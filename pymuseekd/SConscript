@@ -8,7 +8,7 @@ def build_setup(target, source, env):
 
 targets = [env.Command('musetup', ['musetup.in'], build_setup)]
 if 'swig' in env['TOOLS']:
-	targets.append('mulog')
+	targets.append('mulog', 'museekcontrol')
 
 manfile = ["musetup.1", "mulog.1"]
 man_install = env.Install(env['DESTDIR'] + env['MANDIR'], manfile)

@@ -1,0 +1,926 @@
+#! /usr/bin/env python
+
+# museekcontrol -- command-line control of museekd
+#
+# Copyright (C) 2006 daelstorm <daelstorm@gmail.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+Version = "0.2.0"
+
+import struct, socket, sys, time, urllib, pwd, os, select, getopt, ConfigParser
+from time import sleep
+try:
+	from museek import messages, driver
+except:
+	print "WARNING: The Museek Message-Parsing modules, messages.py and/or driver.py  were not found. Please install them into your '/usr/lib/python2.X/site-packages/museek' directory, or place them in a 'museek' subdirectory of the directory that contains the museekcontrol python scipt."
+	sys.exit()
+def output(s):
+	print s
+	sys.stdout.flush()
+parser = ConfigParser.ConfigParser()
+
+config_dir = str(os.path.expanduser("~/.museekd/"))
+
+config_file = config_dir+"museekcontrol.config"
+interface = None
+password = None
+log_dir = None
+
+def usage():
+	print ("""MuseekControl is a command-line script for Museek, the P2P Soulseek Daemon
+Author: daelstorm
+Version: %s
+	Default options: none
+	-c,   --config <file>     (Use a different config file)
+	
+	SEARCHING:
+	--gs, --gsearch <query>   (Globally search for <query> & show results)
+	--rs, --rsearch <query>   (Room search for <query> & show results)
+	--bs, --bsearch <query>   (Buddy search for <query> & show results)
+	
+	CHAT ROOMS:
+	-r,   --rooms             (Show list of rooms)
+	--roomlist                (Refresh list of rooms)
+	--joined                  (Show list of Joined rooms)
+	--roominfo <room>         (Show users in a Joined room)
+	--roomsinfo               (Show users for all Joined rooms)
+	--sroom <room>            (Show chat log for room)
+	--srooms                  (Show chat log for all rooms)
+	-j,   --join <room>       (Join a room)
+	-l,   --leave <room>      (Leave a room)
+	
+	--chat <room>	          (Use with --message)
+	-m,   --message <message> (Say <message> in <room> (Use with --chat))
+	
+	TICKERS:
+	--tickers <room>          (Show tickers in room)
+	--alltickers              (Show tickers in all rooms)
+	
+	--setticker <room>        (Pick a room to set the ticker in)
+	--settempticker <room>    (Pick a room for a temporary ticker)
+	--setdefaultticker        (Set the default ticker for all room)
+	                          (Use the above options with --message)
+	-m,   --message <message> (Set the ticker to this)
+	
+	PRIVATE CHAT:
+	--sprivate <user>         (Show Private Chat log for a user)
+	--sprivates               (Show Private Chat logs for all users)
+	--pm, --private <user>    (Say <message> in PM (Use with --message))
+	-m,   --message <message> (Say <message> in PM (Use with --pm))
+	
+	USERS:
+	--buddy  --unbuddy <user> (Add/Remove user from Buddies list)
+	--ignore --unignore <user>(Add/Remove user from Ignore list)
+	--ban    --unban   <user> (Add/Remove user from Banned list)
+	--trust --distrust <user> (Add/Remove user from Trusted list)
+	--comment <string>        (Comment for the user in list)
+	
+	USERINFO:
+	--info <user>             (Show <user> info  (Saves image to <user>.img
+	                          if available)
+	--minfo                   (Monitor all User Info)
+	--ip <user>               (Get a user's IP and Port)
+	
+	BROWSING:
+	-b.   --browse <user>     (Get a user's shares and show them)
+	--mb, --mbrowse           (Monitor browsing)
+
+	TRANSFERS:
+	-t,   --transfers         (Display all current up- and downloads)
+	--mt, --mtransfers        (Monitor transfers)
+	--download   slsk://user/path (Add file or dir to the download queue)
+	--upload     slsk://user/path (Attempt to upload file to user)
+	--abortup    slsk://user/path (Abort Upload)
+	--abortdown  slsk://user/path (Abort Download)
+	--removeup   slsk://user/path (Remove Upload from queue)
+	--removedown slsk://user/path (Remove Download from queue)
+	--retryup    slsk://user/path (Retry Upload (for remote uploads))
+	--retrydown  slsk://user/path (Retry Download)
+
+	MUSEEK DAEMON LOGIN:
+	-i,   --interface <host:port|/socket.path> (Use a different interface)
+	-p,   --password <pass>   (Use a different password (saved) )
+
+	-v,   --version           (Display version and quit)
+	-h,   --help              (Display this help and exit)
+	""" %Version)
+	sys.exit(2)
+	
+try:
+	opts, args = getopt.getopt(sys.argv[1:], "hc:vi:p:j:l:p:m:b:tar", ["help", "config=", "interface=", "password=", "transfers", "monitor-transfers", "info=",  "minfo", "browse=", "sprivates", "sprivate=", "leave=", "join=", "joined",  "sroom=", "stalk", "rooms", "bs=", "bsearch=", "rs=", "rsearch=", "gs=", "alltickers", "tickers=", "gsearch=", "version", "log=", "chat=", "pm=", "private=", "message=", "away", "download=", "mt", "mtransfers", "mb", "mbrowse", "buddy=", "unbuddy=", "ignore=", "uningore=", "ban=", "unban=", "trust=", "distrust=", "comment=", "roomlist", "abortdown=", "abortup=", "retryup=", "retrydown=", "removeup=", "removedown=", "upload=", "roominfo=", "roomsinfo", "ip=", "setticker=", "settempticker=", "setdefaultticker" ])
+except getopt.GetoptError:
+	usage()
+	sys.exit(2)
+if len(opts) == 0:
+	usage()
+	sys.exit(2)
+else:
+	room = None
+	user = None
+	want = None
+	reason = None
+	message = None
+	query = None
+for opts, args in opts:
+	if opts in ("-h", "--help"):
+		usage()
+		sys.exit()
+	elif opts in ("-c", "--config"):
+		config_file=str(os.path.expanduser(args))
+
+	elif opts in ("-i", "--interface"):
+		interface=str(os.path.expanduser(args))
+	elif opts in ("-p", "--password"):
+		password=str(os.path.expanduser(args))
+	elif opts in ("-v", "--version"):
+		print "Mulog version: %s" % Version
+		sys.exit(2)
+	elif opts == "-b" or opts == "--browse":
+		want = "browse"
+		user = str(args)
+	elif opts == "--mb" or opts == "--mbrowse":
+		want = "browse"
+	elif opts ==  "--info":
+		want ="info"
+		user=str(args)	
+	elif opts ==  "--ip":
+		want ="ip"
+		user=str(args)	
+	elif opts ==  "--minfo":
+		want ="info"
+	elif opts == "-t" or opts == "--transfers":
+		want = "transfers"
+ 	elif opts == "--mt" or opts == "--mtransfers":
+		want = "mtransfers"
+	elif opts in ("--gs", "--gsearch"):
+		want = "gsearch"
+		query = str(args)	
+	elif opts in ("--bs", "--bsearch"):
+		want = "bsearch"
+		query = str(args)	
+	elif opts in ("--rs", "--rsearch"):
+		want = "rsearch"
+		query = str(args)	
+	elif opts in ("-r", "--rooms"):
+		want = "rooms"
+	elif opts == "--roominfo":
+		want = "roominfo"
+		room = str(args)
+	elif opts == "--roomsinfo":
+		want = "roominfo"
+	elif opts == "--joined":
+		want = "joined"
+	elif opts in ( "--pm", "--private"):
+		want = "private"
+		user = str(args)
+	elif opts ==  "--sprivates":
+		want = "sprivates"
+	elif opts == "--sprivate":
+		want = "sprivate"
+		user = str(args)	
+	elif opts == "--srooms":
+		want = "stalk"
+	elif opts == "--sroom":
+		want = "stalk"
+		room=str(args)
+	elif opts == "--ban":
+		want = "ban"
+		user=str(args)	
+	elif opts == "--unban":
+		want = "unban"
+		user=str(args)	
+	elif opts == "--buddy":
+		want = "buddy"
+		user=str(args)	
+	elif opts == "--unbuddy":
+		want = "unbuddy"
+		user=str(args)	
+	elif opts == "--ignore":
+		want = "ignore"
+		user=str(args)	
+	elif opts == "--unignore":
+		want = "unignore"
+		user=str(args)	
+	elif opts == "--trust":
+		want = "trust"
+		user=str(args)	
+	elif opts == "--distrust":
+		want = "distrust"
+		user=str(args)	
+	elif opts == "--comment":
+		reason=str(args)	
+	elif opts == "--tickers":
+		want = "tickers"
+		room=str(args)
+	elif opts == "--alltickers":
+		want = "tickers"
+	elif opts == "--setticker":
+		want = "setticker"
+		room=str(args)
+	elif opts == "--setdefaultticker":
+		want = "setdefaultticker"
+		room=str(args)
+	elif opts == "--settempticker":
+		want = "settempticker"
+		room=str(args)
+	elif opts in ("-j", "--join"):
+		want = "join"
+		room =str(args)	
+	elif opts in ("-l", "--leave", "-p", "--part"):
+		want = "leave"
+		room =str(args)	
+	elif opts in ("-a", "--away"):
+		want = "away"
+	elif opts in ( "--roomlist"):
+		want = "roomlist"
+	elif opts in ("--message"):
+		message = str(args)
+	elif opts in ("--chat"):
+		want = "say"
+		room = str(args)
+ 	elif opts in ( "--download"):
+ 		url =str(args)
+		if url[:7] == "slsk://":
+			try:
+				user, ufile = urllib.url2pathname(url[7:]).split("/", 1)
+				if ufile[-1] != "/":
+					want = "download"
+					ufile = ufile.replace("/", "\\")
+ 					print "Attempting to Queue file: %s from %s" % (ufile, user)
+				else:
+					want = "downfolder"
+					ufile = ufile.replace("/", "\\")
+
+					print "Attempting to get folder contents: %s from %s" % (ufile, user)
+				
+			except Exception, e:
+				print e
+		else:
+			print "Invalid soulseek url: %s. Use the slsk://username//path format" % url
+	elif opts == "--abortdown":
+		url =str(args)
+		if url[:7] == "slsk://":
+			try:
+				user, ufile = urllib.url2pathname(url[7:]).split("/", 1)
+				want = "abortdown"
+				ufile = ufile.replace("/", "\\")
+
+			except Exception, e:
+				print e
+		else:
+			print "Invalid soulseek url: %s. Use the slsk://username//path format" % url
+	elif opts == "--abortup":
+		url =str(args)
+		if url[:7] == "slsk://":
+			try:
+				user, ufile = urllib.url2pathname(url[7:]).split("/", 1)
+				want = "abortup"
+				ufile = ufile.replace("/", "\\")
+
+			except Exception, e:
+				print e
+		else:
+			print "Invalid soulseek url: %s. Use the slsk://username//path format" % url
+	elif opts == "--removedown":
+		url =str(args)
+		if url[:7] == "slsk://":
+			try:
+				user, ufile = urllib.url2pathname(url[7:]).split("/", 1)
+				want = "removedown"
+				ufile = ufile.replace("/", "\\")
+
+			except Exception, e:
+				print e
+		else:
+			print "Invalid soulseek url: %s. Use the slsk://username//path format" % url
+	elif opts == "--removeup":
+		url =str(args)
+		if url[:7] == "slsk://":
+			try:
+				user, ufile = urllib.url2pathname(url[7:]).split("/", 1)
+				want = "removeup"
+				ufile = ufile.replace("/", "\\")
+
+			except Exception, e:
+				print e
+		else:
+			print "Invalid soulseek url: %s. Use the slsk://username//path format" % url
+	elif opts == "--retryup":
+		url =str(args)
+		if url[:7] == "slsk://":
+			try:
+				user, ufile = urllib.url2pathname(url[7:]).split("/", 1)
+				want = "retryup"
+				ufile = ufile.replace("/", "\\")
+
+			except Exception, e:
+				print e
+		else:
+			print "Invalid soulseek url: %s. Use the slsk://username//path format" % url
+	elif opts == "--upload":
+		url =str(args)
+		if url[:7] == "slsk://":
+			try:
+				user, ufile = urllib.url2pathname(url[7:]).split("/", 1)
+				want = "upload"
+				ufile = ufile.replace("/", "\\")
+
+			except Exception, e:
+				print e
+		else:
+			print "Invalid soulseek url: %s. Use the slsk://username//path format" % url
+	elif opts == "--retrydown":
+		url =str(args)
+		if url[:7] == "slsk://":
+			try:
+				user, ufile = urllib.url2pathname(url[7:]).split("/", 1)
+				want = "retrydown"
+				ufile = ufile.replace("/", "\\")
+
+			except Exception, e:
+				print e
+		else:
+			print "Invalid soulseek url: %s. Use the slsk://username//path format" % url
+# 	elif opts in ("-", "--"):
+# 		want = ""
+# 		s =str(args)
+			
+
+museekcontrol_config = {"connection":{"interface":'localhost:2240', "password":None}, \
+	"museekcontrol":{"log_dir": "~/.museekd/logs/"} 	}
+
+def create_config():
+
+	parser.read([config_file])
+
+	museekcontrol_config_file = file(config_file, 'w')
+	
+	for i in museekcontrol_config.keys():
+		if not parser.has_section(i):
+			parser.add_section(i)
+		for j in museekcontrol_config[i].keys():
+			if j not in ["nonexisting", "hated", "options"]:
+				parser.set(i,j, museekcontrol_config[i][j])
+			else:
+				parser.remove_option(i,j)
+	parser.write(museekcontrol_config_file)
+	museekcontrol_config_file.close()	
+
+
+def read_config():
+	
+	parser.read([config_file])
+	for i in parser.sections():
+		for j in parser.options(i):
+			val = parser.get(i,j, raw = 1)
+
+			if j in ['login','password','interface', "log_dir",] :
+				museekcontrol_config[i][j] = val
+			else:
+				try:
+					museekcontrol_config[i][j] = eval(val, {})
+				except:
+					museekcontrol_config[i][j] = None
+
+def update_config():
+	museekcontrol_config_file = file(config_file, 'w')
+	for i in museekcontrol_config.keys():
+		if not parser.has_section(i):
+			parser.add_section(i)
+		for j in museekcontrol_config[i].keys():
+			if j not in ["evilness"]:
+				parser.set(i,j, museekcontrol_config[i][j])
+			else:
+				parser.remove_option(i,j)
+	parser.write(museekcontrol_config_file)
+	museekcontrol_config_file.close()
+	
+def check_path():
+	if os.path.exists(config_dir):
+		if os.path.exists(config_file) and os.stat(config_file)[6] > 0:
+			read_config()
+		else:
+			create_config()
+			
+	else:
+		os.mkdir(config_dir, 0700)
+		create_config()
+check_path()
+
+if log_dir != None:
+	museekcontrol_config["museekcontrol"]["log_dir"] = log_dir
+if password != None:
+	museekcontrol_config["connection"]["password"] = password
+if interface != None:
+	museekcontrol_config["connection"]["interface"] = interface
+
+update_config()
+
+
+class museekcontrol(driver.Driver):
+
+	def __init__(self):
+		driver.Driver.__init__(self)
+		self.s_query = {}
+		self.search_number = 0
+		self.count = 0
+		self.connected = 0
+
+		self.states = {0: "Finished", 1: "Transferring", 2: "Negotiating", 3: "Waiting", 4: "Establishing", 5: "Initiating", 6: "Connecting", 7: "Queued", 8: "Address", 9: "Status", 10: "Offline", 11: "Closed", 12: "Can't Connect", 13: "Aborted", 14: "Not Shared" }
+
+		
+	def disconnect(self):
+		driver.Driver.close(self)
+		
+	def connect(self):
+	
+		try:
+			driver.Driver.connect(self, museekcontrol_config["connection"]["interface"], museekcontrol_config["connection"]["password"], messages.EM_CHAT |  messages.EM_USERINFO| messages.EM_PRIVATE| messages.EM_TRANSFERS  | messages.EM_USERSHARES | messages.EM_CONFIG)
+			
+		except Exception, e:
+			print e
+	def process(self):
+		d = 0
+		r, w, x = select.select([self.socket, sys.stdin], [], [self.socket], d)
+		
+		if self.socket in r:
+			driver.Driver.process(self)
+		if self.connected == 1:
+			if want == None or want == "":
+				print "Nothing to be done, exiting"
+				sys.exit()
+			if want == "say":
+				if message != None:
+					self.send(messages.SayRoom(room, message))
+					print "Sent \"", message, "\" to room", room
+				else:
+					print "No message, aborting.."
+				sys.exit()
+			elif want == "join":
+				self.send(messages.JoinRoom(room))
+				sys.exit()
+			elif want in ("leave", "part"):
+				self.send(messages.LeaveRoom(room))
+				sys.exit()
+			elif want  in ("stalk", "rooms", "sprivate", "sprivates", "transfers", "mtransfers", "joined", "tickers"):
+				pass
+			elif want in ("pm", "private"):
+				if message != None:
+					self.send(messages.PrivateMessage(1, user, message))
+					print "Sent \"", message, "\" to", user
+				else:
+					print "No message, aborting.."
+				sys.exit()
+			elif want == "setticker":
+				if message != None and room != None:
+					self.send(messages.ConfigSet("tickers", room, message))
+					self.send(messages.RoomTickerSet(room, message))
+				sys.exit()
+			elif want == "settempticker":
+				if message != None and room != None:
+					self.send(messages.RoomTickerSet(room, message))
+				sys.exit()
+			elif want == "setdefaultticker":
+				if message != None:
+					self.send(messages.ConfigSet("default-ticker", "ticker", message))
+				sys.exit()	
+			elif want == "away":
+				pass
+			elif want == "info":
+				if user != None:
+					self.send(messages.UserInfo(user))
+			elif want == "ip":
+				if self.count == 0:
+					if user != None:
+						self.send(messages.PeerAddress(user))
+					self.count += 1
+			elif want == "stats":
+				if self.count == 0:
+					if user != None:
+						self.send(messages.PeerStats(user))
+					self.count += 1
+			elif want == "browse":
+				if self.count == 0:
+					if user != None:
+						print user
+						self.send(messages.UserShares(user))
+					self.count += 1
+			elif want == "ticker":
+				if room != None:
+					self.send(messages.RoomTickerSet(room, message))
+					sys.exit()
+			elif want == "buddy":
+				if reason != None:
+					self.send(messages.ConfigSet("buddies", user, reason))
+				else:
+					self.send(messages.ConfigSet("buddies", user, ""))
+				sys.exit()
+			elif want == "ban":
+				#if reason != None:
+				#	self.send(messages.ConfigSet("banned", user, reason))
+				#else:
+	
+				if user != None:
+					self.send(messages.ConfigSet("banned", user, "a"))
+				sys.exit()
+			elif want == "ignore":
+				if reason != None:
+					self.send(messages.ConfigSet("ignored", user, reason))
+				else:
+					self.send(messages.ConfigSet("ignored", user, ""))
+				sys.exit()
+			elif want == "roomlist":
+				self.send(messages.RoomList())
+				sys.exit()
+			elif want == "download":
+				if user != '':
+					self.send(messages.DownloadFile(user, ufile))
+				sys.exit()
+			elif want == "downfolder":
+				if user != '':
+					s = ufile[:-1]
+					self.send(messages.GetFolderContents(user, ufile))
+						
+				sys.exit()
+			elif want == "gsearch":
+	
+				if self.count == 0:
+					self.send(messages.Search(0, query))
+					self.count += 1
+			elif want == "bsearch":
+				
+				if self.count == 0:
+					self.send(messages.Search(1, query))
+					self.count += 1
+			elif want == "rsearch":
+				if self.count == 0:
+					self.send(messages.Search(2, query))
+					self.count += 1
+			elif want == "abortdown":
+				self.send(messages.TransferAbort(0, user, ufile)) #d
+				sleep(1)
+				sys.exit()
+			elif want == "abortup":
+				self.send(messages.TransferAbort(1, user, ufile)) #u
+				sleep(1)
+				sys.exit()
+			elif want == "removedown":
+				self.send(messages.TransferRemove(0, user, ufile))
+				sleep(1)
+				sys.exit()
+			elif want == "removeup":
+				self.send(messages.TransferRemove(1, user, ufile))
+				sleep(1)
+				sys.exit()
+			elif want == "retrydown":
+				self.send(messages.DownloadFile(user, ufile))
+				sleep(1)
+				sys.exit()
+			elif want == "upload":	
+				self.send(messages.UploadFile(user, ufile))
+				sleep(1)
+				sys.exit()
+			elif want == "retryup":
+				self.send(messages.TransferRemove(1, user, ufile))
+				sleep(1)
+				self.send(messages.UploadFile(user, ufile))
+				sleep(1)
+				sys.exit()
+		sleep(0.001)
+
+	def status_check(self, status):
+		if status == 0:
+			stat = "Offline"
+		elif status == 1:
+			stat = "Away"
+		elif status == 2:
+			stat = "Online"
+		return stat
+	def cb_room_state(self, roomlist, joined, tickers):
+		self.connected = 1
+		if want == "rooms":
+			x = roomlist.keys()
+			x.sort()
+			print "Current rooms in the roomlist:"
+			print "Size-----Name-------------------------------------------------------"
+			for s in x:
+				print "%s\t%s" % (roomlist[s], s)
+			sys.exit()
+		elif want == "roominfo":
+			x = joined.keys()
+			x.sort()
+			if room != None:
+				print "Size-----Name-------------------------------------------------------"
+				print "%s\t%s" % (roomlist[room], room) #joined[s],
+				print "Users" + ("-" * 25) + "Status----Speed---Down----Files---Dirs"
+				r = joined[room]
+				list = joined[room].keys()
+				list.sort()
+				for u in list:
+					z = str(self.status_check(int(r[u][0]))) + "\t" + str(r[u][1]) + "\t" + str(r[u][2]) + "\t" + str(r[u][3]) + "\t" + str(r[u][4])
+					print "%s%s%s" % (u, " " * (30-len(u)), z)
+				print ""
+			else:
+				for s in x:
+					print "Size-----Name-------------------------------------------------------"
+					print "%s\t%s" % (roomlist[s], s) #joined[s],
+					print "Users" + ("-" * 25) + "Status----Speed---Down----Files---Dirs"
+					r = joined[s]
+					for u in joined[s]:
+						z = str(self.status_check(int(r[u][0]))) + "\t" + str(r[u][1]) + "\t" + str(r[u][2]) + "\t" + str(r[u][3]) + "\t" + str(r[u][4])
+						print "%s%s%s" % (u, " " * (30-len(u)), z)
+					print ""
+			sys.exit()
+			
+		elif want == "joined":
+			x = joined.keys()
+			x.sort()
+			print "You are in the following rooms:"
+			print "-Size-\t-Name-"
+			for s in x:
+				print "%s\t%s" % (roomlist[s], s) #joined[s], 
+			sys.exit()
+		elif want == "tickers":
+			x = tickers.keys()
+			x.sort()
+			if room == None:
+				for s in x:
+					if tickers[s] != {}:
+						print "Room:", s
+						for t in tickers[s]:
+							print "[%s]\t%s" % (t, tickers[s][t])
+			else:
+				if tickers[room] != {}:
+					print "Room:", room
+					for t in tickers[room]:
+						print "[%s]\t%s" % (t, tickers[room][t])
+					
+			sys.exit()
+			
+	def cb_server_status_set(self, status):
+		if want == "away":
+			if status == 0:
+				self.send(messages.SetStatus(1))
+			else:
+				self.send(messages.SetStatus(0))
+			sys.exit()
+			
+	def cb_room_said(self, roomname, user, text):
+		good =0
+		if want == "stalk":
+			if room != None:
+				if room == roomname:
+					good = 1
+			else:
+				good =1
+		if good ==1:
+			if text[:4] == "/me ":
+				message = "* "+user+" " + text[4:]
+			else:
+				message = "["+user+"] " + text
+			print "%s (%s) %s" % (time.strftime("%d %b %Y %H:%M:%S"), roomname, message)
+			
+	def cb_private_message(self, direction, timestamp, username, message):
+		doit = 0
+		if want == "sprivates" or want == "sprivate":
+			if want == "sprivate":
+				if user == username:
+					doit = 1
+			elif want == "sprivates":
+				doit = 1
+			if doit == 1:
+				if direction == 0:
+					print "(PM)", time.strftime("%d %b %Y %H:%M:%S"), username+" said: "+ message 
+				elif direction == 1:
+					print "(PM)", time.strftime("%d %b %Y %H:%M:%S"), "You told", username +": "+ message
+
+	def cb_user_info(self, username, info, picture, uploads, queue, slotsfree):
+		if want == "info":
+			if user != None:
+				if user == username:
+					print "User:", username
+					i = info.split('\n')
+					for line in i:
+						print line
+					print "Queue:", queue, "Uploads:", uploads, "Slots:", slotsfree
+					if picture != '':
+						r = file(str(username)+".image", 'w')
+						print >> r, str(picture)
+						r.close()
+						print "Saved User Image as: %s.image" % username
+					sys.exit()
+			else:
+				print "User:", username
+				i = info.split('\n')
+				for line in i:
+					print line
+				print "Queue:", queue, "Uploads:", uploads, "Slots:", slotsfree
+				if picture != '':
+					r = file(str(username)+".image", 'w')
+					print >> r, str(picture)
+					r.close()
+					print "Saved User Image as: %s.image" % username
+				print "- - - - - - - - - - - - - - - -"
+				
+	def display_shares(self, username, shares):
+		self.browse_number = 0
+		files_in_shares = 0
+		for dirs, files in shares.items():
+			for filez  in files.keys():
+				files_in_shares += 1
+		len_shares = len(str(files_in_shares+1))
+		for dirs, files in shares.items():
+			result_list = []
+# 			if files != {}:
+# 				output("------\nDIR: slsk://%s/%s" % (username, dirs))
+			for filez, stats in files.items():
+				self.browse_number = self.browse_number +1
+
+				size= str(stats[0]/1024)+"KB"
+				ftype =stats[1]
+				if ftype == '':
+					ftype = "None"
+					length = "00:00"
+					bitrate = 'None'
+				else:
+					bitrate =str(stats[2][0])
+					if bitrate == '':
+						bitrate = 'None'	
+					length =str(stats[2][1])
+					if length != '' and length != None:
+						minutes = int(length)/60
+						seconds = str( int(length) - (60 * minutes))
+						if len(seconds) < 2:
+							seconds = '0' + seconds
+						length = str(minutes)+":"+str(seconds)
+					else:
+						length = "00:00"
+
+				
+				filename = dirs + "\\" + filez
+				result_list = user, filename
+				# Activate Number for Result
+# 				if len(str(self.browse_number)) < len_shares:
+				number = " " * (len_shares - len(str(self.browse_number))) + str(self.browse_number)
+# 				else:
+# 					number = self.browse_number
+				
+				if ftype in ("mp3", "ogg", "MP3", "OGG"):
+					output('['+str(number)+'] ' + "Size: " + str(size) +"\t" + "slsk://%s/%s" % (username, dirs) +"\\"+str(filez)+ "\nLength: " + str(length) + " Bitrate: " + str(bitrate) )
+				else:
+					output('['+str(number)+'] '+ "Size: " + str(size) +"\t" + "slsk://%s/%s" % (username, dirs) +"\\"+  str(filez)  )
+		output("Finished browsing: " + username)
+		
+	def cb_user_shares(self, username, shares):
+		if want == "browse":
+			if user != None:
+				if user == username:
+					print "User:", username
+					self.display_shares(username, shares)
+					sys.exit()
+			else:
+				print "User:", username
+				self.display_shares(username, shares)
+				
+	def cb_search_ticket(self, query, ticket):
+		self.s_query[ticket] = query
+		
+	def cb_search_results(self, ticket, user, free, speed, queue, results):
+		# search results
+
+		if want in ("gsearch", "bsearch", "rsearch"):
+			output("---------\nSearch: " +str(self.s_query[ticket]) + " Results from: User: "+ user )
+
+			for result in results:
+				result_list = []
+				# Create Result List for future use 
+				# clear it next interation
+	
+				result_list = ticket, user, free, speed, queue, result[0], result[1], result[2], result[3]
+				
+				# Count Search Result
+				self.search_number += 1
+				# Display Search Result
+			
+				path = result[0]
+				size = str(result[1]/1024)+'KB'
+				ftype = result[2]
+	
+				if ftype in ('mp3', 'ogg'):
+					if result[3] != []:
+						bitrate = result[3][0]
+						length = result[3][1]
+						minutes = int(length)/60
+						seconds = str(length - (60 * minutes))
+						
+						if len(seconds) < 2:
+							seconds = '0' + seconds
+					else:
+						bitrate = 'None'
+						minutes = '00'
+						seconds = '00'
+						length = 0
+				else:
+					bitrate = 'None'
+					minutes = '00'
+					seconds = '00'
+					length = 0
+				if free:
+					free = 'Y'
+				else:
+					free = 'N'
+				output("[%s] slsk://%s/%s" % (str(self.search_number), user, path.replace("\\", "/")))
+				output("Size: "+str(size)+ " Bitrate: "+ str(bitrate) + " Length: " + str(minutes)+":"+seconds +" Queue: "+str(queue)+" Speed: "+str(speed) +" Free: " +free)
+				output(" ")
+			
+				
+	def cb_peer_address(self, username, ip, port):
+		if want == "ip":
+			if user != None:
+				if user == username:
+					print "%s's IP: %s Port: %s"  % (user, str(ip), str(port))
+					sys.exit()
+					
+	def cb_peer_stats(self, username, avgspeed, numdownloads, numfiles, numdirs):
+		if want == "stats":
+			if user == username:
+				output("Peer Stats for: %s \nSpeed: %s \tDownloads: %s \nFiles: %s \tDirectories: %s" % (user,  avgspeed, numdownloads, numfiles, numdirs))
+				output("")
+				sys.exit()
+			
+		
+		
+	def cb_disconnected(self):
+		self.connected = 0
+		print "--- Disconnected from the Museek Daemon ---"
+		sys.exit()
+		
+	def cb_login_error(self, reason):
+		self.connected = 0
+		if reason == "INVPASS":
+			self.invalidpass = 1
+			print "couldn't log in: Invalid Password"
+			self.connect()
+		else:
+			self.invalidpass = 0
+			print "couldn't log in: " + reason
+
+	def cb_login_ok(self):
+		self.connected = 1
+		self.invalidpass = 0
+# 		print "Logging in..."
+		
+		
+	def cb_server_state(self, state, username):
+		
+		if state:
+			output("Connected to server, username: " + username)
+		else:
+			output("Not connected to server")
+			
+	def cb_transfer_state(self, downloads, uploads):
+		if want in ("mtransfers", "transfers"):
+			for transfer in uploads:
+				print "Upload: slsk://%s/%s\nSize: %s Pos: %s Rate: %s State: %s %s" % (transfer.user, transfer.path, transfer.filesize, transfer.filepos, transfer.rate,  self.states[int(transfer.state)], transfer.error)
+				print "- - - - - - - - - - - - - - - -"
+			for transfer in downloads:
+				print "Download: slsk://%s/%s\nSize: %s Pos: %s Rate: %s State: %s %s" % (transfer.user, transfer.path, transfer.filesize, transfer.filepos, transfer.rate,  self.states[int(transfer.state)], transfer.error)
+				print "- - - - - - - - - - - - - - - -"
+		if want == "transfers":
+			sys.exit()
+			
+	def cb_transfer_update(self, transfer):
+		if want == "mtransfers":
+			if transfer.is_upload:
+				print "Upload: slsk://%s/%s\nSize: %s Pos: %s Rate: %s State: %s %s" % (transfer.user, transfer.path, transfer.filesize, transfer.filepos, transfer.rate,  self.states[int(transfer.state)], transfer.error)
+				print "- - - - - - - - - - - - - - - -"
+			else:
+				print "Download: slsk://%s/%s\nSize: %s Pos: %s Rate: %s State: %s %s" % (transfer.user, transfer.path, transfer.filesize, transfer.filepos, transfer.rate,  self.states[int(transfer.state)], transfer.error)
+
+if museekcontrol_config["connection"]["password"] == None:
+	output("No password set")
+	sys.exit()
+c = museekcontrol()
+
+def start():
+	try:
+		while 1:
+			if c.socket is None:
+				c.connect()
+			c.process()
+	except Exception, e:
+		print e
+start()
