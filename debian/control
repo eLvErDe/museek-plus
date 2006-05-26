@@ -7,7 +7,7 @@ Standards-Version: 3.7.2
 
 Package: museekd
 Architecture: any
-Depends: ${shlibs:Depends}
+Depends: ${shlibs:Depends}, ${python:Depends}
 Description: file-sharing application for the SoulSeek peer-to-peer network
  Museek+ consists of museekd (daemon), museeq (QT gui), muscan (tool for 
  scanning shared files), musetup (configuration script), museekchat (Curses 
