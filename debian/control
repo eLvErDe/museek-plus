@@ -35,7 +35,6 @@ Description: file-sharing application for the SoulSeek peer-to-peer network
  .
  Python bindings.
 
-
 Package: museeq
 Architecture: any
 Depends: ${shlibs:Depends}
@@ -45,3 +44,13 @@ Description: file-sharing application for the SoulSeek peer-to-peer network
  chat client), and Python bindings.
  .
  QT client.
+
+Package: mucous
+Architecture: any
+Depends: ${python:Depends}
+Description: file-sharing application for the SoulSeek peer-to-peer network
+ Museek+ consists of museekd (daemon), museeq (QT gui), muscan (tool for
+ scanning shared files), musetup (configuration script), museekchat (Curses
+ chat client), and Python bindings.
+ .
+ Python/Curses client.
