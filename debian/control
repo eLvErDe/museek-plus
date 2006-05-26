@@ -15,6 +15,16 @@ Description: file-sharing application for the SoulSeek peer-to-peer network
  .
  Server daemon.
 
+Package: museekd-tools
+Architecture: any
+Depends: ${shlibs:Depends}, ${python:Depends}, museek-common (= ${Source-Version})
+Description: file-sharing application for the SoulSeek peer-to-peer network
+ Museek+ consists of museekd (daemon), museeq (QT gui), muscan (tool for 
+ scanning shared files), musetup (configuration script), museekchat (Curses 
+ chat client), and Python bindings.
+ .
+ Tools for managing museekd. Provides mulog and museekcontrol.
+
 Package: museek-common
 Architecture: any
 Depends: ${python:Depends}

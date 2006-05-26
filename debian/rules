@@ -45,9 +45,6 @@ install: build
 	# Install files
 	scons PREFIX=/usr MANDIR=/usr/share/man/man1 DESTDIR=$(CURDIR)/debian/tmp install
 
-	# Remove .py from mulog
-	mv debian/tmp/usr/bin/mulog.py debian/tmp/usr/bin/mulog
-
 # Build architecture-dependent files here.
 binary-arch: build install
 	dh_testdir
