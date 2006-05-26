@@ -1,0 +1,22 @@
+Mucous
+------
+
+
+If you want accented characters, you'll need to do the following:
+
+Copy the sitecustomize.py file to your /usr/lib/python2.X/site-packages/ 
+directory. 
+
+If you already have such a file, add the contents of mine to yours.
+
+
+If you don't have Mucipher installed you'll need to do so. (if you compiled museek yourself, SWIG needed to be available.)
+It is absolutely necessary to allow Mucous to connect to the Museek Daemon. 
+Download it here: http://thegraveyard.org/files/pymucipher-0.0.1.tar.gz
+Extract the tarball, and as Root or sudo, run:
+python setup.py install
+You'll need GCC, Python and SWIG to install it. "
+
+--
+
+daelstorm@liamg.moc

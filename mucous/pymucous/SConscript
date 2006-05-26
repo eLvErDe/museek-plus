@@ -1,0 +1,15 @@
+
+Import('env')
+
+files = Split("""
+	__init__.py
+	utils.py
+""")
+
+import sys, os
+py_ver = str(sys.version_info[0]) + "." + str(sys.version_info[1])
+py_dest = env['DESTDIR'] + os.path.join(sys.prefix, "lib", "python" + py_ver, "site-packages", "pymucous")
+
+install = env.Install(py_dest, files)
+env.Alias('install_mucous', install)
+env.Alias('install', 'install_mucous')

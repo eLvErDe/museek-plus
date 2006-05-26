@@ -1,0 +1,77 @@
+.TH "MUCOUS" "1" "Release 0.8.0" "daelstorm" "Mucous"
+.SH "NAME"
+.LP 
+\fBMucous\fR \- Python / Curses client for museek
+.SH "SYNOPSIS"
+.B mucous 
+[\-c <\fIfilename\fP>] [\-\-config <\fIfilename\fP>]
+[\-l <\fIdirectory\fP>] [\-\-log <\fIdirectory\fP>] 
+[\-v] [\-\-version]
+[\-h] [\-\-help]
+.SH "DESCRIPTION"
+.LP 
+Mucous provides a interface for the Museek Daemon for chatting, transferring files, managing users and browsing shares on the Soulseek P2P network and Soulfind Servers.
+.LP 
+You will need a configured \fImuseekd\fP(1).
+.SH "OPTIONS"
+.LP 
+Mucous accepts the following options:
+.TP 
+.B \-c <\fIfilename\fP>, \-\-config <\fIfilename\fP>
+Use a different config file.
+.TP 
+.B \-l <\fIdirectory\fP>, \-\-log <\fIdirectory\fP> 
+Use a different chat log directory.
+.TP 
+.B \-v, \-\-version
+Display Version and exit.
+.TP 
+.B \-h, \-\-help
+Display Help and exit.
+
+.SH "EXAMPLE"
+.LP 
+To run this program the standard way type:
+.LP 
+mucous
+.LP 
+Alternativly you use a different config file with:
+.LP 
+mucous \-\-config config
+.LP 
+Or a different chat logging directory with:
+.LP 
+mucous \-\-log logdir
+.SH "ENVIRONMENTAL VARIABLES"
+.LP 
+.TP 
+\fBTERM\fP
+Specifies the type of Terminal; changes the way mucous displays color.
+.LP 
+For XTerm: xterm\-color
+.LP 
+For aterm or rxvt: rxvt
+.LP 
+For urxvt: rxvt\-unicode
+.SH "FILES"
+.TP 
+ \fI~/.mucous/config\fR
+The default location for the \fBmucous\fP config file.
+.TP 
+ \fI~/.mucous/logs/\fR
+The default directory for chat logs.
+.TP 
+ \fI~/.mucous/logs/room/\fR
+The directory where chat room logs are stored.
+.TP 
+ \fI~/.mucous/logs/private/\fR
+The directory where private chat logs are stored.
+.TP 
+ \fI~/.mucous/$USER.image\fR
+The file where a user's userinfo image is saved.
+.SH "AUTHORS"
+.LP 
+daelstorm <daelstorm@gmail.com>
+.SH "SEE ALSO"
+.LP 
+\fImuseekd\fP(1) \fImuscan\fP(1) \fImuscand\fP(1) \fImulog\fP(1) \fImuseeq\fP(1) \fImusetup\fP(1)

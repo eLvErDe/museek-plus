@@ -1,0 +1,515 @@
+Changelog
+
+Updated April 18th 2006
+Version: 0.8.0pre1
+* Lots of new features to keep up with Museek+
+* the unfinished Interests/Recommendations are in Users mode
+* New commands:
+  /extra (toggle responding to version requests) /ctcpversion (request client version)
+  /logout  /login      (Server Login and Logout)
+  /like   /donotlike   (Add/remove interests)
+  /hate /donothate     (Add/remove interests)
+  /similar   /itemsimilar <item>  (List Similar users)
+  /globalrex  /recommendations  /rex /itemrex <item>
+  /uploadto <user>  /upload <file> (Initiate remote upload)
+* Renabled Home/End for supporting terminals
+* Removed white colors defines, so that White-BG terminals are readable.
+
+
+Updated April 29th 2006
+Version: 0.7.10
+
+    * Fixed a bug with the Browse User popup menu item
+    * Users-in-Room Box is positionable on the right side of the Chat Window and Status log, now. There are now 7 different positions for the subwindows in Chat mode.
+    * Fixed scrolling alignment bug caused by tab marks \t by replacing them with spaces
+    * Newlines, ( \n ) are properly formatted with a "--' prefix now. This will only matter on Soulfind servers, as Soulseek has disabled them, iirc.
+    * Fixed an error message when attempting (Alt-Up/Alt-Down) to get input history when you haven't inputed anything, yet.
+    * Greatly reduced flicker when drawing/refreshing Chat mode and some other modes by using the .noutrefresh() curses function in a lot of cases, instead of the .refresh() curses function. This requires a curses.doupdate() when construction of the window is finished, but is much cleaner and less annoying.
+    * Made search entry not try to convert accented characters, don't know if it'll help any. 
+    * Mucous sets the mode to Away after 900 seconds of keyboard/mouse inactivity. (this is AutoAway) 
+
+Updated April 23th 2006
+Version: 0.7.9
+
+    * Fixed a bug with the Userinfo popup menu item
+    * Added a warning with instructions if the Mucipher module isn't found.
+    * Fixed the Input Bar to keep it's contents after resizing the terminal window.
+    * Fixed download/upload numbers to be cleared after disconnection
+    * Fixed long /me Chat lines to be completely green
+    * Connect/Disconnect status messages are more verbose
+    * Fixed search result tabs not to be checked for away status.. *blush*
+    * Made user tabs (in browse, private, & userinfo modes) to refresh less often when users change status 
+
+Updated April 17th 2006
+Version: 0.7.8b
+
+    * Fixed two bugs in Browsing shares (extra \ in the directory tree, and once again, Windows drives) Thanks for the bug report, Cravings. 
+
+Updated April 17th 2006
+Version: 0.7.8
+
+    * Clicking on the top-left status message now can reconnect you to Museek, if you're not connected, or toggle Away/Online Status if you are connected.
+    * Tabs fit together a bit closer, and now if a user is offline, away or online, the color of the user's nick will be red, yellow, white, or green if online and selected.
+    * Alert Messages work differently, now (Old messages reappear when newer ones have been cleared)
+    * Added /reload and /refresh (/reloadshares and /refreshshares still exist)
+    * Removed /pmclose and /infoclose and merged them into a more incompassing /close function that works for Chatrooms, Private Chat, Searching, Browsing, and Userinfo
+    * Chat Room Buffers are now 700 messages long. This is to prevent wasteful Memory and CPU usage while scrolling. If you want longer chatroom history, use the chat logs (by default in your ~/.mucous/logs/rooms/ directory. 
+
+Updated April 7th 2006
+Version: 0.7.7b
+
+    * Fixed the mouse-clickable ChatLog scroll arrows to work with the resized windows
+    * Added a check for TERM != 'linux' (the linux console or framebuffer) for updating the Terminal title.
+    * Made scrolling directories the default in Browse Mode.
+    * Rearranged the not-quite-perfect browsefilter to catch everything in the directory. But it's still not very usable. Command: /bfilter
+    * Simplified FileFormat code (GB/MB/KB/B). There were some problems with certain file sizes.
+    * Also fixed some bugs caused by missing file stats.
+    * Made Chat log not autoscroll if not on the last line of the buffer. (hopefully will work without too many problems) 
+
+Updated March 31th 2006
+Version: 0.7.6
+
+    * Added Encoding option/menus to Chat Rooms, Private Chat and Browse Modes. To change, click on the encoding (Example: UTF-8) in bottom right and choose a new option from the menu.
+    * Once again, I have fixed broken accented characters... I can't seem to go a few versions with breaking them :)
+    * Add a Place in Queue option to the Download Transfer menu. Using it on a queued download should update the display with the number of files before you in the queue. You can also use /ut 1, or any other number to update the queue position.
+    * Fixed a scrolling bug that broke downloading individual files from big directories in Browse Mode and another bug with file stats. 
+
+Updated March 27th 2006
+Version: 0.7.5
+
+    * Fixed some minor bugs with highlighting tab, added Help highlighting
+    * Added the Give Privileges function. Example: /giveprivs username
+      Afterwards, input a number of days and press Enter. You can also access this via the popup menus. 
+
+Updated March 26th 2006
+Version: 0.7.4
+
+    * Added empty directories to the directory tree in Browse Mode
+    * Add Visual Notifications to some of the tabs at the bottom of the screen. For example, new Chat messages cause Chat tab to highlight yellow, while new nick mentions cause it to highlight red. New PMs, Search results, Userinfo, and Browsed Shares all cause their respective tabs to highlight yellow. I think you'll like it.
+    * Sorted joined chatrooms alphabetically (as should have been ages ago)
+    * merged /autojoin and /noauto into a single /autojoin toggle
+    * Added function to check remaining privileges. Use /privileges or /privs 
+
+Updated March 21th 2006
+Version: 0.7.3e
+
+    * More bugs fixed. Specifically a popup window in searches not handling Exceptions 
+
+Updated March 21th 2006
+Version: 0.7.3d
+
+    * Fixed more bugs... all those changes in 0.7.2 and 0.7.3 sure did cause problems :-/ 
+
+Updated March 20th 2006
+Version: 0.7.3c
+
+    * Fixed broken Logging 
+
+Updated March 20th 2006
+Version: 0.7.3b
+
+    * Reverted the Glib (GObject) requirement) due to it missing in Ubuntu Python packages 
+
+Updated March 19th 2006
+Version: 0.7.3
+
+    * Mucous now uses the Glib mainloop
+    * Fixed some chat formatting bugs with /me messages
+    * Fixed some scrolling bugs caused by the chatlog vs the roombox
+    * Browsing now has a clickable directory tree and popup menus. List view has been AXED. >:)
+    * Fixed Chat log saving. It can now be is permanently disabled. (get 0.7.3c) 
+
+Updated March 18th 2006
+Version: 0.7.2
+
+    * Search now is quite different, you'll need to scroll to file to see it's details, size, length.. user and the rest. Also a right-click (Alt-p) popup menu was added. The Search Filter is a lot more obvious now. Set it with /filter
+    * Clicking on the user/search tabs in Private, Info, Search and Browse modes now actually works as it should, instead of simply cycling thru the list.
+    * Help is now split between Debug mode and Help Mode. Errors and status messages are shown in Debug Mode, and /help commands are displayed only in Help Mode. Use: /debug /help or click on their respective titles when in either mode.
+    * Rewrote scrolling for Help, the New Debug mode, Private Chat, Chat, and Info modes.. works much smoother.
+    * Bug in Transfer scrolling fixed
+    * The last 20 lines of chat history will be displayed when joining rooms, and also some previous private chat history is shown
+    * Added missing Private chat menu item to some of the popup menus
+    * Chat now has a resize button in the top left of the chat window. It does the same thing as the /roombox command
+    * Reformated /help messages 
+
+Updated March 7th 2006
+Version: 0.7.1
+
+    * Now Requires the Schee's Museek Roomsearch patch or better: my modified version of Museek, which includes some more features. Read the CHANGELOG for a full list.
+    * Added roomsearch option (Thanks to Schee's Patch)
+    * The last 10 lines of chat history will be displayed at startup
+    * Fixed some mouse annoyances
+    * Fixed some threading bugs (/connect)
+    * Simplified some transfer code 
+
+Updated 14 December 2005
+Version: 0.7.0
+
+    * Reduced flicker
+    * Major Changes to transfers/rooms/lists/users-in-room windows. Now you can scroll them by item, select items and open popup windows for various actions.. almost like a GUI
+    * New hotkeys: Alt-T (Toggle window) & Alt-P (Open Popup Window )
+    * Cleaned up a lot of redundant code 
+
+Updated 31 August 2005
+Version: 0.6.8
+
+    * Fixed a bug with logging
+    * Logging toggle in Setup mode now works (as does /logging)
+    * Added GeoIP support (/ip now displays the country of origin)
+    * Added Status info (Speed, Number of Files) to the Users Lists (Ban, Buddy, Ignore)
+    * Various other minor fixes (Alert related) 
+
+Updated 11 August 2005
+Version: 0.6.7
+
+    * Added a tab for logging (doesn't do anything but display status, right now)
+    * Added a check for the subprocess module, instead of dropping dead when it doesn't find it 
+
+Updated 10 August 2005
+Version: 0.6.6
+
+    * Finished adding support for accented characters to userinfo, browsing, searching, private chat, and chat rooms.
+    * Reworked the search and browse modes a little bit. Now they are stripped white on gray & white on black.
+    * Added Title Changing for the terminal. Now Mucous displays the version and online status in the terminal title (via Bash).
+    * Added optional beep-on-nick-mention, added setting for in the setup mode. (If you don't get any sound for your PC Speaker, load the pcspkr module.)
+    * Added toggle for encoding in setup mode. I recommend ISO-8859-1 or ISO-8859-15
+    * Added a Shares tab to setup mode. You can now reload, rescan, update, list, add directories, and remove directories with muscan from within Mucous.
+    * Added preliminary UserInfo setup tab in setup.. couple of bugs still, like the need for newlines, accented characters (this one is very wierd), and scrolling. :)
+    * Added a Save Config button in setup mode.
+    * Added a thread for Auto-Retrying downloads when they fail.
+    * Added a thread for Auto-Clearing uploads when they finish or fail & downloads when they finish downloading.
+    * Requires Python 2.4.x due to the subproccess module
+    * Toggles for the above two features are in setup mode (i'm really leaning towards lots of mouse-only features... i need to stop that)
+    * The threads run every 30 seconds whilst enabled.
+    * Totally murdered the transfer flicker (when not in transfer mode) 
+
+Updated 8 August 2005
+Version: 0.6.5
+
+    * Added support for accented characters across most of Mucous.
+    * Chatting, tickers, transfers, & searching are now accented.
+    * Getting Userinfo, etc from users with accented characters doesn't work. (Shouldn't be a problem, unless you use Soulfind)
+    * Support for more of Soulfind's UTF-8 features will come later.
+    * You'll need to read the INSTALL file included in the tarball, and copy an included script into the Python site-packages directory. 
+
+Updated 7 August 2005
+Version: 0.6.4
+
+    * Added Sorting in Search mode
+    * Sort by: Number, User, Free Slots, Speed, Queue, Path, Size, Filetype, Bitrate, and Time. Also, you can Reverse all of these sorting methods.
+    * Fixed a bug or two in the new tabbed transfer mode
+    * Fixed another bug in the RoomList mode
+    * Mucous is now very picky about when it'll attempt to update transfer display (cuts down on flickering a bit) 
+
+Updated 7 August 2005
+Version: 0.6.3
+
+    * Added Sorting in RoomList mode
+    * Sort: Alphabetically, Reverse-Alphabetically, Size, Reverse-Size
+    * Use the mouse to refresh the roomlist and switch between the sortting methods
+    * You can also use: Insert, Left-Arrow and Right-Arrow
+    * Colored the status line at the top of the window white-on-grey 
+
+Updated 6 August 2005
+Version: 0.6.2
+
+    * This release focuses only the Transfer mode and whatever i changed in 0.6.2beta1 (sorry, I forgot)
+    * Added a Tabbed mode so that only Uploads or only Downloads are visible.
+    * Toggle with /transbox or by clicking on the <Tabbed> or <Split> button in the bottom left of the transfer window
+    * Toggle between Upload and Download views by clicking the Uploading Transfers/Downloading Transfers buttons at the top of the transfer window 
+
+Updated 5 June 2005
+Version: 0.6.1
+
+    * This is mainly a cleanup release
+    * Removed unnecessary verbosity from search results
+    * Attempted to fix the long-standing, and unsightly scrolling bug in chat rooms
+    * Fixed the ghastly blank-line-at-top-of-log bug
+    * Sorted transfers by usernames
+    * Added /urlreader & /urlcustom In Setup Mode, the command that executes when you use /url is displayed, as well as a toggle. (Default is Firefox.. others: lynx, elinks, custom)
+    * /urlcustom example: /urlcustom xterm -e 'links $'
+
+Updated 31 May 2005
+Version: 0.6.0
+
+    * Added: /filter, /j, /close, /clearsearchs, /nick, and /users
+    * In the new pseudo-filesystem Browse Mode use the following commands: cd, get, getdir, ls, ls -l, lsdirs (with or without the prefixed '/'
+    * Split searches and browsing
+    * Search can now be Filtered
+    * Lots of crash fixes
+    * Resizing the terminal now actually works without killing mucous
+    * Click on the "Perc" or "Speed" column in transfers to switch between
+
+# Updated 6 May 2005
+Version: 0.5.9
+
+    * Added: /alias, /unalias, /aliases For now, you can only use them to save blocks of text. Later I'll add support for execution
+    * Added: /say for saying something in a different room (must be in chat mode). example use: /say museek echo
+    * Fixed a small problem with tabbing
+    * Added /url for grabbing the last link in a room or pm and running an elinks in an xterm
+    * Alerts are now bold, not underlined 
+
+Updated 3 May 2005
+Version: 0.5.8
+
+    * Split User Info up into tabs. Click on them to cycle thru, Click close to close them, or use /infoclose
+    * Fixed a bug in Private Chat scrolling (discovered whilst working on UserInfo) 
+
+Updated 2 May 2005
+Version: 0.5.7
+
+    * Added a nicotine-like ticker to the status log. Toggle on or off in the new-and-improved setup mode or with /tickcycle
+    * Setup mode vastly improved
+    * Added a history log. Use Alt-Up/Alt-Down to cycle thru it
+    * Connection and debugging info moved to the new Help Mode 
+
+
+Updated 1 May 2005
+Version: 0.5.6
+
+    * Integrated Buddy, Ban and Ignore lists in "Users" Mode, added online status to them
+    * Added a "Rooms" mode, with a scrollable roomlist
+    * Fixed some bugs in the chat room log, when scrolling, new chat messages don't appear
+    * The Userlist Roombox now scrolls from the top of the list
+    * Some protocol changes, use messages.py and driver.py included in tarball 
+
+Version: 0.5.5
+
+    * Updated to match current Museek Subversion's protocol changes (private messages, searches) 
+
+
+Updated 25 April 2005
+Version: 0.5.4
+
+    * Fixed a bug in scrolling
+    * Added /retryall (retries all failed downloads)
+    * Added /clearroom clears current or specified room log 
+
+Version: 0.5.3
+
+    * Modified: remember that primitive userlist box? Now it's toggleable with /roombox to big, small and off and scrolls. To switch to it, use HOME, END, or /roombox.
+    * Fixed a crash with tabbing in "connection mode" (thanks, stoked-fish, jaren80 for pointing it out)
+    * Fixed a bug in the /np function that outputted "None" before now playing text 
+
+Updated 24 April 2005
+Version: 0.5.2
+
+    * Modified: chatroom colors, layout, added a primitive userlist box in the top left.. doesn't scroll, yet. (thanks Xero, for the criticism about the colors)
+    * Modifed: Private Chat to be seperated & "tabbed  with a clickable bar along the top
+    * Fixed the crazy way the mouse worked earlier.. curses.BUTTON1_PRESSED -> curses.BUTTON1_CLICKED.. silly me.
+    * Tab completion now cycles (this was a big pain, and it still isn't perfect, yet)
+    * /list now outputs green for buddies, red for banned, etc. 
+
+Updated 22 April 2005
+Version: 0.5.1
+
+    * Modified: nick mention highlighting to make it even cooler
+    * Added: //command escaping
+    * Fixed a bug in the timer 
+
+Updated 21 April 2005
+Version: 0.5.0
+
+    * Added: nick highlighting... and some other groovy magic 
+
+Version: 0.4.9
+
+    * Modified: customizeable /np use /npset and /npprefix and /npcheck to manage it. 
+
+Version: 0.4.8
+
+    * Added: Logging (use /logging to enable, and then /save)
+      logs will be saved in ~/.mucous/logs/[rooms|private]/[room|user] unless you use --log
+    * Added: /rescanshares and /reloadshares 
+
+Version: 0.4.7
+
+    * Fixed: crash on server reconnect
+    * Added /roomlistrefresh, made /roomlist output already recieved roomlist
+    * Past chat in rooms in no longer cleared, if disconnected and reconnected from museekd or soulseek.
+    * Added a --- Disconnected from xxxx --- message to the chatrooms
+    * Added /nuke and /unnuke
+    * Fixed a mistake I made in messages.py, now /ip doesn't crash mucous anymore 
+
+
+Updated 20 April 2005
+Version: 0.4.6
+
+    * Added major enhancements to tab-completion
+    * Tabbing now works for usernames and /commands
+    * Cleaned up the code a lot, added more checks for proper /command input
+    * Added /downpathdir, for recursive manual downloading. (Set user with /downuser)
+    * Use PageUp & PageDown to switch scolling from downloads to uploads instead of tab
+    * The keypad enter should now work no matter numlock's state
+    * Added a forgotten transfer type (error) to the transfer lists
+    * Changed how config setting changes are reported in Info Mode, made sure updates to buddy/ban/ignore lists take effect immediately 
+
+
+Updated 19 April 2005
+Version: 0.4.5
+
+    * Added command-line options, --help, --config, --version
+    * Mucous no longer crashes when disconnected from Museekd
+    * Mucous also can now be manually disconnected with /disconnect
+    * Mucous will close a bad connection attempt after 5 seconds
+    * Added /downdir (use like /download, for searches)
+    * You'll need the new driver.py, because of the new socket closing feature. 
+
+
+Updated 18 April 2005
+Version: 0.4.4
+
+    * Finished implementing scrolling in Transfer Mode (Use Tab to switch between uploads and downloads)
+    * Partially rewrote scrolling for chatrooms
+    * Added clickable scrolling spots in chatrooms
+    * Changed the formatting in the ban, buddy and ignore lists 
+
+
+Updated 17 April 2005
+Version: 0.4.3
+
+    * Added tab nick completion! Yay!
+    * Added a little bit more info to setup mode. 
+
+
+Version: 0.4.2
+
+    * Added the /retry transfer command
+    * Added the /searchbuddy command (only works with Museek Subversion from April 16th)
+    * Fixed another resize bug (in transfers)
+    * Other misc fixes
+    * As usual, if new museek features are implemented (not just client-side features), redownload driver.py and messages.py 
+
+
+Updated 15 April 2005
+Bugfix release: 0.4.1
+
+    * Fixed the "first time start" bug
+    * Fixed some of the many terminal-resize crashes. (hope I can kill them all)
+    * Cleaned up a few things
+    * Moved /joining users-in-room-lists from info-mode into the rooms 
+
+
+Updated 14 April 2005
+Renamed to Mucous, version: 0.4.0
+
+    * Added F10, setup mode, some options are toggleable just by clicking on them.
+    * BE CAREFUL with Buddies-Only!
+    * Added a spot to click to cycle rooms. It looks like >>>>>
+    * Made the transfer view name (Queued, All, Active) to be a clickable toggle as well
+    * Added /unhide (for displaying the password in Setup Mode)
+    * Moved config to ~/.mucous/config 
+
+
+Updated 13 April 2005
+Bumped version up to 0.3.9
+
+    * Added /abortdown and /abortd commands, also /removedown, /removed, /removeup and /removeu.
+    * If you wanted to abort download number 5, you'd type: /abortd 5
+    * /clearup clears all aborted, failed transfers and offline uploading users.
+    * /cleardown clears all finished downloads
+    * /buddyall adds everyone you are transfering to or from into your buddylist.
+    * /onlybuddy Toggles Buddy-Only-Sharing
+    * /privbuddy Toggles giving privileges to buddies
+    * /slots <number> sets the number of upload slots 
+
+
+Bumped version up to 0.3.8
+
+    * Cleaned up transfers, organized them, and colored a few, too.
+    * Added /abortup and /abortdown commands, which you can use to abort transfers, via their "number".
+    * Uploads are scrollable, downloads are not, yet.
+    * Hit the INSERT key, or the Left/Right arrow keys to toggle which kinds of transfers to display. 
+
+
+Updated 3 April 2005
+Version 0.3.5
+
+    * Alphabetized (A-Za-z) buddy, ban and ignore lists. 
+
+
+Updated 2 April 2005
+Version 0.3.4
+
+    * Split chatrooms up
+    * Fixed scrolling in chatrooms, so it's now quite nice (thanks to Hyriand) 
+
+Updated 1 April 2005
+Version 0.3.3
+
+    * Added colors to the buttons
+
+Version 0.3.2
+
+    * Added mouse-clickable buttons 
+
+Updated 31 March 2005
+Bumped version waaay up to 0.3.1
+
+    * Custom tickers can be saved with: /save (erase your old config, first)
+    * Fixed displaying tickers (yes, it was broken for a day or so)
+    * Connecting from inside mucous (/interface, /password /save /connect) now works pretty well 
+
+
+Updated 30 March 2005
+
+    * Added a config file, removed commandline options 
+
+
+Updated 29 March 2005
+
+    * Added a cursor in edit line
+    * Added an attributecheck for get_default_color (for python 2.3) 
+
+
+Updated 28 March 2005
+
+    * Cleaned up the GUI a lot, the Online Status Log is now only visible in chat mode.
+    * Added transparent background support
+    * Added Function Keys to switch Modes:
+      F1->Chat
+      F2->Private Messages
+      F3->Transfers
+      F4->Search
+      F5->Info
+      F6->Browse
+      F7->BuddyList
+      F8->BanList
+      F9->IgnoreList
+      These keys work fine on rxvt/aterm.. but very badly in xterm and konsole for some reason. 
+
+
+Updated Later @ 27 March 2005
+
+    * Added active transfer monitoring
+    * Added Searching for browsed files
+    * Added highlight-if-username-mentioned in chatrooms
+    * Added /me highlight
+    * Added a error message about Terminal size if too small (75col x 15lines)
+    * Added New PM/New Chat/Nick Mention status messages 
+
+
+Updated 27 March 2005
+
+    * With a lot of help from Hyriand (thanks!), I got museekchat working in cygwin. (Not native win32) (Screenshot)
+    * What's required: pymucipher 0.0.1, python, curses, and if you are going to compile the binary module for pymucipher, you'll need SWIG.
+    * If you're in a hurry, grab the compiled binary mucipher module: mucipher-cygwin-0.0.1.tar.bz2 (python 2.4)
+    * Mucipher is the encryption library that museekchat needs to communicate with museekd 
+
+
+Updated 26 March 2005
+New Features:
+
+    * Browsing: Browse-user, Download-by-number
+    * Interface: /chat /search /browse /info /private now switch to their respective modes. It's slightly less cluttered this way, since everything was in the chat log before. 
+
+
+Updated 25 March 2005
+
+Now its features include:
+
+    * User Management: Ban/Unban, Buddy/UnBuddy, Ignore/Unignore, Userinfo, Userstats, User IP, Private Messages
+    * Status Settings: Away Toggling, Room AutoJoin Toggling, Setting Tickers, Toggle Tickers
+    * Searching: Searching, Result Numbering, Download-by-Number
+    * Transfers: Download-by-User/Path, AutoBuddy, Current Number of Active Uploads/Downloads
+    * Rooms: RoomListing (by number of users), Users in room, Listing Tickers (per room), Primitive chat room Scrolling, and most important, a Now Playing script. 
