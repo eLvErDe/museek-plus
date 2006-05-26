@@ -1,0 +1,32 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 000_SConstruct_cc_flags
+## Adam Cecile (Le_Vert) <gandalf@le-vert.net>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Use debian regular CXXFLAGS.
+
+@DPATCH@
+
+
+diff -u museek+-0.1.7b/SConstruct museek+-0.1.7b/SConstruct.new
+--- museek+-0.1.7b/SConstruct	2006-05-05 09:52:43.000000000 +0200
++++ museek+-0.1.7b/SConstruct.new	2006-05-11 00:45:02.000000000 +0200
+@@ -88,14 +88,14 @@
+ # All warnings if compiler is gcc
+ 
+ if os.path.basename(env['CC']) in ['gcc', 'apgcc']:
+-    env.Append(CCFLAGS = ['-fPIC', '-Wall', '-pipe']) # allows x86_64 to compile
+-#    env.Append(CCFLAGS = ['-Wall', '-pipe']) # original
++#    env.Append(CCFLAGS = ['-fPIC', '-Wall', '-pipe']) # allows x86_64 to compile
++    env.Append(CCFLAGS = ['-fPIC', '-Wall', '-pipe', '-g']) # original
+     if env['RELEASE']:
+-        env.Append(CCFLAGS = ['-fomit-frame-pointer'])
++        env.Append(CCFLAGS = ['-fomit-frame-pointer', '-O2'])
+     if env['PROFILE']:
+         env.Append(CCFLAGS = ['-pg'])
+     if not env['RELEASE'] and not env['PROFILE']:
+-        env.Append(CCFLAGS = ['-g'])
++        env.Append(CCFLAGS = ['-fPIC', '-O0'])
+ 
+ 
+ 
