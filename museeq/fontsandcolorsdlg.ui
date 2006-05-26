@@ -1,0 +1,344 @@
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<class>FontsAndColorsDlg</class>
+<widget class="QDialog">
+    <property name="name">
+        <cstring>FontsAndColorsDlg</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>463</width>
+            <height>514</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Fonts &amp; Colors</string>
+    </property>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>mOK</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>200</x>
+                <y>480</y>
+                <width>111</width>
+                <height>31</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>OK</string>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>mCancel</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>330</x>
+                <y>481</y>
+                <width>101</width>
+                <height>30</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Cancel</string>
+        </property>
+        <property name="default">
+            <bool>true</bool>
+        </property>
+    </widget>
+    <widget class="QLayoutWidget">
+        <property name="name">
+            <cstring>layout3</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>10</y>
+                <width>440</width>
+                <height>460</height>
+            </rect>
+        </property>
+        <grid>
+            <property name="name">
+                <cstring>unnamed</cstring>
+            </property>
+            <widget class="QLineEdit" row="1" column="1">
+                <property name="name">
+                    <cstring>SRemoteText</cstring>
+                </property>
+            </widget>
+            <widget class="QLineEdit" row="2" column="1">
+                <property name="name">
+                    <cstring>SNicknameText</cstring>
+                </property>
+            </widget>
+            <widget class="QLineEdit" row="5" column="1">
+                <property name="name">
+                    <cstring>STrustedText</cstring>
+                </property>
+            </widget>
+            <widget class="QPushButton" row="4" column="2">
+                <property name="name">
+                    <cstring>BannedColorButton</cstring>
+                </property>
+                <property name="text">
+                    <string>Pick Color</string>
+                </property>
+            </widget>
+            <widget class="QPushButton" row="7" column="2">
+                <property name="name">
+                    <cstring>TimeFontButton</cstring>
+                </property>
+                <property name="text">
+                    <string>Pick Font</string>
+                </property>
+            </widget>
+            <widget class="QPushButton" row="8" column="2">
+                <property name="name">
+                    <cstring>MessageFontButton</cstring>
+                </property>
+                <property name="text">
+                    <string>Pick Font</string>
+                </property>
+            </widget>
+            <widget class="QLabel" row="6" column="0">
+                <property name="name">
+                    <cstring>textLabel1_6</cstring>
+                </property>
+                <property name="text">
+                    <string>Time &amp; Brackets Text Color</string>
+                </property>
+            </widget>
+            <widget class="QLineEdit" row="4" column="1">
+                <property name="name">
+                    <cstring>SBannedText</cstring>
+                </property>
+            </widget>
+            <widget class="QLineEdit" row="6" column="1">
+                <property name="name">
+                    <cstring>STimeText</cstring>
+                </property>
+            </widget>
+            <widget class="QLabel" row="7" column="0">
+                <property name="name">
+                    <cstring>textLabel1_7</cstring>
+                </property>
+                <property name="text">
+                    <string>Time &amp; Brackets Font</string>
+                </property>
+            </widget>
+            <widget class="QLabel" row="0" column="0">
+                <property name="name">
+                    <cstring>textLabel1</cstring>
+                </property>
+                <property name="text">
+                    <string>/Me Text</string>
+                </property>
+            </widget>
+            <widget class="QPushButton" row="0" column="2">
+                <property name="name">
+                    <cstring>MeColorButton</cstring>
+                </property>
+                <property name="text">
+                    <string>Pick Color</string>
+                </property>
+            </widget>
+            <widget class="QPushButton" row="5" column="2">
+                <property name="name">
+                    <cstring>TrustColorButton</cstring>
+                </property>
+                <property name="text">
+                    <string>Pick Color</string>
+                </property>
+            </widget>
+            <widget class="QLineEdit" row="8" column="1">
+                <property name="name">
+                    <cstring>SMessageFont</cstring>
+                </property>
+            </widget>
+            <widget class="QPushButton" row="2" column="2">
+                <property name="name">
+                    <cstring>NicknameColorButton</cstring>
+                </property>
+                <property name="text">
+                    <string>Pick Color</string>
+                </property>
+            </widget>
+            <widget class="QPushButton" row="6" column="2">
+                <property name="name">
+                    <cstring>TimeColorButton</cstring>
+                </property>
+                <property name="text">
+                    <string>Pick Color</string>
+                </property>
+            </widget>
+            <widget class="QLabel" row="5" column="0">
+                <property name="name">
+                    <cstring>textLabel1_5</cstring>
+                </property>
+                <property name="text">
+                    <string>Trusted User</string>
+                </property>
+            </widget>
+            <widget class="QLabel" row="1" column="0">
+                <property name="name">
+                    <cstring>remote_text</cstring>
+                </property>
+                <property name="text">
+                    <string>Remote Text</string>
+                </property>
+            </widget>
+            <widget class="QLabel" row="8" column="0">
+                <property name="name">
+                    <cstring>textLabel1_8</cstring>
+                </property>
+                <property name="text">
+                    <string>Message Font</string>
+                </property>
+            </widget>
+            <widget class="QLineEdit" row="0" column="1">
+                <property name="name">
+                    <cstring>SMeText</cstring>
+                </property>
+            </widget>
+            <widget class="QLabel" row="3" column="0">
+                <property name="name">
+                    <cstring>textLabel1_3</cstring>
+                </property>
+                <property name="text">
+                    <string>Buddied User</string>
+                </property>
+            </widget>
+            <widget class="QPushButton" row="3" column="2">
+                <property name="name">
+                    <cstring>BuddiedColorButton</cstring>
+                </property>
+                <property name="text">
+                    <string>Pick Color</string>
+                </property>
+            </widget>
+            <widget class="QLabel" row="2" column="0">
+                <property name="name">
+                    <cstring>textLabel1_2</cstring>
+                </property>
+                <property name="text">
+                    <string>My Text</string>
+                </property>
+            </widget>
+            <widget class="QLabel" row="4" column="0">
+                <property name="name">
+                    <cstring>textLabel1_4</cstring>
+                </property>
+                <property name="text">
+                    <string>Banned User</string>
+                </property>
+            </widget>
+            <widget class="QLineEdit" row="7" column="1">
+                <property name="name">
+                    <cstring>STimeFont</cstring>
+                </property>
+            </widget>
+            <widget class="QLineEdit" row="3" column="1">
+                <property name="name">
+                    <cstring>SBuddiedText</cstring>
+                </property>
+            </widget>
+            <widget class="QPushButton" row="1" column="2">
+                <property name="name">
+                    <cstring>RemoteColorButton</cstring>
+                </property>
+                <property name="text">
+                    <string>Pick Color</string>
+                </property>
+            </widget>
+        </grid>
+    </widget>
+</widget>
+<connections>
+    <connection>
+        <sender>mOK</sender>
+        <signal>clicked()</signal>
+        <receiver>FontsAndColorsDlg</receiver>
+        <slot>accept()</slot>
+    </connection>
+    <connection>
+        <sender>mCancel</sender>
+        <signal>clicked()</signal>
+        <receiver>FontsAndColorsDlg</receiver>
+        <slot>reject()</slot>
+    </connection>
+    <connection>
+        <sender>MeColorButton</sender>
+        <signal>clicked()</signal>
+        <receiver>FontsAndColorsDlg</receiver>
+        <slot>color_text_me()</slot>
+    </connection>
+    <connection>
+        <sender>BannedColorButton</sender>
+        <signal>clicked()</signal>
+        <receiver>FontsAndColorsDlg</receiver>
+        <slot>color_text_banned()</slot>
+    </connection>
+    <connection>
+        <sender>BuddiedColorButton</sender>
+        <signal>clicked()</signal>
+        <receiver>FontsAndColorsDlg</receiver>
+        <slot>color_text_buddied()</slot>
+    </connection>
+    <connection>
+        <sender>MessageFontButton</sender>
+        <signal>clicked()</signal>
+        <receiver>FontsAndColorsDlg</receiver>
+        <slot>font_text_message()</slot>
+    </connection>
+    <connection>
+        <sender>NicknameColorButton</sender>
+        <signal>clicked()</signal>
+        <receiver>FontsAndColorsDlg</receiver>
+        <slot>color_text_nickname()</slot>
+    </connection>
+    <connection>
+        <sender>RemoteColorButton</sender>
+        <signal>clicked()</signal>
+        <receiver>FontsAndColorsDlg</receiver>
+        <slot>color_text_remote()</slot>
+    </connection>
+    <connection>
+        <sender>TimeColorButton</sender>
+        <signal>clicked()</signal>
+        <receiver>FontsAndColorsDlg</receiver>
+        <slot>color_text_time()</slot>
+    </connection>
+    <connection>
+        <sender>TrustColorButton</sender>
+        <signal>clicked()</signal>
+        <receiver>FontsAndColorsDlg</receiver>
+        <slot>color_text_trusted()</slot>
+    </connection>
+    <connection>
+        <sender>TimeFontButton</sender>
+        <signal>clicked()</signal>
+        <receiver>FontsAndColorsDlg</receiver>
+        <slot>font_text_time()</slot>
+    </connection>
+</connections>
+<includes>
+    <include location="local" impldecl="in implementation">fontsandcolorsdlg.ui.h</include>
+</includes>
+<slots>
+    <slot>color_text_me()</slot>
+    <slot>color_text_buddied()</slot>
+    <slot>color_text_nickname()</slot>
+    <slot>color_text_banned()</slot>
+    <slot>color_text_remote()</slot>
+    <slot>color_text_time()</slot>
+    <slot>color_text_trusted()</slot>
+    <slot>font_text_time()</slot>
+    <slot>font_text_message()</slot>
+</slots>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

@@ -1,0 +1,183 @@
+Always compile Museek with the built-in version of scons
+UNRELEASED
+* Modified man pages some more, removing COMPILING section and adding FILES section
+* Added man page for mulog
+* renamed mulog.py to mulog
+* Modified mulog to use a config file, thus protecting the password from prying eyes, 
+  and easing the use of mulog, slightly. Made logs to use the "HH:MM:SS [username] <Tab> message"
+0.1.9pre2:  May 25th 2006
+* Added VORBIS scons option, allowing for manual disabling of OGG Vorbis support 
+  in muscan. 
+* Fixed an issue with images.cpp (and old versions of either QT or GCC) not 
+  compiling due to museeq->mIconTheme not being enclosed in a QString() 
+  (thanks for your patience and help, leftcoast)
+* Added man pages for museekd, musetup, muscan, muscand and museeq
+* Added Retry Upload(s) to museeq (it secretly clears uploads before retrying them)
+* Fixed some compiler warnings in museekd
+
+0.1.9pre1:  May 24th 2006
+* Compiler Fix for x86_64 http://thegraveyard.org/daelstorm/museek/browser.cpp
+* Added Icon Theme selector to museeq (Select the directory the museeq icons are in)
+* Added new menu for switching to the different modes, Chat Rooms, Private Chat, 
+  Transfers, Search, User Info and Browse
+* Added a new Commands Help dialog, and about 15 new /commands in chat.
+* Fixed an issue with newer versions of SCons not being able to complete 
+  the compile-tests for epoll and scandir because a change in conf.CheckFunc()
+* Fixed an issue with SCons (> 0.95) removing mucipherc.py, part of mucipher's python 
+  bindings, before installing, which caused installation to fail.
+* Updated my iTheme museeq icons
+
+0.1.8:  May 18th 2006
+* Missing variable in messages.py (.in) fixed
+* Added checkbox to ticker toggle menu item.
+* Added Special shares for buddies only, needs to be seperately scanned in. 
+  To do this, modifications were made to muscan, muscand. New command line 
+  options -b &, --buddy will modify the config.buddyshares and 
+  config.buddyshares.state files in muscan and keep track of the buddyshares in
+  muscand. Toggle these special shares with the config option 
+  ["transfers"]["have_buddy_shares"]
+* Modified the about and help dialogs; made them normal MessageDialogs. Fixes 
+  cropped text issues.
+* Added automatic messages for users trying to download your shares when they
+  have been banned or are not on your buddy-list when sharing list-only.
+* Modified musetup to scan buddy-shares and to correctly write config file 
+  on first-run before attempting to load shares with muscan.
+* Added Color and Font options under Settings->Colors and Fonts
+* Added new status icons for banned/buddied/trusted/ignored (and made them
+  not waste bandwidth)
+* Fixed trailing / being sent by museeq on download folder requests
+* Fixed compile-error in museeq 0.1.8pre caused by a new popup menu feature. 
+  (thanks Lunar Raven and others)
+* Added ONLYMUSEEQ scons option for building just museeq and it's dependency, 
+  mucipher.
+* Fixed museekd only accepting download folder requests with trailing /, now 
+  both with and without work.
+* Added room, default tickers to the config, museeq can now save tickers.
+* Finished implementing the SendSpeed Message (34) so that the average transfer 
+  speed gets sent to the server when a download finishes, updating the other 
+  user's stats.
+* Removed Ban & Ignore from Museeq's Private Chat and Browse modes, since they 
+  clutter it up. They're accessible from the User Info mode, still.
+* Added message handler for, but don't do anything with, peer messages 42, 46.
+  (Upload Placeholder, Upload Failed)
+* Fixed musetup's new buddy-shares directory-removal commands
+  (thanks for the bug-report, y00sah)
+* Added text label in museeq's shares, for whether they're recieved yet, empty 
+  or if not, and how may directories are in them. (chs_kasper's idea)
+* Added new Interface StatusMessage (0010) to forward various messages to these
+  clients. Currently sending login, connect, & disconnect messages.
+* Added Toggleable Log in Museeq for status messages.
+* Fixed 'not shared' message if shared files were in both buddy-only and normal shares.
+  (thanks for noticing, y00sah & svarun)
+* Included daal's new Bluebox 0.3 theme for museeq. It's in the museek+/icons/ directory
+* Included daal's old Raven theme for museeq. It's also in the museek+/icons/ directory
+
+0.1.7b:  May 10th 2006
+* convert more characters for slsk:// links to webforms
+* the  #include <qinputdialog.h> in museeq.cpp was in the wrong place, so it
+  only compiled with QSA which b0rked the build for QSA-less users. (found by 
+  chs_kasper )
+
+0.1.7:  May 10th 2006
+* Fixed a looping bug that continually checked a buddies address/port if that
+  buddy's port was 0
+* Fixed updated shares filecount by requesting a peer_stats message after
+  reloading shares
+* Discovered that newer Scons versions cause the dialog boxes in Museeq to not
+  compile their slots/functions/buttons correctly. Use the Version of Scons
+  included with Museek-Plus!
+* Add a Toggle Tickers menu item under the Settings menu ( Requiem1348's
+  request)
+* Added the Remote Upload Queue notification message, 52 to aid in sending
+  files to Windows slsk users. But it doesn't seem to help. It also is used for
+  sending a private message if a user trying to send files isn't on your 
+  trusted list.
+* Added Help and About dialog boxes
+* Added outgoing private messages from other interfaces being echoed to museeq's
+* Yanked green buddy highlighting in museeq chatrooms, looks bad on a white 
+  background.
+* Added popup-menu item for editing comments. (Buddies only) Lots of people 
+  requested this.
+* Added inline handler for slsk://username/path/path/file links, now you can 
+  paste links by Browsing Someone->Right-click on file->Copy URL
+* Rewrote/Fixed the Incredibly slow Python  UserShares parsing function in 
+  messages.py, it's speed is now comparable to browsing in museeq.
+
+0.1.6  May 7th 2006
+* Fixed non-trusted users queuing multiple downloads from your shares (First 
+  transfer worked, later ones failed due to redundant trusted user check 
+  causing false negatives.)
+* Fixed the broken toggling of trusting_users that didn't take effect until 
+  museekd was restarted
+* Added 'Browse My Shares' menu item to the File menu
+* Reorganized Settings Menu so that with larger fonts the text doesn't get
+  cropped by the different widgets.
+
+0.1.5  May 7th 2006
+* Changed "Awaiting User" to "User Offline" in museeq (mer.lin.ux's idea)
+* Current Museek user's IP is set internally to 127.0.0.1, to facilitate 
+  getting your own Shares and Userinfo. This has the side-effect of not allowing
+  you to see your own external IP-address. Hopefully, you're listening on 
+  127.0.0.1 :) (mer.lin.ux's idea)
+* Added Refresh buttons to Shares and Userinfo (mer.lin.ux's idea)
+* Split some DEBUG messages off into the seperate TT message type, for cleaner 
+  museekd status messages. You can enable those messages by adding 'traffictime'
+  to the MULOG variable
+* Implemented the new room/user search messages 120 and 42. Unfortunantly, 
+  Soulfind 0.1 -> 0.4.7 are no longer supported for Buddy/Room searching. 
+  (Thanks for the Info, sierracat)
+* Added Sending Remote Uploads from museekd and museeq. It now seems to work 
+  as expected.
+* Lots of minor changes to the museekd codebase were made to facilitate proper 
+  remotely-initated- transfers.
+* A new type of user, Trusted User, can remotely-initate-uploads that download 
+  to your system( a previous hack allowed everyone to send you files) Is
+  now toggleable in museeq.
+* Yanked the mostly useless CopyIP popup menuitem in museeq's IP dialog. It 
+  caused crashes if no item was selected when the popup menu got created.
+* Added a IFACE messages to disconnect and reconnect museekd to the server, 
+  to facilitate username or server changes without having to restart museekd. 
+  Had to force reset the server variables to make this possible.
+* Added a IFACE Message to reload shares (NOT rescan)
+* Fixed the QSA Scripts-menu's hotkey to be 'T' instead of the letter 'S' which
+  conflicted with the Settings-menu's (cravings was horrified by this)
+* Rearranged Okay/Cancel dialogs with okay on the Left side. (groovything's 
+  idea)
+* Added Museeq Settings Dialog ( includes settings for Server, Username, 
+  Password, and a bunch of other config options; a Reload Shares button; 
+  Server Disconnect and Connect buttons)
+
+0.1.4
+* Museekd now responds to message 26, and should send out search results for 
+  global searches.
+* Added handler for message 41, Museekd gives up connecting if another client 
+  has kicked it off the server.
+* use "kill -ALRM museekd' to manually reconnect museekd to the server
+* Added all Interests & Recommendations messages and functions to museekd and 
+  museeq.
+* Added all Interests & Recommendations messages to messages.py and driver.py 
+  for Python clients.
+* Added a --version, -V message to museekd, added the version in museeq's 
+  titlebar.
+
+0.1.3
+* Added Belegdol's GCC 4.1 fix (changs to museeq/museekdriver.h)
+* Corrected <iostream.h> to <iostream> in museeq's mainwin.cpp (gets rid of GCC 
+  warning)
+* Museeq: Ignorelist and Banlist are now uncloseable
+* Added a 'clean' script, a 'build-debug', and a 'build-release' script
+* Added -fPIC to the SConstruct script, so x86_64 users should have an easier 
+  time compiling it. Don't know of any side effects for the rest of us.
+* Added some desktop icons and Museeq icon themes to the icons directory
+* Added an rc script for ArchLinux. filename is museekd.rc
+* Added a .desktop file for museeq
+
+
+0.1.2 and previous changes from the last SVN version
+* Added some simple scripts to simplify compiling and installing
+* Applied Schee's Roomsearch patch [ http://seeschloss.org/museek ] and fixed a 
+  bug it added
+* Added Banlist and Ignorelist to Museeq
+* Added some color highlighting to users in Museeq
+
+

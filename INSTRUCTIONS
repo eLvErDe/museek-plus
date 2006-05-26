@@ -1,0 +1,51 @@
+Requirements:
+libxml++2.6-dev or libxml++1.0-dev
+GCC
+Python (by scons, Python bindings)
+
+Optional:
+QT3 
+QSA (QT Scripting)
+libvorbis-dev
+libogg-dev
+SWIG (for the mucipher Python bindings)
+
+
+NOTICE:
+	Always compile with the built-in scons, newer versions fail to build!
+
+--------------------------------------
+To compile & install into /usr/bin
+scons/scons.py install PREFIX=/usr
+--------------------------------------
+If you are running a Debian-Based Distro, like Ubuntu and want Museeq, use
+./build-museeq-deb
+
+On Debian-distros: export QTDIR=/usr/share/qt3
+
+If you don't wish to install into /usr right now
+(maybe you're making a .deb file?), you can run:
+ 
+./install-temp-museeq-deb ( install into ~/museek+/tmp/ )
+
+if you don't want Museeq run:
+./build-no-museeq
+
+if your QTDIR variable is set properly just run,
+./build
+./install-temp  ( install into ~/museek+/tmp/ )
+
+You can view the build scripts to see what messages they pass to scons
+--------------------------------
+
+Read the INSTALL file for more info.
+
+Get binaries of Museek-Plus here:
+http://www.thegraveyard.org/daelstorm/museek.php
+
+Read the FAQ and GUIDE here:
+http://www.thegraveyard.org/daelstorm/museekfaq.php
+http://www.thegraveyard.org/daelstorm/museekguide.php
+
+Get Mucous, the Curses client for Museek, here:
+http://www.thegraveyard.org/daelstorm/mucous.php

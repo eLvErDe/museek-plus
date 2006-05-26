@@ -1,0 +1,60 @@
+Credits go to (in no particular order):
+
+anadyr, daelstorm, SmackleFunky, (va)*10^3 and Wretched
+  for supplying me with feedback, risking their boxes and
+  quite possibly their lives and sanity while testing my
+  not always bug-free code
+
+
+alexbk
+  for reverse-engineering most of the SoulSeek protocol and
+  creating his PySoulSeek client
+
+
+Nir
+  for creating and maintaining the SoulSeek network
+
+
+
+The people that wrote:
+
+
+The AES cipher module used in the Linux kernel
+
+The SHA256 hash module used in the Linux kernel
+
+Solar Designer
+  for creating the public domain md5 hash routines
+
+Paul Kocher
+  for his SHA-1 hash routines
+
+And last, but certainly not least, all the users of both Nicotine and
+Museek.
+
+-----------------------------------
+Below is for Museek-plus (post-svn) 
+-----------------------------------
+
+SeeSchloss
+   For the room searching function (now-defunct) in museekd and museeq
+   and for writing the OpenSource Soulfind Soulseek-Server, which, among other
+   things, allows much greater flexibility in client programming and testing, 
+   without the fears of damaging Soulseek, itself or getting banned.
+Daelstorm
+   For coding new features into museekd and museeq.
+sierracat
+   For explaining some of the Soulseek server and peer messages to daelstorm.
+Belegdol
+   For providing the GCC 4.1 compile fix to museeq and for his Fedora Core RPMs.
+stericho
+   For the Gentoo ebuilds
+
+Ideas for features from: mer.lin.ux, chs_kasper, Requiem1348, groovything, Belegdol, cravings
+and several other that I have forgotten, thanks to you, too.
+
+For everyone who've reported bugs, thanks to you, as well.
+
+(specific ideas mentioned in CHANGELOG and TODO)
+
+Other credits are also in the CHANGELOG 

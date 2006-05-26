@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Museeq
+Comment=Museeq is a client for museek, the Soulseek daemon
+Exec=museeq
+Icon=/usr/share/pixmaps/museeq-circle2.png
+Terminal=false
+StartupNotify=false
+Type=Application
+Categories=Application;Network;

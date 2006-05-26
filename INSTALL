@@ -1,0 +1,123 @@
+Museek uses the SConstruct build system (www.scons.org) for building and
+installing all components. If you got Museek from as an official
+release tarball (ie. not from the Subversion repository, and not a
+snapshot), 'scons' should be included with the release and your can start
+scons using 'python scons/scons.py'.
+
+
+NOTICE:
+	Always compile with the built-in scons, newer versions fail to build!
+
+
+
+For the impatient and/or people with AD(H)D:
+
+# scons/scons.py install
+
+or:
+
+# python scons/scons.py install
+
+
+
+Dependencies:
+
+Museek depends on:
+ - libxml++-1.0.x or 2.6.x
+
+Museeq (the Qt GUI) depends on:
+ - Qt 3.2 or newer
+ - QSA 1.1 or newer (optional) for scripting support
+
+The build system depends on:
+ - Python
+ - SConstruct (included with release tarballs)
+ - A C compiler
+ - A C++ compiler with access to an STL implementation that has wstring
+   support (no MacOSX, Cygwin or FreeBSD4).
+ - Development packages for libxml++ and optionally Qt
+ - Swig, for the Mucipher python bindings
+
+
+
+Using the build system:
+
+$ scons/scons.py [options]... [targets]...
+
+or:
+
+$ python scons/scons.py [options]... [targets]...
+
+
+
+Available options (options marked with [*] are remembered between scons
+runs):
+
+  PREFIX=prefix         [*] Install prefix, where to install Museek to
+                            (default:'/usr/local')
+
+  BINDIR=prefix         [*] Binary directory, where to install binaries to
+                            (default: '$PREFIX/bin')
+
+  DATADIR=prefix        [*] Data directory, where to install data files
+                            (default: '$PREFIX/share/museek')
+
+  DESTDIR=prefix            Installation destination dir, useful for package
+                            builders. (default: '')
+
+  BUILDDIR=yes/no       [*] Build to build-platform-arch subdirectory
+                            default: yes
+
+  RELEASE=yes/no        [*] Build for release with optimizations and without
+                            debugging information (only for gcc)
+                            default: no
+
+  MULOG=debug,cycle,calltrace,traffictime
+                        [*] Which debugging messages to include
+                            default: 'debug'
+
+  EPOLL=yes/no          [*] Use epoll when available (linux 2.6+)
+                            default: yes
+
+  MUSEEQ=yes/no         [*] Test for Qt, and if available, build museeq
+                            default: yes
+
+  ONLYMUSEEQ=yes/no     [*] Only compile Mucipher and museeq
+                            default: no
+
+  QSA=yes/no            [*] Test for QSA, and if available, build museeq with it
+                            default: yes
+
+  QTDIR=prefix          [*] Directory where Qt can be found (should have an
+                            include and lib subdirectory)
+                            default: auto-detect
+
+  QT_LIB=lib            [*] Specify which Qt library to use.
+                            default: 'qt' with fallback to 'qt-mt'
+
+
+
+Available build targets (that make sense):
+
+  museekd               Build the museek daemon
+
+  Tools                 Build the museek tools (only muscan for now)
+
+  museeq                Build the Qt GUI to museekd
+
+  install_museekd       Install museekd
+
+  install_museeq        Install museeq
+
+  install_muscan        Install the museek file scanner, muscan
+  install_mucand        Install the file scanning daemon, muscand
+  install_tools         Install the museek tools (read: muscan & muscand)
+
+  install_mucipher      Install language bindings for Mucipher (cipher
+                        library)
+
+  install_pymuseekd     Install python bindings for Museekd, mulog, and musetup
+
+  install               Install all of the above
+
+Default targets that are built: museekd, Tools, museeq

@@ -1,0 +1,135 @@
+<html>
+ <head>
+  <style>
+   <!--
+    div.section { background: lightgrey; margin-top: 25px; margin-bottom: 25px; margin-left: 5%; margin-right: 5%; padding: 10px;  }
+    div.header { text-align: center; font-size: large; }
+    table.message { background: grey; width: 90%; margin-bottom: 25px; margin-left: 5%; margin-right: 5%; }
+    td.messagecode, td.messageshort, td.messagedesc { background: #ffb0b0; }
+    td.messagedesc { width: 60%; }
+    table.message_in { background: #b0ffb0; width: 100%; }
+    table.message_out { background: #b0b0ff; width: 100%; }
+    td.message_in, td.message_out { white-space: pre; width: 40%; }
+    td.messagecode, td.messageshort, td.messagedesc, td.message_in, td.message_out, td.message_in_desc, td.message_out_desc { vertical-align: top; }
+   -->
+  </style>
+ </head>
+ 
+ <body>
+  <div class="header">
+    Museek Daemon - Protocol draft
+  </div>
+  <div class = "section">
+   Generic message format:<br/>
+   <pre>
+    uint message_len  -- Length of the message (including the message code)
+    uint message_code -- Message code
+    <i>Message specific data</i>
+   </pre>
+  </div>
+  
+  <div class = "section">
+   Data types, primitive:<br/>
+   <pre>
+    bool   -- 8bit character (0 == false, not 0 == true)
+    uint   -- 32bit unsigned little endian ordered integer
+    off_t  -- 64bit signed little endian ordered integer
+    string -- the length of the string (as an uint) + character data
+              (all strings are UTF8)
+   </pre>
+  </div>
+  
+  <div class="section">
+   Data types, complex:<br/>
+   <pre>
+     <b>userdata</b>           -- statistics about a user
+       uint status      -- user's status
+       uint avgspeed    -- user's average upload speed
+       uint downloadnum -- (unknown)
+       uint files       -- number of files a user has shared
+       uint dirs        -- number of dirs a user has shared
+       bool slotsfull   -- wether or not the user has an upload slot available
+     
+     
+     <b>transfer</b>           -- information about a transfer
+       bool is_upload   -- Is this an upload or a download?
+       string user      -- The user associated with this transfer
+       string path      -- The original path to the transfer
+       uint place       -- Place in queue or (uint)-1 if unknown (only valid for downloads)
+       uint state       -- The transfer's state
+                           00: Finished
+                           01: Transferring
+                           02: Negotiating
+                           03: Waiting
+                           04: Establishing
+                           05: Initiating
+                           06: Connecting
+                           07: Queued
+                           08: Getting address
+                           09: Getting status
+                           10: Awaiting user
+                           11: Connection closed
+                           12: Cannot connect
+                           13: Aborted
+                           14: Error
+       string error     -- If the transfer's in error state, this contains the error
+       off_t position   -- How far has the transfer proceded
+       off_t size       -- Total size of this transfer
+       uint rate        -- How fast the transfer is proceding
+       
+       
+     <b>fileentry</b>          -- information about a shared file
+       off_t filesize   -- the file's size
+       string ext       -- the file's extended attribute format
+                           (only 'mp3' or an empty string are supported)
+       uint numattrs    -- number of extended attributes
+       *repeat numattrs*
+         uint attr      -- an attribute
+      
+       <i>The 'mp3' extended attribute format holds 3 attributes:</i>
+         uint bitrate   -- the bitrate of the file
+         uint length    -- duration of the file in seconds
+         uint vbr       -- wether the mp3 has a variable bitrate or not
+    
+     
+     <b>folder</b>             -- information about a shared folder
+       uint numfiles    -- how many files the folder contains
+       *repeat numfiles*
+         string file    -- the filename or full path (depends on context)
+         fileentry info -- the file's information
+    
+     
+     <b>shares</b>             -- information about a user's shares
+       uint numfolders  -- how many folders there are
+       *repeat numfolders*
+         string folder  -- the folder's path
+         folder files   -- the files contained in this folder (filenames are relative)
+     
+     
+     <b>cipher</b>             -- AES (aka Rijndael) encrypted string
+       <i>Configuration strings are sent over the communication layer encrypted 
+       as they may contain sensitive information. The keyphrase of the AES cipher
+       equals the password used to log in. This complex data type start with the
+       length of the <b>unencrypted</b> string (</i>n<i>), followed by the encrypted string
+       data. <b>Crucial note:</b> The amount of encrypted characters sent is </i>n<i> rounded
+       up to the nearest 16 byte block size. For exmaple: if the original string
+       was 6 characters long, </i>n<i> will be 6 but is following by 16 characters of data.</i>
+
+   </pre>
+  </div>
+  
+  <div class="section">
+   Message types:<br/>
+   <br/>
+   <i>(<span style="background:#ffb0b0;">Red</span> blocks indicate general
+information about the message: the message code, the message's name, and a
+short description. <span style="background:#b0ffb0;">Green blocks</span>
+specify the message-specific data sent by the interface to the Museek daemon.
+<span style="background:#b0b0ff;">Blue blocks</span> specify the
+message-specific data sent by the Museek daemon to the interface.)</i><br/>
+  </div>
+
+  @BODY@
+   
+ </body>
+</html>

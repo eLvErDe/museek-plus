@@ -1,0 +1,78 @@
+.TH "MULOG" "1" "Release 0.1.9" "daelstorm" "Museek Daemon Plus"
+.SH "NAME"
+.LP 
+\fBMulog\fR \- Chat Logging Script for Museekd
+.SH "DESCRIPTION"
+.LP 
+Mulog is command\-line Python script that connects to \fImuseekd\fP(1) and saves chat messages into log files. Under the Log Directory, it creates room & private subdirectories and a syslog file. If it loses connection with museekd, it will automatically exit.
+
+Setting the interface and password on the command\-line is a security risk. Since interface and password settings are saved to the config file when set, you should set them, exit mulog, and restart mulog without the options on the commandline..LP 
+
+Before running, you will need a working \fImuseekd\fP(1) and need to know your museekd interface and interface password. Configure those with \fImusetup\fP(1).
+.SH "SYNOPSIS"
+.B mulog
+[\-c <\fIconfig\-filename\fP> ] [\-\-config <\fIconfig\-filename\fP>] 
+[\-i <host:port | /socket.path>] [\-\-interface <host:port | /socket.path>
+[\-p <interface\-password>] [\-\-password <inteface\-password>]
+[\-l <\fIdirectory\fP>] [\-\-log <\fIdirectory\fP>] 
+[\-v] [\-\-version]
+[\-h] [\-\-help]
+.SH "OPTIONS"
+.LP 
+Mulog accepts the following options:
+.TP 
+.B \-c <\fIfilename\fP>, \-\-config <\fIfilename\fP>
+Use a different config file.
+.TP 
+.B \-l <\fIdirectory\fP>, \-\-log <\fIdirectory\fP> 
+Use a different chat log directory.
+.TP 
+.B \-i, \-\-interface <\fIhost:port | /socket.path\fP> 
+Choose a different interface (saved to config file)
+.TP 
+.B \-p, \-\-password <\fIinterface\-password\fP> 
+Choose a different password (saved to config file)
+.TP 
+.B \-v, \-\-version
+Display Version and exit.
+.TP 
+.B \-h, \-\-help
+Display Help and exit.
+
+.SH "EXAMPLE"
+.LP 
+To run this program the standard way type:
+.LP 
+mulog
+.LP 
+Alternativly you use a different config file with:
+.LP 
+mulog \-\-config mulog.config
+.LP 
+To set the interface password:
+.LP 
+mulog \-\-password 1234567890
+.SH "FILES"
+.TP 
+ \fI~/.museekd/mulog.config\fR
+The default location for the \fBmulog\fP config file.
+.TP 
+ \fI~/.museekd/logs/\fR
+The default log directory.
+.TP 
+ \fI~/.museekd/logs/syslog\fR
+The museekd error/connection log file.
+.TP 
+ \fI~/.museekd/logs/room/\fR
+The directory where chat room logs are stored.
+.TP 
+ \fI~/.museekd/logs/private/\fR
+The directory where private chat logs are stored.
+.SH "AUTHORS"
+.LP 
+Hyriand <hyriand@thegraveyard.org>
+.LP 
+daelstorm <daelstorm@gmail.com>
+.SH "SEE ALSO"
+.LP 
+\fImuseekd\fP(1) \fImusetup\fP(1) \fImuscan\fP(1) \fImuscand\fP(1) \fImuseeq\fP(1)

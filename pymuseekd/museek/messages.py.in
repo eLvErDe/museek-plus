@@ -1,0 +1,990 @@
+# pymuseekd - Python tools for museekd
+#
+# Copyright (C) 2003-2004 Hyriand <hyriand@thegraveyard.org>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+import struct
+
+# Event mask
+EM_CHAT		= 1 << 0
+EM_PRIVATE	= 1 << 1
+EM_TRANSFERS	= 1 << 2
+EM_USERINFO	= 1 << 3
+EM_USERSHARES	= 1 << 4
+EM_INTERESTS	= 1 << 5
+EM_CONFIG	= 1 << 6
+
+# Transfer state
+TS_Finished	= 0
+TS_Transferring = 1
+TS_Negotiating	= 2
+TS_Waiting	= 3
+TS_Establishing	= 4
+TS_Initiating	= 5
+TS_Connecting	= 6
+TS_Queued	= 7
+TS_Address	= 8
+TS_Status	= 9
+TS_Offline	= 10
+TS_ConnectionClosed	= 11
+TS_CannotConnect	= 12
+TS_Aborted	= 13
+TS_Error	= 14
+
+class BaseMessage:
+	cipher = None
+	def __init__(self):
+		pass
+	
+	def make(self):
+		print "make called on unsupported message type"
+		sys.stdout.flush()
+		return ""
+
+	def parse(self, msg):
+		print "parse called on unsupported message type"
+		sys.stdout.flush()
+		return None
+
+	def pack_int(self, i):
+		return struct.pack("<i", i)
+
+	def pack_uint(self, i):
+		return struct.pack("<I", i)
+
+	def pack_off(self, i):
+		return struct.pack("<Q", i)
+
+	def pack_string(self, s):
+		return self.pack_int(len(s)) + s
+
+	def unpack_int(self, d):
+		return struct.unpack("<i", d[:4])[0], d[4:]
+
+	def unpack_uint(self, d):
+		return struct.unpack("<I", d[:4])[0], d[4:]
+
+	def unpack_off(self, d):
+		return struct.unpack("<Q", d[:8])[0], d[8:]
+
+	def unpack_string(self, d):
+		l, d = self.unpack_uint(d)
+		return d[0:l], d[l:]
+
+	def unpack_cipher(self, d):
+		l, d = self.unpack_uint(d);
+		if(l % 16) != 0:
+			l_c = ((l / 16) + 1) * 16
+		else:
+			l_c = l
+		return self.cipher.decipher(d[0:l_c])[:l], d[l_c:]
+	
+	def pack_cipher(self, s):
+		return self.pack_uint(len(s)) + self.cipher.cipher(s)
+	
+class Ping(BaseMessage):
+	code = @@IPing@@
+	def __init__(self, id = None):
+		self.id = id
+	
+	def make(self):
+		return self.pack_uint(self.code) + self.pack_uint(self.id)
+	
+	def parse(self, data):
+		self.id, data = self.unpack_uint(data)
+		return self
+	
+class Challenge(BaseMessage):
+	code = @@IChallenge@@
+	
+	def __init__(self):
+		self.version = None
+		self.challenge = None
+		
+	def parse(self, data):
+		self.version, data = self.unpack_uint(data)
+		self.challenge, data = self.unpack_string(data)
+		return self
+
+class Login(BaseMessage):
+	code = @@ILogin@@
+	
+	def __init__(self, algorithm = None, chresponse = None, mask = None):
+		self.algorithm = algorithm
+		self.chresponse = chresponse
+		self.mask = mask
+		self.result = None
+		self.msg = None
+		self.challenge = None
+	
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.algorithm) + \
+			self.pack_string(self.chresponse) + \
+			self.pack_uint(self.mask)
+	
+	def parse(self, data):
+		self.result, data = ord(data[0]), data[1:]
+		self.msg, data = self.unpack_string(data)
+		self.challenge, data = self.unpack_string(data)
+		return self
+
+class ServerState(BaseMessage):
+	code = @@IServerState@@
+	
+	def __init__(self):
+		self.state = None
+		self.username = None
+
+	def parse(self, data):
+		self.state, data = ord(data[0]), data[1:]
+		self.username, data = self.unpack_string(data)
+		return self
+
+class CheckPrivileges(BaseMessage):
+	code = @@ICheckPrivileges@@
+	
+	def __init__(self):
+		self.time_left = None
+	
+	def make(self):
+		return self.pack_uint(self.code)
+	
+	def parse(self, data):
+		self.time_left, data = self.unpack_uint(data)
+		return self
+	
+class SetStatus(BaseMessage):
+	code = @@ISetStatus@@
+	
+	def __init__(self, status = None):
+		self.status = status
+	
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_uint(self.status)
+	
+	def parse(self, data):
+		self.status, data = self.unpack_uint(data)
+		return self
+
+class StatusMessage(BaseMessage):
+	code = @@IStatusMessage@@
+	
+	def __init__(self):
+		self.type = None
+		self.message = None
+
+	def parse(self, data):
+		self.type, data = ord(data[0]), data[1:]
+		self.message, data = self.unpack_string(data)
+		return self
+
+class PeerExists(BaseMessage):
+	code = @@IPeerExists@@
+	
+	def __init__(self, user = None):
+		self.user = user
+		self.exists = None
+	
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.user)
+	
+	def parse(self, data):
+		self.user, data = self.unpack_string(data)
+		self.exists = ord(data[0])
+		return self
+
+class PeerAddress(BaseMessage):
+	code = @@IPeerAddress@@
+	
+	def __init__(self, user = None):
+		self.user = user
+		self.ip = None
+		self.port = None
+	
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.user)
+	
+	def parse(self, data):
+		self.user, data = self.unpack_string(data)
+		self.ip, data = self.unpack_string(data)
+		self.port, data = self.unpack_uint(data)
+		return self
+	
+class PeerStatus(BaseMessage):
+	code = @@IPeerStatus@@
+	
+	def __init__(self, user = None):
+		self.user = user
+		self.status = None
+	
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.user)
+	
+	def parse(self, data):
+		self.user, data = self.unpack_string(data)
+		self.status, data = self.unpack_uint(data)
+		return self
+		
+class PeerStats(BaseMessage):
+	code = @@IPeerStats@@
+	
+	def __init__(self, user = None):
+		self.user = user
+		self.avgspeed = None
+		self.numdownloads = None
+		self.numfiles = None
+		self.numdirs = None
+	
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.user)
+	
+	def parse(self, data):
+		self.user, data = self.unpack_string(data)
+		self.avgspeed, data = self.unpack_uint(data)
+		self.numdownloads, data = self.unpack_uint(data)
+		self.numfiles, data = self.unpack_uint(data)
+		self.numdirs, data = self.unpack_uint(data)
+		return self
+		
+class Search(BaseMessage):
+	code = @@ISearch@@
+	
+	def __init__(self, type = None, query = None):
+		self.type = type
+		self.query = query
+		self.ticket = None
+
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_uint(self.type) + \
+			self.pack_string(self.query)
+
+	def parse(self, data):
+		self.query, data = self.unpack_string(data)
+		self.ticket, data = self.unpack_uint(data)
+		return self
+
+class SearchReply(BaseMessage):
+	code = @@ISearchReply@@
+	
+	def __init__(self):
+		self.ticket = None
+		self.user = None
+		self.free = None
+		self.speed = None
+		self.queue = None
+		self.results = None
+
+	def parse(self, data):
+		self.ticket, data = self.unpack_uint(data)
+		self.user, data = self.unpack_string(data)
+		self.free, data = ord(data[0]), data[1:]
+		self.speed, data = self.unpack_uint(data)
+		self.queue, data = self.unpack_uint(data)
+		n, data = self.unpack_uint(data)
+		self.results = []
+		for i in range(n):
+			fn, data = self.unpack_string(data)
+			sz, data = self.unpack_off(data)
+			ex, data = self.unpack_string(data)
+			an, data = self.unpack_uint(data)
+			at = []
+			for j in range(an):
+				a, data = self.unpack_uint(data)
+				at.append(a)
+			self.results.append((fn, sz, ex, at))
+		return self
+
+class RoomState(BaseMessage):
+	code = @@IRoomState@@
+	
+	def __init__(self):
+		self.roomlist = None
+		self.joined_rooms = None
+		self.tickers = None
+
+	def parse(self, data):
+		self.roomlist = {}
+		pos = 0
+		
+		n = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
+		for i in range(n):
+			l = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4
+			room = data[pos:pos+l]; pos += l
+			users = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
+			self.roomlist[room] = users
+
+		self.joined_rooms = {}
+		self.tickers = {}
+		n = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
+		
+		for i in range(n):
+			l = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4
+			room = data[pos:pos+l]; pos += l
+			self.joined_rooms[room] = {}
+			n2 = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
+			for j in range(n2):
+				l = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4
+				user = data[pos:pos+l]; pos += l
+				status = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
+				avgspeed = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
+				downloadnum = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
+				files = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
+				dirs= struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
+				slotsfull = ord(data[0]); pos += 1
+				self.joined_rooms[room][user] = [status, avgspeed, downloadnum, files, dirs, slotsfull]
+				
+			n2 = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
+			self.tickers[room] = {}
+			for j in range(n2):
+				l = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4
+				user = data[pos:pos+l]; pos += l
+				l = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4
+				message = data[pos:pos+l]; pos += l
+				self.tickers[room][user] = message
+		return self
+
+class RoomList(BaseMessage):
+	code = @@IRoomList@@
+	
+	def __init__(self):
+		self.roomlist = None
+	
+	def make(self):
+		return self.pack_uint(self.code)
+	
+	def parse(self, data):
+		self.roomlist = {}
+		n, data = self.unpack_uint(data);
+		for i in range (n):
+			r, data = self.unpack_string(data)
+			u, data = self.unpack_uint(data)
+			self.roomlist[r] = u
+		return self
+	
+class SayRoom(BaseMessage):
+	code = @@ISayRoom@@
+	
+	def __init__(self, room = None, line = None):
+		self.room = room
+		self.user = None
+		self.line = line
+
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.room) + \
+			self.pack_string(self.line)
+
+	def parse(self, data):
+		self.room, data = self.unpack_string(data)
+		self.user, data = self.unpack_string(data)
+		self.line, data = self.unpack_string(data)
+		return self
+
+class JoinRoom(BaseMessage):
+	code = @@IJoinRoom@@
+	
+	def __init__(self, room = None):
+		self.room = room
+		self.users = None
+
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.room)
+
+	def parse(self, data):
+		self.users = {}
+		pos = 0
+		l = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4
+		self.room = data[pos:pos+l]; pos += l
+		n = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
+		for i in range(n):
+			l = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4
+			user = data[pos:pos+l]; pos += l
+			status = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
+			avgspeed = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
+			downloadnum = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
+			files = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
+			dirs = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
+			free = ord(data[pos]); pos += 1
+			self.users[user] = [status, avgspeed, downloadnum, files, dirs, free]
+		return self
+
+class LeaveRoom(BaseMessage):
+	code = @@ILeaveRoom@@
+	
+	def __init__(self, room = None):
+		self.room = room
+
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.room)
+
+	def parse(self, data):
+		self.room, data = self.unpack_string(data)
+		return self
+
+class UserJoinedRoom(BaseMessage):
+	code = @@IUserJoinedRoom@@
+	
+	def __init__(self):
+		self.room = None
+		self.user = None
+		self.userdata = None
+
+	def parse(self, data):
+		self.room, data = self.unpack_string(data)
+		self.user, data = self.unpack_string(data)
+		status, data = self.unpack_uint(data)
+		avgspeed, data = self.unpack_uint(data)
+		downloadnum, data = self.unpack_uint(data)
+		files, data = self.unpack_uint(data)
+		dirs, data = self.unpack_uint(data)
+		free, data = ord(data[0]), data[1:]
+		self.userdata = [status, avgspeed, downloadnum, files, dirs, free]
+		return self
+
+class UserLeftRoom(BaseMessage):
+	code = @@IUserLeftRoom@@
+	
+	def __init__(self):
+		self.room = None
+		self.user = None
+
+	def parse(self, data):
+		self.room, data = self.unpack_string(data)
+		self.user, data = self.unpack_string(data)
+		return self
+
+class RoomTickers(BaseMessage):
+	code = @@IRoomTickers@@
+	
+	def __init__(self, room = None, tickers = None):
+		self.room = room
+		self.tickers = None
+	def make(self):
+		return self.pack_uint(self.code)
+
+	def parse(self, data):
+		self.room, data = self.unpack_string(data)
+		self.tickers = {}
+		numtickers, data = self.unpack_uint(data)
+		for i in range(numtickers):
+			message, data = self.unpack_string(data)
+			user, data = self.unpack_string(data)
+			self.tickers[user] = message
+		return self
+
+class RoomTickerSet(BaseMessage):
+	code = @@IRoomTickerSet@@
+	
+	def __init__(self, room = None, message = None):
+		self.room = room
+		self.message = message
+		self.user = None
+	
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.room) + \
+			self.pack_string(self.message)
+	
+	def parse(self, data):
+		self.room, data = self.unpack_string(data)
+		self.user, data = self.unpack_string(data)
+		self.message, data = self.unpack_string(data)
+		return self
+
+class PrivateMessage(BaseMessage):
+	code = @@IPrivateMessage@@
+	
+	def __init__(self, direction = None, user = None, message = None):
+		self.direction = direction
+		self.timestamp = None
+		self.user = user
+		self.message = message
+
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.user) + \
+			self.pack_string(self.message)
+
+	def parse(self, data):
+		self.direction, data = self.unpack_uint(data)
+		self.timestamp, data = self.unpack_uint(data)
+		self.user, data = self.unpack_string(data)
+		self.message, data = self.unpack_string(data)
+		return self
+
+class UserInfo(BaseMessage):
+	code = @@IUserInfo@@
+	
+	def __init__(self, user = None):
+		self.user = user
+		self.info = None
+		self.picture = None
+		self.uploads = None
+		self.queue = None
+		self.slotsfree = None
+
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.user)
+
+	def parse(self, data):
+		self.user, data = self.unpack_string(data)
+		self.info, data = self.unpack_string(data)
+		self.picture, data = self.unpack_string(data)
+		self.uploads, data = self.unpack_uint(data)
+		self.queue, data = self.unpack_uint(data)
+		self.slotsfree, data = ord(data[0]), data[1:]
+		return self
+
+class UserShares(BaseMessage):
+	code = @@IUserShares@@
+	
+	def __init__(self, user = None):
+		self.user = user
+		self.shares = None
+
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.user)
+
+	def parse(self, data):
+		self.shares = {}
+		pos = 0
+		l = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4
+		self.user = data[pos:pos+l]; pos += l
+		dirs = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
+		for i in range(dirs):
+			l = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4
+			dir = data[pos:pos+l]; pos += l  
+
+			self.shares[dir] = {}
+			
+			files = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
+
+			for j in range(files):
+				l = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4
+				fn = data[pos:pos+l]; pos += l
+				sz = struct.unpack("<Q", data[pos:pos+8])[0]; pos += 8
+				l = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4
+				ex = data[pos:pos+l]; pos +=  l
+				attrs = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4
+				at = []
+				for k in range(attrs):
+					a = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
+					at.append(a)
+					
+				self.shares[dir][fn] = [sz, ex, at]
+		return self
+
+
+class GivePrivileges(BaseMessage):
+	code = @@IGivePrivileges@@
+
+	def __init__(self, user = None, days=None):
+		self.user = user
+		self.days = days
+
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.user) + \
+			self.pack_uint(self.days)
+
+class Transfer:
+	def __init__(self, is_upload, user, path, state, error, filepos, filesize, rate, place):
+		self.is_upload = is_upload
+		self.user = user
+		self.path = path
+		self.state = state
+		self.error = error
+		self.filepos = filepos
+		self.filesize = filesize
+		self.rate = rate
+		self.place = place
+
+class TransferState(BaseMessage):
+	code = @@ITransferState@@
+	
+	def __init__(self):
+		self.downloads = None
+		self.uploads = None
+
+	def unpack_transfer(self, data):
+		is_upload, data = ord(data[0]), data[1:]
+		user, data = self.unpack_string(data)
+		path, data = self.unpack_string(data)
+		place, data = self.unpack_uint(data)
+		state, data = self.unpack_uint(data)
+		error, data = self.unpack_string(data)
+		filepos, data = self.unpack_off(data)
+		filesize, data = self.unpack_off(data)
+		rate, data = self.unpack_uint(data)
+		return Transfer(is_upload, user, path, state, error, filepos, filesize, rate, place), data
+	
+	def parse(self, data):
+		self.uploads = []
+		self.downloads = []
+		n, data = self.unpack_uint(data)
+		for i in range(n):
+			tf, data = self.unpack_transfer(data)
+			if tf.is_upload:
+				self.uploads.append(tf)
+			else:
+				self.downloads.append(tf)
+		return self
+
+class TransferUpdate(TransferState):
+	code = @@ITransferUpdate@@
+	
+	def __init__(self, user = None, path = None):
+		self.user = user
+		self.path = path
+		self.transfer = None
+		
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.user) + \
+			self.pack_string(self.path)
+			
+	def parse(self, data):
+		self.transfer, data = self.unpack_transfer(data)
+		return self
+		
+class TransferRemove(BaseMessage):
+	code = @@ITransferRemove@@
+
+	def __init__(self, upload = None, user = None, path = None):
+		self.upload = upload
+		self.user = user
+		self.path = path
+
+	def make(self):
+		if self.upload:
+			upload = chr(1)
+		else:
+			upload = chr(0)
+		return self.pack_uint(self.code) + \
+			upload + \
+			self.pack_string(self.user) + \
+			self.pack_string(self.path)
+
+	def parse(self, data):
+		self.upload, data = ord(data[0]), data[1:]
+		self.user, data = self.unpack_string(data)
+		self.path, data = self.unpack_string(data)
+		self.transfer = self.upload, self.user, self.path
+		return self
+
+class TransferAbort(BaseMessage):
+	code = @@ITransferAbort@@
+
+	def __init__(self, upload = None, user = None, path = None):
+		self.upload = upload
+		self.user = user
+		self.path = path
+
+	def make(self):
+		if self.upload:
+			upload = chr(1)
+		else:
+			upload = chr(0)
+		return self.pack_uint(self.code) + \
+			upload + \
+			self.pack_string(self.user) + \
+			self.pack_string(self.path)
+
+	def parse(self, data):
+		self.upload, data = ord(data[0]), data[1:]
+		self.user, data = self.unpack_string(data)
+		self.path, data = self.unpack_string(data)
+		self.transfer = self.upload, self.user, self.path
+		return self
+
+class DownloadFile(BaseMessage):
+	code = @@IDownloadFile@@
+	
+	def __init__(self, user = None, path = None):
+		self.user = user
+		self.path = path
+
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.user) + \
+			self.pack_string(self.path)
+
+class GetFolderContents(BaseMessage):
+	code = @@IDownloadFolder@@
+	
+	def __init__(self, user = None, folder = None):
+		self.user = user
+		self.folder = folder
+
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.user) + \
+			self.pack_string(self.folder)
+
+class UploadFile(BaseMessage):
+	code = @@IUploadFile@@
+	
+	def __init__(self, user = None, path = None):
+		self.user = user
+		self.path = path
+
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.user) + \
+			self.pack_string(self.path)
+
+class ConfigState(BaseMessage):
+	code = @@IConfigState@@
+	
+	def __init__(self):
+		self.config = None
+		
+	def parse(self, data):
+		self.config = {}
+		domains, data = self.unpack_uint(data)
+		for i in range(domains):
+			domain, data = self.unpack_cipher(data)
+			values = {}
+			keys, data = self.unpack_uint(data)
+			for j in range(keys):
+				key, data = self.unpack_cipher(data)
+				value, data = self.unpack_cipher(data)
+				values[key] = value
+			self.config[domain] = values
+		return self
+
+class ConfigSet(BaseMessage):
+	code = @@IConfigSet@@
+	
+	def __init__(self, domain = None, key = None, value = None):
+		self.domain = domain
+		self.key = key
+		self.value = value
+	
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_cipher(self.domain) + \
+			self.pack_cipher(self.key) + \
+			self.pack_cipher(self.value)
+	
+	def parse(self, data):
+		self.domain, data = self.unpack_cipher(data)
+		self.key, data = self.unpack_cipher(data)
+		self.value, data = self.unpack_cipher(data)
+		return self
+
+class ConfigRemove(BaseMessage):
+	code = @@IConfigRemove@@
+	
+	def __init__(self, domain = None, key = None):
+		self.domain = domain
+		self.key = key
+	
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_cipher(self.domain) + \
+			self.pack_cipher(self.key)
+	
+	def parse(self, data):
+		self.domain, data = self.unpack_cipher(data)
+		self.key, data = self.unpack_cipher(data)
+		return self
+
+class GetRecommendations(BaseMessage):
+	code = @@IGetRecommendations@@
+	
+	def __init__(self):
+		self.recommendations = None
+	
+	def make(self):
+		return self.pack_uint(self.code)
+	
+	def parse(self, data):
+		self.recommendations = {}
+		n, data = self.unpack_uint(data);
+		for i in range (n):
+			r, data = self.unpack_string(data)
+			u, data = self.unpack_uint(data)
+			self.recommendations[r] = u
+		return self
+
+
+class GetGlobalRecommendations(BaseMessage):
+	code = @@IGetGlobalRecommendations@@
+	
+	def __init__(self):
+		self.recommendations = None
+	
+	def make(self):
+		return self.pack_uint(self.code)
+	
+	def parse(self, data):
+		self.recommendations = {}
+		n, data = self.unpack_uint(data);
+		for i in range (n):
+			r, data = self.unpack_string(data)
+			u, data = self.unpack_uint(data)
+			self.recommendations[r] = u
+		return self
+
+class GetSimilarUsers(BaseMessage):
+	code = @@IGetSimilarUsers@@
+	
+	def __init__(self):
+		self.users = None
+	
+	def make(self):
+		return self.pack_uint(self.code)
+	
+	def parse(self, data):
+		self.users = {}
+		n, data = self.unpack_uint(data);
+		for i in range (n):
+			r, data = self.unpack_string(data)
+			u, data = self.unpack_uint(data)
+			self.users[r] = u
+		return self
+
+class GetItemRecommendations(BaseMessage):
+	code = @@IGetItemRecommendations@@
+	
+	def __init__(self, item = None):
+		self.item = item
+		self.recommendations = None
+	
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.item)
+	
+	def parse(self, data):
+		self.recommendations = {}
+		self.item, data = self.unpack_string(data)
+		n, data = self.unpack_uint(data);
+		for i in range (n):
+			r, data = self.unpack_string(data)
+			u, data = self.unpack_uint(data)
+			self.recommendations[r] = u
+		return self
+
+
+class GetItemSimilarUsers(BaseMessage):
+	code = @@IGetItemSimilarUsers@@
+	
+	def __init__(self, item = None):
+		self.item = item
+		self.users = None
+	
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.item)
+	
+	def parse(self, data):
+		self.users = {}
+		self.item, data = self.unpack_string(data)
+		n, data = self.unpack_uint(data);
+		for i in range (n):
+			r, data = self.unpack_string(data)
+			u, data = self.unpack_uint(data)
+			self.users[r] = u
+		return self
+
+
+class AddInterest(BaseMessage):
+	code = @@IAddInterest@@
+	
+	def __init__(self, interest = None):
+		self.interest = interest
+
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.interest)
+
+	def parse(self, data):
+		self.interest, data = self.unpack_string(data)
+		return self
+
+class RemoveInterest(BaseMessage):
+	code = @@IRemoveInterest@@
+	
+	def __init__(self, interest = None):
+		self.interest = interest
+
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.interest)
+
+	def parse(self, data):
+		self.interest, data = self.unpack_string(data)
+		return self
+
+class AddHatedInterest(BaseMessage):
+	code = @@IAddHatedInterest@@
+	
+	def __init__(self, interest = None):
+		self.interest = interest
+
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.interest)
+
+	def parse(self, data):
+		self.interest, data = self.unpack_string(data)
+		return self
+
+class RemoveHatedInterest(BaseMessage):
+	code = @@IRemoveHatedInterest@@
+	
+	def __init__(self, interest = None):
+		self.interest = interest
+
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.interest)
+
+	def parse(self, data):
+		self.interest, data = self.unpack_string(data)
+		return self
+
+
+class ConnectServer(BaseMessage):
+	code = @@IConnectServer@@
+	
+	def make(self):
+		return self.pack_uint(self.code)
+	
+class DisconnectServer(BaseMessage):
+	code = @@IDisconnectServer@@
+	
+	def make(self):
+		return self.pack_uint(self.code)
+
+class ReloadShares(BaseMessage):
+	code = @@IReloadShares@@
+	
+	def make(self):
+		return self.pack_uint(self.code)
+

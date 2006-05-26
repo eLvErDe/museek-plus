@@ -1,0 +1,305 @@
+#! /usr/bin/env python
+
+# pymuseekd - Python tools for museekd
+#
+# Copyright (C) 2003-2004 Hyriand <hyriand@thegraveyard.org>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+import curses, sys, time, pwd, os
+import select
+
+from museek import messages, driver
+
+class editor:
+	def __init__(self, win, escaped, line = ""):
+		self.win = win
+		self.escaped = escaped
+		h, self.w = win.getmaxyx()
+		self.scroll = 0
+		self.line = line
+		self.x = len(self.line)
+		self.fixpos()
+		self.escape = False
+
+	def process(self, c):
+		pos = self.x + self.scroll
+		if c == "KEY_LEFT" or c == chr(2):
+			if self.escape:
+				self.escaped(c)
+			else:
+				self.x -= 1
+		elif c == "KEY_RIGHT" or c == chr(6):
+			if self.escape:
+				self.escaped(c)
+			else:
+				self.x += 1
+		elif c == "KEY_DC" or c == chr(4):
+			self.line = self.line[:pos] + self.line[pos+1:]
+		elif c == chr(5):
+			self.x = len(self.line)
+		elif c == chr(1):
+			self.x = self.scroll = 0
+		elif c == chr(10):
+			self.escape = False
+			return True
+		elif c == chr(11):
+			self.line = self.line[:pos]
+			self.x = len(self.line)
+			self.scroll = 0
+		elif c == chr(23):
+			self.line = self.line[pos:]
+			self.x = self.scroll = 0
+		elif c == chr(127) or c == "KEY_BACKSPACE" or c == chr(8):
+			if pos > 0:
+				self.line = self.line[:pos-1] + self.line[pos:]
+				self.x -= 1
+		elif c == chr(27):
+			self.escape = True
+			return False
+		elif len(c) == 1 and ord(c[0]) >= 32 and ord(c[0]) < 127:
+			self.line = self.line[:pos] + c + self.line[pos:]
+			self.x += 1
+
+		self.fixpos()
+
+		self.escape = False
+		return False
+
+	def fixpos(self):
+		while self.scroll + self.x > len(self.line):
+			self.x -= 1
+
+		while self.x >= self.w:
+			self.scroll += 1
+			self.x -= 1
+
+		if self.x < 0:
+			self.scroll += self.x
+			self.x = 0
+
+		if self.scroll < 0:
+			self.scroll = 0
+
+		self.win.erase()
+		self.win.addstr(self.line[self.scroll:self.scroll+self.w-1])
+		self.win.refresh()
+
+	def reset(self):
+		self.x = self.scroll = 0
+		self.line = ""
+		self.win.erase()
+		self.win.refresh()
+
+class museekdchat(driver.Driver):
+	def __init__(self):
+		driver.Driver.__init__(self)
+		self.rooms = {}
+		self.joined = []
+		self.current = None
+		self.log = ["\n"] * 1000
+	
+	def build(self, stdscr, line = ""):
+		self.stdscr = stdscr
+		self.stdscr.clear()
+		self.stdscr.refresh()
+		self.h, self.w = self.stdscr.getmaxyx()
+		self.chatwin = curses.newwin(self.h - 3, self.w)
+		self.chatwin.border()
+		self.chatwin.addstr(0, 3, "[ museekdchat ]")
+		self.chatwin.refresh()
+		self.textwin = self.chatwin.subwin(self.h-5,self.w-2,1,1)
+		self.textwin.scrollok(1)
+		for i in range(self.h-5):
+			self.textwin.addstr(self.log[-(self.h - 5 - i)])
+		self.textwin.refresh()
+		self.inputwin = curses.newwin(3,self.w,self.h-3,0)
+		self.inputwin.border()
+		self.inputwin.refresh()
+	
+		self.editwin = curses.newwin(1, self.w-2, self.h-2, 1)
+		self.edit = editor(self.editwin, self.escaped, line)
+		self.stdscr.nodelay(1)
+		self.set_room(self.current)
+	
+	def connect(self, host, password):
+		driver.Driver.connect(self, host, password, messages.EM_CHAT)
+	
+	def process(self):
+		keys = []
+		while 1:
+			try:
+				c = self.stdscr.getkey(h-2, self.edit.x+1)
+				keys.append(c)
+			except:
+				pass
+			if not keys:
+				d = 1000
+			else:
+				d = 0
+			r, w, x = select.select([self.socket, sys.stdin], [], [self.socket], d)
+			if self.socket in r:
+				driver.Driver.process(self)
+			if sys.stdin in r:
+				try:
+					c = self.stdscr.getkey(self.h-2, self.edit.x)
+					keys.append(c)
+				except Exception, e:
+					pass
+	
+			while keys:
+				c, keys = keys[0], keys[1:]
+				if self.edit.process(c):
+					line = self.edit.line
+					if line[:1] == "/" and line[:4] != "/me ":
+						if line == "/quit":
+							return
+						elif line[:6] == "/talk ":
+							self.set_room(line[6:])
+						elif line[:6] == "/join ":
+							self.send(messages.JoinRoom(line[6:]))
+						elif line == "/part" and self.current:
+							self.send(messages.LeaveRoom(self.current))
+						elif line[:6] == "/part ":
+							self.send(messages.LeaveRoom(line[6:]))
+						else:
+							continue
+						self.edit.reset()
+					elif self.current and line:
+						self.send(messages.SayRoom(self.current, line))
+						self.edit.reset()
+	
+	def cb_login_error(self, reason):
+		self.say("couldn't log in: " + reason)
+	
+	def cb_login_ok(self):
+		pass
+	
+	def cb_server_state(self, state, username):
+		if state:
+			self.say("connected to soulseek, username: " + username)
+		else:
+			self.say("not connected to soulseek")
+	
+	def cb_room_state(self, roomlist, joined, tickers):
+		for room in joined:
+			self.say("Joined room %s (%i users)" % (room, len(joined[room])))
+			self.rooms[room] = joined[room]
+		self.joined = self.rooms.keys()
+		if self.joined:
+			self.set_room(self.joined[0])
+	
+	def cb_room_said(self, room, user, text):
+		if text[:4] == "/me ":
+			msg = "* %s %s" % (user, text[4:])
+		else:
+			msg = "%s: %s" % (user, text)
+		self.say("[%s] %s" % (room, msg))
+	
+	def cb_room_joined(self, room, users):
+		self.say("Joined room %s (%i users)" % (room, len(users)))
+		self.rooms[room] = users;
+		self.joined.append(room)
+		self.set_room(room)
+	
+	def cb_room_left(self, room):
+		self.say("Left room %s" % room)
+		del self.rooms[room]
+		if d.room == self.current:
+			ix = self.joined.index(room)
+			if ix > 0:
+				ix -= 1
+			self.set_room(self.joined[ix])
+		self.joinred.remove(room)
+		if not self.joined:
+			self.set_room(None)
+	
+	def cb_room_user_joined(self, room, user, data):
+		self.say("User %s joined room %s" % (user, room))
+		self.rooms[room][user] = data
+	
+	def cb_room_user_left(self, room, user):
+		self.say("User %s left room %s" % (user, room))
+		del self.rooms[room][user]
+	
+	def say(self, s):
+		self.log.append("\n%s %s" % (time.strftime("%H:%M"), s))
+		self.log = self.log[-1000:]
+		self.textwin.addstr(self.log[-1])
+		self.textwin.refresh()
+
+	def set_room(self, r):
+		self.current = r
+		self.inputwin.border()
+		if self.current:
+			self.inputwin.addstr(0, 2, "[ "+self.current+" ]")
+		self.inputwin.refresh()
+		self.editwin.refresh()
+
+	def escaped(self, key):
+		if not self.joined:
+			return
+		if not self.current in self.joined:
+			if key == "KEY_LEFT":
+				ix = -1
+			elif key == "KEY_RIGHT":
+				ix = 0
+		else:
+			ix = self.joined.index(self.current)
+			if key == "KEY_LEFT":
+				ix -= 1
+			elif key == "KEY_RIGHT":
+				ix += 1
+			if ix < 0:
+				ix = -1
+			elif ix >= len(self.joined):
+				ix = 0
+		self.set_room(self.joined[ix])
+
+if len(sys.argv) != 3:
+	print "Syntax: museekchat host:port password"
+	print "or:     museekchat /path/to/socket password"
+	sys.exit(-1)
+
+c = museekdchat()
+line = ""
+try:
+	while 1:
+		stdscr = curses.initscr()
+		curses.noecho()
+		curses.cbreak()
+		stdscr.keypad(1)
+		c.build(stdscr, line)
+		if c.socket is None:
+			c.connect(sys.argv[1], sys.argv[2])
+		try:
+			c.process()
+		except select.error:
+			line = c.edit.line
+			curses.endwin()
+			continue
+		break
+except Exception, e:
+	curses.nocbreak()
+	stdscr.keypad(0)
+	curses.echo()
+	curses.endwin()
+	print e
+	sys.exit()
+
+curses.nocbreak()
+stdscr.keypad(0)
+curses.echo()
+curses.endwin()

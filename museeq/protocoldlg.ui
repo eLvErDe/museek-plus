@@ -1,0 +1,143 @@
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<class>ProtocolDlg</class>
+<widget class="QDialog">
+    <property name="name">
+        <cstring>ProtocolDlg</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>400</width>
+            <height>224</height>
+        </rect>
+    </property>
+    <property name="sizePolicy">
+        <sizepolicy>
+            <hsizetype>0</hsizetype>
+            <vsizetype>5</vsizetype>
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+        </sizepolicy>
+    </property>
+    <property name="minimumSize">
+        <size>
+            <width>400</width>
+            <height>0</height>
+        </size>
+    </property>
+    <property name="caption">
+        <string>Protocol handlers</string>
+    </property>
+    <grid>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <widget class="QListView" row="0" column="0" rowspan="1" colspan="4">
+            <column>
+                <property name="text">
+                    <string>Protocol</string>
+                </property>
+                <property name="clickable">
+                    <bool>true</bool>
+                </property>
+                <property name="resizable">
+                    <bool>true</bool>
+                </property>
+            </column>
+            <column>
+                <property name="text">
+                    <string>Handler</string>
+                </property>
+                <property name="clickable">
+                    <bool>true</bool>
+                </property>
+                <property name="resizable">
+                    <bool>true</bool>
+                </property>
+            </column>
+            <property name="name">
+                <cstring>mProtocols</cstring>
+            </property>
+            <property name="allColumnsShowFocus">
+                <bool>true</bool>
+            </property>
+        </widget>
+        <widget class="QPushButton" row="1" column="2">
+            <property name="name">
+                <cstring>mOk</cstring>
+            </property>
+            <property name="text">
+                <string>OK</string>
+            </property>
+        </widget>
+        <widget class="QPushButton" row="1" column="3">
+            <property name="name">
+                <cstring>mCancel</cstring>
+            </property>
+            <property name="text">
+                <string>Cancel</string>
+            </property>
+        </widget>
+        <widget class="QPushButton" row="1" column="1">
+            <property name="name">
+                <cstring>mNew</cstring>
+            </property>
+            <property name="text">
+                <string>New</string>
+            </property>
+        </widget>
+        <spacer row="1" column="0">
+            <property name="name">
+                <cstring>spacer1</cstring>
+            </property>
+            <property name="orientation">
+                <enum>Horizontal</enum>
+            </property>
+            <property name="sizeType">
+                <enum>Expanding</enum>
+            </property>
+            <property name="sizeHint">
+                <size>
+                    <width>91</width>
+                    <height>20</height>
+                </size>
+            </property>
+        </spacer>
+    </grid>
+</widget>
+<connections>
+    <connection>
+        <sender>mOk</sender>
+        <signal>clicked()</signal>
+        <receiver>ProtocolDlg</receiver>
+        <slot>accept()</slot>
+    </connection>
+    <connection>
+        <sender>mCancel</sender>
+        <signal>clicked()</signal>
+        <receiver>ProtocolDlg</receiver>
+        <slot>reject()</slot>
+    </connection>
+    <connection>
+        <sender>mNew</sender>
+        <signal>clicked()</signal>
+        <receiver>ProtocolDlg</receiver>
+        <slot>mNew_clicked()</slot>
+    </connection>
+    <connection>
+        <sender>mProtocols</sender>
+        <signal>itemRenamed(QListViewItem*,int)</signal>
+        <receiver>ProtocolDlg</receiver>
+        <slot>mProtocols_itemRenamed(QListViewItem*,int)</slot>
+    </connection>
+</connections>
+<includes>
+    <include location="local" impldecl="in implementation">protocoldlg.ui.h</include>
+</includes>
+<slots>
+    <slot specifier="non virtual">mNew_clicked()</slot>
+    <slot specifier="non virtual">mProtocols_itemRenamed( QListViewItem * item, int col )</slot>
+</slots>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

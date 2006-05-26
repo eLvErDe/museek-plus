@@ -1,0 +1,114 @@
+#!/bin/bash
+# Creator: daelstorm
+# this is a RC script for museekd, and is Archlinux specific, feel free to modify for your own distro or config
+
+# general config
+. /etc/rc.conf
+. /etc/rc.d/functions
+
+MUSEEKD=/usr/bin/museekd
+MUSETUP=/usr/bin/musetup
+MUSCAN=/usr/bin/muscan
+MUSOCKET=/tmp/museekd.root
+PIDFILE=/var/run/museekd.pid
+DBDIR=/var/museek
+CONFIG=$DBDIR/museekd.xml
+CHOWNSOCKET=YES
+
+case "$1" in
+  start)
+	$0 checkdir
+	
+	if [ ! -f $CONFIG ]; then
+		$0 config
+	fi
+	if [ -f $PIDFILE ]; then
+		stat_busy "Museek Daemon already running (or zombie pid file in /var/run/)"
+		stat_fail
+		exit
+	fi
+	stat_busy "Starting Museek Daemon"
+	$MUSEEKD -c $CONFIG &>/dev/null &
+	PID="$!"
+	sleep 2
+	if kill -0 $PID # pid check
+	then 
+ 		if [ $CHOWNSOCKET = YES  ];
+ 		then 
+			if [ -e $MUSOCKET ]; then chmod 666 $MUSOCKET
+			# access the museekd socket from other users, may be a security risk on multiuser systems
+			fi
+		fi
+		add_daemon museekd
+		echo $PID > $PIDFILE
+		stat_done
+	else
+		stat_busy "Museekd isn't starting up properly. Check your Config file, \nor run 'museekd -c /var/museek/museekd.xml' for verbose messages."
+		stat_fail
+
+		
+	fi
+	;;
+  checkdir)
+	if [ ! -d $DBDIR ]; then 
+		mkdir $DBDIR
+	fi
+	;;
+  stop)
+	stat_busy "Stopping Museek Daemon"
+	if [ -f $PIDFILE ]; then
+		kill -15 `cat $PIDFILE`  &>/dev/null
+		rm $PIDFILE
+	else
+		stat_busy "Museek Daemon not running"
+		stat_fail
+		exit
+	fi
+	if [ $? -gt 0 ]; then
+		stat_fail
+	else
+		rm_daemon museekd
+		stat_done
+	fi
+	;;
+  reconnect)
+  	if ck_daemon museekd; then
+		if [ -f $PIDFILE ]; then
+			stat_busy "Attempting to reconnect Museekd to the Server" 
+			kill -ALRM `cat $PIDFILE`  &>/dev/null
+			stat_done
+		fi
+	fi
+  	;;
+  restart)
+	$0 stop
+	sleep 3
+	$0 start
+	;;
+  rescan)
+	stat_busy "Starting Muscan, rescanning shared files" 
+	$MUSCAN -c $CONFIG -r -v
+	stat_done
+	$0 reload
+	;;
+  setup)
+	$0 config
+	;;
+  
+  config)
+	stat_busy "Starting Museek Setup"
+	$0 checkdir
+	$MUSETUP $CONFIG
+	stat_done
+	;;
+  reload)
+	if [ -f $PIDFILE ]; then
+		status "Reloading Museek Daemon to update Shares" kill -HUP `cat $PIDFILE`
+	else
+		stat_busy "Museek Daemon not running, can't reload shares"
+		stat_fail
+	fi
+	;;
+  *)
+    echo "usage: $0 {start|stop|restart|rescan|reconnect|setup|config|reload}"  
+esac

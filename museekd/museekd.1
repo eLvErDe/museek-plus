@@ -1,0 +1,48 @@
+.TH "MUSEEKD" "1" "Release 0.1.9" "daelstorm" "Museek Daemon Plus"
+.SH "NAME"
+.LP 
+\fBMuseekd\fR \- C++ Daemon/Client for Soulseek
+.SH "SYNOPSIS"
+.B museek
+[\-c <\fIfilename\fP>] [\-\-config <\fIfilename\fP>]
+[\-V] [\-\-version]
+[\-h] [\-\-help]
+.SH "DESCRIPTION"
+.LP 
+Museekd is a headless client (daemon) for the Soulseek P2P network and for Soulfind Servers. It is configured with musetup and can be controlled with variety of interfaces and GUIs, such as Museeq and Mucous. It handles any chatting, transferring files, searching, managing of users or browsing of shares requested by the various interfaces or GUIs.
+.LP 
+Before running, you will need a configure it with \fImusetup\fP(1).
+.SH "OPTIONS"
+.LP 
+Museekd accepts the following options:
+.TP 
+.B \-c <\fIfilename\fP>, \-\-config <\fIfilename\fP>
+Use a different config file.
+.TP 
+.B \-V, \-\-version
+Display Version and exit.
+.TP 
+.B \-h, \-\-help
+Display Help and exit.
+
+.SH "EXAMPLE"
+.LP 
+To run this program the standard way type:
+.LP 
+museekd
+.LP 
+Alternativly you use a different config file with:
+.LP 
+museekd \-\-config config.xml
+.SH "FILES"
+.TP 
+ \fI~/.museekd/config.xml\fR
+The default location for the \fBmuseekd\fP config file.
+.SH "AUTHORS"
+.LP 
+Hyriand <hyriand@thegraveyard.org>
+.LP 
+daelstorm <daelstorm@gmail.com>
+.SH "SEE ALSO"
+.LP 
+\fImuscan\fP(1) \fImuscand\fP(1) \fImusetup\fP(1) \fImulog\fP(1) \fImuseeq\fP(1)

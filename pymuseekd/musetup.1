@@ -1,0 +1,48 @@
+.TH "MUSETUP" "1" "Release 0.1.9" "daelstorm" "Museek Daemon Plus"
+.SH "NAME"
+.LP 
+\fBMusetup\fR \- Configuration script for Museekd
+.SH "SYNOPSIS"
+.B musetup
+<\fIconfig\-filename\fP> 
+[\-h] [\-\-help]
+.SH "DESCRIPTION"
+.LP 
+Musetup is command\-line Python script that configures \fImuseekd\fP(1). Configuration options are selected by entering one of the numbers displayed. Modifying those options are done by choosing an option's number or by inputing text.
+.LP 
+Before running, you will need a configure it with \fImusetup\fP(1).
+.SH "OPTIONS"
+.LP 
+Musetup accepts the following options:
+.TP 
+<\fIconfig\-filename\fP>
+Selected Config's path and filename.
+.TP 
+.B \-h, \-\-help
+Display Help and exit.
+.SH "EXAMPLE"
+.LP 
+To run this program the standard way type:
+.LP 
+musetup
+.LP 
+Alternativly you use a different config file with:
+.LP 
+musetup config.xml
+.LP 
+
+.SH "FILES"
+.TP 
+ \fI~/.museekd/config.xml\fR
+The default location for the \fBmuseekd\fP config file.
+.TP 
+ \fI/usr/share/museek/museekd/config.xml.tmpl\fR
+Config file template that's used if no config exists.
+.SH "AUTHORS"
+.LP 
+Hyriand <hyriand@thegraveyard.org>
+.LP 
+daelstorm <daelstorm@gmail.com>
+.SH "SEE ALSO"
+.LP 
+\fImuseekd\fP(1) \fImuscan\fP(1) \fImuscand\fP(1) \fImulog\fP(1) \fImuseeq\fP(1)

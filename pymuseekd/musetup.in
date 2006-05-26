@@ -1,0 +1,543 @@
+#! /usr/bin/env python
+
+import os, sys
+DATADIR = os.path.realpath(sys.argv[0])
+for i in range(2):
+	DATADIR = os.path.split(DATADIR)[0]
+DEFAULT_TEMPLATE = os.path.join(DATADIR, 'share', 'museek', 'museekd', 'config.xml.tmpl')
+DEFAULT_CONFIG = os.path.join('~', '.museekd', 'config.xml')
+
+from xml.dom import minidom
+import time, stat, string, pwd
+
+config = {}
+
+def readDomain(node):
+	domain = {}
+	child = node.firstChild
+	while child:
+		if child.nodeName == u'key':
+			id = child.getAttribute('id')
+			if child.firstChild:
+				domain[id] = child.firstChild.nodeValue
+			else:
+				domain[id] = ''
+		child = child.nextSibling
+	return domain
+	
+def readConfig(path = 'config.xml'):
+	global config
+	doc = minidom.parse(path)
+	root = doc.firstChild
+	node = root.firstChild
+	while node:
+		if node.nodeName == u'domain':
+			id = node.getAttribute('id')
+			config[id] = readDomain(node)
+		node = node.nextSibling
+
+def readTemplate(path = 'config.xml.tmpl', config_path = 'config.xml'):
+	global config
+	readConfig(path)
+	if config_path.rfind('.') > config_path.rfind('/'):
+		config_path = '.'.join(config_path.split('.')[:-1])
+	
+	user = pwd.getpwuid(os.getuid())[0]
+	for domain in config.values():
+		for key in domain.keys():
+			value = domain[key].replace('$(USER)', user).replace('$(CONFIG)', config_path)
+			del domain[key]
+			key = key.replace('$(USER)', user).replace('$(CONFIG)', config_path)
+			domain[key] = value
+	
+def writeConfig(path = 'newconfig.xml'):
+	global config
+	doc = minidom.Document()
+	root = doc.appendChild(doc.createElement('museekd'))
+	for i in config.keys():
+		root.appendChild(doc.createTextNode('\n  '))
+		domain = root.appendChild(doc.createElement('domain'))
+		domain.setAttribute('id', i)
+		for j in config[i].keys():
+			domain.appendChild(doc.createTextNode('\n    '))
+			key = domain.appendChild(doc.createElement('key'))
+			key.setAttribute('id', j)
+			v = config[i][j]
+			if v:
+				key.appendChild(doc.createTextNode(v))
+		domain.appendChild(doc.createTextNode('\n  '))
+	root.appendChild(doc.createTextNode('\n'))
+	
+	try:
+		os.makedirs(os.path.split(path)[0])
+	except OSError:
+		pass
+	
+	f = open(path, 'w')
+	doc.writexml(f)
+	f.close()
+	os.chmod(path, stat.S_IRUSR | stat.S_IWUSR)
+	print
+	print 'Configuration updated. Don\'t forget to restart museekd.'
+	print
+	
+def choice(max):
+	print
+	print 'Pick a number, any number: ',
+	line = sys.stdin.readline().strip()
+	print
+	try:
+		choice = int(line)
+	except:
+		print 'I said, a number.. when did \'%s\' become a number?' % line
+		time.sleep(3)
+		return -1
+	if choice not in range(max+1):
+		print 'I know I said any number, but a number which actually\nhas an action assigned to it might be a wiser choice'
+		time.sleep(3)
+		return -1
+	return choice
+
+def port_choice(default):
+	print 'Port [%s]: ' % (default),
+	s = sys.stdin.readline().strip()
+	print
+	if s:
+		try:
+			port = int(s)
+			return s
+		except:
+			print 'Ports are usually numbers'
+			time.sleep(3)
+	return default
+
+def string_choice(title, default):
+	print '%s [%s]: ' % (title, default),
+	s = sys.stdin.readline().strip()
+	if s:
+		return s
+	return default
+
+def path_choice(default):
+	print 'Path: ',
+	s = sys.stdin.readline().strip()
+	return os.path.expanduser(s)
+
+def server():
+	global config
+	if not config.has_key('server'):
+		config['server'] = {}
+	_server = config['server'].get('host', 'server.slsknet.org')
+	_port = config['server'].get('port', '2240')
+	_username = config['server'].get('username', '')
+	_password = config['server'].get('password', '')
+	print
+	print
+	print 'Soulseek server setup'
+	print
+	print '1. Server:', _server
+	print '2. Port:  ', _port
+	print
+	print '3. Username:', _username
+	print '4. Password:', '*' * len(_password)
+	print
+	print '0. Leave this menu'
+	c = choice(4)
+	if c == 0:
+		return 1
+	elif c == 1:
+		config['server']['host'] = string_choice('Server', _server)
+	elif c == 2:
+		config['server']['port'] = port_choice(_port)
+	elif c == 3:
+		config['server']['username'] = string_choice('Username', _username)
+	elif c == 4:
+		config['server']['password'] = string_choice('Password', _password)
+	return 0
+
+def connectmode():
+	print
+	print
+	print 'Peer connect mode setup'
+	print
+	print '1. Active'
+	print '   (use this if your client port can\'t be reached'
+	print '    from the outside world, think firewalls / routers)'
+	print
+	print '2. Passive'
+	print '   (use this if you can receive direct connections on'
+	print '    your client port from the outside world)'
+	print
+	print '0. Don\'t change this setting'
+	c = choice(2)
+	if c == -1:
+		return 0
+	elif c == 1:
+		config['clients']['connectmode'] = 'active'
+	elif c == 2:
+		config['clients']['connectmode'] = 'passive'
+	return 1
+
+def buddyshares():
+	print
+	print 'Special Shares List for Buddies'
+	print
+	print "Note: If you want to share all the files in your \"Normal\" shares"
+	print "within the special shares, you will have to add them."	
+	print
+	print '1. True'
+	print '   (use this if your want to have a seperate list for'
+	print '    buddies that includes file normal users will not get)'
+	print
+	print '2. False'
+	print '   (use this if you want everyone to get have access'
+	print '    to a single \"Normal\" shares list)'
+	print
+	print '0. Don\'t change this setting'
+	c = choice(2)
+	if c == -1:
+		return 0
+	elif c == 1:
+		config['transfers']['have_buddy_shares'] = 'true'
+	elif c == 2:
+		config['transfers']['have_buddy_shares'] = 'false'
+	return 1
+	
+def portrange():
+	global config
+	if not config.has_key('clients.bind'):
+		config['clients.bind'] = {}
+	_first = config['clients.bind'].get('first', '2234')
+	_last = config['clients.bind'].get('last', '2240')
+	if not config.has_key('clients'):
+		config['clients'] = {}
+	_mode = config['clients'].get('connectmode', 'active')
+	print
+	print
+	print 'Client port range setup'
+	print
+	print '1. First port to try: ', _first
+	print '2. Last port to try:  ', _last
+	print
+	print '3. Connection mode:   ', _mode
+	print
+	print '0. Leave this menu'
+	c = choice(3)
+	if c == 1:
+		config['clients.bind']['first'] = port_choice(_first)
+	elif c == 2:
+		config['clients.bind']['last'] = port_choice(_last)
+	elif c == 3:
+		while not connectmode(): pass
+	else:
+		return 1
+	return 0
+	
+def dirs():
+	if not config.has_key('transfers'):
+		config['transfers'] = {}
+	_complete = config['transfers'].get('download-dir', '~/downloads')
+	_incomplete = config['transfers'].get('incomplete-dir', '')
+
+	print
+	print
+	print 'Incomplete and completed download setup'
+	print
+	print '1. Completed downloads:', _complete
+	print '2. Incomplete downloads:', _incomplete
+	print '   (if this is empty, completed download dirs will be used)'
+	print
+	print '0. Leave this menu'
+	c = choice(2)
+	if c == 1:
+		config['transfers']['download-dir'] = path_choice(_complete)
+	elif c == 2:
+		config['transfers']['incomplete-dir'] = path_choice(_incomplete)
+	else:
+		return 1
+	return 0
+
+def charsets():
+	if not config.has_key('encoding'):
+		config['encoding'] = {}
+	_network = config['encoding'].get('network', 'UTF-8')
+	_filesystem = config['encoding'].get('filesystem', 'LATIN1')
+	print
+	print
+	print 'Network and filesystem character set setup'
+	print
+	print '1. Network character set:   ', _network
+	print '   (Make the world a better place, use UTF-8!)'
+	print
+	print '2. Filesystem character set:', _filesystem
+	print '   (latin1 is usually a good choice)'
+	print
+	print '0. Leave this menu'
+	c = choice(2)
+	if c == 1:
+		config['encoding']['network'] = string_choice('Character set', _network)
+	elif c == 2:
+		config['encoding']['filesystem'] = string_choice('Character set', _filesystem)
+	else:
+		return 1
+	return 0
+	
+def new_iface():
+	print
+	print
+	print 'New interface listener setup'
+	print
+	print '1. Add TCP socket listener'
+	print '2. Add UNIX socket listener'
+	print
+	print '0. Don\'t add a new interface listener'
+	c = choice(2)
+	if c == -1:
+		return 0
+	elif c == 1:
+		host = string_choice('Local address to bind to (empty = all)', '')
+		port = port_choice('')
+		if not port:
+			print 'A port is a requirement to be able to bind...'
+			time.sleep(3)
+			return 0
+		config['interfaces.bind'][host + ':' + port] = ''
+	elif c == 2:
+		path = string_choice('Path + filename of UNIX socket', '')
+		if not path:
+			return 0
+		if path[0] != '/':
+			print 'UNIX socket pathnames have to be absolute'
+			time.sleep(3)
+			return 0
+		config['interfaces.bind'][path] = ''
+	return 1
+	
+def ifaces():
+	if not config.has_key('interfaces'):
+		config['interfaces'] = {}
+	_password = config['interfaces'].get('password', '')
+	if not config.has_key('interfaces.bind'):
+		config['interfaces.bind'] = {}
+	_ifaces = config['interfaces.bind'].keys()
+	_ifaces.sort()
+	print
+	print
+	print 'Interface listener setup'
+	print
+	print '1. Interface password', '*' * len(_password)
+	print
+	print '2. Add new interface listener'
+	print
+	ix = 2
+	for i in _ifaces:
+		ix = ix + 1
+		print '%i. Delete interface listener' % (ix), i 
+	if not _ifaces:
+		print '(no interface listeners defined)'
+	print
+	print '0. Leave this menu'
+	c = choice(ix)
+	if c == 0:
+		return 1
+	elif c == 1:
+		config['interfaces']['password'] = string_choice('Password', _password)
+	elif c == 2:
+		while not new_iface(): pass
+	elif c != -1:
+		del config['interfaces.bind'][_ifaces[c - 3]]
+	return 0
+
+def escapeCommand(filename):
+	"""Escapes special characters for command execution"""
+	escaped = ""
+	for ch in filename:
+		if ch not in string.ascii_letters+string.digits+"/":
+			escaped += "\\"
+		escaped += ch
+	return escaped
+
+def shares(config_path):
+	if not os.path.exists(config_path):
+		print "Need config file to build shares, creating..."
+		writeConfig(config_path)
+	r = os.popen('muscan -c %s -l' % escapeCommand(config_path)).read()
+	_shared = [i for i in r.split("\n") if i]
+	print
+	print
+	print 'Shared directories setup'
+	print ' Note: these options work immediately and without confirmation'
+	print
+	print '1. Rescan shares incrementally'
+	print '2. Rescan shares from scratch'
+	print
+	print '3. Add shared directory'
+	print
+	ix = 3
+	for dir in _shared:
+		ix = ix + 1
+		print '%i. Remove %s' % (ix, dir)
+	print
+	print '0. Leave this menu'
+	c = choice(ix)
+	if c == 0:
+		return 1
+	elif c == 1:
+		print
+		print 'Please wait patiently while rescanning shares...'
+		os.system('muscan -c %s' % escapeCommand(config_path))
+	elif c == 2:
+		print
+		print 'Please wait patiently while rescanning shares...'
+		os.system('muscan -c %s -r' % escapeCommand(config_path))
+	elif c == 3:
+		dir = string_choice('Path', '')
+		if dir:
+			dir = os.path.expanduser(dir)
+			if dir[-1:] == "/":
+				dir = dir[:-1]
+			print dir 
+			print 'Please wait patiently while rescanning shares...'
+			os.system('muscan -c %s -s %s' % (escapeCommand(config_path), escapeCommand(dir)))
+	else:
+		os.system('muscan -c %s -u %s' % (escapeCommand(config_path), escapeCommand(_shared[c - 4])))
+	
+	return 0
+
+def bshares(config_path):
+	if not os.path.exists(config_path):
+		print "Need config file to build shares, creating..."
+		writeConfig(config_path)
+	r = os.popen('muscan -c %s -b -l' % escapeCommand(config_path)).read()
+	_shared = [i for i in r.split("\n") if i]
+	_have_buddy_shares = config['transfers'].get('have_buddy_shares', '')
+	print
+	print
+	print 'Special Buddy-only Shared directories setup'
+	print ' Note: these options work immediately and without confirmation'
+	print
+	print '1. Rescan shares incrementally'
+	print '2. Rescan shares from scratch'
+	print
+	print '3. Special list for buddies:', _have_buddy_shares
+	print
+	print '4. Add shared directory'
+	print
+	ix = 4
+	for dir in _shared:
+		ix = ix + 1
+		print '%i. Remove %s' % (ix, dir)
+	print
+	print '0. Leave this menu'
+	c = choice(ix)
+	if c == 0:
+		return 1
+	elif c == 1:
+		print
+		print 'Please wait patiently while rescanning shares...'
+		os.system('muscan -c %s -b' % escapeCommand(config_path))
+	elif c == 2:
+		print
+		print 'Please wait patiently while rescanning shares...'
+		os.system('muscan -c %s -b -r' % escapeCommand(config_path))
+	elif c == 3:
+		while not buddyshares(): pass
+	elif c == 4:
+		dir = string_choice('Path', '')
+		if dir:
+			dir = os.path.expanduser(dir)
+			if dir[-1:] == "/":
+				dir = dir[:-1]
+			print dir 
+			print 'Please wait patiently while rescanning shares...'
+			os.system('muscan -c %s -b -s %s' % (escapeCommand(config_path), escapeCommand(dir)))
+	else:
+		os.system('muscan -c %s -b -u %s' % (escapeCommand(config_path), escapeCommand(_shared[c - 5])))
+	
+	return 0
+	
+
+def save(config_path):
+	print
+	print
+	print 'Leave museek setup'
+	print
+	print '1. Save changes'
+	print '2. Don\'t save changes'
+	print
+	print '0. Don\'t leave museek setup'
+	c = choice(2)
+	if c == -1:
+		return 0
+	elif c == 0:
+		return 1
+	elif c == 1:
+		writeConfig(config_path)
+	return 2
+	
+def main(config_path):
+	
+	print
+	print 'Museek daemon setup'
+	print
+	print "Settings that must be set for museekd to run: \nServer, Username, Password, Interface Password, Download Dir"
+	print
+	print '1. Soulseek server'
+	print '2. Peer connections'
+	print '3. Interface listeners'
+	print '4. Network and filesystem character sets'
+	print '5. Download and incomplete file directory'
+	print
+	print '6. Shared directories'
+	print "7. Buddy-Only Shared directories"
+	print
+	print '0. Exit museek setup'
+	c = choice(7)
+	if c == -1:
+		return 0
+	elif c == 1:
+		while not server(): pass
+	elif c == 2:
+		while not portrange(): pass
+	elif c == 3:
+		while not ifaces(): pass
+	elif c == 4:
+		while not charsets(): pass
+	elif c == 5:
+		while not dirs(): pass
+	elif c == 6:
+		while not shares(config_path): pass
+	elif c == 7:
+		while not bshares(config_path): pass
+	else:
+		while 1:
+			c = save(config_path)
+			if c == 1:
+				return 0
+			elif c == 2:
+				return  1
+	return 0
+
+if '--help' in sys.argv or len(sys.argv) > 2:
+	print
+	print 'Syntax: %s [path]' % sys.argv[0]
+	print
+	print '\'path\' is the filename of the configuration file to edit.'
+	print
+	sys.exit(1)
+
+if len(sys.argv) == 2:
+	path = sys.argv[1]
+else:
+	path = DEFAULT_CONFIG
+
+path = os.path.expanduser(path)
+try:
+	readConfig(path)
+except:
+	print
+	print "Warning: couldn't load configuration, loading template"
+	print
+	readTemplate(DEFAULT_TEMPLATE, path)
+
+while not main(path): pass

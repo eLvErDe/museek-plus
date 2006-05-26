@@ -1,0 +1,159 @@
+#! /usr/bin/env python
+
+
+# ---- CONFIGURABLE OPTIONS ----
+
+PACKAGE = 'museek'
+VERSION = '0.1.8'
+
+
+sourcedirs = """
+  Muhelp
+  Mucipher
+  Mucipher/perl
+  Mucipher/python
+  Museekal
+  Museek
+  Tools
+  museekd
+  museeq
+  pymuseekd
+  scons
+""".split()
+
+
+files = """
+  COPYING
+  SConstruct
+  version.h
+  sdist
+  defaults.py
+  pymuseekd/museekctl
+  pymuseekd/museekchat
+  museeq/*.png
+""".split()
+
+
+excludes = """
+""".split()
+
+
+
+
+
+# ---- NO NEED TO EDIT AFTER THIS ----
+
+import sys
+import os
+import glob
+
+def globber(excludes, path = ''):
+    tree = []
+    files = glob.glob(path)
+    for f in files:
+        if [m for m in excludes if glob.fnmatch.fnmatch(f, m)]:
+            continue
+        if os.path.isdir(f):
+            pass
+        else:
+            tree.append(f)
+    return tree
+
+def terminate(path):
+    files = glob.glob(os.path.join(path, '*'))
+    files += glob.glob(os.path.join(path, '.*'))
+    for f in files:
+        if f in ['.', '..']:
+            continue;
+        if os.path.isdir(f):
+            terminate(f)
+        else:
+            os.remove(f)
+    os.rmdir(path)
+
+DIST_SCONS = 1
+DIST_VERSION = 1
+DIST_SNAPSHOT = 0
+DIST_PURGE = 1
+
+for arg in sys.argv[1:]:
+    if arg == "--no-scons":
+        DIST_SCONS = 0
+    elif arg == "--no-version":
+        DIST_VERSION = 0
+    elif arg == "snapshot":
+        DIST_SNAPSHOT = 1
+        DIST_SCONS = DIST_VERSION = 0
+    elif arg == "--no-purge":
+        DIST_PURGE = 0
+    elif arg == "--help":
+        print """Help:
+sdist --no-scons --no-version --no-purge snaphot
+
+--no-scons	don't extract scons-local.tar.gz
+--no-version    don't touch version.h
+--no-purge      don't purge the dist tree after making tarball
+snapshot        make snapshot tarball (implies --no-scons and --no-version
+"""
+    else:
+        print "invalid argument", arg
+        sys.exit()
+
+if DIST_SNAPSHOT:
+    import time
+    VERSION = time.strftime("%Y%m%d")
+
+DISTDIR = os.path.join('dist', PACKAGE + '-' + VERSION)
+
+print 'Making source dist tree list...',
+
+for dir in sourcedirs:
+    files.append(dir + '/SConscript')
+    for ext in "cc", "hh", "c", "h", "py", "cpp", "ui", "in", "i":
+        files.append(dir + "/*." + ext)
+
+tree = []
+for f in files:
+	tree += globber(excludes, f)
+tree.sort()
+
+print 'done'
+
+if os.path.exists(DISTDIR):
+    print 'Removing existing source dist tree...',
+    terminate(DISTDIR)
+    print 'done'
+
+print 'Populating source dist tree...',
+for fn in tree:
+    target = os.path.join(DISTDIR, fn)
+    target_dir = os.path.dirname(target)
+    if not os.path.exists(target_dir):
+        os.makedirs(target_dir)
+    open(target, 'w').write(open(fn).read())
+print 'done'
+
+if DIST_VERSION:
+    print 'Generating version.h...',
+    open(os.path.join(DISTDIR, 'version.h'), 'w').write('#define PACKAGE "%s"\n#define VERSION "%s"\n' % (PACKAGE, VERSION))
+    print 'done'
+
+import tarfile
+
+if DIST_SCONS:
+    print 'Unpacking SConstruct-local tarball...',
+    tarball = tarfile.open('scons/scons-local.tar.gz', 'r:gz')
+    for member in tarball:
+        tarball.extract(member, os.path.join(DISTDIR, 'scons'))
+    print 'done'
+
+print 'Generating compressed source tarball...',
+tarball = tarfile.open(DISTDIR + '.tar.bz2', 'w:bz2')
+tarball.add(DISTDIR, PACKAGE + '-' + VERSION)
+tarball.close()
+print 'done'
+
+if DIST_PURGE:
+    print 'Removing source dist tree...',
+    terminate(DISTDIR)
+    print 'done'

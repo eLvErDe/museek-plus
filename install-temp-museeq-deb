@@ -1,0 +1,1 @@
+QTDIR=/usr/share/qt3 scons/scons.py install PREFIX=/usr DESTDIR=~/museek+/tmp
