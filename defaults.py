@@ -37,6 +37,8 @@ RELAY=0
 # Use binary relocation
 BINRELOC=os.path.exists('/proc/self/maps')
 
+# Install Mucous
+MUCOUS=1
 # Build the Qt GUI
 MUSEEQ=1
 # Only Build the Qt GUI and Mucipher

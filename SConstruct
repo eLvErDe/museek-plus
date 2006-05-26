@@ -33,6 +33,7 @@ opts.Add(BoolOption('PROFILE', 'Build for profiling (gcc only)', ''))
 opts.Add(BoolOption('RELEASE', 'Build for release', ''))
 opts.Add(ListOption('MULOG', 'Set debug output', '', ['debug', 'cycle', 'calltrace', 'traffictime']))
 opts.Add(BoolOption('EPOLL', 'Use epoll when available', ''))
+opts.Add(BoolOption('MUCOUS', 'Install Mucous (when SWIG can be found', ''))
 opts.Add(BoolOption('MUSEEQ', 'Build the Qt gui (when Qt can be found', ''))
 opts.Add(BoolOption('ONLYMUSEEQ', 'Build the Qt gui (when Qt can be found', ''))
 opts.Add(BoolOption('VORBIS', 'Build the File Scanner with OGG Vorbis support', ''))
@@ -342,13 +343,19 @@ if env['ONLYMUSEEQ']:
 	else:
 		print "Whoops, Compiling only Mucipher, not Museeq!"
 else:
+
 	subdirs = ['Muhelp', 'Mucipher', 'Museekal', 'Museek', 'Tools', 'museekd', 'doc', 'pymuseekd']
 	print "Compiling Muhelp, Mucipher, Museekal, Museek, museekd, Tools, doc, pymuseekd..."
 	if env['MUSEEQ']:
 		subdirs.append('museeq')
-		print "\tand museeq, too."
+		print "and Museeq..."
 	else:
-		print "\tWithout museeq."
+		print "Without Museeq."
+	if env['MUCOUS']:
+		subdirs.append('mucous')
+		print "and Mucous..."
+	else:
+		print "Without Mucous."				
 for dir in subdirs:
 	if dir in ['Muhelp', 'Museekal', 'Museek', 'Tools', 'museeq']:
 		print "Headers for %s..." % dir
@@ -373,6 +380,7 @@ f.write('MULOG = %s\n' % (`string.join(env['MULOG'], ',')`))
 f.write('EPOLL = %s\n' % (`env['EPOLL']`))
 f.write('RELAY = %s\n' % (`env['RELAY']`))
 f.write('BINRELOC = %s\n' % (`env['BINRELOC']`))
+f.write('MUCOUS = %s\n' % (`env['MUCOUS']`))
 f.write('MUSEEQ = %s\n' % (`env['MUSEEQ']`))
 f.write('ONLYMUSEEQ = %s\n' % (`env['ONLYMUSEEQ']`))
 f.write('QSA = %s\n' % (`env['QSA']`))
