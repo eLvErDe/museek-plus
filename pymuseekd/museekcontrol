@@ -515,7 +515,6 @@ class museekcontrol(driver.Driver):
 			elif want == "browse":
 				if self.count == 0:
 					if user != None:
-						print user
 						self.send(messages.UserShares(user))
 					self.count += 1
 			elif want == "ticker":
@@ -529,10 +528,7 @@ class museekcontrol(driver.Driver):
 					self.send(messages.ConfigSet("buddies", user, ""))
 				sys.exit()
 			elif want == "ban":
-				#if reason != None:
-				#	self.send(messages.ConfigSet("banned", user, reason))
-				#else:
-	
+		
 				if user != None:
 					self.send(messages.ConfigSet("banned", user, "a"))
 				sys.exit()
