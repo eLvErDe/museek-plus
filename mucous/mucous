@@ -1219,12 +1219,9 @@ class mucous(driver.Driver):
 			
 			while 1:
 				
-				self.host = mucous_config["connection"]["interface"]
-				self.password = mucous_config["connection"]["passw"]
-				
 				try:
 					if self.invalidpass == 0:
-						if self.password != None:
+						if mucous_config["connection"]["passw"] != None:
 							
 							self.timer.cancel()
 							self.timer = threading.Timer(10.0, self.nickcheck)
@@ -1241,7 +1238,6 @@ class mucous(driver.Driver):
 				except Exception, e:
 					self.DisplayMode = "debug"
 					self.help_mode()
-					#self.Hlog("debug", str(e))
 					if self.timer != None:
 						self.timer.cancel()
 					if e == "INVPASS":
@@ -1272,6 +1268,7 @@ class mucous(driver.Driver):
 									yes = self.commands(line)
 									
 									if yes == 0:
+										q = 33
 										break
 									elif yes == 2:
 										return
@@ -1279,6 +1276,7 @@ class mucous(driver.Driver):
 										self.edit.reset()
 							except:
 								pass
+					break
 		except Exception, e:
 			self.Hlog("debug", str( e) )
 
@@ -1752,8 +1750,12 @@ class mucous(driver.Driver):
 				self.help_mode()
 				self.Hlog("status", "Mucous version: %s" % Version)
 			elif line[:8] == "/connect":
-				self.connect()
-			
+				if self.connected == 0:
+					self.invalidpass = 0
+					self.connect()
+					return 0
+				else:
+					self.Hlog("status", "Already connected... aborting connection attempt.")
 				'''
 				Tickers
 				'''
@@ -2485,7 +2487,6 @@ class mucous(driver.Driver):
 		elif self.setup_input_mode=="interface-password":
 			line = self.decode_language(line)
 			mucous_config["connection"]["passw"] = line
-			self.password = line
 		elif self.setup_input_mode=="custom-url":
 			line = self.decode_language(line)
 			if "$" in line:
@@ -4543,6 +4544,8 @@ class mucous(driver.Driver):
 				break
 		else:
 			self.info_user = None
+		if user in self.alert["INFO"]:
+			self.alert["INFO"].remove(user)
 		if self.DisplayMode == 'info':
 			self.info_mode()
 			
@@ -4555,6 +4558,8 @@ class mucous(driver.Driver):
 					break
 			else:
 				self.pm_user = None
+			if user in self.alert["PRIVATE"]:
+				self.alert["PRIVATE"].remove(user)
 			if self.DisplayMode == 'private':
 				self.private_mode()
 		except Exception, e:
@@ -4569,6 +4574,9 @@ class mucous(driver.Driver):
 			self.chosen_search = self.s_query.keys()[0]
 		else:
 			self.chosen_search = "default__"
+			
+		if ticket in self.alert["SEARCH"]:
+			self.alert["SEARCH"].remove(ticket)
 		self.search_mode()
 		
 	def close_browse(self, user):
@@ -4582,6 +4590,8 @@ class mucous(driver.Driver):
 				self.browse_current = self.browsed[0]
 		else:
 			self.browse_current = "default__"
+		if user in self.alert["BROWSE"] and user != "__default":
+			self.alert["BROWSE"].remove(user)
 		self.browse_mode()
 		
 	def clear_searchs(self):
@@ -9083,7 +9093,7 @@ class mucous(driver.Driver):
 				self.buttonwin.noutrefresh()
 				self.inbuttonwin = self.buttonwin.subwin(1,30,3,2)
 				self.inbuttonwin.scrollok(1)
-				if self.host != None:
+				if "connection" in mucous_config:
 					self.inbuttonwin.addstr(self.decode_language( mucous_config["connection"]["interface"][:28] ), self.colors["cyan"] )
 				self.inbuttonwin.noutrefresh()
 				self.buttonwin2 = curses.newwin(3,32,5,1)
@@ -9092,9 +9102,9 @@ class mucous(driver.Driver):
 				self.buttonwin2.noutrefresh()
 				self.inbuttonwin2 = self.buttonwin2.subwin(1,30,6,2)
 				self.inbuttonwin2.scrollok(1)
-				if self.password != None:
+				if "connection" in mucous_config:
 					if self.unhide=="true":
-						self.inbuttonwin2.addstr(self.decode_language( self.password ), self.colors["cyan"])
+						self.inbuttonwin2.addstr(self.decode_language( str(mucous_config["connection"]["passw"]) ), self.colors["cyan"])
 					else:
 						self.inbuttonwin2.addstr("*********", self.colors["cyan"])
 				else:
@@ -9276,14 +9286,15 @@ class mucous(driver.Driver):
 				self.inbuttonwin12.noutrefresh()
 				
 				self.inbuttonwin2.scrollok(1)
-				if self.password != None:
-					if self.unhide=="true":
-						if "server" in self.config:
-							self.inbuttonwin2.addstr(self.decode_language( self.config["server"]["password"] ), self.colors["cyan"])
+
+				if self.unhide=="true":
+					if "server" in self.config:
+						self.inbuttonwin2.addstr(self.decode_language( self.config["server"]["password"] ), self.colors["cyan"])
 					else:
-						self.inbuttonwin2.addstr("*********", self.colors["cyan"])
+						self.inbuttonwin2.addstr("NOT set")
 				else:
-					self.inbuttonwin2.addstr("NOT set")
+					self.inbuttonwin2.addstr("*********", self.colors["cyan"])
+				
 
 				self.inbuttonwin2.noutrefresh()
 				
