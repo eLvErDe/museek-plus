@@ -12,6 +12,7 @@ if 'swig' in env['TOOLS']:
 	targets.append('mulog')
 	targets.append('museekcontrol')
 	manfile.append("mulog.1")
+ 	manfile.append("museekcontrol.1")
 
 
 man_install = env.Install(env['DESTDIR'] + env['MANDIR'], manfile)

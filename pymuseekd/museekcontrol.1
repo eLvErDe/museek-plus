@@ -1,0 +1,217 @@
+.TH "MUSEEKCONTROL" "1" "Release 0.1.9" "daelstorm" "Museek Daemon Plus"
+.SH "NAME"
+.LP 
+\fBMuseekControl\fR \- Command\-Line control Python Script for Museekd
+.SH "DESCRIPTION"
+.LP 
+MuseekControl is command\-line Python script that connects to \fImuseekd\fP(1) and initiates many different commands. Chat Room watching, one\-time chat messages, browsing shares, searching, viewing User info and setting tickers are just some of the many commands available.
+
+Only one museek option will work at a time. If two are set, the last one will be used.
+
+Setting the interface and password on the command\-line is a security risk. Since interface and password settings are saved to the config file when set, you should set them, exit museekcontrol, and rerun museekcontrol without the password options on the commandline..LP 
+
+Before running, you will need a working \fImuseekd\fP(1) and need to know your museekd interface and interface password. Configure those with \fImusetup\fP(1).
+.SH "SYNOPSIS"
+.B museekcontrol
+[\-c  |\-\-config <\fIconfig\-filename\fP>] [\-\-gs | \-\-gsearch <\fIquery\fP>] [\-\-rs | \-\-rsearch <\fIquery\fP>] [\-\-bs | \-\-bsearch <\fIquery\fP>] [\-r | \-\-rooms] [\-\-roomlist] [\-\-joined] [\-\-roominfo <\fIroom\fP>] [\-\-roomsinfo] [\-\-sroom <\fIroom\fP>] [\-\-srooms] [\-\-sprivate <\fIuser\fP>] [\-\-sprivates] [\-\-tickers <\fIroom\fP>] [\-\-alltickers] [\-j | \-\-join <\fIroom\fP>] [\-l | \-\-leave <\fIroom\fP>] [\-m | \-\-message <\fImessage\fP>] [\-\-chat <\fIroom\fP>] [\-\-pm | \-\-private <\fIuser\fP>] [\-\-setticker <\fIroom\fP>] [\-\-settempticker <\fIroom\fP>] [\-\-setdefaultticker] [\-\-buddy | \-\-unbuddy <\fIuser\fP>] [\-\-ignore | \-\-unignore <\fIuser\fP>] [\-\-ban | \-\-unban  <\fIuser\fP>] [\-\-trust | \-\-distrust <\fIuser\fP>] [\-\-comment <\fIstring\fP>] [\-\-info <\fIuser\fP>] [\-\-minfo] [\-\-ip <\fIuser\fP>] [\-b | \-\-browse <\fIuser\fP>] [\-\-mb | \-\-mbrowse] [\-t | \-\-transfers] [\-\-mt | \-\-mtransfers] [\-\-download \fIslsk://user/path\fP] [\-\-upload \fIslsk://user/path\fP] [\-\-abortup \fIslsk://user/path\fP] [\-\-abortdown  \fIslsk://user/path\fP] [\-\-removeup \fIslsk://user/path\fP] [\-\-removedown \fIslsk://user/path\fP] [\-\-retryup \fIslsk://user/path\fP] [\-\-retrydown  \fIslsk://user/path\fP] [\-i | \-\-interface <\fIhost:port | /socket.path\fP> [\-p | \-\-password <\fIinteface\-password\fP>] [\-v | \-\-version] [\-h | \-\-help]
+.SH "OPTIONS"
+.LP 
+Museekcontrol accepts the following options:
+.TP 
+.B \-c <\fIfilename\fP>, \-\-config <\fIfilename\fP>
+Use a different config file.
+v
+SEARCHING:
+.TP 
+.B \-\-gs, \-\-gsearch <\fIquery\fP>
+Globally search for query & show results
+.TP 
+.B \-\-rs, \-\-rsearch <\fIquery\fP>
+Room search for query & show results
+.TP 
+.B \-\-bs, \-\-bsearch <\fIquery\fP>
+Buddy search for query & show results
+.TP 
+CHAT ROOMS:
+.TP 
+.B \-r,   \-\-rooms
+Show list of rooms
+.TP 
+.B \-\-roomlist
+Refresh list of rooms
+.TP 
+.B \-\-joined
+Show list of Joined rooms
+.TP 
+.B \-\-roominfo <\fIroom\fP>
+Show users in a Joined room
+.TP 
+.B \-\-roomsinfo
+Show users for all Joined rooms
+.TP 
+.B \-\-sroom <\fIroom\fP>
+Show chat log for room
+.TP 
+.B \-\-srooms
+Show chat log for all rooms
+.TP 
+.B \-j,   \-\-join <\fIroom\fP>       
+Join a room
+.TP 
+.B \-l,   \-\-leave <\fIroom\fP>
+Leave a room
+.TP 
+.B \-\-chat <\fIroom\fP>             
+Use with \-\-message
+.TP 
+.B \-m,   \-\-message <\fImessage\fP>
+Say message in room (Use with \-\-chat)
+.TP 
+TICKERS:
+.TP 
+.B \-\-tickers <\fIroom\fP> 
+Show tickers in room
+.TP 
+.B \-\-alltickers
+Show tickers in all rooms
+.TP 
+.B \-\-setticker <\fIroom\fP>
+Pick a room to set the ticker in. (Use with \-\-message)
+.TP 
+.B \-\-settempticker <\fIroom\fP>
+Pick a room for a temporary ticker (Use with \-\-message)
+.TP 
+.B \-\-setdefaultticker
+Set the default ticker for all room (Use with \-\-message)
+.TP 
+.B \-m,   \-\-message <\fImessage\fP>
+Set the ticker to this.
+.TP 
+PRIVATE CHAT:
+.TP 
+.B \-\-sprivate <\fIuser\fP>
+Show Private Chat log for a user
+.TP 
+.B \-\-sprivates
+Show Private Chat logs for all users
+.TP 
+.B \-\-pm, \-\-private <\fIuser\fP>
+Say message in PM (Use with \-\-message)
+.TP 
+.B \-m,   \-\-message <\fImessage\fP>
+Say message in PM (Use with \-\-pm)
+.TP      
+USERS:
+.TP 
+.B \-\-buddy  \-\-unbuddy <\fIuser\fP>
+Add/Remove user from Buddies list
+.TP 
+.B \-\-ignore \-\-unignore <\fIuser\fP>
+Add/Remove user from Ignore list
+.TP 
+.B \-\-ban    \-\-unban   <\fIuser\fP>
+Add/Remove user from Banned list
+.TP 
+.B \-\-trust \-\-distrust <\fIuser\fP>
+Add/Remove user from Trusted list
+.TP 
+.B \-\-comment <\fIstring\fP>
+Comment for the user in list
+.TP 
+USERINFO:
+.TP 
+.B \-\-info <\fIuser\fP>
+Show a user's info  (Saves image to <user>.img if available)
+.TP 
+.B \-\-minfo
+Monitor all User Info
+.TP 
+.B \-\-ip <\fIuser\fP> 
+Get a user's IP and Port        
+        BROWSING:
+.TP 
+.B \-b.   \-\-browse <\fIuser\fP>
+Get a user's shares and show them
+.TP 
+.B \-\-mb, \-\-mbrowse
+Monitor browsing
+
+        TRANSFERS:
+.TP 
+.B \-t,   \-\-transfers
+Display all current uploads and downloads and exit.
+.TP 
+.B \-\-mt, \-\-mtransfers
+Monitor transfers
+.TP 
+.B \-\-download   \fIslsk://user/path\fP
+Add file or dir to the download queue
+.TP 
+.B \-\-upload     \fIslsk://user/path\fP
+Attempt to upload file to user
+.TP 
+.B \-\-abortup    \fIslsk://user/path\fP
+Abort Upload
+.TP 
+.B \-\-abortdown  \fIslsk://user/path\fP
+Abort Download
+.TP 
+.B \-\-removeup   \fIslsk://user/path\fP
+Remove Upload from queue
+.TP 
+.B \-\-removedown \fIslsk://user/path\fP
+Remove Download from queue
+.TP 
+.B \-\-retryup    \fIslsk://user/path\fP
+Retry Upload (for remote uploads)
+.TP 
+.B \-\-retrydown  \fIslsk://user/path\fP
+Retry Download
+
+
+.TP 
+.B \-i, \-\-interface <\fIhost:port | /socket.path\fP> 
+Choose a different interface (saved to config file)
+.TP 
+.B \-p, \-\-password <\fIinterface\-password\fP> 
+Choose a different password (saved to config file)
+.TP 
+.B \-v, \-\-version
+Display Version and exit.
+.TP 
+.B \-h, \-\-help
+Display Help and exit.
+
+.SH "EXAMPLE"
+.LP 
+To run this program the standard way type:
+.LP 
+museekcontrol
+.LP 
+Alternativly you use a different config file with:
+.LP 
+museekcontrol \-\-config museekcontrol.config
+.LP 
+To set the interface password:
+.LP 
+museekcontrol \-\-password 1234567890
+.LP 
+To listen to all joined Chat Rooms:
+.LP 
+museekcontrol \-\-srooms
+.LP 
+To Search Globally for "crazy pumpkin rabbits":
+.LP 
+museekcontrol \-\-gsearch "crazy pumpkin rabbits"
+.SH "FILES"
+.TP 
+ \fI~/.museekd/museekcontrol.config\fR
+The default location for the \fBmuseekcontrol\fP config file.
+.SH "AUTHORS"
+.LP 
+daelstorm <daelstorm@gmail.com>
+.LP 
+Hyriand <hyriand@thegraveyard.org>
+.SH "SEE ALSO"
+.LP 
+\fImuseekd\fP(1) \fImusetup\fP(1) \fImuscan\fP(1) \fImuscand\fP(1) \fImucous\fP(1) \fImulog\fP(1) \fImuseeq\fP(1)
