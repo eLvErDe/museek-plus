@@ -49,7 +49,7 @@ install: build
 binary-arch: build install
 	dh_testdir
 	dh_testroot
-	dh_installchangelogs CHANGELOG
+	dh_installchangelogs
 	dh_installdocs
 	dh_install --sourcedir=$(CURDIR)/debian/tmp
 	dh_installman
