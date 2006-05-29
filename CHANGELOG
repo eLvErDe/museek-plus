@@ -1,10 +1,14 @@
 Always compile Museek with the built-in version of scons
-UNRELEASED
+0.1.9:  May 29th 2006
 * Modified man pages some more, removing COMPILING section and adding FILES section
 * Added man page for mulog
 * renamed mulog.py to mulog
-* Modified mulog to use a config file, thus protecting the password from prying eyes, 
-  and easing the use of mulog, slightly. Made logs to use the "HH:MM:SS [username] <Tab> message"
+* Modified mulog to use a config file, thus protecting the password from prying 
+  eyes,  and easing the use of mulog, slightly. Made logs to use the 
+  "DD Month YYYY HH:MM:SS [username]<Tab>message" format.
+* Added mucous and museekcontrol to Museek-Plus
+* Fixed bluebox theme installation to share/museek/museeq/bluebox
+
 0.1.9pre2:  May 25th 2006
 * Added VORBIS scons option, allowing for manual disabling of OGG Vorbis support 
   in muscan. 

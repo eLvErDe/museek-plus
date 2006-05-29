@@ -1,4 +1,7 @@
 Changelog
+Unreleased
+* Fixed the /connect command so that it works after starting up with incorrect interface and/or interface password. (It was stuck in a while loop)
+* Made alerts delete when their "parent tabs" get closed (I.E. with the /close command)
 
 Updated April 18th 2006
 Version: 0.8.0pre1

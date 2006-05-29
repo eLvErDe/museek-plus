@@ -32,27 +32,17 @@ QPixmap& IMG(const QString& icon) {
 		iconcache = new QMap<QString, QPixmap>();
 	
 	if(iconcache->find(icon) == iconcache->end()) {
-		if (museeq->mIconTheme != "default") {
-			QDir dir;
-			if(dir.cd(museeq->mIconTheme)) {
-				QFile f(QString(dir.path() + "/" + icon + ".png"));
-				if (f.exists()) {
-					QPixmap p = QPixmap(dir.path() + "/" + icon + ".png");
-					(*iconcache)[icon] = p;
-					return (*iconcache)[icon];
-					}
-			}
-			QString place =  (QString(DATADIR) + "/museek/museeq/" + QString(museeq->mIconTheme) + "/" + icon + ".png");
-			QFile ic( place);
-			if (ic.exists()) {
-				QPixmap p = QPixmap(place);
+		
+		if (museeq->mIconTheme != "default" and icon != "icon") {
+			QString file (QString(museeq->mIconTheme) + "/" + QString(icon) + ".png");
+ 			if (QFile::exists(file)) {
+				QPixmap p = QPixmap(file);
 				(*iconcache)[icon] = p;
-				}
-			else {
+				return (*iconcache)[icon];
+			} else {
 				QPixmap p = QPixmap(QString(DATADIR) + "/museek/museeq/" + icon + ".png");
 				(*iconcache)[icon] = p;
 				}
-			
 		} else {
 				QPixmap p = QPixmap(QString(DATADIR) + "/museek/museeq/" + icon + ".png");
 				(*iconcache)[icon] = p;

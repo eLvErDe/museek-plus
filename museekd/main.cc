@@ -67,7 +67,7 @@ RETSIGTYPE hangup(int signal) {
 
 int main(int argc, char **argv) {
 	std::string config = string(getenv("HOME")) + "/.museekd/config.xml";
-	std::string version = string("museekd :: Version 0.1.9pre2 :: Museek Daemon Plus");
+	std::string version = string("museekd :: Version 0.1.9 :: Museek Daemon Plus");
 	for(int i = 1; i < argc; i++) {
 		string arg = argv[i];
 		if(arg == "--config" || arg == "-c") {
@@ -85,7 +85,10 @@ int main(int argc, char **argv) {
 			std::cout << "Syntax: museekd [options]" << std::endl << std::endl;
 			std::cout << "Options:" << std::endl;
 			std::cout << "-c --config <config file>\tUse alternative config file" << std::endl;
-			std::cout << "-V --version\t\t\tDisplay museekd version and quit" << std::endl;
+			std::cout << "-V --version\t\t\tDisplay museekd version and quit" << std::endl << std::endl; 
+			std::cout << "Signals:" << std::endl;
+			std::cout << "kill -HUP \tReload Shares Database(s)" << std::endl;
+			std::cout << "kill -ALRM \tReconnect to Server" << std::endl;
 			std::cout << std::endl;
 			return 0;
 		}
