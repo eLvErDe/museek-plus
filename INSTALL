@@ -62,6 +62,9 @@ runs):
   DATADIR=prefix        [*] Data directory, where to install data files
                             (default: '$PREFIX/share/museek')
 
+  MANDIR=yes/no         [*] Man Page dictory, where to install man pages
+                            (default: '$PREFIX/man/man1')
+
   DESTDIR=prefix            Installation destination dir, useful for package
                             builders. (default: '')
 
@@ -77,6 +80,12 @@ runs):
                             default: 'debug'
 
   EPOLL=yes/no          [*] Use epoll when available (linux 2.6+)
+                            default: yes
+
+  VORBIS=yes/no         [*] Use OGG VORBIS support when available
+                            default: yes
+			    
+  MUCOUS=yes/no         [*] If pymucipher is available, install mucous
                             default: yes
 
   MUSEEQ=yes/no         [*] Test for Qt, and if available, build museeq

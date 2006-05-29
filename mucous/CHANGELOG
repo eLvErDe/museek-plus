@@ -1,7 +1,12 @@
 Changelog
-Unreleased
-* Fixed the /connect command so that it works after starting up with incorrect interface and/or interface password. (It was stuck in a while loop)
+Updated May 29th 2006
+Version: 0.8.0pre2
+* Added setup.py script. You can now install mucous by entering 
+  "python setup.py install" as root
+* Fixed the /connect command so that it works after starting up with incorrect 
+  interface and/or interface password. (It was stuck in a while loop)
 * Made alerts delete when their "parent tabs" get closed (I.E. with the /close command)
+* Added RoomTickers handler, so now joining a room gets all the current tickers.
 
 Updated April 18th 2006
 Version: 0.8.0pre1
