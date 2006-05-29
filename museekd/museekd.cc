@@ -35,6 +35,7 @@
 
 #include <set>
 
+using std::ifstream;
 using std::vector;
 using std::set;
 using std::string;

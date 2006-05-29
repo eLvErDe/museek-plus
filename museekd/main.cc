@@ -103,7 +103,7 @@ int main(int argc, char **argv) {
 	museekd = new Museekd(config);
 	if(! museekd->load_config()) {
 		delete museekd;
-		std::cerr << "error loading configuration!" << std::endl;
+		std::cerr << "Error loading configuration! Please run musetup and configure any unset options." << std::endl;
 		return -1;
 	}
 	
