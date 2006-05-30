@@ -1303,57 +1303,56 @@ class mucous(driver.Driver):
 			self.Hlog("debug", "Connect "+str( e) )
 
 	def process(self):
-		try:
-	#		c = None
-			keys = []
+
+#		c = None
+		keys = []
+		
+		while 1:
+			try:
+				c = self.stdscr.getkey(self.h-3, self.edit.x+1)
+				keys.append(c)
+			except:
+				pass
+
+			if not keys:
+				d = 1000
+			else:
+				d = 0
+			if self.socket != None:
 			
-			while 1:
+				r, w, x = select.select([self.socket, sys.stdin], [], [self.socket], d)
+				
+			else:
+				sleep(0.01)
+			if self.socket in r:
+				driver.Driver.process(self)
+
+			if sys.stdin in r:
 				try:
 					c = self.stdscr.getkey(self.h-3, self.edit.x+1)
 					keys.append(c)
-				except:
+					
+				except Exception, e:
 					pass
-	
-				if not keys:
-					d = 1000
-				else:
-					d = 0
-				if self.socket != None:
+			while keys:
 				
-					r, w, x = select.select([self.socket, sys.stdin], [], [self.socket], d)
+				c, keys = keys[0], keys[1:]
+				try:
 					
-				else:
-					sleep(0.01)
-				if self.socket in r:
-					driver.Driver.process(self)
-	
-				if sys.stdin in r:
-					try:
-						c = self.stdscr.getkey(self.h-3, self.edit.x+1)
-						keys.append(c)
+					if self.edit.process(c):
+						self.line = self.edit.line
+						yes = self.commands(self.line)
 						
-					except Exception, e:
-						pass
-				while keys:
-					
-					c, keys = keys[0], keys[1:]
-					try:
-						
-						if self.edit.process(c):
-							self.line = self.edit.line
-							yes = self.commands(self.line)
+						if yes == 0:
+							break
+						elif yes == 2:
+							return
+						else:
+							self.edit.reset()
 							
-							if yes == 0:
-								break
-							elif yes == 2:
-								return
-							else:
-								self.edit.reset()
-								
-					except Exception, e:
-						self.Hlog("debug", "Processing... " + str(e))
-		except Exception,e:
-			self.Hlog("debug", "process: " + str(e))
+				except Exception, e:
+					self.Hlog("debug", "Processing... " + str(e))
+
 			
 	def commands(self, line):
 		try:
@@ -7572,7 +7571,13 @@ class mucous(driver.Driver):
 				self.Mwin.addstr(0, 3, "< Chat Rooms >",  self.colors["green"] | curses.A_BOLD)
 				self.Mwin.addstr(1, s["width"]+1, "^",  self.colors["green"] | curses.A_BOLD)
 				self.Mwin.addstr(s["height"], s["width"]+1, "v",  self.colors["green"] | curses.A_BOLD)
+				
 				self.Mwin.addstr(s["height"]+1, 2, "< "+str(abs(self.Sup))+" >", self.colors["green"] | curses.A_BOLD)
+# 				self.Hlog("debug", "rR")
+				if self.current_room != None:
+					if len(self.roomlogs[self.current_room]) <= abs(self.Sup):
+						self.Mwin.addstr(s["height"]+1, 10, "< AutoScrolling >", self.colors["green"] | curses.A_BOLD)
+				
 			else:
 				self.Mwin.border()
 				self.Mwin.addstr(0, 0, "Oo", curses.A_BOLD)
