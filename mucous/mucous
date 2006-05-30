@@ -7575,7 +7575,7 @@ class mucous(driver.Driver):
 				self.Mwin.addstr(s["height"]+1, 2, "< "+str(abs(self.Sup))+" >", self.colors["green"] | curses.A_BOLD)
 # 				self.Hlog("debug", "rR")
 				if self.current_room != None:
-					if len(self.roomlogs[self.current_room]) <= abs(self.Sup):
+					if len(self.roomlogs[self.current_room]) -1 <= abs(self.Sup):
 						self.Mwin.addstr(s["height"]+1, 10, "< AutoScrolling >", self.colors["green"] | curses.A_BOLD)
 				
 			else:
