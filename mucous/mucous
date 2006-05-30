@@ -7599,11 +7599,10 @@ class mucous(driver.Driver):
 				del self.roomlogs[room][0]
 			oldlen = len(self.roomlogs[room])
 			self.roomlogs[room].append(full_message)
-			
 				
 			if self.DisplayMode == "chat":
 				if room == self.current_room and self.chatroomscroll == "roomchat":
-					if self.Sup >= oldlen:
+					if self.Sup >= oldlen -1:
 						self.Sup = -1
 						self.chat_display()
 				elif room == self.current_room and self.chatroomscroll == "roombox":
@@ -7611,7 +7610,6 @@ class mucous(driver.Driver):
 					self.Sup = -1
 					self.chat_display()
 					self.Sup = temp
-					self.Hlog("debug", "say: " + str(e))
 		except Exception,e :
 			self.Hlog("debug", "say: " + str(e))
 
