@@ -316,6 +316,18 @@ void MainWindow::connectToMuseek() {
 
 	mConnectDialog->mAddress->clear();
 	QSettings settings;
+	QString password;
+	QString savePassword = settings.readEntry("/TheGraveyard.org/Museeq/SavePassword");
+ 	if (! savePassword.isEmpty())	
+		if (savePassword == "yes") {
+			mConnectDialog->mSavePassword->setChecked(true);
+			password = settings.readEntry("/TheGraveyard.org/Museeq/Password");
+			if ( !  password.isEmpty())
+				mConnectDialog->mPassword->setText(password);
+		} else  {
+			mConnectDialog->mSavePassword->setChecked(false);
+		}
+	
 	QStringList s_keys = settings.entryList("/TheGraveyard.org/Museeq/Servers");
 	if(! s_keys.isEmpty())
 	{
@@ -343,7 +355,15 @@ void MainWindow::connectToMuseek() {
 		QString server = mConnectDialog->mAddress->currentText(),
 			password = mConnectDialog->mPassword->text().utf8();
 		mMenuFile->setItemEnabled(1, true);
-		
+
+		if(mConnectDialog->mSavePassword->isChecked()) {
+			settings.writeEntry("/TheGraveyard.org/Museeq/SavePassword", "yes");
+			settings.writeEntry("/TheGraveyard.org/Museeq/Password", password);
+		} else {
+			settings.writeEntry("/TheGraveyard.org/Museeq/SavePassword", "no");
+			settings.removeEntry("/TheGraveyard.org/Museeq/Password");
+		}
+
 		settings.beginGroup("/TheGraveyard.org/Museeq/Servers");
 		int ix = 1;
 		for(int i = 0; i < mConnectDialog->mAddress->count(); ++i)

@@ -1,5 +1,7 @@
 TODO list:
 
+* Allow museeq to remember last-used password between sessions
+* Allow museeq to start museekd
 * Auto-Away in museekd (chs_kasper's idea)
 * Make Muscan work properly on Sparc (Big Endian problem?)
 * Make museeq convert newlines to spliting off seperate messages to facilitate pasting debug messages.

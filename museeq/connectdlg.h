@@ -40,7 +40,7 @@ public:
     QRadioButton* mUnix;
     QRadioButton* mTCP;
     QComboBox* mAddress;
-    QCheckBox* mLocal;
+    QCheckBox* mLocal, mSavePassword;
     QPushButton* pushButton1;
     QPushButton* pushButton2;
 
