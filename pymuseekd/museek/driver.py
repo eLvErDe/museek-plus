@@ -182,7 +182,7 @@ class Driver:
 		elif message.__class__ is messages.SayRoom:
 			self.cb_room_said(message.room, message.user, message.line)
 		elif message.__class__ is messages.RoomTickers:
-			self.cb_room_tickers(message.room)
+			self.cb_room_tickers(message.room, message.tickers)
 		elif message.__class__ is messages.RoomTickerSet:
 			self.cb_room_ticker_set(message.room, message.user, message.message)
 		elif message.__class__ is messages.PrivateMessage:
@@ -363,7 +363,7 @@ class Driver:
 #		print '%s [%s] %s' % (room, user, message)
 
 	# See Room tickers
-	def cb_room_tickers(self, room, user, message):
+	def cb_room_tickers(self, room, tickers):
 		pass
 #		print "Ticker set for room '%s', user '%s': %s" % (room, user, message)
 

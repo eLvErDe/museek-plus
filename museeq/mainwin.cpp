@@ -21,6 +21,7 @@
 
 #include "mainwin.h"
 
+#include <qprocess.h>
 #include <qpopupmenu.h>
 #include <qlabel.h>
 #include <qlineedit.h>
@@ -73,7 +74,7 @@ extern int libqsa_is_present; // defined in either museeq.cpp or the relay stub
 
 
 MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, name), mWaitingPrivs(false) {
-	mVersion = "0.1.9";
+	mVersion = "0.1.10pre1";
 	setCaption("museeq "+mVersion);
 	setIcon(IMG("icon"));
 	connect(museeq->driver(), SIGNAL(hostFound()), SLOT(slotHostFound()));
@@ -275,6 +276,7 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 	}
 	
 	box->setEnabled(false);
+	daemon = new QProcess(this);
 }
 void MainWindow::changeCMode() {
 	uint page =0;
@@ -310,12 +312,91 @@ void MainWindow::changePage() {
 	mTitle->setText(mIcons->text(ix));
 	mStack->raiseWidget(ix);
 }
+void MainWindow::doDaemon() {
+
+ 	if (! daemon->isRunning()) {
+		QSettings settings;
+ 		museekConfig = settings.readEntry("/TheGraveyard.org/Museeq/MuseekConfigFile");
+		if (! museekConfig.isEmpty() ) {
+			daemon = new QProcess(this);
+			daemon->addArgument( "museekd" );
+			daemon->addArgument( "--config" );
+			daemon->addArgument( museekConfig );
+			connect( daemon, SIGNAL(readyReadStdout()), this,   SLOT(readFromStdout()) );
+			connect( daemon, SIGNAL(processExited()),  this, SLOT(readFromStdout()) );
+			if (daemon->start()) {
+				statusBar()->message("Launched Museek Daemon...");
+			} else {
+				statusBar()->message("Failed Launching Museek Daemon...");
+			}
+		} else {
+			statusBar()->message("No Config for Museek Daemon selected, giving up...");
+		}
+	} else {
+		statusBar()->message("Museek Daemon is already running...");
+	}
+}
+
+void MainWindow::stopDaemon() {
+	if (daemon->isRunning()) {
+		daemon->tryTerminate();
+		statusBar()->message("Terminated Museek Daemon...");
+	} else {
+		statusBar()->message("Museek Daemon not running, no need to stop it...");
+	}
+}
+
+void MainWindow::readFromStdout() {
+// 	while (daemon->canReadLineStdout()) {
+// 		printf( daemon->readLineStdout() );
+// 		printf( "\n");
+// 	}
+}
+
+void MainWindow::saveConnectConfig() {
+	QSettings settings;
+	QString server = mConnectDialog->mAddress->currentText(),
+		password = mConnectDialog->mPassword->text().utf8();
+	if(mConnectDialog->mLocal->isChecked()) {
+		settings.writeEntry("/TheGraveyard.org/Museeq/LaunchMuseekDaemon", "yes");
+		
+	} else {
+		settings.removeEntry("/TheGraveyard.org/Museeq/LaunchMuseekDaemon");
+	}
+	if ( ! mConnectDialog->mMuseekConfig->text().isEmpty() )
+		settings.writeEntry("/TheGraveyard.org/Museeq/MuseekConfigFile", mConnectDialog->mMuseekConfig->text() );
+	else
+		settings.removeEntry("/TheGraveyard.org/Museeq/MuseekConfigFile");
+	if(mConnectDialog->mSavePassword->isChecked()) {
+		settings.writeEntry("/TheGraveyard.org/Museeq/SavePassword", "yes");
+		settings.writeEntry("/TheGraveyard.org/Museeq/Password", password);
+	} else {
+		settings.writeEntry("/TheGraveyard.org/Museeq/SavePassword", "no");
+		settings.removeEntry("/TheGraveyard.org/Museeq/Password");
+	}
+
+	settings.beginGroup("/TheGraveyard.org/Museeq/Servers");
+	int ix = 1;
+	for(int i = 0; i < mConnectDialog->mAddress->count(); ++i)
+	{
+		QString s = mConnectDialog->mAddress->text(i);
+		if(s != server)
+		{
+			settings.writeEntry(QString::number(ix), s);
+			++ix;
+		}
+	}
+	settings.writeEntry(QString::number(ix), server);
+	settings.endGroup();
+		
+}
 
 void MainWindow::connectToMuseek() {
 	mMenuFile->setItemEnabled(0, false);
 
 	mConnectDialog->mAddress->clear();
 	QSettings settings;
+	QString museekConfig ; //("~/.museekd/config-lego.xml");
 	QString password;
 	QString savePassword = settings.readEntry("/TheGraveyard.org/Museeq/SavePassword");
  	if (! savePassword.isEmpty())	
@@ -327,18 +408,33 @@ void MainWindow::connectToMuseek() {
 		} else  {
 			mConnectDialog->mSavePassword->setChecked(false);
 		}
-	
+	museekConfig= settings.readEntry("/TheGraveyard.org/Museeq/MuseekConfigFile");
+	if (! museekConfig.isEmpty()) { 
+		mConnectDialog->mMuseekConfig->setText(museekConfig);	
+	}
+	QString launchMuseekDaemon = settings.readEntry("/TheGraveyard.org/Museeq/LaunchMuseekDaemon");
+
+ 	if (!  launchMuseekDaemon.isEmpty())	 {
+		if ( launchMuseekDaemon == "yes") {
+			mConnectDialog->mLocal->setChecked(true);
+			mConnectDialog->mMuseekConfig->show();
+			if (! museekConfig.isEmpty()) { 
+				doDaemon();
+			}
+		} else  {
+			mConnectDialog->mLocal->setChecked(false);
+		}
+	} else  {
+		mConnectDialog->mLocal->setChecked(false);
+	}
 	QStringList s_keys = settings.entryList("/TheGraveyard.org/Museeq/Servers");
-	if(! s_keys.isEmpty())
-	{
+	if(! s_keys.isEmpty()) {
 		for(QStringList::Iterator it = s_keys.begin(); it != s_keys.end(); ++it)
 		{
 			QString s = settings.readEntry("/TheGraveyard.org/Museeq/Servers/" + (*it));
 			mConnectDialog->mAddress->insertItem(s);
 		}
-	}
-	else
-	{
+	} else {
 		mConnectDialog->mAddress->insertItem("localhost:2240");
 #ifdef HAVE_SYS_UN_H
 # ifdef HAVE_PWD_H
@@ -350,12 +446,21 @@ void MainWindow::connectToMuseek() {
 	}
 	mConnectDialog->mAddress->setCurrentItem(mConnectDialog->mAddress->count() - 1);
 	slotAddressActivated(mConnectDialog->mAddress->currentText());
-	
+	// Display Connect Dialog
 	if(mConnectDialog->exec() == QDialog::Accepted) {
 		QString server = mConnectDialog->mAddress->currentText(),
 			password = mConnectDialog->mPassword->text().utf8();
 		mMenuFile->setItemEnabled(1, true);
 
+		if(mConnectDialog->mLocal->isChecked()) {
+			settings.writeEntry("/TheGraveyard.org/Museeq/LaunchMuseekDaemon", "yes");
+			
+		} else {
+			
+			settings.removeEntry("/TheGraveyard.org/Museeq/LaunchMuseekDaemon");
+		}
+		if ( ! mConnectDialog->mMuseekConfig->text().isEmpty() )
+			settings.writeEntry("/TheGraveyard.org/Museeq/MuseekConfigFile", mConnectDialog->mMuseekConfig->text() );
 		if(mConnectDialog->mSavePassword->isChecked()) {
 			settings.writeEntry("/TheGraveyard.org/Museeq/SavePassword", "yes");
 			settings.writeEntry("/TheGraveyard.org/Museeq/Password", password);
@@ -852,7 +957,7 @@ void MainWindow::closeEvent(QCloseEvent * ev) {
 	settings.writeEntry("Width", mLastSize.width());
 	settings.writeEntry("Height", mLastSize.height());
 	settings.endGroup();
-	
+	stopDaemon();
 	QMainWindow::closeEvent(ev);
 }
 

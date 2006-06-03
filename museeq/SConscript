@@ -55,57 +55,57 @@ sources = Split("""
 
 """)
 
+default_images = Split("""
+  default/away.png
+  default/away-buddied.png
+  default/away-banned.png
+  default/away-trusted.png
+  default/away-ignored.png
+  default/browser.png
+  default/chatroom.png
+  default/offline.png
+  default/offline-buddied.png
+  default/offline-banned.png
+  default/offline-trusted.png
+  default/offline-ignored.png
+  default/online.png
+  default/online-buddied.png
+  default/online-banned.png
+  default/online-trusted.png
+  default/online-ignored.png
+  default/privatechat.png
+  default/search.png
+  default/tab_remove.png
+  default/transfer.png
+  default/userinfo.png
+""")
 images = Split("""
-  away.png
-  away-buddied.png
-  away-banned.png
-  away-trusted.png
-  away-ignored.png
-  browser.png
-  chatroom.png
-  offline.png
-  offline-buddied.png
-  offline-banned.png
-  offline-trusted.png
-  offline-ignored.png
-  online.png
-  online-buddied.png
-  online-banned.png
-  online-trusted.png
-  online-ignored.png
   logo.png
   icon.png
-  privatechat.png
-  search.png
-  tab_remove.png
-  transfer.png
-  userinfo.png
 """)
-
 bluebox_images = Split("""
-  away.png
-  away-buddied.png
-  away-banned.png
-  away-trusted.png
-  away-ignored.png
-  browser.png
-  chatroom.png
-  offline.png
-  offline-buddied.png
-  offline-banned.png
-  offline-trusted.png
-  offline-ignored.png
-  online.png
-  online-buddied.png
-  online-banned.png
-  online-trusted.png
-  online-ignored.png
-  icon.png
-  privatechat.png
-  search.png
-  tab_remove.png
-  transfer.png
-  userinfo.png
+  bluebox/away.png
+  bluebox/away-buddied.png
+  bluebox/away-banned.png
+  bluebox/away-trusted.png
+  bluebox/away-ignored.png
+  bluebox/browser.png
+  bluebox/chatroom.png
+  bluebox/offline.png
+  bluebox/offline-buddied.png
+  bluebox/offline-banned.png
+  bluebox/offline-trusted.png
+  bluebox/offline-ignored.png
+  bluebox/online.png
+  bluebox/online-buddied.png
+  bluebox/online-banned.png
+  bluebox/online-trusted.png
+  bluebox/online-ignored.png
+  bluebox/privatechat.png
+  bluebox/search.png
+  bluebox/tab_remove.png
+  bluebox/transfer.png
+  bluebox/userinfo.png
 """)
 
 scripts = Split("""
@@ -227,6 +227,7 @@ museeq = env_qt.Program('museeq', sources)
 
 bin_install = env_qt.Install(env['DESTDIR'] + env['BINDIR'], [museeq])
 img_install = env_qt.Install(env['DESTDIR'] + os.path.join(env_qt['DATADIR'], 'museek', 'museeq'), images)
+img_install = env_qt.Install(env['DESTDIR'] + os.path.join(env_qt['DATADIR'], 'museek', 'museeq', 'default'), default_images)
 img_b_install = env_qt.Install(env['DESTDIR'] + os.path.join(env_qt['DATADIR'], 'museek', 'museeq', 'bluebox'), bluebox_images)
 script_install = env_qt.Install(env['DESTDIR'] + os.path.join(env_qt['DATADIR'], 'museek', 'museeq'), scripts)
 

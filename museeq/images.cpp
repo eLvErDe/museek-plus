@@ -33,18 +33,18 @@ QPixmap& IMG(const QString& icon) {
 	
 	if(iconcache->find(icon) == iconcache->end()) {
 		
-		if (museeq->mIconTheme != "default" and icon != "icon") {
+		if (museeq->mIconTheme != "default") {
 			QString file (QString(museeq->mIconTheme) + "/" + QString(icon) + ".png");
  			if (QFile::exists(file)) {
 				QPixmap p = QPixmap(file);
 				(*iconcache)[icon] = p;
 				return (*iconcache)[icon];
 			} else {
-				QPixmap p = QPixmap(QString(DATADIR) + "/museek/museeq/" + icon + ".png");
+				QPixmap p = QPixmap(QString(DATADIR) + "/museek/museeq/default/" + icon + ".png");
 				(*iconcache)[icon] = p;
 				}
 		} else {
-				QPixmap p = QPixmap(QString(DATADIR) + "/museek/museeq/" + icon + ".png");
+				QPixmap p = QPixmap(QString(DATADIR) + "/museek/museeq/default/" + icon + ".png");
 				(*iconcache)[icon] = p;
 		}
 	}

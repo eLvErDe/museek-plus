@@ -992,6 +992,7 @@ class mucous(driver.Driver):
 				 self.line = self.build()
 			except Exception, e:
 				self.Hlog("debug", str(e) )
+				sleep(1)
 			if self.socket is None:
 				self.connect()
 			try:
@@ -999,7 +1000,8 @@ class mucous(driver.Driver):
 			except select.error, e:
 				self.line = self.build()
 				# Terminal resized
-
+				print e
+				sleep(1)
 				pass
 			except Exception, e:
 				self.shutdown()
@@ -1230,8 +1232,10 @@ class mucous(driver.Driver):
 		# THREADS THREADING THRU TIME ^^
 		
 	def disconnect(self):
+		
 		try:
-			driver.Driver.close(self)
+			if self.connected == 1:
+				driver.Driver.close(self)
 		except Exception,e:
 			self.Hlog("debug", "disconnect: " + str(e))
 		
@@ -2628,9 +2632,9 @@ class mucous(driver.Driver):
 	def cb_disconnected(self):
 		try:
 			self.connected = 0
-			self.onlinestatuslog="Closed  "
+			self.onlinestatuslog="Closed"
 			self.onlinestatus.erase()
-			self.onlinestatus.addstr(self.onlinestatuslog, self.colors["red"] |curses.A_BOLD |curses.A_REVERSE)
+			self.onlinestatus.addstr(self.onlinestatuslog, self.colors["red"] | curses.A_BOLD |curses.A_REVERSE)
 			self.onlinestatus.refresh()
 
 			

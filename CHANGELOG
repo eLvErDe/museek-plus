@@ -1,4 +1,10 @@
 Always compile Museek with the built-in version of scons
+UNRELEASED
+* Moved Museeq's Default Icon theme to default/ subdir
+* Added Save password Checkbox to ConnectDialog in museeq
+* Added Start Daemon, Stop Daemon, and Config Selector buttons, and Auto-Start
+  Daemon checkbox to ConnectDialog in museeq
+  
 0.1.9:  May 29th 2006
 * Modified man pages some more, removing COMPILING section and adding FILES section
 * Added man page for mulog

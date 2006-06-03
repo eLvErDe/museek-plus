@@ -369,7 +369,15 @@ void Museeq::slotJoinedRoom(const QString& room, const NRoom&) {
 void Museeq::slotLeftRoom(const QString& room) {
 	mJoinedRooms.remove(room);
 }
-
+void Museeq::startDaemon() {
+	mMainWin->doDaemon();
+}
+void Museeq::stopDaemon() {
+	mMainWin->stopDaemon();
+}
+void Museeq::saveConnectConfig() { 
+	mMainWin->saveConnectConfig(); 
+}
 void Museeq::addInterest(const QString& interest) {
 	mDriver->doAddInterest(interest);
 }

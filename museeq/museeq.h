@@ -85,7 +85,9 @@ public slots:
 	void unloadScript(const QString&);
 	
 	void showURL(const QString&);
-	
+	void startDaemon();
+	void stopDaemon();
+	void saveConnectConfig();
 	void setAway(bool);
 	
 	void addBuddy(const QString&, const QString& = QString::null);

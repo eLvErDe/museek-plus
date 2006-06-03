@@ -29,7 +29,7 @@ class QLabel;
 class QComboBox;
 class QPopupMenu;
 class QListViewItem;
-
+class QProcess;
 class ConnectDlg;
 class IPDlg;
 class SettingsDlg;
@@ -63,6 +63,10 @@ public slots:
 	void changeUMode();
 	void changeMode(uint);
 	void connectToMuseek();
+	void saveConnectConfig();
+	void doDaemon();
+	void stopDaemon();
+	void readFromStdout();
 	void toggleAway();
 	void checkPrivileges();
 	void getOwnShares();
@@ -128,7 +132,8 @@ private:
 	QWidgetStack* mStack;
 	QLabel* mTitle;
 	QPopupMenu* mMenuFile, * mMenuScripts, * mMenuUnloadScripts,  * mMenuHelp;
-	
+	QString museekConfig;
+	QProcess *daemon;
 	ConnectDlg* mConnectDialog;
 	IPDlg* mIPDialog;
 	UserInfoDlg* mUserInfoDialog;

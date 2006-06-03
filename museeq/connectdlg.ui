@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>400</width>
-            <height>189</height>
+            <height>271</height>
         </rect>
     </property>
     <property name="sizePolicy">
@@ -118,14 +118,14 @@
     </widget>
     <widget class="QLayoutWidget">
         <property name="name">
-            <cstring>layout4</cstring>
+            <cstring>layout13</cstring>
         </property>
         <property name="geometry">
             <rect>
                 <x>10</x>
-                <y>108</y>
+                <y>110</y>
                 <width>380</width>
-                <height>70</height>
+                <height>150</height>
             </rect>
         </property>
         <grid>
@@ -145,10 +145,10 @@
                             <cstring>mSavePassword</cstring>
                         </property>
                         <property name="text">
-                            <string>Save Password</string>
+                            <string>&amp;Save Password</string>
                         </property>
                         <property name="accel">
-                            <string></string>
+                            <string>Alt+S</string>
                         </property>
                     </widget>
                     <spacer>
@@ -173,20 +173,54 @@
                             <cstring>mLocal</cstring>
                         </property>
                         <property name="enabled">
-                            <bool>false</bool>
+                            <bool>true</bool>
                         </property>
                         <property name="text">
-                            <string>&amp;Start Museek Daemon</string>
+                            <string>&amp;AutoStart Museek Daemon</string>
                         </property>
                         <property name="accel">
-                            <string>Alt+S</string>
+                            <string>Alt+A</string>
                         </property>
                     </widget>
                 </hbox>
             </widget>
             <widget class="QLayoutWidget" row="1" column="0">
                 <property name="name">
-                    <cstring>layout2</cstring>
+                    <cstring>layoute</cstring>
+                </property>
+                <hbox>
+                    <property name="name">
+                        <cstring>unnamed</cstring>
+                    </property>
+                    <widget class="QLabel">
+                        <property name="name">
+                            <cstring>configLabel</cstring>
+                        </property>
+                        <property name="text">
+                            <string>Museek Daemon Config:</string>
+                        </property>
+                    </widget>
+                    <widget class="QLineEdit">
+                        <property name="name">
+                            <cstring>mMuseekConfig</cstring>
+                        </property>
+                    </widget>
+                    <widget class="QPushButton">
+                        <property name="name">
+                            <cstring>selectButton</cstring>
+                        </property>
+                        <property name="text">
+                            <string>Se&amp;lect...</string>
+                        </property>
+                        <property name="accel">
+                            <string>Alt+L</string>
+                        </property>
+                    </widget>
+                </hbox>
+            </widget>
+            <widget class="QLayoutWidget" row="2" column="0">
+                <property name="name">
+                    <cstring>layout11</cstring>
                 </property>
                 <hbox>
                     <property name="name">
@@ -194,7 +228,7 @@
                     </property>
                     <spacer>
                         <property name="name">
-                            <cstring>spacer1</cstring>
+                            <cstring>spacer3</cstring>
                         </property>
                         <property name="orientation">
                             <enum>Horizontal</enum>
@@ -204,8 +238,63 @@
                         </property>
                         <property name="sizeHint">
                             <size>
-                                <width>91</width>
+                                <width>87</width>
                                 <height>20</height>
+                            </size>
+                        </property>
+                    </spacer>
+                    <widget class="QPushButton">
+                        <property name="name">
+                            <cstring>startDaemonButton</cstring>
+                        </property>
+                        <property name="text">
+                            <string>Start &amp;Daemon</string>
+                        </property>
+                        <property name="accel">
+                            <string>Alt+D</string>
+                        </property>
+                        <property name="default">
+                            <bool>false</bool>
+                        </property>
+                    </widget>
+                    <widget class="QPushButton">
+                        <property name="name">
+                            <cstring>stopDaemonButton</cstring>
+                        </property>
+                        <property name="text">
+                            <string>St&amp;op Daemon</string>
+                        </property>
+                        <property name="accel">
+                            <string>Alt+O</string>
+                        </property>
+                        <property name="default">
+                            <bool>false</bool>
+                        </property>
+                    </widget>
+                </hbox>
+            </widget>
+            <widget class="QLayoutWidget" row="3" column="0">
+                <property name="name">
+                    <cstring>layout12</cstring>
+                </property>
+                <hbox>
+                    <property name="name">
+                        <cstring>unnamed</cstring>
+                    </property>
+                    <spacer>
+                        <property name="name">
+                            <cstring>spacer2_2</cstring>
+                        </property>
+                        <property name="orientation">
+                            <enum>Horizontal</enum>
+                        </property>
+                        <property name="sizeType">
+                            <enum>Expanding</enum>
+                        </property>
+                        <property name="sizeHint">
+                            <size>
+                                <width>110</width>
+                                <height>21</height>
                             </size>
                         </property>
                     </spacer>
@@ -221,6 +310,20 @@
                         </property>
                         <property name="default">
                             <bool>true</bool>
+                        </property>
+                    </widget>
+                    <widget class="QPushButton">
+                        <property name="name">
+                            <cstring>saveButton</cstring>
+                        </property>
+                        <property name="text">
+                            <string>Save</string>
+                        </property>
+                        <property name="accel">
+                            <string></string>
+                        </property>
+                        <property name="default">
+                            <bool>false</bool>
                         </property>
                     </widget>
                     <widget class="QPushButton">
@@ -258,6 +361,36 @@
         <receiver>mLocal</receiver>
         <slot>setChecked(bool)</slot>
     </connection>
+    <connection>
+        <sender>startDaemonButton</sender>
+        <signal>clicked()</signal>
+        <receiver>ConnectDlg</receiver>
+        <slot>startDaemon()</slot>
+    </connection>
+    <connection>
+        <sender>mLocal</sender>
+        <signal>clicked()</signal>
+        <receiver>ConnectDlg</receiver>
+        <slot>toggleConfig()</slot>
+    </connection>
+    <connection>
+        <sender>selectButton</sender>
+        <signal>clicked()</signal>
+        <receiver>ConnectDlg</receiver>
+        <slot>selectConfig()</slot>
+    </connection>
+    <connection>
+        <sender>stopDaemonButton</sender>
+        <signal>clicked()</signal>
+        <receiver>ConnectDlg</receiver>
+        <slot>stopDaemon()</slot>
+    </connection>
+    <connection>
+        <sender>saveButton</sender>
+        <signal>clicked()</signal>
+        <receiver>ConnectDlg</receiver>
+        <slot>save()</slot>
+    </connection>
 </connections>
 <tabstops>
     <tabstop>mPassword</tabstop>
@@ -266,5 +399,15 @@
     <tabstop>cancelButton</tabstop>
     <tabstop>mTCP</tabstop>
 </tabstops>
+<includes>
+    <include location="local" impldecl="in implementation">connectdlg.ui.h</include>
+</includes>
+<slots>
+    <slot>startDaemon()</slot>
+    <slot>toggleConfig()</slot>
+    <slot>selectConfig()</slot>
+    <slot>stopDaemon()</slot>
+    <slot>save()</slot>
+</slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>
