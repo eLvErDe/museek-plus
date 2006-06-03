@@ -78,10 +78,8 @@ default_images = Split("""
   default/tab_remove.png
   default/transfer.png
   default/userinfo.png
-""")
-images = Split("""
-  logo.png
-  icon.png
+  default/logo.png
+  default/icon.png
 """)
 bluebox_images = Split("""
   bluebox/away.png
