@@ -66,6 +66,7 @@ public slots:
 	void saveConnectConfig();
 	void doDaemon();
 	void stopDaemon();
+	void daemonExited();
 	void readFromStdout();
 	void toggleAway();
 	void checkPrivileges();

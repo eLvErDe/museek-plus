@@ -27,7 +27,7 @@ void ConnectDlg::selectConfig()
     QDir dir = QDir::home();
     QFileDialog * fd = new QFileDialog(dir.path()+"/.museekd", "Museek Daemon Config (*.xml)", this);
     fd->setMode(QFileDialog::ExistingFile);
-    fd->addFilter("All files (*)");
+//     fd->addFilter("All files (*)");
     if(fd->exec() == QDialog::Accepted && ! fd->selectedFile().isEmpty())
     {
 	mMuseekConfig->setText(fd->selectedFile());
@@ -48,4 +48,5 @@ void ConnectDlg::stopDaemon()
 void ConnectDlg::save()
 {
   museeq->saveConnectConfig();
+
 }

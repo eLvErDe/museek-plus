@@ -31,6 +31,7 @@
 #include <qwidgetstack.h>
 #include <qmenubar.h>
 #include <qstatusbar.h>
+#include <qpushbutton.h>
 #include <qcheckbox.h>
 #include <qcombobox.h>
 #include <qspinbox.h>
@@ -277,6 +278,8 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 	
 	box->setEnabled(false);
 	daemon = new QProcess(this);
+	connect( daemon, SIGNAL(readyReadStdout()), this,   SLOT(readFromStdout()) );
+	connect( daemon, SIGNAL(processExited()),  this, SLOT(daemonExited()) );
 }
 void MainWindow::changeCMode() {
 	uint page =0;
@@ -318,16 +321,19 @@ void MainWindow::doDaemon() {
 		QSettings settings;
  		museekConfig = settings.readEntry("/TheGraveyard.org/Museeq/MuseekConfigFile");
 		if (! museekConfig.isEmpty() ) {
-			daemon = new QProcess(this);
+			daemon->clearArguments();
 			daemon->addArgument( "museekd" );
 			daemon->addArgument( "--config" );
 			daemon->addArgument( museekConfig );
-			connect( daemon, SIGNAL(readyReadStdout()), this,   SLOT(readFromStdout()) );
-			connect( daemon, SIGNAL(processExited()),  this, SLOT(readFromStdout()) );
+
 			if (daemon->start()) {
 				statusBar()->message("Launched Museek Daemon...");
+				mConnectDialog->startDaemonButton->setDisabled(true);
+				mConnectDialog->stopDaemonButton->setDisabled(false);
 			} else {
 				statusBar()->message("Failed Launching Museek Daemon...");
+				mConnectDialog->startDaemonButton->setDisabled(false);
+				mConnectDialog->stopDaemonButton->setDisabled(true);
 			}
 		} else {
 			statusBar()->message("No Config for Museek Daemon selected, giving up...");
@@ -340,10 +346,17 @@ void MainWindow::doDaemon() {
 void MainWindow::stopDaemon() {
 	if (daemon->isRunning()) {
 		daemon->tryTerminate();
-		statusBar()->message("Terminated Museek Daemon...");
+		statusBar()->message("Terminating Museek Daemon...");
 	} else {
 		statusBar()->message("Museek Daemon not running, no need to stop it...");
 	}
+
+}
+
+void MainWindow::daemonExited() {
+	statusBar()->message("Museek Daemon has Shut Down...");
+	mConnectDialog->startDaemonButton->setDisabled(false);
+	mConnectDialog->stopDaemonButton->setDisabled(true);
 }
 
 void MainWindow::readFromStdout() {
@@ -426,6 +439,14 @@ void MainWindow::connectToMuseek() {
 		}
 	} else  {
 		mConnectDialog->mLocal->setChecked(false);
+	}
+	if (daemon->isRunning()) {
+		mConnectDialog->startDaemonButton->setDisabled(true);
+		mConnectDialog->stopDaemonButton->setDisabled(false);
+	} else {
+		mConnectDialog->startDaemonButton->setDisabled(false);
+		mConnectDialog->stopDaemonButton->setDisabled(true);
+;
 	}
 	QStringList s_keys = settings.entryList("/TheGraveyard.org/Museeq/Servers");
 	if(! s_keys.isEmpty()) {
