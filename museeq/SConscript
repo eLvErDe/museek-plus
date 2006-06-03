@@ -224,7 +224,6 @@ env_qt.Command('museekdriver.cpp', ['museekdriver.cpp.in', '../../museekd/IfaceM
 museeq = env_qt.Program('museeq', sources)
 
 bin_install = env_qt.Install(env['DESTDIR'] + env['BINDIR'], [museeq])
-img_install = env_qt.Install(env['DESTDIR'] + os.path.join(env_qt['DATADIR'], 'museek', 'museeq'), images)
 img_install = env_qt.Install(env['DESTDIR'] + os.path.join(env_qt['DATADIR'], 'museek', 'museeq', 'default'), default_images)
 img_b_install = env_qt.Install(env['DESTDIR'] + os.path.join(env_qt['DATADIR'], 'museek', 'museeq', 'bluebox'), bluebox_images)
 script_install = env_qt.Install(env['DESTDIR'] + os.path.join(env_qt['DATADIR'], 'museek', 'museeq'), scripts)

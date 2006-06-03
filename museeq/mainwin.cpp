@@ -396,7 +396,7 @@ void MainWindow::connectToMuseek() {
 
 	mConnectDialog->mAddress->clear();
 	QSettings settings;
-	QString museekConfig ; //("~/.museekd/config-lego.xml");
+	QString museekConfig;
 	QString password;
 	QString savePassword = settings.readEntry("/TheGraveyard.org/Museeq/SavePassword");
  	if (! savePassword.isEmpty())	
@@ -448,40 +448,12 @@ void MainWindow::connectToMuseek() {
 	slotAddressActivated(mConnectDialog->mAddress->currentText());
 	// Display Connect Dialog
 	if(mConnectDialog->exec() == QDialog::Accepted) {
+		saveConnectConfig();
 		QString server = mConnectDialog->mAddress->currentText(),
 			password = mConnectDialog->mPassword->text().utf8();
+		saveConnectConfig();
 		mMenuFile->setItemEnabled(1, true);
 
-		if(mConnectDialog->mLocal->isChecked()) {
-			settings.writeEntry("/TheGraveyard.org/Museeq/LaunchMuseekDaemon", "yes");
-			
-		} else {
-			
-			settings.removeEntry("/TheGraveyard.org/Museeq/LaunchMuseekDaemon");
-		}
-		if ( ! mConnectDialog->mMuseekConfig->text().isEmpty() )
-			settings.writeEntry("/TheGraveyard.org/Museeq/MuseekConfigFile", mConnectDialog->mMuseekConfig->text() );
-		if(mConnectDialog->mSavePassword->isChecked()) {
-			settings.writeEntry("/TheGraveyard.org/Museeq/SavePassword", "yes");
-			settings.writeEntry("/TheGraveyard.org/Museeq/Password", password);
-		} else {
-			settings.writeEntry("/TheGraveyard.org/Museeq/SavePassword", "no");
-			settings.removeEntry("/TheGraveyard.org/Museeq/Password");
-		}
-
-		settings.beginGroup("/TheGraveyard.org/Museeq/Servers");
-		int ix = 1;
-		for(int i = 0; i < mConnectDialog->mAddress->count(); ++i)
-		{
-			QString s = mConnectDialog->mAddress->text(i);
-			if(s != server)
-			{
-				settings.writeEntry(QString::number(ix), s);
-				++ix;
-			}
-		}
-		settings.writeEntry(QString::number(ix), server);
-		settings.endGroup();
 		
 		if(mConnectDialog->mTCP->isChecked()) {
 			int ix = server.find(':');
