@@ -17,6 +17,7 @@ void UserInfoDlg::mBrowse_clicked()
 {
     QFileDialog * fd = new QFileDialog(QDir::homeDirPath(), "Images (*.png *.gif *.jpg *.jpeg)", this);
     fd->setMode(QFileDialog::ExistingFile);
+    fd->setCaption("Select an Image for you User info");
     fd->addFilter("All files (*)");
     if(fd->exec() == QDialog::Accepted && ! fd->selectedFile().isEmpty())
     {

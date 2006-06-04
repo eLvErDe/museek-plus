@@ -11,6 +11,7 @@ void ConnectDlg::selectConfig()
 {
     QDir dir = QDir::home();
     QFileDialog * fd = new QFileDialog(dir.path()+"/.museekd", "Museek Daemon Config (*.xml)", this);
+    fd->setCaption("Select a Museek Daemon Config File");
     fd->setMode(QFileDialog::ExistingFile);
     if(fd->exec() == QDialog::Accepted && ! fd->selectedFile().isEmpty())
     {

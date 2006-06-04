@@ -63,7 +63,7 @@
 #include "settingsdlg.h"
 #include "protocoldlg.h"
 #include "fontsandcolorsdlg.h"
-
+#include "prefix.h"
 #include "museeq.h"
 
 #include "images.h"
@@ -625,10 +625,11 @@ void MainWindow::slotAddressChanged(const QString& text) {
 void MainWindow::changeTheme() {
 
 	QSettings settings;
-	QDir dir = QDir::home();
-
-	QFileDialog * fd = new QFileDialog(dir.path()+"/.museeq", "Museeq Icon Theme Directory ", this, "hi");
+	QDir dir  (QString(DATADIR) + "/museek/museeq");
+	QFileDialog * fd = new QFileDialog(dir.path(), "", this);
+	fd->setCaption("Enter a Museeq Icon Theme Directory");
 	fd->setMode(QFileDialog::Directory);
+	fd->addFilter("Museeq's Icon Theme (*.png)"); 
 	if(fd->exec() == QDialog::Accepted){
 		museeq->mIconTheme = fd->dirPath();
 		settings.beginGroup("/TheGraveyard.org/Museeq");
