@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>400</width>
-            <height>276</height>
+            <width>411</width>
+            <height>281</height>
         </rect>
     </property>
     <property name="sizePolicy">
@@ -32,74 +32,168 @@
     <property name="modal">
         <bool>true</bool>
     </property>
+    <widget class="QButtonGroup">
+        <property name="name">
+            <cstring>buttonGroup4</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>11</x>
+                <y>11</y>
+                <width>390</width>
+                <height>110</height>
+            </rect>
+        </property>
+        <property name="title">
+            <string>Connect to:</string>
+        </property>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>textLabel2</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>11</x>
+                    <y>19</y>
+                    <width>56</width>
+                    <height>26</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Host / path:</string>
+            </property>
+        </widget>
+        <widget class="QLineEdit">
+            <property name="name">
+                <cstring>mPassword</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>73</x>
+                    <y>51</y>
+                    <width>217</width>
+                    <height>18</height>
+                </rect>
+            </property>
+            <property name="echoMode">
+                <enum>Password</enum>
+            </property>
+        </widget>
+        <widget class="QRadioButton">
+            <property name="name">
+                <cstring>mUnix</cstring>
+            </property>
+            <property name="enabled">
+                <bool>true</bool>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>296</x>
+                    <y>51</y>
+                    <width>83</width>
+                    <height>18</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>&amp;Unix socket</string>
+            </property>
+            <property name="accel">
+                <string>Alt+U</string>
+            </property>
+            <property name="buttonGroupId">
+                <number>1</number>
+            </property>
+        </widget>
+        <widget class="QRadioButton">
+            <property name="name">
+                <cstring>mTCP</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>296</x>
+                    <y>23</y>
+                    <width>83</width>
+                    <height>18</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>&amp;TCP</string>
+            </property>
+            <property name="accel">
+                <string>Alt+T</string>
+            </property>
+            <property name="checked">
+                <bool>true</bool>
+            </property>
+        </widget>
+        <widget class="QComboBox">
+            <property name="name">
+                <cstring>mAddress</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>73</x>
+                    <y>19</y>
+                    <width>217</width>
+                    <height>26</height>
+                </rect>
+            </property>
+            <property name="editable">
+                <bool>true</bool>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>textLabel1</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>11</x>
+                    <y>51</y>
+                    <width>56</width>
+                    <height>18</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Password:</string>
+            </property>
+        </widget>
+        <widget class="QCheckBox">
+            <property name="name">
+                <cstring>mSavePassword</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>80</y>
+                    <width>105</width>
+                    <height>18</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>&amp;Save Password</string>
+            </property>
+            <property name="accel">
+                <string>Alt+S</string>
+            </property>
+        </widget>
+    </widget>
     <widget class="QLayoutWidget">
         <property name="name">
-            <cstring>layout15</cstring>
+            <cstring>layout20</cstring>
         </property>
         <property name="geometry">
             <rect>
                 <x>10</x>
-                <y>115</y>
-                <width>380</width>
-                <height>150</height>
+                <y>130</y>
+                <width>390</width>
+                <height>140</height>
             </rect>
         </property>
         <grid>
             <property name="name">
                 <cstring>unnamed</cstring>
             </property>
-            <widget class="QLayoutWidget" row="0" column="0">
-                <property name="name">
-                    <cstring>layout3</cstring>
-                </property>
-                <hbox>
-                    <property name="name">
-                        <cstring>unnamed</cstring>
-                    </property>
-                    <widget class="QCheckBox">
-                        <property name="name">
-                            <cstring>mSavePassword</cstring>
-                        </property>
-                        <property name="text">
-                            <string>&amp;Save Password</string>
-                        </property>
-                        <property name="accel">
-                            <string>Alt+S</string>
-                        </property>
-                    </widget>
-                    <spacer>
-                        <property name="name">
-                            <cstring>spacer2</cstring>
-                        </property>
-                        <property name="orientation">
-                            <enum>Horizontal</enum>
-                        </property>
-                        <property name="sizeType">
-                            <enum>Expanding</enum>
-                        </property>
-                        <property name="sizeHint">
-                            <size>
-                                <width>104</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                    </spacer>
-                    <widget class="QCheckBox">
-                        <property name="name">
-                            <cstring>mLocal</cstring>
-                        </property>
-                        <property name="enabled">
-                            <bool>true</bool>
-                        </property>
-                        <property name="text">
-                            <string>&amp;AutoStart Museek Daemon</string>
-                        </property>
-                        <property name="accel">
-                            <string>Alt+A</string>
-                        </property>
-                    </widget>
-                </hbox>
-            </widget>
             <widget class="QLayoutWidget" row="1" column="0">
                 <property name="name">
                     <cstring>layoute</cstring>
@@ -130,55 +224,6 @@
                         </property>
                         <property name="accel">
                             <string>Alt+L</string>
-                        </property>
-                    </widget>
-                </hbox>
-            </widget>
-            <widget class="QLayoutWidget" row="2" column="0">
-                <property name="name">
-                    <cstring>layout14</cstring>
-                </property>
-                <hbox>
-                    <property name="name">
-                        <cstring>unnamed</cstring>
-                    </property>
-                    <widget class="QCheckBox">
-                        <property name="name">
-                            <cstring>mShutDownDaemonOnExit</cstring>
-                        </property>
-                        <property name="text">
-                            <string>S&amp;hutDown Daemon on Exit</string>
-                        </property>
-                        <property name="accel">
-                            <string>Alt+H</string>
-                        </property>
-                    </widget>
-                    <widget class="QPushButton">
-                        <property name="name">
-                            <cstring>startDaemonButton</cstring>
-                        </property>
-                        <property name="text">
-                            <string>Start &amp;Daemon</string>
-                        </property>
-                        <property name="accel">
-                            <string>Alt+D</string>
-                        </property>
-                        <property name="default">
-                            <bool>false</bool>
-                        </property>
-                    </widget>
-                    <widget class="QPushButton">
-                        <property name="name">
-                            <cstring>stopDaemonButton</cstring>
-                        </property>
-                        <property name="text">
-                            <string>St&amp;op Daemon</string>
-                        </property>
-                        <property name="accel">
-                            <string>Alt+O</string>
-                        </property>
-                        <property name="default">
-                            <bool>false</bool>
                         </property>
                     </widget>
                 </hbox>
@@ -249,89 +294,112 @@
                     </widget>
                 </hbox>
             </widget>
-        </grid>
-    </widget>
-    <widget class="QButtonGroup">
-        <property name="name">
-            <cstring>buttonGroup4</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>11</x>
-                <y>11</y>
-                <width>378</width>
-                <height>90</height>
-            </rect>
-        </property>
-        <property name="title">
-            <string>Connect to:</string>
-        </property>
-        <grid>
-            <property name="name">
-                <cstring>unnamed</cstring>
-            </property>
-            <widget class="QLabel" row="0" column="0">
+            <widget class="QLayoutWidget" row="0" column="0">
                 <property name="name">
-                    <cstring>textLabel2</cstring>
+                    <cstring>layout19</cstring>
                 </property>
-                <property name="text">
-                    <string>Host / path:</string>
-                </property>
+                <hbox>
+                    <property name="name">
+                        <cstring>unnamed</cstring>
+                    </property>
+                    <widget class="QCheckBox">
+                        <property name="name">
+                            <cstring>mLocal</cstring>
+                        </property>
+                        <property name="enabled">
+                            <bool>true</bool>
+                        </property>
+                        <property name="text">
+                            <string>&amp;AutoStart Museek Daemon</string>
+                        </property>
+                        <property name="accel">
+                            <string>Alt+A</string>
+                        </property>
+                    </widget>
+                    <spacer>
+                        <property name="name">
+                            <cstring>spacer2</cstring>
+                        </property>
+                        <property name="orientation">
+                            <enum>Horizontal</enum>
+                        </property>
+                        <property name="sizeType">
+                            <enum>Expanding</enum>
+                        </property>
+                        <property name="sizeHint">
+                            <size>
+                                <width>64</width>
+                                <height>20</height>
+                            </size>
+                        </property>
+                    </spacer>
+                    <widget class="QCheckBox">
+                        <property name="name">
+                            <cstring>mShutDownDaemonOnExit</cstring>
+                        </property>
+                        <property name="text">
+                            <string>S&amp;hutDown Daemon on Exit</string>
+                        </property>
+                        <property name="accel">
+                            <string>Alt+H</string>
+                        </property>
+                    </widget>
+                </hbox>
             </widget>
-            <widget class="QLineEdit" row="1" column="1">
+            <widget class="QLayoutWidget" row="2" column="0">
                 <property name="name">
-                    <cstring>mPassword</cstring>
+                    <cstring>layout17</cstring>
                 </property>
-                <property name="echoMode">
-                    <enum>Password</enum>
-                </property>
-            </widget>
-            <widget class="QLabel" row="1" column="0">
-                <property name="name">
-                    <cstring>textLabel1</cstring>
-                </property>
-                <property name="text">
-                    <string>Password:</string>
-                </property>
-            </widget>
-            <widget class="QRadioButton" row="1" column="2">
-                <property name="name">
-                    <cstring>mUnix</cstring>
-                </property>
-                <property name="enabled">
-                    <bool>true</bool>
-                </property>
-                <property name="text">
-                    <string>&amp;Unix socket</string>
-                </property>
-                <property name="accel">
-                    <string>Alt+U</string>
-                </property>
-                <property name="buttonGroupId">
-                    <number>1</number>
-                </property>
-            </widget>
-            <widget class="QRadioButton" row="0" column="2">
-                <property name="name">
-                    <cstring>mTCP</cstring>
-                </property>
-                <property name="text">
-                    <string>&amp;TCP</string>
-                </property>
-                <property name="accel">
-                    <string>Alt+T</string>
-                </property>
-                <property name="checked">
-                    <bool>true</bool>
-                </property>
-            </widget>
-            <widget class="QComboBox" row="0" column="1">
-                <property name="name">
-                    <cstring>mAddress</cstring>
-                </property>
-                <property name="editable">
-                    <bool>true</bool>
-                </property>
+                <hbox>
+                    <property name="name">
+                        <cstring>unnamed</cstring>
+                    </property>
+                    <spacer>
+                        <property name="name">
+                            <cstring>spacer4</cstring>
+                        </property>
+                        <property name="orientation">
+                            <enum>Horizontal</enum>
+                        </property>
+                        <property name="sizeType">
+                            <enum>Expanding</enum>
+                        </property>
+                        <property name="sizeHint">
+                            <size>
+                                <width>141</width>
+                                <height>21</height>
+                            </size>
+                        </property>
+                    </spacer>
+                    <widget class="QPushButton">
+                        <property name="name">
+                            <cstring>startDaemonButton</cstring>
+                        </property>
+                        <property name="text">
+                            <string>Start &amp;Daemon</string>
+                        </property>
+                        <property name="accel">
+                            <string>Alt+D</string>
+                        </property>
+                        <property name="default">
+                            <bool>false</bool>
+                        </property>
+                    </widget>
+                    <widget class="QPushButton">
+                        <property name="name">
+                            <cstring>stopDaemonButton</cstring>
+                        </property>
+                        <property name="text">
+                            <string>St&amp;op Daemon</string>
+                        </property>
+                        <property name="accel">
+                            <string>Alt+O</string>
+                        </property>
+                        <property name="default">
+                            <bool>false</bool>
+                        </property>
+                    </widget>
+                </hbox>
             </widget>
         </grid>
     </widget>
