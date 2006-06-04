@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>400</width>
-            <height>271</height>
+            <height>276</height>
         </rect>
     </property>
     <property name="sizePolicy">
@@ -32,98 +32,14 @@
     <property name="modal">
         <bool>true</bool>
     </property>
-    <widget class="QButtonGroup">
-        <property name="name">
-            <cstring>buttonGroup4</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>11</x>
-                <y>11</y>
-                <width>378</width>
-                <height>90</height>
-            </rect>
-        </property>
-        <property name="title">
-            <string>Connect to:</string>
-        </property>
-        <grid>
-            <property name="name">
-                <cstring>unnamed</cstring>
-            </property>
-            <widget class="QLabel" row="0" column="0">
-                <property name="name">
-                    <cstring>textLabel2</cstring>
-                </property>
-                <property name="text">
-                    <string>Host / path:</string>
-                </property>
-            </widget>
-            <widget class="QLineEdit" row="1" column="1">
-                <property name="name">
-                    <cstring>mPassword</cstring>
-                </property>
-                <property name="echoMode">
-                    <enum>Password</enum>
-                </property>
-            </widget>
-            <widget class="QLabel" row="1" column="0">
-                <property name="name">
-                    <cstring>textLabel1</cstring>
-                </property>
-                <property name="text">
-                    <string>Password:</string>
-                </property>
-            </widget>
-            <widget class="QRadioButton" row="1" column="2">
-                <property name="name">
-                    <cstring>mUnix</cstring>
-                </property>
-                <property name="enabled">
-                    <bool>true</bool>
-                </property>
-                <property name="text">
-                    <string>&amp;Unix socket</string>
-                </property>
-                <property name="accel">
-                    <string>Alt+U</string>
-                </property>
-                <property name="buttonGroupId">
-                    <number>1</number>
-                </property>
-            </widget>
-            <widget class="QRadioButton" row="0" column="2">
-                <property name="name">
-                    <cstring>mTCP</cstring>
-                </property>
-                <property name="text">
-                    <string>&amp;TCP</string>
-                </property>
-                <property name="accel">
-                    <string>Alt+T</string>
-                </property>
-                <property name="checked">
-                    <bool>true</bool>
-                </property>
-            </widget>
-            <widget class="QComboBox" row="0" column="1">
-                <property name="name">
-                    <cstring>mAddress</cstring>
-                </property>
-                <property name="editable">
-                    <bool>true</bool>
-                </property>
-            </widget>
-        </grid>
-    </widget>
     <widget class="QLayoutWidget">
         <property name="name">
-            <cstring>layout13</cstring>
+            <cstring>layout15</cstring>
         </property>
         <property name="geometry">
             <rect>
                 <x>10</x>
-                <y>110</y>
+                <y>115</y>
                 <width>380</width>
                 <height>150</height>
             </rect>
@@ -163,7 +79,7 @@
                         </property>
                         <property name="sizeHint">
                             <size>
-                                <width>60</width>
+                                <width>104</width>
                                 <height>20</height>
                             </size>
                         </property>
@@ -220,29 +136,23 @@
             </widget>
             <widget class="QLayoutWidget" row="2" column="0">
                 <property name="name">
-                    <cstring>layout11</cstring>
+                    <cstring>layout14</cstring>
                 </property>
                 <hbox>
                     <property name="name">
                         <cstring>unnamed</cstring>
                     </property>
-                    <spacer>
+                    <widget class="QCheckBox">
                         <property name="name">
-                            <cstring>spacer3</cstring>
+                            <cstring>mShutDownDaemonOnExit</cstring>
                         </property>
-                        <property name="orientation">
-                            <enum>Horizontal</enum>
+                        <property name="text">
+                            <string>S&amp;hutDown Daemon on Exit</string>
                         </property>
-                        <property name="sizeType">
-                            <enum>Expanding</enum>
+                        <property name="accel">
+                            <string>Alt+H</string>
                         </property>
-                        <property name="sizeHint">
-                            <size>
-                                <width>87</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                    </spacer>
+                    </widget>
                     <widget class="QPushButton">
                         <property name="name">
                             <cstring>startDaemonButton</cstring>
@@ -338,6 +248,90 @@
                         </property>
                     </widget>
                 </hbox>
+            </widget>
+        </grid>
+    </widget>
+    <widget class="QButtonGroup">
+        <property name="name">
+            <cstring>buttonGroup4</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>11</x>
+                <y>11</y>
+                <width>378</width>
+                <height>90</height>
+            </rect>
+        </property>
+        <property name="title">
+            <string>Connect to:</string>
+        </property>
+        <grid>
+            <property name="name">
+                <cstring>unnamed</cstring>
+            </property>
+            <widget class="QLabel" row="0" column="0">
+                <property name="name">
+                    <cstring>textLabel2</cstring>
+                </property>
+                <property name="text">
+                    <string>Host / path:</string>
+                </property>
+            </widget>
+            <widget class="QLineEdit" row="1" column="1">
+                <property name="name">
+                    <cstring>mPassword</cstring>
+                </property>
+                <property name="echoMode">
+                    <enum>Password</enum>
+                </property>
+            </widget>
+            <widget class="QLabel" row="1" column="0">
+                <property name="name">
+                    <cstring>textLabel1</cstring>
+                </property>
+                <property name="text">
+                    <string>Password:</string>
+                </property>
+            </widget>
+            <widget class="QRadioButton" row="1" column="2">
+                <property name="name">
+                    <cstring>mUnix</cstring>
+                </property>
+                <property name="enabled">
+                    <bool>true</bool>
+                </property>
+                <property name="text">
+                    <string>&amp;Unix socket</string>
+                </property>
+                <property name="accel">
+                    <string>Alt+U</string>
+                </property>
+                <property name="buttonGroupId">
+                    <number>1</number>
+                </property>
+            </widget>
+            <widget class="QRadioButton" row="0" column="2">
+                <property name="name">
+                    <cstring>mTCP</cstring>
+                </property>
+                <property name="text">
+                    <string>&amp;TCP</string>
+                </property>
+                <property name="accel">
+                    <string>Alt+T</string>
+                </property>
+                <property name="checked">
+                    <bool>true</bool>
+                </property>
+            </widget>
+            <widget class="QComboBox" row="0" column="1">
+                <property name="name">
+                    <cstring>mAddress</cstring>
+                </property>
+                <property name="editable">
+                    <bool>true</bool>
+                </property>
             </widget>
         </grid>
     </widget>

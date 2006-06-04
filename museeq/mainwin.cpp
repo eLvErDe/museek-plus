@@ -387,7 +387,11 @@ void MainWindow::saveConnectConfig() {
 		settings.writeEntry("/TheGraveyard.org/Museeq/SavePassword", "no");
 		settings.removeEntry("/TheGraveyard.org/Museeq/Password");
 	}
-
+	if(mConnectDialog->mShutDownDaemonOnExit->isChecked()) {
+		settings.writeEntry("/TheGraveyard.org/Museeq/ShutDownDaemonOnExit", "yes");
+	} else {
+		settings.writeEntry("/TheGraveyard.org/Museeq/ShutDownDaemonOnExit", "no");
+	}
 	settings.beginGroup("/TheGraveyard.org/Museeq/Servers");
 	int ix = 1;
 	for(int i = 0; i < mConnectDialog->mAddress->count(); ++i)
@@ -412,6 +416,7 @@ void MainWindow::connectToMuseek() {
 	QString museekConfig;
 	QString password;
 	QString savePassword = settings.readEntry("/TheGraveyard.org/Museeq/SavePassword");
+
  	if (! savePassword.isEmpty())	
 		if (savePassword == "yes") {
 			mConnectDialog->mSavePassword->setChecked(true);
@@ -425,6 +430,15 @@ void MainWindow::connectToMuseek() {
 	if (! museekConfig.isEmpty()) { 
 		mConnectDialog->mMuseekConfig->setText(museekConfig);	
 	}
+	QString ShutDownDaemonOnExit = settings.readEntry("/TheGraveyard.org/Museeq/ShutDownDaemonOnExit");
+	if (!  ShutDownDaemonOnExit.isEmpty())	 {
+		if (ShutDownDaemonOnExit == "yes")
+			mConnectDialog->mShutDownDaemonOnExit->setChecked(true);
+		else
+			mConnectDialog->mShutDownDaemonOnExit->setChecked(false);
+		}
+	else
+		mConnectDialog->mShutDownDaemonOnExit->setChecked(false);
 	QString launchMuseekDaemon = settings.readEntry("/TheGraveyard.org/Museeq/LaunchMuseekDaemon");
 
  	if (!  launchMuseekDaemon.isEmpty())	 {
@@ -951,7 +965,8 @@ void MainWindow::closeEvent(QCloseEvent * ev) {
 	settings.writeEntry("Width", mLastSize.width());
 	settings.writeEntry("Height", mLastSize.height());
 	settings.endGroup();
-	stopDaemon();
+	if ( settings.readEntry("/TheGraveyard.org/Museeq/ShutDownDaemonOnExit") == "yes")
+		stopDaemon();
 	QMainWindow::closeEvent(ev);
 }
 
