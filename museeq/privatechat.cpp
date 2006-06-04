@@ -48,6 +48,8 @@ void PrivateChat::append(uint dir, uint ts, const QString& _u, const QString& _l
 }
 
 void PrivateChat::slotSend(const QString& line) {
-	museeq->sayPrivate(user(), line);
-	mChatPanel->append(QString::null, line);
+	if (!line.isEmpty()) {
+		museeq->sayPrivate(user(), line);
+		mChatPanel->append(QString::null, line);
+	}
 }
