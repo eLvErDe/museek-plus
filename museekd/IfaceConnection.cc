@@ -264,7 +264,7 @@ void IfaceConnection::process_message(uint32 code) {
 	}
 	case 0x0403: {
 		PARSE(IUserSearch)
-		DEBUG("got user search request %u, %s", s.user.c_str(), s.query.c_str());
+		DEBUG("got user search request %s, %s", s.user.c_str(), s.query.c_str());
 		
 		mMuseekd->cb_iface_user_search(this, s.user, s.query);
 		break;

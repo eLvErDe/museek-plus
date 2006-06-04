@@ -103,6 +103,8 @@ public slots:
 	void doSayChatroom(const QString&, const QString&);
 	void doSendPrivateMessage(const QString&, const QString&);
 	void doStartSearch(uint, const QString&);
+	void doStartUserSearch(const QString&, const QString&);
+	void doStartWishListSearch(const QString&);
 	void doStopSearch(uint);
 
 	void doAddInterest(const QString&);

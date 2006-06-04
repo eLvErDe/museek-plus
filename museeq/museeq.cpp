@@ -521,7 +521,12 @@ void Museeq::buddySearch(const QString& query) {
 void Museeq::roomSearch(const QString& query) {
 	mDriver->doStartSearch(2, query);
 }
-
+void Museeq::userSearch(const QString& user, const QString& query) {
+	mDriver->doStartUserSearch(user, query);
+}
+void Museeq::wishListSearch(const QString& query) {
+	mDriver->doStartWishListSearch(query);
+}
 void Museeq::terminateSearch(uint token) {
 	mDriver->doStopSearch(token);
 }

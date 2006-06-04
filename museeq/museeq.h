@@ -141,6 +141,8 @@ public slots:
 	void search(const QString&);
 	void buddySearch(const QString&);
 	void roomSearch(const QString&);
+	void userSearch(const QString&, const QString&);
+	void wishListSearch(const QString&);
 	void terminateSearch(uint);
 	
 	void getUserInfo(const QString&);

@@ -20,6 +20,8 @@
 #include "searches.h"
 
 #include <qvbox.h>
+#include <qhbox.h>
+#include <qlabel.h>
 #include <qcombobox.h>
 #include <qradiobutton.h>
 #include <qpushbutton.h>
@@ -34,26 +36,44 @@
 Searches::Searches(QWidget* parent, const char* name)
          : QVBox(parent, name) {
 	
-	QHButtonGroup* group = new QHButtonGroup(this);
-	group->setRadioButtonExclusive(true);
-	group->setFrameShape(QFrame::NoFrame);
-	group->setMargin(0);
-	
-	mEntry = new QComboBox(true, group);
+
+	QHBox* hbox = new QHBox(this);
+	hbox->setMargin(5);
+	hbox->setSpacing(5);
+	mEntry = new QComboBox(true, hbox);
 	mEntry->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	mEntry->insertItem("");
-	connect(mEntry, SIGNAL(activated(const QString&)), SLOT(doSearch(const QString&)));
-	connect(mEntry, SIGNAL(highlighted(const QString&)), SLOT(setSearchText(const QString&)));
-	
+
+	mUserLabel =  new QLabel("User:", hbox);
+	mUserEntry = new QComboBox(true, hbox);
+	mUserEntry->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+	mUserEntry->insertItem("");
+
+
+	mSearch = new QPushButton("Search", hbox);
+
+	QHButtonGroup* group = new QHButtonGroup("Method", this);
+	group->setRadioButtonExclusive(true);
+// 	group->setFrameShape(QFrame::NoFrame);
+	group->setMargin(0);
 	mGlobal = new QRadioButton("Global", group);
 	mRooms = new QRadioButton("Rooms", group);
-	// mRooms->setEnabled(false);
 	mBuddies = new QRadioButton("Buddies", group);
+	mWishList = new QRadioButton("WishList", group);
+	mUser = new QRadioButton("User", group);
 	group->setButton(0);
-	
-	mSearch = new QPushButton("Search", group);
+	searchModeSelected();	
+	connect(mEntry, SIGNAL(activated(const QString&)), SLOT(doSearch(const QString&)));
+	connect(mEntry, SIGNAL(highlighted(const QString&)), SLOT(setSearchText(const QString&)));
+	connect(mUserEntry, SIGNAL(highlighted(const QString&)), SLOT(setUserSearchText(const QString&)));	
+	connect(mUserEntry, SIGNAL(activated(const QString&)), SLOT(doSearch()));
+	connect(mUser, SIGNAL(toggled(bool)), SLOT(searchModeSelected()));
 	connect(mSearch, SIGNAL(clicked()), SLOT(doSearch()));
+
+
 	
+
+
 	QFrame* frame = new QFrame(this);
 	frame->setFrameShape(QFrame::HLine);
 	frame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -70,6 +90,18 @@ Searches::Searches(QWidget* parent, const char* name)
 	connect(museeq, SIGNAL(connectedToServer(bool)), mInterests, SLOT(setEnabled(bool)));
 }
 
+void Searches::searchModeSelected() {
+	if (mUser->isChecked ()) {
+		mUserEntry->setDisabled(false);
+		mUserEntry->show();
+		mUserLabel->show();
+	} else {
+		mUserEntry->setDisabled(true);
+		mUserEntry->hide();
+		mUserLabel->hide();
+	}
+}
+
 void Searches::setSearchText(const QString& text) {
 	if(! text.isEmpty())
 	{
@@ -77,7 +109,13 @@ void Searches::setSearchText(const QString& text) {
 		mEntry->lineEdit()->selectAll();
 	}
 }
-
+void Searches::setUserSearchText(const QString& text) {
+	if(! text.isEmpty())
+	{
+		mUserEntry->setEditText(text);
+		mUserEntry->lineEdit()->selectAll();
+	}
+}
 void Searches::append(uint token, const QString& user, bool free, uint speed, uint files, const NFolder& r) {
 	for(int i = 1; i < mTabWidget->count(); ++i) {
 		Search* search = static_cast<Search*>(mTabWidget->page(i));
@@ -99,6 +137,14 @@ void Searches::setToken(const QString& query, uint token) {
 void Searches::doSearch(const QString& q) {
 	if(q.isEmpty())
 		return;
+	QString user;
+ 	if (mUser->isChecked ()) {
+		if ( mUserEntry->currentText().isEmpty() )
+			return;
+		else {
+			user = mUserEntry->currentText();
+		}
+	}
 	mEntry->setCurrentItem(0);
 	
 	int i;
@@ -122,8 +168,13 @@ void Searches::doSearch(const QString& q) {
 		museeq->buddySearch(q);
 	else if (mRooms->isChecked ())
 		museeq->roomSearch (q);
-	else
+	else if (mGlobal->isChecked ())
 		museeq->search(q);
+	else if (mUser->isChecked ()) {
+		if ( ! user.isEmpty() )
+			museeq->userSearch(user, q);
+	} else if (mWishList->isChecked ())
+		museeq->wishListSearch(q);
 }
 
 void Searches::doSearch() {

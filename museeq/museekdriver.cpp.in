@@ -371,6 +371,14 @@ void MuseekDriver::doStartSearch(uint type, const QString& query) {
 	send(NSearchRequest(type, query));
 }
 
+void MuseekDriver::doStartUserSearch(const QString& user, const QString& query) {
+	send(NUserSearchRequest(user, query));
+}
+
+void MuseekDriver::doStartWishListSearch(const QString& query) {
+	send(NWishListSearchRequest( query));
+}
+
 void MuseekDriver::doJoinRoom(const QString& room) {
 	send(NJoinRoom(room));
 }

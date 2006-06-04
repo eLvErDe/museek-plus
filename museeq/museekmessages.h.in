@@ -512,6 +512,22 @@ MESSAGE(NSearchResults, @@ISearchReply@@)
 	END
 END
 
+MESSAGE(NUserSearchRequest, @@IUserSearch@@)
+	
+	NUserSearchRequest(QString _user, QString _query) {
+		pack(_user);
+		pack(_query);
+	}
+END
+
+MESSAGE(NWishListSearchRequest, @@IWishListSearch@@)
+	QString query;
+	
+	NWishListSearchRequest(QString _query) {
+		pack(_query);
+	}
+END
+
 MESSAGE(NSayChatroom, @@ISayRoom@@)
 	QString room, user;
 	QString line;

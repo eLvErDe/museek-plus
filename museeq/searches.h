@@ -25,6 +25,7 @@
 
 class QComboBox;
 class QRadioButton;
+class QLabel;
 class TabWidget;
 class QPushButton;
 class Interests;
@@ -39,6 +40,8 @@ signals:
 	
 public slots:
 	void setSearchText(const QString&);
+	void setUserSearchText(const QString&);
+	void searchModeSelected();
 	void doSearch(const QString&);
 	
 protected slots:
@@ -47,9 +50,10 @@ protected slots:
 	void append(uint, const QString&, bool, uint, uint, const NFolder&);
 		
 private:
-	QComboBox* mEntry;
+	QComboBox* mEntry,* mUserEntry;
 	QPushButton* mSearch;
-	QRadioButton* mGlobal, * mRooms, * mBuddies;
+	QRadioButton* mGlobal, * mRooms, * mBuddies, * mUser, * mWishList;
+	QLabel* mUserLabel;
 	TabWidget* mTabWidget;
 	Interests* mInterests;
 };
