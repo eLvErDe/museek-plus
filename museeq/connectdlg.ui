@@ -368,12 +368,6 @@
         <slot>startDaemon()</slot>
     </connection>
     <connection>
-        <sender>mLocal</sender>
-        <signal>clicked()</signal>
-        <receiver>ConnectDlg</receiver>
-        <slot>toggleConfig()</slot>
-    </connection>
-    <connection>
         <sender>selectButton</sender>
         <signal>clicked()</signal>
         <receiver>ConnectDlg</receiver>
@@ -404,7 +398,6 @@
 </includes>
 <slots>
     <slot>startDaemon()</slot>
-    <slot>toggleConfig()</slot>
     <slot>selectConfig()</slot>
     <slot>stopDaemon()</slot>
     <slot>save()</slot>

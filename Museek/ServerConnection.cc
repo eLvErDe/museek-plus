@@ -461,6 +461,13 @@ void ServerConnection::user_search(const string& _u, uint32 _t, const wstring& _
 	send(s);
 }
 
+void ServerConnection::wishlist_search(uint32 _t, const wstring& _q) {
+	CT("wishlist_search  %u, %s", _t, _q.c_str());
+	
+	SWishlistSearch s(_t, mMuseek->recoder()->encode_network(_q));
+	send(s);
+}
+
 void ServerConnection::room_list() {
 	CT("room_list");
 	

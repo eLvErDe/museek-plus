@@ -1009,16 +1009,36 @@ IFACEMESSAGE(ISearchReply, 0x0402)
 END
 
 
-IFACEMESSAGE(IBuddySearch, 0x0403)
+IFACEMESSAGE(IUserSearch, 0x0403)
 /*
-	BuddySearch -- Start a new buddy search
+	UserSearch -- Start a new search of only user's shares
+
+	string user -- Who's shares you wish to search
+	string query -- What you want to search for
+	
+	*not sent*
+*/
+	
+	IUserSearch() {}
+
+	PARSE
+		user = unpack_string();
+		query = unpack_string();
+	END_PARSE
+	
+	std::string user, query;
+END
+
+IFACEMESSAGE(IWishListSearch, 0x0405)
+/*
+	WishListSearch -- Start a new wishlist search
 	
 	string query -- What you want to search for
 	
 	*not sent*
 */
 	
-	IBuddySearch() {}
+	IWishListSearch() {}
 
 	PARSE
 		query = unpack_string();
@@ -1026,8 +1046,6 @@ IFACEMESSAGE(IBuddySearch, 0x0403)
 	
 	std::string query;
 END
-
-
 
 
 // Transfer messages

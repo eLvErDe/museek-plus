@@ -261,6 +261,10 @@ void Museek::server_user_search(const string& user, uint32 ticket, const wstring
 	if(mServer)
 		mServer->user_search(user, ticket, query);
 }
+void Museek::server_wishlist_search(uint32 ticket, const wstring& query) {
+	if(mServer)
+		mServer->wishlist_search(ticket, query);
+}
 void Museek::server_no_parent(bool have_parent) {
 	if(mServer)
 		mServer->no_parent(have_parent);

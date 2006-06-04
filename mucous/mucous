@@ -653,6 +653,7 @@ class mucous(driver.Driver):
 		
 		# searches
 		self.search_visible = 1
+		self.search_user = None
 		self.s_tickets = []
 		self.s_query = {}
 		self.sfilter= None
@@ -2074,7 +2075,13 @@ class mucous(driver.Driver):
 						
 					else:
 						self.search_log("sstatus", "Query \""+ query+"\" was ignored", "default__", 0)
+				elif line[:12] == "/searchuser " and line[12:] != '':
+					query = line[12:]
+					if query not in ('mp3', ' ') and len(query) > 2:
+						self.send(messages.Search(0, query))
 						
+					else:
+						self.search_log("sstatus", "Query \""+ query+"\" was ignored", "default__", 0)		
 				elif line[:13] == "/searchbuddy " and line[13:] != '':
 					query = line[13:]
 					self.send(messages.Search(1, query))
@@ -2457,6 +2464,10 @@ class mucous(driver.Driver):
 								# Rooms Search	
 								elif self.search_type == "rooms":	
 									self.send(messages.Search(2, query ))
+								elif self.search_type == "user":	
+									self.send(messages.UserSearch("daelstorm", query ))
+								elif self.search_type == "wishlist":	
+									self.send(messages.WishListSearch(query ))
 						elif self.DisplayMode == "browse":
 							# Browse User's shares
 							if line[:3] == "cd ":
@@ -5856,6 +5867,10 @@ class mucous(driver.Driver):
 					elif self.search_type == "buddies":
 						self.search_type = "rooms"
 					elif self.search_type == "rooms":
+						self.search_type = "user"
+					elif self.search_type == "user":
+						self.search_type = "wishlist"
+					elif self.search_type == "wishlist":
 						self.search_type = "globally"
 					self.search_mode()
 				elif self.DisplayMode == "browse":	
@@ -7588,7 +7603,7 @@ class mucous(driver.Driver):
 				self.Mwin.addstr(0, 3, "< Chat Rooms >",   curses.A_BOLD)
 				self.Mwin.addstr(1, s["width"]+1, "^",  curses.A_BOLD)
 				self.Mwin.addstr(s["height"], s["width"]+1, "v",  curses.A_BOLD)
-				self.Mwin.addstr(s["height"]+1, 2, "< "+str(abs(self.Sup))+" >", curses.A_BOLD)
+# 				self.Mwin.addstr(s["height"]+1, 2, "< "+str(abs(self.Sup))+" >", curses.A_BOLD)
 			self.Mwin.noutrefresh()
 			
 		except Exception,e :

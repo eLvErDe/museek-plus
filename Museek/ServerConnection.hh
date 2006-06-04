@@ -71,7 +71,7 @@ public:
 	void search(uint32 ticket, const std::wstring& query);
 	void room_search( const std::string& room,  uint32 ticket,  const std::wstring& query);
 	void user_search( const std::string& user, uint32 ticket, const std::wstring& query);
-	
+	void wishlist_search(uint32 ticket, const std::wstring& query);
 	void give_privileges(const std::string& user, uint32 days);
 
 protected:

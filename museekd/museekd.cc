@@ -659,7 +659,22 @@ void Museekd::cb_iface_room_ticker_set(IfaceConnection* conn, const string& room
 	server_set_ticker(room, mRecoder->decode_utf8(message));
 }
 
-	
+
+void Museekd::cb_iface_user_search(IfaceConnection* conn, const string& user, const string& query) {
+	uint32 ticket = token();
+	mSearches[ticket] = conn;
+	conn->search(query, ticket);
+	wstring wquery = mRecoder->decode_utf8(query);
+	server_user_search(user, ticket, wquery);
+}
+void Museekd::cb_iface_wishlist_search(IfaceConnection* conn, const string& query) {
+	uint32 ticket = token();
+	mSearches[ticket] = conn;
+	conn->search(query, ticket);
+	wstring wquery = mRecoder->decode_utf8(query);
+	server_wishlist_search(ticket, wquery);
+}
+
 void Museekd::cb_iface_search(IfaceConnection* conn, uint32 type, const string& query) {
 	uint32 ticket = token();
 	mSearches[ticket] = conn;

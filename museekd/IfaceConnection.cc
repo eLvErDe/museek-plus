@@ -262,7 +262,20 @@ void IfaceConnection::process_message(uint32 code) {
 		mMuseekd->cb_iface_terminate(this, s.ticket);
 		break;
 	}
-	
+	case 0x0403: {
+		PARSE(IUserSearch)
+		DEBUG("got user search request %u, %s", s.user.c_str(), s.query.c_str());
+		
+		mMuseekd->cb_iface_user_search(this, s.user, s.query);
+		break;
+	}
+	case 0x0405: {
+		PARSE(IWishListSearch)
+		DEBUG("got wishlist search request %s",  s.query.c_str());
+		
+		mMuseekd->cb_iface_wishlist_search(this,  s.query);
+		break;
+	}
 	case 0x501: {
 		PARSE(ITransferUpdate)
 		DEBUG("got update transfer %s, %s", s.user.c_str(), s.path.c_str());

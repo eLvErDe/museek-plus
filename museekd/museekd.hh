@@ -97,7 +97,9 @@ public:
 	void cb_iface_leave_room(IfaceConnection* conn, const std::string& room);
 	void cb_iface_say_room(IfaceConnection* conn, const std::string& room, const std::string& message);
 	void cb_iface_room_ticker_set(IfaceConnection* conn, const std::string& room, const std::string& message);
-	
+
+	void cb_iface_user_search(IfaceConnection* conn, const std::string& user, const std::string& query);
+	void cb_iface_wishlist_search(IfaceConnection* conn, const std::string& query);	
 	void cb_iface_search(IfaceConnection* conn, uint32 type, const std::string& query);
 	void cb_iface_terminate(IfaceConnection* conn, const uint32 ticket);
 	

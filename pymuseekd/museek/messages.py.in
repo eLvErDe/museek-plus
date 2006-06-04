@@ -314,6 +314,32 @@ class SearchReply(BaseMessage):
 			self.results.append((fn, sz, ex, at))
 		return self
 
+class UserSearch(BaseMessage):
+	code = @@IUserSearch@@
+	
+	def __init__(self, user = None, query = None):
+		self.user = user
+		self.query = query
+		self.ticket = None
+
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.user) + \
+			self.pack_string(self.query)
+
+
+class WishListSearch(BaseMessage):
+	code = @@IWishListSearch@@
+	
+	def __init__(self,  query = None):
+		self.query = query
+		self.ticket = None
+
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.query)
+
+
 class RoomState(BaseMessage):
 	code = @@IRoomState@@
 	

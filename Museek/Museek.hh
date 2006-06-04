@@ -158,7 +158,7 @@ public:
 	void server_search(uint32 ticket, WSTR query);
 	void server_room_search( STR room, uint32 ticket, WSTR query );
 	void server_user_search(STR user, uint32 ticket, WSTR query);
-	
+	void server_wishlist_search(uint32 ticket, WSTR query);	
 	void server_no_parent(bool have_parent);
 	
 	void server_give_privileges(STR user, uint32 days);
