@@ -1,11 +1,42 @@
 Always compile Museek with the built-in version of scons
 UNRELEASED
-* Added WishList Searching from Client Interfaces
+
+* Added WishList Searching from Client Interfaces (no timer, yet)
+MUSEEQ
 * Moved Museeq's Default Icon theme to default/ subdir
 * Added Save password Checkbox to ConnectDialog in museeq
 * Added Start Daemon, Stop Daemon, and Config Selector buttons, and Auto-Start
   Daemon checkbox to ConnectDialog in museeq
-  
+MUCOUS
+Version: 0.8.0pre3
+* Rewrote much of the way internal data and variables are stored
+* Yanked a lot of dead code
+* Fixed the input-disappearing bug (happened on PM messages)
+* Fixed some config options not getting saved
+* Added /autoaway toggle
+* Added /searchuser <user> option for User Searches (Alt-T in search)
+Version: 0.8.0pre2
+* Added setup.py script. You can now install mucous by entering 
+  "python setup.py install" as root
+* Fixed the /connect command so that it works after starting up with incorrect 
+  interface and/or interface password. (It was stuck in a while loop)
+* Made alerts delete when their "parent tabs" get closed (I.E. with the /close command)
+* Added RoomTickers handler, so now joining a room gets all the current tickers.
+Updated April 18th 2006
+Version: 0.8.0pre1
+* Lots of new features to keep up with Museek+
+* the unfinished Interests/Recommendations are in Users mode
+* New commands:
+  /extra (toggle responding to version requests) /ctcpversion (request client version)
+  /logout  /login      (Server Login and Logout)
+  /like   /donotlike   (Add/remove interests)
+  /hate /donothate     (Add/remove interests)
+  /similar   /itemsimilar <item>  (List Similar users)
+  /globalrex  /recommendations  /rex /itemrex <item>
+  /uploadto <user>  /upload <file> (Initiate remote upload)
+* Renabled Home/End for supporting terminals
+* Removed white colors defines, so that White-BG terminals are readable.
+
 0.1.9:  May 29th 2006
 * Modified man pages some more, removing COMPILING section and adding FILES section
 * Added man page for mulog
