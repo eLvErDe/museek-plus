@@ -1,5 +1,13 @@
 Changelog
 Updated May 29th 2006
+UNRELEASED
+* Rewrote much of the way internal data and variables are stored
+* Yanked a lot of dead code
+* Fixed the input-disappearing bug (happened on PM messages)
+* Fixed some config options not getting saved
+* Added /autoaway toggle
+* Added /searchuser <user> option for User Searches (Alt-T in search)
+
 Version: 0.8.0pre2
 * Added setup.py script. You can now install mucous by entering 
   "python setup.py install" as root
