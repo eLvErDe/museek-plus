@@ -1,12 +1,14 @@
 Always compile Museek with the built-in version of scons
 UNRELEASED
+* Added WishList Searching from Client Interfaces, but no timer, yet. ( IWishListSearch )
+* Added per-user search interface ( IUserSearch )
 
-* Added WishList Searching from Client Interfaces (no timer, yet)
 MUSEEQ
 * Moved Museeq's Default Icon theme to default/ subdir
 * Added Save password Checkbox to ConnectDialog in museeq
 * Added Start Daemon, Stop Daemon, and Config Selector buttons, and Auto-Start
   Daemon checkbox to ConnectDialog in museeq
+
 MUCOUS
 Version: 0.8.0pre3
 * Rewrote much of the way internal data and variables are stored
