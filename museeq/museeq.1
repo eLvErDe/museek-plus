@@ -1,22 +1,39 @@
-.TH "MUSEEQ" "1" "Release 0.1.9" "daelstorm" "Museek Daemon Plus"
+.TH "MUSEEQ" "1" "Release 0.1.10" "daelstorm" "Museek Daemon Plus"
 .SH "NAME"
 .LP 
 \fBMuseeq\fR \- QT GUI for the Museek Daemon
 .SH "SYNOPSIS"
 .B museeq
-No options
-
+[\-V] [\-\-version]
+[\-h] [\-\-help]
+[\-\-no\-tray]
 .SH "DESCRIPTION"
 .LP 
 Museeq is a QT GUI for the Museek Daemon. It provides a standard set of Soulseek / Soulfind features, including Chat Rooms; Private Chat; Transferring files; Searching; Buddies, Banned, Ignored and Trusted users lists; Interests & Recommendations; User info; and Browsing of users' Shared files.
 .LP 
 Before running museeq, you will need a \fImuseekd\fP(1) running, and configured with \fImusetup\fP(1).
+.SH "OPTIONS"
+.LP 
+Museeq accepts the following options:
+.TP 
+.B \-\-no\-tray
+Start without Tray Icon.
+.TP 
+.B \-V, \-\-version
+Display Version and exit.
+.TP 
+.B \-h, \-\-help
+Display Help and exit.
+
 .SH "EXAMPLE"
 .LP 
 To run this program the standard way type:
 .LP 
 museeq
-
+.LP 
+Alternatively, to run museeq without the tray icon
+.LP 
+museeq \-\-no\-tray
 .SH "FILES"
 .TP 
  \fI~/.qt/thegraveyard.orgrc\fR
