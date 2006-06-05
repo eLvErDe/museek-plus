@@ -33,6 +33,8 @@
 #include <qpopupmenu.h>
 #include <qtextedit.h>
 #include <qdir.h>
+#include "trayicon.h"
+#include "icon.xpm"
 
 #ifdef HAVE_QSA
 # include <qfile.h>
@@ -133,12 +135,10 @@ Museeq::Museeq(QApplication * app)
 	} else
 		mProtocolHandlers["http"] = "firefox -a firefox --remote openURL($,new-tab)";
 
-
 	mMainWin = new MainWindow(0, "mainWin");
-	
+
 	emit disconnectedFromServer();
 	emit connectedToServer(false);
-	
 
 #ifdef HAVE_QSA
 	if(libqsa_is_present)
@@ -661,7 +661,6 @@ void Museeq::setProtocolHandlers(const QMap<QString, QString>& h) {
 void Museeq::slotStatusSet(uint status) {
 	mAway = status;
 }
-
 void Museeq::setAway(bool away) {
 	mDriver->setStatus(away);
 }
@@ -872,8 +871,19 @@ int main(int argc, char **argv) {
 	QApplication a(argc, argv);
 	new Museeq(&a);
 	a.setMainWidget(museeq->mainwin());
+
+	QPopupMenu menutray;
+	menutray.insertItem( "Restore",museeq->mainwin() , SLOT( showNormal() ) );
+	menutray.insertItem( "Hide", museeq->mainwin() , SLOT( hide()  ) );
+	menutray.insertSeparator();
+	menutray.insertItem( "&Quit", museeq->mainwin() , SLOT( close() ) );
+	TrayIcon mTray ( QPixmap( (char**)icon_xpm),  "MuseeqTray", &menutray );
+	QObject::connect( &mTray, SIGNAL(clicked(const QPoint&, int )), museeq->mainwin(), SLOT(showNormal() ) );
+
+	menutray.show();
+	mTray.show();
 	museeq->mainwin()->show();
-        museeq->mainwin()->connectToMuseek();
-        
+	museeq->mainwin()->connectToMuseek();
+
 	return a.exec();
 }

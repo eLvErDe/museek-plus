@@ -4,6 +4,7 @@ UNRELEASED
 * Added per-user search interface ( IUserSearch )
 
 MUSEEQ
+* Added TrayIcon
 * Moved Museeq's Default Icon theme to default/ subdir
 * Added Save password Checkbox to ConnectDialog in museeq
 * Added Start Daemon, Stop Daemon, and Config Selector buttons, and Auto-Start

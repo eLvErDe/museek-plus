@@ -52,6 +52,7 @@ sources = Split("""
   usermenu.cpp
   usertabwidget.cpp
   util.cpp
+  trayicon.cpp
 
 """)
 
