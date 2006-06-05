@@ -56,7 +56,9 @@ int libqsa_is_present = 1;
 # endif
 
 #endif // HAVE_QSA
-
+#include <string>
+#include <iostream>
+using std::string;
 Museeq::Museeq(QApplication * app)
       : QObject(0, "Museeq"), mApplication(app), mConnected(false) {
 #ifdef HAVE_QSA
@@ -871,19 +873,49 @@ int main(int argc, char **argv) {
 	QApplication a(argc, argv);
 	new Museeq(&a);
 	a.setMainWidget(museeq->mainwin());
+	std::string usetray = string("yes");
+	std::string version = string("museeq ") + museeq->mainwin()->mVersion; //string("museeq "); //+ museeq->mainwin()->mVersion);
+	for(int i = 1; i < argc; i++) {
+		string arg = argv[i];
 
-	QPopupMenu menutray;
-	menutray.insertItem( "Restore",museeq->mainwin() , SLOT( showNormal() ) );
-	menutray.insertItem( "Hide", museeq->mainwin() , SLOT( hide()  ) );
-	menutray.insertSeparator();
-	menutray.insertItem( "&Quit", museeq->mainwin() , SLOT( close() ) );
-	TrayIcon mTray ( QPixmap( (char**)icon_xpm),  "MuseeqTray", &menutray );
-	QObject::connect( &mTray, SIGNAL(clicked(const QPoint&, int )), museeq->mainwin(), SLOT(showNormal() ) );
+		if(arg == "--version" || arg == "-V" ) {
+			std::cout << version << std::endl << std::endl;
+			return 0;
+		} else if(arg == "--no-tray" ) {
+			usetray = string("no");
+			
+		} else if(arg == "--help" || arg == "-h") {
+			std::cout << version << std::endl;
+			std::cout << "Syntax: museeq [options]" << std::endl << std::endl;
+			std::cout << "Options:" << std::endl;
+			std::cout << "-V --version\t\tDisplay museeq version and quit" << std::endl << std::endl; 
+			std::cout << "-h --help\t\tDisplay this message and quit" << std::endl;
+			std::cout << "--no-tray\t\tDon't load TrayIcon" << std::endl;
+			std::cout << std::endl;
+			return 0;
+		}
+			
+	}
 
-	menutray.show();
-	mTray.show();
-	museeq->mainwin()->show();
-	museeq->mainwin()->connectToMuseek();
-
-	return a.exec();
+	
+	if (usetray == "yes") {
+		QPopupMenu menutray;
+		menutray.insertItem( "Restore",museeq->mainwin() , SLOT( showNormal() ) );
+		menutray.insertItem( "Hide", museeq->mainwin() , SLOT( hide()  ) );
+		menutray.insertSeparator();
+		menutray.insertItem( "&Quit", museeq->mainwin() , SLOT( close() ) );
+		TrayIcon mTray ( QPixmap( (char**)icon_xpm),  "MuseeqTray", &menutray );
+		QObject::connect( &mTray, SIGNAL(clicked(const QPoint&, int )), museeq->mainwin(), SLOT(showNormal() ) );
+	
+		menutray.show();
+		mTray.show();
+		museeq->mainwin()->show();
+		museeq->mainwin()->connectToMuseek();
+		return a.exec();
+	} else {
+		museeq->mainwin()->show();
+		museeq->mainwin()->connectToMuseek();
+		return a.exec();
+	}
+	
 }

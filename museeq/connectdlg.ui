@@ -8,22 +8,22 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>411</width>
-            <height>281</height>
+            <width>430</width>
+            <height>291</height>
         </rect>
     </property>
     <property name="sizePolicy">
         <sizepolicy>
-            <hsizetype>5</hsizetype>
-            <vsizetype>5</vsizetype>
+            <hsizetype>3</hsizetype>
+            <vsizetype>3</vsizetype>
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
         </sizepolicy>
     </property>
     <property name="minimumSize">
         <size>
-            <width>400</width>
-            <height>0</height>
+            <width>430</width>
+            <height>280</height>
         </size>
     </property>
     <property name="caption">
@@ -32,6 +32,275 @@
     <property name="modal">
         <bool>true</bool>
     </property>
+    <spacer>
+        <property name="name">
+            <cstring>spacer4</cstring>
+        </property>
+        <property name="orientation">
+            <enum>Horizontal</enum>
+        </property>
+        <property name="sizeType">
+            <enum>Expanding</enum>
+        </property>
+        <property name="sizeHint">
+            <size>
+                <width>141</width>
+                <height>21</height>
+            </size>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>11</x>
+                <y>214</y>
+                <width>141</width>
+                <height>21</height>
+            </rect>
+        </property>
+    </spacer>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>startDaemonButton</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>152</x>
+                <y>211</y>
+                <width>119</width>
+                <height>28</height>
+            </rect>
+        </property>
+        <property name="sizePolicy">
+            <sizepolicy>
+                <hsizetype>7</hsizetype>
+                <vsizetype>7</vsizetype>
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+            </sizepolicy>
+        </property>
+        <property name="text">
+            <string>Start &amp;Daemon</string>
+        </property>
+        <property name="accel">
+            <string>Alt+D</string>
+        </property>
+        <property name="default">
+            <bool>false</bool>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>stopDaemonButton</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>271</x>
+                <y>211</y>
+                <width>118</width>
+                <height>28</height>
+            </rect>
+        </property>
+        <property name="sizePolicy">
+            <sizepolicy>
+                <hsizetype>7</hsizetype>
+                <vsizetype>7</vsizetype>
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+            </sizepolicy>
+        </property>
+        <property name="text">
+            <string>St&amp;op Daemon</string>
+        </property>
+        <property name="accel">
+            <string>Alt+O</string>
+        </property>
+        <property name="default">
+            <bool>false</bool>
+        </property>
+    </widget>
+    <spacer>
+        <property name="name">
+            <cstring>spacer2_2</cstring>
+        </property>
+        <property name="orientation">
+            <enum>Horizontal</enum>
+        </property>
+        <property name="sizeType">
+            <enum>Expanding</enum>
+        </property>
+        <property name="sizeHint">
+            <size>
+                <width>110</width>
+                <height>21</height>
+            </size>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>11</x>
+                <y>254</y>
+                <width>110</width>
+                <height>21</height>
+            </rect>
+        </property>
+    </spacer>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>connectButton</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>127</x>
+                <y>251</y>
+                <width>83</width>
+                <height>28</height>
+            </rect>
+        </property>
+        <property name="sizePolicy">
+            <sizepolicy>
+                <hsizetype>7</hsizetype>
+                <vsizetype>7</vsizetype>
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+            </sizepolicy>
+        </property>
+        <property name="text">
+            <string>Co&amp;nnect</string>
+        </property>
+        <property name="accel">
+            <string>Alt+N</string>
+        </property>
+        <property name="default">
+            <bool>true</bool>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>saveButton</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>216</x>
+                <y>251</y>
+                <width>84</width>
+                <height>28</height>
+            </rect>
+        </property>
+        <property name="sizePolicy">
+            <sizepolicy>
+                <hsizetype>7</hsizetype>
+                <vsizetype>7</vsizetype>
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+            </sizepolicy>
+        </property>
+        <property name="text">
+            <string>Save</string>
+        </property>
+        <property name="accel">
+            <string></string>
+        </property>
+        <property name="default">
+            <bool>false</bool>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>cancelButton</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>306</x>
+                <y>251</y>
+                <width>83</width>
+                <height>28</height>
+            </rect>
+        </property>
+        <property name="sizePolicy">
+            <sizepolicy>
+                <hsizetype>7</hsizetype>
+                <vsizetype>7</vsizetype>
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+            </sizepolicy>
+        </property>
+        <property name="text">
+            <string>&amp;Cancel</string>
+        </property>
+        <property name="accel">
+            <string>Alt+C</string>
+        </property>
+    </widget>
+    <widget class="QLineEdit">
+        <property name="name">
+            <cstring>mMuseekConfig</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>139</x>
+                <y>171</y>
+                <width>122</width>
+                <height>28</height>
+            </rect>
+        </property>
+        <property name="sizePolicy">
+            <sizepolicy>
+                <hsizetype>7</hsizetype>
+                <vsizetype>7</vsizetype>
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+            </sizepolicy>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>selectButton</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>267</x>
+                <y>171</y>
+                <width>122</width>
+                <height>28</height>
+            </rect>
+        </property>
+        <property name="sizePolicy">
+            <sizepolicy>
+                <hsizetype>7</hsizetype>
+                <vsizetype>7</vsizetype>
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+            </sizepolicy>
+        </property>
+        <property name="text">
+            <string>Se&amp;lect...</string>
+        </property>
+        <property name="accel">
+            <string>Alt+L</string>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>configLabel</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>11</x>
+                <y>171</y>
+                <width>122</width>
+                <height>28</height>
+            </rect>
+        </property>
+        <property name="sizePolicy">
+            <sizepolicy>
+                <hsizetype>7</hsizetype>
+                <vsizetype>7</vsizetype>
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+            </sizepolicy>
+        </property>
+        <property name="text">
+            <string>Museek Daemon Config:</string>
+        </property>
+    </widget>
     <widget class="QButtonGroup">
         <property name="name">
             <cstring>buttonGroup4</cstring>
@@ -40,27 +309,106 @@
             <rect>
                 <x>11</x>
                 <y>11</y>
-                <width>390</width>
-                <height>110</height>
+                <width>410</width>
+                <height>120</height>
             </rect>
+        </property>
+        <property name="sizePolicy">
+            <sizepolicy>
+                <hsizetype>7</hsizetype>
+                <vsizetype>7</vsizetype>
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+            </sizepolicy>
         </property>
         <property name="title">
             <string>Connect to:</string>
         </property>
-        <widget class="QLabel">
+        <widget class="QCheckBox">
             <property name="name">
-                <cstring>textLabel2</cstring>
+                <cstring>mSavePassword</cstring>
             </property>
             <property name="geometry">
                 <rect>
-                    <x>11</x>
-                    <y>19</y>
-                    <width>56</width>
-                    <height>26</height>
+                    <x>10</x>
+                    <y>90</y>
+                    <width>140</width>
+                    <height>18</height>
                 </rect>
             </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>3</hsizetype>
+                    <vsizetype>3</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
+            </property>
             <property name="text">
-                <string>Host / path:</string>
+                <string>&amp;Save Password</string>
+            </property>
+            <property name="accel">
+                <string>Alt+S</string>
+            </property>
+        </widget>
+        <widget class="QComboBox">
+            <property name="name">
+                <cstring>mAddress</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>114</x>
+                    <y>22</y>
+                    <width>185</width>
+                    <height>29</height>
+                </rect>
+            </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>3</hsizetype>
+                    <vsizetype>3</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
+            </property>
+            <property name="minimumSize">
+                <size>
+                    <width>185</width>
+                    <height>29</height>
+                </size>
+            </property>
+            <property name="editable">
+                <bool>true</bool>
+            </property>
+        </widget>
+        <widget class="QRadioButton">
+            <property name="name">
+                <cstring>mTCP</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>305</x>
+                    <y>22</y>
+                    <width>95</width>
+                    <height>29</height>
+                </rect>
+            </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>7</hsizetype>
+                    <vsizetype>7</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
+            </property>
+            <property name="text">
+                <string>&amp;TCP</string>
+            </property>
+            <property name="accel">
+                <string>Alt+T</string>
+            </property>
+            <property name="checked">
+                <bool>true</bool>
             </property>
         </widget>
         <widget class="QLineEdit">
@@ -69,11 +417,25 @@
             </property>
             <property name="geometry">
                 <rect>
-                    <x>73</x>
-                    <y>51</y>
-                    <width>217</width>
-                    <height>18</height>
+                    <x>114</x>
+                    <y>57</y>
+                    <width>185</width>
+                    <height>25</height>
                 </rect>
+            </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>3</hsizetype>
+                    <vsizetype>3</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
+            </property>
+            <property name="minimumSize">
+                <size>
+                    <width>181</width>
+                    <height>25</height>
+                </size>
             </property>
             <property name="echoMode">
                 <enum>Password</enum>
@@ -88,11 +450,19 @@
             </property>
             <property name="geometry">
                 <rect>
-                    <x>296</x>
-                    <y>51</y>
-                    <width>83</width>
-                    <height>18</height>
+                    <x>305</x>
+                    <y>57</y>
+                    <width>95</width>
+                    <height>25</height>
                 </rect>
+            </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>7</hsizetype>
+                    <vsizetype>7</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
             </property>
             <property name="text">
                 <string>&amp;Unix socket</string>
@@ -104,42 +474,28 @@
                 <number>1</number>
             </property>
         </widget>
-        <widget class="QRadioButton">
+        <widget class="QLabel">
             <property name="name">
-                <cstring>mTCP</cstring>
+                <cstring>textLabel2</cstring>
             </property>
             <property name="geometry">
                 <rect>
-                    <x>296</x>
-                    <y>23</y>
-                    <width>83</width>
-                    <height>18</height>
+                    <x>12</x>
+                    <y>22</y>
+                    <width>96</width>
+                    <height>29</height>
                 </rect>
+            </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>7</hsizetype>
+                    <vsizetype>7</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
             </property>
             <property name="text">
-                <string>&amp;TCP</string>
-            </property>
-            <property name="accel">
-                <string>Alt+T</string>
-            </property>
-            <property name="checked">
-                <bool>true</bool>
-            </property>
-        </widget>
-        <widget class="QComboBox">
-            <property name="name">
-                <cstring>mAddress</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>73</x>
-                    <y>19</y>
-                    <width>217</width>
-                    <height>26</height>
-                </rect>
-            </property>
-            <property name="editable">
-                <bool>true</bool>
+                <string>Host / path:</string>
             </property>
         </widget>
         <widget class="QLabel">
@@ -148,260 +504,81 @@
             </property>
             <property name="geometry">
                 <rect>
-                    <x>11</x>
-                    <y>51</y>
-                    <width>56</width>
-                    <height>18</height>
+                    <x>12</x>
+                    <y>57</y>
+                    <width>96</width>
+                    <height>25</height>
                 </rect>
+            </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>7</hsizetype>
+                    <vsizetype>7</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
             </property>
             <property name="text">
                 <string>Password:</string>
             </property>
         </widget>
-        <widget class="QCheckBox">
-            <property name="name">
-                <cstring>mSavePassword</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>80</y>
-                    <width>105</width>
-                    <height>18</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>&amp;Save Password</string>
-            </property>
-            <property name="accel">
-                <string>Alt+S</string>
-            </property>
-        </widget>
     </widget>
-    <widget class="QLayoutWidget">
+    <widget class="QCheckBox">
         <property name="name">
-            <cstring>layout20</cstring>
+            <cstring>mLocal</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
         </property>
         <property name="geometry">
             <rect>
                 <x>10</x>
-                <y>130</y>
-                <width>390</width>
-                <height>140</height>
+                <y>140</y>
+                <width>210</width>
+                <height>28</height>
             </rect>
         </property>
-        <grid>
-            <property name="name">
-                <cstring>unnamed</cstring>
-            </property>
-            <widget class="QLayoutWidget" row="1" column="0">
-                <property name="name">
-                    <cstring>layoute</cstring>
-                </property>
-                <hbox>
-                    <property name="name">
-                        <cstring>unnamed</cstring>
-                    </property>
-                    <widget class="QLabel">
-                        <property name="name">
-                            <cstring>configLabel</cstring>
-                        </property>
-                        <property name="text">
-                            <string>Museek Daemon Config:</string>
-                        </property>
-                    </widget>
-                    <widget class="QLineEdit">
-                        <property name="name">
-                            <cstring>mMuseekConfig</cstring>
-                        </property>
-                    </widget>
-                    <widget class="QPushButton">
-                        <property name="name">
-                            <cstring>selectButton</cstring>
-                        </property>
-                        <property name="text">
-                            <string>Se&amp;lect...</string>
-                        </property>
-                        <property name="accel">
-                            <string>Alt+L</string>
-                        </property>
-                    </widget>
-                </hbox>
-            </widget>
-            <widget class="QLayoutWidget" row="3" column="0">
-                <property name="name">
-                    <cstring>layout12</cstring>
-                </property>
-                <hbox>
-                    <property name="name">
-                        <cstring>unnamed</cstring>
-                    </property>
-                    <spacer>
-                        <property name="name">
-                            <cstring>spacer2_2</cstring>
-                        </property>
-                        <property name="orientation">
-                            <enum>Horizontal</enum>
-                        </property>
-                        <property name="sizeType">
-                            <enum>Expanding</enum>
-                        </property>
-                        <property name="sizeHint">
-                            <size>
-                                <width>110</width>
-                                <height>21</height>
-                            </size>
-                        </property>
-                    </spacer>
-                    <widget class="QPushButton">
-                        <property name="name">
-                            <cstring>connectButton</cstring>
-                        </property>
-                        <property name="text">
-                            <string>Co&amp;nnect</string>
-                        </property>
-                        <property name="accel">
-                            <string>Alt+N</string>
-                        </property>
-                        <property name="default">
-                            <bool>true</bool>
-                        </property>
-                    </widget>
-                    <widget class="QPushButton">
-                        <property name="name">
-                            <cstring>saveButton</cstring>
-                        </property>
-                        <property name="text">
-                            <string>Save</string>
-                        </property>
-                        <property name="accel">
-                            <string></string>
-                        </property>
-                        <property name="default">
-                            <bool>false</bool>
-                        </property>
-                    </widget>
-                    <widget class="QPushButton">
-                        <property name="name">
-                            <cstring>cancelButton</cstring>
-                        </property>
-                        <property name="text">
-                            <string>&amp;Cancel</string>
-                        </property>
-                        <property name="accel">
-                            <string>Alt+C</string>
-                        </property>
-                    </widget>
-                </hbox>
-            </widget>
-            <widget class="QLayoutWidget" row="0" column="0">
-                <property name="name">
-                    <cstring>layout19</cstring>
-                </property>
-                <hbox>
-                    <property name="name">
-                        <cstring>unnamed</cstring>
-                    </property>
-                    <widget class="QCheckBox">
-                        <property name="name">
-                            <cstring>mLocal</cstring>
-                        </property>
-                        <property name="enabled">
-                            <bool>true</bool>
-                        </property>
-                        <property name="text">
-                            <string>&amp;AutoStart Museek Daemon</string>
-                        </property>
-                        <property name="accel">
-                            <string>Alt+A</string>
-                        </property>
-                    </widget>
-                    <spacer>
-                        <property name="name">
-                            <cstring>spacer2</cstring>
-                        </property>
-                        <property name="orientation">
-                            <enum>Horizontal</enum>
-                        </property>
-                        <property name="sizeType">
-                            <enum>Expanding</enum>
-                        </property>
-                        <property name="sizeHint">
-                            <size>
-                                <width>64</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                    </spacer>
-                    <widget class="QCheckBox">
-                        <property name="name">
-                            <cstring>mShutDownDaemonOnExit</cstring>
-                        </property>
-                        <property name="text">
-                            <string>S&amp;hutDown Daemon on Exit</string>
-                        </property>
-                        <property name="accel">
-                            <string>Alt+H</string>
-                        </property>
-                    </widget>
-                </hbox>
-            </widget>
-            <widget class="QLayoutWidget" row="2" column="0">
-                <property name="name">
-                    <cstring>layout17</cstring>
-                </property>
-                <hbox>
-                    <property name="name">
-                        <cstring>unnamed</cstring>
-                    </property>
-                    <spacer>
-                        <property name="name">
-                            <cstring>spacer4</cstring>
-                        </property>
-                        <property name="orientation">
-                            <enum>Horizontal</enum>
-                        </property>
-                        <property name="sizeType">
-                            <enum>Expanding</enum>
-                        </property>
-                        <property name="sizeHint">
-                            <size>
-                                <width>141</width>
-                                <height>21</height>
-                            </size>
-                        </property>
-                    </spacer>
-                    <widget class="QPushButton">
-                        <property name="name">
-                            <cstring>startDaemonButton</cstring>
-                        </property>
-                        <property name="text">
-                            <string>Start &amp;Daemon</string>
-                        </property>
-                        <property name="accel">
-                            <string>Alt+D</string>
-                        </property>
-                        <property name="default">
-                            <bool>false</bool>
-                        </property>
-                    </widget>
-                    <widget class="QPushButton">
-                        <property name="name">
-                            <cstring>stopDaemonButton</cstring>
-                        </property>
-                        <property name="text">
-                            <string>St&amp;op Daemon</string>
-                        </property>
-                        <property name="accel">
-                            <string>Alt+O</string>
-                        </property>
-                        <property name="default">
-                            <bool>false</bool>
-                        </property>
-                    </widget>
-                </hbox>
-            </widget>
-        </grid>
+        <property name="sizePolicy">
+            <sizepolicy>
+                <hsizetype>7</hsizetype>
+                <vsizetype>7</vsizetype>
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+            </sizepolicy>
+        </property>
+        <property name="text">
+            <string>&amp;AutoStart Museek Daemon</string>
+        </property>
+        <property name="accel">
+            <string>Alt+A</string>
+        </property>
+    </widget>
+    <widget class="QCheckBox">
+        <property name="name">
+            <cstring>mShutDownDaemonOnExit</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>230</x>
+                <y>140</y>
+                <width>190</width>
+                <height>28</height>
+            </rect>
+        </property>
+        <property name="sizePolicy">
+            <sizepolicy>
+                <hsizetype>7</hsizetype>
+                <vsizetype>7</vsizetype>
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+            </sizepolicy>
+        </property>
+        <property name="text">
+            <string>S&amp;hutDown Daemon on Exit</string>
+        </property>
+        <property name="accel">
+            <string>Alt+H</string>
+        </property>
     </widget>
 </widget>
 <connections>

@@ -85,6 +85,7 @@ int main(int argc, char **argv) {
 			std::cout << "Syntax: museekd [options]" << std::endl << std::endl;
 			std::cout << "Options:" << std::endl;
 			std::cout << "-c --config <config file>\tUse alternative config file" << std::endl;
+			std::cout << "-h --help\t\t\tDisplay this message and quit" << std::endl;
 			std::cout << "-V --version\t\t\tDisplay museekd version and quit" << std::endl << std::endl; 
 			std::cout << "Signals:" << std::endl;
 			std::cout << "kill -HUP \tReload Shares Database(s)" << std::endl;
