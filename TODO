@@ -1,88 +1,23 @@
-TODO list:
+General To Dos
+ * Right-click in upload-queue gives a option 'message all downloading users' (chs_kasper)
+ * Online-alert messages in log-window (chs_kasper)
+ * Show things like 'shared files browsed by user xyz' or 'send search results 123 to user xyz' in the new museeq log-window (chs_kasper)
+ * Option in the config for automated messages (lartza)
+ * Auto-Away in museekd (chs_kasper's idea)
+ * Make Muscan work properly on Sparc (Big Endian problem?)
+ * Make museeq convert newlines to spliting off seperate messages to facilitate pasting debug messages.
+ * Fix segfault that happens immediately after a "timeout connecting to host" DEBUG message.
+ * Find out why some SCONS versions other than v0.95 do not compile museeq .ui.h files correctly. and instead give errors like: " SettingsDlg::SReloadShares_clicked(): Not implemented yet"
+ * Find out why uploading to windows soulseek is still broken, even after peer message 52 was sent.
+ * Adding logging of Chat Rooms and Private Message to museeq
+ * Upload limits
+ * Wishlist - with auto-download. (mer.lin.ux) Status: Partially complete (searches only) 
 
-* Allow museeq to remember last-used password between sessions
-* Allow museeq to start museekd
-* Auto-Away in museekd (chs_kasper's idea)
-* Make Muscan work properly on Sparc (Big Endian problem?)
-* Make museeq convert newlines to spliting off seperate messages to facilitate pasting debug messages.
-* Fix segfault that happens immediately after a "timeout connecting to host" DEBUG message.
-* Find out why some SCONS versions other than v0.95 do not compile museeq .ui.h files correctly.
-  and instead give errors like: "SettingsDlg::SReloadShares_clicked(): Not implemented yet"
-* Find out why uploading to windows soulseek is still broken, even after peer message
-  52 was sent.
-* Adding logging of Chat Rooms and Private Message to museeq
-* Upload limits
+Unlikely to be added anytime soon
 
-[mer.lin.ux's ideas]
-
-- Improve documentation (explain how to rescan shares, including the SIGHUP 
-  method of refreshing a rescan)
-- have Museeq optionally remember interface password
-- wishlist (with auto-download)
-
-Unlikely to be added anytime soon:
-
-- Up/Down transfer rate status in status bar
-- Up/Down transfer limiting
-- Round robin queueing
-- "max amount of MB's per day per user/list-user" (suggested by Dalai on slsk forum 
-  Mar 27 2004, 11:30 AM) (This feature would limit certain users to a maximum 
-  total amount downloaded per day.)
-- swarmed downloads
-- Single user searching (would require a new interface message, but otherwise be easy)
-* Trusted users -> Privileges to individual buddies (chs_kasper) 
-
-REASON: Buddies already have optional special privileges "privilege_buddies", 
-but it applies to ALL buddies if enabled. Maybe I'll implement something like 
-this later, but for now it's on the back-burner.
-* 
-
-DONE:
-
-* Added Retry-Upload popup-menu item in museeq
-
-* use loopback device or local IP for browsing local shares, instead of external IP.
- (This allows one to browse his own shares while behind a router that is configured to filter internal
- NAT redirection.  Allowing internal NAT redirection is a security hazard because it makes it easier
- for a hacker outside your LAN to spoof IP addresses in packets sent to systems behind your
- router) ->  (this would require telling museekd its external and internal IP address in the config file)
-
-* Added Refresh buttons to Shares and Userinfo in Museeq (mer.lin.ux's idea)
- ((  refreshable "Browse Shares" and "User Info" windows (instead of requiring the user to close the page and then reopen it) ))
-
-* Implement the new room/user search messages 42 and 120
-
-* Recieve Remote upoads only from Trusted Users
-
-* Send Remote uploads to other users (Needs more work)
-
-* Settings dialog for museeq
-
-* Add a IFACE messages to disconnect and reconnect museekd to the server, 
-  to facilitate username or server changes without having to restart museekd.
-
-* Add a IFACE Message to reload shares (NOT rescan)
-
-* ReArrange Okay/Cancel dialogs with okay on the Left side. (groovything's idea)
-
-* Fix QSA scripts menu's hotkey to be some other than the letter 'S'
-* Make ticker disable-able
-* make buddylist comments in Museeq easier to change (dragging is unusual) -- added popup-menu item
-
-* Special Shares list that only Buddies can download from (lots of people wanted this)
-
-* museekd should send a 'no files shared' to non-buddies when 'shared to buddies only' (chs_kasper's idea)
-
-* Choose font (and size) for Museeq (mer.lin.ux & others)
-
-* Put tickers in the config, and set them automatically when joining rooms.
-
-* Make icon themes chooseable in museeq
-
-* Added text label in museeq's shares, for whether they're recieved yet, empty 
-  or if not, and how may directories are in them.
-
-"i had a wish... or a suggestion for museek-todo: winslsk shows messages like 'no files shared' or 'error getting filelist' when browsing users. it would be nice if museeq shows that too."  (chs_kasper's idea)
-
-Can't do this part, though: "also nice is a progress-bar for browsing users like nicotine has." (chs_kasper's idea)
-
+ * Up/Down transfer rate status in status bar
+ * Up/Down transfer limiting
+ * Round robin queueing
+ * "max amount of MB's per day per user/list-user" (suggested by Dalai on slsk forum Mar 27 2004, 11:30 AM) (This feature would limit certain users to a maximum total amount downloaded per day.)
+ * swarmed downloads
+ * Trusted users -> Privileges to individual buddies (chs_kasper) REASON: Buddies already have optional special privileges "privilege_buddies", but it applies to ALL buddies if enabled. 

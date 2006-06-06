@@ -6,6 +6,12 @@ def build_setup(target, source, env):
     os.chmod(str(target[0]), 0755)
     return 0
 
+try:
+	import pyexpat
+	print "Dependency of musetup found: pyexpat"
+except:
+	print "\nWARNING: Dependency of musetup NOT found: pyexpat missing!"
+
 targets = [env.Command('musetup', ['musetup.in'], build_setup)]
 manfile = ["musetup.1"]
 if 'swig' in env['TOOLS']:

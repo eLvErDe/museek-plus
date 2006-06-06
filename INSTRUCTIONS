@@ -2,12 +2,14 @@ Requirements:
 libxml++2.6-dev or libxml++1.0-dev
 GCC
 Python (by scons, Python bindings)
+pyexpat (for musetup)
 
 Optional:
 QT3 
 QSA (QT Scripting)
 libvorbis-dev
 libogg-dev
+
 SWIG (for the mucipher Python bindings)
 
 

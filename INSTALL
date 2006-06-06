@@ -30,7 +30,7 @@ Museeq (the Qt GUI) depends on:
  - QSA 1.1 or newer (optional) for scripting support
 
 The build system depends on:
- - Python
+ - Python (including pyexpat for musetup)
  - SConstruct (included with release tarballs)
  - A C compiler
  - A C++ compiler with access to an STL implementation that has wstring
