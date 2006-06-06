@@ -6,6 +6,7 @@ UNRELEASED
 MUSEEQ
 * Ported ConnectDialog from designer ui to pure C++ code, to get around the annoying widget-cropping.
 * Added TrayIcon
+* Fixed sending empty Private Message
 * Moved Museeq's Default Icon theme to default/ subdir
 * Added Save password Checkbox to ConnectDialog in museeq
 * Added Start Daemon, Stop Daemon, and Config Selector buttons, and Auto-Start
