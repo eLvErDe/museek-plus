@@ -60,26 +60,21 @@ ConnectDialog::ConnectDialog(QWidget *parent, const char *name)
 	mUnix->setAccel( QKeySequence( tr( "Alt+U" ) ) );
 	buttonGroup4->insert( mUnix, 1 );
 	
-
+	spacer1 =  new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
+	mExtra = new QPushButton( this, "ExtraOptions" );
+	mExtra->setText( tr( "Daemon O&ptions..." ) );
 	
-
-	
-
-
-
-	QHBox *box1 = new QHBox(this, "centralWidget");
-	box1->setSpacing(15);
-	startDaemonButton = new QPushButton( box1, "startDaemonButton" );
+	startDaemonButton = new QPushButton( this, "startDaemonButton" );
 	startDaemonButton->setDefault( FALSE );
-	startDaemonButton->setSizePolicy (QSizePolicy::Minimum,QSizePolicy::Preferred);
-	stopDaemonButton = new QPushButton( box1, "stopDaemonButton" );
+	spacer2 =  new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
+	stopDaemonButton = new QPushButton( this, "stopDaemonButton" );
 	stopDaemonButton->setDefault( FALSE );
 	startDaemonButton->setText( tr( "Start &Daemon" ) );
 	startDaemonButton->setAccel( QKeySequence( tr( "Alt+D" ) ) );
 	stopDaemonButton->setText( tr( "St&op Daemon" ) );
 	stopDaemonButton->setAccel( QKeySequence( tr( "Alt+O" ) ) );	
 
-	QHBox *box2 = new QHBox(this, "centralWidget");
+	box2 = new QHBox(this, "centralWidget");
 	box2->setSpacing(5);
 	configLabel = new QLabel( box2, "configLabel" );
 	configLabel->setText( tr( "Museek Daemon Config:" ) );
@@ -88,13 +83,12 @@ ConnectDialog::ConnectDialog(QWidget *parent, const char *name)
 	selectButton->setText( tr( "Se&lect..." ) );
 	selectButton->setAccel( QKeySequence( tr( "Alt+L" ) ) );	
 
-	QHBox *box4 = new QHBox(this, "centralWidget");
-	box4->setSpacing(5);
-	connectButton = new QPushButton( box4, "connectButton" );
+	spacer3 =  new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
+	connectButton = new QPushButton( this, "connectButton" );
 	connectButton->setDefault( TRUE );
-	saveButton = new QPushButton( box4, "saveButton" );
+	saveButton = new QPushButton( this, "saveButton" );
 	saveButton->setDefault( FALSE );
-	cancelButton = new QPushButton( box4, "cancelButton" );
+	cancelButton = new QPushButton( this, "cancelButton" );
 	connectButton->setText( tr( "Co&nnect" ) );
 	connectButton->setAccel( QKeySequence( tr( "Alt+N" ) ) );
 	saveButton->setText( tr( "Save" ) );
@@ -102,7 +96,7 @@ ConnectDialog::ConnectDialog(QWidget *parent, const char *name)
 	cancelButton->setText( tr( "&Cancel" ) );
 	cancelButton->setAccel( QKeySequence( tr( "Alt+C" ) ) );
 
-	QHBox *box3 = new QHBox(this, "centralWidget");
+	box3 = new QHBox(this, "centralWidget");
 	box3->setSpacing(5);
 	mAutoStartDaemon = new QCheckBox( box3, "mAutoStartDaemon" );
 	mShutDownDaemonOnExit = new QCheckBox( box3, "mShutDownDaemonOnExit" );
@@ -111,67 +105,76 @@ ConnectDialog::ConnectDialog(QWidget *parent, const char *name)
 	mShutDownDaemonOnExit->setText( tr( "S&hutDown Daemon on Exit" ) );
 	mShutDownDaemonOnExit->setAccel( QKeySequence( tr( "Alt+H" ) ) );
 
-	clearWState( WState_Polished );
-	
+
+	extra = true;
 	// signals and slots connections
 	connect( connectButton, SIGNAL( clicked() ), this, SLOT( accept() ) );
 	connect( cancelButton, SIGNAL( clicked() ), this, SLOT( reject() ) );
-// 	connect( mUnix, SIGNAL( toggled(bool) ), this, SLOT( setChecked(bool) ) );
+	connect( mExtra, SIGNAL( clicked() ), this, SLOT( extraOptions() ) );
 	connect( startDaemonButton, SIGNAL( clicked() ), this, SLOT( startDaemon() ) );
 	connect( selectButton, SIGNAL( clicked() ), this, SLOT( selectConfig() ) );
 	connect( stopDaemonButton, SIGNAL( clicked() ), this, SLOT( stopDaemon() ) );
 	connect( saveButton, SIGNAL( clicked() ), this, SLOT( save() ) );
-// 	box->show();
-	// tab order
+
 	setTabOrder( mPassword, mAutoStartDaemon );
 	setTabOrder( mAutoStartDaemon, connectButton );
 	setTabOrder( connectButton, cancelButton );
 	setTabOrder( cancelButton, mTCP );
 
-// 	connect(lineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(enableConnectButton(const QString &))); 
-// 	connect(connectButton, SIGNAL(clicked()),  this, SLOT(connectClicked())); 
-// 	connect(closeButton, SIGNAL(clicked()),  this, SLOT(close())); 
+	extraLayout = new QHBoxLayout; 
+	extraLayout->addItem(spacer1); 
+	extraLayout->addWidget(mExtra); 
 
-// 	QHBoxLayout *topLeftLayout = new QHBoxLayout; 
-// 	topLeftLayout->addWidget(label); 
-// 	topLeftLayout->addWidget(buttonGroup4); 
+	controldLayout = new QHBoxLayout; 
+	controldLayout->addWidget(startDaemonButton); 
+	controldLayout->addItem(spacer2); 
+	controldLayout->addWidget(stopDaemonButton); 
+
+	connectLayout = new QHBoxLayout; 
+	connectLayout->addItem(spacer3); 
+	connectLayout->addWidget(connectButton); 
+	connectLayout->addWidget(saveButton);
+	connectLayout->addWidget(cancelButton);
+
 	QVBoxLayout *leftLayout = new QVBoxLayout; 
-// 	leftLayout->addLayout(topLeftLayout); 
-// 	leftLayout->addLayout();
 	leftLayout->addWidget(boxsd); 
-	leftLayout->addWidget(box1); 
-	leftLayout->addWidget(box2); 
+
+	leftLayout->addLayout(extraLayout);
 	leftLayout->addWidget(box3); 
-	leftLayout->addWidget(box4); 
-// 	QVBoxLayout *rightLayout = new QVBoxLayout; 
-// 	rightLayout->addWidget(connectButton); 
-// 	rightLayout->addWidget(closeButton); 
-// 	rightLayout->addStretch(1); 
+	leftLayout->addLayout(controldLayout);
+	leftLayout->addWidget(box2); 
+
+	leftLayout->addLayout(connectLayout); 
  	QHBoxLayout *mainLayout = new QHBoxLayout(this); 
  	mainLayout->setMargin(11); 
  	mainLayout->setSpacing(6); 
  	mainLayout->addLayout(leftLayout); 
-//  	mainLayout->addLayout(rightLayout); 
+	extraOptions();
+
 } 
-void ConnectDialog::connectClicked() 
-{ 
-	QString text = lineEdit->text(); 
-	bool caseSensitive = caseCheckBox->isOn(); 
-	if (backwardCheckBox->isOn()) 
-		emit connectPrev(text, caseSensitive); 
-	else 
-		emit connectNext(text, caseSensitive); 
-} 
-void ConnectDialog::enableConnectButton(const QString &text) 
-{ 
-	connectButton->setEnabled(!text.isEmpty()); 
-}
+
 // below be dragons
 void ConnectDialog::startDaemon()
 {
     museeq->startDaemon();
 }
 
+void ConnectDialog::extraOptions()
+{	
+	if ( extra) {
+		box2->hide();
+		box3->hide();
+		startDaemonButton->hide();
+		stopDaemonButton->hide();
+		extra = false;
+	} else {
+		box2->show();
+		box3->show();
+		startDaemonButton->show();
+		stopDaemonButton->show();
+		extra = true;
+	}
+}
 
 void ConnectDialog::selectConfig()
 {

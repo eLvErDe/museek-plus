@@ -7,15 +7,17 @@ class QLineEdit;
 class QPushButton; 
 class QVBoxLayout;  
 class QHBoxLayout;  
+class QHBox;  
 class QGridLayout;  
 class QSpacerItem;  
 class QPushButton;  
-class QLineEdit;  
+class QLineEdit;
 class QLabel; 
-class QButtonGroup; 
-class QCheckBox;  
-class QComboBox;  
-class QRadioButton;   
+class QButtonGroup;
+class QCheckBox;
+class QComboBox;
+class QRadioButton;
+class QSpacerItem;
  class ConnectDialog : public QDialog  
 { 
 	Q_OBJECT 
@@ -26,33 +28,31 @@ public:
 	QPushButton *stopDaemonButton;
 	QPushButton *connectButton;
 	QPushButton *saveButton;
-	QPushButton *cancelButton;
-	QLineEdit *mMuseekConfig;
+	QPushButton *cancelButton, *mExtra;
 	QPushButton *selectButton;
+	QLineEdit *mMuseekConfig;
 	QLabel *configLabel;
 	QButtonGroup *buttonGroup4;
-	QCheckBox *mSavePassword;
 	QComboBox *mAddress;
-	QRadioButton *mTCP;
 	QLineEdit *mPassword;
 	QRadioButton *mUnix;
+	QRadioButton *mTCP;
 	QLabel *textLabel2;
 	QLabel *textLabel1;
+	QCheckBox *mSavePassword;
 	QCheckBox *mAutoStartDaemon;
 	QCheckBox *mShutDownDaemonOnExit;
-
+	QHBoxLayout *extraLayout, *controldLayout, *connectLayout;
+	QHBox *box1, *box2, *box3;
+	bool extra;
+	QSpacerItem* spacer1, * spacer2, * spacer3;
 public slots:   
 	virtual void startDaemon(); 
 	virtual void selectConfig();    
 	virtual void stopDaemon();  
-	virtual void save();   
-signals: 
-	void connectNext(const QString &str, bool caseSensitive); 
-	void connectPrev(const QString &str, bool caseSensitive); 
+	virtual void save();
+	virtual void extraOptions();
 
-private slots: 
-	void connectClicked(); 
-	void enableConnectButton(const QString &text); 
 private: 
 	QLabel *label; 
 	QLineEdit *lineEdit; 
