@@ -42,6 +42,11 @@ Version: 0.8.0pre1
 * Renabled Home/End for supporting terminals
 * Removed white colors defines, so that White-BG terminals are readable.
 
+MUSEEKCONTROL
+* Changed version to museek+ version
+* Fixed --info command (kept sending command again and again)
+* Added --connect, --disconnect, --reloadshares options
+
 0.1.9:  May 29th 2006
 * Modified man pages some more, removing COMPILING section and adding FILES section
 * Added man page for mulog

@@ -18,7 +18,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-Version = "0.2.0"
+Version = "0.1.10"
 
 import struct, socket, sys, time, urllib, pwd, os, select, getopt, ConfigParser
 from time import sleep
@@ -98,6 +98,9 @@ Version: %s
 	-b.   --browse <user>     (Get a user's shares and show them)
 	--mb, --mbrowse           (Monitor browsing)
 
+	SHARES:
+	--reloadshares            (Reload Shares Databases)
+
 	TRANSFERS:
 	-t,   --transfers         (Display all current up- and downloads)
 	--mt, --mtransfers        (Monitor transfers)
@@ -110,6 +113,10 @@ Version: %s
 	--retryup    slsk://user/path (Retry Upload (for remote uploads))
 	--retrydown  slsk://user/path (Retry Download)
 
+	SERVER:
+	--connect       (Connect to Serverl; Disconnect if already connected)
+	--disconnect    (Disconnect from Server; Do not try to reconnect)
+			  
 	MUSEEK DAEMON LOGIN:
 	-i,   --interface <host:port|/socket.path> (Use a different interface)
 	-p,   --password <pass>   (Use a different password (saved) )
@@ -120,7 +127,7 @@ Version: %s
 	sys.exit(2)
 	
 try:
-	opts, args = getopt.getopt(sys.argv[1:], "hc:vi:p:j:l:p:m:b:tar", ["help", "config=", "interface=", "password=", "transfers", "monitor-transfers", "info=",  "minfo", "browse=", "sprivates", "sprivate=", "leave=", "join=", "joined",  "sroom=", "stalk", "rooms", "bs=", "bsearch=", "rs=", "rsearch=", "gs=", "alltickers", "tickers=", "gsearch=", "version", "log=", "chat=", "pm=", "private=", "message=", "away", "download=", "mt", "mtransfers", "mb", "mbrowse", "buddy=", "unbuddy=", "ignore=", "uningore=", "ban=", "unban=", "trust=", "distrust=", "comment=", "roomlist", "abortdown=", "abortup=", "retryup=", "retrydown=", "removeup=", "removedown=", "upload=", "roominfo=", "roomsinfo", "ip=", "setticker=", "settempticker=", "setdefaultticker" ])
+	opts, args = getopt.getopt(sys.argv[1:], "hc:vi:p:j:l:p:m:b:tar", ["help", "config=", "interface=", "password=", "transfers", "monitor-transfers", "info=",  "minfo", "browse=", "sprivates", "sprivate=", "leave=", "join=", "joined",  "sroom=", "stalk", "rooms", "bs=", "bsearch=", "rs=", "rsearch=", "gs=", "alltickers", "tickers=", "gsearch=", "version", "log=", "chat=", "pm=", "private=", "message=", "away", "download=", "mt", "mtransfers", "mb", "mbrowse", "buddy=", "unbuddy=", "ignore=", "uningore=", "ban=", "unban=", "trust=", "distrust=", "comment=", "roomlist", "abortdown=", "abortup=", "retryup=", "retrydown=", "removeup=", "removedown=", "upload=", "roominfo=", "roomsinfo", "ip=", "setticker=", "settempticker=", "setdefaultticker", "reloadshares", "disconnect", "connect" ])
 except getopt.GetoptError:
 	usage()
 	sys.exit(2)
@@ -246,6 +253,12 @@ for opts, args in opts:
 		want = "away"
 	elif opts in ( "--roomlist"):
 		want = "roomlist"
+	elif opts in ( "--reloadshares"):
+		want = "reloadshares"
+	elif opts == "--connect":
+		want = "connect"
+	elif opts == "--disconnect":
+		want = "disconnect"
 	elif opts in ("--message"):
 		message = str(args)
 	elif opts in ("--chat"):
@@ -501,7 +514,9 @@ class museekcontrol(driver.Driver):
 				pass
 			elif want == "info":
 				if user != None:
-					self.send(messages.UserInfo(user))
+					if self.count == 0:
+						self.send(messages.UserInfo(user))
+						self.count += 1
 			elif want == "ip":
 				if self.count == 0:
 					if user != None:
@@ -537,6 +552,15 @@ class museekcontrol(driver.Driver):
 					self.send(messages.ConfigSet("ignored", user, reason))
 				else:
 					self.send(messages.ConfigSet("ignored", user, ""))
+				sys.exit()
+			elif want == "reloadshares":
+				self.send(messages.ReloadShares())
+				sys.exit()
+			elif want == "connect":
+				self.send(messages.ConnectServer())
+				sys.exit()
+			elif want == "disconnect":
+				self.send(messages.DisconnectServer())
 				sys.exit()
 			elif want == "roomlist":
 				self.send(messages.RoomList())
