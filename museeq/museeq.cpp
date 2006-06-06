@@ -905,7 +905,7 @@ int main(int argc, char **argv) {
 		menutray.insertSeparator();
 		menutray.insertItem( "&Quit", museeq->mainwin() , SLOT( close() ) );
 		TrayIcon mTray ( QPixmap( (char**)icon_xpm),  "MuseeqTray", &menutray );
-		QObject::connect( &mTray, SIGNAL(clicked(const QPoint&, int )), museeq->mainwin(), SLOT(showNormal() ) );
+		QObject::connect( &mTray, SIGNAL(clicked(const QPoint&, int )), museeq->mainwin(), SLOT(toggleVisibility() ) );
 	
 		menutray.show();
 		mTray.show();

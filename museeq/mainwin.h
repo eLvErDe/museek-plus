@@ -73,6 +73,7 @@ public slots:
 	void getOwnShares();
 	void toggleTickers();
 	void toggleLog();
+	void toggleVisibility();
 
 	void showIPDialog();
 	void showIPDialog(const QString&);

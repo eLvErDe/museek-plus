@@ -324,33 +324,6 @@
         <property name="title">
             <string>Connect to:</string>
         </property>
-        <widget class="QCheckBox">
-            <property name="name">
-                <cstring>mSavePassword</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>90</y>
-                    <width>140</width>
-                    <height>18</height>
-                </rect>
-            </property>
-            <property name="sizePolicy">
-                <sizepolicy>
-                    <hsizetype>3</hsizetype>
-                    <vsizetype>3</vsizetype>
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                </sizepolicy>
-            </property>
-            <property name="text">
-                <string>&amp;Save Password</string>
-            </property>
-            <property name="accel">
-                <string>Alt+S</string>
-            </property>
-        </widget>
         <widget class="QComboBox">
             <property name="name">
                 <cstring>mAddress</cstring>
@@ -522,6 +495,60 @@
                 <string>Password:</string>
             </property>
         </widget>
+        <widget class="QCheckBox">
+            <property name="name">
+                <cstring>mSavePassword</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>90</y>
+                    <width>200</width>
+                    <height>18</height>
+                </rect>
+            </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>3</hsizetype>
+                    <vsizetype>3</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
+            </property>
+            <property name="text">
+                <string>&amp;Save Password</string>
+            </property>
+            <property name="accel">
+                <string>Alt+S</string>
+            </property>
+        </widget>
+    </widget>
+    <widget class="QCheckBox">
+        <property name="name">
+            <cstring>mShutDownDaemonOnExit</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>230</x>
+                <y>140</y>
+                <width>190</width>
+                <height>28</height>
+            </rect>
+        </property>
+        <property name="sizePolicy">
+            <sizepolicy>
+                <hsizetype>7</hsizetype>
+                <vsizetype>7</vsizetype>
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+            </sizepolicy>
+        </property>
+        <property name="text">
+            <string>S&amp;hutDown Daemon on Exit</string>
+        </property>
+        <property name="accel">
+            <string>Alt+H</string>
+        </property>
     </widget>
     <widget class="QCheckBox">
         <property name="name">
@@ -551,33 +578,6 @@
         </property>
         <property name="accel">
             <string>Alt+A</string>
-        </property>
-    </widget>
-    <widget class="QCheckBox">
-        <property name="name">
-            <cstring>mShutDownDaemonOnExit</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>230</x>
-                <y>140</y>
-                <width>190</width>
-                <height>28</height>
-            </rect>
-        </property>
-        <property name="sizePolicy">
-            <sizepolicy>
-                <hsizetype>7</hsizetype>
-                <vsizetype>7</vsizetype>
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-            </sizepolicy>
-        </property>
-        <property name="text">
-            <string>S&amp;hutDown Daemon on Exit</string>
-        </property>
-        <property name="accel">
-            <string>Alt+H</string>
         </property>
     </widget>
 </widget>

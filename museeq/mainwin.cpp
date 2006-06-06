@@ -281,6 +281,12 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 	connect( daemon, SIGNAL(readyReadStdout()), this,   SLOT(readFromStdout()) );
 	connect( daemon, SIGNAL(processExited()),  this, SLOT(daemonExited()) );
 }
+void MainWindow::toggleVisibility() {
+	if ( museeq->mainwin()->isVisible() )
+		museeq->mainwin()->hide();
+	else
+		museeq->mainwin()->show();
+}
 void MainWindow::changeCMode() {
 	uint page =0;
 	changeMode(page);
