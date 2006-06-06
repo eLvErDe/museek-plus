@@ -57,7 +57,8 @@
 #include "userinfos.h"
 #include "browsers.h"
 #include "museekdriver.h"
-#include "connectdlg.h"
+// #include "connectdlg.h"
+#include "connect.h"
 #include "ipdlg.h"
 #include "userinfodlg.h"
 #include "settingsdlg.h"
@@ -158,8 +159,8 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 	
 	statusBar()->message("Welcome to Museeq");
 	
-	
-	mConnectDialog = new ConnectDlg(this, "connectDialog");
+	mConnectDialog = new ConnectDialog(this, "connectDialog");
+
 #ifdef HAVE_SYS_UN_H
 	connect(mConnectDialog->mAddress, SIGNAL(activated(const QString&)), SLOT(slotAddressActivated(const QString&)));
 	connect(mConnectDialog->mAddress, SIGNAL(textChanged(const QString&)), SLOT(slotAddressChanged(const QString&)));
@@ -376,7 +377,7 @@ void MainWindow::saveConnectConfig() {
 	QSettings settings;
 	QString server = mConnectDialog->mAddress->currentText(),
 		password = mConnectDialog->mPassword->text().utf8();
-	if(mConnectDialog->mLocal->isChecked()) {
+	if(mConnectDialog->mAutoStartDaemon->isChecked()) {
 		settings.writeEntry("/TheGraveyard.org/Museeq/LaunchMuseekDaemon", "yes");
 		
 	} else {
@@ -449,16 +450,16 @@ void MainWindow::connectToMuseek() {
 
  	if (!  launchMuseekDaemon.isEmpty())	 {
 		if ( launchMuseekDaemon == "yes") {
-			mConnectDialog->mLocal->setChecked(true);
+			mConnectDialog->mAutoStartDaemon->setChecked(true);
 			mConnectDialog->mMuseekConfig->show();
 			if (! museekConfig.isEmpty()) { 
 				doDaemon();
 			}
 		} else  {
-			mConnectDialog->mLocal->setChecked(false);
+			mConnectDialog->mAutoStartDaemon->setChecked(false);
 		}
 	} else  {
-		mConnectDialog->mLocal->setChecked(false);
+		mConnectDialog->mAutoStartDaemon->setChecked(false);
 	}
 	if (daemon->isRunning()) {
 		mConnectDialog->startDaemonButton->setDisabled(true);

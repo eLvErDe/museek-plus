@@ -30,7 +30,7 @@ class QComboBox;
 class QPopupMenu;
 class QListViewItem;
 class QProcess;
-class ConnectDlg;
+class ConnectDialog;
 class IPDlg;
 class SettingsDlg;
 class UserInfoDlg;
@@ -136,7 +136,7 @@ private:
 	QPopupMenu* mMenuFile, * mMenuScripts, * mMenuUnloadScripts,  * mMenuHelp;
 	QString museekConfig;
 	QProcess *daemon;
-	ConnectDlg* mConnectDialog;
+	ConnectDialog* mConnectDialog;
 	IPDlg* mIPDialog;
 	UserInfoDlg* mUserInfoDialog;
 	SettingsDlg* mSettingsDialog;

@@ -1,6 +1,5 @@
 sources = Split("""
   prefix.c
-  connectdlg.ui
   ipdlg.ui
   tickerdlg.ui
   userinfodlg.ui
@@ -53,7 +52,7 @@ sources = Split("""
   usertabwidget.cpp
   util.cpp
   trayicon.cpp
-
+  connect.cpp
 """)
 
 default_images = Split("""
