@@ -184,7 +184,7 @@ int main() {
  return 0;
 }""", ".c")
 	if result[0] != 1:
-		print "Couldn't compile type-size test.. Your system is strange"
+		print "Couldn't compile type-size test.. Your system is strange\nTry installing GCC and any glibc packages your distro provides (needs stdio.h)."
 		Exit(1);
 	size_int, size_short, size_longint = result[1].split(" ")
 	sys_h.write("#define SIZE_INT %s\n" % size_int)
@@ -249,7 +249,7 @@ int main() { size_t r = iconv(0, (%s)0, 0, (char**)0, 0); return 0; }
 		sys.stdout.write(' char**\n')
 		sys_h.write('#define ICONV_IN char **\n\n')
 	else:
-		sys.stderr.write('Couldn\'t determine what iconv wants for input.. Please contact the maintainer.\n')
+		sys.stderr.write('Couldn\'t determine what iconv wants for input.. Do you have glibc installed?.\n')
 		Exit(1)
 
 	# Check if we can use epoll (linux 2.6+ async poller)
@@ -355,9 +355,9 @@ else:
 		subdirs.append('mucous')
 		print "and Mucous..."
 	else:
-		print "Without Mucous."				
+		print "Without Mucous."
 for dir in subdirs:
-	if dir in ['Muhelp', 'Museekal', 'Museek', 'Tools', 'museeq']:
+	if dir in ['Muhelp', 'Museekal', 'Museek', 'Mucipher',  'Tools', 'museeq', "mucous", "pymuseekd"]:
 		print "Headers for %s..." % dir
 	if buildDir is None:
 		bd = None

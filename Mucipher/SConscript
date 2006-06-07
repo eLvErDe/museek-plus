@@ -17,6 +17,6 @@ if 'swig' in env['TOOLS']:
     SConscript(os.path.join('python', 'SConscript'))
     print "SWIG found, building Python bindings for mucipher."
 else:
-    print "Not building Python bindings for mucipher, SWIG not found."
+    print "WARNING: SWIG not found, NOT building Python bindings for mucipher."
 #    SConscript(os.path.join('perl', 'SConscript')) 
 #    can't use perl, cstring not implemented in swig-perl

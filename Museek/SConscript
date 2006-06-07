@@ -25,7 +25,7 @@ pch = Split("""
 conf = env.Configure()
 
 if not conf.CheckLibWithHeader('z', 'zlib.h', 'C++', 'inflate(0, Z_FINISH);'):
-    print 'Please install ZLIB and point scons at it'
+    print 'Please install ZLIB and point scons at it. If problem persists, erase the system.h file, and try again.'
     Exit(1)
 
 conf.Finish()

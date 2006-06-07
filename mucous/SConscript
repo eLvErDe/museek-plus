@@ -18,3 +18,6 @@ if 'swig' in env['TOOLS']:
     env.Alias('install_mucous', install)
     env.Alias('install', 'install_mucous')
     SConscript(os.path.join('pymucous', 'SConscript'))
+    print "SWIG found, mucous will be installed"
+else:
+	print "WARNING: SWIG not found, mucous will NOT be installed"

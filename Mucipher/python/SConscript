@@ -34,4 +34,5 @@ if os.path.exists(os.path.join(py_inc, "Python.h")):
 
     env.Alias('install_mucipher',  install)
     env.Alias('install', 'install_mucipher')
-
+else:
+	print "WARNING: Python.h include not found, please install Python's development packages"
