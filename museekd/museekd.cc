@@ -93,7 +93,7 @@ bool Museekd::load_config() {
 	mConfig["server"]["password"];
 	
 	if(! mConfig["clients"]["connectmode"])
-		mConfig["clients"]["connectmode"] = "active";
+		mConfig["clients"]["connectmode"] = "passive";
 	if(! mConfig["clients.bind"]["first"])
 		mConfig["clients.bind"]["first"] = "2234";
 	if(! mConfig["clients.bind"]["last"])
