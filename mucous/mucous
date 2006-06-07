@@ -1268,7 +1268,7 @@ class mucous(driver.Driver):
 					Chatrooms
 					'''
 				elif line[:6] == "/talk ": 
-					self.set_room(line[6:])
+					self.change_room(line[6:])
 					
 				elif line[:6] == "/join ":
 					self.send(messages.JoinRoom( self.decode_language( line[6:] ) ))
@@ -2732,14 +2732,14 @@ class mucous(driver.Driver):
 				if mucous_config["rooms"]["default_room"] != None:
 					if mucous_config["rooms"]["default_room"] in joined:
 						self.Spl["room"] = mucous_config["rooms"]["default_room"]
-						self.set_room(mucous_config["rooms"]["default_room"])
+						self.change_room(mucous_config["rooms"]["default_room"])
 					else:
 						self.send(messages.JoinRoom(mucous_config["rooms"]["default_room"]))
-						self.set_room(joined[0])
+						self.change_room(joined[0])
 	
 				else:
 					self.Spl["room"] = joined[0]
-					self.set_room(joined[0])
+					self.change_room(joined[0])
 
 		except Exception, e:
 			self.Hlog("debug", "CB Room state" + str(e))	
@@ -2907,19 +2907,19 @@ class mucous(driver.Driver):
 			del self.data["rooms"][room]
 			if room == self.Spl["room"]:
 				if len(joined) == 1:
-					self.set_room(None)
+					self.change_room(None)
 				else:
 					ix = joined.index(room)
 					if ix > 0:
 						ix -= 1
 					elif ix == 0:
 						ix = -1
-					self.set_room(joined[ix])
+					self.change_room(joined[ix])
 					self.say("Status", joined[ix], '!!!!', "Left room %s" % room)
 			joined.remove(room)
 			
 			if joined == []:
-				self.set_room(None)
+				self.change_room(None)
 				self.drawchatwindow()
 				self.windows["text"]["chat"].noutrefresh()
 			else:
@@ -2959,7 +2959,7 @@ class mucous(driver.Driver):
 					for lines in self.logs["rooms"][self.Spl["room"]][ len(self.logs["rooms"][self.Spl["room"]]) - s["height"]:]:
 						# Update Chat history if user changes status
 						if lines[2] == user:
-							self.set_room(self.Spl["room"])
+							self.change_room(self.Spl["room"])
 							break
 					curses.doupdate()
 		except Exception, e:
@@ -2989,7 +2989,7 @@ class mucous(driver.Driver):
 				for lines in self.logs["rooms"][room][len(self.logs["rooms"][self.Spl["room"]]) - self.windows["dimensions"]["chat"]["height"]:]:
 					# Update Chat history if user changes status
 					if lines[2] == user:
-						self.set_room(room)
+						self.change_room(room)
 						break
 				curses.doupdate()
 		except Exception, e:
@@ -5892,7 +5892,7 @@ class mucous(driver.Driver):
 									ix = -1
 								elif ix >= len(joined):
 									ix = 0
-							self.set_room(joined[ix])
+							self.change_room(joined[ix])
 							
 					elif y  in (w["top"] + w["height"], w["top"] + w["height"]-1) and x >= w["left"] + w["width"]-5 and x <= w["left"] + w["width"]:
 						self.key = "KEY_NPAGE"
@@ -6602,7 +6602,7 @@ class mucous(driver.Driver):
 						elif ix >= len(joined):
 							ix = 0
 					if ix != None:
-						self.set_room(joined[ix])
+						self.change_room(joined[ix])
 						self.ticker_z = 0
 						try:
 							if mucous_config["tickers"]["ticker_cycle"] == "yes" and mucous_config["tickers"]["tickers_enabled"] == "yes":
@@ -7000,8 +7000,8 @@ class mucous(driver.Driver):
 			tw.scrollok(0)
 			tw.idlok(1)
 	
-			if self.display["chat"] != "roombox":
-				self.scrolling["chatroom"] = -1
+# 			if self.display["chat"] != "roombox":
+# 				self.scrolling["chatroom"] = -1
 			if self.logs["alert"] in ( "New Chat", "Nick Mention"):
 				self.alert_status("")	
 		
@@ -7046,9 +7046,9 @@ class mucous(driver.Driver):
 			selected_log = self.logs["rooms"][self.Spl["room"]]
 			lol = self.wrap_chat_text(selected_log, w)
 			
-			if self.display["chat"] != "chatroom":
-				self.scrolling["chatroom"] =  len(lol)
-			else:
+			if self.display["chat"] == "chatroom":
+# 				self.scrolling["chatroom"] =  len(lol)
+# 			else:
 				if self.scrolling["chatroom"] == -1:
 					self.scrolling["chatroom"] = len(lol)
 
@@ -7370,6 +7370,11 @@ class mucous(driver.Driver):
 		return string
 	
 	# Change Room Title
+	def change_room(self, r):
+		self.scrolling["chatroom"] = -1
+		self.scrolling["roombox"] = 0
+		self.set_room(r)
+		
 	def set_room(self, r):
 		try:
 			self.Spl["room"] = r
@@ -7413,8 +7418,7 @@ class mucous(driver.Driver):
 				except:
 					pass
 				self.roomstatusbox()
-				if self.display["chat"] == "chatroom":
-					self.scrolling["chatroom"] = -1
+				
 				# Display chat log
 				try:
 					if self.display["chat"] == "chatroom":
