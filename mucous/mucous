@@ -336,11 +336,13 @@ class editor(threading.Thread):
 				else:
 					self.escape = True
 					return False		
-			elif c in ("t", "T", "p", "P"):
+			elif c in ("t", "T", "p", "P", "d", "D"):
 				if self.escape:
 					if c in ("t", "T"):
 						self.key_mouse_funks("switch", self.line)
-					if c in ("p", "P"):
+					elif c in ("d", "D"):
+						self.key_mouse_funks("delete", self.line)
+					elif c in ("p", "P"):
 						self.key_mouse_funks("popup", self.line)
 				else:
 					self.line = self.line[:pos] + c + self.line[pos:]
@@ -461,21 +463,21 @@ class mucous(driver.Driver):
 		driver.Driver.__init__(self)
 		self.config = {}
 		self.usernames = {"username": None, "download": None, "private":None, "info": None, "upload": None, "search": None, "privileges": None, "browse": "default__"}
-		self.Spl = {"menunumber": 0, "title": None, "selected": None, "status": None, "connected": 0, "room": None, "history_count": 0, "current_search": "default__",  "dir_browse": "", "search_method": "globally", "search_order": "num", "show_menu": False, "current_menu": None, "setup_input": "default", "ticker_room": None, "uploads": 0, "downloads": 0 , "search_reverse": False}
-		self.data = {"rooms": {}, "tickers": {}, "shares": {} , "roomlist": {}, "search_tickets": {}, "search_results": {}, "browse_num": {}, "browse_results": {}, "mystats": [], "downloads": {}, "uploads": {} }
-		self.logs = {"buddy": [], "ban": [], "ignore": [], "uploads": "Up: 0", "downloads": "Down: 0", "tab_completion": [], "search_count": ["Results: ", 0], "history": [], "alert": "", "onlinestatus": "Offline", "info": {}, "private": {}, "rooms": {}, "browse": {}, "search":{} , "roombox": {} , "status": {}     }
+		self.Spl = {"menunumber": 0, "title": None, "selected": None, "status": None, "connected": 0, "room": None, "history_count": 0, "current_search": "default__",  "dir_browse": "", "search_method": "globally", "search_order": "num", "show_menu": False, "current_menu": None, "setup_input": "default", "interests_input": "add_likes", "ticker_room": None, "uploads": 0, "downloads": 0 , "search_reverse": False, "recommend_sort": "alpha"}
+		self.data = {"rooms": {}, "tickers": {}, "shares": {} , "roomlist": {}, "search_tickets": {}, "search_results": {}, "browse_num": {}, "browse_results": {}, "mystats": [], "downloads": {}, "uploads": {}, "recommendations": {}, "similar_users": {} }
+		self.logs = {"buddies": [], "banned": [], "ignored": [], "trusted": [], "uploads": "Up: 0", "downloads": "Down: 0", "tab_completion": [], "search_count": ["Results: ", 0], "history": [], "alert": "", "onlinestatus": "Offline", "info": {}, "private": {}, "rooms": {}, "browse": {}, "search":{} , "roombox": {} , "status": {} , "recommendations": [], "likes": [], "hates": [], "similar_users":[]    }
 		self.activeitems = {"info": [], "search": [], "browse": [], "private": [], "positions": {}}
 		self.requests = {"ip":[], "info": [], "statistics": [], "browse": []}
 		self.transfers = {"downloads": {}, "uploads": {} }
-		self.display = {"mode": "chat", "list": "buddies", "chatshape": mucous_config["mucous"]["roombox"], "chat": "roomchat", "browse": "directories", "setup": "mucous", "password": "no", "transfers": "download", "transfers": "all", "t_scroll": "download", "t_speed": True}
+		self.display = {"mode": "chat", "list": "buddies", "interests": "recommendations", "chatshape": mucous_config["mucous"]["roombox"], "chat": "chatroom", "browse": "directories", "setup": "mucous", "password": "no", "transfers": "downloads", "transfer_sort": "all", "t_speed": True}
 		self.user = { "status": {}, "statistics": {}  }
 		self.windows = {"text": {}, "border": {}, "dimensions": {} }
+		self.scrolling = {"chatroom": -1, "roombox": 0, "chatstatus": 0, "info": 0, "private": 0, "browsefile": 0, "browsedir": 0, "likes": 0, "hates": 0, "recommendations": 0, "similar_users": 0, "help":0, "debug": 0, "search": 0, "uploads": 0, "downloads": 0, "buddies": 0, "banned": 0, "ignored": 0, "trusted": 0, "roomlist":0 }
 		self.menus = {}
-		
-		self.interestslog = []		
+
 		self.url = None
 		self.bfilter = None
-		self.dsup = 0
+
 		self.timedout = False
 		self.listline = [] # Tab Completion Line (split)
 		self.Sup = 0
@@ -484,16 +486,13 @@ class mucous(driver.Driver):
 		# transfers
 		self.sorted_transfer_list = {}
 		self.last_transferscroll = None
-			
-		self.s_start =0
-		self.s_end = -1
 
 		# searches
 		self.search_user = None
 		self.sfilter= None
 		self.search_number = 0
 
-		self.Spl["search_reverse"] = False
+
 		self.sorted_search = []
 
 		# config
@@ -519,8 +518,7 @@ class mucous(driver.Driver):
 		# Temporary Logs
 
 		
-		self.recommendations_list = {}
-		self.similar_users = {}
+
 
 		self.pminfolog = ["Global Private Messaging commands:",\
 "To start a Private Message:",\
@@ -983,6 +981,7 @@ class mucous(driver.Driver):
 				self.clear_timer.start()
 		except Exception,e:
 			self.Hlog("debug", "clear_display: " + str(e))
+			
 	def muscan_display(self):
 		try:
 			self.muscan_timer.cancel()
@@ -1850,26 +1849,22 @@ class mucous(driver.Driver):
 						self.send(messages.GetItemSimilarUsers(item))
 						
 				elif line[:6] == "/like ":
-					if line[6:] != "" and line[6:].isspace() == 0:
-						interest = line[6:]
-						self.send(messages.AddInterest(interest))
+					interest = line[6:]
+					self.send_add_interest(interest)
 						
 				elif line[:6] == "/hate ":
-					if line[6:] != "" and line[6:].isspace() == 0:
-						interest = line[6:]
-						self.send(messages.AddHatedInterest(interest))
+					interest = line[6:]
+					self.send_add_hated_interest(interest)
 						
 				elif line[:11] == "/donotlike ":
-					if line[11:] != "" and line[11:].isspace() == 0:
-						interest = line[11:]
-						if interest in self.config["interests.like"]:
-							self.send(messages.RemoveInterest(interest))
+					interest = line[11:]
+					if interest in self.config["interests.like"]:
+						self.send_remove_interest(interest)
 						
 				elif line[:11] == "/donothate ":
-					if line[11:] != "" and line[11:].isspace() == 0:
-						interest = line[11:]
-						if interest in self.config["interests.hate"]:
-							self.send(messages.RemoveHatedInterest(interest))
+					interest = line[11:]
+					if interest in self.config["interests.hate"]:
+						self.send_remove_hated_interest(interest)
 						
 				elif line == "/transbox":
 					if mucous_config["mucous"]["transbox"]=="split":
@@ -2362,6 +2357,8 @@ class mucous(driver.Driver):
 								self.mod_config("ban", line, '')
 							elif self.display["list"] == "ignored":
 								self.mod_config("ignore", line, '')
+							elif self.display["list"] == "interests":
+								self.interests_input_parse(line)
 						elif self.display["mode"] == "roomlist":
 							self.send(messages.JoinRoom(line.decode(mucous_config["mucous"]["language"])))
 						elif self.display["mode"] == "setup":
@@ -2374,6 +2371,49 @@ class mucous(driver.Driver):
 		except Exception,e:
 			self.Hlog("debug", "commands: " + str(e))
 			
+	def send_add_interest(self, interest):
+		try:
+			if self.Spl["connected"] == 1 and not interest.isspace() and interest != "":
+				self.send(messages.AddInterest(interest))
+		except Exception,e:
+			self.Hlog("debug", "send_add_interest: " + str(e))	
+	def send_add_hated_interest(self, interest):
+		try:
+			if self.Spl["connected"] == 1 and not interest.isspace() and interest != "":
+				self.send(messages.AddHatedInterest(interest))
+		except Exception,e:
+			self.Hlog("debug", "send_add_hated_interest: " + str(e))	
+	def send_remove_interest(self, interest):
+		try:
+			if self.Spl["connected"] == 1 and not interest.isspace() and interest != "":
+				if interest in self.config["interests.like"]:
+					self.send(messages.RemoveInterest(interest))
+		except Exception,e:
+			self.Hlog("debug", "send_remove_interest: " + str(e))	
+	def send_remove_hated_interest(self, interest):
+		try:
+			if self.Spl["connected"] == 1 and not interest.isspace() and interest != "":
+				if interest in self.config["interests.hate"]:
+					self.send(messages.RemoveHatedInterest(interest))
+		except Exception,e:
+			self.Hlog("debug", "send_remove_hated_interest: " + str(e))	
+	def interests_input_parse(self, line):
+		try:
+			interest = self.decode_language(line)
+			if self.display["interests"] == "likes":
+				if self.Spl["interests_input"] == "add_likes":
+					self.send_add_interest(interest)
+				elif self.Spl["interests_input"] == "del_likes":
+					self.send_remove_interest(interest)
+			elif self.display["interests"] == "hates":
+				if self.Spl["interests_input"] == "add_hates":
+					self.send_add_hated_interest(interest)
+				elif self.Spl["interests_input"] == "del_hates":
+					self.send_remove_hated_interest(interest)
+				
+				
+		except Exception,e:
+			self.Hlog("debug", "interests_input_parse: " + str(e))
 	def setup_input_parse(self, line):
 		try:
 			if self.Spl["setup_input"] == "interface":
@@ -2721,53 +2761,59 @@ class mucous(driver.Driver):
 			
 	def cb_get_global_recommendations(self, recommendations):
 		try:
-			self.recommendations_list = SortedDict()
+			self.data["recommendations"] = SortedDict()
 			for rec, num in recommendations.items():
-				self.recommendations_list [rec] = num
+				self.data["recommendations"] [rec] = num
+			if self.display["mode"] == "lists" and self.display["list"] == "interests":
+				self.interests_draw()
 		except Exception, e:
 			self.Hlog("debug", "CB Get Global Recommendations" + str(e))
 
 	def cb_get_similar_users(self, users):
 		try:
 			
-			self.similar_users = SortedDict()
+			self.data["similar_users"] = SortedDict()
 			for rec, num in users.items():
-				self.similar_users[rec] = num
-
+				self.data["similar_users"][rec] = num
+			if self.display["mode"] == "lists" and self.display["list"] == "interests":
+				self.interests_draw()
 		except Exception, e:
 			self.Hlog("debug", "CB Similar Users" + str(e))
 			
 	def cb_get_recommendations(self, recommendations):
 		try:
-			self.recommendations_list = SortedDict()
+			self.data["recommendations"] = SortedDict()
 			for rec, num in recommendations.items():
-				self.recommendations_list [rec] = num
-
+				self.data["recommendations"] [rec] = num
+			if self.display["mode"] == "lists" and self.display["list"] == "interests":
+				self.interests_draw()
 		except Exception, e:
 			self.Hlog("debug", "CB Get  Recommendations" + str(e))
 			
 	def cb_get_item_similar_users(self, item, users):
 		try:
-			self.similar_users = SortedDict()
+			self.data["similar_users"] = SortedDict()
 			for rec, num in users.items():
-				self.similar_users[rec] = num
-
+				self.data["similar_users"][rec] = num
+			if self.display["mode"] == "lists" and self.display["list"] == "interests":
+				self.interests_draw()
 		except Exception, e:
 			self.Hlog("debug", "CB Item Similar Users" + str(e))
 			
 	def cb_get_item_recommendations(self, item, recommendations):
 		try:
 
-			self.recommendations_list = SortedDict()
+			self.data["recommendations"] = SortedDict()
 			for rec, num in recommendations.items():
-				self.recommendations_list [rec] = num
-
+				self.data["recommendations"] [rec] = num
+			if self.display["mode"] == "lists" and self.display["list"] == "interests":
+				self.interests_draw()
 		except Exception, e:
 			self.Hlog("debug", "CB Get Item Recommendations" + str(e))
 			
-	def cb_add_hated_interest(self, interest):
-		self.Hlog("status", str(interest)) 
-		
+# 	def cb_add_hated_interest(self, interest):
+# 		self.Hlog("status", str(interest)) 
+				
 	def beep(self):
 		try:
 			if mucous_config["mucous"]["beep"] == "True":
@@ -2906,8 +2952,8 @@ class mucous(driver.Driver):
 				if self.Spl["room"] == room:
 					if self.display["chat"]  == "roombox":
 						self.data["rooms"][room].sort()
-						if self.data["rooms"][room].index(user) < self.Sup:
-							self.Sup += 1
+						if self.data["rooms"][room].index(user) < self.scrolling["roombox"]:
+							self.scrolling["roombox"] += 1
 
 					self.roomstatusbox()
 					for lines in self.logs["rooms"][self.Spl["room"]][ len(self.logs["rooms"][self.Spl["room"]]) - s["height"]:]:
@@ -2931,8 +2977,8 @@ class mucous(driver.Driver):
 			# correct placement in roombox
 			if  self.display["mode"] == "chat" and self.display["chat"]  == "roombox":
 				self.data["rooms"][room].sort()
-				if self.data["rooms"][room].index(user) < self.Sup:
-					self.Sup -= 1
+				if self.data["rooms"][room].index(user) < self.scrolling["roombox"]:
+					self.scrolling["roombox"] -= 1
 			if user in self.data["rooms"][room]:
 				self.data["rooms"][room].remove(user)
 			if room in self.data["tickers"]:
@@ -3050,7 +3096,7 @@ class mucous(driver.Driver):
 			if user in self.requests["statistics"]:
 	
 				self.info_log("Peer Stats for: %s" % user)
-				self.info_log("Speed: %s" % avgspeed)
+				self.info_log("Speed: %sKB/s" % avgspeed/1024)
 				self.info_log("Downloads: %s" % numdownloads)
 				self.info_log("Files: %s" % numfiles)
 				self.info_log("Directories: %s" % numdirs)
@@ -3330,11 +3376,8 @@ class mucous(driver.Driver):
 				browse_list = a
 				del a
 					
-			if self.display["browse"] == "directories":
-				clipped_list, sup, self.windows["dimensions"]["browse"]["start"] = self.scrollbox(browse_list, 0, w["height"])
-			else:
-				clipped_list, self.Sup, self.windows["dimensions"]["browse"]["start"] = self.scrollbox(browse_list, self.Sup, w["height"])
-				sup = self.Sup
+			clipped_list, self.scrolling["browsefile"], self.windows["dimensions"]["browse"]["start"] = self.scrollbox(browse_list, self.scrolling["browsefile"], w["height"])
+			sup = self.scrolling["browsefile"]
 				
 			
 
@@ -3353,28 +3396,16 @@ class mucous(driver.Driver):
 	def browse_file_bar(self):
 		try:
 			self.browse_bar.erase()
-			if self.display["browse"] == "files":
-				num = self.Sup
-				if self.Spl["dir_browse"] not in self.data["shares"][self.usernames["browse"]]:
-					self.browse_bar.refresh()
-					return
-					
-				if self.data["shares"][self.usernames["browse"]][self.Spl["dir_browse"]].keys() != []:
-					file, stats = self.data["shares"][self.usernames["browse"]][self.Spl["dir_browse"]].items()[num]
-				else: 
-					self.browse_bar.refresh()
-					return
-			else:
-				num = 0
-				if self.Spl["dir_browse"] not in self.data["shares"][self.usernames["browse"]]:
-					self.browse_bar.refresh()
-					return
-				if self.data["shares"][self.usernames["browse"]][self.Spl["dir_browse"]].keys() != []:
-					file, stats = self.data["shares"][self.usernames["browse"]][self.Spl["dir_browse"]].items()[num]
-				else: 
-					self.browse_bar.refresh()
-					return
-				#self.Hlog("debug", str( self.data["shares"][self.usernames["browse"]][self.Spl["dir_browse"]].keys()[num] ))
+			num = self.scrolling["browsefile"]
+			if self.Spl["dir_browse"] not in self.data["shares"][self.usernames["browse"]]:
+				self.browse_bar.refresh()
+				return
+			if self.data["shares"][self.usernames["browse"]][self.Spl["dir_browse"]].keys() != []:
+				file, stats = self.data["shares"][self.usernames["browse"]][self.Spl["dir_browse"]].items()[num]
+			else: 
+				self.browse_bar.refresh()
+				return
+	
 
 			size  = self.byte_format(stats[0])
 			
@@ -3402,7 +3433,7 @@ class mucous(driver.Driver):
 			self.browse_bar.addstr(line)
 			self.browse_bar.refresh()
 		except Exception, e:
-			self.Hlog("debug", "browse_file_bar: " + str(e)+":"+str(self.Sup))
+			self.Hlog("debug", "browse_file_bar: " + str(e))
 			
 # 	def get_shares(self, user, shares):
 			
@@ -3423,7 +3454,7 @@ class mucous(driver.Driver):
 					self.download_manager()
 					curses.doupdate()
 				else:
-					if self.display["t_scroll"] == "upload":
+					if self.display["transfers"] == "uploads":
 						self.upload_manager()
 						curses.doupdate()
 					else:
@@ -3451,7 +3482,7 @@ class mucous(driver.Driver):
 						self.upload_manager()
 						curses.doupdate()
 					else:
-						if self.display["t_scroll"] == "upload":
+						if self.display["transfers"] == "uploads":
 							self.upload_manager()
 							curses.doupdate()
 				self.upload_status(str(len(self.transfers["uploads"].keys())))
@@ -3463,7 +3494,7 @@ class mucous(driver.Driver):
 						self.download_manager()
 						curses.doupdate()
 					else:
-						if self.display["t_scroll"] == "upload":
+						if self.display["transfers"] == "uploads":
 							pass
 						else:
 							self.download_manager()
@@ -3485,7 +3516,7 @@ class mucous(driver.Driver):
 						self.upload_manager()
 						curses.doupdate()
 					else:
-						if self.display["t_scroll"] == "upload":
+						if self.display["transfers"] == "uploads":
 							self.upload_manager()
 							curses.doupdate()
 				self.upload_status(str(len(self.transfers["uploads"].keys())))
@@ -3497,7 +3528,7 @@ class mucous(driver.Driver):
 						self.download_manager()
 						curses.doupdate()
 					else:
-						if self.display["t_scroll"] == "upload":
+						if self.display["transfers"] == "uploads":
 							pass
 						else:
 							self.download_manager()
@@ -3605,7 +3636,7 @@ class mucous(driver.Driver):
 
 				if self.usernames["info"] in self.user["statistics"].keys():
 					try:
-						itw.addstr('\nSpeed: '+str(self.user["statistics"][self.usernames["info"]][0]))
+						itw.addstr('\nSpeed: %sKB/s' % str(self.user["statistics"][self.usernames["info"]][0]/1024))
 						itw.addstr('\nDown: '+str(self.user["statistics"][self.usernames["info"]][1]))
 						itw.addstr('\nFiles: '+str(self.user["statistics"][self.usernames["info"]][2]))
 						itw.addstr('\nDirs: '+str(self.user["statistics"][self.usernames["info"]][3]))
@@ -3751,7 +3782,7 @@ class mucous(driver.Driver):
 					self.sorted_search.reverse()
 				self.logs["search"][str(this_ticket)] = []
 				
-				clipped_list, self.Sup, self.windows["dimensions"]["search"]["start"] = self.scrollbox(self.sorted_search, self.Sup, self.windows["dimensions"]["search"]["height"])
+				clipped_list, self.scrolling["search"], self.windows["dimensions"]["search"]["start"] = self.scrollbox(self.sorted_search, self.scrolling["search"], self.windows["dimensions"]["search"]["height"])
 				tw.erase()
 				count = 0
 				self.activeitems["search"] = clipped_list
@@ -3838,7 +3869,7 @@ class mucous(driver.Driver):
 					
 					if self.Spl["current_search"]==str(ticket) and self.display["mode"] == "search":
 						#result = -1
-						if count + self.windows["dimensions"]["search"]["start"]== self.Sup:
+						if count + self.windows["dimensions"]["search"]["start"]== self.scrolling["search"]:
 							attr =  curses.A_REVERSE | curses.A_BOLD
 							attrc = self.colors["cybg"]| curses.A_BOLD
 							self.statswin.erase()
@@ -4124,15 +4155,15 @@ class mucous(driver.Driver):
 		try: 
 			if self.display["mode"] == "transfer":
 	
-				if self.display["transfers"] == 'active':
+				if self.display["transfer_sort"] == 'active':
 					status_list = (1, 2, 3, 4, 5, 6, 8, 9,)
-				elif self.display["transfers"] == 'all':
+				elif self.display["transfer_sort"] == 'all':
 					status_list = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
-				elif self.display["transfers"] == 'finished':
+				elif self.display["transfer_sort"] == 'finished':
 					status_list = (0, 99999)
-				elif self.display["transfers"] == 'queued':
+				elif self.display["transfer_sort"] == 'queued':
 					status_list = (7, 99999)
-				elif self.display["transfers"] == 'failed':
+				elif self.display["transfer_sort"] == 'failed':
 					status_list = (  10, 11, 12, 13)
 				uploadlist = []
 				num = 0
@@ -4152,15 +4183,12 @@ class mucous(driver.Driver):
 					self.Win_Height =self.h/2-5
 				else:
 					self.Win_Height =self.h -8
-				if self.display["t_scroll"] == "upload":
-					clipped_list, self.Sup, start = self.scrollbox(uploadlist, self.Sup, self.Win_Height)
-					s = self.Sup
-				else:
-					clipped_list, s, start = self.scrollbox(uploadlist, 0, self.Win_Height)
+				clipped_list, self.scrolling["uploads"], start = self.scrollbox(uploadlist, self.scrolling["uploads"], self.Win_Height)
+				s = self.scrolling["uploads"]
 				self.windows["dimensions"]["uploads"]["start"] = start
 				
 				try:
-					if self.display["t_scroll"] == "upload" or mucous_config["mucous"]["transbox"] == "split":
+					if self.display["transfers"] == "uploads" or mucous_config["mucous"]["transbox"] == "split":
 						
 						if self.display["t_speed"] == True:
 							swting = "Numb|Speed| Size | Username |  Status  |  Path"
@@ -4171,7 +4199,7 @@ class mucous(driver.Driver):
 							spaces -= 1
 							swting += " "
 						self.upwin.erase()
-						if self.display["t_scroll"] == "upload":
+						if self.display["transfers"] == "uploads":
 							self.upwin.addstr(swting, self.colors["green"] | curses.A_REVERSE)
 						else:
 							self.upwin.addstr(swting, self.colors["blafgcyabg"] )
@@ -4288,15 +4316,15 @@ class mucous(driver.Driver):
 		try:
 			if self.display["mode"] == "transfer":
 				w = self.windows["dimensions"]["downloads"]
-				if self.display["transfers"] == 'active':
+				if self.display["transfer_sort"] == 'active':
 					status_list = (1, 2, 3, 4, 5, 6, 8, 9,)
-				elif self.display["transfers"] == 'all':
+				elif self.display["transfer_sort"] == 'all':
 					status_list = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,  14)
-				elif self.display["transfers"] == 'finished':
+				elif self.display["transfer_sort"] == 'finished':
 					status_list = (0, 99999)
-				elif self.display["transfers"] == 'queued':
+				elif self.display["transfer_sort"] == 'queued':
 					status_list = (7, 99999)
-				elif self.display["transfers"] == 'failed':
+				elif self.display["transfer_sort"] == 'failed':
 					status_list = (  10, 11, 12, 13)
 				downloadlist = []
 				num = 0
@@ -4310,17 +4338,14 @@ class mucous(driver.Driver):
 					if item != None:
 						downloadlist.append(item)
 				#self.Hlog("debug", downloadlist)
-				if self.display["t_scroll"] == "download":
+				if self.display["transfers"] == "downloads":
 					self.Win_Height =self.windows["dimensions"]["downloads"]["height"]-1
 					
-				if self.display["t_scroll"] == "download":
-					clipped_list, self.Sup, start = self.scrollbox(downloadlist, self.Sup, self.Win_Height)
-					s = self.Sup
- 				else:
- 					clipped_list, s, start = self.scrollbox(downloadlist, 0, self.Win_Height)
+				clipped_list, self.scrolling["downloads"], start = self.scrollbox(downloadlist, self.scrolling["downloads"], self.Win_Height)
+				s = self.scrolling["downloads"]
 # 				clipped_list, self.Sup, start = self.scrollbox(downloadlist, self.Sup, self.Win_Height)
 				self.windows["dimensions"]["downloads"]["start"] = start
-				if self.display["t_scroll"] == "download" or mucous_config["mucous"]["transbox"] == "split":
+				if self.display["transfers"] == "downloads" or mucous_config["mucous"]["transbox"] == "split":
 					
 					try:
 						if self.display["t_speed"] == True:
@@ -4333,7 +4358,7 @@ class mucous(driver.Driver):
 							spaces -= 1
 							swting += " "
 						self.downwin.erase()
-						if self.display["t_scroll"] == "download":
+						if self.display["transfers"] == "downloads":
 							self.downwin.addstr(swting, self.colors["green"] | curses.A_REVERSE)
 						else:
 							self.downwin.addstr(swting, self.colors["blafgcyabg"] )
@@ -4500,7 +4525,7 @@ class mucous(driver.Driver):
 		try:
 			if user in self.activeitems["browse"]:
 				self.activeitems["browse"].remove(user)
-				self.dsup = 0
+				self.scrolling["browsedir"] = 0
 			if user in self.logs["browse"]:
 				del self.logs["browse"][user]
 			if self.activeitems["browse"] != []:
@@ -4529,7 +4554,7 @@ class mucous(driver.Driver):
  	def buddylist(self):
 		try:
 			if "buddies" in self.config.keys():
-				self.logs["buddy"] = []
+				self.logs["buddies"] = []
 				alpha_list = SortedDict()
 				for keyname, keyvalue in self.config["buddies"].items():
 					alpha_list[keyname] = keyvalue
@@ -4559,7 +4584,7 @@ class mucous(driver.Driver):
  	def banlist(self):
 		try:
 			if "banned" in self.config.keys():
-				self.logs["ban"] = []
+				self.logs["banned"] = []
 				alpha_list = SortedDict()
 				for keyname, keyvalue in self.config["banned"].items():
 					alpha_list[keyname] = keyvalue
@@ -4589,7 +4614,7 @@ class mucous(driver.Driver):
 		try:
 			if self.config !=  {}:
 				if "ignored" in self.config.keys():
-					self.logs["ignore"] = []
+					self.logs["ignored"] = []
 					alpha_list = SortedDict()
 					for keyname, keyvalue in self.config["ignored"].items():
 						alpha_list[keyname] = keyvalue
@@ -4657,9 +4682,12 @@ class mucous(driver.Driver):
 		try:
 			key = self.key
 			color_added = None
+			scrolltext = None
 			if self.display["mode"] in ( "transfer", "search", "help", "debug", "info", "private", "lists", "roomlist", "chat", "browse"):
 				if self.display["mode"] == "chat":
-					if self.display["chat"] == "roomchat":
+					if self.display["chat"] == "chatroom":
+						scrolltext = "chatroom"
+						
 						w = self.windows["dimensions"]["chat"]
 						if self.Spl["room"] != None:
 							selected_log = self.logs["rooms"][self.Spl["room"]]
@@ -4668,56 +4696,74 @@ class mucous(driver.Driver):
 							self.windows["text"]["chat"].refresh()
 							return
 					elif self.display["chat"] == "roombox":
+						scrolltext = "roombox"
 						w = self.windows["dimensions"]["roombox"]
 						selected_log = self.logs["roombox"][self.Spl["room"]]
+					elif self.display["chat"] == "roomstatus":
+						scrolltext = "roomstatus"
+						w = self.windows["dimensions"]["roomstatus"]
+						selected_log = self.logs["status"][self.Spl["room"]]
 					scrolldiff = w["height"]
 				elif self.display["mode"] == "browse":
+					if self.display["browse"] == "directories":
+						scrolltext = "browsedir"
+					else:
+						scrolltext = "browsefile"
 					scrolldiff = self.windows["dimensions"]["browse"]["height"]
-				elif self.display["mode"] in ("help", "debug"):
+				elif self.display["mode"] in ("debug", "help"):
+					scrolltext = self.display["mode"]
 					scrolldiff = self.windows["dimensions"]["help"]["height"]
 				elif self.display["mode"] in ("info", "private"):
+					scrolltext = self.display["mode"]
 					scrolldiff = self.windows["dimensions"][self.display["mode"]]["height"]
 				elif self.display["mode"] == "search":
+					scrolltext = self.display["mode"]
 					scrolldiff = self.windows["dimensions"]["search"]["height"]
 				elif self.display["mode"] == "lists":
 					if self.display["list"] == "buddies":
+						scrolltext = self.display["list"]
 						scrolldiff = self.windows["dimensions"][self.display["list"]]["height"]
-						selected_log = self.logs["buddy"]
+						selected_log = self.logs["buddies"]
 					elif self.display["list"] == "banned":
+						scrolltext = self.display["list"]
 						scrolldiff = self.windows["dimensions"][self.display["list"]]["height"]
-						selected_log = self.logs["ban"]
+						selected_log = self.logs["banned"]
 					elif self.display["list"] == "ignored":
+						scrolltext = self.display["list"]
 						scrolldiff = self.windows["dimensions"][self.display["list"]]["height"]
-						selected_log = self.logs["ignore"]
+						selected_log = self.logs["ignored"]
 					elif self.display["list"] == "interests":
+						scrolltext = self.display["interests"]
 						scrolldiff = self.windows["dimensions"][self.display["list"]]["height"]
-						selected_log = self.recommendations_list.keys()
+						selected_log = self.logs[self.display["interests"]]
 				elif self.display["mode"] == "roomlist":
+					scrolltext = "roomlist"
 					scrolldiff = self.windows["dimensions"][ self.display["mode"] ]["height"]
 				elif self.display["mode"] == "transfer":
 					if mucous_config["mucous"]["transbox"] == "split":
-						if self.display["t_scroll"] == "upload":
+						if self.display["transfers"] == "uploads":
+							scrolltext = "uploads"
 							scrolldiff = self.windows["dimensions"]["uploads"]["height"]-1
-						elif self.display["t_scroll"] == "download":
+						elif self.display["transfers"] == "downloads":
+							scrolltext = "downloads"
 							scrolldiff = self.windows["dimensions"]["downloads"]["height"]-1
 					else:
 						scrolldiff = self.h-7
 						
 				if key == "KEY_UP":	
-					self.Sup = self.Sup -1
+					self.scrolling[scrolltext] -= 1
 				elif key == "KEY_DOWN":
-					self.Sup = self.Sup +1
+					self.scrolling[scrolltext] += 1
 				elif key == "KEY_PPAGE":
+					self.scrolling[scrolltext] -= scrolldiff + 1
 					# upload or download window height - one line for heading
-					self.Sup = self.Sup -scrolldiff +1
 				elif key == "KEY_NPAGE":
-					self.Sup = self.Sup + scrolldiff -1
-				
-				if self.Sup < 0:
-					self.Sup = 0
+					self.scrolling[scrolltext] += scrolldiff + 1
+				if self.scrolling[scrolltext] < 0:
+					self.scrolling[scrolltext] = 0
 				
 				if self.display["mode"] == "chat":
-					if self.display["chat"]  == "roomchat":
+					if self.display["chat"]  == "chatroom":
 						#start -= 1
 						self.chat_display()
 					elif self.display["chat"]  == "roombox":
@@ -4743,14 +4789,14 @@ class mucous(driver.Driver):
 					return
 				elif self.display["mode"] == "roomlist":
 					self.display_room_list_mode()
-					return self.sizedrooms[self.Sup]
+					return self.sizedrooms[self.scrolling["roomlist"]]
 				elif self.display["mode"] in ("help", "debug"):
 					self.help_display()
 				elif self.display["mode"] == "transfer":
-					if self.display["t_scroll"] == "upload":
+					if self.display["transfers"] == "uploads":
 						self.upload_manager()
 						curses.doupdate()
-					elif self.display["t_scroll"] == "download":
+					elif self.display["transfers"] == "downloads":
 						self.download_manager()
 						curses.doupdate()
 				
@@ -4879,19 +4925,20 @@ class mucous(driver.Driver):
 			
 	def get_transfer_number(self, this_list):
 		try:
+			if self.display["transfers"] != "downloads":
+				mode = "uploads"
+			else:
+				mode = "downloads"
 			number = None
-			username = this_list[self.Sup][1] 
-			path = this_list[self.Sup][2]
+			username = this_list[self.scrolling[mode]][1] 
+			path = this_list[self.scrolling[mode]][2]
 			
 			userpath = (username, path)
 			
-			if self.display["t_scroll"] != "download":
-				listw = "uploads"
-			else:
-				listw = "downloads"
+			
 			count = 1
 			transfer = None
-			for user, path  in self.sorted_transfer_list[listw]:
+			for user, path  in self.sorted_transfer_list[mode]:
 				if (user, path) == userpath:
 					#transfer = count
 					number = count
@@ -4912,55 +4959,61 @@ class mucous(driver.Driver):
 			if this_list == []:
 				return
 			if menu == "roombox":
+				mode == "roombox"
 				if self.display["chatshape"] == "rightlist":
 					left = self.windows["dimensions"]["roombox"]["left"] - 22
 				else:
 					left = self.windows["dimensions"]["roombox"]["left"]+self.windows["dimensions"]["roombox"]["width"]+1
 				top = 2; width = 20
-				title = "%s" % (self.logs["roombox"][self.Spl["room"]][self.Sup])[:16]
-				user = name = self.logs["roombox"][self.Spl["room"]][self.Sup]
+				title = "%s" % (self.logs["roombox"][self.Spl["room"]][self.scrolling[mode]])[:16]
+				user = name = self.logs["roombox"][self.Spl["room"]][self.scrolling[mode]]
 				if user in self.user["statistics"].keys():
 					number = str(self.user["statistics"][user][2]) + " Files"
 				items = [["Private Message", "all"], ["Userinfo", "all"], ["IP Address", "all"], ["Browse", "all"], ["", "line"], ["Buddy", "buddies"], ["Ban", "banned"], ["Ignore", "ignored"], ["Trusted", "trusted"], ["Give Privileges", "giveprivs"]  ]
 				height = len(items) + 2	
 			elif menu == "lists":
+				mode = self.display["interests"]
 				left = 25; top = 2; width = 20
-				title = "%s" % (this_list[self.Sup])[1][:16]
-				name = this_list[self.Sup][1]
+				title = "%s" % (this_list[self.scrolling[mode]])[1][:16]
+				name = this_list[self.scrolling[mode]][1]
 				items = [["Private Message", "all"], ["Userinfo", "all"], ["IP Address", "all"], ["Browse", "all"], ["", "line"], ["Buddy", "buddies"], ["Ban", "banned"], ["Ignore", "ignored"], ["Trusted", "trusted"], ["Give Privileges", "giveprivs"]  ]
 				height = len(items) + 2	
 				
 			elif menu == "transfers":
+				mode = self.display["transfers"]
 				left = 25; top = 1; width = 20
 				
-				title = "%s" % this_list[self.Sup][1][:16]
-				name = this_list[self.Sup][1]
+				title = "%s" % this_list[self.scrolling[mode]][1][:16]
+				name = this_list[self.scrolling[mode]][1]
 				
 				number = self.get_transfer_number(this_list)
-				if self.display["t_scroll"] == "download":
+				if self.display["transfers"] == "downloads":
 					items = [["Retry", "transfers"], ["Retry All", "transfers"],["Abort", "transfers"], ["Abort User", "transfers"], ["Clear", "transfers"], ["Clear Finished", "transfers"], ["Clear User", "transfers"], ["", "line"], ["Private Message", "all"], ["Userinfo", "all"], ["IP Address", "all"], ["Browse", "all"], ["", "line"], ["Buddy", "buddies"], ["Ban", "banned"], ["Ignore", "ignored"], ["Trusted", "trusted"], ["Give Privileges", "giveprivs"],  ["Get Queue Place", "getplace"] ]
 				else:
 					items = [["Retry", "transfers"], ["Retry All", "transfers"],["Abort", "transfers"], ["Abort User", "transfers"], ["Clear", "transfers"], ["Clear Finished", "transfers"], ["Clear User", "transfers"], ["", "line"], ["Private Message", "all"], ["Userinfo", "all"], ["IP Address", "all"], ["Browse", "all"], ["", "line"], ["Buddy", "buddies"], ["Ban", "banned"], ["Ignore", "ignored"], ["Trusted", "trusted"], ["Give Privileges", "giveprivs"]  ]
 				height = len(items) + 2	
 			elif menu == "search":
+				mode = search
 				left = 25; top = 5; width = 20
-				number = this_list[self.Sup-self.windows["dimensions"]["search"]["start"]]
+				number = this_list[self.scrolling[mode]-self.windows["dimensions"]["search"]["start"]]
 				title = "%s" % (self.data["search_results"][number][1])
 				name = self.data["search_results"][number][1]
 				
 				items = [ ["Download", "download"], ["Download Dir", "downdir"], ["Display Full Path", "displaypath"], ["", "line"], ["Private Message", "all"], ["Userinfo", "all"], ["IP Address", "all"], ["Browse", "all"], ["", "line"], ["Buddy", "buddies"], ["Ban", "banned"], ["Ignore", "ignored"], ["Trusted", "trusted"], ["Give Privileges", "giveprivs"]]
 				height = len(items) + 2	
 			elif menu == "browse-dirs":
+				mode = "browsedir"
 				left = 23; top = 5; width = 20
-				#number = this_list[self.Sup-self.windows["dimensions"]["directories"]["start"]]
+				#number = this_list[self.scrolling[mode]-self.windows["dimensions"]["directories"]["start"]]
 				title = "Directory" 
 				name = self.usernames["browse"]
 				
 				items = [ ["Download Dir", "downdir"], ["Display Full Path", "displaypath"], ["", "line"], ["Private Message", "all"], ["Userinfo", "all"], ["IP Address", "all"], ["Refresh Shares", "all"], ["", "line"], ["Buddy", "buddies"], ["Ban", "banned"], ["Ignore", "ignored"], ["Trusted", "trusted"],  ["Give Privileges", "giveprivs"]]
 				height = len(items) + 2	
 			elif menu == "browse-files":	
+				mode = "browsefile"
 				left = 2; top = 5; width = 20
-				number =self.Sup + 1 #self.windows["dimensions"]["browse"]["start"]+1
+				number =self.scrolling[mode] + 1 #self.windows["dimensions"]["browse"]["start"]+1
 				title = "File"
 				name = self.usernames["browse"]
 				
@@ -5076,11 +5129,11 @@ class mucous(driver.Driver):
 				this_list = self.logs["roombox"][self.Spl["room"]]
 			elif self.display["mode"] == "lists":
 				if self.display["list"]=="buddies":
-					this_list = self.logs["buddy"]
+					this_list = self.logs["buddies"]
 				elif self.display["list"]=="banned":
-					this_list = self.logs["ban"]
+					this_list = self.logs["banned"]
 				elif self.display["list"]=="ignored":
-					this_list = self.logs["ignore"]
+					this_list = self.logs["ignored"]
 			elif self.display["mode"] == "transfer":
 				this_list = self.get_transfers_list()
 			elif self.display["mode"] == "search":
@@ -5100,17 +5153,17 @@ class mucous(driver.Driver):
 		try:
 			this_list = []
 			
-			if self.display["transfers"] == 'active':
+			if self.display["transfer_sort"] == 'active':
 				status_list = (1, 2, 3, 4, 5, 6, 8, 9,)
-			elif self.display["transfers"] == 'all':
+			elif self.display["transfer_sort"] == 'all':
 				status_list = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,  14)
-			elif self.display["transfers"] == 'finished':
+			elif self.display["transfer_sort"] == 'finished':
 				status_list = (0, 99999)
-			elif self.display["transfers"] == 'queued':
+			elif self.display["transfer_sort"] == 'queued':
 				status_list = (7, 99999)
-			elif self.display["transfers"] == 'failed':
+			elif self.display["transfer_sort"] == 'failed':
 				status_list = (  10, 11, 12, 13)
-			if self.display["t_scroll"] == "upload":
+			if self.display["transfers"] == "uploads":
 				
 				for username, path in self.sorted_transfer_list["uploads"]:
 					vals = self.transfers["uploads"][(username, path)]
@@ -5118,7 +5171,7 @@ class mucous(driver.Driver):
 					if status in status_list:
 						this_list.append(vals)
 						
-			elif self.display["t_scroll"] == "download":
+			elif self.display["transfers"] == "downloads":
 				#self.Hlog("debug", self.sorted_transfer_list["downloads"])
 				for username, path in self.sorted_transfer_list["downloads"]:
 					vals = self.transfers["downloads"][(username, path)]
@@ -5196,12 +5249,15 @@ class mucous(driver.Driver):
 			num = self.Spl["menunumber"]
 			if self.Spl["current_menu"] in ("roombox", "lists", "transfers", "search", "browse-dirs", "browse-files"):
 				if self.Spl["current_menu"] == "roombox":
-					username = self.logs["roombox"][self.Spl["room"]][self.Sup]
+					mode = "roombox"
+					username = self.logs["roombox"][self.Spl["room"]][self.scrolling[mode]]
 				elif self.Spl["current_menu"] == "lists":
-					username = self.find_menu()[self.Sup][1]
+					mode = self.display["list"]
+					username = self.find_menu()[self.scrolling[mode]][1]
 				elif self.Spl["current_menu"] == "transfers":
+					mode = self.display["transfers"]
 					the_list = self.find_menu()
-					item_num = self.Sup
+					item_num = self.scrolling[mode]
 					username = the_list[item_num][1] 
 					
 					path = the_list[item_num][2]
@@ -5211,7 +5267,7 @@ class mucous(driver.Driver):
 						return
 					if num == 0:
 						# RETRY DOWNLOAD
-						if self.display["t_scroll"] != "download":
+						if self.display["transfers"] != "downloads":
 							return 1
 						if transfer in self.data["downloads"].keys():
 							for username, path in self.data["downloads"][transfer].items():
@@ -5222,7 +5278,7 @@ class mucous(driver.Driver):
 						return 0
 					elif num == 1:
 						# RETRY ALL DOWNLOADS
-						if self.display["t_scroll"] != "download":
+						if self.display["transfers"] != "downloads":
 							return 1
 						for user_path, transfer  in self.transfers["downloads"].items():
 							if int(transfer[3]) in (10, 11, 12, 13, 14):
@@ -5230,14 +5286,14 @@ class mucous(driver.Driver):
 						return 0
 					elif num == 2:
 						# ABORT TRANSFER
-						if self.display["t_scroll"] == "download":
+						if self.display["transfers"] == "downloads":
 							if transfer in self.data["downloads"].keys():
 								for username, path in self.data["downloads"][transfer].items():
 									self.Hlog("status", "Aborting download: [%s] %s" % (username, path))
 									self.send(messages.TransferAbort(0, username, path))
 							else:
 								self.Hlog("status", "No such transfer #" + str(transfer))
-						elif self.display["t_scroll"] == "upload":
+						elif self.display["transfers"] == "uploads":
 							if transfer in self.data["uploads"].keys():
 								for username, path in self.data["uploads"][transfer].items():
 									self.Hlog("status", "Aborting upload: [%s] %s" % (username, path))
@@ -5247,13 +5303,13 @@ class mucous(driver.Driver):
 						return 0
 					elif num == 3:
 						# ABORT USER's TRANSFER(s)
-						if self.display["t_scroll"] == "download":
+						if self.display["transfers"] == "downloads":
 							for userpath, values in self.transfers["downloads"].items():
 								if userpath[0] == username:
 									self.Hlog("status", "Aborting download: [%s] %s" % (username, values[2]))
 									self.send(messages.TransferAbort(0, username, values[2]))
 	
-						elif self.display["t_scroll"] == "upload":
+						elif self.display["transfers"] == "uploads":
 							for userpath, values in self.transfers["uploads"].items():
 								if userpath[0] == username:
 									self.Hlog("status", "Aborting upload: [%s] %s" % (username, values[2]))
@@ -5262,7 +5318,7 @@ class mucous(driver.Driver):
 						return 0
 					elif num == 4:
 						# Clear
-						if self.display["t_scroll"] == "download":
+						if self.display["transfers"] == "downloads":
 							if transfer in self.data["downloads"].keys():
 								for username, path in self.data["downloads"][transfer].items():
 									self.Hlog("status", "Removing download: [%s] %s" % (username, path))
@@ -5270,7 +5326,7 @@ class mucous(driver.Driver):
 							else:
 								self.Hlog("status", "No such transfer #" + str(transfer))
 							
-						elif self.display["t_scroll"] == "upload":
+						elif self.display["transfers"] == "uploads":
 							if transfer in self.data["uploads"].keys():
 								for username, path in self.data["uploads"][transfer].items():
 									self.Hlog("status", "Removing upload: [%s] %s" % (username, path))
@@ -5280,22 +5336,22 @@ class mucous(driver.Driver):
 						return 0
 					elif num == 5:
 						# Clear ALL FINISHED/FAILED
-						if self.display["t_scroll"] == "download":
+						if self.display["transfers"] == "downloads":
 							for userpath, values in self.transfers["downloads"].items():
 								if values[3] == 0:
 									self.send(messages.TransferRemove(0, values[1], values[2]))
-						elif self.display["t_scroll"] == "upload":
+						elif self.display["transfers"] == "uploads":
 							for userpath, values in self.transfers["uploads"].items():
 								if values[3] in (0, 10, 11, 12, 13, 14):
 									self.send(messages.TransferRemove(1, values[1], values[2]))
 						return 0
 					elif num == 6:
 						# Clear USER's Transfers
-						if self.display["t_scroll"] == "download":
+						if self.display["transfers"] == "downloads":
 							for userpath, values in self.transfers["downloads"].items():
 								if userpath[0] == username:
 									self.send(messages.TransferRemove(0, values[1], values[2]))
-						elif self.display["t_scroll"] == "upload":
+						elif self.display["transfers"] == "uploads":
 							for userpath, values in self.transfers["uploads"].items():
 								if userpath[0] == username:
 									self.send(messages.TransferRemove(1, values[1], values[2]))
@@ -5306,8 +5362,8 @@ class mucous(driver.Driver):
 						num -=8
 				elif self.Spl["current_menu"] == "search":
 					the_list = self.find_menu()
-					
-					number = the_list[self.Sup-self.windows["dimensions"]["search"]["start"]]
+					mode = "search"
+					number = the_list[self.scrolling[mode]-self.windows["dimensions"]["search"]["start"]]
 					#self.Hlog("status", number)
 					username = self.data["search_results"][number][1]
 					path = self.data["search_results"][number][5]
@@ -5339,7 +5395,8 @@ class mucous(driver.Driver):
 					userpath = (username, path)
 					
 					if self.display["browse"] == "directories":
-						number = self.Sup-self.windows["dimensions"]["directories"]["start"]
+						mode = "browsedir"
+						number = self.scrolling[mode]-self.windows["dimensions"]["directories"]["start"]
 						if num == 0:
 							# Download
 							self.download_path_file("dir", number)
@@ -5350,7 +5407,8 @@ class mucous(driver.Driver):
 						else:
 							num -= 2
 					if self.display["browse"] == "files":
-						number = self.Sup
+						mode = "browsefile"
+						number = self.scrolling[mode]
 						if num == 0:
 							# Download
 							self.download_path_file("file", number)
@@ -5467,10 +5525,10 @@ class mucous(driver.Driver):
 					self.transwin.redrawwin()
 					self.transwin.refresh()
 				else:
-					if self.display["t_scroll"] == "download":
+					if self.display["transfers"] == "downloads":
 						self.transwin.redrawwin()
 						self.transwin.refresh()
-					elif self.display["t_scroll"] == "upload":
+					elif self.display["transfers"] == "uploads":
 						self.transwin2.redrawwin()
 						self.transwin2.refresh()
 			elif self.display["mode"] =="lists":
@@ -5512,12 +5570,13 @@ class mucous(driver.Driver):
 			if y >= w["top"]+1 and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
 							
 				y -= w["top"] +1
-				
 				if y  + w["start"] in range(len( self.get_transfers_list() )):
-					self.Sup = y  + w["start"]
+					if self.display["mode"] in ("chat", "private", "info", "search", "browse", "transfer"):
+						mode = self.display["transfers"]
+						self.scrolling[mode] = y  + w["start"]
 	
 				
-				if self.display["t_scroll"] == "download":
+				if self.display["transfers"] == "downloads":
 					self.download_manager()
 					curses.doupdate()
 				else:
@@ -5538,15 +5597,15 @@ class mucous(driver.Driver):
 					return
 				elif x >= 20:
 					if x >=20 and x < 28:
-						self.display["transfers"] = 'all'
+						self.display["transfer_sort"] = 'all'
 					elif x >=28 and x < 39:
-						self.display["transfers"] = 'active'
+						self.display["transfer_sort"] = 'active'
 					elif x >=39 and x < 50:
-						self.display["transfers"] = 'queued'	
+						self.display["transfer_sort"] = 'queued'	
 					elif x >=50 and x < 58:
-						self.display["transfers"] = 'finished'
+						self.display["transfer_sort"] = 'finished'
 					elif x >=63 and x < 75:
-						self.display["transfers"] = 'failed'
+						self.display["transfer_sort"] = 'failed'
 					self.transfer_mode()
 					return 1
 			return 0
@@ -5649,42 +5708,52 @@ class mucous(driver.Driver):
 								self.create_menu("browse-files", 0)
 							elif self.display["browse"] == "directories":
 								self.create_menu("browse-dirs", 0)
-			 
+			elif key in ("delete"):
+				if self.display["mode"] == "lists" and self.display["list"] == "interests":
+					inp = self.Spl["interests_input"]
+					if inp == "add_likes":
+						inp = "del_likes"
+					elif inp == "del_likes":
+						inp = "add_likes"
+					elif inp == "del_hates":
+						inp = "add_hates"
+					elif inp == "add_hates":
+						inp = "del_hates"
+					self.Spl["interests_input"]  = inp
+					self.interests_mode()
+				
+					
 			elif key in ("switch", "KEY_HOME", "KEY_END"):
 				if self.display["mode"] == "transfer":
 					# Tab to switch between upload and download scrolling
-					if self.display["t_scroll"] == "upload":
-						self.display["t_scroll"]="download"
-						self.Sup =0
-					elif self.display["t_scroll"]=="download":
-						self.display["t_scroll"]="upload"
-						self.Sup =0
+					if self.display["transfers"] == "uploads":
+						self.display["transfers"]="downloads"
+					elif self.display["transfers"]=="downloads":
+						self.display["transfers"]="uploads"
 					self.transfer_mode()
 				
 				elif self.display["mode"] == "chat":
 					if key in ("switch"):
-						if self.display["chat"] == "roomchat":
+						if self.display["chat"] == "chatroom":
 							if self.display["chatshape"] not in ( "noroombox", "chat-only"):
-								self.Sup =0
 								self.display["chat"] = "roombox"
 						elif self.display["chat"] == "roombox":
-							self.display["chat"] = "roomchat"
-							self.Sup = -1
+							self.display["chat"] = "chatroom"
  						self.chat_mode()
 						
 					elif key == "KEY_END":
-						if self.display["chat"] == "roomchat":
-							self.Sup = -1
+						if self.display["chat"] == "chatroom":
+							self.scroling["chatroom"] = -1
 							self.chat_display()
 						elif self.display["chat"] == "roombox":
-							self.Sup = len(self.data["rooms"][self.Spl["room"]])
+							self.scroling["roombox"] = len(self.data["rooms"][self.Spl["room"]])
 	 						self.chat_mode()
 					elif key == "KEY_HOME":
-						if self.display["chat"] == "roomchat":
-							self.Sup = 0 
+						if self.display["chat"] == "chatroom":
+							self.scroling["chatroom"] = 0 
 							self.chat_display()
 						elif self.display["chat"] == "roombox":
-							self.Sup = 0
+							self.scroling["roombox"] = 0
 							self.chat_mode()
 						
 					
@@ -5707,6 +5776,16 @@ class mucous(driver.Driver):
 					elif self.display["browse"] == "directories":
 						self.display["browse"] = "files"
 					self.browse_mode()
+				elif self.display["mode"] == "lists" and self.display["list"] == "interests":
+					if self.display["interests"] == "recommendations":
+						self.display["interests"] = "similar_users"
+					elif self.display["interests"] == "similar_users":
+						self.display["interests"] = "likes"
+					elif self.display["interests"] == "likes":
+						self.display["interests"] = "hates"
+					elif self.display["interests"] == "hates":
+						self.display["interests"] = "recommendations"
+					self.interests_mode()
 			elif key == "KEY_MOUSE":
 				(id,x,y,z,event)=curses.getmouse()
 				#self.Hlog("debug", "%d %d %d %d %d" % (id, x, y, z,event))
@@ -5774,16 +5853,16 @@ class mucous(driver.Driver):
 								
 								sup = y  + roombox["start"]
 								if event in ( 4096, 16384):
-									if sup != self.Sup:
-										self.Sup = sup
+									if sup != self.scrolling["roombox"]:
+										self.scrolling["roombox"] = sup
 									self.roomstatusbox()
 									
 									self.Spl["show_menu"] = True
 									self.create_menu("roombox", 0)
 									curses.doupdate()
 								else:
-									if sup != self.Sup:
-										self.Sup = sup
+									if sup != self.scrolling["roombox"]:
+										self.scrolling["roombox"] = sup
 										self.roomstatusbox()
 										curses.doupdate()
 							return
@@ -5824,8 +5903,8 @@ class mucous(driver.Driver):
 						self.scrolltext(line)
 					else:
 						if y >= w["top"]-1 and y < w["top"] + w["height"] +1 and x >= w["left"] -1 and x < w["left"] +w["width"]+1:
-							if self.display["chat"] != "roomchat":
-								self.display["chat"] = "roomchat"
+							if self.display["chat"] != "chatroom":
+								self.display["chat"] = "chatroom"
 								self.chat_mode()
 							
 					
@@ -5880,7 +5959,7 @@ class mucous(driver.Driver):
 							self.display["browse"] = "directories"
 							self.browse_redraw()
 							
-						self.Sup = y - d["top"] + d["start"]
+						self.scrolling["browsedir"] = y - d["top"] + d["start"]
 						self.browse_display()
 						
 						if event in ( 4096, 16384):
@@ -5897,7 +5976,7 @@ class mucous(driver.Driver):
 						if self.display["browse"] != "files":
 							self.display["browse"] = "files"
 							self.browse_redraw()
-						self.Sup = y - w["top"]+ w["start"]
+						self.scrolling["browsefile"] = y - w["top"]+ w["start"]
 						self.browse_display()
 						
 						if event in ( 4096, 16384):
@@ -5949,7 +6028,7 @@ class mucous(driver.Driver):
 							y1 = y- w["top"]
 							
 							if y1  + w["start"] in range(self.search_number):
-								self.Sup  = y1  + w["start"]
+								self.scrolling["search"]  = y1  + w["start"]
 								self.search_display()
 								if event in ( 4096, 16384):
 									self.Spl["show_menu"] = True
@@ -6054,51 +6133,156 @@ class mucous(driver.Driver):
 					if y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
 						y -= w["top"]
 						if y  + w["start"] in range(len(self.sizedrooms)):
-							self.Sup  = y  + w["start"]
+							self.scrolling["roomlist"]  = y  + w["start"]
 							self.display_room_list_mode()
-							return self.sizedrooms[self.Sup]
-	
+							return self.sizedrooms[self.scrolling["roomlist"]]
+
 							
 				elif self.display["mode"] == "lists":
 					w = self.windows["dimensions"][self.display["list"]]
 					if y == 1:
-						if x >= 3 and x <= 10:
+						if x >= 4 and x <= 15:
 							self.display["list"]="buddies"
 							self.list_mode()
-						elif x >= 13 and x <= 24:
+						elif x >= 17 and x <= 27:
 							self.display["list"]="banned"
 							self.list_mode()
-						elif x >= 26 and x <= 33:
+						elif x >= 29 and x <= 40:
 							self.display["list"]="ignored"
 							self.list_mode()
-						elif x >= 35 and x <= 50:
+						elif x >= 42 and x <= 55:
 							self.display["list"]="interests"
 							self.list_mode()
-					
-					elif y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
-						y -= w["top"]
-						
-						if self.display["list"]=="buddies":
-							this_list = self.logs["buddy"]
-						elif self.display["list"]=="banned":
-							this_list = self.logs["ban"]
-						elif self.display["list"]=="ignored":
-							this_list = self.logs["ignore"]
-						if y  + w["start"] in range(len(this_list)):
-							self.Sup  = y  + w["start"]
 							
-							if event in ( 4096, 16384):
-								self.display_lists()
-								self.Spl["show_menu"] = True
-								self.create_menu("lists", 0)
-							else:
-								self.display_lists()
+					if self.display["list"] == "interests":
+						rexw = self.windows["dimensions"]["recommendations"]
+						userw = self.windows["dimensions"]["similar_users"]
+						hatew = self.windows["dimensions"]["hates"]
+						likew = self.windows["dimensions"]["likes"]
+						
+# 						self.Hlog("debug", "%d %d" % (x, y) )
+						if y >= userw["top"]-1 and y < userw["top"] + userw["height"]+1 and x >= userw["left"]-1 and x < userw["left"]+1 +userw["width"]:
+# 							self.Hlog("debug", "sim")
+							w = userw
+							if self.display["interests"] != "similar_users":
+								self.display["interests"] = "similar_users"
+						
+							if y == w["top"] + w["height"]:
+								if x >= w["left"]+w["width"] -11 and x <=  w["left"]+w["width"]:
+									self.send(messages.GetSimilarUsers())
+							if y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
+								y -= w["top"]
+								this_list = self.logs[self.display["interests"]]
+								if y  + w["start"] in range(len(this_list)):
+									self.scrolling[self.display["interests"]]  = y  + w["start"]
+									self.line = str(self.logs[self.display["interests"]][self.scrolling[self.display["interests"]]][0])
+							self.interests_mode()
+							return self.line
+						elif y >= likew["top"]-1 and y < likew["top"] + likew["height"]+1 and x >= likew["left"]-1 and x < likew["left"]+1 +likew["width"]:
+# 							self.Hlog("debug", "lik")
+							w = likew
+							if self.display["interests"] != "likes":
+								self.display["interests"] = "likes"
+								
+							
+							if y == w["top"] + w["height"]:
+								
+								if x >= w["left"]+2 and x <= w["left"]+7:
+									
+									if self.Spl["interests_input"] == "add_likes":
+										self.send_add_interest(self.line)
+									else:
+										self.Spl["interests_input"] = "add_likes"
+								elif x >= w["left"]+9 and x <= w["left"]+w["width"]:
+									if self.Spl["interests_input"] == "del_likes":
+										self.send_remove_interest(self.line)
+									else:
+										self.Spl["interests_input"] = "del_likes"
+									
+							if y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
+								y -= w["top"]
+								this_list = self.logs[self.display["interests"]]
+								
+								if y  + w["start"] in range(len(this_list)):
+									self.scrolling[self.display["interests"]]  = y  + w["start"]
+ 									self.line = self.logs[self.display["interests"]][self.scrolling[self.display["interests"]]]
+
+								
+							self.interests_mode()
+							return self.line
+						elif y >= hatew["top"]-1 and y < hatew["top"] + hatew["height"]+1 and x >= hatew["left"]-1 and x < hatew["left"]+1 +hatew["width"]:
+# 							self.Hlog("debug", "hat")
+							w = hatew
+							if self.display["interests"] != "hates":
+								self.display["interests"] = "hates"
+							if y == w["top"] + w["height"]:
+								if x >= 2 and x <= 7:
+									if self.Spl["interests_input"] == "add_hates":
+										self.send_add_hated_interest(self.line)
+									else:
+										self.Spl["interests_input"] = "add_hates"
+									
+								elif x >= w["left"]+9 and x <= w["left"]+w["width"]:
+									if self.Spl["interests_input"] == "del_hates":
+										self.send_remove_hated_interest(self.line)
+									else:
+										self.Spl["interests_input"] = "del_hates"
+							if y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
+								y -= w["top"]
+								this_list = self.logs[self.display["interests"]]
+								if y  + w["start"] in range(len(this_list)):
+									self.scrolling[self.display["interests"]]  = y  + w["start"]
+									self.line = self.logs[self.display["interests"]][self.scrolling[self.display["interests"]]]
+							self.interests_mode()
+							return self.line
+						elif y >= rexw["top"]-1 and y < rexw["top"] + rexw["height"]+1 and x >= rexw["left"]-1 and x < rexw["left"]+1 +rexw["width"]:
+							w = rexw
+# 							self.Hlog("debug", "rec")
+							if self.display["interests"] != "recommendations":
+								self.display["interests"] = "recommendations"
+							if y == w["top"] -1:
+# 								self.Hlog("debug", w["left"]+w["width"] -len(self.Spl["interests_input"]) -5)
+# 								self.Hlog("debug", w["left"]+w["width"])
+								if x >= w["left"]+w["width"] -len(self.Spl["recommend_sort"]) -5 and x <=  w["left"]+w["width"]:
+									if self.Spl["recommend_sort"] == "size":
+										self.Spl["recommend_sort"] = "alpha"
+									elif self.Spl["recommend_sort"] == "alpha":
+										self.Spl["recommend_sort"] = "size"
+							elif y == w["top"] + w["height"]:
+								if x >= w["left"]+ 1 and x <=  w["left"]+12:
+									self.send(messages.GetRecommendations())
+								elif x >= w["left"]+w["width"] -10 and x <=  w["left"]+w["width"]:
+									self.send(messages.GetGlobalRecommendations())
+							elif y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
+								y -= w["top"]
+								this_list = self.logs[self.display["interests"]]
+								if y  + w["start"] in range(len(this_list)):
+									self.scrolling[self.display["interests"]]  = y  + w["start"]
+									self.line = self.logs[self.display["interests"]][self.scrolling[self.display["interests"]]][0]
+									
+							self.interests_mode()
+							return self.line
+					elif self.display["list"] in ("buddies", "banned", "ignored", "trusted"):
+						
+						if y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
+							y -= w["top"]
+							
+							this_list = self.logs[self.display["list"]]
+							if y  + w["start"] in range(len(this_list)):
+								self.scrolling[self.display["list"]]  = y  + w["start"]
+								
+								if event in ( 4096, 16384):
+									self.display_lists()
+									self.Spl["show_menu"] = True
+									self.create_menu("lists", 0)
+								else:
+									self.display_lists()
 							
 							
 				elif self.display["mode"] == "transfer":
 					# TRANSFERS BUTTONS
 					# Clickable transfer type switcher
-					up = self.Sup
+					up = self.scrolling[self.display["transfers"]]
 					if mucous_config["mucous"]["transbox"]=="split":
 						u = self.windows["dimensions"]["uploads"]
 						d = self.windows["dimensions"]["downloads"]
@@ -6106,32 +6290,31 @@ class mucous(driver.Driver):
 						w = None
 						
 						if y >= u["top"]+1 and y <= u["top"] + u["height"] and x >= u["left"] and x < u["left"] +u["width"]:
-							if self.display["t_scroll"] != "upload":
-								self.display["t_scroll"] = "upload"
+							if self.display["transfers"] != "uploads":
+								self.display["transfers"] = "uploads"
 								self.transfer_mode()
 							w = u
 							#y -= w["top"]+1
 						elif y >= d["top"]+1 and y <= d["top"] + d["height"] and x >= d["left"] and x < d["left"] +d["width"]:
-							if self.display["t_scroll"] != "download":
-								self.display["t_scroll"] = "download"
+							if self.display["transfers"] != "downloads":
+								self.display["transfers"] = "downloads"
 								self.transfer_mode()
 							w = d
 	
 						if w != None:
-							r = self.math_transfer_window(w, event, x, y, up)
-							if r == 1:
+							if self.math_transfer_window(w, event, x, y, up) == 1:
 								return
 	
 					else:
 						if y == 1:
 							if x >=2 and x < 26:
-								self.display["t_scroll"]="upload"
+								self.display["transfers"]="uploads"
 							elif x >=27 and x < 40:	
-								self.display["t_scroll"]="download"
+								self.display["transfers"]="downloads"
 							self.transfer_mode()
 							return
 							
-						if self.display["t_scroll"] == "upload":
+						if self.display["transfers"] == "uploads":
 							w = self.windows["dimensions"]["uploads"]
 						else:
 							w = self.windows["dimensions"]["downloads"]
@@ -6462,16 +6645,16 @@ class mucous(driver.Driver):
 					
 				elif self.display["mode"] == "transfer":
 					# Hotkeys to switch listing transfer types
-					if self.display["transfers"] == 'all':
-						self.display["transfers"] = 'active'
-					elif self.display["transfers"] == 'active':
-						self.display["transfers"] = 'queued'	
-					elif self.display["transfers"] == 'queued':
-						self.display["transfers"] = 'finished'
-					elif self.display["transfers"] == 'finished':
-						self.display["transfers"] = 'failed'
-					elif self.display["transfers"] == 'failed':
-						self.display["transfers"] = 'all'
+					if self.display["transfer_sort"] == 'all':
+						self.display["transfer_sort"] = 'active'
+					elif self.display["transfer_sort"] == 'active':
+						self.display["transfer_sort"] = 'queued'	
+					elif self.display["transfer_sort"] == 'queued':
+						self.display["transfer_sort"] = 'finished'
+					elif self.display["transfer_sort"] == 'finished':
+						self.display["transfer_sort"] = 'failed'
+					elif self.display["transfer_sort"] == 'failed':
+						self.display["transfer_sort"] = 'all'
 	
 					self.transfer_mode()
 		
@@ -6661,23 +6844,23 @@ class mucous(driver.Driver):
 							self.roomstatuswin.addstr('* ', curses.A_BOLD)
 							
 						if users in self.config["banned"].keys():
-							if self.Sup == self.logs["roombox"][self.Spl["room"]].index(users):
+							if self.scrolling["roombox"] == self.logs["roombox"][self.Spl["room"]].index(users):
 								attrib = curses.A_BOLD | curses.A_REVERSE | self.colors["red"]
 							else: attrib = self.colors["red"]
 							
 						elif users in self.config["ignored"].keys():
-							if self.Sup == self.logs["roombox"][self.Spl["room"]].index(users):
+							if self.scrolling["roombox"] == self.logs["roombox"][self.Spl["room"]].index(users):
 								attrib = curses.A_BOLD | curses.A_REVERSE | self.colors["yellow"]
 							else: attrib = self.colors["yellow"]
 							
 						elif users in self.config["buddies"].keys():
-							if self.Sup == self.logs["roombox"][self.Spl["room"]].index(users):
+							if self.scrolling["roombox"] == self.logs["roombox"][self.Spl["room"]].index(users):
 								attrib = curses.A_BOLD | curses.A_REVERSE | self.colors["green"]
 							else:
 								attrib = self.colors["green"]
 							
 						else:
-							if self.Sup == self.logs["roombox"][self.Spl["room"]].index(users):
+							if self.scrolling["roombox"] == self.logs["roombox"][self.Spl["room"]].index(users):
 								attrib = curses.A_BOLD | curses.A_REVERSE 
 							else:
 								attrib = curses.A_NORMAL
@@ -6755,10 +6938,7 @@ class mucous(driver.Driver):
 							if self.logs["roombox"][self.Spl["room"]] != []:
 								#if self.display["chatshape"] in  ("big", "nostatuslog"):
 									#self.roomstatuswin.erase()
-								if self.display["chat"] == "roombox":
-									clipped_list, self.Sup, self.windows["dimensions"]["roombox"]["start"] = self.scrollbox(self.logs["roombox"][self.Spl["room"]], self.Sup, self.windows["dimensions"]["roombox"]["height"])
-								else:
-									clipped_list, s, self.windows["dimensions"]["roombox"]["start"] = self.scrollbox(self.logs["roombox"][self.Spl["room"]], self.Sup, self.windows["dimensions"]["roombox"]["height"])
+								clipped_list, self.scrolling["roombox"], self.windows["dimensions"]["roombox"]["start"] = self.scrollbox(self.logs["roombox"][self.Spl["room"]], self.scrolling["roombox"], self.windows["dimensions"]["roombox"]["height"])
 									
 								self.chat_roombox_display()
 								#for lines in clipped_list:
@@ -6781,21 +6961,21 @@ class mucous(driver.Driver):
 			cs = None
 			if self.display["chatshape"] == "big":
 				w = self.windows["dimensions"]["chat"] = {"height": self.h-13, "width": self.w-17, "top": 8, "left": 16}
-				cs = self.windows["dimensions"]["chatstatus"] = {"height": 6, "width": w["width"]+2, "top": 1, "left": w["left"]-1}
+				cs = self.windows["dimensions"]["roomstatus"] = {"height": 6, "width": w["width"]+2, "top": 1, "left": w["left"]-1}
 			elif self.display["chatshape"] == "widelist":
 				w = self.windows["dimensions"]["chat"] = {"height": self.h-13, "width": self.w-27, "top": 8, "left": 26}
-				cs = self.windows["dimensions"]["chatstatus"] = {"height": 6, "width": w["width"]+2, "top": 1, "left": w["left"]-1}
+				cs = self.windows["dimensions"]["roomstatus"] = {"height": 6, "width": w["width"]+2, "top": 1, "left": w["left"]-1}
 			elif self.display["chatshape"] in ("noroombox", "small"):
 				w = self.windows["dimensions"]["chat"] = {"height": self.h-13, "width": self.w-2, "top": 8, "left": 1}
 				if self.display["chatshape"] in ("noroombox"):
-					cs = self.windows["dimensions"]["chatstatus"] = {"height": 6, "width": w["width"]+2, "top": 1, "left": 0}
+					cs = self.windows["dimensions"]["roomstatus"] = {"height": 6, "width": w["width"]+2, "top": 1, "left": 0}
 					#cs["height"]-2, cs["width"]-1, cs["top"]+1,cs["left"]+1
 					#self.logwin = self.borderlogwin.subwin(4, cs["width"], 2, 1)
 				elif self.display["chatshape"] in ("small"):
-					cs = self.windows["dimensions"]["chatstatus"] = {"height": 6, "width": w["width"]+2, "top": 1, "left": 15}
+					cs = self.windows["dimensions"]["roomstatus"] = {"height": 6, "width": w["width"]+2, "top": 1, "left": 15}
 			elif self.display["chatshape"] == "rightlist":
 				w = self.windows["dimensions"]["chat"] = {"height": self.h-13, "width": self.w-17, "top": 8, "left": 1}
-				cs = self.windows["dimensions"]["chatstatus"] = {"height": 6, "width": w["width"]+2, "top": 1, "left": 0}
+				cs = self.windows["dimensions"]["roomstatus"] = {"height": 6, "width": w["width"]+2, "top": 1, "left": 0}
 			elif self.display["chatshape"] == "nostatuslog":
 				w = self.windows["dimensions"]["chat"] = {"height": self.h-7, "width": self.w-17, "top": 2, "left": 16}
 			elif self.display["chatshape"] == "chat-only":
@@ -6821,7 +7001,7 @@ class mucous(driver.Driver):
 			tw.idlok(1)
 	
 			if self.display["chat"] != "roombox":
-				self.Sup  = -1
+				self.scrolling["chatroom"] = -1
 			if self.logs["alert"] in ( "New Chat", "Nick Mention"):
 				self.alert_status("")	
 		
@@ -6853,14 +7033,7 @@ class mucous(driver.Driver):
 			w = self.windows["dimensions"]["roombox"]
 			lol = self.logs["roombox"][self.Spl["room"]]
 			self.roomstatuswin.erase()
-			if self.display["chat"] == "roomchat":
-				sup = 0
-			else:
-				sup = self.Sup
-				
-			clipped_list, sup, self.windows["dimensions"]["roombox"]["start"] = self.scrollbox(lol, sup, w["height"])
-			if self.display["chat"] == "roombox":
-				self.Sup = sup
+			clipped_list, self.scrolling["roombox"], self.windows["dimensions"]["roombox"]["start"] = self.scrollbox(lol, self.scrolling["roombox"], w["height"])
 			for lines in clipped_list:
 				self.showroomstatusbox(lines, w["start"])
 			self.roomstatuswin.noutrefresh()
@@ -6873,18 +7046,15 @@ class mucous(driver.Driver):
 			selected_log = self.logs["rooms"][self.Spl["room"]]
 			lol = self.wrap_chat_text(selected_log, w)
 			
-			if self.display["chat"] != "roomchat":
-				sup =  len(lol)
+			if self.display["chat"] != "chatroom":
+				self.scrolling["chatroom"] =  len(lol)
 			else:
-				if self.Sup == -1:
-					sup = self.Sup = len(lol)
-				else:
-					sup = self.Sup
-			
-			clipped_list, sup, self.windows["dimensions"]["chat"]["start"] = self.scrollbox(lol, sup, w["height"])
+				if self.scrolling["chatroom"] == -1:
+					self.scrolling["chatroom"] = len(lol)
+
+			clipped_list, self.scrolling["chatroom"], self.windows["dimensions"]["chat"]["start"] = self.scrollbox(lol, self.scrolling["chatroom"], w["height"])
 			#self.wrap_chat_text(log_scroll[start:end], 0)
-			if self.display["chat"] == "roomchat":
-				self.Sup = sup
+			
 			self.windows["text"]["chat"].erase()
 			for lines in clipped_list:
 				#lines, ls = self.string_add_blanks(lines, w)
@@ -7243,11 +7413,11 @@ class mucous(driver.Driver):
 				except:
 					pass
 				self.roomstatusbox()
-				if self.display["chat"] == "roomchat":
-					self.Sup = -1
+				if self.display["chat"] == "chatroom":
+					self.scrolling["chatroom"] = -1
 				# Display chat log
 				try:
-					if self.display["chat"] == "roomchat":
+					if self.display["chat"] == "chatroom":
 						self.windows["border"]["chat"].attron(self.colors["green"])
 					else:
 						self.windows["border"]["chat"].attroff(self.colors["green"])
@@ -7369,7 +7539,7 @@ class mucous(driver.Driver):
 						#tw.addstr(tabbeduser)
 						#stats = note = ''
 						
-					if count + start == self.Sup:
+					if count + start == self.scrolling[self.display["list"]]:
 						attrib = curses.A_BOLD | curses.A_REVERSE | color
 						attrib2 = curses.A_BOLD | curses.A_REVERSE 
 					else:
@@ -7424,10 +7594,10 @@ class mucous(driver.Driver):
 				mw.addstr(1, s["width"]+1, "^",  self.colors["green"] | curses.A_BOLD)
 				mw.addstr(s["height"], s["width"]+1, "v",  self.colors["green"] | curses.A_BOLD)
 				
-				mw.addstr(s["height"]+1, 2, "< "+str(abs(self.Sup))+" >", self.colors["green"] | curses.A_BOLD)
+				mw.addstr(s["height"]+1, 2, "< "+str(abs(self.scrolling["chatroom"]))+" >", self.colors["green"] | curses.A_BOLD)
 # 				self.Hlog("debug", "rR")
 				if self.Spl["room"] != None:
-					if len(self.logs["rooms"][self.Spl["room"]]) -1 <= abs(self.Sup):
+					if len(self.logs["rooms"][self.Spl["room"]]) -1 <= abs(self.scrolling["chatroom"]):
 						mw.addstr(s["height"]+1, 10, "< AutoScrolling >", self.colors["green"] | curses.A_BOLD)
 				
 			else:
@@ -7436,7 +7606,7 @@ class mucous(driver.Driver):
 				mw.addstr(0, 3, "< Chat Rooms >",   curses.A_BOLD)
 				mw.addstr(1, s["width"]+1, "^",  curses.A_BOLD)
 				mw.addstr(s["height"], s["width"]+1, "v",  curses.A_BOLD)
-# 				mw.addstr(s["height"]+1, 2, "< "+str(abs(self.Sup))+" >", curses.A_BOLD)
+# 				mw.addstr(s["height"]+1, 2, "< "+str(abs(self.scrolling["chatroom"]))+" >", curses.A_BOLD)
 			mw.noutrefresh()
 			
 		except Exception,e :
@@ -7453,15 +7623,15 @@ class mucous(driver.Driver):
 			self.logs["rooms"][room].append(full_message)
 				
 			if self.display["mode"] == "chat":
-				if room == self.Spl["room"] and self.display["chat"] == "roomchat":
-					if self.Sup >= oldlen -1:
-						self.Sup = -1
+				if room == self.Spl["room"] and self.display["chat"] == "chatroom":
+					if self.scrolling["chatroom"] >= oldlen -1:
+						self.scrolling["chatroom"] = -1
 						self.chat_display()
 				elif room == self.Spl["room"] and self.display["chat"] == "roombox":
-					temp = self.Sup
-					self.Sup = -1
+					temp = self.scrolling["chatroom"]
+					self.scrolling["chatroom"] = -1
 					self.chat_display()
-					self.Sup = temp
+					self.scrolling["chatroom"] = temp
 		except Exception,e :
 			self.Hlog("debug", "say: " + str(e))
 
@@ -7496,13 +7666,13 @@ class mucous(driver.Driver):
 				self.display["chat"]  = "roombox"
 			elif self.display["chatshape"] == "rightlist":
 				self.display["chatshape"] = "nostatuslog"
-				self.display["chat"]  = "roomchat"
+				self.display["chat"]  = "chatroom"
 			elif self.display["chatshape"] == "nostatuslog":	
 				self.display["chatshape"] = "chat-only"
-				self.display["chat"]  = "roomchat"
+				self.display["chat"]  = "chatroom"
 			elif self.display["chatshape"] == "chat-only":
 				self.display["chatshape"] = "noroombox"
-				self.display["chat"]  = "roomchat"
+				self.display["chat"]  = "chatroom"
 				
 			mucous_config["mucous"]["roombox"] = self.display["chatshape"]
 			self.chat_mode()
@@ -7539,7 +7709,7 @@ class mucous(driver.Driver):
 			tw.scrollok(0)
 			tw.idlok(1)
 			
-			self.Sup = -1 
+			self.scrolling["private"] = -1 
 			self.private_display()
 			if self.usernames["private"] != None:
 				self.Spl["selected"] = self.usernames["private"]
@@ -7576,7 +7746,7 @@ class mucous(driver.Driver):
 			self.Hlog("debug", "private_mode" +str(e))
 		curses.doupdate()
 		
-	def wrap_n_clip(self, the_list, w):
+	def wrap_n_clip(self, the_list, w, scrolltext):
 		try:
 			wrapped_lines = []
 			for lines in the_list:
@@ -7591,23 +7761,24 @@ class mucous(driver.Driver):
 				list_of_strings = self.string_cut_width(lines1, w)
 				for string in list_of_strings:
 					wrapped_lines.append(string)
-			if self.Sup == -1:
-				self.Sup = len(wrapped_lines)
-			clipped_list, self.Sup, w["start"] = self.scrollbox(wrapped_lines, self.Sup, w["height"])
-			return clipped_list, self.Sup, w["start"]
+			if self.scrolling[scrolltext] == -1:
+				self.scrolling[scrolltext] = len(wrapped_lines)
+			clipped_list, self.scrolling[scrolltext], w["start"] = self.scrollbox(wrapped_lines, self.scrolling[scrolltext], w["height"])
+			return clipped_list, self.scrolling[scrolltext], w["start"]
 		except Exception, e:
 			self.Hlog("debug", "wrap_n_clip " +str(e))
 	
 	
 	def private_display(self):
 		try:
+			scrolltext = "private"
 			w = self.windows["dimensions"]["private"]
 			tw = self.windows["text"]["private"]
 			tw.erase()
 			if self.usernames["private"] != None:
 				# Private chat log
 				if self.usernames["private"] in self.logs["private"]:
-					clipped_list, self.Sup, w["start"] = self.wrap_n_clip( self.logs["private"][self.usernames["private"]], w )
+					clipped_list, self.scrolling["private"], w["start"] = self.wrap_n_clip( self.logs["private"][self.usernames["private"]], w, scrolltext )
 					
 					attrs = curses.A_BOLD #| curses.A_UNDERLINE
 					attr = curses.A_NORMAL
@@ -7615,7 +7786,7 @@ class mucous(driver.Driver):
 					for lines in clipped_list:
 						try:
 							lines, ls = self.string_add_blanks(lines, w)
-							if count + w["start"] == self.Sup:
+							if count + w["start"] == self.scrolling["private"]:
 								tw.addstr(self.decode_language(lines), attrs)
 							else:
 								tw.addstr(self.decode_language(lines), attr)
@@ -7671,18 +7842,18 @@ class mucous(driver.Driver):
 						win.addstr(0, 27, "< Downloading Transfers >",   curses.A_BOLD|self.colors["green"])	
 					
 				else:
-					if self.display["t_scroll"] == "upload" and window == "uploads":
+					if self.display["transfers"] == "uploads" and window == "uploads":
 						win.attron(self.colors["green"])
 						win.border()
 						win.addstr(0, 3, "< Uploading Transfers >", curses.A_BOLD|self.colors["green"])
-					elif self.display["t_scroll"] == "upload" and window == "downloads":
+					elif self.display["transfers"] == "uploads" and window == "downloads":
 						win.border()
 						win.addstr(0, 3, "< Downloading Transfers >", curses.A_BOLD)
-					elif self.display["t_scroll"] == "download" and window == "downloads":
+					elif self.display["transfers"] == "downloads" and window == "downloads":
 						win.attron(self.colors["green"])
 						win.border()
 						win.addstr(0, 3, "< Downloading Transfers >", curses.A_BOLD|self.colors["green"])
-					elif self.display["t_scroll"] == "download" and window == "uploads":
+					elif self.display["transfers"] == "downloads" and window == "uploads":
 						win.border()
 						win.addstr(0, 3, "< Uploading Transfers >", curses.A_BOLD)
 						
@@ -7770,7 +7941,7 @@ class mucous(driver.Driver):
 				
 				
 				
-			self.Sup = 0
+			self.scrolling[self.display["list"]] = 0
 		except Exception, e:
 			self.Hlog("debug", "process_list_window: " + str(e))
 		
@@ -7778,7 +7949,7 @@ class mucous(driver.Driver):
 	def transfer_mode(self):
 		self.display["mode"] = "transfer"
 		self.Spl["show_menu"] = False
-		
+# 		self.scrolling["uploads"] = self.scrolling["downloads"]  = 0
 		# Draw upload border
 
 		try:
@@ -7789,7 +7960,7 @@ class mucous(driver.Driver):
 				self.process_list_window("downloads")
 				
 			elif mucous_config["mucous"]["transbox"] == "tabbed":
-				if self.display["t_scroll"] == "upload":
+				if self.display["transfers"] == "uploads":
 					u = self.windows["dimensions"]["uploads"] = {"height": self.h-7, "width": self.w-2, "top": 2, "left": 1}
 					self.process_list_window("uploads")
 				else:
@@ -7815,13 +7986,13 @@ class mucous(driver.Driver):
 				
 			elif mucous_config["mucous"]["transbox"] == "tabbed":
 				
-				if self.display["t_scroll"] == "upload":
+				if self.display["transfers"] == "uploads":
 					self.transwin2.refresh()
 					self.upwin = self.transwin2.subwin( u["height"], u["width"], u["top"], u["left"])
 					self.upwin.scrollok(0)
 					self.upwin.idlok(1)
 					self.upwin.noutrefresh()
-				elif self.display["t_scroll"] == "download":
+				elif self.display["transfers"] == "downloads":
 					self.transwin.refresh()
 					# Draw download window
 					self.downwin = self.transwin.subwin(d["height"],d["width"], d["top"],d["left"])
@@ -7829,11 +8000,7 @@ class mucous(driver.Driver):
 					self.downwin.idlok(1)
 					self.downwin.noutrefresh()
 					
-			if self.last_transferscroll != None:
-				if self.last_transferscroll != self.display["t_scroll"]:
-					self.Sup = 0
-			else:
-				self.Sup = 0
+
 			
 		except Exception, e:
 			self.Hlog("debug", "transfer mode: " + str(e))
@@ -7847,14 +8014,14 @@ class mucous(driver.Driver):
 				self.download_manager()
 				curses.doupdate()
 			else:
-				if self.display["t_scroll"] == "upload":
+				if self.display["transfers"] == "uploads":
 					self.upload_manager()
 					curses.doupdate()
-				if self.display["t_scroll"] == "download":
+				if self.display["transfers"] == "downloads":
 					self.download_manager()
 					curses.doupdate()
 					
-			self.last_transferscroll = self.display["t_scroll"]
+			self.last_transferscroll = self.display["transfers"]
 		except Exception, e:
 			self.Hlog("debug", "transfer panel: " + str(e))
 			
@@ -7871,42 +8038,42 @@ class mucous(driver.Driver):
 	
 	def transfer_panel(self):
 		try:
-			if self.display["t_scroll"] == "download":
+			if self.display["transfers"] == "downloads":
 				s = self.windows["dimensions"]["downloads"]
 				window = self.transwin
-			elif self.display["t_scroll"] == "upload":
+			elif self.display["transfers"] == "uploads":
 				s = self.windows["dimensions"]["uploads"]
 				window = self.transwin2
 			pos = 2
 			 
 			self.arrows(window, s["height"]+1, pos, mucous_config["mucous"]["transbox"])
 			
-			if self.display["transfers"] == 'all':
+			if self.display["transfer_sort"] == 'all':
 				
 				pos = 20
-				self.arrows(window, s["height"]+1, pos, self.display["transfers"])
+				self.arrows(window, s["height"]+1, pos, self.display["transfer_sort"])
 			else:
 				window.addstr(s["height"]+1, 20, "< All >")
 
-			if self.display["transfers"] == 'active':
+			if self.display["transfer_sort"] == 'active':
 				pos = 28
-				self.arrows(window, s["height"]+1, pos, self.display["transfers"])
+				self.arrows(window, s["height"]+1, pos, self.display["transfer_sort"])
 			else:
 				window.addstr(s["height"]+1, 28, "< "+'Active'+" >")
 
-			if self.display["transfers"] == 'queued':
+			if self.display["transfer_sort"] == 'queued':
 				pos = 39
-				self.arrows(window, s["height"]+1, pos, self.display["transfers"])
+				self.arrows(window, s["height"]+1, pos, self.display["transfer_sort"])
 			else:
 				window.addstr(s["height"]+1, 39, "< "+'Queued'+" >")
-			if self.display["transfers"] == 'finished':
+			if self.display["transfer_sort"] == 'finished':
 				pos = 50
-				self.arrows(window, s["height"]+1, pos, self.display["transfers"])
+				self.arrows(window, s["height"]+1, pos, self.display["transfer_sort"])
 			else:
 				window.addstr(s["height"]+1, 50, "< "+'Finished'+" >")
-			if self.display["transfers"] == 'failed':
+			if self.display["transfer_sort"] == 'failed':
 				pos = 63
-				self.arrows(window, s["height"]+1, pos, self.display["transfers"])
+				self.arrows(window, s["height"]+1, pos, self.display["transfer_sort"])
 			else:
 				window.addstr(s["height"]+1, 63, "< "+'Failed'+" >")
 			window.refresh()
@@ -7937,8 +8104,7 @@ class mucous(driver.Driver):
 			self.dirwin.erase()
 			self.dirwin.noutrefresh()
 	
-			self.Sup = 0 
-			
+			self.scrolling["browsefile"] = self.scrolling["browsedir"] = 0
 			# Vars
 			self.filesdirs = []
 			self.numberfiles=0
@@ -7993,7 +8159,7 @@ class mucous(driver.Driver):
 			self.dirborderwin.noutrefresh()
 			
 			if self.usernames["browse"] == "default__":
-				self.dsup = 0
+				self.scrolling["browsedir"] = 0
 				self.set_edit_title("Choose a user to Browse Shares")
 				self.temporary_click_text()
 			else:
@@ -8023,10 +8189,10 @@ class mucous(driver.Driver):
 				directories.sort()
 				self.directories = directories
 				if self.display["browse"] == "directories":
-					clipped_list, self.Sup, self.windows["dimensions"]["directories"]["start"] = self.scrollbox(directories, self.Sup, d["height"])
-					self.dsup = self.Sup
+					clipped_list, self.scrolling["browsedir"], self.windows["dimensions"]["directories"]["start"] = self.scrollbox(directories, self.scrolling["browsedir"], d["height"])
+# 					self.scrolling["browsedir"] = self.Sup
 				else:
-					clipped_list, self.dsup, self.windows["dimensions"]["directories"]["start"] = self.scrollbox(directories, self.dsup, d["height"])
+					clipped_list, self.scrolling["browsedir"], self.windows["dimensions"]["directories"]["start"] = self.scrollbox(directories, self.scrolling["browsedir"], d["height"])
 				
 				count = 0
 				self.dirwin.erase()
@@ -8036,7 +8202,7 @@ class mucous(driver.Driver):
 						string = (" " * (len(z)-2)) + "\\"
 						string += self.decode_language(z[-1][:self.w-w["width"]-4-len(string)])
 						string += " " * ( (self.w-w["width"]-4) -len(string) )
-						if count +d["start"] == self.dsup:
+						if count +d["start"] == self.scrolling["browsedir"]:
 							self.dirwin.addstr(string, self.colors["green"])
 						else:
 							self.dirwin.addstr(string)
@@ -8045,7 +8211,7 @@ class mucous(driver.Driver):
 						pass
 						#self.Hlog("debug", str(e))
 				
-				self.Spl["dir_browse"] = self.directories[self.dsup] 
+				self.Spl["dir_browse"] = self.directories[self.scrolling["browsedir"]]
 				self.set_edit_title(self.Spl["dir_browse"] )
 				self.browse_file_stats( self.usernames["browse"], self.Spl["dir_browse"])
 				self.browse_file_bar()
@@ -8063,7 +8229,7 @@ class mucous(driver.Driver):
 				for lines in self.logs["browse"][self.usernames["browse"]]:
 				#self.browse_file_stats(self, self.usernames["browse"], self.Spl["dir_browse"]):
 					try:
-						self.display_browse_text(lines, count , self.Sup)
+						self.display_browse_text(lines, count , self.scrolling["browsefile"])
 		
 					except Exception, e:
 						self.Hlog("debug", "Browse mode" + str(e))
@@ -8151,7 +8317,6 @@ class mucous(driver.Driver):
 			tw = self.windows["text"]["search"] = mw.subwin(w["height"], w["width"], w["top"], w["left"])
 			tw.scrollok(0)
 			tw.idlok(1)
-			self.Sup = 0
 			
 			self.statswin = curses.newwin(1, self.w, self.h-5, 0)
 			self.statswin.erase()
@@ -8239,8 +8404,7 @@ class mucous(driver.Driver):
 				gi = "Instructions"
 			elif self.display["mode"] == "info":
 				gi = "Instructions"
-				
-				
+
 			w = self.windows["dimensions"][self.display["mode"]]
 			pos = w["width"]-3-len(gi)
 			if self.display["mode"] != "lists":
@@ -8267,14 +8431,14 @@ class mucous(driver.Driver):
 				mw.addstr(vertex,w["width"]-9, "Close ", self.colors["cyan"] | curses.A_BOLD)
 				mw.addstr(vertex,w["width"]-3, ">")
 			elif self.display["mode"] == "info":
-				isw = self.windows["border"][["infostats"]]
+				isw = self.windows["border"]["infostats"]
 				isw.addstr(vertex,3, "< ")
 				isw.addstr(vertex,5, "Close ", self.colors["cyan"] | curses.A_BOLD)
 				isw.addstr(vertex,11, ">")
 				isw.noutrefresh()
 			mw.noutrefresh()
 		except Exception, e:
-			self.Hlog("debug", "TCT" + str(e))
+			self.Hlog("debug", "TemporaryClickText " + str(e))
 	
 	def select_tab_box(self, tab_box_list, selected_tab):
 		try:
@@ -8354,7 +8518,7 @@ class mucous(driver.Driver):
 			self.display["mode"] = "info"
 			self.Spl["show_menu"] = False
 			
-			w = self.windows["dimensions"]["info"] = {"height": self.h-10, "width": self.w-17, "top": 5, "left": 1}
+			w = self.windows["dimensions"]["info"] = {"height": self.h-10, "width": self.w-20, "top": 5, "left": 1}
 			mw = self.windows["border"]["info"] = curses.newwin(w["height"]+2, w["width"]+2, w["top"]-1, w["left"]-1)
 			mw.attron(self.colors["green"])
 			mw.border()
@@ -8370,17 +8534,17 @@ class mucous(driver.Driver):
 			tw.idlok(1)
 			
 			
-			self.Sup = -1
+			self.scrolling["info"] = -1
 	
 			self.set_edit_title("Get info about user:")
 			
 			#if self.logs["alert"] in ("New Userinfo", "New IP", "New Stats"):
 			#	self.alert_status("")
-			
-			isw = self.windows["border"]["infostats"] = curses.newwin(self.h-8, 15, 4, self.w-15)
+			sw = self.windows["dimensions"]["infostats"]= {"height": self.h-10, "width": 16, "top": 5, "left": self.w-17}
+			isw = self.windows["border"]["infostats"] = curses.newwin(sw["height"]+2, sw["width"]+2, sw["top"]-1, sw["left"]-1)
 			isw.border()
-			
-			itw = self.windows["text"]["infostats"] = isw.subwin(self.h-10, 13, 5, self.w-14)
+			isw.addstr(0, 2, "< Stats >")
+			itw = self.windows["text"]["infostats"] = isw.subwin(sw["height"], sw["width"], sw["top"], sw["left"])
 			itw.scrollok(1)
 	
 			mw.refresh()
@@ -8399,17 +8563,18 @@ class mucous(driver.Driver):
 			
 	def info_display(self):
 		try:
+			scrolltext = "info"
 			w = self.windows["dimensions"]["info"] 
 			lang = mucous_config["mucous"]["language"]
 			tw = self.windows["text"]["info"]
 			if self.usernames["info"] != None:
 				self.temporary_click_text()
 				# Display Userinfo & Stats
-				clipped_list, self.Sup, w["start"] = self.wrap_n_clip(self.logs["info"][self.usernames["info"]][0], w )
+				clipped_list, self.scrolling["info"], w["start"] = self.wrap_n_clip(self.logs["info"][self.usernames["info"]][0], w, scrolltext )
 				
 			else:
 				# Display instructions, IP info, and stats
-				clipped_list, self.Sup, w["start"] = self.wrap_n_clip( self.infolog, w )
+				clipped_list, self.scrolling["info"], w["start"] = self.wrap_n_clip( self.infolog, w, scrolltext )
 	
 			attrs = curses.A_BOLD; attr = curses.A_NORMAL
 			count = 0
@@ -8417,7 +8582,7 @@ class mucous(driver.Driver):
 			for lines in clipped_list:
 				try:
 					lines, ls = self.string_add_blanks(lines, w)
-					if count + w["start"] == self.Sup:
+					if count + w["start"] == self.scrolling["info"]:
 						tw.addstr(self.decode_language(lines), attrs)
 					else:
 						tw.addstr(self.decode_language(lines), attr)
@@ -8459,7 +8624,7 @@ class mucous(driver.Driver):
 			tw.scrollok(0)
 			tw.idlok(1)
 			
-			self.Sup = -1
+			self.scrolling["help"] = -1
 			self.help_display()
 			
 			self.set_edit_title("Use /help")
@@ -8488,10 +8653,10 @@ class mucous(driver.Driver):
 				list_of_strings = self.string_cut_width(lines, w)
 				for string in list_of_strings:
 					wrapped_lines.append(string)
-			if self.Sup == -1:
-				self.Sup = len(wrapped_lines)
+			if self.scrolling[self.display["mode"]] == -1:
+				self.scrolling[self.display["mode"]] = len(wrapped_lines)
 				
-			clipped_list, self.Sup, w["start"] = self.scrollbox(wrapped_lines, self.Sup, w["height"])
+			clipped_list, self.scrolling[self.display["mode"]], w["start"] = self.scrollbox(wrapped_lines, self.scrolling[self.display["mode"]], w["height"])
 			del wrapped_lines
 			count = 0
 			
@@ -8539,7 +8704,7 @@ class mucous(driver.Driver):
 				
 			if self.display["mode"] in ( "help", "debug", "status"):
 				#self.Hlog_display( htype, s, 0)
-				self.Sup = -1
+				self.scrolling[self.display["mode"]] = -1
 				self.help_display()
 				#self.check_alert_state()
 			else:
@@ -8599,7 +8764,7 @@ class mucous(driver.Driver):
 			if self.display["mode"] in ( "help", "debug", "status"):
 				tw = self.windows["text"]["help"]
 				w = self.windows["dimensions"]["help"]
-				if count + w["start"] == self.Sup:
+				if count + w["start"] == self.scrolling[self.display["mode"]]:
 					attr = curses.A_BOLD
 				else:
 					attr = curses.A_NORMAL
@@ -8621,105 +8786,266 @@ class mucous(driver.Driver):
 		try:
 			self.display["list"] = "interests"
 			self.Spl["show_menu"] = False
+# 			self.scrolling[ "recommendations" ] = self.scrolling[ "likes" ] = self.scrolling[ "hates" ] = self.scrolling[ "similar_users" ] = 0
+			self.windows["dimensions"]["recommendations"] = s = self.windows["dimensions"][self.display["list"]] = {"height": self.h-8, "top": 3, "left": 21, "width": self.w-42, "start": 0}
+			self.windows["dimensions"]["likes"] = l  = self.windows["dimensions"][self.display["list"]] = {"height": self.h/2-5, "top": 3, "left": 1, "width": 18, "start": 0}
+			self.windows["dimensions"]["hates"] = h = self.windows["dimensions"][self.display["list"]] = {"height": self.h-8-(l["height"])-2, "top": 5+l["height"], "left": 1, "width": 18, "start": 0}
+			self.windows["dimensions"]["similar_users"] = u = self.windows["dimensions"][self.display["list"]] = {"height": self.h-8, "top":3 , "left": self.w-19, "width": 18, "start": 0}
 			
-			self.windows["dimensions"]["recommendations"] = s = self.windows["dimensions"][self.display["list"]] = {"height": self.h-7, "top": 2, "left": 21, "width": self.w-42}
-			self.windows["dimensions"]["likes"] = l  = self.windows["dimensions"][self.display["list"]] = {"height": self.h/2-4, "top": 2, "left": 1, "width": 18}
-			self.windows["dimensions"]["hates"] = h = self.windows["dimensions"][self.display["list"]] = {"height": self.h-7-(l["height"])-2, "top": 4+l["height"], "left": 1, "width": 18}
-			self.windows["dimensions"]["users"] = u = self.windows["dimensions"][self.display["list"]] = {"height": self.h-7, "top": 2, "left": self.w-19, "width": 18}
+			mw = curses.newwin(3, self.w,  1, 0)
+			mw.attron(self.colors["green"])
+# 			win = curses.newwin(w["height"]+2, w["width"]+2, w["top"]-1, w["left"]-1)
+			mw.erase()
+			mw.border()
+ 			mw.addstr(0, 3, "< Buddied >",  self.colors["green"])
+			mw.addstr(0, 16, "< Banned >", self.colors["green"])
+			mw.addstr(0, 28, "< Ignored >", self.colors["green"])
+			mw.addstr(0, 41, "< Interests >", self.colors["green"]  | curses.A_BOLD)
+			mw.noutrefresh()
 	
-			self.create_rex_window(s, "Recommendations")
-			self.create_rex_window(l, "Liked")
-			self.create_rex_window(h, "Hated")
-			self.create_rex_window(u, "Users")
-			
-			
-			self.like_draw()
-			self.hate_draw()
-			self.recommendations_draw()
-			self.similar_draw()
-	# 		self.buddylist()
-	# 		self.process_list_window(self.display["list"])
-			
-			log = self.interestslog
-			self.process_list_log(s, log)
+
+  			if self.display["interests"] == "likes":
+				if self.Spl["interests_input"] not in ("add_likes", "del_likes"):
+					self.Spl["interests_input"] = "add_likes"
+				if self.Spl["interests_input"] == "add_likes":
+					self.set_edit_title("Add Liked (Alt-D to Toggle to Delete)")
+				elif self.Spl["interests_input"] == "del_likes":
+					self.set_edit_title("Delete Liked (Alt-D to Toggle to Add)")
+			elif self.display["interests"] == "hates":
+				if self.Spl["interests_input"] not in ("add_hates", "del_hates"):
+					self.Spl["interests_input"] = "add_hates"
+				if self.Spl["interests_input"] == "add_hates":
+					self.set_edit_title("Add Hated (Alt-D to Toggle to Delete)")
+				elif self.Spl["interests_input"] == "del_hates":
+					self.set_edit_title("Delete Hated (Alt-D to Toggle to Add)")
+			elif self.display["interests"] == "recommendations":
+				self.set_edit_title("Recommendations:")
+			elif self.display["interests"] == "similar_users":
+				self.set_edit_title("Similar Users:")
+			self.create_rex_window(s, "recommendations")
+			self.create_rex_window(l, "likes")
+			self.create_rex_window(h, "hates")
+			self.create_rex_window(u, "similar_users")
+			self.interests_draw()
+
 			
 			self.hotkeys()
 			curses.doupdate()
 		except Exception, e:
 			self.Hlog("debug", "interests_mode: " + str(e))
 			
+	def interests_draw(self):
+		self.like_draw()
+		self.hate_draw()
+		self.recommendations_draw()
+		self.similar_draw()
+		
 	def recommendations_draw(self):
 		try:
-			self.windows["text"]["recommendations"].erase()
-			if self.recommendations_list != {}:
-				for item, num in self.recommendations_list.items():
-					self.windows["text"]["recommendations"].addstr(item + " " * (self.windows["dimensions"]["recommendations"]["width"] - len(item)))
-				self.windows["text"]["recommendations"].refresh()
-		except:
-			self.windows["text"]["recommendations"].refresh()
+			mode  = "recommendations"
+			self.windows["text"][mode].erase()
+			w = self.windows["dimensions"][mode]
+			self.logs[mode] = []
+			sup = self.scrolling[ mode ]
+			if self.data[mode] != {}:
+				if self.Spl["recommend_sort"] == "alpha":
+# 					dict = self.data[mode]
+					dict = []
+					for item, num in self.data[mode].items():
+						dict.append([item, num])
+				elif self.Spl["recommend_sort"] == "size":
+					dict = self.sortbyvalue(self.data[mode])
+					dict.reverse()
+				for item, num in dict: #.items():
+
+					self.logs[mode].append( [item, num])
+# 					self.Hlog("debug", "recommendations_draw: " + str(num))
+				if self.Spl["recommend_sort"] == "alpha":
+					self.logs[mode].sort()
+			else:
+				self.logs[mode] = [["EMPTY RECOMMENDATIONS", 0]]
+			count = 0
+			clipped_list, sup, self.windows["dimensions"][mode]["start"] = self.scrollbox(self.logs[mode], sup, w["height"])
+			self.scrolling[mode] = sup
+			start = self.windows["dimensions"][mode]["start"]
+			for item, num in clipped_list:
+				length = len( item+( " " * (w["width"] - len(item)-len(str(num))))+str(num ) )
+				if length > w["width"]:
+					item = item [:w["width"] - length  ]
+				if count + start == sup:
+					self.windows["text"][mode].addstr(item +( " " * (w["width"] - len(item)-len(str(num))))+str(num ), curses.A_BOLD)
+				else:
+					self.windows["text"][mode].addstr(item +( " " * (w["width"] - len(item)-len(str(num))))+str(num ))
+				count += 1
+			self.windows["text"][mode].refresh()
+		except Exception, e:
+			self.windows["text"][mode].refresh()
+# 			self.Hlog("debug", "recommendations_draw: " + str(e))
+
+	def similar_draw(self):
+		try:
+			mode  = "similar_users"
+			self.windows["text"][mode].erase()
+
+			if self.data[mode] != {}:
+				self.logs[mode] = []
+				w = self.windows["dimensions"][mode]
+				for user, status in self.data[mode].items():
+					self.logs[mode].append( [user, status])
+				sup = self.scrolling[ mode ]
+				count = 0 
+				self.logs[mode].sort()
+				clipped_list, sup, start = self.scrollbox(self.logs[mode], sup, w["height"])
+				self.windows["dimensions"][mode]["start"] = start
+				self.scrolling[mode] = sup
+				for user, status in clipped_list:
+					if count + start == sup:
+						attr = curses.A_BOLD
+					else: 
+						attr = curses.A_NORMAL
+					if status == 1:
+						self.windows["text"][mode].addstr("* ", self.colors["yellow"] | attr)
+					elif status == 2:
+						self.windows["text"][mode].addstr("* ", self.colors["green"] | attr)
+					else:
+						self.windows["text"][mode].addstr("* " , attr)
+					if len (user )+2 > w["width"]:
+						user = user[ :w["width"]-2-len(user) ]
+					self.windows["text"][mode].addstr(user + " " * (w["width"] - len(user)-2),   attr)
+					count +=1
+				self.windows["text"][mode].refresh()
+		except Exception, e:
+# 			self.Hlog( "debug", "similar_draw " + str(e) + str(self.scrolling["similar_users" ]))
+			self.windows["text"]["similar_users"].refresh()
 	
 	def hate_draw(self):
 		try:
-			self.windows["text"]["hates"].erase()
+			mode = "hates"
+
+			self.windows["text"][mode].erase()
+			w = self.windows["dimensions"][mode]
+			self.logs[mode] = []
+			sup = self.scrolling[ mode ]
 			if "interests.hate" in self.config.keys():
 				for item in self.config["interests.hate"]:
-					self.windows["text"]["hates"].addstr(item + " " * (self.windows["dimensions"]["hates"]["width"] - len(item)))
-				self.windows["text"]["hates"].refresh()
-		except Exception, e:
 					
+					self.logs[mode].append( item)
+	
+			count = 0
+			clipped_list, sup, self.windows["dimensions"][mode]["start"] = self.scrollbox(self.logs[mode], sup, w["height"])
+			self.scrolling[mode] = sup
+			start = self.windows["dimensions"][mode]["start"]
+			for line in clipped_list:
+				length = len( line+( " " * (w["width"] - len(line) ) ) )
+				if length > w["width"]:
+					line = line [:w["width"] - length  ]
+				if count + start == sup:
+					self.windows["text"][mode].addstr(line + " " * (self.windows["dimensions"]["hates"]["width"] - len(line)), curses.A_BOLD)
+				else:
+					self.windows["text"][mode].addstr(line + " " * (self.windows["dimensions"]["hates"]["width"] - len(line)))
+				count += 1
+			self.windows["text"][mode].refresh()
+		
+		except Exception, e:
+			self.Hlog( "debug", "hate_draw " + str(e))
 			self.windows["text"]["hates"].refresh()
 			
 	def like_draw(self):
 		try:
-			self.windows["text"]["likes"].erase()
-			if "interests.like" in self.config.keys():
+			mode = "likes"
+			self.windows["text"][mode].erase()
+			w = self.windows["dimensions"][mode]
+			self.logs[mode] = []
+			sup = self.scrolling[ mode ]
+			if "interests.hate" in self.config.keys():
 				for item in self.config["interests.like"]:
-					self.windows["text"]["likes"].addstr(item + " " * (self.windows["dimensions"]["likes"]["width"] - len(item)))
-			self.windows["text"]["likes"].refresh()
-		except:
-			self.windows["text"]["likes"].refresh()
-			
-	def similar_draw(self):
-		try:
-			self.windows["text"]["users"].erase()
-			if self.similar_users != {}:
-				for item, num in self.similar_users.items():
-					if num == 1:
-						self.windows["text"]["users"].addstr("* ", self.colors["yellow"])
-					elif num == 2:
-						self.windows["text"]["users"].addstr("* ", self.colors["green"])
-					else:
-						self.windows["text"]["users"].addstr("* ")
-					self.windows["text"]["users"].addstr(item + " " * (self.windows["dimensions"]["users"]["width"] - len(item)-2))
-				self.windows["text"]["users"].refresh()
-		except Exception, e:
-			self.Hlog( "debug", "similar_draw" + str(e))
-			self.windows["text"]["users"].refresh()
+
+					self.logs[mode].append( item)
 	
-	def create_rex_window(self, w, title):
+			count = 0
+			clipped_list, sup, self.windows["dimensions"][mode]["start"] = self.scrollbox(self.logs[mode], sup, w["height"])
+			self.scrolling[mode] = sup
+			start = self.windows["dimensions"][mode]["start"]
+			for line in clipped_list:
+				length = len( line+( " " * (w["width"] - len(line) ) ) )
+				if length > w["width"]:
+					line = line [:w["width"] - length  ]
+				if count + start == sup:
+					self.windows["text"][mode].addstr(line + " " * (w["width"] - len(line)), curses.A_BOLD)
+				else:
+					self.windows["text"][mode].addstr(line + " " * (w["width"] - len(line)))
+				count += 1
+			self.windows["text"][mode].refresh()
+		except:
+			self.windows["text"][mode].refresh()
+			
+
+	def create_rex_window(self, w, mode):
 		try:
 			win = curses.newwin(w["height"]+2, w["width"]+2, w["top"]-1, w["left"]-1)
-			win.attron(self.colors["green"])
+			if self.display["interests"] == mode:
+				win.attron(self.colors["green"])
 			win.border()
-			win.addstr(0, 1, "< %s >" % title)
-			win.attroff(self.colors["green"])
+			if mode == "recommendations":
+				title = "Recommendations"
+				rs = len(self.Spl["recommend_sort"])
+				win.addstr(0, w["width"]-rs-4, "< %s >" % (" "*rs))
+				win.addstr(0, w["width"]-rs-2, self.Spl["recommend_sort"].capitalize(),  curses.A_BOLD | self.colors["cyan"])
+				win.addstr(w["height"]+1, 1, "<          >")
+				win.addstr(w["height"]+1, 3, "PERSONAL",  curses.A_BOLD | self.colors["cyan"])
+				win.addstr(w["height"]+1, w["width"]-10, "<        >")
+				win.addstr(w["height"]+1, w["width"]-8, "GLOBAL",  curses.A_BOLD | self.colors["cyan"])
+			elif mode == "likes":
+				title = "Liked"
+				if self.Spl["interests_input"] == "add_likes":
+					aattr = curses.A_BOLD | self.colors["cyan"]
+					dattr = curses.A_NORMAL
+				elif self.Spl["interests_input"]  == "del_likes":
+					aattr = curses.A_NORMAL
+					dattr = curses.A_BOLD | self.colors["cyan"]
+				else:
+					aattr = curses.A_NORMAL
+					dattr = curses.A_NORMAL
+				win.addstr(w["height"]+1, 1, "<     >")
+				win.addstr(w["height"]+1, 3, "ADD", aattr)
+				win.addstr(w["height"]+1, w["width"]-9, "<        >")
+				win.addstr(w["height"]+1, w["width"]-7, "DELETE", dattr)
+			elif mode == "hates":
+				title = "Hated"
+				if self.Spl["interests_input"] == "add_hates":
+					aattr = curses.A_BOLD | self.colors["cyan"]
+					dattr = curses.A_NORMAL
+				elif self.Spl["interests_input"]  == "del_hates":
+					aattr = curses.A_NORMAL
+					dattr = curses.A_BOLD | self.colors["cyan"]
+				else:
+					aattr = curses.A_NORMAL
+					dattr = curses.A_NORMAL
+				win.addstr(w["height"]+1, 1, "<     >")
+				win.addstr(w["height"]+1, 3, "ADD", aattr)
+				win.addstr(w["height"]+1, w["width"]-9, "<        >")
+				win.addstr(w["height"]+1, w["width"]-7, "DELETE", dattr)
+			elif mode == "similar_users":
+				title = "Users"
+				win.addstr(w["height"]+1, w["width"]-10, "<         >")
+				win.addstr(w["height"]+1, w["width"]-8, "REFRESH",  curses.A_BOLD | self.colors["cyan"])
+			
+			win.addstr(0, 1, "< %s >" % (" " * len(title)))
+			if mode == self.display["interests"]:
+				 win.addstr(0, 3, title, curses.A_BOLD | self.colors["green"])
+			else:
+				 win.addstr(0, 3, title, curses.A_BOLD)
+			if self.display["interests"] == mode:
+				win.attroff(self.colors["green"])
 			win.refresh()
 			twin =win.subwin(w["height"], w["width"], w["top"], w["left"])
 			
 			twin.scrollok(0)
 			twin.idlok(1)
-			if title == "Recommendations":
-				self.windows["text"]["recommendations"] = twin
-				self.windows["border"]["recommendations"] = win
-			elif title == "Liked":
-				self.windows["text"]["likes"] = twin
-				self.windows["border"]["likes"] = win
-			elif title == "Hated":
-				self.windows["text"]["hates"] = twin
-				self.windows["border"]["hates"] = win
-			elif title == "Users":
-				self.windows["text"]["users"] = twin
-				self.windows["border"]["users"] = win
+	
+			self.windows["text"][mode] = twin
+			self.windows["border"][mode] = win
+
 		except Exception, e:
 			self.Hlog( "debug", "create_rex_window: " + str(e))
 		
@@ -8732,8 +9058,7 @@ class mucous(driver.Driver):
 			self.buddylist()
 			self.process_list_window(self.display["list"])
 			
-			log = self.logs["buddy"]
-			self.process_list_log(s, log)
+			self.process_list_log(s, "buddies")
 			
 			self.hotkeys()
 			curses.doupdate()
@@ -8748,8 +9073,7 @@ class mucous(driver.Driver):
 			s = self.windows["dimensions"][self.display["list"]] = {"height": self.h-7, "top": 2, "left": 1, "width": self.w-2}
 			self.process_list_window(self.display["list"])
 			self.banlist()
-			log = self.logs["ban"]
-			self.process_list_log(s, log)
+			self.process_list_log(s, "banned")
 			self.hotkeys()
 			curses.doupdate()
 		except Exception, e:
@@ -8762,20 +9086,19 @@ class mucous(driver.Driver):
 			s = self.windows["dimensions"][self.display["list"]] = {"height": self.h-7, "top": 2, "left": 1, "width": self.w-2}
 			self.process_list_window(self.display["list"])
 			
-			log = self.logs["ignore"]
-			self.process_list_log(s, log)
+			self.process_list_log(s, "ignored")
 			self.hotkeys()
 			curses.doupdate()
 		except Exception, e:
 			self.Hlog("debug", "ignore_mode: " + str(e))
 			
-	def process_list_log(self, window, log):
+	def process_list_log(self, window, mode):
 		try:
-			if log != []:
-				clipped_list, self.Sup, self.windows["dimensions"][self.display["list"]]["start"] = self.scrollbox(log, self.Sup, window["height"])
+			if self.logs[mode] != None and self.logs[mode] != []:
+				clipped_list, self.scrolling[mode], self.windows["dimensions"][self.display["list"]]["start"] = self.scrollbox(self.logs[mode], self.scrolling[mode], window["height"])
 				count =0 
 				try:
-					self.windows["border"][self.display["list"]].addstr(self.h-6, self.w-18, "< "+str(len(log))+" >", self.colors["green"] | curses.A_BOLD)
+					self.windows["border"][self.display["list"]].addstr(self.h-6, self.w-18, "< "+str(len(self.logs[mode]))+" >", self.colors["green"] | curses.A_BOLD)
 					self.windows["border"][self.display["list"]].noutrefresh()	
 				except:
 					pass
@@ -8791,14 +9114,12 @@ class mucous(driver.Driver):
 	def display_lists(self):
 		try:
 			if self.display["list"]=="buddies":
-				this_list = self.logs["buddy"]
+				this_list = self.logs["buddies"]
 			elif self.display["list"]=="banned":
-				this_list = self.logs["ban"]
+				this_list = self.logs["banned"]
 			elif self.display["list"]=="ignored":
-				this_list = self.logs["ignore"]
-			elif self.display["list"]=="interests":
-				this_list = self.interestslog
-			clipped_list, self.Sup, self.windows["dimensions"][self.display["list"]]["start"] = self.scrollbox(this_list, self.Sup, self.h-7)
+				this_list = self.logs["ignored"]
+			clipped_list, self.scrolling[self.display["list"]], self.windows["dimensions"][self.display["list"]]["start"] = self.scrollbox(this_list, self.scrolling[self.display["list"]], self.h-7)
 			count =0
 			self.windows["text"][self.display["list"]].erase()
 			for lines in clipped_list:
@@ -8864,7 +9185,7 @@ class mucous(driver.Driver):
 	def display_rooms(self, roomitem, count, start):
 		try:
 			
-			if count + start == self.Sup:
+			if count + start == self.scrolling["roomlist"]:
 				attrib =  curses.A_BOLD | curses.A_REVERSE
 			else:
 				attrib = curses.A_NORMAL
@@ -8897,7 +9218,7 @@ class mucous(driver.Driver):
 	def display_room_list_mode(self):
 		try:
 			self.windows["text"]["roomlist"].erase()
-			clipped_list, self.Sup, self.windows["dimensions"]["roomlist"]["start"] = self.scrollbox(self.sizedrooms, self.Sup, self.h-7)
+			clipped_list, self.scrolling["roomlist"], self.windows["dimensions"]["roomlist"]["start"] = self.scrollbox(self.sizedrooms, self.scrolling["roomlist"], self.h-7)
 			count =0 
 			for rooms10 in clipped_list:
 				self.display_rooms(rooms10, count, self.windows["dimensions"]["roomlist"]["start"])
@@ -9163,7 +9484,7 @@ class mucous(driver.Driver):
 						inbwin1_1.addstr("Files: "+str(self.data["mystats"][3]), self.colors["cyan"] )
 						inbwin1_2.addstr("Dirs: "+str(self.data["mystats"][4]), self.colors["cyan"] )
 						inbwin1_3.addstr("Downloads: "+str(self.data["mystats"][2]), self.colors["cyan"] )
-						inbwin1_4.addstr("Speed: "+str(self.data["mystats"][1]), self.colors["cyan"] )
+						inbwin1_4.addstr("Speed: "+str(self.data["mystats"][1]/1024)+"KB/s", self.colors["cyan"] )
 						#self.data["mystats"] = user,  avgspeed, numdownloads, numfiles, numdirs
 					except:
 						pass
@@ -9674,19 +9995,19 @@ class mucous(driver.Driver):
 			
 	def buddy_log(self, mtype, user, note):
 		try:
-			self.logs["buddy"].append([mtype, user, note])
+			self.logs["buddies"].append([mtype, user, note])
 		except Exception, e:
 			self.Hlog("debug", "buddy_log: " + str(e))
 
 	def ban_log(self, mtype, user, note):
 		try:
-			self.logs["ban"].append([mtype, user, note])
+			self.logs["banned"].append([mtype, user, note])
 		except Exception, e:
 			self.Hlog("debug", "ban_log: " + str(e))
 
 	def ignore_log(self, mtype, user, note):
 		try:
-			self.logs["ignore"].append([mtype, user, note])
+			self.logs["ignored"].append([mtype, user, note])
 		except Exception, e:
 			self.Hlog("debug", "ignore_log: " + str(e))
 
