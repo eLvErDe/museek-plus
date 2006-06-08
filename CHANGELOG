@@ -13,7 +13,9 @@ MUSEEQ
   Daemon checkbox to ConnectDialog in museeq
 
 MUCOUS
-Version: 0.8.0pre3
+Version: 0.8.0
+* Finished Interests and recommendations
+* Rewrote Scrolling variables (each mode/window has it's own scroll counter, now)
 * Rewrote much of the way internal data and variables are stored
 * Yanked a lot of dead code
 * Fixed the input-disappearing bug (happened on PM messages)

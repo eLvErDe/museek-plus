@@ -43,7 +43,7 @@ using std::queue;
 using std::vector;
 using std::map;
 
-Museek::Museek() : ConnectionManager(), mListenPort(0), mBuddySharesHave(true), mRecoder(0), 
+Museek::Museek() : ConnectionManager(), mListenPort(0), mUserWarnings(true), mBuddySharesHave(true), mRecoder(0), 
                    mServerHost(""), mServerPort(0), mUsername(""), mPassword(""),
                    mServer(0), mConnected(false), mLoggedIn(false), mBuddiesOnly(false),
                    mParentInactivityTimeout(0), mSearchInactivityTimeout(0), mMinParentsInCache(0),
@@ -546,8 +546,9 @@ void Museek::cb_peer_upload_blocked(const string& user) {
 	if(mServer) {
 		mServer->send_private(user, recoder()->wasciify("[Automatic Message] You are not on my Trusted users list, you can't upload files to me.")); }
 }
-
 void Museek::cb_peer_banned(const string& user) {
+}
+void Museek::peer_banned(const string& user) {
 	if(mServer) {
 		if (! mBuddiesOnly) {
 			mServer->send_private(user, recoder()->wasciify("[Automatic Message] You are banned, so you cannot access my files."));

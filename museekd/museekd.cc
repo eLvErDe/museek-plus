@@ -646,6 +646,11 @@ void Museekd::cb_server_add_hated_interest(const string& interest) {
 
 }
 
+void Museekd::cb_peer_banned(const string& user) {
+	string _msg = ("Refused to send shares to: "+ user );
+	ALL_IFACES(status_message(1, _msg ));
+	peer_banned(user);
+}
 
 void Museekd::cb_iface_say_room(IfaceConnection* conn, const string& room, const string& message) {
 	if(mJoinedRooms.find(room) == mJoinedRooms.end() || message.empty())

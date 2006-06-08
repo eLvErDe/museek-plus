@@ -540,4 +540,8 @@ except:
 	print
 	readTemplate(DEFAULT_TEMPLATE, path)
 
-while not main(path): pass
+try:
+	while not main(path): pass
+except Exception, e:
+	
+	print "\nAborting musetup..."

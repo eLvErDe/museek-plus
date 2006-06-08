@@ -148,6 +148,7 @@ public:
 	void cb_server_add_interest(const std::string& interest);
 	void cb_server_remove_hated_interest(const std::string& interest);
 	void cb_server_remove_interest(const std::string& interest);
+	void cb_peer_banned(const std::string& user);
 
 	void cb_peer_shares(const std::string& user, const WShares& shares);
 	void cb_peer_info(const std::string& user, const std::wstring& info, const std::vector<unsigned char>& pic, uint32 totalupl, uint32 queuelen, bool slotfree);

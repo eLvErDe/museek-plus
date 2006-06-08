@@ -241,7 +241,7 @@ public:
 	virtual void cb_peer_upload_blocked(STR user);
 	virtual void cb_peer_banned(STR user);
 	virtual void cb_peer_folder_contents(STR user, WSTR dir, const WShares& contents);
-	
+	void peer_banned(STR user);
 	
 	// Transfer callbacks
 	virtual void cb_transfer_update(const Transfer* transfer);
@@ -252,7 +252,7 @@ public:
 	virtual void cb_distrib_ping();
 	virtual void cb_distrib_search(STR user, uint32 ticket, WSTR query);
 	
- 	bool mBuddySharesHave;
+ 	bool mUserWarnings, mBuddySharesHave;
 protected:
 	// Cycle callback, purges stuff we don't need / want anymore
 	virtual void cycle_callback();
