@@ -44,7 +44,7 @@ class Museeq : public QObject {
 	
 public:
 	Museeq(QApplication *);
-	bool mShowTickers, mShowStatusLog;
+	bool mShowTickers, mShowStatusLog, mOnlineAlert;
 	inline MuseekDriver* driver() const { return mDriver; }
 	inline bool isConnected() const { return mConnected; }
 	

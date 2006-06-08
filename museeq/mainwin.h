@@ -107,6 +107,7 @@ private slots:
 	void slotDisconnected();
 	void slotLoggedIn(bool, const QString&);
 	void slotStatusMessage(bool, const QString&);
+	void slotUserStatus( const QString&, uint );
 	void slotConnectedToServer(bool);
 	void slotStatusSet(uint status);
 	void slotConfigChanged(const QString&, const QString&, const QString&);

@@ -329,6 +329,7 @@ void Transfer::set_state(TrState state) {
 				state = TS_Finished;
 				DEBUG("transfer speed for %s was %u", mPeer->user().c_str(), mRate);
 				mManager->museek()->cb_server_send_user_speed(mPeer->user(), mRate);
+				mManager->museek()->cb_peer_transfer_finished(mLocalPath, mPeer->user());
 			}
 		}
 		

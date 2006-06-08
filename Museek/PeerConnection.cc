@@ -58,12 +58,14 @@ void PeerConnection::process_message(uint32 code) {
 				DEBUG("sending buddy shared files list %s", mUser.c_str());
 				PSharesReply r(mMuseek->buddyshares()->shares());
 				send(r);
+				mMuseek->cb_peer_sent_buddy_shares(mUser);
 				}
 			else {
 				lock();
 				DEBUG("sending normal shared files list %s", mUser.c_str());
 				PSharesReply r(mMuseek->shares()->shares());
 				send(r);
+				mMuseek->cb_peer_sent_normal_shares(mUser);
 				}
 		}
 		else {
@@ -107,6 +109,7 @@ void PeerConnection::process_message(uint32 code) {
 		             mMuseek->transfer_manager()->queue_length(mUser),
 		             mMuseek->transfer_manager()->slot_free());
 		send(r);
+		mMuseek->cb_peer_sent_user_info(mUser);
 		break;
 	}
 	case 16: {

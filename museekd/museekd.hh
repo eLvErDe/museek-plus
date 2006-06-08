@@ -148,7 +148,13 @@ public:
 	void cb_server_add_interest(const std::string& interest);
 	void cb_server_remove_hated_interest(const std::string& interest);
 	void cb_server_remove_interest(const std::string& interest);
+	// Status Messages
 	void cb_peer_banned(const std::string& user);
+	void cb_peer_upload_blocked(const std::string& user);
+	void cb_peer_transfer_finished(const std::wstring& path, const std::string& user);
+	void cb_peer_sent_buddy_shares(const std::string& user);
+	void cb_peer_sent_normal_shares(const std::string& user);
+	void cb_peer_sent_user_info(const std::string& user);
 
 	void cb_peer_shares(const std::string& user, const WShares& shares);
 	void cb_peer_info(const std::string& user, const std::wstring& info, const std::vector<unsigned char>& pic, uint32 totalupl, uint32 queuelen, bool slotfree);
@@ -164,6 +170,7 @@ protected:
 	void set_trusting_uploads(bool);
 	void set_privilege_buddies(bool);
 	void set_only_buddies(bool);
+	void set_user_warnings(bool);
 	void update_buddies();
 	void ban(const std::string&);
 	void unban(const std::string&);

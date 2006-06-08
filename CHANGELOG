@@ -12,6 +12,9 @@ MUSEEQ
 * Added Start Daemon, Stop Daemon, and Config Selector buttons, and Auto-Start
   Daemon checkbox to ConnectDialog in museeq
 * Page Up/Page Down/arrows chat log scrolling in museeq (requested by y00sah)
+* Status messages in Log Window: Browse requests, browse refusals, userinfo 
+  requests, transfer finishing, Online-alert messages (requested by chs_kasper)
+* Option in the config for automated messages (requested by lartza)
 
 MUCOUS
 Version: 0.8.1

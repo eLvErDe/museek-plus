@@ -112,8 +112,9 @@ public:
 	inline bool have_buddy_shares() const { return mBuddySharesHave; }
 	void set_have_buddy_shares(bool have) { mBuddySharesHave = have; }
 	inline bool buddies_only() const { return mBuddiesOnly; }
-	void xset_only_buddies(bool only);
-	
+	void mu_set_only_buddies(bool uw);
+	void mu_set_user_warnings(bool only);
+
 	inline uint32 upload_slots() const { return mUploadSlots; }
 	inline void set_upload_slots(uint32 n) { mUploadSlots = n; }
 
@@ -238,11 +239,18 @@ public:
 	virtual void cb_peer_search(PeerConnection* conn, STR user, uint32 ticket, WSTR query);
 	virtual void cb_peer_info(STR user, WSTR info, const std::vector<unsigned char>& pic, uint32 totalupl, uint32 queuelen, bool slotfree);
 	virtual void cb_peer_results(uint32 ticket, STR user, const WFolder& results, uint32 avgspeed, uint32 queuelen, bool slotfree);
+	virtual void cb_peer_folder_contents(STR user, WSTR dir, const WShares& contents);
+
+	// Status Messages & Warnings
 	virtual void cb_peer_upload_blocked(STR user);
 	virtual void cb_peer_banned(STR user);
-	virtual void cb_peer_folder_contents(STR user, WSTR dir, const WShares& contents);
+	virtual void cb_peer_sent_buddy_shares(STR user);
+	virtual void cb_peer_sent_normal_shares(STR user);
+	virtual void cb_peer_sent_user_info(STR user);
+	virtual void cb_peer_transfer_finished(WSTR path, STR user);
 	void peer_banned(STR user);
-	
+	void peer_upload_blocked(STR user);
+
 	// Transfer callbacks
 	virtual void cb_transfer_update(const Transfer* transfer);
 	virtual void cb_transfer_delete(const Transfer* transfer);

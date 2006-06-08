@@ -335,7 +335,7 @@
                         <x>3</x>
                         <y>21</y>
                         <width>370</width>
-                        <height>300</height>
+                        <height>230</height>
                     </rect>
                 </property>
                 <grid>
@@ -419,7 +419,7 @@
                                     <x>80</x>
                                     <y>20</y>
                                     <width>188</width>
-                                    <height>46</height>
+                                    <height>30</height>
                                 </rect>
                             </property>
                             <property name="sizePolicy">
@@ -440,10 +440,10 @@
                             </property>
                             <property name="geometry">
                                 <rect>
-                                    <x>81</x>
-                                    <y>73</y>
+                                    <x>80</x>
+                                    <y>60</y>
                                     <width>188</width>
-                                    <height>46</height>
+                                    <height>30</height>
                                 </rect>
                             </property>
                             <property name="sizePolicy">
@@ -469,6 +469,66 @@
                     </widget>
                 </grid>
             </widget>
+            <widget class="QLayoutWidget">
+                <property name="name">
+                    <cstring>layout8</cstring>
+                </property>
+                <property name="geometry">
+                    <rect>
+                        <x>0</x>
+                        <y>260</y>
+                        <width>370</width>
+                        <height>70</height>
+                    </rect>
+                </property>
+                <grid>
+                    <property name="name">
+                        <cstring>unnamed</cstring>
+                    </property>
+                    <widget class="QLineEdit" row="0" column="1">
+                        <property name="name">
+                            <cstring>SDownDir</cstring>
+                        </property>
+                    </widget>
+                    <widget class="QPushButton" row="0" column="2">
+                        <property name="name">
+                            <cstring>SDownloadButton</cstring>
+                        </property>
+                        <property name="text">
+                            <string>Select..</string>
+                        </property>
+                    </widget>
+                    <widget class="QLineEdit" row="1" column="1">
+                        <property name="name">
+                            <cstring>SIncompleteDir</cstring>
+                        </property>
+                    </widget>
+                    <widget class="QLabel" row="0" column="0">
+                        <property name="name">
+                            <cstring>textLabel1</cstring>
+                        </property>
+                        <property name="text">
+                            <string>Download Dir:</string>
+                        </property>
+                    </widget>
+                    <widget class="QPushButton" row="1" column="2">
+                        <property name="name">
+                            <cstring>SIncompleteButton</cstring>
+                        </property>
+                        <property name="text">
+                            <string>Select..</string>
+                        </property>
+                    </widget>
+                    <widget class="QLabel" row="1" column="0">
+                        <property name="name">
+                            <cstring>textLabel1_2</cstring>
+                        </property>
+                        <property name="text">
+                            <string>Incomplete Dir:</string>
+                        </property>
+                    </widget>
+                </grid>
+            </widget>
         </widget>
         <widget class="QWidget">
             <property name="name">
@@ -479,14 +539,14 @@
             </attribute>
             <widget class="QLayoutWidget">
                 <property name="name">
-                    <cstring>layout32</cstring>
+                    <cstring>layout11</cstring>
                 </property>
                 <property name="geometry">
                     <rect>
                         <x>20</x>
-                        <y>10</y>
+                        <y>6</y>
                         <width>350</width>
-                        <height>310</height>
+                        <height>320</height>
                     </rect>
                 </property>
                 <vbox>
@@ -507,6 +567,22 @@
                         </property>
                         <property name="text">
                             <string>Buddies are Privileged</string>
+                        </property>
+                    </widget>
+                    <widget class="QCheckBox">
+                        <property name="name">
+                            <cstring>SOnlineAlerts</cstring>
+                        </property>
+                        <property name="sizePolicy">
+                            <sizepolicy>
+                                <hsizetype>5</hsizetype>
+                                <vsizetype>7</vsizetype>
+                                <horstretch>10</horstretch>
+                                <verstretch>11</verstretch>
+                            </sizepolicy>
+                        </property>
+                        <property name="text">
+                            <string>Online Alerts in Log Window instead of popup</string>
                         </property>
                     </widget>
                     <widget class="QCheckBox">
@@ -557,6 +633,22 @@
                             <string>Seperate Shares list for Buddies</string>
                         </property>
                     </widget>
+                    <widget class="QCheckBox">
+                        <property name="name">
+                            <cstring>SUserWarnings</cstring>
+                        </property>
+                        <property name="sizePolicy">
+                            <sizepolicy>
+                                <hsizetype>7</hsizetype>
+                                <vsizetype>7</vsizetype>
+                                <horstretch>0</horstretch>
+                                <verstretch>10</verstretch>
+                            </sizepolicy>
+                        </property>
+                        <property name="text">
+                            <string>Send automatic warnings to users via Private Chat</string>
+                        </property>
+                    </widget>
                 </vbox>
             </widget>
         </widget>
@@ -593,6 +685,18 @@
         <receiver>SettingsDlg</receiver>
         <slot>SReloadShares_clicked()</slot>
     </connection>
+    <connection>
+        <sender>SDownloadButton</sender>
+        <signal>clicked()</signal>
+        <receiver>SettingsDlg</receiver>
+        <slot>SDownload_clicked()</slot>
+    </connection>
+    <connection>
+        <sender>SIncompleteButton</sender>
+        <signal>clicked()</signal>
+        <receiver>SettingsDlg</receiver>
+        <slot>SIncomplete_clicked()</slot>
+    </connection>
 </connections>
 <tabstops>
     <tabstop>mOK</tabstop>
@@ -620,6 +724,8 @@
     <slot specifier="non virtual">SConnect_clicked()</slot>
     <slot specifier="non virtual">SDisconnect_clicked()</slot>
     <slot specifier="non virtual">SReloadShares_clicked()</slot>
+    <slot>SDownload_clicked()</slot>
+    <slot>SIncomplete_clicked()</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

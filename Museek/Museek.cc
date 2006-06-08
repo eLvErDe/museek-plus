@@ -43,7 +43,7 @@ using std::queue;
 using std::vector;
 using std::map;
 
-Museek::Museek() : ConnectionManager(), mListenPort(0), mUserWarnings(true), mBuddySharesHave(true), mRecoder(0), 
+Museek::Museek() : ConnectionManager(), mListenPort(0), mUserWarnings(false), mBuddySharesHave(true), mRecoder(0), 
                    mServerHost(""), mServerPort(0), mUsername(""), mPassword(""),
                    mServer(0), mConnected(false), mLoggedIn(false), mBuddiesOnly(false),
                    mParentInactivityTimeout(0), mSearchInactivityTimeout(0), mMinParentsInCache(0),
@@ -132,8 +132,10 @@ bool Museek::is_trusted(const string& user) const {
 		return (*it).second; }
 	return false;
 }
-
-void Museek::xset_only_buddies(bool only) {
+void Museek::mu_set_user_warnings(bool uw) {
+	mUserWarnings = uw;
+}
+void Museek::mu_set_only_buddies(bool only) {
 	mBuddiesOnly = only;
 }
 void Museek::server_connect(uint timeout) {
@@ -543,13 +545,15 @@ void Museek::cb_peer_info(const string& user, const wstring& info, const vector<
 }
 
 void Museek::cb_peer_upload_blocked(const string& user) {
-	if(mServer) {
+}
+void Museek::peer_upload_blocked(const string& user) {
+	if(mServer && mUserWarnings) {
 		mServer->send_private(user, recoder()->wasciify("[Automatic Message] You are not on my Trusted users list, you can't upload files to me.")); }
 }
 void Museek::cb_peer_banned(const string& user) {
 }
 void Museek::peer_banned(const string& user) {
-	if(mServer) {
+	if(mServer && mUserWarnings) {
 		if (! mBuddiesOnly) {
 			mServer->send_private(user, recoder()->wasciify("[Automatic Message] You are banned, so you cannot access my files."));
 			}
@@ -557,6 +561,13 @@ void Museek::peer_banned(const string& user) {
 			mServer->send_private(user, recoder()->wasciify("[Automatic Message] You are not on my Buddies list, and I only share to my Buddies."));
 			}
 	}
+}
+
+void Museek::cb_peer_sent_buddy_shares(const string& user) {
+}
+void Museek::cb_peer_sent_normal_shares(const string& user) {
+}
+void Museek::cb_peer_sent_user_info(const string& user) {
 }
 
 void Museek::cb_peer_results(uint32 ticket, const string& user, const WFolder& results, uint32 avgspeed, uint32 queuelen, bool slotfree) {
@@ -577,6 +588,8 @@ void Museek::cb_distrib_ping() {
 void Museek::cb_server_send_user_speed(const string& user, uint32 speed) {
 	if(mServer)
 		mServer->send_user_speed(user, speed);
+}
+void Museek::cb_peer_transfer_finished(const wstring& path, const string& user) {
 }
 
 void Museek::cb_distrib_search(const string& user, uint32 ticket, const wstring& query) {

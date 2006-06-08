@@ -261,7 +261,7 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 	if ( ! museeq->mShowStatusLog)
 		mLog->hide();
 
-
+	connect(museeq->driver(), SIGNAL(userStatus(const QString&, uint)), SLOT(slotUserStatus(const QString&, uint)));
 	QSettings settings;
 	mMoves = 0;
 	int w = settings.readNumEntry("/TheGraveyard.org/Museeq/Width", 600);
@@ -576,13 +576,18 @@ void MainWindow::slotLoggedIn(bool success, const QString& msg) {
 }
 #define _TIME QString("<span style='"+museeq->mFontTime+"'><font color='"+museeq->mColorTime+"'>") + QDateTime::currentDateTime().toString("hh:mm:ss") + "</font></span> "
 void MainWindow::slotStatusMessage(bool type, const QString& msg) {
-// 	mLog->append(QString(_TIME+"<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>%1</font></span>").arg(msg.replace("\n", "\\n")));
-//  	;
+
 	QString Message = msg;
 	QStringList wm = QStringList::split("\n", msg, true);
 	QStringList::iterator it = wm.begin();
 	for(; it != wm.end(); ++it) {
 		mLog->append(QString(_TIME+"<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+*it+"</font></span>"));
+	}
+}
+void MainWindow::slotUserStatus( const QString & user, uint status ) {
+ 	if (museeq->mOnlineAlert  && museeq->hasAlert(user)) {
+		QString s = (status == 0) ? "offline" : ((status == 1) ? "away" : "online");
+		mLog->append(QString(_TIME)+QString("<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>user %2 is now %3</font></span>").arg(user).arg(s)) ;
 	}
 }
 void MainWindow::slotStatusSet(uint status) {
@@ -711,8 +716,16 @@ void MainWindow::slotConfigChanged(const QString& domain, const QString& key, co
 	} else if(domain == "transfers" && key == "trusting_uploads") {
 		if (value == "true") mSettingsDialog->STrustedUsers->setChecked(true);
 		else if ( value == "false") mSettingsDialog->STrustedUsers->setChecked(false);
+	} else if(domain == "transfers" && key == "user_warnings") {
+		if (value == "true") mSettingsDialog->SUserWarnings->setChecked(true);
+		else if ( value == "false") mSettingsDialog->SUserWarnings->setChecked(false);
 	} else if(domain == "transfers" && key == "download-dir") {
-// 		mSettingsDialog->SDownDir->setText(value);
+		mSettingsDialog->SDownDir->setText(value);
+	} else if(domain == "transfers" && key == "incomplete-dir") {
+		mSettingsDialog->SIncompleteDir->setText(value);
+	} else if(domain == "museeq.alerts" && key == "log_window") {
+		if (value == "true") mSettingsDialog->SOnlineAlerts->setChecked(true);
+		else if ( value == "false") mSettingsDialog->SOnlineAlerts->setChecked(false);
 	} else if(domain == "clients" && key == "connectmode") {
 		if (value == "active") mSettingsDialog->SActive->setChecked(true);
 		else if (value == "passive") mSettingsDialog->SPassive->setChecked(true);
@@ -823,10 +836,14 @@ void MainWindow::changeSettings() {
 			museeq->setConfig("server", "username", mSettingsDialog->SSoulseekUsername->text());
 		if (! mSettingsDialog->SSoulseekPassword->text().isEmpty() )
 			museeq->setConfig("server", "password", mSettingsDialog->SSoulseekPassword->text());
-
-// 		museeq->setConfig("transfers", "download-dir", mSettingsDialog->SServerHost->text());
-// 		museeq->setConfig("transfers", "incomplete-dir", mSettingsDialog->SServerHost->text());
-
+		if (! mSettingsDialog->SDownDir->text().isEmpty() )
+			museeq->setConfig("transfers", "download-dir", mSettingsDialog->SDownDir->text());
+		if (! mSettingsDialog->SIncompleteDir->text().isEmpty() )
+			museeq->setConfig("transfers", "incomplete-dir", mSettingsDialog->SIncompleteDir->text());
+		if(mSettingsDialog->SOnlineAlerts->isChecked()) {
+			museeq->setConfig("museeq.alerts", "log_window", "true");
+		}
+		else {  museeq->setConfig("museeq.alerts", "log_window", "false");  }
 		if(mSettingsDialog->SActive->isChecked()) {
 			museeq->setConfig("clients", "connectmode", "active");
 		}
@@ -837,7 +854,6 @@ void MainWindow::changeSettings() {
 			museeq->setConfig("transfers", "have_buddy_shares", "true");
 		}
 		else {  museeq->setConfig("transfers", "have_buddy_shares", "false");  }
-
 		if(mSettingsDialog->SShareBuddiesOnly->isChecked()) {
 			museeq->setConfig("transfers", "only_buddies", "true");
 		}
@@ -851,6 +867,11 @@ void MainWindow::changeSettings() {
 			museeq->setConfig("transfers", "trusting_uploads", "true");
 		}
 		else { museeq->setConfig("transfers", "trusting_uploads", "false"); }
+		if(mSettingsDialog->SUserWarnings->isChecked()) {
+			museeq->setConfig("transfers", "user_warnings", "true");
+		}
+		else { museeq->setConfig("transfers", "user_warnings", "false"); }
+
 	}
 }
 

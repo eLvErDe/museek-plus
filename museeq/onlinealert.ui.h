@@ -22,6 +22,8 @@ void OnlineAlert::setUser( const QString &user )
 
 void OnlineAlert::slotUserStatus( const QString & user, uint status )
 {
+    if (museeq->mOnlineAlert)
+	return;
     if(user == mUser && (status == 2 || isShown()))
     {
 	QString s = (status == 0) ? "offline" : ((status == 1) ? "away" : "online");

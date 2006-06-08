@@ -109,6 +109,8 @@ bool Museekd::load_config() {
 	
 	if(! mConfig["transfers"]["privilege_buddies"])
 		mConfig["transfers"]["privilege_buddies"] = true;
+	if(! mConfig["transfers"]["user_warnings"])
+		mConfig["transfers"]["user_warnings"] = true;
 	if(! mConfig["transfers"]["only_buddies"])
 		mConfig["transfers"]["only_buddies"] = false;
 	if(! mConfig["transfers"]["trusting_uploads"])
@@ -181,9 +183,11 @@ void Museekd::init() {
 	mTrustedUploads = mConfig["transfers"]["trusting_uploads"].asBool();
 	mPrivilegeBuddies = mConfig["transfers"]["privilege_buddies"].asBool();
 	mOnlyBuddies = mConfig["transfers"]["only_buddies"].asBool();
-
+	mUserWarnings = mConfig["transfers"]["user_warnings"].asBool();
+	mu_set_user_warnings(mUserWarnings);
+	set_user_warnings(mUserWarnings);
 	set_only_buddies(mOnlyBuddies);
-	xset_only_buddies(mOnlyBuddies);
+	mu_set_only_buddies(mOnlyBuddies);
 	update_buddies();
 
 	set_server(mConfig["server"]["host"],
@@ -442,17 +446,19 @@ void Museekd::cb_iface_config_set(IfaceConnection* conn, const string& domain, c
 		if(key == "upload_slots") {
 			set_upload_slots(mConfig[domain][key].asInt());
 			mTransferManager->check_uploads();
-		} else if(key == "privilege_buddies")
+		} else if(key == "privilege_buddies") {
 			set_privilege_buddies(mConfig[domain][key].asBool());
-		else if(key == "only_buddies") {
+		} else if(key == "user_warnings") {
+			set_user_warnings(mConfig[domain][key].asBool());
+		} else if(key == "only_buddies") {
 			set_only_buddies(mConfig[domain][key].asBool());
-			xset_only_buddies(mConfig[domain][key].asBool());
-			}
-		else if(key == "trusting_uploads")
+			mu_set_only_buddies(mConfig[domain][key].asBool());
+		} else if(key == "trusting_uploads") {
 			set_trusting_uploads(mConfig[domain][key].asBool());
-		else if(key == "have_buddy_shares")
+		} else if(key == "have_buddy_shares") {
 			mHaveBuddyShares = mConfig[domain][key].asBool();
 			set_have_buddy_shares(mHaveBuddyShares);
+		}
 	} else if(domain == "clients") {
 		 if (key == "active")
 			set_connect_mode(CM_Active);
@@ -646,11 +652,36 @@ void Museekd::cb_server_add_hated_interest(const string& interest) {
 
 }
 
+void Museekd::cb_peer_transfer_finished(const wstring& path, const string& user) {
+	string _path = mRecoder->encode_utf8(path);
+	string _msg = ("Finished downloading "+ _path +" from "+ user );
+	ALL_IFACES(status_message(1, _msg ));
+}
+
 void Museekd::cb_peer_banned(const string& user) {
 	string _msg = ("Refused to send shares to: "+ user );
 	ALL_IFACES(status_message(1, _msg ));
 	peer_banned(user);
 }
+void Museekd::cb_peer_upload_blocked(const string& user) {
+	string _msg = ("Refused to accept file from non-trusted user: "+ user );
+	ALL_IFACES(status_message(1, _msg ));
+	peer_upload_blocked(user);
+}
+
+void Museekd::cb_peer_sent_buddy_shares(const string& user) {
+	string _msg = ("Buddy Shares sent to: "+ user );
+	ALL_IFACES(status_message(1, _msg ));
+}
+void Museekd::cb_peer_sent_normal_shares(const string& user) {
+	string _msg = ("Normal Shares sent to: "+ user );
+	ALL_IFACES(status_message(1, _msg ));
+}
+void Museekd::cb_peer_sent_user_info(const string& user) {
+	string _msg = ("User Info sent to: "+ user );
+	ALL_IFACES(status_message(1, _msg ));
+}
+
 
 void Museekd::cb_iface_say_room(IfaceConnection* conn, const string& room, const string& message) {
 	if(mJoinedRooms.find(room) == mJoinedRooms.end() || message.empty())
@@ -1439,6 +1470,12 @@ void Museekd::set_privilege_buddies(bool b) {
 		return;
 	mPrivilegeBuddies = b;
 	update_buddies();
+}
+
+void Museekd::set_user_warnings(bool b) {
+	if(mUserWarnings == b)
+		return;
+	mUserWarnings = b;
 }
 
 void Museekd::set_only_buddies(bool b) {

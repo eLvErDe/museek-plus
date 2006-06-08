@@ -71,6 +71,7 @@ Museeq::Museeq(QApplication * app)
 	mShowStatusLog = false;
 	mFontTime = "font-family:fixed-width";
 	mFontMessage =  "";
+	mOnlineAlert =  false;
 	mColorBanned = mColorBuddied = mColorTime = mColorNickname = mColorTrusted = mColorRemote = mColorMe = "";
 
 	connect(mDriver, SIGNAL(connectionClosed()), SLOT(slotConnectionClosed()));
@@ -282,6 +283,14 @@ void Museeq::slotConfigSet(const QString& domain, const QString& key, const QStr
 			mMainWin->mMenuSettings->setItemChecked(6, museeq->mShowStatusLog);
 			mMainWin->mLog->hide();
 			}
+	} else if(domain == "museeq.alerts") {
+		if (key == "log_window") {
+			if(value == "true" || value == true) {
+				mOnlineAlert = true;
+			} else if(value == "false" || value == false) {
+				mOnlineAlert = false;
+			}
+		}
 	} else if(domain == "museeq.text") {
 		if (key == "fontTime") {
 			mFontTime = value;}
