@@ -4959,7 +4959,7 @@ class mucous(driver.Driver):
 			if this_list == []:
 				return
 			if menu == "roombox":
-				mode == "roombox"
+				mode = "roombox"
 				if self.display["chatshape"] == "rightlist":
 					left = self.windows["dimensions"]["roombox"]["left"] - 22
 				else:
@@ -4993,7 +4993,7 @@ class mucous(driver.Driver):
 					items = [["Retry", "transfers"], ["Retry All", "transfers"],["Abort", "transfers"], ["Abort User", "transfers"], ["Clear", "transfers"], ["Clear Finished", "transfers"], ["Clear User", "transfers"], ["", "line"], ["Private Message", "all"], ["Userinfo", "all"], ["IP Address", "all"], ["Browse", "all"], ["", "line"], ["Buddy", "buddies"], ["Ban", "banned"], ["Ignore", "ignored"], ["Trusted", "trusted"], ["Give Privileges", "giveprivs"]  ]
 				height = len(items) + 2	
 			elif menu == "search":
-				mode = search
+				mode = "search"
 				left = 25; top = 5; width = 20
 				number = this_list[self.scrolling[mode]-self.windows["dimensions"]["search"]["start"]]
 				title = "%s" % (self.data["search_results"][number][1])
