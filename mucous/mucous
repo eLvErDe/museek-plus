@@ -5786,17 +5786,17 @@ class mucous(driver.Driver):
 						
 					elif key == "KEY_END":
 						if self.display["chat"] == "chatroom":
-							self.scroling["chatroom"] = -1
+							self.scrolling["chatroom"] = -1
 							self.chat_display()
 						elif self.display["chat"] == "roombox":
-							self.scroling["roombox"] = len(self.data["rooms"][self.Spl["room"]])
+							self.scrolling["roombox"] = len(self.data["rooms"][self.Spl["room"]])
 	 						self.chat_mode()
 					elif key == "KEY_HOME":
 						if self.display["chat"] == "chatroom":
-							self.scroling["chatroom"] = 0 
+							self.scrolling["chatroom"] = 0 
 							self.chat_display()
 						elif self.display["chat"] == "roombox":
-							self.scroling["roombox"] = 0
+							self.scrolling["roombox"] = 0
 							self.chat_mode()
 						
 					

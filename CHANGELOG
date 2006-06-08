@@ -11,8 +11,13 @@ MUSEEQ
 * Added Save password Checkbox to ConnectDialog in museeq
 * Added Start Daemon, Stop Daemon, and Config Selector buttons, and Auto-Start
   Daemon checkbox to ConnectDialog in museeq
+* Page Up/Page Down/arrows chat log scrolling in museeq (requested by y00sah)
 
 MUCOUS
+Version: 0.8.1
+* Made Room Status log scrollable
+* Typo fixes
+
 Version: 0.8.0
 * Finished Interests and recommendations
 * Rewrote Scrolling variables (each mode/window has it's own scroll counter, now)

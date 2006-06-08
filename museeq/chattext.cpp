@@ -27,7 +27,7 @@ ChatText::ChatText(const QString& _tf, QWidget* _p, const char* _n)
 	
 	setReadOnly(true);
 	setTextFormat(Qt::RichText);
-	setFocusPolicy(NoFocus);
+// 	setFocusPolicy(NoFocus);
 	connect(museeq, SIGNAL(nicknameChanged(const QString&)), SLOT(setNickname(const QString&)));
 	connect(this, SIGNAL(linkClicked(const QString&)), museeq, SLOT(showURL(const QString&)));
 }

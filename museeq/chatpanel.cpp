@@ -62,7 +62,7 @@ void ChatPanel::slotSendMessage() {
 }
 
 void ChatPanel::showEvent(QShowEvent*) {
-	mEntry->setFocus();
+ 	mEntry->setFocus();
 }
 
 void ChatPanel::slotDisconnected() {

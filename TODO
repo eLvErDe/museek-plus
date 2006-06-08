@@ -1,7 +1,6 @@
 General To Dos
  * Right-click in upload-queue gives a option 'message all downloading users' (chs_kasper)
  * Online-alert messages in log-window (chs_kasper)
- * PageUp PageDown scrolling in museeq
  * Show things like 'shared files browsed by user xyz' or 'send search results 123 to user xyz' in the new museeq log-window (chs_kasper)
  * Option in the config for automated messages (lartza)
  * Auto-Away in museekd (chs_kasper's idea)
