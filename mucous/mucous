@@ -465,14 +465,14 @@ class mucous(driver.Driver):
 		self.usernames = {"username": None, "download": None, "private":None, "info": None, "upload": None, "search": None, "privileges": None, "browse": "default__"}
 		self.Spl = {"menunumber": 0, "title": None, "selected": None, "status": None, "connected": 0, "room": None, "history_count": 0, "current_search": "default__",  "dir_browse": "", "search_method": "globally", "search_order": "num", "show_menu": False, "current_menu": None, "setup_input": "default", "interests_input": "add_likes", "ticker_room": None, "uploads": 0, "downloads": 0 , "search_reverse": False, "recommend_sort": "alpha", "ticker_num":  0}
 		self.data = {"rooms": {}, "tickers": {}, "shares": {} , "roomlist": {}, "search_tickets": {}, "search_results": {}, "browse_num": {}, "browse_results": {}, "mystats": [], "downloads": {}, "uploads": {}, "recommendations": {}, "similar_users": {} }
-		self.logs = {"buddies": [], "banned": [], "ignored": [], "trusted": [], "uploads": "Up: 0", "downloads": "Down: 0", "tab_completion": [], "search_count": ["Results: ", 0], "history": [], "alert": "", "onlinestatus": "Offline", "info": {}, "private": {}, "rooms": {}, "browse": {}, "search":{} , "roombox": {} , "roomstatus": {} , "recommendations": [], "likes": [], "hates": [], "similar_users":[]    }
+		self.logs = {"buddied": [], "banned": [], "ignored": [], "trusted": [], "uploads": "Up: 0", "downloads": "Down: 0", "tab_completion": [], "search_count": ["Results: ", 0], "history": [], "alert": "", "onlinestatus": "Offline", "info": {}, "private": {}, "rooms": {}, "browse": {}, "search":{} , "roombox": {} , "roomstatus": {} , "recommendations": [], "likes": [], "hates": [], "similar_users":[]    }
 		self.activeitems = {"info": [], "search": [], "browse": [], "private": [], "positions": {}}
 		self.requests = {"ip":[], "info": [], "statistics": [], "browse": []}
 		self.transfers = {"downloads": {}, "uploads": {} }
-		self.display = {"mode": "chat", "list": "buddies", "interests": "recommendations", "chatshape": mucous_config["mucous"]["roombox"], "chat": "chatroom", "browse": "directories", "setup": "mucous", "password": "no", "transfers": "downloads", "transfer_sort": "all", "t_speed": True}
+		self.display = {"mode": "chat", "list": "buddied", "interests": "recommendations", "chatshape": mucous_config["mucous"]["roombox"], "chat": "chatroom", "browse": "directories", "setup": "mucous", "password": "no", "transfers": "downloads", "transfer_sort": "all", "t_speed": True}
 		self.user = { "status": {}, "statistics": {}  }
 		self.windows = {"text": {}, "border": {}, "dimensions": {} }
-		self.scrolling = {"chatroom": -1, "roombox": 0, "roomstatus": -1, "info": 0, "private": 0, "browsefile": 0, "browsedir": 0, "likes": 0, "hates": 0, "recommendations": 0, "similar_users": 0, "help":0, "debug": 0, "search": 0, "uploads": 0, "downloads": 0, "buddies": 0, "banned": 0, "ignored": 0, "trusted": 0, "roomlist":0 }
+		self.scrolling = {"chatroom": -1, "roombox": 0, "roomstatus": -1, "info": 0, "private": 0, "browsefile": 0, "browsedir": 0, "likes": 0, "hates": 0, "recommendations": 0, "similar_users": 0, "help":0, "debug": 0, "search": 0, "uploads": 0, "downloads": 0, "buddied": 0, "banned": 0, "ignored": 0, "trusted": 0, "roomlist":0 }
 		self.menus = {}
 
 		self.url = None
@@ -1594,7 +1594,7 @@ class mucous(driver.Driver):
 					self.browse_mode()
 						
 				elif line == "/buddylist" :
-					self.display["list"] = "buddies"
+					self.display["list"] = "buddied"
 					self.list_mode()
 					
 				elif line == "/banlist" :
@@ -2345,7 +2345,7 @@ class mucous(driver.Driver):
 							self.send(messages.PeerStats(user))
 							
 						elif self.display["mode"] == "lists":
-							if self.display["list"] == "buddies":
+							if self.display["list"] == "buddied":
 								self.mod_config("buddy", line, '')
 							elif self.display["list"] == "banned":
 								self.mod_config("ban", line, '')
@@ -4551,7 +4551,7 @@ class mucous(driver.Driver):
  	def buddylist(self):
 		try:
 			if "buddies" in self.config.keys():
-				self.logs["buddies"] = []
+				self.logs["buddied"] = []
 				alpha_list = SortedDict()
 				for keyname, keyvalue in self.config["buddies"].items():
 					alpha_list[keyname] = keyvalue
@@ -4717,10 +4717,10 @@ class mucous(driver.Driver):
 					scrolltext = self.display["mode"]
 					scrolldiff = self.windows["dimensions"]["search"]["height"]
 				elif self.display["mode"] == "lists":
-					if self.display["list"] == "buddies":
+					if self.display["list"] == "buddied":
 						scrolltext = self.display["list"]
 						scrolldiff = self.windows["dimensions"][self.display["list"]]["height"]
-						selected_log = self.logs["buddies"]
+						selected_log = self.logs["buddied"]
 					elif self.display["list"] == "banned":
 						scrolltext = self.display["list"]
 						scrolldiff = self.windows["dimensions"][self.display["list"]]["height"]
@@ -4972,10 +4972,12 @@ class mucous(driver.Driver):
 				items = [["Private Message", "all"], ["Userinfo", "all"], ["IP Address", "all"], ["Browse", "all"], ["", "line"], ["Buddy", "buddies"], ["Ban", "banned"], ["Ignore", "ignored"], ["Trusted", "trusted"], ["Give Privileges", "giveprivs"]  ]
 				height = len(items) + 2	
 			elif menu == "lists":
-				mode = self.display["interests"]
+				mode = self.display["list"]
 				left = 25; top = 2; width = 20
 				title = "%s" % (this_list[self.scrolling[mode]])[1][:16]
 				name = this_list[self.scrolling[mode]][1]
+ 				number = self.scrolling[mode] +1 
+ 				
 				items = [["Private Message", "all"], ["Userinfo", "all"], ["IP Address", "all"], ["Browse", "all"], ["", "line"], ["Buddy", "buddies"], ["Ban", "banned"], ["Ignore", "ignored"], ["Trusted", "trusted"], ["Give Privileges", "giveprivs"]  ]
 				height = len(items) + 2	
 				
@@ -5128,8 +5130,8 @@ class mucous(driver.Driver):
 			if self.display["mode"] == "chat":
 				this_list = self.logs["roombox"][self.Spl["room"]]
 			elif self.display["mode"] == "lists":
-				if self.display["list"]=="buddies":
-					this_list = self.logs["buddies"]
+				if self.display["list"]=="buddied":
+					this_list = self.logs["buddied"]
 				elif self.display["list"]=="banned":
 					this_list = self.logs["banned"]
 				elif self.display["list"]=="ignored":
@@ -6185,7 +6187,7 @@ class mucous(driver.Driver):
 					w = self.windows["dimensions"][self.display["list"]]
 					if y == 1:
 						if x >= 4 and x <= 15:
-							self.display["list"]="buddies"
+							self.display["list"]="buddied"
 							self.list_mode()
 						elif x >= 17 and x <= 27:
 							self.display["list"]="banned"
@@ -6305,8 +6307,8 @@ class mucous(driver.Driver):
 									
 							self.interests_mode()
 							return self.line
-					elif self.display["list"] in ("buddies", "banned", "ignored", "trusted"):
-						
+					elif self.display["list"] in ("buddied", "banned", "ignored", "trusted"):
+						# clicking on items in lists
 						if y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
 							y -= w["top"]
 							
@@ -6757,14 +6759,14 @@ class mucous(driver.Driver):
 						self.browse_mode()
 						
 				elif self.display["mode"]=="lists":
-					if self.display["list"]=="buddies":
+					if self.display["list"]=="buddied":
 						self.display["list"]="banned"
 					elif self.display["list"]=="banned":
 						self.display["list"]="ignored"
 					elif self.display["list"]=="ignored":
 						self.display["list"]="interests"
 					elif self.display["list"]=="interests":
-						self.display["list"]="buddies"
+						self.display["list"]="buddied"
 					self.list_mode()
 					
 				elif self.display["mode"]=="roomlist":
@@ -7563,7 +7565,7 @@ class mucous(driver.Driver):
 						tw.addstr('* ')	
 					pos = 2
 					
-					if self.display["list"] == "buddies":
+					if self.display["list"] == "buddied":
 						try:
 							
 							if mtype == 'Banned':
@@ -7942,7 +7944,7 @@ class mucous(driver.Driver):
 						
 	
 			if self.display["mode"] == "lists":
-				if self.display["list"] =="buddies":
+				if self.display["list"] =="buddied":
 					mw.addstr(0, 3, "< Buddied >",  self.colors["green"] | curses.A_BOLD)
 					mw.addstr(0, 16, "< Banned >", self.colors["green"])
 					mw.addstr(0, 28, "< Ignored >", self.colors["green"])
@@ -9135,14 +9137,14 @@ class mucous(driver.Driver):
 		
 	def buddy_mode(self):
 		try:
-			self.display["list"] = "buddies"
+			self.display["list"] = "buddied"
 			self.Spl["show_menu"] = False
 			
 			s = self.windows["dimensions"][self.display["list"]] = {"height": self.h-7, "top": 2, "left": 1, "width": self.w-2}
 			self.buddylist()
 			self.process_list_window(self.display["list"])
 			
-			self.process_list_log(s, "buddies")
+			self.process_list_log(s, "buddied")
 			
 			self.hotkeys()
 			curses.doupdate()
@@ -9197,8 +9199,8 @@ class mucous(driver.Driver):
 			
 	def display_lists(self):
 		try:
-			if self.display["list"]=="buddies":
-				this_list = self.logs["buddies"]
+			if self.display["list"]=="buddied":
+				this_list = self.logs["buddied"]
 			elif self.display["list"]=="banned":
 				this_list = self.logs["banned"]
 			elif self.display["list"]=="ignored":
@@ -9216,7 +9218,7 @@ class mucous(driver.Driver):
 	def list_mode(self):
 		self.display["mode"] = "lists"
 		self.Spl["show_menu"] = False
-		if self.display["list"] == "buddies":
+		if self.display["list"] == "buddied":
 			self.buddy_mode()
 			
 		elif self.display["list"] == "banned":
@@ -10079,7 +10081,7 @@ class mucous(driver.Driver):
 			
 	def buddy_log(self, mtype, user, note):
 		try:
-			self.logs["buddies"].append([mtype, user, note])
+			self.logs["buddied"].append([mtype, user, note])
 		except Exception, e:
 			self.Hlog("debug", "buddy_log: " + str(e))
 

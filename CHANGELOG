@@ -20,7 +20,7 @@ MUCOUS
 Version: 0.8.1
 * Made Room Status log scrollable
 * Typo fixes
-
+* User lists fixes
 Version: 0.8.0
 * Finished Interests and recommendations
 * Rewrote Scrolling variables (each mode/window has it's own scroll counter, now)
