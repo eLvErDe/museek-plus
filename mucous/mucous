@@ -480,9 +480,7 @@ class mucous(driver.Driver):
 
 		self.timedout = False
 		self.listline = [] # Tab Completion Line (split)
-		self.Sup = 0
-		self.end = 0
-		self.start = 0
+
 		# transfers
 		self.sorted_transfer_list = {}
 		self.last_transferscroll = None
@@ -515,56 +513,9 @@ class mucous(driver.Driver):
 		self.states = {0: "Finished", 1: "Xferring", 2: "Negotiating", 3:"Waiting", 4: "Establishing", 5: "Initiating", 6: "Connecting",  7: "Queued", 8:"Address", 9:  "Status", 10: "Offline",11: "Closed",12: "Can't Connect", 13: "Aborted",14: "Not Shared"}
 		self.alert = { "CHAT": {}, "PRIVATE": [], "TRANSFERS" : [],  "SEARCH": [], "INFO": [], "BROWSE": [],  "HELP": [] }
 		
-		# Temporary Logs
-
+		# Help Logs
+		self.help_pages()
 		
-
-
-		self.pminfolog = ["Global Private Messaging commands:",\
-"To start a Private Message:",\
-"1) Type in the username you wish to PM below",\
-"2) Press <Enter>",\
-"3) Type your messages",
-"Use the commands below:",\
-"/pm      <user>        (Start PM or switch to user)",\
-"/close   <user>        (Close user's PM) ",\
-"/close                 (Close current PM)",\
-"/ip                    (Get the IP of current user)",\
-"/msg <message>         (Send message to previous chosen user)"]
-
-		self.logs["search"]["default__"] = ["Search commands:",\
-"/searchfor   <query>   (Global Search)",\
-"/searchbuddy <query>   (Buddy Search)",\
-"/searchroom  <query>   (Room Search)",\
-"/download <number>     (Download File with number)",\
-"/downdir  <number>     (Download directory of File)",\
-"/close                 (Close current search)",\
-"/filter <string>       (limit displayed results)",\
-"Mouse: Right-Click     (popup menu)",\
-"Press Insert to toggle between searches.",\
-"Press Alt-T to toggle Global/Buddy/Room searches",\
-
-"Or, type in the query, below."]
-
-		self.logs["browse"]["default__"] = ["----<Browse Commands>----",\
-"/browse        (Switch to Browse Mode)",\
-"/buser    <user>       (Browse User)",\
-"/bsearch  <query>      (Search thru Shares)",\
-"/download <number>     (Download file with this number)",\
-"/close                 (close current shares)",\
-"Press Insert to toggle between shares.",\
-"--File System browsing commands--",\
-"cd (change dir) get, getdir (download)",\
-"First, type in the user you wish to browse, below.",\
-"Right-click on directories or files to display the popup menu."]
-
-
-		self.infolog = ["Global User Information commands:",\
-"/userinfo <user>",\
-"/stat     <user>",\
-"/ip       <user>",\
-"Or type the user name that you wish get recieve userinfo from, below.",\
- "--"]
 		# timers
 		self.retry_timer = threading.Timer(30.0, self.retry_display)
 		self.clear_timer = threading.Timer(30.0, self.clear_display)
@@ -596,163 +547,8 @@ class mucous(driver.Driver):
 
  		for alias in mucous_config["aliases"].keys():
 			self.commandlist.append("/"+alias)
-		
-		self.help_chat = ["----[Chat Commands]----", \
-"/join <room>   /part <room>  /leave <room>",\
-"/j <room>      /talk <room>  /say <room> <message>",\
-"/users <room>          (lists of users in room)",\
-"/autojoin <room>       (Toggle Autojoining room)",\
-"/roomlistrefresh       (redownload roomlist from server)",\
-"/inrooms               (list of joined rooms)",\
-"/clearroom <room>      (clear <room>, or current room)",\
-"/pm <user>             (Private Message user)",\
-"/msg <message>         (send message to last user)",\
-"/url          /urlcustom (command$command)    (Requires X11)",\
-"/urlreader (lynx|links|elinks|firefox|custom) (Requires X11)",\
-"/np                    (XMMS/BMP Now playing script)",\
-"/npcheck               (display Now playing script command)",\
-"/npset <command>       (Set Now playing script to command)",\
-"/npprefix <text>       (set to np: or /me is now playing:)",\
-"/alias <alias> <text>  /unalias <alias>"]
-
-		
-		self.help_ticker = ["----<Ticker Commands>---- ",\
-"/listtick <room>       (Lists tickers in room)",\
-"/settick <message>     (set ticker for last room)",\
-"/tickcycle             (Toggle cycling tickers in Chat Rooms)",\
-"/tickers               (Toggle tickers)",\
-"/defaulttick <message> (Set & save default ticker)",\
-"/tickroom <room>       (Choose room for setting tickers)",\
-"/settick <message>     (Set ticker to message, and save it)",\
-"/settemptick <message> (Set ticker only for this session)",\
-]
-
-		self.help_connect = ["Connection Configuration",\
-"/interface </tmp/museekd.[username]> or <host:port>",\
-"/password <interface password>",\
-"/connect               (Attempts to connect to Museekd)",\
-"/disconnect            (Disconnects from Museekd)",\
-"/save                  (Writes settings to config)"]
-
-		self.help_setup = ["Setup",\
-"/autobuddy             (Auto-buddy users you download from)",\
-"/privbuddy             (Toggle Privileging buddies)",\
-"/onlybuddy             (Toggle Only sharing to buddies)",\
-"/slots <num>           (Set upload slots)",\
-"/unhide                (Toggle show password)",\
-"/logging               (Toggle Logging)"]
-
-		self.help_user = ["----[User Commands]---- ",\
-"/buddy    <user>    /unbuddy   <user>",\
-"/ban      <user>    /unban     <user> (Cannot access your files)",\
-"/ignore   <user>    /unignore  <user> (No messages in chat)",\
-"/nuke     <user>    /unnuke    <user> (Ban+Ignore)",\
-"/trust    <user>    /distrust  <user> (Can Upload to you)",\
-"/stat     <user>    /ip        <user>",\
-"/userinfo <user>    /giveprivs <user> (Input days next)",\
-"/away (Toggle your Online/Away Status)",\
-"/autoaway (Go away after 900 seconds of inactivity)"]
-
-		self.help_transfer = ["----[Transfer Commands]---- ",\
-"/abortu  <num> /abortup    <num> (Abort Upload)",\
-"/abortd  <num> /abortdown  <num> (Abort Download)",\
-"/removeu <num> /removeup   <num> (Remove Upload)",\
-"/removed <num> /removedown <num> (Remove Download)",\
-"/retry   <num>                   (Retry Download)",\
-"/retryall                        (Retry all Downloads)",\
-"/clearup                         (Clear failed/finished Uploads)",\
-"/cleardown                       (Clear finished Download)",\
-"/percent                         (Toggle Percent/Speed",\
-"/transbox                        (Toggle Split/Tabbed Mode))"]
-		self.help_mode_text = ["----[Mode Commands]---- ",\
-"/chat          (Chat Mode)",\
-"/transfer      (Transfer Mode)",\
-"/info          (Info Mode)",\
-"/browse        (Browse Mode)",\
-"/private       (Private Message Mode)",\
-"/search        (Search Mode)",\
-"/buddylist     (Buddylist Mode)",\
-"/banlist       (Banlist Mode)",\
-"/ignorelist    (Ignorelist Mode)",\
-"/roomlist      (Roomlist Mode)",\
-"/setup         (Setup Mode)",\
-"/help /debug   (Help & Debug Mode)"]
-
-		self.help_help = ["----<Help Commands>---- ",\
-"/help          (This Message)",\
-"/help connect  (Connection Commands)",\
-"/help setup    (Setup Commands)",\
-"/help mode     (Mode Commands)",\
-"/help chat     (Chatroom Commands)",\
-"/help ticker   (Ticker Commands)",\
-"/help user     (User Commands)",\
-"/help transfer (Transfer Commands)",\
-"/help browse   (Browse Commands)",\
-"/help search   (Search Commands)",\
-"/help download (Download Commands)",\
-"/help keys     (Special Keys)",\
-"/quit          (Close Mucous)"]
-		
-		self.help_search = ["----<Search Commands>----",\
-"/search        (Switch to Search Mode)",\
-"/searchfor   <query>",\
-"/searchbuddy <query>",\
-"/searchroom  <query>",\
-"/searchuser  <user>",\
-"/download <search number>",\
-"/downdir  <search number>",\
-"/close         (Close Current Search)",\
-"/clearsearchs  (Removes all searches)",\
-"/filter (Turn OFF Filter) /filter <query> (Set Filter)"]
-
-		self.help_browse = ["----<Browse Commands>----",\
-"/browse        (Switch to Browse Mode)",\
-"/buser    <user>       (Browse User)",\
-"/bsearch  <query>      (Search thru Shares)",\
-"/download <number>     (Download file with this number)",\
-"/close                 (close current shares)",\
-"Press Insert to toggle between shares.",\
-"--File System browsing commands--",\
-"cd (change dir) get, getdir (download)",\
-"First, type in the user you wish to browse, below."]
-		
-		self.help_download = ["----<Manual Download Commands>----",\
-"/downuser <user>    (Set download user)",\
-"/downpath <path>    (Download file from user)",\
-"/downpathdir <path> (Download dir from user)"]
-
-		self.help_keys =["------<Keys>------ ",\
-"ESC or Alt + [, ], <-, ->  (Change Room / Transfer display mode)",\
-"Insert                     (Same as above)",\
-"Tab                        (Completes nicks)",\
-"Home/End                   (switches Upload & Download scrolling)",\
-"Up, PageUp                 (Scroll Up a line, a page)",\
-"Down, PageDown             (Scroll Down a line, a page)",\
-"F1->Chat                 F6->Browse",\
-"F2->Private Messages     F7->User Lists",\
-"F3->Transfers            F8->Rooms List",\
-"F4->Search               F9->Setup",\
-"F5->Info                 F10->Help"]
-		self.helpdebuglog = []
-		self.helplog =["----<Help Commands>---- ",\
-"/help          (This Message)",\
-"/help connect  (Connection Commands)",\
-"/help setup    (Setup Commands)",\
-"/help mode     (Mode Commands)",\
-"/help chat     (Chatroom Commands)",\
-"/help ticker   (Ticker Commands)",\
-"/help user     (User Commands)",\
-"/help transfer (Transfer Commands)",\
-"/help browse   (Browse Commands)",\
-"/help search   (Search Commands)",\
-"/help download (Download Commands)",\
-"/help keys     (Special Keys)",\
-"/quit"]	
-
-	
 	
 		# Startup Size Check
-		
 		self.stdscr = curses.initscr()
 		#curses.flushinp()
 		#curses.setupterm()
@@ -761,7 +557,7 @@ class mucous(driver.Driver):
 		curses.meta(1)
 		h, w = self.stdscr.getmaxyx()
 		#h,w = struct.unpack("HHHH", fcntl.ioctl(sys.stdout.fileno(),termios.TIOCGWINSZ, struct.pack("HHHH", 0, 0, 0, 0)))[:2]
-		if  h <=5 or w <=37:
+		if  h <=7 or w <=37:
 			self.stdscr.keypad(1)
 			curses.echo()
 			curses.endwin()
@@ -2523,6 +2319,7 @@ class mucous(driver.Driver):
 			self.Hlog("status", "Logging into Museek at "+ mucous_config["connection"]["interface"])
 			self.timeout_timer = threading.Timer(self.timeout_time, self.timeout)
 			self.timeout_timer.start()
+			self.refresh_windows()
 		except Exception,e:
 			self.Hlog("debug", "cb_login_ok: " + str(e))
 		
@@ -2545,6 +2342,7 @@ class mucous(driver.Driver):
 			self.transfers["uploads"] = {}
 			for room in self.data["rooms"].keys():
 				self.data["rooms"][room] = []
+				self.data["tickers"][room] = []
 				
 			if self.display["mode"] == "chat":
 				self.chat_mode()
@@ -2677,7 +2475,7 @@ class mucous(driver.Driver):
 				
 # 				roomlist = []
 	
-				alpha_list  = SortedDict()
+# 				alpha_list  = SortedDict()
 				
 				for users in joined[room]:
 # 					roomlist.append(users)
@@ -2694,9 +2492,9 @@ class mucous(driver.Driver):
 					if rooms14 == room:
 						self.data["tickers"][room] = ticks
 	
-				for rooms2, ticks in alpha_list.items():
-					if rooms2 == room:
-						self.data["tickers"][room] = alpha_list[room]
+# 				for rooms2, ticks in alpha_list.items():
+# 					if rooms2 == room:
+# 						self.data["tickers"][room] = alpha_list[room]
 						
 				#SMALL ROOM USER PRINTOUT
 	# 			
@@ -2889,7 +2687,7 @@ class mucous(driver.Driver):
 				self.user["status"][users] = stats[0] # online status
 			
 			self.data["rooms"][room] = list_of_users.keys()
-			if self.Spl["room"] == None:
+			if self.Spl["room"] == None or self.Spl["room"] == room:
 				self.change_room(room)
 			curses.doupdate()
 		except Exception, e:
@@ -3182,8 +2980,9 @@ class mucous(driver.Driver):
 			self.Hlog( "debug", "cb_server_status_set: " + str(e))
 			
 	def cb_room_tickers(self, room, tickers):
+		
 		try:
-			for user, message in tickers.items():
+			for message, user in tickers.items():
 				self.data["tickers"][room][user] = message
 		except Exception, e:
 			self.Hlog( "debug", "cb_room_tickers: " + str(e))
@@ -3197,7 +2996,6 @@ class mucous(driver.Driver):
 					if user not in self.config["ignored"].keys():
 						self.log_window(user, room, did, what)
 			if room in self.data["tickers"].keys():
-				
 				self.data["tickers"][room][user] = message
 					
 		except Exception, e:
@@ -4162,6 +3960,7 @@ class mucous(driver.Driver):
 					status_list = (7, 99999)
 				elif self.display["transfer_sort"] == 'failed':
 					status_list = (  10, 11, 12, 13)
+				utw =self.windows["text"]["uploads"]
 				uploadlist = []
 				num = 0
 				self.data["uploads"] = {}
@@ -4195,11 +3994,11 @@ class mucous(driver.Driver):
 						while spaces > 0:
 							spaces -= 1
 							swting += " "
-						self.upwin.erase()
+						utw.erase()
 						if self.display["transfers"] == "uploads":
-							self.upwin.addstr(swting, self.colors["green"] | curses.A_REVERSE)
+							utw.addstr(swting, self.colors["green"] | curses.A_REVERSE)
 						else:
-							self.upwin.addstr(swting, self.colors["blafgcyabg"] )
+							utw.addstr(swting, self.colors["blafgcyabg"] )
 				except Exception, e:
 					self.Hlog("debug", "Upload Item: " + str(e))
 					
@@ -4219,16 +4018,16 @@ class mucous(driver.Driver):
 							if count + start == s:
 								attr = curses.A_REVERSE | curses.A_BOLD
 							try:
-								self.upwin.addstr(self.decode_language(transfers[0]), attr)
+								utw.addstr(self.decode_language(transfers[0]), attr)
 							except:
 								pass
 							count += 1
 					else:
-						self.upwin.addstr("\nNo transfers in this category, hit INSERT to switch to another.")
+						utw.addstr("\nNo transfers in this category, hit INSERT to switch to another.")
 						
 				except:
 					pass
-			self.upwin.noutrefresh()
+			utw.noutrefresh()
 		except Exception, e:
 			self.Hlog("debug", "Upload Manager: " + str(e))
 			
@@ -4324,6 +4123,7 @@ class mucous(driver.Driver):
 				elif self.display["transfer_sort"] == 'failed':
 					status_list = (  10, 11, 12, 13)
 				downloadlist = []
+				dtw = self.windows["text"]["downloads"]
 				num = 0
 				self.data["downloads"] = {}
 				userlist = self.transfers["downloads"].keys()
@@ -4354,11 +4154,11 @@ class mucous(driver.Driver):
 						while spaces > 0:
 							spaces -= 1
 							swting += " "
-						self.downwin.erase()
+						dtw.erase()
 						if self.display["transfers"] == "downloads":
-							self.downwin.addstr(swting, self.colors["green"] | curses.A_REVERSE)
+							dtw.addstr(swting, self.colors["green"] | curses.A_REVERSE)
 						else:
-							self.downwin.addstr(swting, self.colors["blafgcyabg"] )
+							dtw.addstr(swting, self.colors["blafgcyabg"] )
 					except:
 						pass
 					try:
@@ -4380,17 +4180,17 @@ class mucous(driver.Driver):
 								if count + start == s:
 									attr = curses.A_REVERSE | curses.A_BOLD
 								try:
-									self.downwin.addstr(self.encode_language(transfers[0])[:w["width"]], attr)
+									dtw.addstr(self.encode_language(transfers[0])[:w["width"]], attr)
 									
 								except:
 									pass
 								count += 1
 						else:
 						
-							self.downwin.addstr("\nNo transfers in this category, hit INSERT to switch to another.")
+							dtw.addstr("\nNo transfers in this category, hit INSERT to switch to another.")
 					except Exception, e:
 						self.Hlog("debug", "Download log: " + str(e))
-					self.downwin.noutrefresh()
+					dtw.noutrefresh()
 
 		except Exception, e:
 			self.Hlog("debug", "Download Manager: " + str(e))
@@ -5522,17 +5322,17 @@ class mucous(driver.Driver):
 		try:
 			if self.display["mode"] =="transfer":
 				if mucous_config["mucous"]["transbox"]=="split":
-					self.transwin2.redrawwin()
-					self.transwin2.refresh()
-					self.transwin.redrawwin()
-					self.transwin.refresh()
+					self.windows["border"]["uploads"].redrawwin()
+					self.windows["border"]["uploads"].refresh()
+					self.windows["border"]["downloads"].redrawwin()
+					self.windows["border"]["downloads"].refresh()
 				else:
 					if self.display["transfers"] == "downloads":
-						self.transwin.redrawwin()
-						self.transwin.refresh()
+						self.windows["border"]["downloads"].redrawwin()
+						self.windows["border"]["downloads"].refresh()
 					elif self.display["transfers"] == "uploads":
-						self.transwin2.redrawwin()
-						self.transwin2.refresh()
+						self.windows["border"]["uploads"].redrawwin()
+						self.windows["border"]["uploads"].refresh()
 			elif self.display["mode"] =="lists":
 				self.windows["border"][self.display["list"]].redrawwin()
 				self.windows["border"][self.display["list"]].refresh()
@@ -5549,8 +5349,8 @@ class mucous(driver.Driver):
 					self.windows["text"]["roomstatus"].redrawwin()
 					self.windows["text"]["roomstatus"].refresh()
 				if self.display["chatshape"] not in ( "noroombox", "chat-only"):
-					self.roomstatusborderwin.redrawwin()
-					self.roomstatusborderwin.refresh()
+					self.windows["border"]["roombox"].redrawwin()
+					self.windows["border"]["roombox"].refresh()
 					
 			elif self.display["mode"] =="browse":
 				self.browse_redraw()
@@ -7911,10 +7711,7 @@ class mucous(driver.Driver):
 				
 			if self.display["mode"] == "transfer":
 				s = self.windows["dimensions"][window]
-				if window == "uploads":
-					win = self.transwin2 = curses.newwin(s["height"]+2, s["width"]+2, s["top"]-1, s["left"]-1)
-				elif window == "downloads":
-					win = self.transwin = curses.newwin(s["height"]+2, s["width"]+2, s["top"]-1, s["left"]-1)
+				win = self.windows["border"][window] = curses.newwin(s["height"]+2, s["width"]+2, s["top"]-1, s["left"]-1)
 				
 				if mucous_config["mucous"]["transbox"] == "tabbed":
 					win.attron(self.colors["green"])
@@ -8056,34 +7853,39 @@ class mucous(driver.Driver):
 			
 			if mucous_config["mucous"]["transbox"] == "split":
 				
-				self.transwin2.refresh()
-				self.transwin.refresh()
+				uw = self.windows["border"]["uploads"]
+				uw.noutrefresh()
+				dw = self.windows["border"]["downloads"]
+				dw.noutrefresh()
 				
-				self.upwin = self.transwin2.subwin( u["height"], u["width"], u["top"], u["left"])
-				self.upwin.scrollok(0)
-				self.upwin.idlok(1)
-				self.upwin.noutrefresh()
+				utw = self.windows["text"]["uploads"] = uw.subwin( u["height"], u["width"], u["top"], u["left"])
+				utw.scrollok(0)
+				utw.idlok(1)
+				utw.noutrefresh()
 				
-				self.downwin = self.transwin.subwin(d["height"],d["width"], d["top"],d["left"])
-				self.downwin.scrollok(0)
-				self.downwin.idlok(1)
-				self.downwin.noutrefresh()
+				dtw = self.windows["text"]["downloads"] = dw.subwin(d["height"],d["width"], d["top"],d["left"])
+				dtw.scrollok(0)
+				dtw.idlok(1)
+				dtw.noutrefresh()
 				
 			elif mucous_config["mucous"]["transbox"] == "tabbed":
 				
 				if self.display["transfers"] == "uploads":
-					self.transwin2.refresh()
-					self.upwin = self.transwin2.subwin( u["height"], u["width"], u["top"], u["left"])
-					self.upwin.scrollok(0)
-					self.upwin.idlok(1)
-					self.upwin.noutrefresh()
+					uw = self.windows["border"]["uploads"]
+					uw.refresh()
+					utw = self.windows["text"]["uploads"] = uw.subwin( u["height"], u["width"], u["top"], u["left"])
+					utw.scrollok(0)
+					utw.idlok(1)
+					utw.noutrefresh()
 				elif self.display["transfers"] == "downloads":
-					self.transwin.refresh()
+					
+					dw = self.windows["border"]["downloads"]
+					dw.refresh()
 					# Draw download window
-					self.downwin = self.transwin.subwin(d["height"],d["width"], d["top"],d["left"])
-					self.downwin.scrollok(0)
-					self.downwin.idlok(1)
-					self.downwin.noutrefresh()
+					dtw = self.windows["text"]["downloads"] = dw.subwin(d["height"],d["width"], d["top"],d["left"])
+					dtw.scrollok(0)
+					dtw.idlok(1)
+					dtw.noutrefresh()
 					
 
 			
@@ -8123,12 +7925,8 @@ class mucous(driver.Driver):
 	
 	def transfer_panel(self):
 		try:
-			if self.display["transfers"] == "downloads":
-				s = self.windows["dimensions"]["downloads"]
-				window = self.transwin
-			elif self.display["transfers"] == "uploads":
-				s = self.windows["dimensions"]["uploads"]
-				window = self.transwin2
+			s = self.windows["dimensions"][self.display["transfers"] ]
+			window = self.windows["border"][ self.display["transfers"] ]
 			pos = 2
 			 
 			self.arrows(window, s["height"]+1, pos, mucous_config["mucous"]["transbox"])
@@ -8805,7 +8603,207 @@ class mucous(driver.Driver):
 				self.check_alert_state()
 		except Exception, e:
 			pass
-			
+					
+	def help_pages(self):
+						
+		self.pminfolog = ["Global Private Messaging commands:",\
+"To start a Private Message:",\
+"1) Type in the username you wish to PM below",\
+"2) Press <Enter>",\
+"3) Type your messages",
+"Use the commands below:",\
+"/pm      <user>        (Start PM or switch to user)",\
+"/close   <user>        (Close user's PM) ",\
+"/close                 (Close current PM)",\
+"/ip                    (Get the IP of current user)",\
+"/msg <message>         (Send message to previous chosen user)"]
+
+		self.logs["search"]["default__"] = ["Search commands:",\
+"/searchfor   <query>   (Global Search)",\
+"/searchbuddy <query>   (Buddy Search)",\
+"/searchroom  <query>   (Room Search)",\
+"/download <number>     (Download File with number)",\
+"/downdir  <number>     (Download directory of File)",\
+"/close                 (Close current search)",\
+"/filter <string>       (limit displayed results)",\
+"Mouse: Right-Click     (popup menu)",\
+"Press Insert to toggle between searches.",\
+"Press Alt-T to toggle Global/Buddy/Room searches",\
+
+"Or, type in the query, below."]
+
+		self.logs["browse"]["default__"] = ["----<Browse Commands>----",\
+"/browse        (Switch to Browse Mode)",\
+"/buser    <user>       (Browse User)",\
+"/bsearch  <query>      (Search thru Shares)",\
+"/download <number>     (Download file with this number)",\
+"/close                 (close current shares)",\
+"Press Insert to toggle between shares.",\
+"--File System browsing commands--",\
+"cd (change dir) get, getdir (download)",\
+"First, type in the user you wish to browse, below.",\
+"Right-click on directories or files to display the popup menu."]
+
+
+		self.infolog = ["Global User Information commands:",\
+"/userinfo <user>",\
+"/stat     <user>",\
+"/ip       <user>",\
+"Or type the user name that you wish get recieve userinfo from, below.",\
+ "--"]
+		
+		self.help_chat = ["----[Chat Commands]----", \
+"/join <room>   /part <room>  /leave <room>",\
+"/j <room>      /talk <room>  /say <room> <message>",\
+"/users <room>          (lists of users in room)",\
+"/autojoin <room>       (Toggle Autojoining room)",\
+"/roomlistrefresh       (redownload roomlist from server)",\
+"/inrooms               (list of joined rooms)",\
+"/clearroom <room>      (clear <room>, or current room)",\
+"/pm <user>             (Private Message user)",\
+"/msg <message>         (send message to last user)",\
+"/url          /urlcustom (command$command)    (Requires X11)",\
+"/urlreader (lynx|links|elinks|firefox|custom) (Requires X11)",\
+"/np                    (XMMS/BMP Now playing script)",\
+"/npcheck               (display Now playing script command)",\
+"/npset <command>       (Set Now playing script to command)",\
+"/npprefix <text>       (set to np: or /me is now playing:)",\
+"/alias <alias> <text>  /unalias <alias>"]
+
+		
+		self.help_ticker = ["----<Ticker Commands>---- ",\
+"/listtick <room>       (Lists tickers in room)",\
+"/settick <message>     (set ticker for last room)",\
+"/tickcycle             (Toggle cycling tickers in Chat Rooms)",\
+"/tickers               (Toggle tickers)",\
+"/defaulttick <message> (Set & save default ticker)",\
+"/tickroom <room>       (Choose room for setting tickers)",\
+"/settick <message>     (Set ticker to message, and save it)",\
+"/settemptick <message> (Set ticker only for this session)",\
+]
+
+		self.help_connect = ["Connection Configuration",\
+"/interface </tmp/museekd.[username]> or <host:port>",\
+"/password <interface password>",\
+"/connect               (Attempts to connect to Museekd)",\
+"/disconnect            (Disconnects from Museekd)",\
+"/save                  (Writes settings to config)"]
+
+		self.help_setup = ["Setup",\
+"/autobuddy             (Auto-buddy users you download from)",\
+"/privbuddy             (Toggle Privileging buddies)",\
+"/onlybuddy             (Toggle Only sharing to buddies)",\
+"/slots <num>           (Set upload slots)",\
+"/unhide                (Toggle show password)",\
+"/logging               (Toggle Logging)"]
+
+		self.help_user = ["----[User Commands]---- ",\
+"/buddy    <user>    /unbuddy   <user>",\
+"/ban      <user>    /unban     <user> (Cannot access your files)",\
+"/ignore   <user>    /unignore  <user> (No messages in chat)",\
+"/nuke     <user>    /unnuke    <user> (Ban+Ignore)",\
+"/trust    <user>    /distrust  <user> (Can Upload to you)",\
+"/stat     <user>    /ip        <user>",\
+"/userinfo <user>    /giveprivs <user> (Input days next)",\
+"/away (Toggle your Online/Away Status)",\
+"/autoaway (Go away after 900 seconds of inactivity)"]
+
+		self.help_transfer = ["----[Transfer Commands]---- ",\
+"/abortu  <num> /abortup    <num> (Abort Upload)",\
+"/abortd  <num> /abortdown  <num> (Abort Download)",\
+"/removeu <num> /removeup   <num> (Remove Upload)",\
+"/removed <num> /removedown <num> (Remove Download)",\
+"/retry   <num>                   (Retry Download)",\
+"/retryall                        (Retry all Downloads)",\
+"/clearup                         (Clear failed/finished Uploads)",\
+"/cleardown                       (Clear finished Download)",\
+"/percent                         (Toggle Percent/Speed",\
+"/transbox                        (Toggle Split/Tabbed Mode))"]
+		self.help_mode_text = ["----[Mode Commands]---- ",\
+"/chat          (Chat Mode)",\
+"/transfer      (Transfer Mode)",\
+"/info          (Info Mode)",\
+"/browse        (Browse Mode)",\
+"/private       (Private Message Mode)",\
+"/search        (Search Mode)",\
+"/buddylist     (Buddylist Mode)",\
+"/banlist       (Banlist Mode)",\
+"/ignorelist    (Ignorelist Mode)",\
+"/roomlist      (Roomlist Mode)",\
+"/setup         (Setup Mode)",\
+"/help /debug   (Help & Debug Mode)"]
+
+		self.help_help = ["----<Help Commands>---- ",\
+"/help          (This Message)",\
+"/help connect  (Connection Commands)",\
+"/help setup    (Setup Commands)",\
+"/help mode     (Mode Commands)",\
+"/help chat     (Chatroom Commands)",\
+"/help ticker   (Ticker Commands)",\
+"/help user     (User Commands)",\
+"/help transfer (Transfer Commands)",\
+"/help browse   (Browse Commands)",\
+"/help search   (Search Commands)",\
+"/help download (Download Commands)",\
+"/help keys     (Special Keys)",\
+"/quit          (Close Mucous)"]
+		
+		self.help_search = ["----<Search Commands>----",\
+"/search        (Switch to Search Mode)",\
+"/searchfor   <query>",\
+"/searchbuddy <query>",\
+"/searchroom  <query>",\
+"/searchuser  <user>",\
+"/download <search number>",\
+"/downdir  <search number>",\
+"/close         (Close Current Search)",\
+"/clearsearchs  (Removes all searches)",\
+"/filter (Turn OFF Filter) /filter <query> (Set Filter)"]
+
+		self.help_browse = ["----<Browse Commands>----",\
+"/browse        (Switch to Browse Mode)",\
+"/buser    <user>       (Browse User)",\
+"/bsearch  <query>      (Search thru Shares)",\
+"/download <number>     (Download file with this number)",\
+"/close                 (close current shares)",\
+"Press Insert to toggle between shares.",\
+"--File System browsing commands--",\
+"cd (change dir) get, getdir (download)",\
+"First, type in the user you wish to browse, below."]
+		
+		self.help_download = ["----<Manual Download Commands>----",\
+"/downuser <user>    (Set download user)",\
+"/downpath <path>    (Download file from user)",\
+"/downpathdir <path> (Download dir from user)"]
+
+		self.help_keys =["------<Keys>------ ",\
+"ESC or Alt + [, ], <-, ->  (Change Room / Transfer display mode)",\
+"Insert                     (Same as above)",\
+"Tab                        (Completes nicks)",\
+"Home/End                   (switches Upload & Download scrolling)",\
+"Up, PageUp                 (Scroll Up a line, a page)",\
+"Down, PageDown             (Scroll Down a line, a page)",\
+"F1->Chat                 F6->Browse",\
+"F2->Private Messages     F7->User Lists",\
+"F3->Transfers            F8->Rooms List",\
+"F4->Search               F9->Setup",\
+"F5->Info                 F10->Help"]
+		self.helpdebuglog = []
+		self.helplog =["----<Help Commands>---- ",\
+"/help          (This Message)",\
+"/help connect  (Connection Commands)",\
+"/help setup    (Setup Commands)",\
+"/help mode     (Mode Commands)",\
+"/help chat     (Chatroom Commands)",\
+"/help ticker   (Ticker Commands)",\
+"/help user     (User Commands)",\
+"/help transfer (Transfer Commands)",\
+"/help browse   (Browse Commands)",\
+"/help search   (Search Commands)",\
+"/help download (Download Commands)",\
+"/help keys     (Special Keys)",\
+"/quit"]	
+
 	def string_cut_width(self, s, w):
 		try:
 			s = str(s); ls = len(s)
