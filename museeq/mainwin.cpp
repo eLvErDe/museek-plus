@@ -651,7 +651,8 @@ void MainWindow::slotAddressChanged(const QString& text) {
 void MainWindow::changeTheme() {
 
 	QSettings settings;
-	QDir dir  (QString(DATADIR) + "/museek/museeq");
+	QString _path = QString(DATADIR) + "/museek/museeq";
+	QDir dir  (_path);
 	QFileDialog * fd = new QFileDialog(dir.path(), "", this);
 	fd->setCaption("Enter a Museeq Icon Theme Directory");
 	fd->setMode(QFileDialog::Directory);
