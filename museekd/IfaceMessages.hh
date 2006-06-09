@@ -1011,14 +1011,14 @@ END
 
 IFACEMESSAGE(IUserSearch, 0x0403)
 /*
-	UserSearch -- Start a new search of only user's shares
-
+	User Search -- Start a new search of only users shares
+	
 	string user -- Who's shares you wish to search
 	string query -- What you want to search for
 	
 	*not sent*
 */
-	
+
 	IUserSearch() {}
 
 	PARSE
@@ -1031,7 +1031,7 @@ END
 
 IFACEMESSAGE(IWishListSearch, 0x0405)
 /*
-	WishListSearch -- Start a new wishlist search
+	WishList Search -- Start a new wishlist search
 	
 	string query -- What you want to search for
 	
