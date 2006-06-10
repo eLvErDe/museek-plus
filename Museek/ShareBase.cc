@@ -69,6 +69,8 @@ void ShareBase::update(const string& type) {
 	if(mMuseek->logged_in())
 		if  (type  != "buddy")
 			mMuseek->server_shared_folders_files(mNumFolders, mNumFiles);
+		else if  (type  == "buddy" && mMuseek->mBuddySharesHave && mMuseek->mBuddiesOnly)
+			mMuseek->server_shared_folders_files(mNumFolders, mNumFiles);
 }
 
 void ShareBase::recode() {

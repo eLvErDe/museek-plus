@@ -43,9 +43,9 @@ using std::queue;
 using std::vector;
 using std::map;
 
-Museek::Museek() : ConnectionManager(), mListenPort(0), mUserWarnings(false), mBuddySharesHave(true), mRecoder(0), 
+Museek::Museek() : ConnectionManager(), mListenPort(0), mUserWarnings(false), mBuddySharesHave(true),  mBuddiesOnly(false), mRecoder(0), 
                    mServerHost(""), mServerPort(0), mUsername(""), mPassword(""),
-                   mServer(0), mConnected(false), mLoggedIn(false), mBuddiesOnly(false),
+                   mServer(0), mConnected(false), mLoggedIn(false),
                    mParentInactivityTimeout(0), mSearchInactivityTimeout(0), mMinParentsInCache(0),
                    mDistribAliveInterval(0), mWishListInterval(0), 
                    mShares(0),  mBuddyShares(0), mConnectMode(CM_Active),  mPeerManager(0),
@@ -314,7 +314,11 @@ void Museek::cb_server_logged_in(bool success, const string& message) {
 	DEBUG("Logged in: %d\n%s", success, message.c_str());
 	mLoggedIn = success;
 	if(success) {
-		server_shared_folders_files(mShares->folders(), mShares->files());
+		if (mBuddiesOnly && mBuddySharesHave)
+			server_shared_folders_files(mBuddyShares->folders(), mBuddyShares->files());
+		else {
+			server_shared_folders_files(mShares->folders(), mShares->files());
+		}
 		mPeerManager->server_connected();
 	}
 }

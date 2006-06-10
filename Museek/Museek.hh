@@ -260,7 +260,7 @@ public:
 	virtual void cb_distrib_ping();
 	virtual void cb_distrib_search(STR user, uint32 ticket, WSTR query);
 	
- 	bool mUserWarnings, mBuddySharesHave;
+ 	bool mUserWarnings, mBuddySharesHave, mBuddiesOnly;
 protected:
 	// Cycle callback, purges stuff we don't need / want anymore
 	virtual void cycle_callback();
@@ -279,7 +279,7 @@ protected:
 	std::vector<unsigned char> mUserpic;
 	
 	ServerConnection* mServer;
-	bool mConnected, mLoggedIn, mBuddiesOnly;
+	bool mConnected, mLoggedIn;
 	
 	std::map<std::string, bool> mPrivileged, mAllowUploads;
 	
