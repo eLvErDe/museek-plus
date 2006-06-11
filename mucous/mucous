@@ -7853,7 +7853,8 @@ class mucous(driver.Driver):
 			self.last_transferscroll = self.display["transfers"]
 		except Exception, e:
 			self.Hlog("debug", "transfer panel: " + str(e))
-			
+
+
 		self.hotkeys()
 		curses.doupdate()
 	
@@ -8718,32 +8719,32 @@ class mucous(driver.Driver):
 "/downpathdir <path> (Download dir from user)"]
 
 		self.help_keys =["------<Keys>------ ",\
+"No guarantees that these hotkeys work with your terminal",\
 "ESC or Alt + [, ], <-, ->  (Change Room / Transfer display mode)",\
 "Insert                     (Same as above)",\
 "Tab                        (Completes nicks)",\
 "Home/End                   (switches Upload & Download scrolling)",\
 "Up, PageUp                 (Scroll Up a line, a page)",\
 "Down, PageDown             (Scroll Down a line, a page)",\
-"F1->Chat                 F6->Browse",\
-"F2->Private Messages     F7->User Lists",\
+"F1->Chat Rooms           F6->Browse Users",\
+"F2->Private Messages     F7->User Lists/Interests",\
 "F3->Transfers            F8->Rooms List",\
 "F4->Search               F9->Setup",\
 "F5->Info                 F10->Help"]
 		self.helpdebuglog = []
-		self.helplog =["----<Help Commands>---- ",\
-"/help          (This Message)",\
-"/help connect  (Connection Commands)",\
-"/help setup    (Setup Commands)",\
-"/help mode     (Mode Commands)",\
-"/help chat     (Chatroom Commands)",\
-"/help ticker   (Ticker Commands)",\
-"/help user     (User Commands)",\
-"/help transfer (Transfer Commands)",\
-"/help browse   (Browse Commands)",\
-"/help search   (Search Commands)",\
-"/help download (Download Commands)",\
-"/help keys     (Special Keys)",\
-"/quit"]	
+		self.helplog =[\
+"  _____  __ __   ____  ____  __ __  ______",\
+" /     \|  |  \_/ ___\/  _ \|  |  \/  ___/",\
+"|  Y Y  \  |  /\  \__(  <_> )  |  /\___ \ ",\
+"|__|_|  /____/  \___  >____/|____//____  >",\
+"      \/            \/                 \/",\
+"/help          (This Message)         /quit          (Shut down Mucous)",\
+"/help connect  (Connection Commands)  /help setup    (Setup Commands)",\
+"/help mode     (Mode Commands)        /help user     (User Commands)",\
+"/help chat     (Chatroom Commands)    /help ticker   (Ticker Commands)",\
+"/help transfer (Transfer Commands)    /help download (Download Commands)",\
+"/help browse   (Browse Commands)      /help search   (Search Commands)",\
+"/help keys     (Special Keys)"]	
 
 	def string_cut_width(self, s, w):
 		try:
