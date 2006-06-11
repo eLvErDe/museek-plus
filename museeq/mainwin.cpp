@@ -77,7 +77,7 @@ extern int libqsa_is_present; // defined in either museeq.cpp or the relay stub
 
 MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, name), mWaitingPrivs(false) {
 	mVersion = "0.1.10";
-	setCaption("museeq "+mVersion);
+	setCaption(tr("museeq ")+mVersion);
 	setIcon(IMG("icon"));
 	connect(museeq->driver(), SIGNAL(hostFound()), SLOT(slotHostFound()));
 	connect(museeq->driver(), SIGNAL(connected()), SLOT(slotConnected()));
@@ -92,7 +92,7 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 	connect(museeq, SIGNAL(configChanged(const QString&, const QString&, const QString&)), SLOT(slotConfigChanged(const QString&, const QString&, const QString&)));
 	
 	mMenuFile = new QPopupMenu(this);
-	mMenuFile->insertItem("&Connect...", this, SLOT(connectToMuseek()), ALT + Key_C, 0);
+	mMenuFile->insertItem(tr("&Connect..."), this, SLOT(connectToMuseek()), ALT + Key_C, 0);
 	mMenuFile->insertItem("&Disconnect", museeq->driver(), SLOT(disconnect()), ALT + Key_D, 1);
 	mMenuFile->insertSeparator();
 	mMenuFile->insertItem("Toggle &away", this, SLOT(toggleAway()), ALT + Key_A, 2);
@@ -988,6 +988,21 @@ void MainWindow::resizeEvent(QResizeEvent * ev) {
 
 void MainWindow::closeEvent(QCloseEvent * ev) {
 	QSettings settings;
+	
+	if (daemon->isRunning() && settings.readEntry("/TheGraveyard.org/Museeq/ShutDownDaemonOnExit") == "yes") {
+		if (QMessageBox::question(this, tr("Shutdown Museeq"), tr("The Museek Daemon is still running, and will be shut down if you close Museeq, are you sure you want to?"), tr("&Yes"), tr("&No"), QString::null, 1 ) ) {
+ 			return;
+		}
+	} else if (daemon->isRunning() && settings.readEntry("/TheGraveyard.org/Museeq/ShutDownDaemonOnExit") == "no")  {
+		if (QMessageBox::question(this, tr("Shutdown Museeq"), tr("The Museek Daemon is still running, but will <b>not</b> be shut down if you close Museeq. Are you sure you want to?"), tr("&Yes"), tr("&No"), QString::null, 1 ) ) {
+ 			return;
+		}
+	} else {
+		if (QMessageBox::question(this, tr("Shutdown Museeq"), tr("It's safe to close museeq, but are you sure you want to?"), tr("&Yes"), tr("&No"), QString::null, 1 ) ) {
+ 			return;
+		}
+	}
+	
 	settings.beginGroup("/TheGraveyard.org/Museeq");
 	settings.writeEntry("X", mLastPos.x());
 	settings.writeEntry("Y", mLastPos.y());
@@ -997,6 +1012,7 @@ void MainWindow::closeEvent(QCloseEvent * ev) {
 	if ( settings.readEntry("/TheGraveyard.org/Museeq/ShutDownDaemonOnExit") == "yes")
 		stopDaemon();
 	QMainWindow::closeEvent(ev);
+
 }
 
 void MainWindow::loadScript() {
@@ -1004,7 +1020,7 @@ void MainWindow::loadScript() {
 	if(! libqsa_is_present)
 		return;
 	
-	QString fn = QFileDialog::getOpenFileName("", "*.qs", this, 0, "Load Script");
+	QString fn = QFileDialog::getOpenFileName("", "*.qs", this, 0, tr("Load Script"));
 	if(! fn.isEmpty()) {
 		QFile f(fn);
 		if(f.open(IO_ReadOnly))
