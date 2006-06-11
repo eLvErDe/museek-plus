@@ -463,13 +463,14 @@ class mucous(driver.Driver):
 		driver.Driver.__init__(self)
 		self.config = {}
 		self.usernames = {"username": None, "download": None, "private":None, "info": None, "upload": None, "search": None, "privileges": None, "browse": "default__"}
-		self.Spl = {"menunumber": 0, "title": None, "selected": None, "status": None, "connected": 0, "room": None, "history_count": 0, "current_search": "default__",  "dir_browse": "", "search_method": "globally", "search_order": "num", "show_menu": False, "current_menu": None, "setup_input": "default", "interests_input": "add_likes", "ticker_room": None, "uploads": 0, "downloads": 0 , "search_reverse": False, "recommend_sort": "alpha", "ticker_num":  0}
+		self.Spl = {"menunumber": 0, "title": None,  "status": None, "connected": 0, "room": None, "history_count": 0, "current_search": "default__",  "dir_browse": "", "search_method": "globally", "search_order": "num", "show_menu": False, "current_menu": None, "setup_input": "default", "interests_input": "add_likes", "ticker_room": None, "uploads": 0, "downloads": 0 , "search_reverse": False, "recommend_sort": "alpha", "ticker_num":  0}
 		self.data = {"rooms": {}, "tickers": {}, "shares": {} , "roomlist": {}, "search_tickets": {}, "search_results": {}, "browse_num": {}, "browse_results": {}, "mystats": [], "downloads": {}, "uploads": {}, "recommendations": {}, "similar_users": {} }
 		self.logs = {"buddied": [], "banned": [], "ignored": [], "trusted": [], "uploads": "Up: 0", "downloads": "Down: 0", "tab_completion": [], "search_count": ["Results: ", 0], "history": [], "alert": "", "onlinestatus": "Offline", "info": {}, "private": {}, "rooms": {}, "browse": {}, "search":{} , "roombox": {} , "roomstatus": {} , "recommendations": [], "likes": [], "hates": [], "similar_users":[]    }
 		self.activeitems = {"info": [], "search": [], "browse": [], "private": [], "positions": {}}
 		self.requests = {"ip":[], "info": [], "statistics": [], "browse": []}
 		self.transfers = {"downloads": {}, "uploads": {} }
 		self.display = {"mode": "chat", "list": "buddied", "interests": "recommendations", "chatshape": mucous_config["mucous"]["roombox"], "chat": "chatroom", "browse": "directories", "setup": "mucous", "password": "no", "transfers": "downloads", "transfer_sort": "all", "t_speed": True}
+		self.modes = {"setup":  ["mucous", "museek", "shares", "userinfo", "logs"], "transfers": ["all","active",  "queued", "finished", "failed"] }
 		self.user = { "status": {}, "statistics": {}  }
 		self.windows = {"text": {}, "border": {}, "dimensions": {} }
 		self.scrolling = {"chatroom": -1, "roombox": 0, "roomstatus": -1, "info": 0, "private": 0, "browsefile": 0, "browsedir": 0, "likes": 0, "hates": 0, "recommendations": 0, "similar_users": 0, "help":0, "debug": 0, "search": 0, "uploads": 0, "downloads": 0, "buddied": 0, "banned": 0, "ignored": 0, "trusted": 0, "roomlist":0 }
@@ -2328,9 +2329,10 @@ class mucous(driver.Driver):
 		try:
 			self.Spl["connected"] = 0
 			self.logs["onlinestatus"]="Closed"
-			self.onlinestatus.erase()
-			self.onlinestatus.addstr(self.logs["onlinestatus"], self.colors["red"] | curses.A_BOLD |curses.A_REVERSE)
-			self.onlinestatus.refresh()
+			osw = self.windows["border"]["onlinestatus"]
+			osw.erase()
+			osw.addstr(self.logs["onlinestatus"], self.colors["red"] | curses.A_BOLD |curses.A_REVERSE)
+			osw.refresh()
 
 			
 			for room in self.data["rooms"].keys():
@@ -2363,20 +2365,23 @@ class mucous(driver.Driver):
 			
 	def cb_status_message(self, type, message):
 		try:
+			timestamp = time.strftime("%H:%M:%S")
 			if type == 1:
-				self.Hlog("status", "Peer Message: %s" % message)
+				stype = "Peer"
 			elif type == 0:
-				self.Hlog("status", "Server Message: %s" % message)
+				stype = "Server"
+			self.Hlog("status", "%s %s Message: %s" % (timestamp, stype, message))
 		except Exception,e:
 			self.Hlog("debug", "cb_status_message: " +str( e) )	
 			
 	def cb_server_state(self, state, username):
 		try:
 			self.usernames["username"] = username
-			
-			self.usernamewin.erase()
-			self.usernamewin.addstr(self.decode_language(self.usernames["username"][:15]), self.colors["blafgcyabg"] )
-			self.usernamewin.refresh()
+			un = self.windows["border"]["username"]
+			osw = self.windows["border"]["onlinestatus"]
+			un.erase()
+			un.addstr(self.decode_language(self.usernames["username"][:15]), self.colors["blafgcyabg"] )
+			un.refresh()
 		
 			self.upload_status("0")
 			self.download_status("0")
@@ -2415,9 +2420,9 @@ class mucous(driver.Driver):
 				elif self.display["mode"] == "transfer":
 					self.transfer_mode()
 
-			self.onlinestatus.erase()
-			self.onlinestatus.addstr(self.decode_language(self.logs["onlinestatus"]), self.colors["blafgcyabg"] )
-			self.onlinestatus.refresh()
+			osw.erase()
+			osw.addstr(self.decode_language(self.logs["onlinestatus"]), self.colors["blafgcyabg"] )
+			osw.refresh()
 			
 		except Exception,e:
 			self.Hlog("debug", "cb_server_state: " +str( e) )
@@ -2473,12 +2478,7 @@ class mucous(driver.Driver):
 					self.add_logs_to_chat(room)
 						
 				
-# 				roomlist = []
-	
-# 				alpha_list  = SortedDict()
-				
 				for users in joined[room]:
-# 					roomlist.append(users)
 					self.user["status"][users] = joined[room][users][0]
 					self.user["statistics"][users] = joined[room][users][1], joined[room][users][2 ], joined[room][users][3], joined[room][users][4]
 					
@@ -2741,20 +2741,20 @@ class mucous(driver.Driver):
 			self.user["statistics"][user] = speed, downloads, files, dirs
 			self.user["status"][user] = status
 			# correct placement in roombox
-			if self.display["mode"] == "chat":
-				if self.Spl["room"] == room:
-					if self.display["chat"]  == "roombox":
-						self.data["rooms"][room].sort()
-						if self.data["rooms"][room].index(user) < self.scrolling["roombox"]:
-							self.scrolling["roombox"] += 1
+			
+			if self.display["mode"] == "chat" and self.Spl["room"] == room:
+				if self.display["chat"]  == "roombox":
+					self.data["rooms"][room].sort()
+					if self.data["rooms"][room].index(user) < self.scrolling["roombox"]:
+						self.scrolling["roombox"] += 1
 
-					self.roomuserbox()
-					for lines in self.logs["rooms"][self.Spl["room"]][ len(self.logs["rooms"][self.Spl["room"]]) - s["height"]:]:
-						# Update Chat history if user changes status
-						if lines[2] == user:
-							self.change_room(self.Spl["room"])
-							break
-					curses.doupdate()
+				self.roomuserbox()
+				for lines in self.logs["rooms"][self.Spl["room"]][ len(self.logs["rooms"][self.Spl["room"]]) - s["height"]:]:
+					# Update Chat history if user changes status
+					if lines[2] == user:
+						self.change_room(self.Spl["room"])
+						break
+				curses.doupdate()
 		except Exception, e:
 			self.Hlog("debug", "CB Room User Joined" + str(e))
 
@@ -2967,14 +2967,14 @@ class mucous(driver.Driver):
 				stat = "Online"
 			
 			self.logs["onlinestatus"]=stat
-			
+			osw = self.windows["border"]["onlinestatus"]
 			try:
-				self.onlinestatus.erase()
-				self.onlinestatus.addstr(self.decode_language(self.logs["onlinestatus"]), self.colors["blafgcyabg"] )
+				osw.erase()
+				osw.addstr(self.decode_language(self.logs["onlinestatus"]), self.colors["blafgcyabg"] )
 				
 			except:
 				pass
-			self.onlinestatus.refresh()
+			osw.refresh()
 			self.update_title()
 		except Exception, e:
 			self.Hlog( "debug", "cb_server_status_set: " + str(e))
@@ -3043,7 +3043,7 @@ class mucous(driver.Driver):
 
 	def cb_user_shares(self, user, shares):
 		try:
-			if user in self.requests["browse"] and shares != {}:
+			if user in self.requests["browse"]:
 				
 				if user not in self.activeitems["browse"]:
 					self.activeitems["browse"].append(user)
@@ -3060,28 +3060,30 @@ class mucous(driver.Driver):
 				# Debugging
 				#self.Hlog("debug", shares.keys())
 				#########
-				sdirs = shares.keys()
-				sdirs.sort()
+				if shares != {}:
+					sdirs = shares.keys()
+					sdirs.sort()
 				
-				if sdirs != []:
-					for item in sdirs:
-						s = item.split("\\")
-						path = ''
+					if sdirs != []:
+						for item in sdirs:
+							s = item.split("\\")
+							path = ''
+		
+							parent = s[0]
+							for seq in s[1:]:
 	
-						parent = s[0]
-						for seq in s[1:]:
-
-							parent += "\\"
+								parent += "\\"
+		
+								path = parent+seq
 	
-							path = parent+seq
-
-			
-							if path not in self.data["browse_results"][user]["dirs"]:
-								self.data["browse_results"][user]["dirs"].append(path)
-							parent =  path
+				
+								if path not in self.data["browse_results"][user]["dirs"]:
+									self.data["browse_results"][user]["dirs"].append(path)
+								parent =  path
 									
-				self.data["browse_results"][user]["dirs"].sort()
-								
+					self.data["browse_results"][user]["dirs"].sort()
+				else:
+					self.data["browse_results"][user]["dirs"].append("Empty Shares")
 				self.Spl["dir_browse"]=self.data["browse_results"][user]["dirs"][0]
 				
 				self.data["shares"][user] = shares
@@ -5433,12 +5435,12 @@ class mucous(driver.Driver):
 		except Exception, e:
 			self.Hlog("debug", "tab_click: " +str(e) )
 			
-	def list_rotate(self, direction, _list, place):
+	def list_rotate(self, direction, _list, place, sort):
 		try:
 			if not _list:
 				return place
-			_list.sort()
-			
+			if sort == "yes":
+	 			_list.sort()
 			if not place in _list:
 				if direction == "left":
 					ix = -1
@@ -5583,7 +5585,7 @@ class mucous(driver.Driver):
 						else:
 							_list = ["chatroom", "roomstatus", "roombox"]
 						if _list != None:
-							self.display["chat"] = self.list_rotate("right", _list, self.display["chat"])
+							self.display["chat"] = self.list_rotate("right", _list, self.display["chat"], "no")
 							self.chat_mode()
 						
 					elif key == "KEY_END":
@@ -6425,42 +6427,10 @@ class mucous(driver.Driver):
 				elif key == "KEY_RIGHT" or key == chr(93) or key == chr(35) or key == "KEY_IC":
 					direction = "right"
 				if self.display["mode"] == "chat":
-					place = self.list_rotate(direction, self.data["rooms"].keys(), self.Spl["room"] )
+					place = self.list_rotate(direction, self.data["rooms"].keys(), self.Spl["room"], "yes" )
 					if self.Spl["room"]  != place:
 						self.change_room(place)
-# 					joined = self.data["rooms"].keys()
-# 					joined.sort()
-# 					if not joined:
-# 						return
-# 					# Hotkeys to switch rooms
-# 					if not self.Spl["room"] in joined:
 
-# 							ix = -1
-
-# 							ix = 0
-# 						
-# 	
-# 					else:
-# 						ix = joined.index(self.Spl["room"])
-# 						if key == "KEY_LEFT" or key == chr(91)  or key == chr(34):
-# 							ix -= 1
-# 						elif key == "KEY_RIGHT" or key == chr(93) or key == chr(35) or key == "KEY_IC":
-# 							ix += 1
-# 						
-# 						if ix < 0:
-# 							ix = -1
-# 						elif ix >= len(joined):
-# 							ix = 0
-# 					if ix != None:
-# 						self.change_room(joined[ix])
-# 						self.Spl["ticker_num"] = 0
-# 						try:
-# 							if mucous_config["tickers"]["ticker_cycle"] == "yes" and mucous_config["tickers"]["tickers_enabled"] == "yes":
-# 								self.ticker_timer.cancel()
-# 								self.ticker_timer = threading.Timer(3.0, self.ticker_display)
-# 								self.ticker_timer.start()
-# 						except:
-# 							pass
 							
 				elif self.display["mode"] == "info":
 					if len(self.activeitems["info"]) >= 1:
@@ -6481,30 +6451,16 @@ class mucous(driver.Driver):
 							self.private_mode()
 							
 				elif self.display["mode"] == "setup":
-					if self.display["setup"] == "mucous":
-						self.display["setup"] = "museek"
-					elif self.display["setup"] == "museek":
-						self.display["setup"] = "shares"
-					elif self.display["setup"] == "shares":
-						self.display["setup"] = "userinfo"
-					elif self.display["setup"] == "userinfo":
-						self.display["setup"]="logs"
-					elif self.display["setup"]=="logs":
-						self.display["setup"] = "mucous"
+					
+					self.display["setup"]  = self.list_rotate(direction, self.modes["setup"], self.display["setup"], "no" )
+
 					self.setup_mode()
 					
 				elif self.display["mode"] == "transfer":
 					# Hotkeys to switch listing transfer types
-					if self.display["transfer_sort"] == 'all':
-						self.display["transfer_sort"] = 'active'
-					elif self.display["transfer_sort"] == 'active':
-						self.display["transfer_sort"] = 'queued'	
-					elif self.display["transfer_sort"] == 'queued':
-						self.display["transfer_sort"] = 'finished'
-					elif self.display["transfer_sort"] == 'finished':
-						self.display["transfer_sort"] = 'failed'
-					elif self.display["transfer_sort"] == 'failed':
-						self.display["transfer_sort"] = 'all'
+					
+					self.display["transfer_sort"]  = self.list_rotate(direction, self.modes["transfers"], self.display["transfer_sort"], "no" )
+					
 	
 					self.transfer_mode()
 		
@@ -6555,7 +6511,7 @@ class mucous(driver.Driver):
 						sdirs =  self.data["browse_results"][self.usernames["browse"]].keys()
 						sdirs.sort()
 						self.Spl["dir_browse"]=sdirs[0]
-						
+						self.scrolling["browsefile"] = self.scrolling["browsedir"] = 0
 						self.browse_mode()
 						
 				elif self.display["mode"]=="lists":
@@ -6912,16 +6868,13 @@ class mucous(driver.Driver):
 				selected_log = self.logs["rooms"][self.Spl["room"]]
 				lol = self.wrap_chat_text(selected_log, w)
 				
-				if self.display["chat"] == "chatroom":
-					if self.scrolling["chatroom"] == -1:
-						self.scrolling["chatroom"] = len(lol)
+				if self.scrolling["chatroom"] == -1:
+					self.scrolling["chatroom"] = len(lol)
 	
 				clipped_list, self.scrolling["chatroom"], self.windows["dimensions"]["chat"]["start"] = self.scrollbox(lol, self.scrolling["chatroom"], w["height"])
-				#self.wrap_chat_text(log_scroll[start:end], 0)
 				
 				self.windows["text"]["chat"].erase()
 				for lines in clipped_list:
-					#lines, ls = self.string_add_blanks(lines, w)
 					self.display_room_text(lines)
 	
 			self.drawchatwindow()
@@ -6930,7 +6883,7 @@ class mucous(driver.Driver):
 			self.Hlog("debug", "chat_display: " + str(e))
 			
 	def wrap_chat_text(self, the_list, w):
-		# we wrap text here so that scrolling works properly... (it never does) *sigh*
+		# we wrap text here so that scrolling works properly... 
 		try:
 			pos = 0
 			cut_list = []
@@ -7152,6 +7105,7 @@ class mucous(driver.Driver):
 			
 	def add_logs_to_private(self, username):
 		try:
+			# Read from Private Chat Logs
 			if "\\" in username: username = username.replace("/", "\\")
 			if os.path.exists(os.path.expanduser(mucous_config["mucous"]["log_dir"])+"/private"+"/"+username):
 				path = os.path.expanduser(mucous_config["mucous"]["log_dir"])+"/private"+"/"+username
@@ -7181,6 +7135,7 @@ class mucous(driver.Driver):
 			
 	def add_logs_to_chat(self, room):
 		try:
+			# Read from Chat Room Logs
 			if "\\" in room: room = room.replace("/", "\\")
 			if os.path.exists(os.path.expanduser(mucous_config["mucous"]["log_dir"])+"/rooms/"+room):
 				path = os.path.expanduser(mucous_config["mucous"]["log_dir"])+"/rooms/"+room
@@ -7235,28 +7190,21 @@ class mucous(driver.Driver):
 	
 	# Change Room Title
 	def change_room(self, r):
-		self.scrolling["chatroom"] = -1
+		self.scrolling["chatroom"] = self.scrolling["roomstatus"] = -1
 		self.scrolling["roombox"] = 0
-		self.scrolling["roomstatus"] = -1
 		self.set_room(r)
 		
 	def set_room(self, r):
 		try:
 			
 			self.Spl["room"] = r
-			self.Spl["selected"] = r
 			self.Spl["title"]= r
 			
 			if self.display["mode"] == "chat":
-				
-				
-				
 				# Change title in edit window
-				
 				if self.display["chatshape"] not in ("chat-only", "nostatuslog"):
 					self.display_status_log_border()
 					self.display_status_log()
-				self.windows["border"]["input"].erase()
 				self.set_edit_title(self.Spl["room"])
 				# Display Next-room hotspot's text
 				try:
@@ -7287,16 +7235,11 @@ class mucous(driver.Driver):
 				self.roomuserbox()
 				
 				# Display chat log
-				try:
-					if self.display["chat"] == "chatroom":
-						self.windows["border"]["chat"].attron(self.colors["green"])
-					else:
-						self.windows["border"]["chat"].attroff(self.colors["green"])
-	#				self.drawchatwindow()
-				except:
-					pass
-# 				if self.Spl["room"] != None:
-					#self.wrap_chat_text(self.logs["rooms"][self.Spl["room"]], 1)
+				if self.display["chat"] == "chatroom":
+					self.windows["border"]["chat"].attron(self.colors["green"])
+				else:
+					self.windows["border"]["chat"].attroff(self.colors["green"])
+				
 				self.chat_display()
 				
 				# Clear Alert log
@@ -7319,21 +7262,23 @@ class mucous(driver.Driver):
 				self.Spl["title"]= title
 			else:
 				self.Spl["title"] = "Join a room or something."
-			self.windows["border"]["input"].erase()
-			self.windows["border"]["input"].border()
+			ibw = self.windows["border"]["input"]
+			itw = self.windows["text"]["input"]
+			ibw.erase()
+			ibw.border()
 			if self.Spl["title"]:
 				try:
 					current = self.decode_language(self.Spl["title"])
-					self.windows["border"]["input"].addstr(0, 2, "< ")
-					self.windows["border"]["input"].addstr(0, 4, current[:self.w-8], self.colors["cyan"] | curses.A_BOLD)
-					self.windows["border"]["input"].addstr(0, 4+len(current[:self.w-8]), " >")
+					ibw.addstr(0, 2, "< ")
+					ibw.addstr(0, 4, current[:self.w-8], self.colors["cyan"] | curses.A_BOLD)
+					ibw.addstr(0, 4+len(current[:self.w-8]), " >")
 				except Exception, e:
 					self.Hlog("debug", "set_edit_title: " + str(e))
 			try:
-				self.windows["border"]["input"].noutrefresh()
-				self.windows["text"]["input"].erase()
-				self.windows["text"]["input"].addstr(self.line)
-				self.windows["text"]["input"].noutrefresh()
+				ibw.noutrefresh()
+				itw.erase()
+				itw.addstr(self.line)
+				itw.noutrefresh()
 			except:
 				pass
 		except Exception, e:
@@ -7593,11 +7538,10 @@ class mucous(driver.Driver):
 			
 			tw.scrollok(0)
 			tw.idlok(1)
-			
+			ibw = self.windows["border"]["input"]
 			self.scrolling["private"] = -1 
 			self.private_display()
 			if self.usernames["private"] != None:
-				self.Spl["selected"] = self.usernames["private"]
 				self.set_edit_title("Send message to: " + self.usernames["private"])
 				try:
 					if self.usernames["private"] in self.config["encoding.users"]:
@@ -7605,14 +7549,14 @@ class mucous(driver.Driver):
 					else:
 						blah = self.config["encoding"]["network"]
 					
-					self.windows["border"]["input"].addstr(0, self.w-17-len(blah)-4, "<" + (" " *( len(blah) +2) )+  ">")
-					self.windows["border"]["input"].addstr(0, self.w-17-len(blah)-2, blah, self.colors["cyan"] | curses.A_BOLD)
-					self.windows["border"]["input"].addstr(0, self.w-10, "< ")
-					self.windows["border"]["input"].addstr(0, self.w-8, "Close ", self.colors["cyan"] | curses.A_BOLD)
-					self.windows["border"]["input"].addstr(0, self.w-2, ">")
+					ibw.addstr(0, self.w-17-len(blah)-4, "<" + (" " *( len(blah) +2) )+  ">")
+					ibw.addstr(0, self.w-17-len(blah)-2, blah, self.colors["cyan"] | curses.A_BOLD)
+					ibw.addstr(0, self.w-10, "< ")
+					ibw.addstr(0, self.w-8, "Close ", self.colors["cyan"] | curses.A_BOLD)
+					ibw.addstr(0, self.w-2, ">")
 				except:
 					pass
- 				self.windows["border"]["input"].noutrefresh()
+ 				ibw.noutrefresh()
 				self.windows["text"]["input"].noutrefresh()
 				self.check_alert_state()
 	
@@ -7831,8 +7775,6 @@ class mucous(driver.Driver):
 	def transfer_mode(self):
 		self.display["mode"] = "transfer"
 		self.Spl["show_menu"] = False
-# 		self.scrolling["uploads"] = self.scrolling["downloads"]  = 0
-		# Draw upload border
 
 		try:
 			if mucous_config["mucous"]["transbox"] == "split":
@@ -7987,7 +7929,7 @@ class mucous(driver.Driver):
 			self.dirwin.erase()
 			self.dirwin.noutrefresh()
 	
-			self.scrolling["browsefile"] = self.scrolling["browsedir"] = 0
+# 			self.scrolling["browsefile"] = self.scrolling["browsedir"] = 0
 			# Vars
 			self.filesdirs = []
 			self.numberfiles=0
@@ -8060,7 +8002,6 @@ class mucous(driver.Driver):
 			w = self.windows["dimensions"]["browse"] 
 			tw = self.windows["text"]["browse"]
 			#self.display["browse"] = "directories"
-			self.Spl["selected"] = self.usernames["browse"]
 			if self.usernames["browse"] != "default__":
 				
 				directories = []
@@ -8217,7 +8158,7 @@ class mucous(driver.Driver):
 				else:
 					self.set_edit_title("Search (Alt-t) "+self.Spl["search_method"].capitalize()+" for:")
 			self.select_tab_box(self.data["search_tickets"].keys(), self.Spl["current_search"])
-			self.Spl["selected"] = self.Spl["current_search"]
+
 			if self.Spl["current_search"] != "default__":
 				self.temporary_click_text()
 				self.check_alert_state()
@@ -8435,7 +8376,7 @@ class mucous(driver.Driver):
 			self.info_display()
 			itw.refresh()
 			# queue, uploads, speed, downloads, files, directories, freeslots
-			self.Spl["selected"] = self.usernames["info"]
+
 			self.select_tab_box(self.activeitems["info"], self.usernames["info"])
 			self.display_userinfo_log()
 			self.check_alert_state()
@@ -9162,6 +9103,7 @@ class mucous(driver.Driver):
 			curses.doupdate()
 		except Exception, e:
 			self.Hlog("debug", "ban_mode: " + str(e))
+			
 	def ignore_mode(self):
 		try:
 			self.display["list"] = "ignored"
@@ -9735,12 +9677,12 @@ class mucous(driver.Driver):
 				inbuttonwin2.noutrefresh()
 				
 				#------------------------
-				self.usernamewin2 = curses.newwin(3,32,2,33)
-				self.usernamewin2.border()
-				self.usernamewin2.addstr(0, 1, "< Soulseek Username >",  curses.A_BOLD)
-				self.usernamewin2.noutrefresh()
+				unw2 = curses.newwin(3,32,2,33)
+				unw2.border()
+				unw2.addstr(0, 1, "< Soulseek Username >",  curses.A_BOLD)
+				unw2.noutrefresh()
 				
-				inusernamewin2 = self.usernamewin2.subwin(1,30,3,34)
+				inusernamewin2 = unw2.subwin(1,30,3,34)
 				inusernamewin2.scrollok(1)
 				if "server" in self.config:
 					a = self.decode_language(self.config["server"]["username"])
@@ -9816,72 +9758,71 @@ class mucous(driver.Driver):
 	
 	def topbar_mode(self):
 		try:
-			self.topbar =  curses.newwin(1, self.w, 0, 0)
-			self.topbar.bkgdset(" ", self.colors["blafgcyabg"]  | curses.A_REVERSE | curses.A_BOLD)
-			self.topbar.idlok(1)
-			self.topbar.erase()
-			self.topbar.refresh()
+			tb = self.windows["border"]["top"] =   curses.newwin(1, self.w, 0, 0)
+			tb.bkgdset(" ", self.colors["blafgcyabg"]  | curses.A_REVERSE | curses.A_BOLD)
+			tb.idlok(1)
+			tb.erase()
+			tb.refresh()
 							
-			self.onlinestatus =  curses.newwin(1, 8, 0, 0)
-			self.onlinestatus.bkgdset(" ", self.colors["blafgcyabg"]  |curses.A_REVERSE | curses.A_BOLD)
-			self.onlinestatus.idlok(1)
+			osw = self.windows["border"]["onlinestatus"]  =  curses.newwin(1, 8, 0, 0)
+			osw.bkgdset(" ", self.colors["blafgcyabg"]  |curses.A_REVERSE | curses.A_BOLD)
+			osw.idlok(1)
 			try:
-				self.onlinestatus.erase()
-				self.onlinestatus.addstr(self.logs["onlinestatus"],  self.colors["blafgcyabg"] )
+				osw.erase()
+				osw.addstr(self.logs["onlinestatus"],  self.colors["blafgcyabg"] )
 			except:
 				pass
-			self.onlinestatus.refresh()
+			osw.refresh()
 			
-			self.uploadwin = curses.newwin(1, 10, 0, 25)
-			self.uploadwin.bkgdset(" ", self.colors["blafgcyabg"]  | curses.A_REVERSE | curses.A_BOLD)
-			self.uploadwin.idlok(1)
+			usw = self.windows["border"]["uploadstatus"]  = curses.newwin(1, 10, 0, 25)
+			usw.bkgdset(" ", self.colors["blafgcyabg"]  | curses.A_REVERSE | curses.A_BOLD)
+			usw.idlok(1)
 			try:
-				self.uploadwin.erase()
-				self.uploadwin.addstr(self.logs["uploads"],  self.colors["blafgcyabg"] )
+				usw.erase()
+				usw.addstr(self.logs["uploads"],  self.colors["blafgcyabg"] )
 			except:
 				pass
-			self.uploadwin.refresh()
+			usw.refresh()
 			
-			self.downloadwin = curses.newwin(1, 12, 0, 35)
-			self.downloadwin.bkgdset(" ", self.colors["blafgcyabg"]  | curses.A_REVERSE | curses.A_BOLD)
-			self.downloadwin.idlok(1)
+			dsw = self.windows["border"]["downloadstatus"] = curses.newwin(1, 12, 0, 35)
+			dsw.bkgdset(" ", self.colors["blafgcyabg"]  | curses.A_REVERSE | curses.A_BOLD)
+			dsw.idlok(1)
 			try:
-				self.downloadwin.erase()
-				self.downloadwin.addstr(self.logs["downloads"],  self.colors["blafgcyabg"] )
+				dsw.erase()
+				dsw.addstr(self.logs["downloads"],  self.colors["blafgcyabg"] )
 			except:
 				pass
-			self.downloadwin.refresh()
+			dsw.refresh()
 			
 		
-			self.searchwin = curses.newwin(1, 15, 0, 47)
-			self.searchwin.bkgdset(" ", self.colors["blafgcyabg"]  | curses.A_REVERSE | curses.A_BOLD)
-			self.searchwin.idlok(1)
+			ssw = self.windows["border"]["searchstatus"] = curses.newwin(1, 15, 0, 47)
+			ssw.bkgdset(" ", self.colors["blafgcyabg"]  | curses.A_REVERSE | curses.A_BOLD)
+			ssw.idlok(1)
 			try:
-				self.searchwin.erase()
-				self.searchwin.addstr(self.logs["search_count"][0],  self.colors["blafgcyabg"] )
-				self.searchwin.addstr(str(self.logs["search_count"][1]),  self.colors["blafgcyabg"] )
+				ssw.erase()
+				ssw.addstr(self.logs["search_count"][0],  self.colors["blafgcyabg"] )
+				ssw.addstr(str(self.logs["search_count"][1]),  self.colors["blafgcyabg"] )
 			except:
 				pass
-			self.searchwin.refresh()
+			ssw.refresh()
 		
 		
-			self.alertwin = curses.newwin(1, 15, 0, self.w-15)
-			self.alertwin.bkgdset(" ", self.colors["blafgcyabg"]  | curses.A_REVERSE | curses.A_BOLD)
-			self.alertwin.idlok(1)
+			aw = self.windows["border"]["alert"] = curses.newwin(1, 15, 0, self.w-15)
+			aw.bkgdset(" ", self.colors["blafgcyabg"]  | curses.A_REVERSE | curses.A_BOLD)
+			aw.idlok(1)
 			
 			self.alert_status(self.logs["alert"])
-		
-			self.usernamewin = curses.newwin(1, 16, 0, 9)
-			self.usernamewin.idlok(1)
-			self.usernamewin.bkgdset(" ", self.colors["blafgcyabg"]  | curses.A_REVERSE | curses.A_BOLD)
+			un = self.windows["border"]["username"] =  curses.newwin(1, 16, 0, 9)
+			un.idlok(1)
+			un.bkgdset(" ", self.colors["blafgcyabg"]  | curses.A_REVERSE | curses.A_BOLD)
 			
 			if self.usernames["username"] != None:
 				try:
-					self.usernamewin.erase()
-					self.usernamewin.addstr(self.decode_language(self.usernames["username"][:15]),  self.colors["blafgcyabg"] )
+					un.erase()
+					un.addstr(self.decode_language(self.usernames["username"][:15]),  self.colors["blafgcyabg"] )
 				except:
 					pass
-			self.usernamewin.refresh()
+			un.refresh()
 		
 		except Exception,e :
 			self.Hlog("debug", "topbar mode" + str(e))
@@ -10146,11 +10087,12 @@ class mucous(driver.Driver):
 				pass
 			else:
 				self.logs["search_count"] = "Results: ", s
+				ssw = self.windows["border"]["searchstatus"]
 				try:
-					self.searchwin.erase()
-					self.searchwin.addstr(self.logs["search_count"][0],  self.colors["blafgcyabg"] )
-					self.searchwin.addstr(str(self.logs["search_count"][1]),  self.colors["blafgcyabg"] )
-					self.searchwin.refresh()
+					ssw.erase()
+					ssw.addstr(self.logs["search_count"][0],  self.colors["blafgcyabg"] )
+					ssw.addstr(str(self.logs["search_count"][1]),  self.colors["blafgcyabg"] )
+					ssw.refresh()
 				except Exception, e:
 					self.Hlog( "debug", "Search Status: " + str(e))
 		except Exception, e:
@@ -10162,10 +10104,11 @@ class mucous(driver.Driver):
 				pass
 			else:
 				self.logs["uploads"] = "Up: %s" %str(s)
+				usw = self.windows["border"]["uploadstatus"]
 				try:
-					self.uploadwin.erase()
-					self.uploadwin.addstr(self.logs["uploads"], self.colors["blafgcyabg"] )
-					self.uploadwin.refresh()
+					usw.erase()
+					usw.addstr(self.logs["uploads"], self.colors["blafgcyabg"] )
+					usw.refresh()
 				except Exception, e:
 					self.Hlog( "debug", "Upload Status: " + str(e))
 		except Exception, e:
@@ -10177,10 +10120,11 @@ class mucous(driver.Driver):
 				pass
 			else:
 				self.logs["downloads"] = "Down: %s" %str(s)
+				dsw = self.windows["border"]["downloadstatus"]
 				try:
-					self.downloadwin.erase()
-					self.downloadwin.addstr(self.logs["downloads"], self.colors["blafgcyabg"] )
-					self.downloadwin.refresh()
+					dsw.erase()
+					dsw.addstr(self.logs["downloads"], self.colors["blafgcyabg"] )
+					dsw.refresh()
 				except Exception, e:
 					self.Hlog( "debug", "Download Status: " + str(e))
 		except Exception, e:
@@ -10288,14 +10232,15 @@ class mucous(driver.Driver):
 	def alert_status(self, s):
 		try:
 			self.logs["alert"] = s
-			self.alertwin.erase()
+			aw = self.windows["border"]["alert"]
+			aw.erase()
 			
 			if len(self.logs["alert"][:14]) < 13 and len(self.logs["alert"][:14]) > 0:
 				line = " "+self.decode_language( self.logs["alert"][:14] )+" "
 			else:
 				line = self.decode_language( self.logs["alert"][:14] )
-			self.alertwin.addstr(line, self.colors["yellow"] )
-			self.alertwin.refresh()
+			aw.addstr(line, self.colors["yellow"] )
+			aw.refresh()
 		except Exception, e:
 			self.Hlog( "debug", "Alert Status: " + str(e))
 				
