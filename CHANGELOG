@@ -1,11 +1,26 @@
 Always compile Museek with the built-in version of scons
+UNRELEASED
+MUSEEK DAEMON
+* Fixed the minPort == maxPort bug and maxPort > minPort bug, for peer
+  connections. Previously, it'd skip the port listen attempt entirely. Now it
+  tries the listen on minPort (if they equal) or on maxPort (if it's smaller 
+  than minport) and  then gives up if it fails. 
+
+MUCOUS
+* Add timestamps to Status Messages, bugfixes for browse mode, topbar variables
+   merged into the new storage method
+
+
 0.1.10:  June 9th 2006
-* Added WishList Searching from Client Interfaces, but no timer, yet. ( IWishListSearch )
+* Added WishList Searching from Client Interfaces, but no timer, yet. 
+  ( IWishListSearch )
 * Added per-user search interface ( IUserSearch )
-* New Status Messages: Browse requests, browse refusals, userinfo requests, transfer finishing.
+* New Status Messages: Browse requests, browse refusals, userinfo requests, 
+  transfer finishing.
 
 MUSEEQ
-* Ported ConnectDialog from designer ui to pure C++ code, to get around the annoying widget-cropping.
+* Ported ConnectDialog from designer ui to pure C++ code, to get around the 
+  annoying widget-cropping.
 * Added TrayIcon
 * Fixed sending empty Private Message
 * Moved Museeq's Default Icon theme to default/ subdir
@@ -13,7 +28,8 @@ MUSEEQ
 * Added Start Daemon, Stop Daemon, and Config Selector buttons, and Auto-Start
   Daemon checkbox to ConnectDialog in museeq
 * Page Up/Page Down/arrows chat log scrolling in museeq (requested by y00sah)
-* New Status messages in Log Window and Online-alert messages (requested by chs_kasper)
+* New Status messages in Log Window and Online-alert messages (requested by 
+  chs_kasper)
 * Option in the config for automated messages (requested by lartza)
 
 MUCOUS
@@ -23,7 +39,8 @@ Version: 0.8.1
 * User lists fixes
 Version: 0.8.0
 * Finished Interests and recommendations
-* Rewrote Scrolling variables (each mode/window has it's own scroll counter, now)
+* Rewrote Scrolling variables (each mode/window has it's own scroll counter, 
+  now)
 * Rewrote much of the way internal data and variables are stored
 * Yanked a lot of dead code
 * Fixed the input-disappearing bug (happened on PM messages)
@@ -35,14 +52,16 @@ Version: 0.8.0pre2
   "python setup.py install" as root
 * Fixed the /connect command so that it works after starting up with incorrect 
   interface and/or interface password. (It was stuck in a while loop)
-* Made alerts delete when their "parent tabs" get closed (I.E. with the /close command)
+* Made alerts delete when their "parent tabs" get closed (I.E. with the /close 
+  command)
 * Added RoomTickers handler, so now joining a room gets all the current tickers.
 Updated April 18th 2006
 Version: 0.8.0pre1
 * Lots of new features to keep up with Museek+
 * the unfinished Interests/Recommendations are in Users mode
 * New commands:
-  /extra (toggle responding to version requests) /ctcpversion (request client version)
+  /extra (toggle responding to version requests) /ctcpversion (request client 
+  version)
   /logout  /login      (Server Login and Logout)
   /like   /donotlike   (Add/remove interests)
   /hate /donothate     (Add/remove interests)
@@ -58,7 +77,8 @@ MUSEEKCONTROL
 * Added --connect, --disconnect, --reloadshares options
 
 0.1.9:  May 29th 2006
-* Modified man pages some more, removing COMPILING section and adding FILES section
+* Modified man pages some more, removing COMPILING section and adding FILES 
+  section
 * Added man page for mulog
 * renamed mulog.py to mulog
 * Modified mulog to use a config file, thus protecting the password from prying 
@@ -68,25 +88,27 @@ MUSEEKCONTROL
 * Fixed bluebox theme installation to share/museek/museeq/bluebox
 
 0.1.9pre2:  May 25th 2006
-* Added VORBIS scons option, allowing for manual disabling of OGG Vorbis support 
-  in muscan. 
+* Added VORBIS scons option, allowing for manual disabling of OGG Vorbis 
+  support in muscan. 
 * Fixed an issue with images.cpp (and old versions of either QT or GCC) not 
   compiling due to museeq->mIconTheme not being enclosed in a QString() 
   (thanks for your patience and help, leftcoast)
 * Added man pages for museekd, musetup, muscan, muscand and museeq
-* Added Retry Upload(s) to museeq (it secretly clears uploads before retrying them)
+* Added Retry Upload(s) to museeq (it secretly clears uploads before retrying 
+  them)
 * Fixed some compiler warnings in museekd
 
 0.1.9pre1:  May 24th 2006
 * Compiler Fix for x86_64 http://thegraveyard.org/daelstorm/museek/browser.cpp
-* Added Icon Theme selector to museeq (Select the directory the museeq icons are in)
-* Added new menu for switching to the different modes, Chat Rooms, Private Chat, 
-  Transfers, Search, User Info and Browse
+* Added Icon Theme selector to museeq (Select the directory the museeq icons 
+  are in)
+* Added new menu for switching to the different modes, Chat Rooms, Private 
+  Chat, Transfers, Search, User Info and Browse
 * Added a new Commands Help dialog, and about 15 new /commands in chat.
 * Fixed an issue with newer versions of SCons not being able to complete 
   the compile-tests for epoll and scandir because a change in conf.CheckFunc()
-* Fixed an issue with SCons (> 0.95) removing mucipherc.py, part of mucipher's python 
-  bindings, before installing, which caused installation to fail.
+* Fixed an issue with SCons (> 0.95) removing mucipherc.py, part of mucipher's 
+  python bindings, before installing, which caused installation to fail.
 * Updated my iTheme museeq icons
 
 0.1.8:  May 18th 2006
@@ -129,10 +151,12 @@ MUSEEKCONTROL
 * Added new Interface StatusMessage (0010) to forward various messages to these
   clients. Currently sending login, connect, & disconnect messages.
 * Added Toggleable Log in Museeq for status messages.
-* Fixed 'not shared' message if shared files were in both buddy-only and normal shares.
-  (thanks for noticing, y00sah & svarun)
-* Included daal's new Bluebox 0.3 theme for museeq. It's in the museek+/icons/ directory
-* Included daal's old Raven theme for museeq. It's also in the museek+/icons/ directory
+* Fixed 'not shared' message if shared files were in both buddy-only and normal 
+  shares. (thanks for noticing, y00sah & svarun)
+* Included daal's new Bluebox 0.3 theme for museeq. It's in the museek+/icons/ 
+  directory
+* Included daal's old Raven theme for museeq. It's also in the museek+/icons/ 
+  directory
 
 0.1.7b:  May 10th 2006
 * convert more characters for slsk:// links to webforms

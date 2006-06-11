@@ -92,14 +92,36 @@ void Museek::init_transfer_manager() {
 
 void Museek::init_peer_listener() {
 	mListenPort = 0;
-	for(uint i = mMinPort; i < mMaxPort; ++i) {
+	if (mMinPort == mMaxPort) {
 		mPeerListener = new PeerListener(this);
-		mPeerListener->listen("", i);
+		mPeerListener->listen("", mMinPort);
 		if(mPeerListener->get_error() == ERR_NONE) {
-			mListenPort = i;
-			break;
+			mListenPort = mMinPort;
+		} else {
+			mPeerListener = 0;
 		}
-		mPeerListener = 0;
+	} else if (mMinPort > mMaxPort) {
+		for(uint i = mMaxPort; i < mMinPort; ++i) {
+			mPeerListener = new PeerListener(this);
+			mPeerListener->listen("", i);
+			if(mPeerListener->get_error() == ERR_NONE) {
+				mListenPort = i;
+				break;
+			}
+			
+			mPeerListener = 0;
+		}
+	} else {
+		for(uint i = mMinPort; i < mMaxPort; ++i) {
+			mPeerListener = new PeerListener(this);
+			mPeerListener->listen("", i);
+			if(mPeerListener->get_error() == ERR_NONE) {
+				mListenPort = i;
+				break;
+			}
+			
+			mPeerListener = 0;
+		}
 	}
 }
 
