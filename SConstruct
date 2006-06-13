@@ -32,6 +32,9 @@ opts.Add(BoolOption('BUILDDIR', 'Build to build-*-* directory', ''))
 opts.Add(BoolOption('PROFILE', 'Build for profiling (gcc only)', ''))
 opts.Add(BoolOption('RELEASE', 'Build for release', ''))
 opts.Add(ListOption('MULOG', 'Set debug output', '', ['debug', 'cycle', 'calltrace', 'traffictime']))
+print "Reading CFLAGS from defaults.py and Command Line arguments"
+opts.Add(ListOption('CFLAGS', 'Set your CCFLAGS here', '', ['fPIC', 'Wall', 'pipe', "g", "O0", "O1", "O2", "O3", "funrollloop", "Os", "fomit-frame-pointer"]))
+# New CCFLAGS must be added to the above option, or you'll just get error messages
 opts.Add(BoolOption('EPOLL', 'Use epoll when available', ''))
 opts.Add(BoolOption('MUCOUS', 'Install Mucous (when SWIG can be found', ''))
 opts.Add(BoolOption('MUSEEQ', 'Build the Qt gui (when Qt can be found', ''))
@@ -95,15 +98,23 @@ env.Append(LIBPATH = env['LIBPATH_MUCIPHER'])
 # All warnings if compiler is gcc
 
 if os.path.basename(env['CC']) in ['gcc', 'apgcc']:
-    env.Append(CCFLAGS = ['-fPIC', '-Wall', '-pipe']) # allows x86_64 to compile
-#    env.Append(CCFLAGS = ['-Wall', '-pipe']) # original
-    if env['RELEASE']:
-        env.Append(CCFLAGS = ['-fomit-frame-pointer'])
-    if env['PROFILE']:
-        env.Append(CCFLAGS = ['-pg'])
-    if not env['RELEASE'] and not env['PROFILE']:
-        env.Append(CCFLAGS = ['-g'])
-
+# env['CFLAGS'] = ['-fPIC', '-Wall', '-pipe'] # allows x86_64 to compile
+# ['-Wall', '-pipe']) # original
+	flags = []
+	for flag in str(env['CFLAGS']).split(','):
+		flags.append("-"+flag)
+	env.Append(CCFLAGS = flags)
+	
+	if env['RELEASE'] and "-fomit-frame-pointer" not in env["CCFLAGS"]:
+		env.Append(CCFLAGS = ['-fomit-frame-pointer'])
+	if env['PROFILE'] and "-pg" not in env["CCFLAGS"]:
+		env.Append(CCFLAGS = ['-pg'])
+	if not env['RELEASE'] and not env['PROFILE'] and "-g" not in env["CCFLAGS"]:
+		env.Append(CCFLAGS = ['-g'])
+	flagstring =""
+	for i in env["CCFLAGS"]:
+		flagstring += i + " "
+	print "BUILDING with CCFLAGS: "+ flagstring
 
 
 # Set up additional include and library paths

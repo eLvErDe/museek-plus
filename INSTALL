@@ -74,7 +74,9 @@ runs):
   RELEASE=yes/no        [*] Build for release with optimizations and without
                             debugging information (only for gcc)
                             default: no
-
+  CFLAGS=fPIC,Wall,pipe,g,O0,O1,O2,O3,funrollloop,Os,fomit-frame-pointer
+                        [*] Which CCFLAGS to use. (Do not prepend the dash "-" )
+                            default: 'fPIC,Wall,pipe'
   MULOG=debug,cycle,calltrace,traffictime
                         [*] Which debugging messages to include
                             default: 'debug'

@@ -5,6 +5,7 @@ MUSEEK DAEMON
   connections. Previously, it'd skip the port listen attempt entirely. Now it
   tries the listen on minPort (if they equal) or on maxPort (if it's smaller 
   than minport) and  then gives up if it fails. 
+* SCons can now set CCFLAGS with the CFLAGS option
 
 MUSEEQ
 * Added Translation *Support*

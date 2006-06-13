@@ -25,6 +25,9 @@ MANDIR=os.path.join('${PREFIX}','man', "man1")
 # Debugging verbosity (debug, cycle, calltrace)
 MULOG='debug'
 
+# CCFLAGS (fPIC, Wall, pipe) Do not include the prefix "-"
+CFLAGS='fPIC,Wall,pipe'
+
 # Enable OGG Vorbis support (if available) in file scanner (muscan)
 VORBIS=1
 

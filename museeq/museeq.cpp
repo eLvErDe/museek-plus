@@ -893,7 +893,7 @@ int main(int argc, char **argv) {
 	QTranslator translation( 0 );
 	QString lang, lang2;
 	lang = QString(QTextCodec::locale());
-	lang = lang.mid(0,2); // to fix all shorten long locales like "en_US.utf8" to "en"
+	lang = lang.mid(0,2); // to fix \ shorten long locales like "en_US.utf8" to "en"
 	lang2 =  (QString(DATADIR) + QString("/museek/museeq/translations/museeq_") + lang + QString(".qm") );
 	QFileInfo fi( lang2 );
 	
