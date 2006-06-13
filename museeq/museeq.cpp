@@ -18,13 +18,14 @@
  */
 
 #include "museeq.h"
-
+#include "prefix.h"
 #include <system.h>
 
 #include "museekdriver.h"
 #include "mainwin.h"
 #include "onlinealert.h"
-
+#include <qtranslator.h>
+#include <qtextcodec.h>
 #include <qapplication.h>
 #include <qprocess.h>
 #include <qmessagebox.h>
@@ -35,7 +36,8 @@
 #include <qdir.h>
 #include "trayicon.h"
 #include "icon.xpm"
-
+#include <qcanvas.h>
+#include <qfileinfo.h>
 #ifdef HAVE_QSA
 # include <qfile.h>
 
@@ -880,10 +882,31 @@ Museeq* museeq = 0;
 
 int main(int argc, char **argv) {
 	QApplication a(argc, argv);
+
+	
+	// translation file for Qt
+        QTranslator qta( 0 );
+        qta.load( QString( "qt_" ) + QTextCodec::locale(), "." );
+        a.installTranslator( &qta );
+
+        // translation file for application strings
+	QTranslator translation( 0 );
+	QString lang, lang2;
+	lang = QString(QTextCodec::locale());
+	lang = lang.mid(0,2); // to fix all shorten long locales like "en_US.utf8" to "en"
+	lang2 =  (QString(DATADIR) + QString("/museek/museeq/translations/museeq_") + lang + QString(".qm") );
+	QFileInfo fi( lang2 );
+	
+	translation.load( lang2);
+
+	a.installTranslator( &translation );
+	
 	new Museeq(&a);
 	a.setMainWidget(museeq->mainwin());
+	
 	std::string usetray = string("yes");
-	std::string version = string("museeq ") + museeq->mainwin()->mVersion; //string("museeq "); //+ museeq->mainwin()->mVersion);
+	std::string version = string("museeq ") + museeq->mainwin()->mVersion + string( QT_TR_NOOP(" Language: ") )+ lang; 
+	
 	for(int i = 1; i < argc; i++) {
 		string arg = argv[i];
 
@@ -895,25 +918,30 @@ int main(int argc, char **argv) {
 			
 		} else if(arg == "--help" || arg == "-h") {
 			std::cout << version << std::endl;
-			std::cout << "Syntax: museeq [options]" << std::endl << std::endl;
-			std::cout << "Options:" << std::endl;
-			std::cout << "-V --version\t\tDisplay museeq version and quit" << std::endl << std::endl; 
-			std::cout << "-h --help\t\tDisplay this message and quit" << std::endl;
-			std::cout << "--no-tray\t\tDon't load TrayIcon" << std::endl;
+			std::cout << QT_TR_NOOP("Syntax: museeq [options]") << std::endl << std::endl;
+			std::cout << QT_TR_NOOP("Options:") << std::endl;
+			std::cout << QT_TR_NOOP("-V --version\t\tDisplay museeq version and quit") << std::endl << std::endl; 
+			std::cout << QT_TR_NOOP("-h --help\t\tDisplay this message and quit") << std::endl;
+			std::cout << QT_TR_NOOP("--no-tray\t\tDon't load TrayIcon") << std::endl;
 			std::cout << std::endl;
 			return 0;
 		}
 			
 	}
 
-	
+	if ( !fi.exists() and lang != "en") {
+		QMessageBox::warning( 0, "File error",
+			      QString("Cannot find translation for language: "+lang+
+				      "\n(try eg. LANG='en' museeq, LANG='fr' museeq)") );
+// 		return 0; // QUIT
+	}	
 	if (usetray == "yes") {
 		QPopupMenu menutray;
-		menutray.insertItem( "Restore",museeq->mainwin() , SLOT( showNormal() ) );
-		menutray.insertItem( "Hide", museeq->mainwin() , SLOT( hide()  ) );
+		menutray.insertItem(QT_TR_NOOP("&Restore"),museeq->mainwin() , SLOT( showNormal() ) );
+		menutray.insertItem(QT_TR_NOOP("&Hide"), museeq->mainwin() , SLOT( hide()  ) );
 		menutray.insertSeparator();
-		menutray.insertItem( "&Quit", museeq->mainwin() , SLOT( close() ) );
-		TrayIcon mTray ( QPixmap( (char**)icon_xpm),  "MuseeqTray", &menutray );
+		menutray.insertItem( QT_TR_NOOP("&Quit"), museeq->mainwin() , SLOT( close() ) );
+		TrayIcon mTray ( QPixmap( (char**)icon_xpm),  QT_TR_NOOP("MuseeqTray"), &menutray );
 		QObject::connect( &mTray, SIGNAL(clicked(const QPoint&, int )), museeq->mainwin(), SLOT(toggleVisibility() ) );
 	
 		menutray.show();

@@ -18,25 +18,26 @@
  */
 
 #include "util.h"
+#include "museeq.h"
 
 QString Util::makeSize(Q_INT64 i) {
 	double d = i;
 	if(d < 1000)
-		return QString().sprintf("%.2f B", d);
+		return QString().sprintf(QT_TR_NOOP("%.2f B"), d);
 	d /= 1024;
 	if(d < 1024)
-		return QString().sprintf("%.2f KiB", d);
+		return QString().sprintf(QT_TR_NOOP("%.2f KiB"), d);
 	d /= 1024;
 	if(d < 1024)
-		return QString().sprintf("%.2f MiB", d);
+		return QString().sprintf(QT_TR_NOOP("%.2f MiB"), d);
 	d /= 1024;
 	if(d < 1024)
-		return QString().sprintf("%.2f GiB", d);
+		return QString().sprintf(QT_TR_NOOP("%.2f GiB"), d);
 	d /= 1024;
 	if(d < 1024)
-		return QString().sprintf("%.2f TiB", d);
+		return QString().sprintf(QT_TR_NOOP("%.2f TiB"), d);
 	d /= 1024;
-	return QString().sprintf("%.2f PB", d);
+	return QString().sprintf(QT_TR_NOOP("%.2f PB"), d);
 }
 
 int Util::cmp(Q_INT64 a, Q_INT64 b) {
@@ -62,7 +63,7 @@ QString Util::makeBitrate(uint bitrate, bool vbr) {
 		return QString::null;
 	else
 		if(vbr)
-			return QString("(vbr) %1").arg(bitrate);
+			return QString(QT_TR_NOOP("(vbr) %1")).arg(bitrate);
 		else
 			return QString::number(bitrate);
 }

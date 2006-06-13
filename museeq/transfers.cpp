@@ -38,8 +38,8 @@ Transfers::Transfers(QWidget* _p, const char* _n)
 	
 	QVBox *box = new QVBox(this);
 	QHBox *hbox = new QHBox(box);
-	(new QLabel("Downloads:", hbox))->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-	mGroupDownloads = new QCheckBox("Group by user", hbox);
+	(new QLabel(tr("Downloads:"), hbox))->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+	mGroupDownloads = new QCheckBox(tr("Group by user"), hbox);
 	connect(mGroupDownloads, SIGNAL(toggled(bool)), SLOT(groupDownloads(bool)));
 	
 	mDownloads = new TransferListView(true, box);
@@ -53,7 +53,7 @@ Transfers::Transfers(QWidget* _p, const char* _n)
 	hbox->setSpacing(5);
 	(new QLabel("Uploads:", hbox))->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	
-	mGroupUploads = new QCheckBox("Group by user", hbox);
+	mGroupUploads = new QCheckBox(tr("Group by user"), hbox);
 	connect(mGroupUploads, SIGNAL(toggled(bool)), SLOT(groupUploads(bool)));
 	
 	QFrame* frame = new QFrame(hbox);
@@ -70,25 +70,25 @@ Transfers::Transfers(QWidget* _p, const char* _n)
 	connect(museeq, SIGNAL(uploadRemoved(const QString&, const QString&)), mUploads, SLOT(remove(const QString&, const QString&)));
 	
 	mTransferMenu = new QPopupMenu(this);
-	mTransferMenu->insertItem("Retry", this, SLOT(retrySelected()), 0, 0);
-	mTransferMenu->insertItem("Abort", this, SLOT(abortSelected()));
-	mTransferMenu->insertItem("Check Position", this, SLOT(updateSelected()), 0, 1);
+	mTransferMenu->insertItem(tr("Retry"), this, SLOT(retrySelected()), 0, 0);
+	mTransferMenu->insertItem(tr("Abort"), this, SLOT(abortSelected()));
+	mTransferMenu->insertItem(tr("Check Position"), this, SLOT(updateSelected()), 0, 1);
 	
 	mClearMenu = new QPopupMenu(mTransferMenu);
-	mClearMenu->insertItem("Selected", this, SLOT(clearSelected()));
+	mClearMenu->insertItem(tr("Selected"), this, SLOT(clearSelected()));
 	mClearMenu->insertSeparator();
-	mClearMenu->insertItem("Finished", this, SLOT(clearFinished()));
-	mClearMenu->insertItem("Aborted", this, SLOT(clearAborted()));
-	mClearMenu->insertItem("Offline", this, SLOT(clearAwaiting()));
-	mClearMenu->insertItem("Cruft", this, SLOT(clearCruft())); 
-	mClearMenu->insertItem("Finished / aborted", this, SLOT(clearFinishedAborted()));
-	mClearMenu->insertItem("Queued", this, SLOT(clearQueued()));
-	mTransferMenu->insertItem("Clear", mClearMenu);
+	mClearMenu->insertItem(tr("Finished"), this, SLOT(clearFinished()));
+	mClearMenu->insertItem(tr("Aborted"), this, SLOT(clearAborted()));
+	mClearMenu->insertItem(tr("Offline"), this, SLOT(clearAwaiting()));
+	mClearMenu->insertItem(tr("Cruft"), this, SLOT(clearCruft())); 
+	mClearMenu->insertItem(tr("Finished / aborted"), this, SLOT(clearFinishedAborted()));
+	mClearMenu->insertItem(tr("Queued"), this, SLOT(clearQueued()));
+	mTransferMenu->insertItem(tr("Clear"), mClearMenu);
 	
 	mTransferMenu->insertSeparator();
 	
 	mUsersMenu = new QPopupMenu(mTransferMenu);
-	mTransferMenu->insertItem("Users", mUsersMenu);
+	mTransferMenu->insertItem(tr("Users"), mUsersMenu);
 	
 	connect(mUploads, SIGNAL(contextMenuRequested(QListViewItem*, const QPoint&, int)), SLOT(popupUploads(QListViewItem*, const QPoint&, int)));
 	connect(mDownloads, SIGNAL(contextMenuRequested(QListViewItem*, const QPoint&, int)), SLOT(popupDownloads(QListViewItem*, const QPoint&, int)));

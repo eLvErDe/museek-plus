@@ -44,7 +44,7 @@ ScrollImage::ScrollImage(QWidget* parent, const char* name)
 	addChild(mLabel, 0, 0);
 	
 	mPopupMenu = new QPopupMenu(this);
-	mPopupMenu->insertItem("Save picture...", this, SLOT(savePicture()));
+	mPopupMenu->insertItem(tr("Save picture..."), this, SLOT(savePicture()));
 }
 
 void ScrollImage::resizeEvent(QResizeEvent* event) {
@@ -92,31 +92,31 @@ UserInfo::UserInfo(const QString& user, QWidget* parent, const char* name)
 	vbox->setSpacing(5);
 	split->setResizeMode(vbox, QSplitter::KeepSize);
 	
-	QVGroupBox* frame = new QVGroupBox("Description", vbox);
+	QVGroupBox* frame = new QVGroupBox(tr("Description"), vbox);
 	
 	new CodecCombo("encoding.users", user, frame);
 	
 	mDescr = new QTextEdit(frame);
 	mDescr->setReadOnly(true);
 	
-	frame = new QVGroupBox("Information", vbox);
+	frame = new QVGroupBox(tr("Information"), vbox);
 	QGrid* grid = new QGrid(2, frame);
 	grid->setSpacing(5);
 	
-	new QLabel("Uploads allowed", grid);
-	(mSlots = new QLabel("unknown", grid))->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+	new QLabel(tr("Uploads allowed"), grid);
+	(mSlots = new QLabel(tr("unknown"), grid))->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	
-	new QLabel("Queue size", grid);
-	(mQueue = new QLabel("unknown", grid))->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+	new QLabel(tr("Queue size"), grid);
+	(mQueue = new QLabel(tr("unknown"), grid))->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	
-	new QLabel("Slots available", grid);
-	(mAvail = new QLabel("unknown", grid))->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-	mRefresh = new QPushButton("Refresh", grid);
+	new QLabel(tr("Slots available"), grid);
+	(mAvail = new QLabel(tr("unknown"), grid))->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+	mRefresh = new QPushButton(tr("Refresh"), grid);
 	connect(mRefresh, SIGNAL(clicked()), SLOT(getUserInfo()));
 	
 	vbox = new QVBox(split);
 	vbox->setMargin(5);
-	frame = new QVGroupBox("Picture", vbox);
+	frame = new QVGroupBox(tr("Picture"), vbox);
 	
 	mView = new ScrollImage(frame);
 }
@@ -127,7 +127,7 @@ void UserInfo::setInfo(const QString& info, const QByteArray& picture, uint upsl
 	mDescr->setText(info);
 	mSlots->setText(QString::number(upslots));
 	mQueue->setText(QString::number(queue));
-	mAvail->setText(free ? "yes" : "no");
+	mAvail->setText(free ? tr("yes") : tr("no"));
 	if(picture.size()) {
 		QPixmap p(picture);
 		mView->setPixmap(p, user());

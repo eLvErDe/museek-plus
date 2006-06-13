@@ -35,15 +35,15 @@ SearchListView::SearchListView(SearchFilter* filter, QWidget* parent, const char
 	setAllColumnsShowFocus(true);
 	
 	addColumn("");
-	addColumn("User", 100);
-	addColumn("Filename", 250);
-	addColumn("Size", 100);
-	addColumn("Speed", 100);
-	addColumn("Queued", 75);
-	addColumn("Imm.",20);
-	addColumn("Length", 75);
-	addColumn("Bitrate", 75);
-	addColumn("Path");
+	addColumn(tr("User"), 100);
+	addColumn(tr("Filename"), 250);
+	addColumn(tr("Size"), 100);
+	addColumn(tr("Speed"), 100);
+	addColumn(tr("Queued"), 75);
+	addColumn(tr("Imm."),20);
+	addColumn(tr("Length"), 75);
+	addColumn(tr("Bitrate"), 75);
+	addColumn(tr("Path"));
 	
 	setColumnAlignment(0, Qt::AlignRight|Qt::AlignVCenter);
 	setColumnAlignment(3, Qt::AlignRight|Qt::AlignVCenter);
@@ -54,11 +54,11 @@ SearchListView::SearchListView(SearchFilter* filter, QWidget* parent, const char
 	setColumnAlignment(8, Qt::AlignRight|Qt::AlignVCenter);
 	
 	mPopupMenu = new QPopupMenu(this);
-	mPopupMenu->insertItem("Download file(s)", this, SLOT(downloadFiles()));
-	mPopupMenu->insertItem("Download selected folder(s)", this, SLOT(downloadFolders()));
+	mPopupMenu->insertItem(tr("Download file(s)"), this, SLOT(downloadFiles()));
+	mPopupMenu->insertItem(tr("Download selected folder(s)"), this, SLOT(downloadFolders()));
 	mPopupMenu->insertSeparator();
 	mUsersMenu = new QPopupMenu(mPopupMenu);
-	mPopupMenu->insertItem("Users", mUsersMenu);
+	mPopupMenu->insertItem(tr("Users"), mUsersMenu);
 	
 	connect(this, SIGNAL(contextMenuRequested(QListViewItem*, const QPoint&, int)), SLOT(popupMenu(QListViewItem*, const QPoint&, int)));
 }
@@ -140,11 +140,11 @@ QDragObject* SearchListView::dragObject() {
 	
 	QString x;
 	if(items.count() == 1)
-		x = "1 search result (1 user)";
+		x = tr("1 search result (1 user)");
 	else if(users.count() == 1)
-		x = QString("%1 search results (1 user)").arg(items.count());
+		x = QString(tr("%1 search results (1 user)") ).arg(items.count());
 	else
-		x = QString("%1 search results (%2 users)").arg(items.count()).arg(users.count());
+		x = QString(tr("%1 search results (%2 users)") ).arg(items.count()).arg(users.count());
 	QSize s = viewport()->fontMetrics().size(Qt::SingleLine, x) + QSize(6, 4);
 	
 	QPixmap pix(s);
@@ -184,9 +184,9 @@ SearchListItem::SearchListItem(QListView* parent, Q_UINT64 n, const QString& use
 		setText(2, mFilename);
 	}
 	setText(3, Util::makeSize(mSize));
-	setText(4, Util::makeSize(mSpeed) + "/s");
+	setText(4, Util::makeSize(mSpeed) + QT_TR_NOOP("/s"));
 	setText(5, QString::number(mInQueue));
-	setText(6, mFree ? "Y" : "N");
+	setText(6, mFree ? QT_TR_NOOP("Y") : QT_TR_NOOP("N"));
 	if(mLength)
 		setText(7, Util::makeTime(mLength));
 	if(mBitrate)

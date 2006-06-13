@@ -29,7 +29,7 @@ ChatRooms::ChatRooms(QWidget* parent, const char* name)
           : TabWidget(parent, name) {
 	
 	mRoomList = new RoomList(this);
-	addTab(mRoomList, "*Rooms*");
+	addTab(mRoomList, tr("*Rooms*"));
 	
 	connect(museeq, SIGNAL(disconnected()), SLOT(clear()));
 	

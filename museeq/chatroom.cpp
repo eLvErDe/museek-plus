@@ -65,7 +65,7 @@ ChatRoom::ChatRoom(const char * _r, QWidget * parent, const char * name)
 	mUserList->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
 	
 	QHBox* hbox = new QHBox(vbox);
-	mAutoJoin = new QCheckBox("Auto-join", hbox, "autojoin");
+	mAutoJoin = new QCheckBox(tr("Auto-join"), hbox, "autojoin");
 	if(museeq->isAutoJoined(mRoom))
 		mAutoJoin->toggle();
 	connect(mAutoJoin, SIGNAL(toggled(bool)), SLOT(slotAutoJoin(bool)));
@@ -207,7 +207,7 @@ void ChatRoom::userJoined(const QString& _u, int _s, unsigned int _sp, unsigned 
 	if(mUserList->findItem(_u))
 		return;
 	if (! museeq->isIgnored(_u))
-		mLog->append(QString(_TIME+"<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>%1 joined the room</font></span>").arg(escape(_u)));
+		mLog->append(QString(_TIME+"<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+tr("%1 joined the room")+"</font></span>").arg(escape(_u)));
 	if(museeq->isBuddy(_u)) {
 		mUserList->add(_u , _s, _sp, _f);
 	} else if(museeq->isBanned(_u)) {
@@ -227,7 +227,7 @@ void ChatRoom::userLeft(const QString& _u) {
 		return;
 	mStatus.remove(_u);
 	if (! museeq->isIgnored(_u))
-		mLog->append(QString(_TIME+"</font></span><span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>%1 left the room</font></span>").arg(escape(_u)));
+		mLog->append(QString(_TIME+"</font></span><span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+tr("%1 left the room")+"</font></span>").arg(escape(_u)));
 	mUserList->remove(_u);
 	
 	mChatPanel->entry()->removeCompletor(_u);
@@ -243,9 +243,9 @@ void ChatRoom::setUserStatus(const QString& _u, uint _s) {
 		if(old_s > 0 && _s != old_s) {
 			QString l = _TIME;
 			if(_s == 1)
-				l += QString("<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>%1 has gone away</font></span>").arg(escape(_u));
+				l += QString("<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+tr("%1 has gone away")+"</font></span>").arg(escape(_u));
 			else if(_s == 2)
-				l += QString("<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>%1 has returned</font></span>").arg(escape(_u));
+				l += QString("<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+tr("%1 has returned")+"</font></span>").arg(escape(_u));
 		mLog->append(l);
 		mStatus[_u] = _s;
 		}	

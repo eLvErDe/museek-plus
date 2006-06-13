@@ -39,20 +39,20 @@ SearchFilter::SearchFilter(QWidget *parent, const char *name)
 	connect(mRegExp->lineEdit(), SIGNAL(enterPressed()), SLOT(updateFilter()));
 	
 	QHBox *box = new QHBox(this);
-	new QLabel("Size:", box);
+	new QLabel(tr("Size:"), box);
 	mSize = new QComboBox(box);
 	mSize->setLineEdit(new MyLineEdit(mSize));
 	mSize->setEditable(true);
 	connect(mSize->lineEdit(), SIGNAL(enterPressed()), SLOT(updateFilter()));
 	
 	box = new QHBox(this);
-	new QLabel("Bitrate:", box);
+	new QLabel(tr("Bitrate:"), box);
 	mBitrate = new QComboBox(box);
 	mBitrate->setLineEdit(new MyLineEdit(mBitrate));
 	mBitrate->setEditable(true);
 	connect(mBitrate->lineEdit(), SIGNAL(enterPressed()), SLOT(updateFilter()));
 	
-	mFreeSlot = new QCheckBox("Free slot", this);
+	mFreeSlot = new QCheckBox(tr("Free slot"), this);
 	connect(mFreeSlot, SIGNAL(toggled(bool)), SLOT(updateFilter()));
 	
 	updateFilter();
@@ -105,7 +105,7 @@ void SearchFilter::hideEvent(QHideEvent *ev) {
 void SearchFilter::updateFilter() {
 	mFilterRegExp.setPattern(mRegExp->currentText());
 	if(! mFilterRegExp.isValid()) {
-		QMessageBox::warning(this, "Warning - Museeq", "Invalid regular expression, disabling it");
+		QMessageBox::warning(this, tr("Warning - Museeq"), tr("Invalid regular expression, disabling it"));
 		mFilterRegExp.setPattern(QString::null);
 	}
 	
@@ -125,11 +125,11 @@ void SearchFilter::updateFilter() {
 		
 		if(! s.isEmpty()) {
 			QString l = s.right(1).lower();
-			if(l == "k")
+			if(l == tr("k"))
 				factor = 1024;
-			else if(l == "m")
+			else if(l == tr("m"))
 				factor = 1024*1024;
-			else if(l == "g")
+			else if(l == tr("g"))
 				factor = 1024*1024*1024;
 			if(factor != 1)
 				s = s.left(s.length() - 1);
@@ -137,7 +137,7 @@ void SearchFilter::updateFilter() {
 		
 		mFilterSize = s.toInt(&ok);
 		if(! ok) {
-			QMessageBox::warning(this, "Warning - Museeq", "Invalid size filter, disabling it");
+			QMessageBox::warning(this, tr("Warning - Museeq"), tr("Invalid size filter, disabling it"));
 			mFilterSizeExact = false;
 			mFilterSize = 0;
 		} else {
@@ -161,7 +161,7 @@ void SearchFilter::updateFilter() {
 		}
 		mFilterBitrate = s.toInt(&ok);
 		if(! ok) {
-			QMessageBox::warning(this, "Warning - Museeq", "Invalid bitrate filter, disabling it");
+			QMessageBox::warning(this, tr("Warning - Museeq"), tr("Invalid bitrate filter, disabling it"));
 			mFilterBitrateExact = false;
 			mFilterBitrate = 0;
 		} else if(neg)

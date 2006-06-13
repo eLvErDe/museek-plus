@@ -23,7 +23,7 @@
 #include <qlineedit.h>
 #include <qinputdialog.h>
 #include <qurl.h>
-
+#include <qtranslator.h>
 #include "userlistview.h"
 #include "userlistitem.h"
 #include "museeq.h"
@@ -40,7 +40,7 @@ BuddyList::BuddyList(QWidget* _p, const char* _n)
 	connect(museeq, SIGNAL(disconnected()), mUserList, SLOT(clear()));
 	
 	QHBox *box = new QHBox(this);
-	new QLabel("Add:", box);
+	new QLabel(tr("Add:"), box);
 
 	mEntry = new QLineEdit(box, "newBuddy");
 	connect(mEntry, SIGNAL(returnPressed()), SLOT(addBuddy()));
@@ -62,7 +62,7 @@ void BuddyList::editComments(const QString& n) {
 	if(item)
 		_c = item->comments();
 	
-	QString c = QInputDialog::getText("Comments", "Comments for " + n, QLineEdit::Normal, _c);
+	QString c = QInputDialog::getText(tr("Comments"), tr("Comments for ") + n, QLineEdit::Normal, _c);
 	museeq->addBuddy(n, c);
 }
 

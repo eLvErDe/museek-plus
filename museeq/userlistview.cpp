@@ -37,11 +37,11 @@ UserListView::UserListView(bool comments, QWidget * parent, const char * name)
 	setSelectionMode(Extended);
 	
 	addColumn(QString::null);
-	addColumn("User", 150);
-	addColumn("Speed");
-	addColumn("Files");
+	addColumn(tr("User"), 150);
+	addColumn(tr("Speed"));
+	addColumn(tr("Files"));
 	if(comments) {
-		addColumn("Comments");
+		addColumn(tr("Comments"));
 		setResizeMode(QListView::LastColumn);
 	}
 	

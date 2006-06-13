@@ -36,9 +36,9 @@ Search::Search(const QString& query, QWidget* parent, const char* name)
 	
 	QHBox* box = new QHBox(this);
 	box->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-	mShowFilters = new QCheckBox("Enable filters", box);
+	mShowFilters = new QCheckBox(tr("Enable filters"), box);
 	(new QWidget(box))->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-	new QPushButton("Ignore", box);
+	new QPushButton(tr("Ignore"), box);
 	
 	mFilters = new SearchFilter(this);
 	

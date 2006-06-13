@@ -32,16 +32,16 @@ TransferListView::TransferListView(bool place, QWidget* _p, const char* _n)
 	setShowSortIndicator(true);
 	setSelectionMode(Extended);
 	
-	addColumn("User", 100);
-	addColumn("File", 250);
-	addColumn("Status");
-	addColumn("Place", 50);
+	addColumn(tr("User"), 100);
+	addColumn(tr("File"), 250);
+	addColumn(tr("Status"));
+	addColumn(tr("Place"), 50);
 	if(! place)
 		setColumnWidth(3, 0);
-	addColumn("Position", 100);
-	addColumn("Size", 100);
-	addColumn("Speed", 100);
-	addColumn("Path");
+	addColumn(tr("Position"), 100);
+	addColumn(tr("Size"), 100);
+	addColumn(tr("Speed"), 100);
+	addColumn(tr("Path"));
 	
 	setColumnAlignment(3, Qt::AlignRight|Qt::AlignVCenter);
 	setColumnAlignment(4, Qt::AlignRight|Qt::AlignVCenter);
@@ -181,11 +181,11 @@ QDragObject* TransferListView::dragObject() {
 	
 	QString x;
 	if(items.count() == 1)
-		x = "1 transfer (1 user)";
+		x = tr("1 transfer (1 user)");
 	else if(users.count() == 1)
-		x = QString("%1 transfers (1 user)").arg(items.count());
+		x = QString(tr("%1 transfers (1 user)")).arg(items.count());
 	else
-		x = QString("%1 transfers (%2 users)").arg(items.count()).arg(users.count());
+		x = QString(tr("%1 transfers (%2 users)")).arg(items.count()).arg(users.count());
 	QSize s = viewport()->fontMetrics().size(Qt::SingleLine, x) + QSize(6, 4);
 	
 	QPixmap pix(s);

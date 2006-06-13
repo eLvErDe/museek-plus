@@ -16,14 +16,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
-#include "images.h"
 #include "prefix.h"
 #include <qmap.h>
 #include <qfile.h>
 #include <qdir.h>
 #include "museeq.h"
-
+#include "images.h"
 
 static QMap<QString, QPixmap>* iconcache = 0;
 

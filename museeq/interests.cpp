@@ -39,22 +39,22 @@ Interests::Interests(QWidget* parent, const char* name)
 	bbox->setFrameStyle(NoFrame);
 	bbox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	
-	QLabel* w = new QLabel("Interests", bbox);
+	QLabel* w = new QLabel(tr("Interests"), bbox);
 	QFont f = w->font();
 	f.setBold(true);
 	w->setFont(f);
 	
 	w->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	
-	mGlobal = new QPushButton("Global", bbox);
+	mGlobal = new QPushButton(tr("Global"), bbox);
 	connect(museeq, SIGNAL(connectedToServer(bool)), mGlobal, SLOT(setEnabled(bool)));
 	connect(mGlobal, SIGNAL(clicked()), SLOT(getGlobalRecommendations()));
 	
-	mRecommend = new QPushButton("Recommend", bbox);
+	mRecommend = new QPushButton(tr("Recommend"), bbox);
 	connect(museeq, SIGNAL(connectedToServer(bool)), mRecommend, SLOT(setEnabled(bool)));
 	connect(mRecommend, SIGNAL(clicked()), SLOT(getRecommendations()));
 	
-	mSimilar = new QPushButton("Similar", bbox);
+	mSimilar = new QPushButton(tr("Similar"), bbox);
 	connect(museeq, SIGNAL(connectedToServer(bool)), mSimilar, SLOT(setEnabled(bool)));
 	connect(mSimilar, SIGNAL(clicked()), SLOT(getSimilarUsers()));
 
@@ -64,8 +64,8 @@ Interests::Interests(QWidget* parent, const char* name)
 	box->setSpacing(5);
 	split->setResizeMode(box, QSplitter::KeepSize);
 
-	mILove = new InterestList("I like:", box);
-	mIHate = new InterestList("I hate:", box);
+	mILove = new InterestList(tr("I like:"), box);
+	mIHate = new InterestList(tr("I hate:"), box);
 	
 	mRecommendsList = new RecommendsView(split);
 

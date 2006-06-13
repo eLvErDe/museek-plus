@@ -25,20 +25,20 @@ Usermenu::Usermenu(QWidget* parent, const char* name)
          : QPopupMenu(parent, name) {
 	
 	setCheckable(true);
-	insertItem("Private chat", (int)0);
-	insertItem("Get user info", (int)1);
-	insertItem("Get user shares", (int)2);
-	insertItem("Give Soulseek privileges", (int)9);
+	insertItem(tr("Private chat"), (int)0);
+	insertItem(tr("Get user info"), (int)1);
+	insertItem(tr("Get user shares"), (int)2);
+	insertItem(tr("Give Soulseek privileges"), (int)9);
 	insertSeparator();
-	insertItem("Buddy", (int)3);
-	insertItem("Trusted", (int)4);
-	insertItem("Banned", (int)5);
-	insertItem("Ignored", (int)6);
+	insertItem(tr("Buddy"), (int)3);
+	insertItem(tr("Trusted"), (int)4);
+	insertItem(tr("Banned"), (int)5);
+	insertItem(tr("Ignored"), (int)6);
 	insertSeparator();
-	insertItem("Show IP", (int)7);
+	insertItem(tr("Show IP"), (int)7);
 	insertSeparator();
-	insertItem("Online alert", (int)8);
-	insertItem("Edit Comments", (int) 10);
+	insertItem(tr("Online alert"), (int)8);
+	insertItem(tr("Edit Comments"), (int) 10);
 
 	connect(this, SIGNAL(activated(int)), SLOT(slotActivated(int)));
 }

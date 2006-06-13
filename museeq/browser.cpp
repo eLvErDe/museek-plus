@@ -33,7 +33,7 @@
 #include "qpainter.h"
 #include "museeq.h"
 #include <qclipboard.h>
-
+#include <qtranslator.h>
 class SharesData {
 public:
 	QString path;
@@ -77,15 +77,15 @@ Browser::Browser(const QString& user, QWidget* parent, const char* name)
 	hbox->setSpacing(5);
 	mUser = user;
 	hbox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-	new QLabel("Search files and folders", hbox);
+	new QLabel(tr("Search files and folders"), hbox);
 	mEntry = new QLineEdit(hbox, "search");
 	
 	QFrame* frame = new QFrame(hbox);
 	frame->setFrameShape(QFrame::VLine);
 	frame->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
-	mFileCount = new QLabel("Haven't recieved shares", hbox);	
+	mFileCount = new QLabel(tr("Haven't recieved shares"), hbox);	
 	new CodecCombo("encoding.users", user, hbox, "encoding");
-	mRefresh = new QPushButton("Refresh", hbox);
+	mRefresh = new QPushButton(tr("Refresh"), hbox);
 	connect(mRefresh, SIGNAL(clicked()), SLOT(getShares()));
 
 	QSplitter* split = new QSplitter(this);
@@ -106,10 +106,10 @@ void Browser::setShares(const NShares& shares) {
 	if (shares.size()) {
 		uint z = shares.size();
 		QVariant p (z);
-		mFileCount->setText(p.toString()+ " directories");
+		mFileCount->setText(p.toString()+ " "+  tr("directories"));
 		}
 	else 
-		mFileCount->setText("Sharing nothing..");
+		mFileCount->setText(tr("Sharing nothing.."));
 	mCurrentResult = mShares.begin();
 	mFolders->setShares(shares);
 	mFolders->setEnabled(true);
@@ -198,12 +198,12 @@ private:
 
 FolderListView::FolderListView(const QString& user, QWidget* parent, const char* name)
                         : QListView(parent, name), mUser(user), mShares(0) {
-	addColumn("Folder");
+	addColumn(tr("Folder"));
 	setRootIsDecorated(true);
 	
 	mPopupMenu = new QPopupMenu(this);
-	mPopupMenu->insertItem("Download folder", this, SLOT(doDownloadFolder()));
-	mPopupMenu->insertItem("Copy URL", this, SLOT(doCopyURL()));
+	mPopupMenu->insertItem(tr("Download folder"), this, SLOT(doDownloadFolder()));
+	mPopupMenu->insertItem(tr("Copy URL"), this, SLOT(doCopyURL()));
 	connect(this, SIGNAL(contextMenuRequested(QListViewItem*, const QPoint&, int)), SLOT(doPopupMenu(QListViewItem*, const QPoint&, int)));	
 	connect(this, SIGNAL(currentChanged(QListViewItem*)), SLOT(doCurrentChanged(QListViewItem*)));
 }
@@ -228,9 +228,9 @@ QDragObject* FolderListView::dragObject() {
 	
 	QString x;
 	if(drag->count() == 1)
-		x = "1 folder";
+		x = tr("1 folder");
 	else
-		x = QString("%1 folders").arg(drag->count());
+		x = QString(tr("%1 folders")).arg(drag->count());
 	QSize s = viewport()->fontMetrics().size(Qt::SingleLine, x) + QSize(6, 4);
 	
 	QPixmap pix(s);
@@ -344,10 +344,10 @@ private:
 FileListView::FileListView(const QString& user, QWidget* parent, const char* name)
              : QListView(parent, name), mUser(user), mPath(QString::null) {
 
-	addColumn("Filename", 250);
-	addColumn("Size", 100);
-	addColumn("Length", 75);
-	addColumn("Bitrate", 75);
+	addColumn(tr("Filename"), 250);
+	addColumn(tr("Size"), 100);
+	addColumn(tr("Length"), 75);
+	addColumn(tr("Bitrate"), 75);
 	setColumnAlignment(1, Qt::AlignRight|Qt::AlignVCenter);
 	setColumnAlignment(2, Qt::AlignRight|Qt::AlignVCenter);
 	setColumnAlignment(3, Qt::AlignRight|Qt::AlignVCenter);
@@ -358,11 +358,11 @@ FileListView::FileListView(const QString& user, QWidget* parent, const char* nam
 	setAllColumnsShowFocus(true);
 	
 	mPopupMenu = new QPopupMenu(this);
-	mPopupMenu->insertItem("Download files", this, SLOT(doDownloadFiles()));
+	mPopupMenu->insertItem(tr("Download files"), this, SLOT(doDownloadFiles()));
 	if (museeq->nickname() == mUser) {
-		mPopupMenu->insertItem("Upload files", this, SLOT(doUploadFiles()));
+		mPopupMenu->insertItem(tr("Upload files"), this, SLOT(doUploadFiles()));
 		}
-	mPopupMenu->insertItem("Copy URL", this, SLOT(doCopyURL()));
+	mPopupMenu->insertItem(tr("Copy URL"), this, SLOT(doCopyURL()));
 	connect(this, SIGNAL(contextMenuRequested(QListViewItem*, const QPoint&, int)), SLOT(doPopupMenu(QListViewItem*, const QPoint&, int)));
 }
 
@@ -398,9 +398,9 @@ QDragObject* FileListView::dragObject() {
 	
 	QString x;
 	if(drag->count() == 1)
-		x = "1 file";
+		x = tr("1 file");
 	else
-		x = QString("%1 files").arg(drag->count());
+		x = QString(tr("%1 files")).arg(drag->count());
 	QSize s = viewport()->fontMetrics().size(Qt::SingleLine, x) + QSize(6, 4);
 	
 	QPixmap pix(s);
@@ -449,8 +449,8 @@ void FileListView::doCopyURL() {
 void FileListView::doUploadFiles() {
 	bool ok = false;
 
-	const QString& user = QInputDialog::getText("Upload File(s)",
-	             "Which user do you wish to upload these to?",
+	const QString& user = QInputDialog::getText(tr("Upload File(s)"),
+	             tr("Which user do you wish to upload these to?"),
 	             QLineEdit::Normal, QString::null, &ok, this);
 	if(ok && user) {
 		QListViewItemIterator item(firstChild(), QListViewItemIterator::Selected);

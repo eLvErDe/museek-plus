@@ -1,3 +1,7 @@
+
+import os
+import sys
+
 sources = Split("""
   prefix.c
   ipdlg.ui
@@ -110,9 +114,26 @@ scripts = Split("""
   uptime.qs
   nowplaying.qs
 """)
+scripts = Split("""
+  uptime.qs
+  nowplaying.qs
+""")
+ts_templates= ["fr", "de", "ar"]
 
-import os
-import sys
+translations = []
+qm_files = []
+def make_qm(ts_templates):
+	for lang in ts_templates:
+		if os.path.exists("museeq_"+lang+".ts"):
+			translations.append(lang)
+			print "Language: %s found, translation to be built" % lang
+		else:
+			print "Language: %s not found, translation not built" % lang
+make_qm(ts_templates)
+# translations = ["museeq_de.qm", "museeq_fr.qm"]
+
+
+
 from muscons import Relay
 
 Import('env')
@@ -121,6 +142,13 @@ def iface_build(target, source, env):
     from muscons import IfaceGen
     IfaceGen(str(target[0]), str(source[0]), str(source[1]))
     return 0
+
+
+def translation_build(target, source, env):
+# 	print source[0], target[0]
+	os.system("lrelease "+ str(source[0])+" -qm "+ str(target[0]))
+	
+	return 0
 
 def file_copy(target, source, env):
     open(str(target[0]), 'w').write(open(str(source[0])).read())
@@ -221,6 +249,9 @@ env_qt.Append(LIBPATH = env['LIBPATH_MUCIPHER'])
 env_qt.Append(LIBS = ['ucipher'])
 env_qt.Command('museekmessages.h', ['museekmessages.h.in', '../../museekd/IfaceMessages.hh'], iface_build)
 env_qt.Command('museekdriver.cpp', ['museekdriver.cpp.in', '../../museekd/IfaceMessages.hh'], iface_build)
+for lang in translations:
+	env_qt.Command("museeq_"+lang+".qm", "museeq_"+lang+".ts", translation_build)
+	qm_files.append("museeq_"+lang+".qm")
 museeq = env_qt.Program('museeq', sources)
 
 bin_install = env_qt.Install(env['DESTDIR'] + env['BINDIR'], [museeq])
@@ -228,9 +259,11 @@ img_install = env_qt.Install(env['DESTDIR'] + os.path.join(env_qt['DATADIR'], 'm
 img_b_install = env_qt.Install(env['DESTDIR'] + os.path.join(env_qt['DATADIR'], 'museek', 'museeq', 'bluebox'), bluebox_images)
 script_install = env_qt.Install(env['DESTDIR'] + os.path.join(env_qt['DATADIR'], 'museek', 'museeq'), scripts)
 
+translations_install = env_qt.Install(env['DESTDIR'] + os.path.join(env_qt['DATADIR'], 'museek', 'museeq', "translations"), qm_files)
 manfile = ["museeq.1"]
 man_install = env_qt.Install(env['DESTDIR'] + env['MANDIR'], manfile)
 
+env.Alias('install_museeq', translations_install)
 env.Alias('install_museeq', img_install)
 env.Alias('install_museeq', img_b_install)
 env.Alias('install_museeq', script_install)

@@ -19,7 +19,7 @@
 
 #include "transferlistitem.h"
 #include "util.h"
-
+#include "museeq.h"
 TransferListItem::TransferListItem(QListView* p, const QString& _u, const QString& _p)
                  : QListViewItem(p), mUser(_u), mPath(_p) {
 	
@@ -70,46 +70,46 @@ void TransferListItem::update(const NTransfer& transfer, bool force) {
 		mState = transfer.state;
 		switch(mState) {
 		case 0:
-			setText(2, "Finished");
+			setText(2, QT_TR_NOOP("Finished"));
 			break;
 		case 1:
-			setText(2, "Transferring");
+			setText(2, QT_TR_NOOP("Transferring"));
 			break;
 		case 2:
-			setText(2, "Negotiating");
+			setText(2, QT_TR_NOOP("Negotiating"));
 			break;
 		case 3:
-			setText(2, "Waiting");
+			setText(2, QT_TR_NOOP("Waiting"));
 			break;
 		case 4:
-			setText(2, "Establishing");
+			setText(2, QT_TR_NOOP("Establishing"));
 			break;
 		case 5:
-			setText(2, "Initiating");
+			setText(2, QT_TR_NOOP("Initiating"));
 			break;
 		case 6:
-			setText(2, "Connecting");
+			setText(2, QT_TR_NOOP("Connecting"));
 			break;
 		case 7:
-			setText(2, "Queued");
+			setText(2, QT_TR_NOOP("Queued"));
 			break;
 		case 8:
-			setText(2, "Getting address");
+			setText(2, QT_TR_NOOP("Getting address"));
 			break;
 		case 9:
-			setText(2, "Getting status");
+			setText(2, QT_TR_NOOP("Getting status"));
 			break;
 		case 10:
-			setText(2, "User Offline");
+			setText(2, QT_TR_NOOP("User Offline"));
 			break;
 		case 11:
-			setText(2, "Connection closed by peer");
+			setText(2, QT_TR_NOOP("Connection closed by peer"));
 			break;
 		case 12:
-			setText(2, "Cannot connect");
+			setText(2, QT_TR_NOOP("Cannot connect"));
 			break;
 		case 13:
-			setText(2, "Aborted");
+			setText(2, QT_TR_NOOP("Aborted"));
 			break;
 		case 14:
 			mError = QString::null;
@@ -143,7 +143,7 @@ void TransferListItem::update(const NTransfer& transfer, bool force) {
 	}
 	if(transfer.rate != mRate || force) {
 		mRate = transfer.rate;
-		setText(6, Util::makeSize(mRate) + "/s");
+		setText(6, Util::makeSize(mRate) + QT_TR_NOOP("/s"));
 	}
 }
 
@@ -198,7 +198,7 @@ void TransferListItem::updateStats() {
 	else
 		setText(5, Util::makeSize(__t));
 	
-	setText(6, Util::makeSize(__r) + "/s");
+	setText(6, Util::makeSize(__r) + QT_TR_NOOP("/s"));
 }
 
 void TransferListItem::update(const NTransfer& transfer) {

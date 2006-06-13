@@ -38,14 +38,14 @@ UserTabWidget::UserTabWidget(QWidget* _p, const char* _n)
 	const QString& Name = _n ;
 	mBuddyList = new BuddyList(0, "buddyList");
 	connect(mBuddyList, SIGNAL(activated(const QString&)), SLOT(setPage(const QString&)));
-	addTab(mBuddyList, "*Buddies*");
+	addTab(mBuddyList, tr("*Buddies*"));
 	if (Name == "userInfo") {
 		mBanList = new BanList(0, "banList");
 		mIgnoreList = new IgnoreList(0, "ignoreList");	
 		connect(mBanList, SIGNAL(activated(const QString&)), SLOT(setPage(const QString&)));	
 		connect(mIgnoreList, SIGNAL(activated(const QString&)), SLOT(setPage(const QString&)));	
-		addTab(mIgnoreList, "*Ignored*");
-		addTab(mBanList, "*Banned*");
+		addTab(mIgnoreList, tr("*Ignored*"));
+		addTab(mBanList, tr("*Banned*"));
 	}
 
 	

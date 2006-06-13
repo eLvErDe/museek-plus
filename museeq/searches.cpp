@@ -44,23 +44,23 @@ Searches::Searches(QWidget* parent, const char* name)
 	mEntry->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	mEntry->insertItem("");
 
-	mUserLabel =  new QLabel("User:", hbox);
+	mUserLabel =  new QLabel(tr("User:"), hbox);
 	mUserEntry = new QComboBox(true, hbox);
 	mUserEntry->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	mUserEntry->insertItem("");
 
 
-	mSearch = new QPushButton("Search", hbox);
+	mSearch = new QPushButton(tr("Search"), hbox);
 
-	QHButtonGroup* group = new QHButtonGroup("Method", this);
+	QHButtonGroup* group = new QHButtonGroup(tr("Method"), this);
 	group->setRadioButtonExclusive(true);
 // 	group->setFrameShape(QFrame::NoFrame);
 	group->setMargin(0);
-	mGlobal = new QRadioButton("Global", group);
-	mRooms = new QRadioButton("Rooms", group);
-	mBuddies = new QRadioButton("Buddies", group);
-	mWishList = new QRadioButton("WishList", group);
-	mUser = new QRadioButton("User", group);
+	mGlobal = new QRadioButton(tr("Global"), group);
+	mRooms = new QRadioButton(tr("Rooms"), group);
+	mBuddies = new QRadioButton(tr("Buddies"), group);
+	mWishList = new QRadioButton(tr("WishList"), group);
+	mUser = new QRadioButton(tr("User"), group);
 	group->setButton(0);
 	searchModeSelected();	
 	connect(mEntry, SIGNAL(activated(const QString&)), SLOT(doSearch(const QString&)));
@@ -81,7 +81,7 @@ Searches::Searches(QWidget* parent, const char* name)
 	mTabWidget = new TabWidget(this);
 	mInterests = new Interests(mTabWidget);
 	mInterests->setDisabled(true);
-	mTabWidget->addTab(mInterests, "*Search*");
+	mTabWidget->addTab(mInterests, tr("*Search*"));
 	
 	connect(museeq, SIGNAL(searchResults(uint, const QString&, bool, uint, uint, const NFolder&)), SLOT(append(uint, const QString&, bool, uint, uint, const NFolder&)));
 	connect(museeq, SIGNAL(searchToken(const QString&, uint)), SLOT(setToken(const QString&, uint)));

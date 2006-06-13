@@ -40,7 +40,7 @@ BanList::BanList(QWidget* _p, const char* _n)
 	connect(museeq, SIGNAL(disconnected()), mUserList, SLOT(clear()));
 	
 	QHBox *box = new QHBox(this);
-	new QLabel("Add:", box);
+	new QLabel(tr("Add:"), box);
 
 	mEntry = new QLineEdit(box, "newBanned");
 	connect(mEntry, SIGNAL(returnPressed()), SLOT(addBanned()));
@@ -62,7 +62,7 @@ void BanList::editComments(const QString& n) {
 	if(item)
 		_c = item->comments();
 	
-	QString c = QInputDialog::getText("Comments", "Comments for " + n, QLineEdit::Normal, _c);
+	QString c = QInputDialog::getText(tr("Comments"), tr("Comments for ") + n, QLineEdit::Normal, _c);
 	museeq->addBanned(n, c);
 }
 

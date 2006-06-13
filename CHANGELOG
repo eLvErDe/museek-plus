@@ -6,6 +6,9 @@ MUSEEK DAEMON
   tries the listen on minPort (if they equal) or on maxPort (if it's smaller 
   than minport) and  then gives up if it fails. 
 
+MUSEEQ
+* Added Translation *Support*
+
 MUCOUS
 * Add timestamps to Status Messages, bugfixes for browse mode, topbar variables
    merged into the new storage method
