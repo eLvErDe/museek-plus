@@ -9,6 +9,8 @@ MUSEEK DAEMON
 
 MUSEEQ
 * Added Translation *Support*
+* Le_Vert translated museeq into French
+* Added more icons (ip, comments, alert, and small-icons for:  browse, userinfo, search, chatrooms, privatechat )
 
 MUCOUS
 * Add timestamps to Status Messages, bugfixes for browse mode, topbar variables

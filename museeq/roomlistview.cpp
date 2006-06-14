@@ -26,8 +26,8 @@
 RoomListView::RoomListView(QWidget* _p, const char* _n)
              : QListView(_p, _n) {
 
-	addColumn("Room");
-	addColumn("Users");
+	addColumn(tr("Room"));
+	addColumn(tr("Users"));
 
 	setColumnAlignment(1, Qt::AlignRight|Qt::AlignVCenter);
 	setSorting(1);
@@ -35,10 +35,10 @@ RoomListView::RoomListView(QWidget* _p, const char* _n)
 	setAllColumnsShowFocus(true);
 	
 	mPopup = new QPopupMenu(this);
-	mPopup->insertItem("Join room", this, SLOT(slotJoin()), 0, 0);
-	mPopup->insertItem("Leave room", this, SLOT(slotLeave()), 0, 1);
+	mPopup->insertItem(tr("Join room"), this, SLOT(slotJoin()), 0, 0);
+	mPopup->insertItem(tr("Leave room"), this, SLOT(slotLeave()), 0, 1);
 	mPopup->insertSeparator();
-	mPopup->insertItem("Refresh", this, SLOT(slotRefresh()), 0, 2);
+	mPopup->insertItem(tr("Refresh"), this, SLOT(slotRefresh()), 0, 2);
 	
 	connect(this, SIGNAL(contextMenuRequested(QListViewItem*, const QPoint&, int)), SLOT(slotPopupMenu(QListViewItem*, const QPoint&, int)));
 

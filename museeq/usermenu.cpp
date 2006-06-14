@@ -20,25 +20,25 @@
 #include "usermenu.h"
 #include "museeq.h"
 #include "mainwin.h"
-
+#include "images.h"
 Usermenu::Usermenu(QWidget* parent, const char* name)
          : QPopupMenu(parent, name) {
 	
 	setCheckable(true);
-	insertItem(tr("Private chat"), (int)0);
-	insertItem(tr("Get user info"), (int)1);
-	insertItem(tr("Get user shares"), (int)2);
-	insertItem(tr("Give Soulseek privileges"), (int)9);
+	insertItem(IMG("privatechat-small"), tr("Private chat"), (int)0);
+	insertItem(IMG("userinfo-small"), tr("Get user info"), (int)1);
+	insertItem(IMG("browser-small"), tr("Get user shares"), (int)2);
+	insertItem(IMG("privileges"), tr("Give Soulseek privileges"), (int)9);
 	insertSeparator();
 	insertItem(tr("Buddy"), (int)3);
 	insertItem(tr("Trusted"), (int)4);
 	insertItem(tr("Banned"), (int)5);
 	insertItem(tr("Ignored"), (int)6);
 	insertSeparator();
-	insertItem(tr("Show IP"), (int)7);
+	insertItem(IMG("ip"), tr("Show IP"), (int)7);
 	insertSeparator();
-	insertItem(tr("Online alert"), (int)8);
-	insertItem(tr("Edit Comments"), (int) 10);
+	insertItem(IMG("alert"), tr("Online alert"), (int)8);
+	insertItem(IMG("comments"), tr("Edit Comments"), (int) 10);
 
 	connect(this, SIGNAL(activated(int)), SLOT(slotActivated(int)));
 }

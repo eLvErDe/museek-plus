@@ -65,8 +65,25 @@ default_images = Split("""
   default/away-banned.png
   default/away-trusted.png
   default/away-ignored.png
+  default/connect.png
+  default/disconnect.png
+  default/help.png
+  default/privileges.png
+  default/ip.png
+  default/alert.png
+  default/comments.png
   default/browser.png
+  default/browser-small.png
   default/chatroom.png
+  default/chatroom-small.png
+  default/privatechat.png
+  default/privatechat-small.png
+  default/search.png
+  default/search-small.png
+  default/transfer.png
+  default/transfer-small.png
+  default/userinfo.png
+  default/userinfo-small.png
   default/offline.png
   default/offline-buddied.png
   default/offline-banned.png
@@ -77,11 +94,7 @@ default_images = Split("""
   default/online-banned.png
   default/online-trusted.png
   default/online-ignored.png
-  default/privatechat.png
-  default/search.png
   default/tab_remove.png
-  default/transfer.png
-  default/userinfo.png
   default/logo.png
   default/icon.png
 """)

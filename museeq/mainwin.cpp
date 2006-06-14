@@ -92,19 +92,19 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 	connect(museeq, SIGNAL(configChanged(const QString&, const QString&, const QString&)), SLOT(slotConfigChanged(const QString&, const QString&, const QString&)));
 	
 	mMenuFile = new QPopupMenu(this);
-	mMenuFile->insertItem(tr("&Connect..."), this, SLOT(connectToMuseek()), ALT + Key_C, 0);
-	mMenuFile->insertItem(tr("&Disconnect"), museeq->driver(), SLOT(disconnect()), ALT + Key_D, 1);
+	mMenuFile->insertItem(IMG("connect"), tr("&Connect..."), this, SLOT(connectToMuseek()), ALT + Key_C, 0);
+	mMenuFile->insertItem(IMG("disconnect"), tr("&Disconnect"), museeq->driver(), SLOT(disconnect()), ALT + Key_D, 1);
 	mMenuFile->insertSeparator();
 	mMenuFile->insertItem(tr("Toggle &away"), this, SLOT(toggleAway()), ALT + Key_A, 2);
 	mMenuFile->insertItem(tr("Check &privileges"), this, SLOT(checkPrivileges()), 0, 3);
-	mMenuFile->insertItem(tr("&Browse My Shares"), this, SLOT(getOwnShares()), ALT + Key_B, 4);
+	mMenuFile->insertItem(tr("&Browse My Shares"), this, SLOT(getOwnShares()), ALT + Key_B, 4); // , 
 	mMenuFile->insertSeparator();
 	mMenuFile->insertItem(tr("E&xit"), this, SLOT(close()), ALT + Key_X);
 	mMenuFile->setItemEnabled(1, false);
 	mMenuFile->setItemEnabled(2, false);
 	mMenuFile->setItemEnabled(3, false);
 	mMenuFile->setItemEnabled(4, false);
-	menuBar()->insertItem("&File", mMenuFile);
+	menuBar()->insertItem(tr("&File"), mMenuFile);
 	
 	mMenuSettings = new QPopupMenu(this);
 	mMenuSettings->insertItem(tr("&Protocol handlers..."), this, SLOT(protocolHandlers()), 0, 0);
@@ -127,18 +127,18 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 	mMenuSettings->setItemChecked(6, museeq->mShowStatusLog);
 	menuBar()->insertItem(tr("&Settings"), mMenuSettings);
 	mMenuModes = new QPopupMenu(this);
-	mMenuModes->insertItem(tr("&Chat Rooms"), this, SLOT(changeCMode()), 0, 0);
-	mMenuModes->insertItem(tr("&Private Chat"), this, SLOT(changePMode()), 0, 1);
-	mMenuModes->insertItem(tr("&Transfers"), this, SLOT(changeTMode()), 0, 2);
-	mMenuModes->insertItem(tr("&Search"), this, SLOT(changeSMode()), 0, 3);
-	mMenuModes->insertItem(tr("&User Info"), this, SLOT(changeUMode()), 0, 4);
-	mMenuModes->insertItem(tr("&Browse Shares"), this, SLOT(changeBMode()), 0, 5);
+	mMenuModes->insertItem( IMG("chatroom-small"), tr("&Chat Rooms"), this, SLOT(changeCMode()), 0, 0);
+	mMenuModes->insertItem( IMG("privatechat-small"), tr("&Private Chat"), this, SLOT(changePMode()), 0, 1);
+	mMenuModes->insertItem( IMG("transfer-small"), tr("&Transfers"), this, SLOT(changeTMode()), 0, 2);
+	mMenuModes->insertItem( IMG("search-small"), tr("&Search"), this, SLOT(changeSMode()), 0, 3);
+	mMenuModes->insertItem( IMG("userinfo-small"), tr("&User Info"), this, SLOT(changeUMode()), 0, 4);
+	mMenuModes->insertItem( IMG("browser-small"), tr("&Browse Shares"), this, SLOT(changeBMode()), 0, 5);
 
 	menuBar()->insertItem(tr("&Modes"), mMenuModes);
 	mMenuHelp = new QPopupMenu(this);
-	mMenuHelp->insertItem(tr("&About..."), this, SLOT(displayAboutDialog()), 0, 0);
-	mMenuHelp->insertItem(tr("&Commands..."), this, SLOT(displayCommandsDialog()), 0, 1);
-	mMenuHelp->insertItem(tr("&Help..."), this, SLOT(displayHelpDialog()), 0, 2);
+	mMenuHelp->insertItem(IMG("help"), tr("&About..."), this, SLOT(displayAboutDialog()), 0, 0);
+	mMenuHelp->insertItem(IMG("help"), tr("&Commands..."), this, SLOT(displayCommandsDialog()), 0, 1);
+	mMenuHelp->insertItem(IMG("help"), tr("&Help..."), this, SLOT(displayHelpDialog()), 0, 2);
 	menuBar()->insertItem(tr("&Help"), mMenuHelp);
 #ifdef HAVE_QSA
 	if(libqsa_is_present)

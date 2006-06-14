@@ -307,6 +307,59 @@
     </message>
 </context>
 <context>
+    <name>IgnoreList</name>
+    <message>
+        <source>Add:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Comments</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Comments for </source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>InterestList</name>
+    <message>
+        <source>Add:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>I like:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>I hate:</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>InterestListView</name>
+    <message>
+        <source>I like:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>I hate:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Recommendations for this Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Similar Users for this Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Interests</name>
     <message>
         <source>Interests</source>
@@ -680,6 +733,40 @@
         <source>Load Script</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>&amp;File</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>RoomList</name>
+    <message>
+        <source>Create:</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>RoomListView</name>
+    <message>
+        <source>Room</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Users</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Join room</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Leave room</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ScrollImage</name>
@@ -1025,6 +1112,14 @@
     </message>
     <message>
         <source>Users</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Uploads:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>slots</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

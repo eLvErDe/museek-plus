@@ -31,7 +31,7 @@ RoomList::RoomList(QWidget* _p, const char* _n)
 	mRoomList = new RoomListView(this);
 	
 	QHBox *box = new QHBox(this);
-	new QLabel("Create:", box);
+	new QLabel(tr("Create:"), box);
 	
 	mEntry = new QLineEdit(box);
 	connect(mEntry, SIGNAL(returnPressed()), SLOT(slotJoinRoom()));

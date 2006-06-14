@@ -17,6 +17,30 @@
         <source>MuseeqTray</source>
         <translation>MuseeqTray</translation>
     </message>
+    <message>
+        <source> Language: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Syntax: museeq [options]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Options:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>-V --version<byte value="x9"/><byte value="x9"/>Display museeq version and quit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>-h --help<byte value="x9"/><byte value="x9"/>Display this message and quit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>--no-tray<byte value="x9"/><byte value="x9"/>Don&apos;t load TrayIcon</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>BanList</name>
@@ -280,6 +304,59 @@
     <message>
         <source>%1 folders</source>
         <translation>%1 répertoires</translation>
+    </message>
+</context>
+<context>
+    <name>IgnoreList</name>
+    <message>
+        <source>Add:</source>
+        <translation type="unfinished">Ajouter:</translation>
+    </message>
+    <message>
+        <source>Comments</source>
+        <translation type="unfinished">Commentaire</translation>
+    </message>
+    <message>
+        <source>Comments for </source>
+        <translation type="unfinished">Commentaire pour</translation>
+    </message>
+</context>
+<context>
+    <name>InterestList</name>
+    <message>
+        <source>Add:</source>
+        <translation type="unfinished">Ajouter:</translation>
+    </message>
+    <message>
+        <source>I like:</source>
+        <translation type="unfinished">J&apos;aime:</translation>
+    </message>
+    <message>
+        <source>I hate:</source>
+        <translation type="unfinished">Je deteste:</translation>
+    </message>
+</context>
+<context>
+    <name>InterestListView</name>
+    <message>
+        <source>I like:</source>
+        <translation type="unfinished">J&apos;aime:</translation>
+    </message>
+    <message>
+        <source>Remove</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>I hate:</source>
+        <translation type="unfinished">Je deteste:</translation>
+    </message>
+    <message>
+        <source>Recommendations for this Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Similar Users for this Item</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -658,6 +735,40 @@
         <source>Load Script</source>
         <translation>Démarrer le script</translation>
     </message>
+    <message>
+        <source>&amp;File</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>RoomList</name>
+    <message>
+        <source>Create:</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>RoomListView</name>
+    <message>
+        <source>Room</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Users</source>
+        <translation type="unfinished">Utilisateurs</translation>
+    </message>
+    <message>
+        <source>Join room</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Leave room</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh</source>
+        <translation type="unfinished">Actualiser</translation>
+    </message>
 </context>
 <context>
     <name>ScrollImage</name>
@@ -1006,6 +1117,14 @@
     <message>
         <source>Users</source>
         <translation>Utilisateurs</translation>
+    </message>
+    <message>
+        <source>Uploads:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>slots</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

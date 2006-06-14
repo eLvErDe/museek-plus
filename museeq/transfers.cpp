@@ -51,7 +51,7 @@ Transfers::Transfers(QWidget* _p, const char* _n)
 	box = new QVBox(this);
 	hbox = new QHBox(box);
 	hbox->setSpacing(5);
-	(new QLabel("Uploads:", hbox))->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+	(new QLabel(tr("Uploads:"), hbox))->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	
 	mGroupUploads = new QCheckBox(tr("Group by user"), hbox);
 	connect(mGroupUploads, SIGNAL(toggled(bool)), SLOT(groupUploads(bool)));
@@ -61,7 +61,7 @@ Transfers::Transfers(QWidget* _p, const char* _n)
 	frame->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
 	
 	mUpslots = new QSpinBox(0, 99, 1, hbox);
-	new QLabel(mUpslots, "slots", hbox);
+	new QLabel(mUpslots, tr("slots"), hbox);
 	connect(mUpslots, SIGNAL(valueChanged(const QString&)), SLOT(setUpslots(const QString&)));
 	connect(museeq, SIGNAL(configChanged(const QString&, const QString&, const QString&)), SLOT(slotConfigChanged(const QString&, const QString&, const QString&)));
 	

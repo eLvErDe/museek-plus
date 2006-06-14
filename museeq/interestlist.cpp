@@ -33,14 +33,14 @@ InterestList::InterestList(const QString& caption, QWidget* parent, const char* 
 
 	mListView->setResizeMode(QListView::LastColumn);
 	QHBox* box = new QHBox(this);
-	new QLabel("Add:", box);
+	new QLabel(tr("Add:"), box);
 	mEntry = new QLineEdit(box);
 
 	
-	if ( caption == "I like:" ) {
+	if ( caption == tr("I like:") ) {
 		connect(mEntry, SIGNAL(returnPressed()), SLOT(slotDoAddInterest()));
  	}
-	else if ( caption == "I hate:" ) {
+	else if ( caption == tr("I hate:") ) {
 		connect(mEntry, SIGNAL(returnPressed()), SLOT(slotDoAddHatedInterest()));
 
 	}

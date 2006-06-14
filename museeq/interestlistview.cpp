@@ -32,14 +32,14 @@ InterestListView::InterestListView( const QString& caption,  QWidget* _p, const 
 	setAllColumnsShowFocus(true);
 	
 	mPopup = new QPopupMenu(this);
-	if ( caption == "I like:" ) {
-		mPopup->insertItem("Remove", this, SLOT(slotRemoveInterest()), 0, 0);
+	if ( caption == tr("I like:") ) {
+		mPopup->insertItem(tr("Remove"), this, SLOT(slotRemoveInterest()), 0, 0);
 	}
-	else if ( caption == "I hate:" ) {
-		mPopup->insertItem("Remove", this, SLOT(slotRemoveHatedInterest()), 0, 0);
+	else if ( caption == tr("I hate:") ) {
+		mPopup->insertItem(tr("Remove"), this, SLOT(slotRemoveHatedInterest()), 0, 0);
 	}
-	mPopup->insertItem("Recommendations for this Item", this, SLOT(slotItemRecommendations()), 0, 1);
-	mPopup->insertItem("Similar Users for this Item", this, SLOT(slotItemSimilarUsers()), 0, 2);
+	mPopup->insertItem(tr("Recommendations for this Item"), this, SLOT(slotItemRecommendations()), 0, 1);
+	mPopup->insertItem(tr("Similar Users for this Item"), this, SLOT(slotItemSimilarUsers()), 0, 2);
 
 	connect(this, SIGNAL(contextMenuRequested(QListViewItem*, const QPoint&, int)), SLOT(slotPopupMenu(QListViewItem*, const QPoint&, int)));
 

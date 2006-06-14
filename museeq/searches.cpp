@@ -27,8 +27,9 @@
 #include <qpushbutton.h>
 #include <qhbuttongroup.h>
 #include <qlineedit.h>
-
+#include <qiconset.h>
 #include "tabwidget.h"
+#include "images.h"
 #include "interests.h"
 #include "search.h"
 #include "museeq.h"
@@ -49,9 +50,10 @@ Searches::Searches(QWidget* parent, const char* name)
 	mUserEntry->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	mUserEntry->insertItem("");
 
-
+	QIconSet mSearchIcon = IMG("search-small");
 	mSearch = new QPushButton(tr("Search"), hbox);
-
+	mSearch->setIconSet(mSearchIcon);
+// 	mSearch->setText(tr("Search"));
 	QHButtonGroup* group = new QHButtonGroup(tr("Method"), this);
 	group->setRadioButtonExclusive(true);
 // 	group->setFrameShape(QFrame::NoFrame);
