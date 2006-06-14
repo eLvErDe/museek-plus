@@ -97,7 +97,7 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 	mMenuFile->insertSeparator();
 	mMenuFile->insertItem(tr("Toggle &away"), this, SLOT(toggleAway()), ALT + Key_A, 2);
 	mMenuFile->insertItem(tr("Check &privileges"), this, SLOT(checkPrivileges()), 0, 3);
-	mMenuFile->insertItem(tr("&Browse My Shares"), this, SLOT(getOwnShares()), ALT + Key_B, 4); // , 
+	mMenuFile->insertItem( IMG("browser-small"),tr("&Browse My Shares"), this, SLOT(getOwnShares()), ALT + Key_B, 4); // , 
 	mMenuFile->insertSeparator();
 	mMenuFile->insertItem(tr("E&xit"), this, SLOT(close()), ALT + Key_X);
 	mMenuFile->setItemEnabled(1, false);
@@ -107,12 +107,12 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 	menuBar()->insertItem(tr("&File"), mMenuFile);
 	
 	mMenuSettings = new QPopupMenu(this);
-	mMenuSettings->insertItem(tr("&Protocol handlers..."), this, SLOT(protocolHandlers()), 0, 0);
+	mMenuSettings->insertItem(IMG("protocol"), tr("&Protocol handlers..."), this, SLOT(protocolHandlers()), 0, 0);
 	mMenuSettings->insertSeparator();
-	mMenuSettings->insertItem(tr("&User info..."), this, SLOT(changeUserInfo()), 0, 1);
+	mMenuSettings->insertItem( IMG("userinfo-small"), tr("&User info..."), this, SLOT(changeUserInfo()), 0, 1);
 	mMenuSettings->insertSeparator();
-	mMenuSettings->insertItem(tr("&Museek..."), this, SLOT(changeSettings()), 0, 2);
-	mMenuSettings->insertItem(tr("&Colors and Fonts..."), this, SLOT(changeColors()), 0, 3);
+	mMenuSettings->insertItem(IMG("settings"),tr("&Museek..."), this, SLOT(changeSettings()), 0, 2);
+	mMenuSettings->insertItem( IMG("colors"), tr("&Colors and Fonts..."), this, SLOT(changeColors()), 0, 3);
 	mMenuSettings->insertItem(tr("Pick &Icon Theme... (Requires Restart)"), this, SLOT(changeTheme()), 0, 4);
 	mMenuSettings->insertItem(tr("Show &Tickers"), this, SLOT(toggleTickers()), 0, 5);
 	mMenuSettings->insertItem(tr("Show &Log"), this, SLOT(toggleLog()), 0, 6);

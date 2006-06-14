@@ -68,6 +68,9 @@ default_images = Split("""
   default/connect.png
   default/disconnect.png
   default/help.png
+  default/colors.png
+  default/settings.png
+  default/protocol.png
   default/privileges.png
   default/ip.png
   default/alert.png
