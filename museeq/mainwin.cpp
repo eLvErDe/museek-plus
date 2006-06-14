@@ -95,11 +95,11 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 	mMenuFile->insertItem(IMG("connect"), tr("&Connect..."), this, SLOT(connectToMuseek()), ALT + Key_C, 0);
 	mMenuFile->insertItem(IMG("disconnect"), tr("&Disconnect"), museeq->driver(), SLOT(disconnect()), ALT + Key_D, 1);
 	mMenuFile->insertSeparator();
-	mMenuFile->insertItem(tr("Toggle &away"), this, SLOT(toggleAway()), ALT + Key_A, 2);
+	mMenuFile->insertItem( tr("Toggled &away"), this, SLOT(toggleAway()), ALT + Key_A, 2);
 	mMenuFile->insertItem(tr("Check &privileges"), this, SLOT(checkPrivileges()), 0, 3);
 	mMenuFile->insertItem( IMG("browser-small"),tr("&Browse My Shares"), this, SLOT(getOwnShares()), ALT + Key_B, 4); // , 
 	mMenuFile->insertSeparator();
-	mMenuFile->insertItem(tr("E&xit"), this, SLOT(close()), ALT + Key_X);
+	mMenuFile->insertItem(IMG("exit"), tr("E&xit"), this, SLOT(close()), ALT + Key_X);
 	mMenuFile->setItemEnabled(1, false);
 	mMenuFile->setItemEnabled(2, false);
 	mMenuFile->setItemEnabled(3, false);
@@ -570,6 +570,7 @@ void MainWindow::slotLoggedIn(bool success, const QString& msg) {
 		mMenuFile->setItemEnabled(0, true);
 		mMenuFile->setItemEnabled(1, false);
 		mMenuFile->setItemEnabled(2, false);
+		
 		mMenuFile->setItemEnabled(3, false);
 
 	}
@@ -588,13 +589,17 @@ void MainWindow::slotUserStatus( const QString & user, uint status ) {
  	if (museeq->mOnlineAlert  && museeq->hasAlert(user)) {
 		QString s = (status == 0) ? "offline" : ((status == 1) ? "away" : "online");
 		mLog->append(QString(_TIME)+QString("<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>user %2 is now %3</font></span>").arg(user).arg(s)) ;
+		
 	}
 }
 void MainWindow::slotStatusSet(uint status) {
-	if (status)
+	if (status) {
 		statusBar()->message(tr("Connected to soulseek, your nickname: ") + museeq->nickname() + tr(" Status: Away") );
-	else 
+		mMenuFile->setItemChecked(2, true);
+	} else {
 		statusBar()->message(tr("Connected to soulseek, your nickname: ") + museeq->nickname() + tr(" Status: Online") );
+		mMenuFile->setItemChecked(2, false);
+	}
 }
 void MainWindow::slotConnectedToServer(bool connected) {
 	if(connected) {
