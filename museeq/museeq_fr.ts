@@ -65,7 +65,7 @@
     </message>
     <message>
         <source>Haven&apos;t recieved shares</source>
-        <translation>Partages pas encore reçus</translation>
+        <translation type="obsolete">Partages pas encore reçus</translation>
     </message>
     <message>
         <source>Refresh</source>
@@ -78,6 +78,10 @@
     <message>
         <source>Sharing nothing..</source>
         <translation>Aucun partage.</translation>
+    </message>
+    <message>
+        <source>Haven&apos;t received shares</source>
+        <translation>Partages pas encore reçus</translation>
     </message>
 </context>
 <context>
@@ -310,37 +314,37 @@
     <name>IgnoreList</name>
     <message>
         <source>Add:</source>
-        <translation type="unfinished">Ajouter:</translation>
+        <translation>Ajouter:</translation>
     </message>
     <message>
         <source>Comments</source>
-        <translation type="unfinished">Commentaire</translation>
+        <translation>Commentaire</translation>
     </message>
     <message>
         <source>Comments for </source>
-        <translation type="unfinished">Commentaire pour</translation>
+        <translation>Commentaire pour</translation>
     </message>
 </context>
 <context>
     <name>InterestList</name>
     <message>
         <source>Add:</source>
-        <translation type="unfinished">Ajouter:</translation>
+        <translation>Ajouter:</translation>
     </message>
     <message>
         <source>I like:</source>
-        <translation type="unfinished">J&apos;aime:</translation>
+        <translation>J&apos;aime:</translation>
     </message>
     <message>
         <source>I hate:</source>
-        <translation type="unfinished">Je deteste:</translation>
+        <translation>Je deteste:</translation>
     </message>
 </context>
 <context>
     <name>InterestListView</name>
     <message>
         <source>I like:</source>
-        <translation type="unfinished">J&apos;aime:</translation>
+        <translation>J&apos;aime:</translation>
     </message>
     <message>
         <source>Remove</source>
@@ -348,7 +352,7 @@
     </message>
     <message>
         <source>I hate:</source>
-        <translation type="unfinished">Je deteste:</translation>
+        <translation>Je deteste:</translation>
     </message>
     <message>
         <source>Recommendations for this Item</source>
@@ -403,7 +407,7 @@
     </message>
     <message>
         <source>Toggle &amp;away</source>
-        <translation>S&apos;&amp;absenter / Revenir</translation>
+        <translation type="obsolete">S&apos;&amp;absenter / Revenir</translation>
     </message>
     <message>
         <source>Check &amp;privileges</source>
@@ -739,6 +743,10 @@
         <source>&amp;File</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Toggled &amp;away</source>
+        <translation>S&apos;&amp;absenter / Revenir</translation>
+    </message>
 </context>
 <context>
     <name>RoomList</name>
@@ -767,7 +775,7 @@
     </message>
     <message>
         <source>Refresh</source>
-        <translation type="unfinished">Actualiser</translation>
+        <translation>Actualiser</translation>
     </message>
 </context>
 <context>

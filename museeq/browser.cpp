@@ -83,7 +83,7 @@ Browser::Browser(const QString& user, QWidget* parent, const char* name)
 	QFrame* frame = new QFrame(hbox);
 	frame->setFrameShape(QFrame::VLine);
 	frame->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
-	mFileCount = new QLabel(tr("Haven't recieved shares"), hbox);	
+	mFileCount = new QLabel(tr("Haven't received shares"), hbox);	
 	new CodecCombo("encoding.users", user, hbox, "encoding");
 	mRefresh = new QPushButton(tr("Refresh"), hbox);
 	connect(mRefresh, SIGNAL(clicked()), SLOT(getShares()));

@@ -64,10 +64,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Haven&apos;t recieved shares</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Refresh</source>
         <translation type="unfinished"></translation>
     </message>
@@ -77,6 +73,10 @@
     </message>
     <message>
         <source>Sharing nothing..</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Haven&apos;t received shares</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -398,10 +398,6 @@
     </message>
     <message>
         <source>&amp;Disconnect</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Toggle &amp;away</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -735,6 +731,10 @@
     </message>
     <message>
         <source>&amp;File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toggled &amp;away</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
