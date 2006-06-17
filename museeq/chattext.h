@@ -42,7 +42,7 @@ protected slots:
 	void setNickname(const QString&);
 	
 protected:
-	QString postProcess(const QString&);
+	QString postProcess(const QString&, const QString&, const QString&);
 	
 private:
 	QString mTimeFormat, mNickname;

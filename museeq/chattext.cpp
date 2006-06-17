@@ -66,43 +66,44 @@ void ChatText::append(uint ts, const QString& _u, const QString& _l) {
 		l = _l.mid(4);
 	} else if(museeq->nickname() == _u) {
 		line += " <span style='"+fontTime+"'><font color='"+colorTime+"'>[</font></span><span style='" + fontMessage + "'><font color='"+colorNickname+"'>" + escape(u) + "</font></span><span style='"+fontTime+"'><font color='"+colorTime+"'>]</font></span> <span style='" + fontMessage +  "'><font color='"+colorNickname+"'> ";
-	} else if(museeq->isBanned(_u)) {
-		line += " <span style='"+fontTime+"'><font color='"+colorTime+"'>[</font></span><span style='" + fontMessage + "'><font color='"+colorBanned+"'>" + escape(u) + "</font></span><span style='"+fontTime+"'><font color='"+colorTime+"'>]</font></span><span style='" + fontMessage + "'><font color='"+colorRemote+"'> ";
-	} else if(museeq->isTrusted(_u)) {
-		line += " <span style='"+fontTime+"'><font color='"+colorTime+"'>[</font></span><span style='" + fontMessage + "'><font color='"+colorTrusted+"'>" + escape(u) + "</font></span><span style='"+fontTime+"'><font color='"+colorTime+"'>]</font></span><span style='" + fontMessage + "'><font color='"+colorRemote+"'> ";
-	} else if(museeq->isBuddy(_u)) {
-		line += " <span style='"+fontTime+"'><font color='"+colorTime+"'>[</font></span><span style='" + fontMessage + "'><font color='"+colorBuddied+"'>" + escape(u) + "</font></span><span style='"+fontTime+"'><font color='"+colorTime+"'>]</font></span><span style='" + fontMessage + "'><font color='"+colorRemote+"'> ";
-	} else
-		line += " <span style='"+fontTime+"'><font color='"+colorTime+"'>[</font></span><span style='"+ fontMessage+"'><font color='"+colorRemote+"'>" + escape(u) + "</font></span><span style='"+fontTime+"'><font color='"+colorTime+"'>]</font></span><span style='" + fontMessage + "'><font color='"+colorRemote+"'> ";
-	
+	} else {
+		line += " <span style='"+fontTime+"'><font color='"+colorTime+"'>[</font></span><span style='" + fontMessage + "'>";
+		 if(museeq->isBanned(_u)) {
+			line += "<font color='"+colorBanned+"'>";
+		} else if(museeq->isTrusted(_u)) {
+			line += "<font color='"+colorTrusted+"'>";
+		} else if(museeq->isBuddy(_u)) {
+			line += "<font color='"+colorBuddied+"'>";
+		} else
+			line += "<font color='"+colorRemote+"'>";
+		line +=  escape(u) + "</font></span><span style='"+fontTime+"'><font color='"+colorTime+"'>]</font></span><span style='" + fontMessage + "'><font color='"+colorRemote+"'> ";
+	}
 	int ix;
 	while((ix = url_rx.match(l)) != -1) {
 		int len = url_rx.matchedLength();
 		QString url = l.mid(ix, len);
-		if(! _u.isNull()) {
-			if(_l.startsWith("/me ")) {
-				line += escape(l.left(ix)).replace(mNickname, "</font><font color='"+museeq->mColorMe+"'>" + mNickname + "</font><font color='"+colorMe+"'>");
-			} else if(museeq->nickname() == _u) {
-				line += escape(l.left(ix)).replace(mNickname, "</font><font color='"+museeq->mColorMe+"'>" + mNickname + "</font><font color='"+colorNickname+"'>");
-			} else
-				line += escape(l.left(ix)).replace(mNickname, "</font><font color='"+museeq->mColorMe+"'>" + mNickname + "</font><font color='"+colorRemote+"'>");
-		} else
-			line +=  escape(l.left(ix));
-// 		line += postProcess( l.left(ix));
+
+		line += postProcess( l.left(ix), _l, _u); 
 		line += "<a href=\"" + url + "\">" + escape(url) + "</a>";
 		l = l.mid(ix + len);
 	}
+
 	if(! l.isEmpty()) {
-		line += postProcess(l)+"</font></span>";
+		line += postProcess(l, _l, _u)+"</font></span>";
 	}
 
 	QTextBrowser::append(line);
 }
 
-QString ChatText::postProcess(const QString& _s) {
-	if(! mNickname.isNull())
-		return escape(_s).replace(mNickname, "<span color='"+museeq->mColorMe+"'>" + mNickname + "</span>");
-	else
+QString ChatText::postProcess(const QString& _s, const QString& _l, const QString& _u) {
+	if(! mNickname.isNull()) {
+		if(_l.startsWith("/me ")) {
+			return escape(_s).replace(mNickname, "</font><font color='"+ museeq->mColorMe+"'>" + mNickname + "</font><font color='"+ museeq->mColorMe+"'>");
+		} else if(museeq->nickname() == _u) {
+			return escape(_s).replace(mNickname, "</font><font color='"+ museeq->mColorMe+"'>" + mNickname + "</font><font color='"+ museeq->mColorNickname+"'>");
+		} else
+			return escape(_s).replace(mNickname, "</font><font color='"+ museeq->mColorMe+"'>" + mNickname + "</font><font color='"+ museeq->mColorRemote+"'>");
+	} else
 		return escape(_s);
 }
 
