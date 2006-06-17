@@ -2891,7 +2891,7 @@ class mucous(driver.Driver):
 			if user in self.requests["statistics"]:
 	
 				self.info_log("Peer Stats for: %s" % user)
-				self.info_log("Speed: %sKB/s" % avgspeed/1024)
+				self.info_log("Speed: %sKB/s" % str(avgspeed/1024))
 				self.info_log("Downloads: %s" % numdownloads)
 				self.info_log("Files: %s" % numfiles)
 				self.info_log("Directories: %s" % numdirs)

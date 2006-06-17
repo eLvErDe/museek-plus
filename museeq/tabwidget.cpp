@@ -99,7 +99,7 @@ void TabWidget::doCurrentChanged(QWidget*) {
 }
 
 void TabWidget::closeCurrent() {
-	if(! mProtectThird || ! mProtectFirst  ||  mProtectFirst && currentPageIndex() > 0 || mProtectThird && currentPageIndex() > 2)
+	if(! mProtectFirst  ||  ! mProtectThird && mProtectFirst && currentPageIndex() > 0 || mProtectThird && currentPageIndex() > 2)
 		delete currentPage();
 }
 

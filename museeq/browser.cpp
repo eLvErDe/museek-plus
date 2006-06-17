@@ -27,6 +27,8 @@
 #include <qlistview.h>
 #include <qlabel.h>
 #include <iostream>
+#include <qiconset.h>
+#include "images.h"
 #include <qpushbutton.h>
 #include "codeccombo.h"
 #include "slskdrag.h"
@@ -85,7 +87,9 @@ Browser::Browser(const QString& user, QWidget* parent, const char* name)
 	frame->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
 	mFileCount = new QLabel(tr("Haven't received shares"), hbox);	
 	new CodecCombo("encoding.users", user, hbox, "encoding");
+	QIconSet refreshIcon = IMG("refresh");
 	mRefresh = new QPushButton(tr("Refresh"), hbox);
+	mRefresh->setIconSet(refreshIcon);
 	connect(mRefresh, SIGNAL(clicked()), SLOT(getShares()));
 
 	QSplitter* split = new QSplitter(this);

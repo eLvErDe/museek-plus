@@ -114,8 +114,14 @@ void PeerManager::set_peer_status(const string& user, uint32 status) {
 	CT("set_peer_status %s, %u", user.c_str(), status);
 	
 	Peer* peer;
-	if((peer = get_peer(user, false)))
-		peer->set_status(status);
+	if (status == 0) {
+		if((peer = get_peer(user, true))) {
+			remove_peer(peer);
+		}
+	} else {
+		if((peer = get_peer(user, false)))
+			peer->set_status(status);
+	}
 }
 
 void PeerManager::set_peer_address(const string& user, const string& ip, uint32 port) {
@@ -180,7 +186,7 @@ Peer::Peer(PeerManager* manager, const string& user)
 Peer::~Peer() {
 	CT("~Peer (%s)", mUser.c_str());
 	
-	DEBUG("gurgle gurgle... %s is a goner", mUser.c_str());
+	DEBUG("gurgle gurgle... %s is removed from the list of peers", mUser.c_str());
 	mManager->remove_peer(this);
 }
 

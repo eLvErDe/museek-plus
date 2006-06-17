@@ -242,7 +242,8 @@ def dirs():
 	print
 	print
 	print 'Incomplete and completed download setup'
-	print
+	print 'Please input the full directory path, or use ~/ for your home directory'
+	print 
 	print '1. Completed downloads:', _complete
 	print '2. Incomplete downloads:', _incomplete
 	print '   (if this is empty, completed download dirs will be used)'

@@ -29,6 +29,8 @@
 #include <qfile.h>
 #include <qtimer.h>
 #include <qfiledialog.h>
+#include <qiconset.h>
+#include "images.h"
 #include <qpopupmenu.h>
 #include <qpushbutton.h>
 #include "codeccombo.h"
@@ -111,7 +113,9 @@ UserInfo::UserInfo(const QString& user, QWidget* parent, const char* name)
 	
 	new QLabel(tr("Slots available"), grid);
 	(mAvail = new QLabel(tr("unknown"), grid))->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+	QIconSet refreshIcon = IMG("refresh");
 	mRefresh = new QPushButton(tr("Refresh"), grid);
+	mRefresh->setIconSet(refreshIcon);
 	connect(mRefresh, SIGNAL(clicked()), SLOT(getUserInfo()));
 	
 	vbox = new QVBox(split);
