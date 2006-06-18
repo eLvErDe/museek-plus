@@ -10,7 +10,7 @@ sources = Split("""
   protocoldlg.ui
   settingsdlg.ui
   onlinealert.ui
-  fontsandcolorsdlg.ui
+  fontsandcolorsdialog.cpp
   aclineedit.cpp
   browser.cpp
   browsers.cpp

@@ -57,13 +57,12 @@
 #include "userinfos.h"
 #include "browsers.h"
 #include "museekdriver.h"
-// #include "connectdlg.h"
 #include "connect.h"
 #include "ipdlg.h"
 #include "userinfodlg.h"
 #include "settingsdlg.h"
 #include "protocoldlg.h"
-#include "fontsandcolorsdlg.h"
+#include "fontsandcolorsdialog.h"
 #include "prefix.h"
 #include "museeq.h"
 
@@ -173,8 +172,7 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 	mUserInfoDialog = new UserInfoDlg(this, "userInfoDialog");
 	mSettingsDialog = new SettingsDlg(this, "settingsDialog");
 	mProtocolDialog = new ProtocolDlg(this, "protocolDialog");
-	mColorsDialog = new FontsAndColorsDlg(this, "colorsDialog");
-
+	mColorsDialog = new FontsAndColorsDialog(this, "colorsDialog");
 	connect(mProtocolDialog->mProtocols, SIGNAL(contextMenuRequested(QListViewItem*,const QPoint&,int)), SLOT(protocolHandlerMenu(QListViewItem*, const QPoint&, int)));
 	
 	QHBox *box = new QHBox(this, "centralWidget");
