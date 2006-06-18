@@ -1,11 +1,3 @@
-/****************************************************************************
-** Form interface generated from reading ui file 'build-i686-linux/museeq/onlinealert.ui'
-**
-** Created: Sun May 14 16:23:27 2006
-**      by: The User Interface Compiler ($Id: qt/main.cpp   3.3.6   edited Aug 31 2005 $)
-**
-** WARNING! All changes made in this file will be lost!
-****************************************************************************/
 
 #ifndef ONLINEALERT_H
 #define ONLINEALERT_H

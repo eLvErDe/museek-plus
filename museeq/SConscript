@@ -7,9 +7,9 @@ sources = Split("""
   ipdialog.cpp
   tickerdialog.cpp
   userinfodialog.cpp
-  protocoldlg.ui
+  protocoldialog.cpp
   settingsdlg.ui
-  onlinealert.ui
+  onlinealert.cpp
   fontsandcolorsdialog.cpp
   aclineedit.cpp
   browser.cpp
@@ -136,17 +136,14 @@ scripts = Split("""
   uptime.qs
   nowplaying.qs
 """)
-ts_templates= ["fr", "it", "pl", "ar"]
+ts_templates= ["fr", "it", "pl"]
 
 translations = []
 qm_files = []
 def make_qm(ts_templates):
 	for lang in ts_templates:
-		if os.path.exists("museeq_"+lang+".ts"):
-			translations.append(lang)
-			print "Language: %s found, translation to be built" % lang
-		else:
-			print "Language: %s not found, translation not built" % lang
+		translations.append(lang)
+
 make_qm(ts_templates)
 # translations = ["museeq_de.qm", "museeq_fr.qm"]
 
@@ -164,7 +161,13 @@ def iface_build(target, source, env):
 
 def translation_build(target, source, env):
 # 	print source[0], target[0]
-	os.system("lrelease "+ str(source[0])+" -qm "+ str(target[0]))
+	if os.path.exists(str(source[0])):
+	#if os.path.exists("museeq_"+lang+".ts"):
+		print "Language: %s found, translation to be built" % lang
+		os.system("lrelease "+ str(source[0])+" -qm "+ str(target[0]))
+	else:
+		print "Language: %s not found, translation not built" % lang
+		
 	
 	return 0
 

@@ -61,7 +61,7 @@
 #include "ipdialog.h"
 #include "userinfodialog.h"
 #include "settingsdlg.h"
-#include "protocoldlg.h"
+#include "protocoldialog.h"
 #include "fontsandcolorsdialog.h"
 #include "prefix.h"
 #include "museeq.h"
@@ -171,7 +171,7 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 
 	mUserInfoDialog = new UserInfoDialog(this, "userInfoDialog");
 	mSettingsDialog = new SettingsDlg(this, "settingsDialog");
-	mProtocolDialog = new ProtocolDlg(this, "protocolDialog");
+	mProtocolDialog = new ProtocolDialog(this, "protocolDialog");
 	mColorsDialog = new FontsAndColorsDialog(this, "colorsDialog");
 	connect(mProtocolDialog->mProtocols, SIGNAL(contextMenuRequested(QListViewItem*,const QPoint&,int)), SLOT(protocolHandlerMenu(QListViewItem*, const QPoint&, int)));
 	

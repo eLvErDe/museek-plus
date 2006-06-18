@@ -34,7 +34,7 @@ class ConnectDialog;
 class IPDialog;
 class SettingsDlg;
 class UserInfoDialog;
-class ProtocolDlg;
+class ProtocolDialog;
 class FontsAndColorsDialog;
 class QMessageBox;
 class ChatRooms;
@@ -141,9 +141,8 @@ private:
 	IPDialog* mIPDialog;
 	UserInfoDialog* mUserInfoDialog;
 	SettingsDlg* mSettingsDialog;
-// 	FontsAndColorsDlg* mColorsDialog;
 	FontsAndColorsDialog* mColorsDialog;
-	ProtocolDlg* mProtocolDialog;
+	ProtocolDialog* mProtocolDialog;
 
 	ChatRooms* mChatRooms;
 	PrivateChats* mPrivateChats;
