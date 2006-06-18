@@ -6,7 +6,7 @@ sources = Split("""
   prefix.c
   ipdlg.ui
   tickerdlg.ui
-  userinfodlg.ui
+  userinfodialog.cpp
   protocoldlg.ui
   settingsdlg.ui
   onlinealert.ui
@@ -136,7 +136,7 @@ scripts = Split("""
   uptime.qs
   nowplaying.qs
 """)
-ts_templates= ["fr", "de", "ar"]
+ts_templates= ["fr", "it", "pl", "ar"]
 
 translations = []
 qm_files = []

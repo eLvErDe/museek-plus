@@ -59,7 +59,7 @@
 #include "museekdriver.h"
 #include "connect.h"
 #include "ipdlg.h"
-#include "userinfodlg.h"
+#include "userinfodialog.h"
 #include "settingsdlg.h"
 #include "protocoldlg.h"
 #include "fontsandcolorsdialog.h"
@@ -169,7 +169,7 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 	mIPDialog = new IPDlg(this, "ipDialog");
 	connect(mIPDialog->mIPListView, SIGNAL(contextMenuRequested(QListViewItem*,const QPoint&,int)), SLOT(ipDialogMenu(QListViewItem*, const QPoint&, int)));
 
-	mUserInfoDialog = new UserInfoDlg(this, "userInfoDialog");
+	mUserInfoDialog = new UserInfoDialog(this, "userInfoDialog");
 	mSettingsDialog = new SettingsDlg(this, "settingsDialog");
 	mProtocolDialog = new ProtocolDlg(this, "protocolDialog");
 	mColorsDialog = new FontsAndColorsDialog(this, "colorsDialog");

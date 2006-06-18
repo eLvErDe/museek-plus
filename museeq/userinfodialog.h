@@ -1,14 +1,14 @@
 /****************************************************************************
 ** Form interface generated from reading ui file 'build-i686-linux/museeq/userinfodlg.ui'
 **
-** Created: Sun May 14 16:22:32 2006
+** Created: Tue Jun 13 20:07:23 2006
 **      by: The User Interface Compiler ($Id: qt/main.cpp   3.3.6   edited Aug 31 2005 $)
 **
 ** WARNING! All changes made in this file will be lost!
 ****************************************************************************/
 
-#ifndef USERINFODLG_H
-#define USERINFODLG_H
+#ifndef USERINFODIALOG_H
+#define USERINFODIALOG_H
 
 #include <qvariant.h>
 #include <qdialog.h>
@@ -24,13 +24,13 @@ class QLineEdit;
 class QToolButton;
 class QPushButton;
 
-class UserInfoDlg : public QDialog
+class UserInfoDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    UserInfoDlg( QWidget* parent = 0, const char* name = 0, bool modal = FALSE, WFlags fl = 0 );
-    ~UserInfoDlg();
+    UserInfoDialog( QWidget* parent = 0, const char* name = 0, bool modal = FALSE, WFlags fl = 0 );
+    ~UserInfoDialog();
 
     QTextEdit* mText;
     QButtonGroup* buttonGroup1;
@@ -46,7 +46,7 @@ public slots:
     void mBrowse_clicked();
 
 protected:
-    QGridLayout* UserInfoDlgLayout;
+    QGridLayout* UserInfoDialogLayout;
     QSpacerItem* spacer5;
     QGridLayout* buttonGroup1Layout;
 
@@ -55,4 +55,4 @@ protected slots:
 
 };
 
-#endif // USERINFODLG_H
+#endif // USERINFODIALOG_H
