@@ -32,7 +32,7 @@ class QListViewItem;
 class QProcess;
 class ConnectDialog;
 class IPDialog;
-class SettingsDlg;
+class SettingsDialog;
 class UserInfoDialog;
 class ProtocolDialog;
 class FontsAndColorsDialog;
@@ -64,6 +64,7 @@ public slots:
 	void changeMode(uint);
 	void connectToMuseek();
 	void saveConnectConfig();
+	void saveSettings();
 	void doDaemon();
 	void stopDaemon();
 	void daemonExited();
@@ -140,7 +141,7 @@ private:
 	ConnectDialog* mConnectDialog;
 	IPDialog* mIPDialog;
 	UserInfoDialog* mUserInfoDialog;
-	SettingsDlg* mSettingsDialog;
+	SettingsDialog* mSettingsDialog;
 	FontsAndColorsDialog* mColorsDialog;
 	ProtocolDialog* mProtocolDialog;
 

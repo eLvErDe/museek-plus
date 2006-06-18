@@ -8,7 +8,7 @@ sources = Split("""
   tickerdialog.cpp
   userinfodialog.cpp
   protocoldialog.cpp
-  settingsdlg.ui
+  settingsdialog.cpp
   onlinealert.cpp
   fontsandcolorsdialog.cpp
   aclineedit.cpp

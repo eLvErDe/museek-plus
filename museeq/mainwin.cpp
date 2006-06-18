@@ -60,7 +60,7 @@
 #include "connect.h"
 #include "ipdialog.h"
 #include "userinfodialog.h"
-#include "settingsdlg.h"
+#include "settingsdialog.h"
 #include "protocoldialog.h"
 #include "fontsandcolorsdialog.h"
 #include "prefix.h"
@@ -75,7 +75,7 @@ extern int libqsa_is_present; // defined in either museeq.cpp or the relay stub
 
 
 MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, name), mWaitingPrivs(false) {
-	mVersion = "0.1.10";
+	mVersion = "0.1.11";
 	setCaption(tr("museeq ")+mVersion);
 	setIcon(IMG("icon"));
 	connect(museeq->driver(), SIGNAL(hostFound()), SLOT(slotHostFound()));
@@ -170,7 +170,7 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 	connect(mIPDialog->mIPListView, SIGNAL(contextMenuRequested(QListViewItem*,const QPoint&,int)), SLOT(ipDialogMenu(QListViewItem*, const QPoint&, int)));
 
 	mUserInfoDialog = new UserInfoDialog(this, "userInfoDialog");
-	mSettingsDialog = new SettingsDlg(this, "settingsDialog");
+	mSettingsDialog = new SettingsDialog(this, "settingsDialog");
 	mProtocolDialog = new ProtocolDialog(this, "protocolDialog");
 	mColorsDialog = new FontsAndColorsDialog(this, "colorsDialog");
 	connect(mProtocolDialog->mProtocols, SIGNAL(contextMenuRequested(QListViewItem*,const QPoint&,int)), SLOT(protocolHandlerMenu(QListViewItem*, const QPoint&, int)));
@@ -830,52 +830,57 @@ void MainWindow::changeUserInfo() {
 	}
 }
 
+void MainWindow::saveSettings() {
+
+	if (! mSettingsDialog->SServerHost->text().isEmpty() )
+		museeq->setConfig("server", "host", mSettingsDialog->SServerHost->text());
+	QVariant p (mSettingsDialog->SServerPort->value());
+	museeq->setConfig("server", "port", p.toString());
+	if (! mSettingsDialog->SSoulseekUsername->text().isEmpty() )
+		museeq->setConfig("server", "username", mSettingsDialog->SSoulseekUsername->text());
+	if (! mSettingsDialog->SSoulseekPassword->text().isEmpty() )
+		museeq->setConfig("server", "password", mSettingsDialog->SSoulseekPassword->text());
+	if (! mSettingsDialog->SDownDir->text().isEmpty() )
+		museeq->setConfig("transfers", "download-dir", mSettingsDialog->SDownDir->text());
+	if (! mSettingsDialog->SIncompleteDir->text().isEmpty() )
+		museeq->setConfig("transfers", "incomplete-dir", mSettingsDialog->SIncompleteDir->text());
+	if(mSettingsDialog->SOnlineAlerts->isChecked()) {
+		museeq->setConfig("museeq.alerts", "log_window", "true");
+	}
+	else {  museeq->setConfig("museeq.alerts", "log_window", "false");  }
+	if(mSettingsDialog->SActive->isChecked()) {
+		museeq->setConfig("clients", "connectmode", "active");
+	}
+	else if (mSettingsDialog->SPassive->isChecked()) {
+		museeq->setConfig("clients", "connectmode", "passive");
+	}
+	if(mSettingsDialog->SBuddiesShares->isChecked()) {
+		museeq->setConfig("transfers", "have_buddy_shares", "true");
+	}
+	else {  museeq->setConfig("transfers", "have_buddy_shares", "false");  }
+	if(mSettingsDialog->SShareBuddiesOnly->isChecked()) {
+		museeq->setConfig("transfers", "only_buddies", "true");
+	}
+	else {  museeq->setConfig("transfers", "only_buddies", "false");  }
+	if(mSettingsDialog->SBuddiesPrivileged->isChecked()) {
+		museeq->setConfig("transfers", "privilege_buddies", "true");
+	}
+	else { museeq->setConfig("transfers", "privilege_buddies", "false"); }
+
+	if(mSettingsDialog->STrustedUsers->isChecked()) {
+		museeq->setConfig("transfers", "trusting_uploads", "true");
+	}
+	else { museeq->setConfig("transfers", "trusting_uploads", "false"); }
+	if(mSettingsDialog->SUserWarnings->isChecked()) {
+		museeq->setConfig("transfers", "user_warnings", "true");
+	}
+	else { museeq->setConfig("transfers", "user_warnings", "false"); }
+
+}
+
 void MainWindow::changeSettings() {
 	if(mSettingsDialog->exec() == QDialog::Accepted) {
-		if (! mSettingsDialog->SServerHost->text().isEmpty() )
-			museeq->setConfig("server", "host", mSettingsDialog->SServerHost->text());
-		QVariant p (mSettingsDialog->SServerPort->value());
-		museeq->setConfig("server", "port", p.toString());
-		if (! mSettingsDialog->SSoulseekUsername->text().isEmpty() )
-			museeq->setConfig("server", "username", mSettingsDialog->SSoulseekUsername->text());
-		if (! mSettingsDialog->SSoulseekPassword->text().isEmpty() )
-			museeq->setConfig("server", "password", mSettingsDialog->SSoulseekPassword->text());
-		if (! mSettingsDialog->SDownDir->text().isEmpty() )
-			museeq->setConfig("transfers", "download-dir", mSettingsDialog->SDownDir->text());
-		if (! mSettingsDialog->SIncompleteDir->text().isEmpty() )
-			museeq->setConfig("transfers", "incomplete-dir", mSettingsDialog->SIncompleteDir->text());
-		if(mSettingsDialog->SOnlineAlerts->isChecked()) {
-			museeq->setConfig("museeq.alerts", "log_window", "true");
-		}
-		else {  museeq->setConfig("museeq.alerts", "log_window", "false");  }
-		if(mSettingsDialog->SActive->isChecked()) {
-			museeq->setConfig("clients", "connectmode", "active");
-		}
-		else if (mSettingsDialog->SPassive->isChecked()) {
-			museeq->setConfig("clients", "connectmode", "passive");
-		}
-		if(mSettingsDialog->SBuddiesShares->isChecked()) {
-			museeq->setConfig("transfers", "have_buddy_shares", "true");
-		}
-		else {  museeq->setConfig("transfers", "have_buddy_shares", "false");  }
-		if(mSettingsDialog->SShareBuddiesOnly->isChecked()) {
-			museeq->setConfig("transfers", "only_buddies", "true");
-		}
-		else {  museeq->setConfig("transfers", "only_buddies", "false");  }
-		if(mSettingsDialog->SBuddiesPrivileged->isChecked()) {
-			museeq->setConfig("transfers", "privilege_buddies", "true");
-		}
-		else { museeq->setConfig("transfers", "privilege_buddies", "false"); }
-
-		if(mSettingsDialog->STrustedUsers->isChecked()) {
-			museeq->setConfig("transfers", "trusting_uploads", "true");
-		}
-		else { museeq->setConfig("transfers", "trusting_uploads", "false"); }
-		if(mSettingsDialog->SUserWarnings->isChecked()) {
-			museeq->setConfig("transfers", "user_warnings", "true");
-		}
-		else { museeq->setConfig("transfers", "user_warnings", "false"); }
-
+		saveSettings();
 	}
 }
 

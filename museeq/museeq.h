@@ -156,6 +156,7 @@ public slots:
 	void disconnectServer();
 	void connectServer();
 	void reloadShares();
+	void saveSettings();
 	 
 signals:
 	// Museekd related signals

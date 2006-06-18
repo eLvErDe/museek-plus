@@ -311,6 +311,100 @@
     </message>
 </context>
 <context>
+    <name>FontsAndColorsDialog</name>
+    <message>
+        <source>Fonts &amp; Colors</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>OK</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pick Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pick Font</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Time &amp; Brackets Text Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Time &amp; Brackets Font</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>/Me Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Trusted Users</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remote Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Message Font</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Buddied Users</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>My Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Banned Users</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>IPDialog</name>
+    <message>
+        <source>User</source>
+        <translation type="unfinished">Utilisateur</translation>
+    </message>
+    <message>
+        <source>IP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Port</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hostname</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>IP Addresses</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Alt+C</source>
+        <translation type="unfinished">Alt+R</translation>
+    </message>
+    <message>
+        <source>Clear</source>
+        <translation type="unfinished">Effacer</translation>
+    </message>
+</context>
+<context>
     <name>IgnoreList</name>
     <message>
         <source>Add:</source>
@@ -749,6 +843,72 @@
     </message>
 </context>
 <context>
+    <name>OnlineAlert</name>
+    <message>
+        <source>Online alert</source>
+        <translation type="unfinished">Notification lors de sa présence</translation>
+    </message>
+    <message>
+        <source>&amp;Remove</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Alt+R</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;OK</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Alt+O</source>
+        <translation type="unfinished">Alt+O</translation>
+    </message>
+    <message>
+        <source>offline</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>away</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>online</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 user %2 is now %3</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ProtocolDialog</name>
+    <message>
+        <source>Protocol</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Handler</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Protocol handlers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>OK</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>RoomList</name>
     <message>
         <source>Create:</source>
@@ -956,6 +1116,180 @@
     <message>
         <source>*Search*</source>
         <translation>*Recherche*</translation>
+    </message>
+</context>
+<context>
+    <name>SettingsDialog</name>
+    <message>
+        <source>Museek Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ok</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save</source>
+        <translation type="unfinished">Enregistrer</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Default Encoding:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Filesystem Encoding:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Network Encoding:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connect</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disconnect</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Server Port:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Server Host:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Soulseek Username:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Soulseek Password:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Server</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Configure your shares with musetup, or run &lt;u&gt;muscan -r &lt;/u&gt;to rescan your shares and then press:&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connections</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Active Connections</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Passive Connections</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reload Shares</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select..</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Download Dir:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Incomplete Dir:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Shares and Connections</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Buddies are Privileged</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Online Alerts in Log Window instead of popup</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Share to Buddies Only</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Trusted users can Send you Files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Seperate Shares list for Buddies</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Send automatic warnings to users via Private Chat</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>User Options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a Directory to store your downloaded files.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>All files (*)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a Directory to store your incomplete downloading files.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TickerDialog</name>
+    <message>
+        <source>Set ticker...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set ticker to:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Just this time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Always for this room</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Default for all rooms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Cancel</source>
+        <translation type="unfinished">Annule&amp;r</translation>
+    </message>
+    <message>
+        <source>Alt+C</source>
+        <translation type="unfinished">Alt+R</translation>
+    </message>
+    <message>
+        <source>&amp;OK</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Alt+O</source>
+        <translation type="unfinished">Alt+O</translation>
     </message>
 </context>
 <context>
@@ -1176,6 +1510,53 @@
     <message>
         <source>no</source>
         <translation>non</translation>
+    </message>
+</context>
+<context>
+    <name>UserInfoDialog</name>
+    <message>
+        <source>Change user info</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Image</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Clear</source>
+        <translation type="unfinished">Effacer</translation>
+    </message>
+    <message>
+        <source>Don&apos;t touch</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Upload:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>OK</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Images (*.png *.gif *.jpg *.jpeg)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select an Image for you User info</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>All files (*)</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

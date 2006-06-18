@@ -627,6 +627,9 @@ void Museeq::disconnectServer() {
 void Museeq::reloadShares() {
 	mDriver->doReloadShares();
 }
+void Museeq::saveSettings() {
+	mMainWin->saveSettings();
+}
 void Museeq::showURL(const QString& url) {
 	QString protocol = url.left(url.find(':'));
 	if(! mProtocolHandlers.contains(protocol) and protocol != "slsk") {
