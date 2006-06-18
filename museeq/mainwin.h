@@ -31,7 +31,7 @@ class QPopupMenu;
 class QListViewItem;
 class QProcess;
 class ConnectDialog;
-class IPDlg;
+class IPDialog;
 class SettingsDlg;
 class UserInfoDialog;
 class ProtocolDlg;
@@ -138,7 +138,7 @@ private:
 	QString museekConfig;
 	QProcess *daemon;
 	ConnectDialog* mConnectDialog;
-	IPDlg* mIPDialog;
+	IPDialog* mIPDialog;
 	UserInfoDialog* mUserInfoDialog;
 	SettingsDlg* mSettingsDialog;
 // 	FontsAndColorsDlg* mColorsDialog;

@@ -58,7 +58,7 @@
 #include "browsers.h"
 #include "museekdriver.h"
 #include "connect.h"
-#include "ipdlg.h"
+#include "ipdialog.h"
 #include "userinfodialog.h"
 #include "settingsdlg.h"
 #include "protocoldlg.h"
@@ -166,7 +166,7 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 #else
 	mConnectDialog->mUnix->setDisabled(true);
 #endif
-	mIPDialog = new IPDlg(this, "ipDialog");
+	mIPDialog = new IPDialog(this, "ipDialog");
 	connect(mIPDialog->mIPListView, SIGNAL(contextMenuRequested(QListViewItem*,const QPoint&,int)), SLOT(ipDialogMenu(QListViewItem*, const QPoint&, int)));
 
 	mUserInfoDialog = new UserInfoDialog(this, "userInfoDialog");
