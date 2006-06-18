@@ -29,7 +29,7 @@
 #include "chatticker.h"
 #include "codeccombo.h"
 #include "aclineedit.h"
-#include "tickerdlg.h"
+#include "tickerdialog.h"
 #include "museeq.h"
 #include "mainwin.h"
 
@@ -281,7 +281,7 @@ void ChatRoom::setAutoJoin(const QString& room, bool on) {
 }
 
 void ChatRoom::setTicker() {
-	TickerDlg * dlg = new TickerDlg();
+	TickerDialog * dlg = new TickerDialog();
 	if(dlg->exec() == QDialog::Accepted)
 	{
 		if (dlg->mThisTime->isChecked()) {

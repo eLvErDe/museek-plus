@@ -1,11 +1,3 @@
-/****************************************************************************
-** Form interface generated from reading ui file 'build-i686-linux/museeq/fontsandcolorsdlg.ui'
-**
-** Created: Tue Jun 13 20:07:05 2006
-**      by: The User Interface Compiler ($Id: qt/main.cpp   3.3.6   edited Aug 31 2005 $)
-**
-** WARNING! All changes made in this file will be lost!
-****************************************************************************/
 
 #ifndef FONTSANDCOLORSDIALOG_H
 #define FONTSANDCOLORSDIALOG_H

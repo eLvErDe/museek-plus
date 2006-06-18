@@ -5,7 +5,7 @@ import sys
 sources = Split("""
   prefix.c
   ipdialog.cpp
-  tickerdlg.ui
+  tickerdialog.cpp
   userinfodialog.cpp
   protocoldlg.ui
   settingsdlg.ui
