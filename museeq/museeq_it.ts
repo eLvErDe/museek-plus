@@ -1111,135 +1111,135 @@
     <name>SettingsDialog</name>
     <message>
         <source>Museek Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Impostazioni di Museek</translation>
     </message>
     <message>
         <source>Ok</source>
-        <translation type="unfinished"></translation>
+        <translation>Ok</translation>
     </message>
     <message>
         <source>Save</source>
-        <translation type="unfinished">Salva</translation>
+        <translation>Salva</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished">Cancella</translation>
+        <translation>Cancella</translation>
     </message>
     <message>
         <source>Default Encoding:</source>
-        <translation type="unfinished"></translation>
+        <translation>Codifica standard:</translation>
     </message>
     <message>
         <source>Filesystem Encoding:</source>
-        <translation type="unfinished"></translation>
+        <translation>Codifica filesystem:</translation>
     </message>
     <message>
         <source>Network Encoding:</source>
-        <translation type="unfinished"></translation>
+        <translation>Codifica rete:</translation>
     </message>
     <message>
         <source>Connect</source>
-        <translation type="unfinished"></translation>
+        <translation>Connetti</translation>
     </message>
     <message>
         <source>Disconnect</source>
-        <translation type="unfinished"></translation>
+        <translation>Disconnetti</translation>
     </message>
     <message>
         <source>Server Port:</source>
-        <translation type="unfinished"></translation>
+        <translation>Porta server:</translation>
     </message>
     <message>
         <source>Server Host:</source>
-        <translation type="unfinished"></translation>
+        <translation>Host server:</translation>
     </message>
     <message>
         <source>Soulseek Username:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome utente Soulseek:</translation>
     </message>
     <message>
         <source>Soulseek Password:</source>
-        <translation type="unfinished"></translation>
+        <translation>Password Soulseek:</translation>
     </message>
     <message>
         <source>Server</source>
-        <translation type="unfinished"></translation>
+        <translation>Server</translation>
     </message>
     <message>
         <source>&lt;p&gt;Configure your shares with musetup, or run &lt;u&gt;muscan -r &lt;/u&gt;to rescan your shares and then press:&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Configura il tuo share con musetup, o esegui &lt;u&gt;muscan -r &lt;/u&gt;per aggiornare il tuo share e quindi premi:&lt;/p&gt;</translation>
     </message>
     <message>
         <source>Connections</source>
-        <translation type="unfinished"></translation>
+        <translation>Connessioni</translation>
     </message>
     <message>
         <source>Active Connections</source>
-        <translation type="unfinished"></translation>
+        <translation>Connessioni attive</translation>
     </message>
     <message>
         <source>Passive Connections</source>
-        <translation type="unfinished"></translation>
+        <translation>Connessioni passive</translation>
     </message>
     <message>
         <source>Reload Shares</source>
-        <translation type="unfinished"></translation>
+        <translation>Ricarica share</translation>
     </message>
     <message>
         <source>Select..</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleziona..</translation>
     </message>
     <message>
         <source>Download Dir:</source>
-        <translation type="unfinished"></translation>
+        <translation>Cartella download:</translation>
     </message>
     <message>
         <source>Incomplete Dir:</source>
-        <translation type="unfinished"></translation>
+        <translation>Cartella incompleti:</translation>
     </message>
     <message>
         <source>Shares and Connections</source>
-        <translation type="unfinished"></translation>
+        <translation>Condivisi e connessioni</translation>
     </message>
     <message>
         <source>Buddies are Privileged</source>
-        <translation type="unfinished"></translation>
+        <translation>Gli Amici sono privilegiati</translation>
     </message>
     <message>
         <source>Online Alerts in Log Window instead of popup</source>
-        <translation type="unfinished"></translation>
+        <translation>Avvertimenti online nella finestra log invece che popup</translation>
     </message>
     <message>
         <source>Share to Buddies Only</source>
-        <translation type="unfinished"></translation>
+        <translation>Condividi solo agli Amici</translation>
     </message>
     <message>
         <source>Trusted users can Send you Files</source>
-        <translation type="unfinished"></translation>
+        <translation>Gli utenti fidati possono inviarti file</translation>
     </message>
     <message>
         <source>Seperate Shares list for Buddies</source>
-        <translation type="unfinished"></translation>
+        <translation>Lista share separata per gli Amici</translation>
     </message>
     <message>
         <source>Send automatic warnings to users via Private Chat</source>
-        <translation type="unfinished"></translation>
+        <translation>Invia avvertimenti automatici agli utenti via messaggio privato</translation>
     </message>
     <message>
         <source>User Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opzioni utente</translation>
     </message>
     <message>
         <source>Select a Directory to store your downloaded files.</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleziona una cartella per i tuoi download.</translation>
     </message>
     <message>
         <source>All files (*)</source>
-        <translation type="unfinished">Tutti i file (*)</translation>
+        <translation>Tutti i file (*)</translation>
     </message>
     <message>
         <source>Select a Directory to store your incomplete downloading files.</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleziona una cartella per i tuoi download incompleti.</translation>
     </message>
 </context>
 <context>
