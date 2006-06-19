@@ -4,10 +4,8 @@ release tarball (ie. not from the Subversion repository, and not a
 snapshot), 'scons' should be included with the release and your can start
 scons using 'python scons/scons.py'.
 
-
-NOTICE:
-	Always compile with the built-in scons, newer versions fail to build!
-
+If you distrbutions provides a scons package, you should install it and 
+use this one instead of the included scons.
 
 
 For the impatient and/or people with AD(H)D:
@@ -112,7 +110,7 @@ Available build targets (that make sense):
 
   museekd               Build the museek daemon
 
-  Tools                 Build the museek tools (only muscan for now)
+  Tools                 Build the museek tools (only muscan/muscand for now)
 
   museeq                Build the Qt GUI to museekd
 
