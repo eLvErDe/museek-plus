@@ -5,6 +5,10 @@ DATADIR = os.path.realpath(sys.argv[0])
 for i in range(2):
 	DATADIR = os.path.split(DATADIR)[0]
 DEFAULT_TEMPLATE = os.path.join(DATADIR, 'share', 'museek', 'museekd', 'config.xml.tmpl')
+if not os.path.exists(DEFAULT_TEMPLATE):
+	t_path = os.path.join('/usr', 'share', 'museek', 'museekd', 'config.xml.tmpl')
+	if os.path.exists(t_path):
+		DEFAULT_TEMPLATE = t_path
 DEFAULT_CONFIG = os.path.join('~', '.museekd', 'config.xml')
 
 from xml.dom import minidom

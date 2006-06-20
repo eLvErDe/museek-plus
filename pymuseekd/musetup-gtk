@@ -1,0 +1,576 @@
+#!/usr/bin/python
+
+# Museek GTK Setup
+# Requires: Python, PyGTK2
+# Credit: thanks for the help with the xml parser, Hyriand
+#         large amount of XML code taken from musetup
+import commands, os, sys, getopt
+
+from xml.dom import minidom
+import signal
+import gtk, gobject
+import time, stat, string, pwd
+import os, sys
+
+DATADIR = os.path.realpath(sys.argv[0])
+for i in range(2):
+	DATADIR = os.path.split(DATADIR)[0]
+DEFAULT_TEMPLATE = os.path.join(DATADIR, 'share', 'museek', 'museekd', 'config.xml.tmpl')
+if not os.path.exists(DEFAULT_TEMPLATE):
+	t_path = os.path.join('/usr', 'share', 'museek', 'museekd', 'config.xml.tmpl')
+	if os.path.exists(t_path):
+		DEFAULT_TEMPLATE = t_path
+
+DEFAULT_CONFIG = os.path.join('~', '.museekd', 'config.xml')
+
+CONFIG_PATH = (os.path.expanduser(DEFAULT_CONFIG))
+
+version = "0.1.11"
+
+def usage():
+	print ("""MuSetup GTK  %s
+Author: Daelstorm
+
+	Option: musetup-gtk [OPTION]...
+	Shutdown the Museek Daemon before you run this tool.
+	Default options: --config ~/.museekd/config.xml
+	-c,	--config <config.xml> Use another config file
+	
+	-v,	--version             Display Version and Exit
+	-h,	--help                Display this help and exit
+	""" % version)
+	sys.exit(2)
+	
+try:
+	opts, args = getopt.getopt(sys.argv[1:], "hvc:", ["help", "version", "config"])
+except getopt.GetoptError:
+	# print help information and exit:
+	usage()
+	sys.exit(2)
+for opts, args in opts:
+	if opts in ("-h", "--help"):
+		usage()
+		sys.exit()
+	if opts in ("-c", "--config"):
+		CONFIG_PATH=str(os.path.expanduser(args))
+	if opts in ("-v", "--version"):
+		print "MuSetup GTK version: %s" % version
+		sys.exit(2)
+
+
+
+
+		
+	
+
+class PopupMenu(gtk.Menu):
+	def __init__(self, xapp, type):
+		gtk.Menu.__init__(self)
+		self.app = xapp
+		self.type = type
+		self.key = None
+		self.value = None
+		self.node = None
+		self.num = None
+
+		
+	def setup(self, *items):
+		for item in items:
+			if item[0] == "":
+				menuitem = gtk.MenuItem()
+			else:
+				if item[0][0] == "$":
+					menuitem = gtk.CheckMenuItem(item[0][1:])
+				else:
+					menuitem = gtk.MenuItem(item[0])
+				if item[1] is not None:
+					menuitem.connect("activate", item[1])
+			self.append(menuitem)
+			menuitem.show()
+		return self
+				
+	def set_key(self, node, key, value, num):
+# 		print node, key, value, num
+		self.key = key
+		self.value = value
+		self.node = node
+		self.num = num
+		
+	def OnDeleteNode(self, widget):
+		self.app.treestore.remove(self.app.parents[self.node][0])
+		del self.app.config[self.node]
+		del self.app.parents[self.node]
+		
+	def OnAddNode(self, widget):
+		self.node, value = self.app.input_box(title="Edit Config setting", message="Add Node", message2="", key="", value="", modal= True, List=[], vlist=[], second=False)
+		if self.node not in self.app.parents:
+			node = self.node
+			self.app.parents[node]= {}
+			self.app.parents[node][0] = self.app.treestore.append(None, [node, "", "", node, 0])
+			self.app.config[self.node] = {}
+	
+	def OnAdd(self, widget):
+# 		print self.node
+		key, value = self.app.input_box(title="Edit Config setting", message="Add Key", message2="Add Value", key="", value="", modal= True, List=[], vlist=[], second=True)
+		if key == "" or key.isspace():
+			return
+		
+# 		print self.node, key, value, self.num
+		if value == None:
+			value = ""
+
+		if self.node in self.app.config:
+			if key in self.app.config[self.node]:
+				return
+			# a genuine new key
+			self.app.config[self.node][key] = value
+			z = 0
+			num = None
+			for n in self.app.parents[self.node].keys():
+				if n != z:
+					num = z
+					break
+				z += 1
+			if num == None:
+				num = len(self.app.parents[self.node].keys())
+# 			num = len(self.app.parents[self.node])
+			self.app.parents[self.node][num] = self.app.treestore.append( self.app.parents[self.node][0],  ["", key, value,  self.node, num])
+		
+			
+					
+	def OnEdit(self, widget):
+# 		print self.node
+		key, value = self.app.input_box(title="Edit Config setting", message="Edit Key", message2="Edit Value", key=self.key, value=self.value, modal= True, List=[], vlist=[], second=True)
+# 		print self.node, key, value
+		if key == "" or key.isspace():
+			return
+		if value == None:
+			value = ""
+			if self.node in self.app.config:
+				if self.value != value or self.key != key:
+					# If value or key is different
+					self.app.config[self.node][key] = ""
+					self.app.treestore.set( self.app.parents[self.node][self.num],  0, "", 1, key, 2, value, 3, self.node)
+		else:
+			if self.node in self.app.config:
+				if self.value != value or self.key != key:
+					# If value or key is different
+					self.app.config[self.node][key] = value
+					self.app.treestore.set( self.app.parents[self.node][self.num],  0, "", 1, key, 2, value, 3, self.node)
+		if self.key != key:
+			# Remove old key
+			del self.app.config[self.node][self.key]
+		
+		
+
+		
+	def OnDelete(self, widget):
+		self.app.treestore.remove(self.app.parents[self.node][self.num])
+		del self.app.config[self.node][self.key]
+		del self.app.parents[self.node][self.num] 
+		
+	
+class EntryDialog( gtk.Dialog):
+    def __init__(self, Mapp, message="", message2="", key='', value=None, modal= True, List=[], v_list=[], second=True):
+        gtk.Dialog.__init__(self)
+        self.connect("destroy", self.quit)
+        self.connect("delete_event", self.quit)
+	self.ret = key
+	self.ret2 = value
+        if modal:
+            self.set_modal(True)
+        box = gtk.VBox(spacing=10)
+        box.set_border_width(10)
+        self.vbox.pack_start(box)
+        box.show()
+        if message:
+            label = gtk.Label(message)
+            box.pack_start(label)
+            label.show()
+	    
+	self.combo = gtk.combo_box_entry_new_text()
+	#if "buddies" in Mapp.ProcessMessages.config.keys():
+	alist = List #Mapp.ProcessMessages.config["buddies"].keys()
+	alist.sort()
+	for i in alist:
+		self.combo.append_text( i)
+	if key != None:
+		self.combo.child.set_text(key)
+	self.combo.grab_focus()
+	
+	self.combo.show()
+	
+        box.pack_start(self.combo)
+	if message2:
+            label2 = gtk.Label(message2)
+            box.pack_start(label2)
+	    if second == True:
+            	label2.show()
+	self.combov = gtk.combo_box_entry_new_text()
+	#if "buddies" in Mapp.ProcessMessages.config.keys():
+	vlist = v_list #Mapp.ProcessMessages.config["buddies"].keys()
+	vlist.sort()
+	for i in vlist:
+		self.combo.append_text( i)
+	if value is not None:
+		self.combov.child.set_text(value)
+	self.combov.grab_focus()
+	if second == True:
+		self.combov.show()
+	
+	box.pack_start(self.combov)
+	
+        button = gtk.Button("OK")
+        button.connect("clicked", self.click)
+        button.set_flags(gtk.CAN_DEFAULT)
+        self.action_area.pack_start(button)
+        button.show()
+	
+        button.grab_default()
+        button = gtk.Button("Cancel")
+        button.connect("clicked", self.quit)
+        button.set_flags(gtk.CAN_DEFAULT)
+	
+        self.action_area.pack_start(button)
+        button.show()
+        
+	
+    def quit(self, w=None, event=None):
+
+        self.hide()
+        self.destroy()
+        #gtk.main_quit()
+	
+	
+    def click(self, button):
+        self.ret = self.combo.child.get_text()
+	self.ret2 = self.combov.child.get_text()
+	
+        self.quit()
+	
+def ChooseDir(parent = None, initialdir = "~"):
+	dialog = gtk.FileChooserDialog(parent=None, action=gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER, buttons=(gtk.STOCK_OK, gtk.RESPONSE_ACCEPT, gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT))
+	dialog.set_select_multiple(True)
+	response = dialog.run()
+	
+	if response == gtk.RESPONSE_ACCEPT:
+		res = dialog.get_filenames()
+	else:
+		res = None
+	dialog.destroy()
+	return res
+	
+class MuseekSetupGTK:
+	def __init__(self, create = True, accel_group = None):
+		if accel_group is None:
+			self.accel_group = gtk.AccelGroup()
+		else:
+			self.accel_group = accel_group
+		if create:
+			self.MuseekSetupGTK = gtk.Window(gtk.WINDOW_TOPLEVEL)
+			self.MuseekSetupGTK.set_default_size(600, 400)
+			#self.MuseekSetupGTK.set_title(("Nicoseek"))
+			self.MuseekSetupGTK.set_position(gtk.WIN_POS_CENTER)
+			self.MuseekSetupGTK.add_accel_group(self.accel_group)
+			self.MuseekSetupGTK.show()
+		self.MuseekSetupGTK.set_title(("Museek Setup GTK") + " " + version)
+		self.MuseekSetupGTK.connect("destroy", self.window_quit)
+		self.MuseekSetupGTK.connect("delete_event", self.window_quit)
+		self.EntryDialog = EntryDialog(self)
+		self.CONFIG_PATH = CONFIG_PATH
+		self.TEMPLATE_PATH = DEFAULT_TEMPLATE
+		vbox_msetup = gtk.VBox()
+		vbox_msetup.set_spacing(2)
+		menubar1 = gtk.MenuBar()
+		menubar1.show()
+		
+		menu1 = gtk.Menu()
+		
+		connect_menu = gtk.Menu()
+		
+		menuitem1 = gtk.MenuItem(("_File"))
+		menuitem1.show()
+		
+		open1 = gtk.MenuItem("_Open Museek config XML")
+		open1.connect("activate", self.OpenConfig)
+		open1.add_accelerator("activate", self.accel_group, gtk.gdk.keyval_from_name("O"), gtk.gdk.MOD1_MASK, gtk.ACCEL_VISIBLE)
+		open1.show()
+		
+		save1 = gtk.MenuItem("_Save config XML to disk")
+		save1.connect("activate", self.Save)
+		save1.add_accelerator("activate", self.accel_group, gtk.gdk.keyval_from_name("S"), gtk.gdk.MOD1_MASK, gtk.ACCEL_VISIBLE)
+		save1.show()
+		
+		quit1 = gtk.MenuItem("_Quit Museek Setup")
+		quit1.connect("activate", self.window_quit, "")
+		quit1.add_accelerator("activate", self.accel_group, gtk.gdk.keyval_from_name("Q"), gtk.gdk.MOD1_MASK, gtk.ACCEL_VISIBLE)
+		quit1.show()				
+		menu1.append(open1)
+		menu1.append(save1)
+		menu1.append(quit1)
+	
+		menuitem1.set_submenu(menu1)
+	
+		menu1.show()
+		
+		menubar1.append(menuitem1)
+
+		menubar1.show()
+		
+		vbox_msetup.pack_start(menubar1, False, False, 0)
+		
+		
+		
+		sscroll = gtk.ScrolledWindow()
+		self.treestore = lists = gtk.TreeStore(  str, str, str, str, int )
+# 		lists = gtk.ListStore(str, str, str )
+		
+
+
+		# Users-in-room Listbox with users and files
+		self.mu_treeview =  mu_treeview = gtk.TreeView(lists)
+		mu_treeview.set_property("rules-hint", True)
+		lists.set_sort_column_id(0, gtk.SORT_ASCENDING)
+
+		node_column = gtk.TreeViewColumn('Node')
+		cell = gtk.CellRendererText()
+		cell.set_property('mode', gtk.CELL_RENDERER_MODE_EDITABLE)
+		node_column.pack_start(cell, True)
+		node_column.add_attribute(cell, 'text', 0)
+		node_column.set_sort_column_id(0)
+		key_column = gtk.TreeViewColumn('Key')
+		
+		cell2 = gtk.CellRendererText()
+		cell2.set_property('mode', gtk.CELL_RENDERER_MODE_ACTIVATABLE)
+# 		cell.set_property('cell-background', "#FFFFDD")
+		key_column.pack_start(cell2, True)
+		key_column.add_attribute(cell2, 'text', 1)
+		key_column.set_sort_column_id(1)
+		value_column = gtk.TreeViewColumn('Value')
+		
+		cell3 = gtk.CellRendererText()
+		cell3.set_property('mode', gtk.CELL_RENDERER_MODE_EDITABLE)
+		value_column.pack_start(cell3, True)
+		value_column.add_attribute(cell3, 'text', 2)
+ 		value_column.set_sort_column_id(2)
+		node_column.set_resizable(True)
+		key_column.set_resizable(True)
+		value_column.set_resizable(True)
+
+		mu_treeview.append_column(node_column)
+		mu_treeview.append_column(key_column)
+		mu_treeview.append_column(value_column)
+		mu_treeview.show()
+		cell3.set_property('mode', gtk.CELL_RENDERER_MODE_EDITABLE)
+		sscroll.add(mu_treeview)
+		sscroll.show()		
+		vbox_msetup.pack_start(sscroll, True, True)
+		self.popup_menu = popup = PopupMenu(self, "keys")
+		self.popup_menu2 = popup2 = PopupMenu(self, "nodes")
+		
+		self.popup_menu.setup(
+			(("_Edit Key"), popup.OnEdit),
+			(("_Delete Key"), popup.OnDelete), )
+			
+		self.popup_menu2.setup( (("_Add Node"), popup2.OnAddNode), (("_Add Key"), popup2.OnAdd), (("_Delete Node!"), popup2.OnDeleteNode), )
+				
+		mu_treeview.connect("button_press_event", self.OnPopupMenu, "config", "")
+		self.Statusbar = gtk.Statusbar()
+		self.Statusbar.set_has_resize_grip(False)
+		self.Statusbar.show()
+		self.Statusbar.set_border_width(1)
+		self.status_context_id = self.Statusbar.get_context_id("")
+		
+		
+		vbox_msetup.pack_end(self.Statusbar, False, True, 0)
+		vbox_msetup.show()
+		if create:
+			self.MuseekSetupGTK.add(vbox_msetup)
+		self.tryReadConfig()
+		
+			
+	def OnPopupMenu(self, widget, event, string, string2):
+		if event.button != 3:
+			return
+
+		d = self.mu_treeview.get_path_at_pos(int(event.x), int(event.y))
+		if not d:
+			return
+		path, column, x, y = d
+
+ 		if len(path) == 1:
+			items = self.popup_menu2.get_children()
+		else:
+			items = self.popup_menu.get_children()
+		key =  self.treestore.get_value(self.treestore.get_iter(path), 1)
+		value =  self.treestore.get_value(self.treestore.get_iter(path), 2)
+		node = self.treestore.get_value(self.treestore.get_iter(path), 3)
+		num =  self.treestore.get_value(self.treestore.get_iter(path), 4)
+	
+		if len(path) >1:
+
+			self.popup_menu.set_key(node, key, value, num)
+			self.popup_menu.popup(None, None, None, event.button, event.time)
+		else:
+			self.popup_menu2.set_key(node, key, value, num)
+			self.popup_menu2.popup(None, None, None, event.button, event.time)
+		
+	def populate_store(self):
+		self.treestore.clear()
+ 		parents = self.parents = {}
+		lists = self.treestore
+		for node in self.config.keys():
+			
+			if node not in parents:
+				parents[node]= {}
+				parents[node][0] =  lists.append(None, [node, "", "", node, 0])
+			num = 1
+			for key, value in self.config[node].items():
+				if value != None and value != "":
+					parents[node][num] = lists.append(parents[node][0], [ "", str(key), str(value ), node, num ])
+				else:
+					parents[node][num] = lists.append(parents[node][0], [ "", str(key), "", node, num ])
+				num += 1
+					
+	def input_box(self, title="Input Box", message="", message2= "", key='', value=None, modal= True, List=[], vlist=[], second=True):
+		try:
+			win = EntryDialog(self, message,  message2, key, value, modal, List, vlist, second)
+			win.set_title(title)
+			win.show()
+			win.run()
+			win.destroy()
+			return win.ret, win.ret2
+		
+		except Exception,e:
+			print e
+	
+	def run(self):
+		pass
+	
+	def readTemplate(self):
+# 		 'config.xml.tmpl' path =, config_path = 'config.xml'):
+# 		global config
+		
+		self.readConfig(self.TEMPLATE_PATH)
+		
+		if self.CONFIG_PATH.rfind('.') > self.CONFIG_PATH.rfind('/'):
+			config_path = '.'.join(self.CONFIG_PATH.split('.')[:-1])
+# 		print config_path
+		
+		user = pwd.getpwuid(os.getuid())[0]
+		for domain in self.config.values():
+			for key in domain.keys():
+				value = domain[key].replace('$(USER)', user).replace('$(CONFIG)', config_path)
+				del domain[key]
+				key = key.replace('$(USER)', user).replace('$(CONFIG)', config_path)
+				domain[key] = value
+				
+	def readDomain(self, node):
+		domain = {}
+		child = node.firstChild
+		while child:
+			if child.nodeName == u'key':
+				id = child.getAttribute('id')
+				if child.firstChild:
+					domain[id] = child.firstChild.nodeValue
+				else:
+					domain[id] = ''
+			child = child.nextSibling
+		return domain
+				
+	def tryReadConfig(self):
+		try:
+			self.readConfig(self.CONFIG_PATH)
+		except:
+			self.readTemplate()
+			self.populate_store()
+	def readConfig(self, CONFIG):
+		
+			self.config = {}
+			doc = minidom.parse(CONFIG)
+			root = doc.firstChild
+			node = root.firstChild
+			while node:
+				
+				if node.nodeName == u'domain':
+					id = node.getAttribute('id')
+					self.config[id] = self.readDomain(node)
+				node = node.nextSibling	
+			self.populate_store()
+			self.Statusbar.pop(self.status_context_id)
+			self.Statusbar.push(self.status_context_id, CONFIG)
+			
+	def OpenConfig(self, widget):
+		dialog = gtk.FileChooserDialog(title="Select the Museek Daemon Config", parent=None, action=gtk.FILE_CHOOSER_ACTION_OPEN, buttons=(gtk.STOCK_OK, gtk.RESPONSE_ACCEPT, gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT))
+		dialog.set_select_multiple(False)
+		dialog.set_current_folder_uri("file://"+pwd.getpwuid(os.getuid())[5]+"/.museekd")
+		ff = gtk.FileFilter()
+		ff.add_pattern("*.xml")
+		dialog.set_property("filter", ff)
+		response = dialog.run()
+		
+		if response == gtk.RESPONSE_ACCEPT:
+			
+			res = dialog.get_filenames()
+			for file in res:
+				self.CONFIG_PATH = file
+				self.tryReadConfig()
+		else:
+			res = None
+		
+		dialog.destroy()
+		
+		
+	
+	def Save(self, widget):
+		doc = minidom.Document()
+		root = doc.appendChild(doc.createElement('museekd'))
+		for i in self.config.keys():
+			root.appendChild(doc.createTextNode('\n  '))
+			domain = root.appendChild(doc.createElement('domain'))
+			domain.setAttribute('id', i)
+			for j in self.config[i].keys():
+				domain.appendChild(doc.createTextNode('\n    '))
+				key = domain.appendChild(doc.createElement('key'))
+				key.setAttribute('id', j)
+				v = self.config[i][j]
+				if v:
+					key.appendChild(doc.createTextNode(v))
+			domain.appendChild(doc.createTextNode('\n  '))
+		root.appendChild(doc.createTextNode('\n'))
+		
+		try:
+			os.makedirs(os.path.split(self.CONFIG_PATH)[0])
+		except OSError:
+			pass
+		
+		f = open(self.CONFIG_PATH, 'w')
+		doc.writexml(f)
+		f.close()
+		os.chmod(self.CONFIG_PATH, stat.S_IRUSR | stat.S_IWUSR)
+ 	def window_quit(self, w=None, event=None):
+ 		self.MuseekSetupGTK.hide()
+ 		self.MuseekSetupGTK.destroy()
+		self.MuseekSetupGTK = None
+
+		os._exit(1)
+
+class MainApp:
+	
+	
+	def __init__(self):
+		self.app = MuseekSetupGTK()
+		
+	def MainLoop(self):
+		signal.signal(signal.SIGINT, signal.SIG_DFL)
+		
+		
+		#self.app.MuseekSetupGTK.show()
+		self.app.run()
+		mainloop = gobject.MainLoop()
+		mainloop.run()
+
+Mapp = MainApp()
+while 1:
+	Mapp.MainLoop()
+ 
