@@ -114,14 +114,14 @@ void PeerManager::set_peer_status(const string& user, uint32 status) {
 	CT("set_peer_status %s, %u", user.c_str(), status);
 	
 	Peer* peer;
-	if (status == 0) {
-		if((peer = get_peer(user, true))) {
-			remove_peer(peer);
-		}
-	} else {
+// 	if (status == 0) {
+// 		if((peer = get_peer(user, true))) {
+// 			remove_peer(peer);
+// 		}
+// 	} else {
 		if((peer = get_peer(user, false)))
 			peer->set_status(status);
-	}
+// 	}
 }
 
 void PeerManager::set_peer_address(const string& user, const string& ip, uint32 port) {
