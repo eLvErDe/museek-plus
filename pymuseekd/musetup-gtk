@@ -103,8 +103,12 @@ class PopupMenu(gtk.Menu):
 		
 	def OnAddNode(self, widget):
 		self.node, value = self.app.input_box(title="Edit Config setting", message="Add Node", message2="", key="", value="", modal= True, List=[], vlist=[], second=False)
+		if self.node == None:
+			return
 		if self.node not in self.app.parents:
 			node = self.node
+			if node == "" or node.isspace():
+				return
 			self.app.parents[node]= {}
 			self.app.parents[node][0] = self.app.treestore.append(None, [node, "", "", node, 0])
 			self.app.config[self.node] = {}
@@ -112,6 +116,8 @@ class PopupMenu(gtk.Menu):
 	def OnAdd(self, widget):
 # 		print self.node
 		key, value = self.app.input_box(title="Edit Config setting", message="Add Key", message2="Add Value", key="", value="", modal= True, List=[], vlist=[], second=True)
+		if key == None:
+			return
 		if key == "" or key.isspace():
 			return
 		
@@ -142,6 +148,8 @@ class PopupMenu(gtk.Menu):
 # 		print self.node
 		key, value = self.app.input_box(title="Edit Config setting", message="Edit Key", message2="Edit Value", key=self.key, value=self.value, modal= True, List=[], vlist=[], second=True)
 # 		print self.node, key, value
+		if key == None:
+			return
 		if key == "" or key.isspace():
 			return
 		if value == None:
@@ -236,7 +244,7 @@ class EntryDialog( gtk.Dialog):
         
 	
     def quit(self, w=None, event=None):
-
+	self.ret = self.ret2 = None
         self.hide()
         self.destroy()
         #gtk.main_quit()
