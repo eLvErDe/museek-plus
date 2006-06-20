@@ -5,12 +5,12 @@
 # Credit: thanks for the help with the xml parser, Hyriand
 #         large amount of XML code taken from musetup
 import commands, os, sys, getopt
-
+import locale, gettext
 from xml.dom import minidom
 import signal
 import gtk, gobject
 import time, stat, string, pwd
-import os, sys
+import os, sys, shutil
 
 DATADIR = os.path.realpath(sys.argv[0])
 for i in range(2):
@@ -59,9 +59,12 @@ for opts, args in opts:
 
 
 
-
-		
-	
+tr_cache = {}
+def _(s):
+	global tr_cache
+	if not tr_cache.has_key(s):
+		tr_cache[s] = gettext.gettext(s)
+	return tr_cache[s]
 
 class PopupMenu(gtk.Menu):
 	def __init__(self, xapp, type):
@@ -178,6 +181,35 @@ class PopupMenu(gtk.Menu):
 		del self.app.config[self.node][self.key]
 		del self.app.parents[self.node][self.num] 
 		
+class BugDialog( gtk.Dialog):
+	def __init__(self, Mapp, where="", message="", modal= True,):
+		gtk.Dialog.__init__(self)
+		self.connect("destroy", self.quit)
+		self.connect("delete_event", self.quit)
+		if modal:
+			self.set_modal(True)
+		box = gtk.VBox(spacing=10)
+		box.set_border_width(10)
+		self.vbox.pack_start(box)
+		box.show()
+		if where:
+			label = gtk.Label(where)
+			box.pack_start(label)
+			label.show()
+		if message:
+			label2 = gtk.Label(message)
+			box.pack_start(label2)
+			label2.show()
+		button = gtk.Button("OK")
+		button.connect("clicked", self.quit)
+		button.set_flags(gtk.CAN_DEFAULT)
+		self.action_area.pack_start(button)
+		button.show()
+	
+	def quit(self, w=None, event=None):
+	
+		self.hide()
+		self.destroy()
 	
 class EntryDialog( gtk.Dialog):
     def __init__(self, Mapp, message="", message2="", key='', value=None, modal= True, List=[], v_list=[], second=True):
@@ -289,9 +321,10 @@ class MuseekSetupGTK:
 		self.MuseekSetupGTK.connect("destroy", self.window_quit)
 		self.MuseekSetupGTK.connect("delete_event", self.window_quit)
 		self.EntryDialog = EntryDialog(self)
+		self.BugDialog = BugDialog(self)
 		self.CONFIG_PATH = CONFIG_PATH
 		self.TEMPLATE_PATH = DEFAULT_TEMPLATE
-		vbox_msetup = gtk.VBox()
+		vbox_msetup = self.vbox_msetup = gtk.VBox()
 		vbox_msetup.set_spacing(2)
 		menubar1 = gtk.MenuBar()
 		menubar1.show()
@@ -330,7 +363,14 @@ class MuseekSetupGTK:
 		menubar1.show()
 		
 		vbox_msetup.pack_start(menubar1, False, False, 0)
+		self.notebook_parent = gtk.Notebook()
+		self.notebook_parent.set_tab_pos(gtk.POS_TOP)
+		self.notebook_parent.set_scrollable(False)
+		self.notebook_parent.show()
+		vbox_msetup.pack_start(self.notebook_parent, True, True, 0)
+		self.encodings= ["UTF-8", "UTF-7", "UTF-16", "UTF-32", "KOI8-R", "ISO8859-1", "ISO8859-2", "ISO8859-3", "ISO8859-4", "ISO8859-5", "ISO8859-6", "ISO8859-7", "ISO8859-8", "ISO8859-9", "ISO8859-10", "ISO8859-11", "ISO8859-13", "ISO8859-14", "ISO8859-15", "ISO8859-16", "CP1250", "CP1251", "CP1252", "CP1253", "CP1254", "CP1255", "CP1256", "CP1257", "CP1258", "CP874"]
 		
+		self.dialogs()
 		
 		
 		sscroll = gtk.ScrolledWindow()
@@ -373,10 +413,15 @@ class MuseekSetupGTK:
 		mu_treeview.append_column(key_column)
 		mu_treeview.append_column(value_column)
 		mu_treeview.show()
-		cell3.set_property('mode', gtk.CELL_RENDERER_MODE_EDITABLE)
+
 		sscroll.add(mu_treeview)
 		sscroll.show()		
-		vbox_msetup.pack_start(sscroll, True, True)
+# 		vbox_msetup.pack_start(sscroll, True, True)
+		self.label_tree = gtk.Label(_("Settings Tree"))
+		self.label_tree.set_padding(0, 0)
+		self.label_tree.show()
+		self.notebook_parent.append_page(sscroll, self.label_tree)
+		
 		self.popup_menu = popup = PopupMenu(self, "keys")
 		self.popup_menu2 = popup2 = PopupMenu(self, "nodes")
 		
@@ -400,7 +445,1142 @@ class MuseekSetupGTK:
 			self.MuseekSetupGTK.add(vbox_msetup)
 		self.tryReadConfig()
 		
+	def dialogs(self):
+		
+		
+		self.notebook1 = gtk.Notebook()
+		self.notebook1.set_tab_pos(gtk.POS_LEFT)
+		self.notebook1.set_scrollable(False)
+		self.notebook1.show()
+	
+		self.scrolledwindow1 = gtk.ScrolledWindow()
+		self.scrolledwindow1.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		self.scrolledwindow1.show()
+		self.scrolledwindow1.set_shadow_type(gtk.SHADOW_NONE)
+	
+		self.viewport2 = gtk.Viewport()
+		self.viewport2.show()
+		self.viewport2.set_shadow_type(gtk.SHADOW_IN)
+	
+		self.vbox2 = gtk.VBox(False, 5)
+		self.vbox2.show()
+		self.vbox2.set_spacing(5)
+		self.vbox2.set_border_width(3)
+	
+		self.hbox2 = gtk.HBox(False, 5)
+		self.hbox2.show()
+		self.hbox2.set_spacing(5)
+	
+		self.label22 = gtk.Label(_("Server Host:"))
+		self.label22.set_padding(0, 0)
+		self.label22.show()
+		self.hbox2.pack_start(self.label22, False, False, 0)
+	
+		self.EntryServerHost = gtk.Entry()
+		self.EntryServerHost.set_text("")
+		self.EntryServerHost.set_editable(True)
+		self.EntryServerHost.show()
+		self.EntryServerHost.set_visibility(True)
+		self.hbox2.pack_end(self.EntryServerHost, False, True, 0)
+	
+		self.vbox2.pack_start(self.hbox2, True, True, 0)
+	
+		self.hbox5 = gtk.HBox(False, 0)
+		self.hbox5.show()
+		self.hbox5.set_spacing(0)
+	
+		self.s_port_Label = gtk.Label(_("Server Port:"))
+		self.s_port_Label.set_padding(0, 0)
+		self.s_port_Label.show()
+		self.hbox5.pack_start(self.s_port_Label, False, False, 0)
+		aj = gtk.Adjustment(value=2240, lower=1, upper=65535, step_incr=1, page_incr=0, page_size=0)
+		self.ServerPort = gtk.SpinButton(aj)
+		self.ServerPort.set_numeric(True)
+		self.ServerPort.show()
+		self.hbox5.pack_end(self.ServerPort, False, True, 0)
+	
+		self.vbox2.pack_start(self.hbox5, True, True, 0)
+	
+		self.hbox4 = gtk.HBox(False, 5)
+		self.hbox4.show()
+		self.hbox4.set_spacing(5)
+	
+		self.s_username_Label = gtk.Label(_("Server Username:"))
+		self.s_username_Label.set_padding(0, 0)
+		self.s_username_Label.show()
+		self.hbox4.pack_start(self.s_username_Label, False, False, 0)
+	
+		self.EntryServerUsername = gtk.Entry()
+		self.EntryServerUsername.set_text("")
+		self.EntryServerUsername.set_editable(True)
+		self.EntryServerUsername.show()
+		self.EntryServerUsername.set_visibility(True)
+		self.hbox4.pack_end(self.EntryServerUsername, False, True, 0)
+	
+		self.vbox2.pack_start(self.hbox4, True, True, 0)
+	
+		self.hbox3 = gtk.HBox(False, 5)
+		self.hbox3.show()
+		self.hbox3.set_spacing(5)
+	
+		self.s_password_Label = gtk.Label(_("Server Password:"))
+		self.s_password_Label.set_padding(0, 0)
+		self.s_password_Label.show()
+		self.hbox3.pack_start(self.s_password_Label, False, False, 0)
+	
+		self.EntryServerPassword = gtk.Entry()
+		self.EntryServerPassword.set_text("")
+		self.EntryServerPassword.set_editable(True)
+		self.EntryServerPassword.show()
+		self.EntryServerPassword.set_visibility(False)
+		self.hbox3.pack_end(self.EntryServerPassword, False, True, 0)
+	
+		self.vbox2.pack_start(self.hbox3, True, True, 0)
+	
+		self.frame1 = gtk.Frame()
+		self.frame1.show()
+		self.frame1.set_shadow_type(gtk.SHADOW_NONE)
+	
+		self.alignment1 = gtk.Alignment(0.5, 0.5, 1, 1)
+		self.alignment1.show()
+	
+		self.vbox3 = gtk.VBox(False, 5)
+		self.vbox3.show()
+		self.vbox3.set_spacing(5)
+	
+		self.hbox6 = gtk.HBox(False, 0)
+		self.hbox6.show()
+		self.hbox6.set_spacing(0)
+	
+		self.default___Label = gtk.Label(_("Default: "))
+		self.default___Label.set_padding(0, 0)
+		self.default___Label.show()
+		self.hbox6.pack_start(self.default___Label, False, False, 0)
+	
+		self.defaultEncoding_List = gtk.ListStore(gobject.TYPE_STRING)
+		self.defaultEncoding = gtk.ComboBoxEntry()
+		self.defaultEncoding.show()
+		for encoding in self.encodings:
+			self.defaultEncoding_List.append([encoding])
+	
+		self.defaultEncoding.set_model(self.defaultEncoding_List)
+		self.defaultEncoding.set_text_column(0)
+		self.hbox6.pack_end(self.defaultEncoding, False, True, 0)
+	
+		self.vbox3.pack_start(self.hbox6, True, True, 0)
+
+		self.hbox7 = gtk.HBox(False, 0)
+		self.hbox7.show()
+		self.hbox7.set_spacing(0)
+	
+		self.filesystem_Label = gtk.Label(_("Filesystem: "))
+		self.filesystem_Label.set_padding(0, 0)
+		self.filesystem_Label.show()
+		self.hbox7.pack_start(self.filesystem_Label, False, False, 0)
+	
+		self.filesystemEncoding_List = gtk.ListStore(gobject.TYPE_STRING)
+		self.filesystemEncoding = gtk.ComboBoxEntry()
+		self.filesystemEncoding.show()
+		for encoding in self.encodings:
+			self.filesystemEncoding_List.append([encoding])
+	
+		self.filesystemEncoding.set_model(self.filesystemEncoding_List)
+		self.filesystemEncoding.set_text_column(0)
+		self.hbox7.pack_end(self.filesystemEncoding, False, True, 0)
+	
+		self.vbox3.pack_start(self.hbox7, True, True, 0)
+	
+		self.hbox8 = gtk.HBox(False, 5)
+		self.hbox8.show()
+		self.hbox8.set_spacing(5)
+	
+		self.network_Label = gtk.Label(_("Network"))
+		self.network_Label.set_padding(0, 0)
+		self.network_Label.show()
+		self.hbox8.pack_start(self.network_Label, False, False, 0)
+	
+		self.networkEncoding_List = gtk.ListStore(gobject.TYPE_STRING)
+		self.networkEncoding = gtk.ComboBoxEntry()
+		self.networkEncoding.show()
+		for encoding in self.encodings:
+			self.networkEncoding_List.append([encoding])
+	
+		self.networkEncoding.set_model(self.networkEncoding_List)
+		self.networkEncoding.set_text_column(0)
+		self.hbox8.pack_end(self.networkEncoding, False, True, 0)
+	
+		self.vbox3.pack_start(self.hbox8, True, True, 0)
+	
+		self.alignment1.add(self.vbox3)
+	
+		self.frame1.add(self.alignment1)
+	
+		self.encodings__Label = gtk.Label()
+		self.encodings__Label.set_markup(_("<b>Encodings</b>") )
+		
+		self.encodings__Label.set_padding(0, 0)
+		self.encodings__Label.show()
+		self.frame1.set_label_widget(self.encodings__Label)
+	
+		self.vbox2.pack_start(self.frame1, True, True, 0)
+	
+		self.hbox33 = gtk.HBox(False, 5)
+		self.hbox33.show()
+		self.hbox33.set_spacing(5)
+		self.hbox33.set_border_width(3)
+	
+		self.fp_Label = gtk.Label(_("First Soulseek Port: "))
+		self.fp_Label.set_padding(0, 0)
+		self.fp_Label.show()
+		self.hbox33.pack_start(self.fp_Label, False, False, 0)
+		
+		fp = gtk.Adjustment(value=2239, lower=1, upper=65535, step_incr=1, page_incr=0, page_size=0)
+		self.FirstPort = gtk.SpinButton(fp)
+		self.FirstPort.show()
+		self.hbox33.pack_start(self.FirstPort, True, True, 0)
+	
+		self.lp_Label = gtk.Label(_("Last Soulseek Port:"))
+		self.lp_Label.set_padding(0, 0)
+		self.lp_Label.show()
+		self.hbox33.pack_start(self.lp_Label, False, False, 0)
+		lp = gtk.Adjustment(value=2234, lower=1, upper=65535, step_incr=1, page_incr=0, page_size=0)
+		self.LastPort = gtk.SpinButton(lp)
+		self.LastPort.show()
+		self.hbox33.pack_start(self.LastPort, True, True, 0)
+	
+		self.vbox2.pack_start(self.hbox33, True, True, 0)
+	
+		self.viewport2.add(self.vbox2)
+	
+		self.scrolledwindow1.add(self.viewport2)
+	
+		self.label1 = gtk.Label(_("Server"))
+		self.label1.set_padding(0, 0)
+		self.label1.show()
+		self.scrolledwindow3 = gtk.ScrolledWindow()
+		self.scrolledwindow3.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		self.scrolledwindow3.show()
+		self.scrolledwindow3.set_shadow_type(gtk.SHADOW_NONE)
+	
+		self.viewport3 = gtk.Viewport()
+		self.viewport3.show()
+		self.viewport3.set_shadow_type(gtk.SHADOW_IN)
+	
+		self.vbox4 = gtk.VBox(False, 0)
+		self.vbox4.show()
+		self.vbox4.set_spacing(0)
+	
+		self.hbox11 = gtk.HBox(False, 5)
+		self.hbox11.show()
+		self.hbox11.set_spacing(5)
+		self.hbox11.set_border_width(3)
+	
+		self.label33 = gtk.Label(_("Client Interfaces Password:"))
+		self.label33.set_padding(0, 0)
+		self.label33.show()
+		self.hbox11.pack_start(self.label33, False, False, 0)
+	
+		self.interfacePassword = gtk.Entry()
+		self.interfacePassword.set_text("")
+		self.interfacePassword.set_editable(True)
+		self.interfacePassword.show()
+		self.interfacePassword.set_visibility(False)
+		self.hbox11.pack_end(self.interfacePassword, False, True, 0)
+	
+		self.vbox4.pack_start(self.hbox11, False, True, 0)
+	
+		self.frame2 = gtk.Frame()
+		self.frame2.show()
+		self.frame2.set_shadow_type(gtk.SHADOW_NONE)
+	
+		self.alignment2 = gtk.Alignment(0.5, 0.5, 1, 1)
+		self.alignment2.show()
+	
+		self.hbox10 = gtk.HBox(False, 0)
+		self.hbox10.show()
+		self.hbox10.set_spacing(0)
+	
+		self.scrolledwindow16 = gtk.ScrolledWindow()
+		self.scrolledwindow16.set_policy(gtk.POLICY_ALWAYS, gtk.POLICY_ALWAYS)
+		self.scrolledwindow16.show()
+		self.scrolledwindow16.set_shadow_type(gtk.SHADOW_NONE)
+		
+		self.interfacesTreestore = gtk.TreeStore(  str, int )
+		self.interfacesTreeview = gtk.TreeView(self.interfacesTreestore)
+		self.interfacesTreeview.show()
+		self.interfacesTreeview.set_headers_visible(True)
+		column = gtk.TreeViewColumn('Interfaces')
+		cell = gtk.CellRendererText()
+		cell.set_property('mode', gtk.CELL_RENDERER_MODE_EDITABLE)
+		column.pack_start(cell, True)
+		column.add_attribute(cell, 'text', 0)
+		column.set_sort_column_id(0)
+		self.interfacesTreeview.append_column(column)
+		self.scrolledwindow16.add(self.interfacesTreeview)
+	
+		self.hbox10.pack_start(self.scrolledwindow16, True, True, 0)
+	
+		self.vbox5 = gtk.VBox(False, 5)
+		self.vbox5.show()
+		self.vbox5.set_spacing(5)
+		self.vbox5.set_border_width(3)
+	
+		self.addInterface = gtk.Button()
+		self.addInterface.set_label(_("Add Interface"))
+		self.addInterface.show()
+	
+		self.vbox5.pack_start(self.addInterface, False, False, 0)
+	
+		self.removeInterface = gtk.Button()
+		self.removeInterface.set_label(_("Remove Interface"))
+		self.removeInterface.show()
+	
+		self.vbox5.pack_start(self.removeInterface, False, False, 0)
+	
+		self.hbox10.pack_end(self.vbox5, False, True, 0)
+	
+		self.alignment2.add(self.hbox10)
+	
+		self.frame2.add(self.alignment2)
+	
+		self.label32 = gtk.Label()
+		self.label32.set_markup(_("<b>Client Interface Ports &amp; Sockets</b>"))
+		
+		self.label32.set_padding(0, 0)
+		self.label32.show()
+		self.frame2.set_label_widget(self.label32)
+	
+		self.vbox4.pack_start(self.frame2, True, True, 0)
+	
+		self.viewport3.add(self.vbox4)
+	
+		self.scrolledwindow3.add(self.viewport3)
+	
+		self.label3 = gtk.Label(_("Museek Clients"))
+		self.label3.set_padding(0, 0)
+		self.label3.show()
+		self.TransfersScrollWindow = gtk.ScrolledWindow()
+		self.TransfersScrollWindow.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		self.TransfersScrollWindow.show()
+		self.TransfersScrollWindow.set_shadow_type(gtk.SHADOW_NONE)
+	
+		self.viewport4 = gtk.Viewport()
+		self.viewport4.show()
+		self.viewport4.set_shadow_type(gtk.SHADOW_IN)
+	
+		self.vbox6 = gtk.VBox(False, 0)
+		self.vbox6.show()
+		self.vbox6.set_spacing(0)
+	
+		self.hbox12 = gtk.HBox(False, 5)
+		self.hbox12.show()
+		self.hbox12.set_spacing(5)
+		self.hbox12.set_border_width(3)
+	
+		self.privilege_buddies_Check = gtk.CheckButton()
+		self.privilege_buddies_Check.set_active(False)
+		self.privilege_buddies_Check.set_label(_("Privilege Buddies"))
+		self.privilege_buddies_Check.show()
+		self.hbox12.pack_start(self.privilege_buddies_Check, False, False, 0)
+	
+		self.have_buddy_shares_Check = gtk.CheckButton()
+		self.have_buddy_shares_Check.set_active(False)
+		self.have_buddy_shares_Check.set_label(_("Enable Buddy Shares"))
+		self.have_buddy_shares_Check.show()
+		self.hbox12.pack_start(self.have_buddy_shares_Check, False, False, 0)
+	
+		self.only_buddies_Check = gtk.CheckButton()
+		self.only_buddies_Check.set_active(False)
+		self.only_buddies_Check.set_label(_("Only Share to Buddies"))
+		self.only_buddies_Check.show()
+		self.hbox12.pack_start(self.only_buddies_Check, False, False, 0)
+	
+		self.vbox6.pack_start(self.hbox12, True, True, 0)
+	
+		self.hbox13 = gtk.HBox(False, 0)
+		self.hbox13.show()
+		self.hbox13.set_spacing(0)
+		self.hbox13.set_border_width(3)
+	
+		self.trusting_uploads_Check = gtk.CheckButton()
+		self.trusting_uploads_Check.set_active(False)
+		self.trusting_uploads_Check.set_label(_("Allow Buddies to send you files"))
+		self.trusting_uploads_Check.show()
+		self.hbox13.pack_start(self.trusting_uploads_Check, False, False, 0)
+	
+		self.vbox6.pack_start(self.hbox13, True, True, 0)
+	
+		self.hbox14 = gtk.HBox(False, 0)
+		self.hbox14.show()
+		self.hbox14.set_spacing(0)
+		self.hbox14.set_border_width(3)
+	
+		self.user_warnings_Check = gtk.CheckButton()
+		self.user_warnings_Check.set_active(False)
+		self.user_warnings_Check.set_label(_("Send Automatic Warnings via Private Chat"))
+		self.user_warnings_Check.show()
+		self.hbox14.pack_start(self.user_warnings_Check, False, False, 0)
+	
+		self.vbox6.pack_start(self.hbox14, True, True, 0)
+	
+		self.hbox15 = gtk.HBox(False, 5)
+		self.hbox15.show()
+		self.hbox15.set_spacing(5)
+		self.hbox15.set_border_width(3)
+	
+		self.label34 = gtk.Label(_("Upload Slots:"))
+		self.label34.set_padding(0, 0)
+		self.label34.show()
+		self.hbox15.pack_start(self.label34, False, False, 0)
+		us = gtk.Adjustment(value=1, lower=0, upper=1000, step_incr=1, page_incr=0, page_size=0)
+		
+		self.uploadSlots = gtk.SpinButton(us)
+		self.uploadSlots.show()
+		self.hbox15.pack_start(self.uploadSlots, False, True, 0)
+		
+		self.pabel= gtk.Label(_("Connection Mode:"))
+		self.pabel.set_padding(0, 0)
+		self.pabel.show()
+		self.hbox15.pack_start(self.pabel, False, False, 0)
+		
+		self.connectMode_List = gtk.ListStore(gobject.TYPE_STRING)
+		self.connectMode = gtk.ComboBoxEntry()
+		self.connectMode.show()
+		for item in ["passive", "active"]:
+			self.connectMode_List.append([item])
+	
+		self.connectMode.set_model(self.connectMode_List)
+		self.connectMode.set_text_column(0)
+		
+		self.hbox15.pack_start(self.connectMode, False, False, 0)
+		
+		self.vbox6.pack_start(self.hbox15, False, True, 0)
+	
+		self.hbox16 = gtk.HBox(False, 5)
+		self.hbox16.show()
+		self.hbox16.set_spacing(5)
+		self.hbox16.set_border_width(3)
+	
+		self.label35 = gtk.Label(_("Download Directory:"))
+		self.label35.set_padding(0, 0)
+		self.label35.show()
+		self.hbox16.pack_start(self.label35, False, False, 0)
+	
+		self.EntryDownloadDIr = gtk.Entry()
+		self.EntryDownloadDIr.set_text("")
+		self.EntryDownloadDIr.set_editable(True)
+		self.EntryDownloadDIr.show()
+		self.EntryDownloadDIr.set_visibility(True)
+		self.hbox16.pack_start(self.EntryDownloadDIr, True, True, 0)
+	
+		self.downloadDirButton = gtk.Button()
+		self.downloadDirButton.set_label(_("Select Directory"))
+		self.downloadDirButton.show()
+		self.downloadDirButton.connect("clicked", self.OnDownloadDir)
+		
+	
+		self.hbox16.pack_end(self.downloadDirButton, False, False, 0)
+	
+		self.vbox6.pack_start(self.hbox16, True, True, 0)
+	
+		self.hbox17 = gtk.HBox(False, 5)
+		self.hbox17.show()
+		self.hbox17.set_spacing(5)
+		self.hbox17.set_border_width(3)
+	
+		self.id_Label = gtk.Label(_("Incomplete Directory:"))
+		self.id_Label.set_padding(0, 0)
+		self.id_Label.show()
+		self.hbox17.pack_start(self.id_Label, False, False, 0)
+	
+		self.EntryIncompleteDir = gtk.Entry()
+		self.EntryIncompleteDir.set_text("")
+		self.EntryIncompleteDir.set_editable(True)
+		self.EntryIncompleteDir.show()
+		self.EntryIncompleteDir.set_visibility(True)
+		self.hbox17.pack_start(self.EntryIncompleteDir, True, True, 0)
+	
+		self.incompleteDirButton = gtk.Button()
+		self.incompleteDirButton.set_label(_("Select Directory"))
+		self.incompleteDirButton.show()
+		self.incompleteDirButton.connect("clicked", self.OnIncompleteDir)
+	
+		self.hbox17.pack_end(self.incompleteDirButton, False, False, 0)
+	
+		self.vbox6.pack_start(self.hbox17, True, True, 0)
+	
+		self.dButtons_hbox = gtk.HBox(False, 5)
+		self.dButtons_hbox.show()
+		self.dButtons_hbox.set_spacing(5)
+		self.dButtons_hbox.set_border_width(3)
+	
+		self.ddb_Label = gtk.Label(_("Downloads Database:"))
+		self.ddb_Label.set_padding(0, 0)
+		self.ddb_Label.show()
+		self.dButtons_hbox.pack_start(self.ddb_Label, False, False, 0)
+	
+		self.EntryDownloadsDBase = gtk.Entry()
+		self.EntryDownloadsDBase.set_text("")
+		self.EntryDownloadsDBase.set_editable(True)
+		self.EntryDownloadsDBase.show()
+		self.EntryDownloadsDBase.set_visibility(True)
+		self.dButtons_hbox.pack_start(self.EntryDownloadsDBase, True, True, 0)
+		
+		self.downloadsDBaseButton = gtk.Button()
+		self.downloadsDBaseButton.set_label(_("Select Database"))
+		self.downloadsDBaseButton.show()
+		self.downloadsDBaseButton.connect("clicked", self.OnDownloadDBase)
+		self.dButtons_hbox.pack_end(self.downloadsDBaseButton, False, False, 0)
+	
+		self.vbox6.pack_start(self.dButtons_hbox, True, True, 0)
+	
+		self.viewport4.add(self.vbox6)
+	
+		self.TransfersScrollWindow.add(self.viewport4)
+	
+		self.TransfersLabel = gtk.Label(_("Transfers"))
+		self.TransfersLabel.set_padding(0, 0)
+		self.TransfersLabel.show()
+		self.scrolledwindow2 = gtk.ScrolledWindow()
+		self.scrolledwindow2.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		self.scrolledwindow2.show()
+		self.scrolledwindow2.set_shadow_type(gtk.SHADOW_NONE)
+	
+		self.viewport1 = gtk.Viewport()
+		self.viewport1.show()
+		self.viewport1.set_shadow_type(gtk.SHADOW_IN)
+	
+		self.notebook3 = gtk.Notebook()
+		self.notebook3.set_tab_pos(gtk.POS_TOP)
+		self.notebook3.set_scrollable(False)
+		self.notebook3.show()
+	
+		self.autojoin_hbox = gtk.HBox(False, 0)
+		
+		self.autojoin_hbox.set_spacing(0)
+	
+		self.autojoinScrollWindow2 = gtk.ScrolledWindow()
+		self.autojoinScrollWindow2.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		self.autojoinScrollWindow2.show()
+		self.autojoinScrollWindow2.set_shadow_type(gtk.SHADOW_NONE)
+	
+		self.autojoinTreestore = gtk.TreeStore(  str, int )
+		self.autojoinTreeview = gtk.TreeView(self.autojoinTreestore)
+		self.autojoinTreeview.show()
+		self.autojoinTreeview.set_headers_visible(True)
+		column = gtk.TreeViewColumn('Rooms')
+		cell = gtk.CellRendererText()
+		cell.set_property('mode', gtk.CELL_RENDERER_MODE_EDITABLE)
+		column.pack_start(cell, True)
+		column.add_attribute(cell, 'text', 0)
+		column.set_sort_column_id(0)
+		self.autojoinTreeview.append_column(column)
+		
+		self.autojoinScrollWindow2.add(self.autojoinTreeview)
+	
+		self.autojoin_hbox.pack_start(self.autojoinScrollWindow2, True, True, 0)
+	
+		self.vbox17 = gtk.VBox(False, 5)
+		self.vbox17.show()
+		self.vbox17.set_spacing(5)
+		self.vbox17.set_border_width(3)
+	
+		self.button5 = gtk.Button()
+		self.button5.set_label(_("Add"))
+		self.button5.show()
+	
+		self.vbox17.pack_start(self.button5, False, False, 0)
+	
+		self.button6 = gtk.Button()
+		self.button6.set_label(_("Remove"))
+		self.button6.show()
+	
+		self.vbox17.pack_start(self.button6, False, False, 0)
+	
+		self.autojoin_hbox.pack_start(self.vbox17, False, True, 0)
+		self.autojoin_hbox.show()
+	
+		self.autojoinLabel = gtk.Label(_("AutoJoined"))
+		self.autojoinLabel.set_padding(0, 0)
+		self.autojoinLabel.show()
+		
 			
+		self.encodings_hbox = gtk.HBox(False, 0)
+		self.encodings_hbox.show()
+		self.encodings_hbox.set_spacing(0)
+	
+		self.encodingsScrollWindow2 = gtk.ScrolledWindow()
+		self.encodingsScrollWindow2.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		self.encodingsScrollWindow2.show()
+		self.encodingsScrollWindow2.set_shadow_type(gtk.SHADOW_NONE)
+	
+		self.encodingsTreestore = gtk.TreeStore(  str,str, int )
+		self.encodingsTreeview = gtk.TreeView(self.encodingsTreestore)
+		self.encodingsTreeview.show()
+		self.encodingsTreeview.set_headers_visible(True)
+		column = gtk.TreeViewColumn('Rooms')
+		cell = gtk.CellRendererText()
+		cell.set_property('mode', gtk.CELL_RENDERER_MODE_EDITABLE)
+		column.pack_start(cell, True)
+		column.add_attribute(cell, 'text', 0)
+		column.set_sort_column_id(0)
+		self.encodingsTreeview.append_column(column)
+		column = gtk.TreeViewColumn('Encodings')
+		cell = gtk.CellRendererText()
+		cell.set_property('mode', gtk.CELL_RENDERER_MODE_EDITABLE)
+		column.pack_start(cell, True)
+		column.add_attribute(cell, 'text', 0)
+		column.set_sort_column_id(0)
+		self.encodingsTreeview.append_column(column)
+		self.encodingsScrollWindow2.add(self.encodingsTreeview)
+		self.encodings_hbox.pack_start(self.encodingsScrollWindow2, True, True, 0)
+	
+		self.encodings_vbox = gtk.VBox(False, 5)
+		self.encodings_vbox.show()
+		self.encodings_vbox.set_spacing(5)
+		self.encodings_vbox.set_border_width(3)
+	
+		self.addEncoding = gtk.Button()
+		self.addEncoding.set_label(_("Add"))
+		self.addEncoding.show()
+	
+		self.encodings_vbox.pack_start(self.addEncoding, False, False, 0)
+	
+		self.removeEncoding = gtk.Button()
+		self.removeEncoding.set_label(_("Remove"))
+		self.removeEncoding.show()
+	
+		self.encodings_vbox.pack_start(self.removeEncoding, False, False, 0)
+	
+		self.encodings_hbox.pack_start(self.encodings_vbox, False, True, 0)
+	
+		self.encodingsLabel = gtk.Label(_("Encodings"))
+		self.encodingsLabel.set_padding(0, 0)
+		self.encodingsLabel.show()
+		
+		self.vbox1 = gtk.VBox(False, 0)
+		self.vbox1.show()
+		self.vbox1.set_spacing(0)
+	
+		self.hbox1 = gtk.HBox(False, 5)
+		self.hbox1.show()
+		self.hbox1.set_spacing(5)
+	
+		self.defaultTickerLabel = gtk.Label(_("Default Ticker:"))
+		self.defaultTickerLabel.set_padding(0, 0)
+		self.defaultTickerLabel.show()
+		self.hbox1.pack_start(self.defaultTickerLabel, False, False, 0)
+	
+		self.defaultTicker = gtk.Entry()
+		self.defaultTicker.set_text("")
+		self.defaultTicker.set_editable(True)
+		self.defaultTicker.show()
+		self.defaultTicker.set_visibility(True)
+		self.hbox1.pack_start(self.defaultTicker, True, True, 0)
+	
+		self.vbox1.pack_start(self.hbox1, False, True, 0)
+	
+		self.hbox34 = gtk.HBox(False, 0)
+		self.hbox34.show()
+		self.hbox34.set_spacing(0)
+	
+		self.tickersScrollWindow = gtk.ScrolledWindow()
+		self.tickersScrollWindow.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		self.tickersScrollWindow.show()
+		self.tickersScrollWindow.set_shadow_type(gtk.SHADOW_NONE)
+	
+		self.TickersTreeview = gtk.TreeView()
+		self.TickersTreeview.show()
+		self.TickersTreeview.set_headers_visible(True)
+		self.tickersScrollWindow.add(self.TickersTreeview)
+	
+		self.hbox34.pack_start(self.tickersScrollWindow, True, True, 0)
+	
+		self.vbox15 = gtk.VBox(False, 5)
+		self.vbox15.show()
+		self.vbox15.set_spacing(5)
+		self.vbox15.set_border_width(3)
+	
+		self.AddTicker = gtk.Button()
+		self.AddTicker.set_label(_("Add"))
+		self.AddTicker.show()
+	
+		self.vbox15.pack_start(self.AddTicker, False, False, 0)
+	
+		self.RemoveTicker = gtk.Button()
+		self.RemoveTicker.set_label(_("Remove"))
+		self.RemoveTicker.show()
+	
+		self.vbox15.pack_start(self.RemoveTicker, False, False, 0)
+	
+		self.hbox34.pack_start(self.vbox15, False, True, 0)
+	
+		self.vbox1.pack_start(self.hbox34, True, True, 0)
+	
+		self.TickersLabel = gtk.Label(_("Tickers"))
+		self.TickersLabel.set_padding(0, 0)
+		self.TickersLabel.show()
+		self.notebook3.append_page(self.autojoin_hbox, self.autojoinLabel)
+	
+		self.notebook3.append_page(self.encodings_hbox, self.encodingsLabel)
+	
+		self.notebook3.append_page(self.vbox1, self.TickersLabel)
+	
+		self.viewport1.add(self.notebook3)
+	
+		self.scrolledwindow2.add(self.viewport1)
+	
+		self.label2 = gtk.Label(_("Chat Rooms"))
+		self.label2.set_padding(0, 0)
+		self.label2.show()
+		self.notebook_users = gtk.Notebook()
+		self.notebook_users.set_tab_pos(gtk.POS_TOP)
+		self.notebook_users.set_scrollable(False)
+		self.notebook_users.show()
+	
+		self.hbox22 = gtk.HBox(False, 0)
+		self.hbox22.show()
+		self.hbox22.set_spacing(0)
+	
+		self.scrolledwindow19 = gtk.ScrolledWindow()
+		self.scrolledwindow19.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		self.scrolledwindow19.show()
+		self.scrolledwindow19.set_shadow_type(gtk.SHADOW_NONE)
+	
+		self.BuddiesTreeview = gtk.TreeView()
+		self.BuddiesTreeview.show()
+		self.BuddiesTreeview.set_headers_visible(True)
+		self.scrolledwindow19.add(self.BuddiesTreeview)
+	
+		self.hbox22.pack_start(self.scrolledwindow19, True, True, 0)
+	
+		self.vbox7 = gtk.VBox(False, 5)
+		self.vbox7.show()
+		self.vbox7.set_spacing(5)
+		self.vbox7.set_border_width(3)
+	
+		self.AddBuddy = gtk.Button()
+		self.AddBuddy.set_label(_("Add"))
+		self.AddBuddy.show()
+	
+		self.vbox7.pack_start(self.AddBuddy, False, False, 0)
+	
+		self.RemoveBuddy = gtk.Button()
+		self.RemoveBuddy.set_label(_("Remove"))
+		self.RemoveBuddy.show()
+	
+		self.vbox7.pack_start(self.RemoveBuddy, False, False, 0)
+	
+		self.hbox22.pack_start(self.vbox7, False, True, 0)
+	
+		self.BuddiesTab = gtk.Label(_("Buddies"))
+		self.BuddiesTab.set_padding(0, 0)
+		self.BuddiesTab.show()
+		self.hbox23 = gtk.HBox(False, 0)
+		self.hbox23.show()
+		self.hbox23.set_spacing(0)
+	
+		self.scrolledwindow20 = gtk.ScrolledWindow()
+		self.scrolledwindow20.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		self.scrolledwindow20.show()
+		self.scrolledwindow20.set_shadow_type(gtk.SHADOW_NONE)
+	
+		self.BannedTreeView = gtk.TreeView()
+		self.BannedTreeView.show()
+		self.BannedTreeView.set_headers_visible(True)
+		self.scrolledwindow20.add(self.BannedTreeView)
+	
+		self.hbox23.pack_start(self.scrolledwindow20, True, True, 0)
+	
+		self.vbox8 = gtk.VBox(False, 5)
+		self.vbox8.show()
+		self.vbox8.set_spacing(5)
+		self.vbox8.set_border_width(3)
+	
+		self.AddBanned = gtk.Button()
+		self.AddBanned.set_label(_("Add"))
+		self.AddBanned.show()
+	
+		self.vbox8.pack_start(self.AddBanned, False, False, 0)
+	
+		self.RemoveBanned = gtk.Button()
+		self.RemoveBanned.set_label(_("Remove"))
+		self.RemoveBanned.show()
+	
+		self.vbox8.pack_start(self.RemoveBanned, False, False, 0)
+	
+		self.hbox23.pack_start(self.vbox8, False, True, 0)
+	
+		self.BannedTab = gtk.Label(_("Banned"))
+		self.BannedTab.set_padding(0, 0)
+		self.BannedTab.show()
+		self.hbox24 = gtk.HBox(False, 0)
+		self.hbox24.show()
+		self.hbox24.set_spacing(0)
+	
+		self.scrolledwindow21 = gtk.ScrolledWindow()
+		self.scrolledwindow21.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		self.scrolledwindow21.show()
+		self.scrolledwindow21.set_shadow_type(gtk.SHADOW_NONE)
+	
+		self.IgnoredTreeview = gtk.TreeView()
+		self.IgnoredTreeview.show()
+		self.IgnoredTreeview.set_headers_visible(True)
+		self.scrolledwindow21.add(self.IgnoredTreeview)
+	
+		self.hbox24.pack_start(self.scrolledwindow21, True, True, 0)
+	
+		self.vbox9 = gtk.VBox(False, 5)
+		self.vbox9.show()
+		self.vbox9.set_spacing(5)
+		self.vbox9.set_border_width(3)
+	
+		self.AddIgnored = gtk.Button()
+		self.AddIgnored.set_label(_("Add"))
+		self.AddIgnored.show()
+	
+		self.vbox9.pack_start(self.AddIgnored, False, False, 0)
+	
+		self.RemoveIgnored = gtk.Button()
+		self.RemoveIgnored.set_label(_("Remove"))
+		self.RemoveIgnored.show()
+	
+		self.vbox9.pack_start(self.RemoveIgnored, False, False, 0)
+	
+		self.hbox24.pack_start(self.vbox9, False, True, 0)
+	
+		self.IgnoredTab = gtk.Label(_("Ignored"))
+		self.IgnoredTab.set_padding(0, 0)
+		self.IgnoredTab.show()
+		self.hbox25 = gtk.HBox(False, 0)
+		self.hbox25.show()
+		self.hbox25.set_spacing(0)
+	
+		self.scrolledwindow22 = gtk.ScrolledWindow()
+		self.scrolledwindow22.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		self.scrolledwindow22.show()
+		self.scrolledwindow22.set_shadow_type(gtk.SHADOW_NONE)
+	
+		self.TrustedTreevie = gtk.TreeView()
+		self.TrustedTreevie.show()
+		self.TrustedTreevie.set_headers_visible(True)
+		self.scrolledwindow22.add(self.TrustedTreevie)
+	
+		self.hbox25.pack_start(self.scrolledwindow22, True, True, 0)
+	
+		self.trusted_vbox = gtk.VBox(False, 5)
+		self.trusted_vbox.show()
+		self.trusted_vbox.set_spacing(5)
+		self.trusted_vbox.set_border_width(3)
+	
+		self.AddTrusted = gtk.Button()
+		self.AddTrusted.set_label(_("Add"))
+		self.AddTrusted.show()
+	
+		self.trusted_vbox.pack_start(self.AddTrusted, False, False, 0)
+	
+		self.RemoveTrusted = gtk.Button()
+		self.RemoveTrusted.set_label(_("Remove"))
+		self.RemoveTrusted.show()
+	
+		self.trusted_vbox.pack_start(self.RemoveTrusted, False, False, 0)
+	
+		self.hbox25.pack_start(self.trusted_vbox, False, True, 0)
+	
+		self.TrustedTab = gtk.Label(_("Trusted"))
+		self.TrustedTab.set_padding(0, 0)
+		self.TrustedTab.show()
+		self.notebook_users.append_page(self.hbox22, self.BuddiesTab)
+	
+		self.notebook_users.append_page(self.hbox23, self.BannedTab)
+	
+		self.notebook_users.append_page(self.hbox24, self.IgnoredTab)
+	
+		self.notebook_users.append_page(self.hbox25, self.TrustedTab)
+	
+		self.users_Label = gtk.Label(_("Users"))
+		self.users_Label.set_padding(0, 0)
+		self.users_Label.show()
+		self.userinfoScrollWindow = gtk.ScrolledWindow()
+		self.userinfoScrollWindow.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		self.userinfoScrollWindow.show()
+		self.userinfoScrollWindow.set_shadow_type(gtk.SHADOW_NONE)
+	
+		self.viewport5 = gtk.Viewport()
+		self.viewport5.show()
+		self.viewport5.set_shadow_type(gtk.SHADOW_IN)
+	
+		self.hpaned1 = gtk.HPaned()
+		self.hpaned1.show()
+	
+		self.vbox12 = gtk.VBox(False, 0)
+		self.vbox12.show()
+		self.vbox12.set_spacing(0)
+	
+		self.scrolledwindow23 = gtk.ScrolledWindow()
+		self.scrolledwindow23.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		self.scrolledwindow23.show()
+		self.scrolledwindow23.set_shadow_type(gtk.SHADOW_NONE)
+		
+		self.userinfoBuffer = gtk.TextBuffer()
+		self.userinfoTextview = gtk.TextView(self.userinfoBuffer)
+		self.userinfoTextview.set_cursor_visible(True)
+		self.userinfoTextview.set_editable(True)
+		self.userinfoTextview.set_wrap_mode(gtk.WRAP_WORD)
+		self.userinfoTextview.show()
+		self.scrolledwindow23.add(self.userinfoTextview)
+	
+		self.vbox12.pack_start(self.scrolledwindow23, True, True, 0)
+	
+		self.hbox26 = gtk.HBox(False, 0)
+		self.hbox26.show()
+		self.hbox26.set_spacing(0)
+	
+		self.removeUserinfoText = gtk.Button()
+		self.removeUserinfoText.set_label(_("Clear"))
+		self.removeUserinfoText.show()
+		self.removeUserinfoText.connect("clicked", self.OnClearUserinfo)
+		self.hbox26.pack_start(self.removeUserinfoText, False, False, 0)
+	
+		self.selectUserinfoText = gtk.Button()
+		self.selectUserinfoText.set_label(_("Import Text"))
+		self.selectUserinfoText.show()
+		self.selectUserinfoText.connect("clicked", self.OnImportUserinfo)
+		
+		self.hbox26.pack_end(self.selectUserinfoText, False, False, 0)
+	
+		self.vbox12.pack_start(self.hbox26, False, True, 0)
+	
+		self.hpaned1.pack1(self.vbox12, False, True)
+	
+		self.vbox11 = gtk.VBox(False, 0)
+		self.vbox11.show()
+		self.vbox11.set_spacing(0)
+	
+		self.scrolledwindow24 = gtk.ScrolledWindow()
+		self.scrolledwindow24.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		self.scrolledwindow24.show()
+		self.scrolledwindow24.set_shadow_type(gtk.SHADOW_NONE)
+	
+		self.viewport6 = gtk.Viewport()
+		self.viewport6.show()
+		self.viewport6.set_shadow_type(gtk.SHADOW_IN)
+	
+		self.userinfoImage = gtk.Image()
+		self.userinfoImage.set_padding(0, 0)
+		self.userinfoImage.show()
+		self.viewport6.add(self.userinfoImage)
+	
+		self.scrolledwindow24.add(self.viewport6)
+	
+		self.vbox11.pack_start(self.scrolledwindow24, True, True, 0)
+	
+		self.hbox27 = gtk.HBox(False, 0)
+		self.hbox27.show()
+		self.hbox27.set_spacing(0)
+	
+		self.removeUserinfoImage = gtk.Button()
+		self.removeUserinfoImage.set_label(_("Clear image"))
+		self.removeUserinfoImage.show()
+		self.removeUserinfoImage.connect("clicked", self.OnClearImage)
+		
+		self.hbox27.pack_start(self.removeUserinfoImage, False, False, 0)
+		self.EntryImage = gtk.Entry()
+		self.EntryImage.set_text("")
+		self.EntryImage.set_editable(True)
+		self.EntryImage.show()
+		self.EntryImage.set_visibility(True)
+		self.hbox27.pack_start(self.EntryImage, True, True, 0)
+		
+		self.selectUserinfoImage = gtk.Button()
+		self.selectUserinfoImage.set_label(_("Select Image"))
+		self.selectUserinfoImage.show()
+		self.selectUserinfoImage.connect("clicked", self.OnOpenImage)
+	
+		self.hbox27.pack_end(self.selectUserinfoImage, False, False, 0)
+	
+		self.vbox11.pack_start(self.hbox27, False, True, 0)
+	
+		self.hpaned1.pack2(self.vbox11, True, True)
+	
+		self.viewport5.add(self.hpaned1)
+	
+		self.userinfoScrollWindow.add(self.viewport5)
+	
+		self.userinfo__Label = gtk.Label(_("My Userinfo"))
+		self.userinfo__Label.set_padding(0, 0)
+		self.userinfo__Label.show()
+		self.scrolledwindow8 = gtk.ScrolledWindow()
+		self.scrolledwindow8.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		self.scrolledwindow8.show()
+		self.scrolledwindow8.set_shadow_type(gtk.SHADOW_NONE)
+	
+		self.viewport7 = gtk.Viewport()
+		self.viewport7.show()
+		self.viewport7.set_shadow_type(gtk.SHADOW_IN)
+	
+		self.vbox13 = gtk.VBox(False, 0)
+		self.vbox13.show()
+		self.vbox13.set_spacing(0)
+	
+		self.frame3 = gtk.Frame()
+		self.frame3.show()
+		self.frame3.set_border_width(3)
+		self.frame3.set_shadow_type(gtk.SHADOW_NONE)
+	
+		self.alignment3 = gtk.Alignment(0.5, 0.5, 1, 1)
+		self.alignment3.show()
+	
+		self.hbox29 = gtk.HBox(False, 5)
+		self.hbox29.show()
+		self.hbox29.set_spacing(5)
+		self.hbox29.set_border_width(3)
+	
+		self.EntryNormalShares = gtk.Entry()
+		self.EntryNormalShares.set_text("")
+		self.EntryNormalShares.set_editable(True)
+		self.EntryNormalShares.show()
+		self.EntryNormalShares.set_visibility(True)
+		self.hbox29.pack_start(self.EntryNormalShares, True, True, 0)
+	
+		self.selectNormalDBase = gtk.Button()
+		self.selectNormalDBase.set_label(_("Select DB"))
+		self.selectNormalDBase.show()
+		self.selectNormalDBase.connect("clicked", self.OnNormalDBase)
+		self.hbox29.pack_end(self.selectNormalDBase, False, False, 0)
+	
+		self.alignment3.add(self.hbox29)
+	
+		self.frame3.add(self.alignment3)
+	
+		self.normalSharesLabel = gtk.Label()
+		self.normalSharesLabel.set_markup(_("<b>Normal Shares</b>"))
+		
+		self.normalSharesLabel.set_padding(0, 0)
+		self.normalSharesLabel.show()
+		self.frame3.set_label_widget(self.normalSharesLabel)
+	
+		self.vbox13.pack_start(self.frame3, False, True, 0)
+	
+		self.frame4 = gtk.Frame()
+		self.frame4.show()
+		self.frame4.set_border_width(3)
+		self.frame4.set_shadow_type(gtk.SHADOW_NONE)
+	
+		self.alignment4 = gtk.Alignment(0.5, 0.5, 1, 1)
+		self.alignment4.show()
+	
+		self.hbox28 = gtk.HBox(False, 5)
+		self.hbox28.show()
+		self.hbox28.set_spacing(5)
+		self.hbox28.set_border_width(3)
+	
+		self.EntryBuddyOnlyShares = gtk.Entry()
+		self.EntryBuddyOnlyShares.set_text("")
+		self.EntryBuddyOnlyShares.set_editable(True)
+		self.EntryBuddyOnlyShares.show()
+		self.EntryBuddyOnlyShares.set_visibility(True)
+		self.hbox28.pack_start(self.EntryBuddyOnlyShares, True, True, 0)
+	
+		self.selectBuddyOnlyDBase = gtk.Button()
+		self.selectBuddyOnlyDBase.set_label(_("Select DB"))
+		self.selectBuddyOnlyDBase.show()
+		self.selectBuddyOnlyDBase.connect("clicked", self.OnBuddyDBase)
+		self.hbox28.pack_end(self.selectBuddyOnlyDBase, False, False, 0)
+	
+		self.alignment4.add(self.hbox28)
+	
+		self.frame4.add(self.alignment4)
+	
+		self.label39 = gtk.Label()
+		self.label39.set_markup(_("<b>Buddy-Only Shares</b>"))
+		self.label39.set_padding(0, 0)
+		self.label39.show()
+		self.frame4.set_label_widget(self.label39)
+	
+		self.vbox13.pack_start(self.frame4, False, True, 0)
+	
+		self.viewport7.add(self.vbox13)
+	
+		self.scrolledwindow8.add(self.viewport7)
+	
+		self.sharesDBLabel = gtk.Label(_("Shares DBs"))
+		self.sharesDBLabel.set_padding(0, 0)
+		self.sharesDBLabel.show()
+		
+		self.scrolledwindow10 = gtk.ScrolledWindow()
+		self.scrolledwindow10.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		self.scrolledwindow10.show()
+		self.scrolledwindow10.set_shadow_type(gtk.SHADOW_NONE)
+	
+		self.viewport8 = gtk.Viewport()
+		self.viewport8.show()
+		self.viewport8.set_shadow_type(gtk.SHADOW_IN)
+	
+		self.hbox32 = gtk.HBox(False, 0)
+		self.hbox32.show()
+		self.hbox32.set_spacing(0)
+	
+		self.alertScrollWindow = gtk.ScrolledWindow()
+		self.alertScrollWindow.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		self.alertScrollWindow.show()
+		self.alertScrollWindow.set_shadow_type(gtk.SHADOW_NONE)
+	
+		self.AlertTreeview = gtk.TreeView()
+		self.AlertTreeview.show()
+		self.AlertTreeview.set_headers_visible(True)
+		self.alertScrollWindow.add(self.AlertTreeview)
+	
+		self.hbox32.pack_start(self.alertScrollWindow, True, True, 0)
+	
+		self.vbox14 = gtk.VBox(False, 5)
+		self.vbox14.show()
+		self.vbox14.set_spacing(5)
+		self.vbox14.set_border_width(3)
+	
+		self.AddAlert = gtk.Button()
+		self.AddAlert.set_label(_("Add"))
+		self.AddAlert.show()
+	
+		self.vbox14.pack_start(self.AddAlert, False, False, 0)
+	
+		self.RemoveAlert = gtk.Button()
+		self.RemoveAlert.set_label(_("Remove"))
+		self.RemoveAlert.show()
+	
+		self.vbox14.pack_start(self.RemoveAlert, False, False, 0)
+	
+		self.hbox32.pack_start(self.vbox14, False, True, 0)
+	
+		self.viewport8.add(self.hbox32)
+	
+		self.scrolledwindow10.add(self.viewport8)
+	
+		self.alertsLabel = gtk.Label(_("Alerts"))
+		self.alertsLabel.set_padding(0, 0)
+		self.alertsLabel.show()
+		self.notebook1.append_page(self.scrolledwindow1, self.label1)
+	
+		self.notebook1.append_page(self.scrolledwindow3, self.label3)
+	
+		self.notebook1.append_page(self.TransfersScrollWindow, self.TransfersLabel)
+	
+		self.notebook1.append_page(self.scrolledwindow2, self.label2)
+	
+		self.notebook1.append_page(self.notebook_users, self.users_Label)
+	
+		self.notebook1.append_page(self.userinfoScrollWindow, self.userinfo__Label)
+	
+		self.notebook1.append_page(self.scrolledwindow8, self.sharesDBLabel)
+	
+		self.notebook1.append_page(self.scrolledwindow10, self.alertsLabel)
+
+		self.label_dialog = gtk.Label(_("General Settings"))
+		self.label_dialog.set_padding(0, 0)
+		self.label_dialog.show()
+		self.notebook_parent.append_page(self.notebook1, self.label_dialog)
+
+
 	def OnPopupMenu(self, widget, event, string, string2):
 		if event.button != 3:
 			return
@@ -426,6 +1606,106 @@ class MuseekSetupGTK:
 		else:
 			self.popup_menu2.set_key(node, key, value, num)
 			self.popup_menu2.popup(None, None, None, event.button, event.time)
+			
+			
+	def createTreeFor(self, store, treeview, name):
+		if name == "interfaces":
+			dict = self.config["interfaces.bind"]
+		store.clear()
+ 		parents = self.parents[name] = {}
+# 		lists = self.treestore
+		num = 0
+# 		return
+		for key, value in dict.items():
+			print key, value
+			
+			parents[num] =  store.append(None, [key, num])
+			num += 1
+		self.parents[name] = parents
+
+	
+	
+	def populate_dialogs(self):
+# 		self.config
+		# Server
+		self.EntryServerHost.set_text(self.config["server"]["host"])
+		self.ServerPort.set_value(int(self.config["server"]["port"]))
+		self.EntryServerPassword.set_text(self.config["server"]["password"])
+		self.EntryServerUsername.set_text(self.config["server"]["username"])
+		if "default" in self.config["encoding"]:
+			self.defaultEncoding.child.set_text(str(self.config["encoding"]["default"]))
+		if "filesystem" in self.config["encoding"]:
+			self.filesystemEncoding.child.set_text(self.config["encoding"]["filesystem"])
+		if "network" in self.config["encoding"]:
+			self.networkEncoding.child.set_text(self.config["encoding"]["network"])
+		self.LastPort.set_value(int(self.config["clients.bind"]["last"]))
+		self.FirstPort.set_value(int(self.config["clients.bind"]["first"]))
+		
+		# Museek Clients
+		self.interfacePassword.set_text(str(self.config["interfaces"]["password"]))
+		self.createTreeFor( self.interfacesTreestore, self.interfacesTreeview, "interfaces")	
+		#str(self.config[""][""])
+		# Transfers
+		self.connectMode.child.set_text(str(self.config["clients"]["connectmode"]))
+# 		if str(self.config[""][""]) == "true":
+		if str(self.config["transfers"]["privilege_buddies"]) == "true":
+			self.privilege_buddies_Check.set_active(True)
+		else:
+			self.privilege_buddies_Check.set_active(False)
+		if "have_buddy_shares" in self.config["transfers"]:
+			if str(self.config["transfers"]["have_buddy_shares"]) == "true":
+				self.have_buddy_shares_Check.set_active(True)
+			else:
+				self.have_buddy_shares_Check.set_active(False)
+		else:
+			self.have_buddy_shares_Check.set_active(False)
+		if "trusting_uploads" in self.config["transfers"]:
+			if str(self.config["transfers"]["trusting_uploads"]) == "true":
+				self.trusting_uploads_Check.set_active(True)
+			else:
+				self.trusting_uploads_Check.set_active(False)
+		else:
+			self.trusting_uploads_Check.set_active(False)
+		if str(self.config["transfers"]["only_buddies"]) == "true":
+			self.only_buddies_Check.set_active(True)
+		else:
+			self.only_buddies_Check.set_active(False)
+		if "user_warnings" in self.config["transfers"]:
+			if str(self.config["transfers"]["user_warnings"]) == "true":
+				self.user_warnings_Check.set_active(True)
+			else:
+				self.user_warnings_Check.set_active(False)
+		else:
+			self.user_warnings_Check.set_active(False)
+		self.uploadSlots.set_value(int(self.config["transfers"]["upload_slots"]))
+		self.EntryDownloadDIr.set_text(str(self.config["transfers"]["download-dir"]))
+		self.EntryIncompleteDir.set_text(str(self.config["transfers"]["incomplete-dir"]))
+		self.EntryDownloadsDBase.set_text(str(self.config["transfers"]["downloads"]))
+		# Chat rooms
+		if "default-ticker" in self.config:
+			if "ticker" in self.config["default-ticker"]:
+				self.defaultTicker.set_text(str(self.config["default-ticker"]["ticker"]))
+		#str(self.config[""][""])
+		# Users
+		
+		# My userinfo
+		s = self.userinfoBuffer.get_start_iter()
+		e = self.userinfoBuffer.get_end_iter()
+		self.userinfoBuffer.delete(s, e)
+# 		set_buffer(str(self.config["userinfo"]["text"]))
+# 		self.userinfoImage 
+			#image = gtk.Image()
+		self.userinfoImage.set_from_file(str(self.config["userinfo"]["image"]))
+		self.EntryImage.set_text(str(self.config["userinfo"]["image"]))
+# 		image.show()
+		s= self.userinfoBuffer.get_start_iter()
+		self.userinfoBuffer.insert(s, str(self.config["userinfo"]["text"]))
+		# Shares DBs
+
+		self.EntryNormalShares.set_text(str(self.config["shares"]["database"]))
+		self.EntryBuddyOnlyShares.set_text(str(self.config["buddy.shares"]["database"]))
+		# Alerts
+		
 		
 	def populate_store(self):
 		self.treestore.clear()
@@ -493,25 +1773,186 @@ class MuseekSetupGTK:
 	def tryReadConfig(self):
 		try:
 			self.readConfig(self.CONFIG_PATH)
-		except:
+		except Exception, e:
+			print "Config failed, reading from template", e
 			self.readTemplate()
-			self.populate_store()
+			self.refreshConfigDisplay()
+			
+	def refreshConfigDisplay(self):
+		self.populate_store()
+		self.populate_dialogs()
+		
 	def readConfig(self, CONFIG):
 		
-			self.config = {}
-			doc = minidom.parse(CONFIG)
-			root = doc.firstChild
-			node = root.firstChild
-			while node:
-				
-				if node.nodeName == u'domain':
-					id = node.getAttribute('id')
-					self.config[id] = self.readDomain(node)
-				node = node.nextSibling	
-			self.populate_store()
-			self.Statusbar.pop(self.status_context_id)
-			self.Statusbar.push(self.status_context_id, CONFIG)
+		self.config = {}
+		doc = minidom.parse(CONFIG)
+		root = doc.firstChild
+		node = root.firstChild
+		while node:
 			
+			if node.nodeName == u'domain':
+				id = node.getAttribute('id')
+				self.config[id] = self.readDomain(node)
+			node = node.nextSibling	
+		if not os.path.exists(self.config["userinfo"]["image"]):
+			image = file(self.config["userinfo"]["image"], "w")
+			image.close()
+			
+		self.populate_store()
+		self.populate_dialogs()
+		self.Statusbar.pop(self.status_context_id)
+		self.Statusbar.push(self.status_context_id, CONFIG)
+		
+			
+			
+			
+	def OpenFile(self, widget, title, filters):
+		dialog = gtk.FileChooserDialog(title=title, parent=None, action=gtk.FILE_CHOOSER_ACTION_OPEN, buttons=(gtk.STOCK_OK, gtk.RESPONSE_ACCEPT, gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT))
+		dialog.set_select_multiple(False)
+		dialog.set_current_folder_uri("file://"+pwd.getpwuid(os.getuid())[5]+"/.museekd")
+ 		ff = gtk.FileFilter()
+ 		for ffilter in filters:
+			ff.add_pattern(ffilter)
+ 		dialog.set_property("filter", ff)
+		response = dialog.run()
+		
+		if response == gtk.RESPONSE_ACCEPT:
+			
+			res = dialog.get_filenames()
+			for files in res:
+				file = files
+		else:
+			file = res = None
+		
+		dialog.destroy()
+		return file
+		
+	def OpenImage(self, widget, title, filters):
+		dialog = gtk.FileChooserDialog(title=title, parent=None, action=gtk.FILE_CHOOSER_ACTION_OPEN, buttons=(gtk.STOCK_OK, gtk.RESPONSE_ACCEPT, gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT))
+		dialog.set_select_multiple(False)
+		dialog.set_current_folder_uri("file://"+pwd.getpwuid(os.getuid())[5])
+		ff = gtk.FileFilter()
+		for ffilter in filters:
+			ff.add_pattern(ffilter)
+			
+
+		dialog.set_property("filter", ff)
+		response = dialog.run()
+		
+		if response == gtk.RESPONSE_ACCEPT:
+			
+			res = dialog.get_filenames()
+			for files in res:
+				file = files
+		else:
+			file = res = None
+		
+		dialog.destroy()
+		return file
+		
+	def OnClearUserinfo(self, widget):
+		self.config["userinfo"]["text"] = ""
+		self.refreshConfigDisplay()
+		
+	def OnImportUserinfo(self, widget):
+		text = self.OpenFile(widget, _("Import Userinfo from a text file"), ["*"])
+		if text != None:
+# 			self.config["transfers"]["download-dir"] = directory
+			if os.path.getsize(text) > 100000:
+				self.Bug("Userinfo file is greater than 100KBytes, not using.", "")
+				return
+			textfile = open(text)
+
+			self.config["userinfo"]["text"] = textfile.read()
+			self.refreshConfigDisplay()
+			
+	def OnDownloadDir(self, widget):
+		directory = self.OpenDirectory(widget, _("Choose a Download Directory"))
+		if directory != None:
+			self.config["transfers"]["download-dir"] = directory
+			self.refreshConfigDisplay()
+	
+	def OnIncompleteDir(self, widget):
+		directory = self.OpenDirectory(widget, _("Choose a Incomplete Downloads Directory"))
+		if directory != None:
+			self.config["transfers"]["incomplete-dir"] = directory
+			self.refreshConfigDisplay()
+	
+	def OnDownloadDBase(self, widget):
+		file = self.OpenFile(widget, _("Choose a Download Database"), ["*.downloads"])
+		if file != None:
+			self.config["transfers"]["downloads"] = file
+			self.refreshConfigDisplay()
+
+	def OnNormalDBase(self, widget):
+		file = self.OpenFile(widget, _("Choose a Normal Shares Database"), ["*.shares"])
+		if file != None:
+			if "shares" not in self.config:
+				self.config["shares"] = {}
+			self.config["shares"]["database"] = file
+			self.refreshConfigDisplay()
+			
+	def OnBuddyDBase(self, widget):
+		file = self.OpenFile(widget, _("Choose a Buddy Shares Database"), ["*.buddyshares"])
+		if file != None:
+			if "buddy.shares" not in self.config:
+				self.config["buddy.shares"] = {}
+			self.config["buddy.shares"]["database"] = file
+			self.refreshConfigDisplay()
+			
+	def OnOpenImage(self, widget):
+		newimage = self.OpenImage(widget, _("Select an Userinfo Image"), ["*.jpg", "*.jpeg", "*.png","*.bmp", "*.xpm", "*.ico","*.gif"])
+		if newimage != None:
+			try:
+				shutil.copy(newimage, self.config["userinfo"]["image"] )
+# 				os.system("cp \"%s\" \"%s\"" %(newimage, self.config["userinfo"]["image"] ))
+			except Exception, e:
+				self.Bug("Creating image", str(e))
+			self.refreshConfigDisplay()
+			
+	def OnClearImage(self, widget):
+# 		newimage = self.OpenImage(widget, _("Select an Userinfo Image"), ["*.jpg", "*.jpeg", "*.png","*.bmp", "*.xpm", "*.ico","*.gif"])
+		
+		os.remove(self.config["userinfo"]["image"])
+		image = file(self.config["userinfo"]["image"], "w")
+		image.close()
+# 		print image
+# 		image.flush()
+#   		image.write("")
+# 		image.close()
+		self.refreshConfigDisplay()
+			
+	def Bug(self, where, message):
+		try:
+			win = BugDialog(self, where, message)
+			win.set_title("Bug Detected")
+			win.show()
+			win.run()
+			win.destroy()
+		
+		except Exception,e:
+			print e
+			
+	def OpenDirectory(self, widget, title):
+		dialog = gtk.FileChooserDialog(title=title, parent=None, action=gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER, buttons=(gtk.STOCK_OK, gtk.RESPONSE_ACCEPT, gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT))
+		dialog.set_select_multiple(False)
+		dialog.set_current_folder_uri("file://"+pwd.getpwuid(os.getuid())[5])
+# 		ff = gtk.FileFilter()
+# 		ff.add_pattern("*.xml")
+# 		dialog.set_property("filter", ff)
+		response = dialog.run()
+		
+		if response == gtk.RESPONSE_ACCEPT:
+			
+			res = dialog.get_filenames()
+			for dir in res:
+				directory = dir
+		else:
+			directory = res = None
+		
+		dialog.destroy()
+		return directory
+		
 	def OpenConfig(self, widget):
 		dialog = gtk.FileChooserDialog(title="Select the Museek Daemon Config", parent=None, action=gtk.FILE_CHOOSER_ACTION_OPEN, buttons=(gtk.STOCK_OK, gtk.RESPONSE_ACCEPT, gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT))
 		dialog.set_select_multiple(False)
