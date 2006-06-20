@@ -116,6 +116,7 @@ class PopupMenu(gtk.Menu):
 	def OnAdd(self, widget):
 # 		print self.node
 		key, value = self.app.input_box(title="Edit Config setting", message="Add Key", message2="Add Value", key="", value="", modal= True, List=[], vlist=[], second=True)
+		print key
 		if key == None:
 			return
 		if key == "" or key.isspace():
@@ -236,18 +237,21 @@ class EntryDialog( gtk.Dialog):
 	
         button.grab_default()
         button = gtk.Button("Cancel")
-        button.connect("clicked", self.quit)
+        button.connect("clicked", self.close)
         button.set_flags(gtk.CAN_DEFAULT)
 	
         self.action_area.pack_start(button)
         button.show()
         
+    def close(self, w=None, event=None):
+	self.ret = self.ret2 = None
+        self.quit()
 	
     def quit(self, w=None, event=None):
-	self.ret = self.ret2 = None
+
         self.hide()
         self.destroy()
-        #gtk.main_quit()
+
 	
 	
     def click(self, button):
