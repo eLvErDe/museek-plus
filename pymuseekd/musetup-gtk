@@ -1858,7 +1858,8 @@ class MuseekSetupGTK:
 					parents[num] =  store.append(None, [key, value, num])
 				num += 1
 			self.parents[name] = parents
-
+		else:
+			self.config[name] = {}
 	
 	
 	def populate_dialogs(self):
