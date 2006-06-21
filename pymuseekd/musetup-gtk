@@ -105,7 +105,7 @@ class PopupMenu(gtk.Menu):
 		self.app.populate_dialogs()
 		
 	def OnAddNode(self, widget):
-		self.node, value = self.app.input_box(title="Edit Config setting", message="Add Node", message2="", key="", value="", modal= True, List=[], vlist=[], second=False)
+		self.node, value = self.app.input_box(title=_("Edit Config setting"), message=_("Add Node"), message2="", key="", value="", modal= True, List=[], vlist=[], second=False)
 		if self.node == None:
 			return
 		if self.node not in self.app.parents["config"]:
@@ -119,7 +119,7 @@ class PopupMenu(gtk.Menu):
 	
 	def OnAdd(self, widget):
 
-		key, value = self.app.input_box(title="Edit Config setting", message="Add Key", message2="Add Value", key="", value="", modal= True, List=[], vlist=[], second=True)
+		key, value = self.app.input_box(title=_("Edit Config setting"), message=_("Add Key"), message2=_("Add Value"), key="", value="", modal= True, List=[], vlist=[], second=True)
 
 		if key == None:
 			return
@@ -152,7 +152,7 @@ class PopupMenu(gtk.Menu):
 					
 	def OnEdit(self, widget):
 
-		key, value = self.app.input_box(title="Edit Config setting", message="Edit Key", message2="Edit Value", key=self.key, value=self.value, modal= True, List=[], vlist=[], second=True)
+		key, value = self.app.input_box(title=_("Edit Config setting"), message=_("Edit Key"), message2=_("Edit Value"), key=self.key, value=self.value, modal= True, List=[], vlist=[], second=True)
 
 		if key == None:
 			return
@@ -198,7 +198,7 @@ class BugDialog( gtk.Dialog):
 			label2 = gtk.Label(message)
 			box.pack_start(label2)
 			label2.show()
-		button = gtk.Button("OK")
+		button = gtk.Button(_("OK"))
 		button.connect("clicked", self.quit)
 		button.set_flags(gtk.CAN_DEFAULT)
 		self.action_area.pack_start(button)
@@ -254,7 +254,7 @@ class EntryDialog( gtk.Dialog):
 	if value is not None:
 		self.combov.child.set_text(value)
 	self.combov.grab_focus()
-	if message2 == "Encoding":
+	if message2 == _("Encoding"):
 		for encoding in Mapp.encodings:
 			self.combov.append_text(encoding)
 	if second == True and message2 != None and message2 != "":
@@ -262,14 +262,14 @@ class EntryDialog( gtk.Dialog):
 	
 	box.pack_start(self.combov)
 	
-        button = gtk.Button("OK")
+        button = gtk.Button(_("OK"))
         button.connect("clicked", self.click)
         button.set_flags(gtk.CAN_DEFAULT)
         self.action_area.pack_start(button)
         button.show()
 	
         button.grab_default()
-        button = gtk.Button("Cancel")
+        button = gtk.Button(_("Cancel"))
         button.connect("clicked", self.close)
         button.set_flags(gtk.CAN_DEFAULT)
 	
@@ -317,7 +317,7 @@ class MuseekSetupGTK:
 			self.MuseekSetupGTK.set_position(gtk.WIN_POS_CENTER)
 			self.MuseekSetupGTK.add_accel_group(self.accel_group)
 			self.MuseekSetupGTK.show()
-		self.MuseekSetupGTK.set_title(("Museek Setup GTK") + " " + version)
+		self.MuseekSetupGTK.set_title(_("Museek Setup GTK") + " " + version)
 		self.MuseekSetupGTK.connect("destroy", self.window_quit)
 		self.MuseekSetupGTK.connect("delete_event", self.window_quit)
 		self.EntryDialog = EntryDialog(self)
@@ -336,20 +336,20 @@ class MuseekSetupGTK:
 		
 		connect_menu = gtk.Menu()
 		
-		menuitem1 = gtk.MenuItem(("_File"))
+		menuitem1 = gtk.MenuItem(_(("_File")))
 		menuitem1.show()
 		
-		open1 = gtk.MenuItem("_Open Museek config XML")
+		open1 = gtk.MenuItem(_("_Open Museek config XML"))
 		open1.connect("activate", self.OpenConfig)
 		open1.add_accelerator("activate", self.accel_group, gtk.gdk.keyval_from_name("O"), gtk.gdk.MOD1_MASK, gtk.ACCEL_VISIBLE)
 		open1.show()
 		
-		save1 = gtk.MenuItem("_Save config XML to disk")
+		save1 = gtk.MenuItem(_("_Save config XML to disk"))
 		save1.connect("activate", self.Save)
 		save1.add_accelerator("activate", self.accel_group, gtk.gdk.keyval_from_name("S"), gtk.gdk.MOD1_MASK, gtk.ACCEL_VISIBLE)
 		save1.show()
 		
-		quit1 = gtk.MenuItem("_Quit Museek Setup")
+		quit1 = gtk.MenuItem(_("_Quit Museek Setup"))
 		quit1.connect("activate", self.window_quit, "")
 		quit1.add_accelerator("activate", self.accel_group, gtk.gdk.keyval_from_name("Q"), gtk.gdk.MOD1_MASK, gtk.ACCEL_VISIBLE)
 		quit1.show()				
@@ -383,7 +383,7 @@ class MuseekSetupGTK:
 		mu_treeview.set_property("rules-hint", True)
 		lists.set_sort_column_id(0, gtk.SORT_ASCENDING)
 
-		node_column = gtk.TreeViewColumn('Node')
+		node_column = gtk.TreeViewColumn(_('Node'))
 		cell = gtk.CellRendererText()
 		cell.set_property('mode', gtk.CELL_RENDERER_MODE_EDITABLE)
 		node_column.pack_start(cell, True)
@@ -424,10 +424,10 @@ class MuseekSetupGTK:
 		self.popup_menu2 = popup2 = PopupMenu(self, "nodes")
 		
 		self.popup_menu.setup(
-			(("_Edit Key"), popup.OnEdit),
-			(("_Delete Key"), popup.OnDelete), )
+			(_("_Edit Key"), popup.OnEdit),
+			(_("_Delete Key"), popup.OnDelete), )
 			
-		self.popup_menu2.setup( (("_Add Node"), popup2.OnAddNode), (("_Add Key"), popup2.OnAdd), (("_Delete Node!"), popup2.OnDeleteNode), )
+		self.popup_menu2.setup( (_("_Add Node"), popup2.OnAddNode), (_("_Add Key"), popup2.OnAdd), (_("_Delete Node!"), popup2.OnDeleteNode), )
 				
 		mu_treeview.connect("button_press_event", self.OnPopupMenu, "config", "")
 		self.Statusbar = gtk.Statusbar()
@@ -553,12 +553,12 @@ class MuseekSetupGTK:
 		self.vbox3.show()
 		self.vbox3.set_spacing(5)
 	
-		self.hbox6 = gtk.HBox(False, 0)
+		self.hbox6 = gtk.HBox(False, 5)
 		self.hbox6.show()
-		self.hbox6.set_spacing(0)
+		self.hbox6.set_spacing(5)
 	
 		self.default___Label = gtk.Label(_("Default: "))
-		self.default___Label.set_padding(0, 0)
+		self.default___Label.set_padding(5, 0)
 		self.default___Label.show()
 		self.hbox6.pack_start(self.default___Label, False, False, 0)
 	
@@ -576,12 +576,12 @@ class MuseekSetupGTK:
 	
 		self.vbox3.pack_start(self.hbox6, True, True, 0)
 
-		self.hbox7 = gtk.HBox(False, 0)
+		self.hbox7 = gtk.HBox(False, 5)
 		self.hbox7.show()
-		self.hbox7.set_spacing(0)
+		self.hbox7.set_spacing(5)
 	
 		self.filesystem_Label = gtk.Label(_("Filesystem: "))
-		self.filesystem_Label.set_padding(0, 0)
+		self.filesystem_Label.set_padding(5, 0)
 		self.filesystem_Label.show()
 		self.hbox7.pack_start(self.filesystem_Label, False, False, 0)
 	
@@ -602,8 +602,8 @@ class MuseekSetupGTK:
 		self.hbox8.show()
 		self.hbox8.set_spacing(5)
 	
-		self.network_Label = gtk.Label(_("Network"))
-		self.network_Label.set_padding(0, 0)
+		self.network_Label = gtk.Label(_("Network:"))
+		self.network_Label.set_padding(5, 0)
 		self.network_Label.show()
 		self.hbox8.pack_start(self.network_Label, False, False, 0)
 	
@@ -1959,7 +1959,7 @@ class MuseekSetupGTK:
 			# Alerts
 			self.createTreeFor( self.AlertsTreestore, self.AlertsTreeview, "alerts")
 		except Exception, e:
-			self.Bug("Populating the Dialogs with config data failed:", str(e))
+			self.Bug(_("Populating the Dialogs with config data failed:"), str(e))
 			
 	def ServerHostChanged(self, widget):
 		if "server" in self.config:
@@ -2069,7 +2069,7 @@ class MuseekSetupGTK:
  		try:
 			string = self.userinfoBuffer.get_text(self.userinfoBuffer.get_start_iter(), self.userinfoBuffer.get_end_iter())
 		except Exception, e:
-			self.Bug("Loading userinfo into the Config failed..", str(e))
+			self.Bug(_("Loading userinfo into the Config failed.."), str(e))
 			
 		if string is not None:
 			self.config["userinfo"]["text"] = string
@@ -2092,7 +2092,7 @@ class MuseekSetupGTK:
 					parents[node][num] = lists.append(parents[node][0], [ "", str(key), "", node, num ])
 				num += 1
 					
-	def input_box(self, title="Input Box", message="", message2= "", key='', value=None, modal= True, List=[], vlist=[], second=True):
+	def input_box(self, title=_("Input Box"), message="", message2= "", key='', value=None, modal= True, List=[], vlist=[], second=True):
 		try:
 			win = EntryDialog(self, message,  message2, key, value, modal, List, vlist, second)
 			win.set_title(title)
@@ -2139,7 +2139,7 @@ class MuseekSetupGTK:
 		try:
 			self.readConfig(self.CONFIG_PATH)
 		except Exception, e:
-			self.Bug("Config failed, reading from template", str(e))
+			self.Bug(_("Config failed, reading from template"), str(e))
 			self.readTemplate()
 			self.refreshConfigDisplay()
 			
@@ -2219,9 +2219,9 @@ class MuseekSetupGTK:
 		
 	def AddItemToList(self, node, message, message2):
 		
-		key, value = self.input_box(title="Add Config setting", message=message, message2=message2, key="", value="", modal= True, List=[], vlist=[], second=True)
+		key, value = self.input_box(title=_("Add Config setting"), message=message, message2=message2, key="", value="", modal= True, List=[], vlist=[], second=True)
 		if key in self.config[node]:
-			self.Bug("Item %s already in the %s list. Please edit instead," %(key, node), "")
+			self.Bug(_("Item %s already in the %s list. Please edit instead.") %(key, node), "")
 			return
 		
 		if node == None or key == None:
@@ -2253,31 +2253,31 @@ class MuseekSetupGTK:
 			
 			
 	def OnAddTrusted(self, widget):
-		self.AddItemToList("trusted", "Trusted User", "Comment")
+		self.AddItemToList("trusted", _("Trusted User"), _("Comment"))
 	
 	def OnAddBuddy(self, widget):
-		self.AddItemToList("buddies", "Buddied User", "Comment")
+		self.AddItemToList("buddies", _("Buddied User"), _("Comment"))
 	
 	def OnAddBanned(self, widget):
-		self.AddItemToList("banned", "Banned User", "Comment")
+		self.AddItemToList("banned", _("Banned User"), _("Comment"))
 
 	def OnAddInterface(self, widget):
-		self.AddItemToList("interfaces.bind", "Socket / Port", None)
+		self.AddItemToList("interfaces.bind", _("Socket / Port"), None)
 	
 	def OnAddIgnored(self, widget):
-		self.AddItemToList("ignored", "Ignored User", "Comment")
+		self.AddItemToList("ignored", _("Ignored User"), _("Comment"))
 	
 	def OnAddAlert(self, widget):
-		self.AddItemToList("alerts", "User Status Alert", None)
+		self.AddItemToList("alerts", _("User Status Alert"), None)
 	
 	def OnAddTicker(self, widget):
-		self.AddItemToList("tickers", "Ticker's Room", "Ticker")
+		self.AddItemToList("tickers", _("Ticker's Room"), _("Ticker"))
 		
 	def OnAddEncoding(self, widget):
-		self.AddItemToList("encoding.rooms", "Room", "Encoding")
+		self.AddItemToList("encoding.rooms", _("Room"), _("Encoding"))
 		
 	def OnAddAutojoin(self, widget):
-		self.AddItemToList("autojoin", "AutoJoin Room", None)
+		self.AddItemToList("autojoin", _("AutoJoin Room"), None)
 		
 	def TreeViewSelection3(self, model, path, iter):
 		key = model.get_value(iter, 0)
@@ -2320,7 +2320,7 @@ class MuseekSetupGTK:
 		treeview.get_selection().selected_foreach(self.TreeViewSelection3)
 		if self.selected_items != []:
 			key, value, num = self.selected_items
-			self.EditItemToList("encoding.rooms", "Room", "Encoding", key, value, num)
+			self.EditItemToList("encoding.rooms", _("Room"), _("Encoding"), key, value, num)
 		
 
 	def OnEditAlert(self, widget):
@@ -2331,7 +2331,7 @@ class MuseekSetupGTK:
 		if self.selected_items != []:
 			key, num = self.selected_items
 	 		
-			self.EditItemToList("alerts", "User Status Alert", None, key, None, num)
+			self.EditItemToList("alerts", _("User Status Alert"), None, key, None, num)
 			
 	def OnEditInterface(self, widget):
 		# 2 column treeview
@@ -2341,7 +2341,7 @@ class MuseekSetupGTK:
 		if self.selected_items != []:
 			key, num = self.selected_items
 	 		
-			self.EditItemToList("interfaces.bind", "Socket / Port", None, key, None, num)
+			self.EditItemToList("interfaces.bind", _("Socket / Port"), None, key, None, num)
 			
 	def OnEditAutojoin(self, widget):
 		# 2 column treeview
@@ -2351,7 +2351,7 @@ class MuseekSetupGTK:
 		if self.selected_items != []:
 			key, num = self.selected_items
 	 		
-			self.EditItemToList("autojoin", "AutoJoin Room", None, key, None, num)
+			self.EditItemToList("autojoin", _("AutoJoin Room"), None, key, None, num)
 						
 	def OnEditTicker(self, widget):
 		# 3 column treeview
@@ -2360,7 +2360,7 @@ class MuseekSetupGTK:
 		treeview.get_selection().selected_foreach(self.TreeViewSelection3)
 		if self.selected_items != []:
 			key, value, num = self.selected_items
-			self.EditItemToList("tickers", "Ticker's Room", "Ticker", key, value, num)
+			self.EditItemToList("tickers", _("Ticker's Room"), _("Ticker"), key, value, num)
 			
 	def OnEditTrusted(self, widget):
 		# 3 column treeview
@@ -2369,7 +2369,7 @@ class MuseekSetupGTK:
 		treeview.get_selection().selected_foreach(self.TreeViewSelection3)
 		if self.selected_items != []:
 			key, value, num = self.selected_items
-			self.EditItemToList("trusted", "Trusted User", "Comment", key, value, num)
+			self.EditItemToList("trusted", _("Trusted User"), _("Comment"), key, value, num)
 			
 	def OnEditBuddy(self, widget):
 		# 3 column treeview
@@ -2378,7 +2378,7 @@ class MuseekSetupGTK:
 		treeview.get_selection().selected_foreach(self.TreeViewSelection3)
 		if self.selected_items != []:
 			key, value, num = self.selected_items
-			self.EditItemToList("buddies", "Buddied User", "Comment", key, value, num)
+			self.EditItemToList("buddies", _("Buddied User"), _("Comment"), key, value, num)
 	def OnEditBanned(self, widget):
 		# 3 column treeview
 		treeview = self.encodingsTreeview
@@ -2386,7 +2386,7 @@ class MuseekSetupGTK:
 		treeview.get_selection().selected_foreach(self.TreeViewSelection3)
 		if self.selected_items != []:
 			key, value, num = self.selected_items
-			self.EditItemToList("banned", "Banned User", "Comment", key, value, num)
+			self.EditItemToList("banned", _("Banned User"), _("Comment"), key, value, num)
 	
 	
 
@@ -2398,7 +2398,7 @@ class MuseekSetupGTK:
 		treeview.get_selection().selected_foreach(self.TreeViewSelection3)
 		if self.selected_items != []:
 			key, value, num = self.selected_items
-			self.EditItemToList("ignored", "Ignored User", "Comment", key, value, num)
+			self.EditItemToList("ignored", _("Ignored User"), _("Comment"), key, value, num)
 
 	def RemoveItemFromList(self, node, key, value, num):
 		if node == None or key == None:
@@ -2518,7 +2518,7 @@ class MuseekSetupGTK:
 		text = self.OpenFile(widget, _("Import Userinfo from a text file"), ["*"])
 		if text != None:
 			if os.path.getsize(text) > 100000:
-				self.Bug("Userinfo file is greater than 100KBytes, not using.", "")
+				self.Bug(_("Userinfo file is greater than 100KBytes, not using."), "")
 				return
 			textfile = open(text)
 
@@ -2582,9 +2582,9 @@ class MuseekSetupGTK:
 		try:
 			win = BugDialog(self, where, message)
 			if message != "":
-				win.set_title("Bug Detected")
+				win.set_title(_("Bug Detected"))
 			else:
-				win.set_title("Problem Detected")
+				win.set_title(_("Problem Detected"))
 			win.show()
 			win.run()
 			win.destroy()
@@ -2611,7 +2611,7 @@ class MuseekSetupGTK:
 		return directory
 		
 	def OpenConfig(self, widget):
-		dialog = gtk.FileChooserDialog(title="Select the Museek Daemon Config", parent=None, action=gtk.FILE_CHOOSER_ACTION_OPEN, buttons=(gtk.STOCK_OK, gtk.RESPONSE_ACCEPT, gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT))
+		dialog = gtk.FileChooserDialog(title=_("Select the Museek Daemon Config"), parent=None, action=gtk.FILE_CHOOSER_ACTION_OPEN, buttons=(gtk.STOCK_OK, gtk.RESPONSE_ACCEPT, gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT))
 		dialog.set_select_multiple(False)
 		dialog.set_current_folder_uri("file://"+pwd.getpwuid(os.getuid())[5]+"/.museekd")
 		ff = gtk.FileFilter()
