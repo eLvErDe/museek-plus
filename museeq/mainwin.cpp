@@ -115,6 +115,7 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 	mMenuSettings->insertItem(tr("Pick &Icon Theme... (Requires Restart)"), this, SLOT(changeTheme()), 0, 4);
 	mMenuSettings->insertItem(tr("Show &Tickers"), this, SLOT(toggleTickers()), 0, 5);
 	mMenuSettings->insertItem(tr("Show &Log"), this, SLOT(toggleLog()), 0, 6);
+	mMenuSettings->insertItem(tr("Show T&imestamps"), this, SLOT(toggleTimestamps()), 0, 7);
 	mMenuSettings->insertSeparator();
 	mMenuSettings->setItemEnabled(1, false);
 	mMenuSettings->setItemEnabled(2, false);
@@ -124,6 +125,8 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 	mMenuSettings->setItemChecked(5, museeq->mShowTickers);
 	mMenuSettings->setItemEnabled(6, false);
 	mMenuSettings->setItemChecked(6, museeq->mShowStatusLog);
+	mMenuSettings->setItemEnabled(7, false);
+	mMenuSettings->setItemChecked(7, museeq->mShowTimestamps);
 	menuBar()->insertItem(tr("&Settings"), mMenuSettings);
 	mMenuModes = new QPopupMenu(this);
 	mMenuModes->insertItem( IMG("chatroom-small"), tr("&Chat Rooms"), this, SLOT(changeCMode()), 0, 0);
@@ -533,6 +536,7 @@ void MainWindow::slotDisconnected() {
 
 	mMenuSettings->setItemEnabled(5, false);
 	mMenuSettings->setItemEnabled(6, false);
+	mMenuSettings->setItemEnabled(7, false);
 }
 
 void MainWindow::slotError(int e) {
@@ -563,6 +567,8 @@ void MainWindow::slotLoggedIn(bool success, const QString& msg) {
 		mMenuSettings->setItemChecked(5, museeq->mShowTickers);
 		mMenuSettings->setItemEnabled(6, true);
 		mMenuSettings->setItemChecked(6, museeq->mShowStatusLog);
+		mMenuSettings->setItemEnabled(7, true);
+		mMenuSettings->setItemChecked(7, museeq->mShowTimestamps);
 	} else {
 		statusBar()->message(tr("Login error: ") + msg);
 		mMenuFile->setItemEnabled(0, true);
@@ -782,6 +788,12 @@ void MainWindow::toggleTickers() {
 		museeq->setConfig("museeq.tickers", "show", "false");
 	else if (museeq->mShowTickers == false)
 		museeq->setConfig("museeq.tickers", "show", "true");
+}
+void MainWindow::toggleTimestamps() {
+	if (museeq->mShowTimestamps == true)
+		museeq->setConfig("museeq.text", "showTimestamps", "false");
+	else if (museeq->mShowTimestamps == false)
+		museeq->setConfig("museeq.text", "showTimestamps", "true");
 }
 void MainWindow::toggleLog() {
 	if (museeq->mShowStatusLog == true)

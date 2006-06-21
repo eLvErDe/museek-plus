@@ -75,6 +75,7 @@ Museeq::Museeq(QApplication * app)
 	mFontMessage =  "";
 	mOnlineAlert =  false;
 	mColorBanned = mColorBuddied = mColorTime = mColorNickname = mColorTrusted = mColorRemote = mColorMe = "";
+	mShowTimestamps = true;
 
 	connect(mDriver, SIGNAL(connectionClosed()), SLOT(slotConnectionClosed()));
 	connect(mDriver, SIGNAL(error(int)), SLOT(slotError(int)));
@@ -305,20 +306,29 @@ void Museeq::slotConfigSet(const QString& domain, const QString& key, const QStr
 			mFontTime = value;}
 		else if (key == "fontMessage") {
 			mFontMessage = value;}
-		else if (key == "colorBanned") {
-			mColorBanned = value;}
-		else if (key == "colorBuddied") {
-			mColorBuddied = value;}
-		else if (key == "colorTrusted") {
-			mColorTrusted = value;}
-		else if (key == "colorMe") {
-			mColorMe = value;}
-		else if (key == "colorNickname") {
-			mColorNickname = value;}
-		else if (key == "colorRemote") {
-			mColorRemote = value;}
-		else if (key == "colorTime") {
-			mColorTime = value;}
+		else if (key == "showTimestamps") {
+			if(value == "true" || value == true) {
+				mShowTimestamps = true;
+				mMainWin->mMenuSettings->setItemChecked(7, true);
+			} else if(value == "false" || value == false) {
+				mShowTimestamps = false;
+				mMainWin->mMenuSettings->setItemChecked(7, false);
+			}
+		} else if (key == "colorBanned") {
+			mColorBanned = value;
+		} else if (key == "colorBuddied") {
+			mColorBuddied = value;
+		} else if (key == "colorTrusted") {
+			mColorTrusted = value;
+		} else if (key == "colorMe") {
+			mColorMe = value;
+		} else if (key == "colorNickname") {
+			mColorNickname = value;
+		} else if (key == "colorRemote") {
+			mColorRemote = value;
+		} else if (key == "colorTime") {
+			mColorTime = value;
+		}
 	} else if(domain == "banned") {
 		mBanned += key;
 		emit addedBanned(key, value);

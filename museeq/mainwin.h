@@ -73,6 +73,7 @@ public slots:
 	void checkPrivileges();
 	void getOwnShares();
 	void toggleTickers();
+	void toggleTimestamps();
 	void toggleLog();
 	void toggleVisibility();
 

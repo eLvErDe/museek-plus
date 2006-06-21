@@ -206,8 +206,12 @@ void ChatRoom::setUsers(const NRoom& r) {
 void ChatRoom::userJoined(const QString& _u, int _s, unsigned int _sp, unsigned int _f) {
 	if(mUserList->findItem(_u))
 		return;
-	if (! museeq->isIgnored(_u))
-		mLog->append(QString(_TIME+"<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+tr("%1 joined the room")+"</font></span>").arg(escape(_u)));
+	if (! museeq->isIgnored(_u)) {
+		if (museeq->mShowTimestamps)
+			mLog->append(QString(_TIME+"<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+tr("%1 joined the room")+"</font></span>").arg(escape(_u)));
+		else
+			mLog->append( QString("<span style='"+museeq->mFontMessage+"'><font color='" + museeq->mColorRemote + "'>"+ tr("%1 joined the room")+"</font></span>" ).arg(escape(_u) ) ) ;
+	}
 	if(museeq->isBuddy(_u)) {
 		mUserList->add(_u , _s, _sp, _f);
 	} else if(museeq->isBanned(_u)) {
@@ -226,8 +230,12 @@ void ChatRoom::userLeft(const QString& _u) {
 	if(! mUserList->findItem(_u))
 		return;
 	mStatus.remove(_u);
-	if (! museeq->isIgnored(_u))
-		mLog->append(QString(_TIME+"</font></span><span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+tr("%1 left the room")+"</font></span>").arg(escape(_u)));
+	if (! museeq->isIgnored(_u))  {
+		if (museeq->mShowTimestamps) 
+			mLog->append(QString(_TIME+"</font></span><span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+tr("%1 left the room")+"</font></span>").arg(escape(_u)));
+		else
+			mLog->append(QString("</font></span><span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+tr("%1 left the room")+"</font></span>").arg(escape(_u)));
+	}
 	mUserList->remove(_u);
 	
 	mChatPanel->entry()->removeCompletor(_u);
@@ -241,7 +249,10 @@ void ChatRoom::setUserStatus(const QString& _u, uint _s) {
 	uint old_s = *it;
 	if (! museeq->isIgnored(_u)) {
 		if(old_s > 0 && _s != old_s) {
-			QString l = _TIME;
+			QString l = "";
+			if (museeq->mShowTimestamps)
+				l += _TIME;
+			
 			if(_s == 1)
 				l += QString("<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+tr("%1 has gone away")+"</font></span>").arg(escape(_u));
 			else if(_s == 2)

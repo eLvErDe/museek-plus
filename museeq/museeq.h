@@ -44,7 +44,7 @@ class Museeq : public QObject {
 	
 public:
 	Museeq(QApplication *);
-	bool mShowTickers, mShowStatusLog, mOnlineAlert;
+	bool mShowTickers, mShowStatusLog, mOnlineAlert, mShowTimestamps;
 	inline MuseekDriver* driver() const { return mDriver; }
 	inline bool isConnected() const { return mConnected; }
 	
@@ -160,9 +160,7 @@ public slots:
 	void connectServer();
 	void reloadShares();
 	void saveSettings();
-// public signals:
-// 	void userExists(const QString&);
-
+	 
 signals:
 	// Museekd related signals
 	void connected();
