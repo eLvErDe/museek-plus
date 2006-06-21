@@ -10,7 +10,7 @@ MUSEEK DAEMON
 * SCons can now set CCFLAGS with the CFLAGS option
 
 MUSEEQ
-
+* Added Timestamp toggle to the Settings menu
 * Made user status appear in Private Chat (* user is away || * user is offline )
 * Ported all .ui dialogs to cpp
 * Added encodings comboboxes to settings dialog, as well as making the password dialog protected with ****s

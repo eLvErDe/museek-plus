@@ -136,40 +136,47 @@ scripts = Split("""
   uptime.qs
   nowplaying.qs
 """)
-ts_templates= ["fr", "it", "pl"]
-
-translations = []
-qm_files = []
-def make_qm(ts_templates):
-	for lang in ts_templates:
-		translations.append(lang)
-
-make_qm(ts_templates)
-# translations = ["museeq_de.qm", "museeq_fr.qm"]
-
-
 
 from muscons import Relay
 
 Import('env')
 
-def iface_build(target, source, env):
-    from muscons import IfaceGen
-    IfaceGen(str(target[0]), str(source[0]), str(source[1]))
-    return 0
+ts_templates= ["fr", "it", "pl"]
+tr_dir = "translations/"
+translations = []
+qm_files = []
+
+def make_qm(ts_templates):
+	for lang in ts_templates:
+		translations.append(lang)
+
+make_qm(ts_templates)
+
 
 
 def translation_build(target, source, env):
-# 	print source[0], target[0]
+ 	print source[0], target[0]
+# 	print source[1]
+	ss = ""
+	for s in source:
+		ss +=  str(s)+" "
 	if os.path.exists(str(source[0])):
+# 	if os.path.exists(str(tr_dir+"museeq_"++".ts")):
 	#if os.path.exists("museeq_"+lang+".ts"):
+
 		print "Language: %s found, translation to be built" % lang
-		os.system("lrelease "+ str(source[0])+" -qm "+ str(target[0]))
+		os.system("lrelease "+ str(ss)+" -qm "+ str(target[0]))
 	else:
 		print "Language: %s not found, translation not built" % lang
 		
 	
 	return 0
+
+
+def iface_build(target, source, env):
+    from muscons import IfaceGen
+    IfaceGen(str(target[0]), str(source[0]), str(source[1]))
+    return 0
 
 def file_copy(target, source, env):
     open(str(target[0]), 'w').write(open(str(source[0])).read())
@@ -270,9 +277,14 @@ env_qt.Append(LIBPATH = env['LIBPATH_MUCIPHER'])
 env_qt.Append(LIBS = ['ucipher'])
 env_qt.Command('museekmessages.h', ['museekmessages.h.in', '../../museekd/IfaceMessages.hh'], iface_build)
 env_qt.Command('museekdriver.cpp', ['museekdriver.cpp.in', '../../museekd/IfaceMessages.hh'], iface_build)
+
 for lang in translations:
-	env_qt.Command("museeq_"+lang+".qm", "museeq_"+lang+".ts", translation_build)
-	qm_files.append("museeq_"+lang+".qm")
+	lsources = [ tr_dir+"museeq_"+lang+".ts" ]
+	if os.path.exists("../../museeq/"+tr_dir+"qt_"+lang+".ts"):
+		lsources.append(tr_dir+"qt_"+lang+".ts")
+	env_qt.Command(tr_dir+"museeq_"+lang+".qm", lsources, translation_build)
+	qm_files.append(tr_dir+"museeq_"+lang+".qm")
+
 museeq = env_qt.Program('museeq', sources)
 
 bin_install = env_qt.Install(env['DESTDIR'] + env['BINDIR'], [museeq])
