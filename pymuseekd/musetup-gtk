@@ -1720,19 +1720,10 @@ class MuseekSetupGTK:
 		self.sharesDBLabel = gtk.Label(_("Shares DBs"))
 		self.sharesDBLabel.set_padding(0, 0)
 		self.sharesDBLabel.show()
-		
-		self.scrolledwindow10 = gtk.ScrolledWindow()
-		self.scrolledwindow10.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-		self.scrolledwindow10.show()
-		self.scrolledwindow10.set_shadow_type(gtk.SHADOW_NONE)
-	
-		self.viewport8 = gtk.Viewport()
-		self.viewport8.show()
-		self.viewport8.set_shadow_type(gtk.SHADOW_IN)
-	
-		self.hbox32 = gtk.HBox(False, 0)
-		self.hbox32.show()
-		self.hbox32.set_spacing(0)
+
+		self.alert_hbox = gtk.HBox(False, 0)
+		self.alert_hbox.show()
+		self.alert_hbox.set_spacing(0)
 	
 		self.alertScrollWindow = gtk.ScrolledWindow()
 		self.alertScrollWindow.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
@@ -1756,7 +1747,7 @@ class MuseekSetupGTK:
 		
 		self.alertScrollWindow.add(self.AlertsTreeview)
 	
-		self.hbox32.pack_start(self.alertScrollWindow, True, True, 0)
+		self.alert_hbox.pack_start(self.alertScrollWindow, True, True, 0)
 	
 		self.vbox14 = gtk.VBox(False, 5)
 		self.vbox14.show()
@@ -1784,16 +1775,12 @@ class MuseekSetupGTK:
 		
 		self.vbox14.pack_start(self.RemoveAlert, False, False, 0)
 	
-		self.hbox32.pack_start(self.vbox14, False, True, 0)
-	
-		self.viewport8.add(self.hbox32)
-	
-		self.scrolledwindow10.add(self.viewport8)
-	
+		self.alert_hbox.pack_start(self.vbox14, False, True, 0)
+
 		self.alertsLabel = gtk.Label(_("Alerts"))
 		self.alertsLabel.set_padding(0, 0)
 		self.alertsLabel.show()
-		self.notebook_users.append_page(self.scrolledwindow10, self.alertsLabel)
+		self.notebook_users.append_page(self.alert_hbox, self.alertsLabel)
 		self.notebook1.append_page(self.scrolledwindow1, self.label1)
 	
 		self.notebook1.append_page(self.scrolledwindow3, self.label3)
