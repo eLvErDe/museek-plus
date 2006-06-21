@@ -93,39 +93,40 @@ class PopupMenu(gtk.Menu):
 		return self
 				
 	def set_key(self, node, key, value, num):
-# 		print node, key, value, num
 		self.key = key
 		self.value = value
 		self.node = node
 		self.num = num
 		
 	def OnDeleteNode(self, widget):
-		self.app.treestore.remove(self.app.parents[self.node][0])
+		self.app.treestore.remove(self.app.parents["config"][self.node][0])
 		del self.app.config[self.node]
-		del self.app.parents[self.node]
+		del self.app.parents["config"][self.node]
+		self.app.populate_dialogs()
 		
 	def OnAddNode(self, widget):
 		self.node, value = self.app.input_box(title="Edit Config setting", message="Add Node", message2="", key="", value="", modal= True, List=[], vlist=[], second=False)
 		if self.node == None:
 			return
-		if self.node not in self.app.parents:
+		if self.node not in self.app.parents["config"]:
 			node = self.node
 			if node == "" or node.isspace():
 				return
-			self.app.parents[node]= {}
-			self.app.parents[node][0] = self.app.treestore.append(None, [node, "", "", node, 0])
+			self.app.parents["config"][node]= {}
+			self.app.parents["config"][node][0] = self.app.treestore.append(None, [node, "", "", node, 0])
 			self.app.config[self.node] = {}
+			self.app.populate_dialogs()
 	
 	def OnAdd(self, widget):
-# 		print self.node
+
 		key, value = self.app.input_box(title="Edit Config setting", message="Add Key", message2="Add Value", key="", value="", modal= True, List=[], vlist=[], second=True)
-		print key
+
 		if key == None:
 			return
 		if key == "" or key.isspace():
 			return
 		
-# 		print self.node, key, value, self.num
+
 		if value == None:
 			value = ""
 
@@ -136,50 +137,47 @@ class PopupMenu(gtk.Menu):
 			self.app.config[self.node][key] = value
 			z = 0
 			num = None
-			for n in self.app.parents[self.node].keys():
+			for n in self.app.parents["config"][self.node].keys():
 				if n != z:
 					num = z
 					break
 				z += 1
 			if num == None:
-				num = len(self.app.parents[self.node].keys())
-# 			num = len(self.app.parents[self.node])
-			self.app.parents[self.node][num] = self.app.treestore.append( self.app.parents[self.node][0],  ["", key, value,  self.node, num])
+				num = len(self.app.parents["config"][self.node].keys())
+
+			self.app.parents["config"][self.node][num] = self.app.treestore.append( self.app.parents["config"][self.node][0],  ["", key, value,  self.node, num])
+			self.app.populate_dialogs()
 		
 			
 					
 	def OnEdit(self, widget):
-# 		print self.node
+
 		key, value = self.app.input_box(title="Edit Config setting", message="Edit Key", message2="Edit Value", key=self.key, value=self.value, modal= True, List=[], vlist=[], second=True)
-# 		print self.node, key, value
+
 		if key == None:
 			return
 		if key == "" or key.isspace():
 			return
 		if value == None:
 			value = ""
-			if self.node in self.app.config:
-				if self.value != value or self.key != key:
-					# If value or key is different
-					self.app.config[self.node][key] = ""
-					self.app.treestore.set( self.app.parents[self.node][self.num],  0, "", 1, key, 2, value, 3, self.node)
-		else:
-			if self.node in self.app.config:
-				if self.value != value or self.key != key:
-					# If value or key is different
-					self.app.config[self.node][key] = value
-					self.app.treestore.set( self.app.parents[self.node][self.num],  0, "", 1, key, 2, value, 3, self.node)
+		if self.node in self.app.config:
+			if self.value != value or self.key != key:
+				# If value or key is different
+				self.app.config[self.node][key] = value
+				self.app.treestore.set( self.app.parents["config"][self.node][self.num],  0, "", 1, key, 2, value, 3, self.node)
 		if self.key != key:
 			# Remove old key
 			del self.app.config[self.node][self.key]
-		
+		if self.value != value or self.key != key:
+			self.app.populate_dialogs()
 		
 
 		
 	def OnDelete(self, widget):
-		self.app.treestore.remove(self.app.parents[self.node][self.num])
+		self.app.treestore.remove(self.app.parents["config"][self.node][self.num])
 		del self.app.config[self.node][self.key]
-		del self.app.parents[self.node][self.num] 
+		del self.app.parents["config"][self.node][self.num]
+		self.app.populate_dialogs()
 		
 class BugDialog( gtk.Dialog):
 	def __init__(self, Mapp, where="", message="", modal= True,):
@@ -212,7 +210,7 @@ class BugDialog( gtk.Dialog):
 		self.destroy()
 	
 class EntryDialog( gtk.Dialog):
-    def __init__(self, Mapp, message="", message2="", key='', value=None, modal= True, List=[], v_list=[], second=True):
+    def __init__(self, Mapp, message="", message2=None, key='', value=None, modal= True, List=[], v_list=[], second=True):
         gtk.Dialog.__init__(self)
         self.connect("destroy", self.quit)
         self.connect("delete_event", self.quit)
@@ -230,8 +228,8 @@ class EntryDialog( gtk.Dialog):
             label.show()
 	    
 	self.combo = gtk.combo_box_entry_new_text()
-	#if "buddies" in Mapp.ProcessMessages.config.keys():
-	alist = List #Mapp.ProcessMessages.config["buddies"].keys()
+
+	alist = List
 	alist.sort()
 	for i in alist:
 		self.combo.append_text( i)
@@ -241,22 +239,25 @@ class EntryDialog( gtk.Dialog):
 	
 	self.combo.show()
 	
-        box.pack_start(self.combo)
-	if message2:
-            label2 = gtk.Label(message2)
-            box.pack_start(label2)
-	    if second == True:
-            	label2.show()
+	box.pack_start(self.combo)
+	if message2 != None and message2 != "":
+		label2 = gtk.Label(message2)
+		box.pack_start(label2)
+		if second == True:
+	  		label2.show()
 	self.combov = gtk.combo_box_entry_new_text()
-	#if "buddies" in Mapp.ProcessMessages.config.keys():
-	vlist = v_list #Mapp.ProcessMessages.config["buddies"].keys()
+	
+	vlist = v_list
 	vlist.sort()
 	for i in vlist:
 		self.combo.append_text( i)
 	if value is not None:
 		self.combov.child.set_text(value)
 	self.combov.grab_focus()
-	if second == True:
+	if message2 == "Encoding":
+		for encoding in Mapp.encodings:
+			self.combov.append_text(encoding)
+	if second == True and message2 != None and message2 != "":
 		self.combov.show()
 	
 	box.pack_start(self.combov)
@@ -313,7 +314,6 @@ class MuseekSetupGTK:
 		if create:
 			self.MuseekSetupGTK = gtk.Window(gtk.WINDOW_TOPLEVEL)
 			self.MuseekSetupGTK.set_default_size(600, 400)
-			#self.MuseekSetupGTK.set_title(("Nicoseek"))
 			self.MuseekSetupGTK.set_position(gtk.WIN_POS_CENTER)
 			self.MuseekSetupGTK.add_accel_group(self.accel_group)
 			self.MuseekSetupGTK.show()
@@ -324,6 +324,9 @@ class MuseekSetupGTK:
 		self.BugDialog = BugDialog(self)
 		self.CONFIG_PATH = CONFIG_PATH
 		self.TEMPLATE_PATH = DEFAULT_TEMPLATE
+		self.parents= {}
+		self.config= {}
+		self.importinguserinfo = 0
 		vbox_msetup = self.vbox_msetup = gtk.VBox()
 		vbox_msetup.set_spacing(2)
 		menubar1 = gtk.MenuBar()
@@ -372,12 +375,8 @@ class MuseekSetupGTK:
 		
 		self.dialogs()
 		
-		
 		sscroll = gtk.ScrolledWindow()
 		self.treestore = lists = gtk.TreeStore(  str, str, str, str, int )
-# 		lists = gtk.ListStore(str, str, str )
-		
-
 
 		# Users-in-room Listbox with users and files
 		self.mu_treeview =  mu_treeview = gtk.TreeView(lists)
@@ -394,7 +393,6 @@ class MuseekSetupGTK:
 		
 		cell2 = gtk.CellRendererText()
 		cell2.set_property('mode', gtk.CELL_RENDERER_MODE_ACTIVATABLE)
-# 		cell.set_property('cell-background', "#FFFFDD")
 		key_column.pack_start(cell2, True)
 		key_column.add_attribute(cell2, 'text', 1)
 		key_column.set_sort_column_id(1)
@@ -416,7 +414,7 @@ class MuseekSetupGTK:
 
 		sscroll.add(mu_treeview)
 		sscroll.show()		
-# 		vbox_msetup.pack_start(sscroll, True, True)
+
 		self.label_tree = gtk.Label(_("Settings Tree"))
 		self.label_tree.set_padding(0, 0)
 		self.label_tree.show()
@@ -471,16 +469,18 @@ class MuseekSetupGTK:
 		self.hbox2.show()
 		self.hbox2.set_spacing(5)
 	
-		self.label22 = gtk.Label(_("Server Host:"))
-		self.label22.set_padding(0, 0)
-		self.label22.show()
-		self.hbox2.pack_start(self.label22, False, False, 0)
+		self.Server_Label = gtk.Label(_("Server Host:"))
+		self.Server_Label.set_padding(0, 0)
+		self.Server_Label.show()
+		self.hbox2.pack_start(self.Server_Label, False, False, 0)
 	
 		self.EntryServerHost = gtk.Entry()
 		self.EntryServerHost.set_text("")
 		self.EntryServerHost.set_editable(True)
 		self.EntryServerHost.show()
 		self.EntryServerHost.set_visibility(True)
+		self.EntryServerHost.connect("changed", self.ServerHostChanged)
+
 		self.hbox2.pack_end(self.EntryServerHost, False, True, 0)
 	
 		self.vbox2.pack_start(self.hbox2, True, True, 0)
@@ -497,6 +497,8 @@ class MuseekSetupGTK:
 		self.ServerPort = gtk.SpinButton(aj)
 		self.ServerPort.set_numeric(True)
 		self.ServerPort.show()
+		self.ServerPort.connect("changed", self.ServerPortChanged)
+		
 		self.hbox5.pack_end(self.ServerPort, False, True, 0)
 	
 		self.vbox2.pack_start(self.hbox5, True, True, 0)
@@ -515,6 +517,7 @@ class MuseekSetupGTK:
 		self.EntryServerUsername.set_editable(True)
 		self.EntryServerUsername.show()
 		self.EntryServerUsername.set_visibility(True)
+		self.EntryServerUsername.connect("changed", self.ServerUsernameChanged)
 		self.hbox4.pack_end(self.EntryServerUsername, False, True, 0)
 	
 		self.vbox2.pack_start(self.hbox4, True, True, 0)
@@ -533,6 +536,8 @@ class MuseekSetupGTK:
 		self.EntryServerPassword.set_editable(True)
 		self.EntryServerPassword.show()
 		self.EntryServerPassword.set_visibility(False)
+		
+		self.EntryServerPassword.connect("changed", self.ServerPasswordChanged)
 		self.hbox3.pack_end(self.EntryServerPassword, False, True, 0)
 	
 		self.vbox2.pack_start(self.hbox3, True, True, 0)
@@ -565,6 +570,8 @@ class MuseekSetupGTK:
 	
 		self.defaultEncoding.set_model(self.defaultEncoding_List)
 		self.defaultEncoding.set_text_column(0)
+		self.defaultEncoding.connect("changed", self.EncodingDefaultChanged)
+		
 		self.hbox6.pack_end(self.defaultEncoding, False, True, 0)
 	
 		self.vbox3.pack_start(self.hbox6, True, True, 0)
@@ -583,7 +590,8 @@ class MuseekSetupGTK:
 		self.filesystemEncoding.show()
 		for encoding in self.encodings:
 			self.filesystemEncoding_List.append([encoding])
-	
+		self.filesystemEncoding.connect("changed", self.EncodingFSChanged)
+		
 		self.filesystemEncoding.set_model(self.filesystemEncoding_List)
 		self.filesystemEncoding.set_text_column(0)
 		self.hbox7.pack_end(self.filesystemEncoding, False, True, 0)
@@ -604,7 +612,8 @@ class MuseekSetupGTK:
 		self.networkEncoding.show()
 		for encoding in self.encodings:
 			self.networkEncoding_List.append([encoding])
-	
+		self.networkEncoding.connect("changed", self.EncodingNWChanged)
+		
 		self.networkEncoding.set_model(self.networkEncoding_List)
 		self.networkEncoding.set_text_column(0)
 		self.hbox8.pack_end(self.networkEncoding, False, True, 0)
@@ -637,6 +646,8 @@ class MuseekSetupGTK:
 		fp = gtk.Adjustment(value=2239, lower=1, upper=65535, step_incr=1, page_incr=0, page_size=0)
 		self.FirstPort = gtk.SpinButton(fp)
 		self.FirstPort.show()
+		self.FirstPort.connect("changed", self.FirstPortChanged)
+		
 		self.hbox33.pack_start(self.FirstPort, True, True, 0)
 	
 		self.lp_Label = gtk.Label(_("Last Soulseek Port:"))
@@ -646,6 +657,8 @@ class MuseekSetupGTK:
 		lp = gtk.Adjustment(value=2234, lower=1, upper=65535, step_incr=1, page_incr=0, page_size=0)
 		self.LastPort = gtk.SpinButton(lp)
 		self.LastPort.show()
+		self.LastPort.connect("changed", self.LastPortChanged)
+		
 		self.hbox33.pack_start(self.LastPort, True, True, 0)
 	
 		self.vbox2.pack_start(self.hbox33, True, True, 0)
@@ -685,6 +698,8 @@ class MuseekSetupGTK:
 		self.interfacePassword.set_editable(True)
 		self.interfacePassword.show()
 		self.interfacePassword.set_visibility(False)
+		self.interfacePassword.connect("changed", self.InterfacePasswordChanged)
+		
 		self.hbox11.pack_end(self.interfacePassword, False, True, 0)
 	
 		self.vbox4.pack_start(self.hbox11, False, True, 0)
@@ -707,6 +722,8 @@ class MuseekSetupGTK:
 		
 		self.interfacesTreestore = gtk.TreeStore(  str, int )
 		self.interfacesTreeview = gtk.TreeView(self.interfacesTreestore)
+		self.interfacesTreeview.set_property("rules-hint", True)
+		self.interfacesTreestore.set_sort_column_id(0, gtk.SORT_ASCENDING)
 		self.interfacesTreeview.show()
 		self.interfacesTreeview.set_headers_visible(True)
 		column = gtk.TreeViewColumn('Interfaces')
@@ -725,17 +742,27 @@ class MuseekSetupGTK:
 		self.vbox5.set_spacing(5)
 		self.vbox5.set_border_width(3)
 	
-		self.addInterface = gtk.Button()
-		self.addInterface.set_label(_("Add Interface"))
-		self.addInterface.show()
+		self.AddInterface = gtk.Button()
+		self.AddInterface.set_label(_("Add Interface"))
+		self.AddInterface.show()
 	
-		self.vbox5.pack_start(self.addInterface, False, False, 0)
+		self.vbox5.pack_start(self.AddInterface, False, False, 0)
+		
+		self.EditInterface = gtk.Button()
+		self.EditInterface.set_label(_("Edit Interface"))
+		self.EditInterface.show()
 	
-		self.removeInterface = gtk.Button()
-		self.removeInterface.set_label(_("Remove Interface"))
-		self.removeInterface.show()
-	
-		self.vbox5.pack_start(self.removeInterface, False, False, 0)
+		self.vbox5.pack_start(self.EditInterface, False, False, 0)
+		
+		self.RemoveInterface = gtk.Button()
+		self.RemoveInterface.set_label(_("Remove Interface"))
+		self.RemoveInterface.show()
+		
+		self.AddInterface.connect("clicked", self.OnAddInterface)
+		self.EditInterface.connect("clicked", self.OnEditInterface)
+		self.RemoveInterface.connect("clicked", self.OnRemoveInterface)
+		
+		self.vbox5.pack_start(self.RemoveInterface, False, False, 0)
 	
 		self.hbox10.pack_end(self.vbox5, False, True, 0)
 	
@@ -781,18 +808,22 @@ class MuseekSetupGTK:
 		self.privilege_buddies_Check.set_active(False)
 		self.privilege_buddies_Check.set_label(_("Privilege Buddies"))
 		self.privilege_buddies_Check.show()
+		self.privilege_buddies_Check.connect("clicked", self.PrivilegeBuddiesChanged)
+		
 		self.hbox12.pack_start(self.privilege_buddies_Check, False, False, 0)
 	
 		self.have_buddy_shares_Check = gtk.CheckButton()
 		self.have_buddy_shares_Check.set_active(False)
 		self.have_buddy_shares_Check.set_label(_("Enable Buddy Shares"))
 		self.have_buddy_shares_Check.show()
+		self.have_buddy_shares_Check.connect("clicked", self.EnableBuddySharesChanged)
 		self.hbox12.pack_start(self.have_buddy_shares_Check, False, False, 0)
 	
 		self.only_buddies_Check = gtk.CheckButton()
 		self.only_buddies_Check.set_active(False)
 		self.only_buddies_Check.set_label(_("Only Share to Buddies"))
 		self.only_buddies_Check.show()
+		self.only_buddies_Check.connect("clicked", self.OnlyBuddiesChanged)
 		self.hbox12.pack_start(self.only_buddies_Check, False, False, 0)
 	
 		self.vbox6.pack_start(self.hbox12, True, True, 0)
@@ -806,6 +837,8 @@ class MuseekSetupGTK:
 		self.trusting_uploads_Check.set_active(False)
 		self.trusting_uploads_Check.set_label(_("Allow Buddies to send you files"))
 		self.trusting_uploads_Check.show()
+		self.trusting_uploads_Check.connect("clicked", self.TrustUploadsChanged)
+		
 		self.hbox13.pack_start(self.trusting_uploads_Check, False, False, 0)
 	
 		self.vbox6.pack_start(self.hbox13, True, True, 0)
@@ -819,6 +852,8 @@ class MuseekSetupGTK:
 		self.user_warnings_Check.set_active(False)
 		self.user_warnings_Check.set_label(_("Send Automatic Warnings via Private Chat"))
 		self.user_warnings_Check.show()
+		self.user_warnings_Check.connect("clicked", self.UserWarningsChanged)
+		
 		self.hbox14.pack_start(self.user_warnings_Check, False, False, 0)
 	
 		self.vbox6.pack_start(self.hbox14, True, True, 0)
@@ -836,6 +871,8 @@ class MuseekSetupGTK:
 		
 		self.uploadSlots = gtk.SpinButton(us)
 		self.uploadSlots.show()
+		self.uploadSlots.connect("changed", self.UploadSlotsChanged)
+		
 		self.hbox15.pack_start(self.uploadSlots, False, True, 0)
 		
 		self.pabel= gtk.Label(_("Connection Mode:"))
@@ -846,16 +883,18 @@ class MuseekSetupGTK:
 		self.connectMode_List = gtk.ListStore(gobject.TYPE_STRING)
 		self.connectMode = gtk.ComboBoxEntry()
 		self.connectMode.show()
+		
+		
 		for item in ["passive", "active"]:
 			self.connectMode_List.append([item])
 	
 		self.connectMode.set_model(self.connectMode_List)
 		self.connectMode.set_text_column(0)
-		
+		self.connectMode.connect("changed", self.ConnectModeChanged)
 		self.hbox15.pack_start(self.connectMode, False, False, 0)
 		
 		self.vbox6.pack_start(self.hbox15, False, True, 0)
-	
+		
 		self.hbox16 = gtk.HBox(False, 5)
 		self.hbox16.show()
 		self.hbox16.set_spacing(5)
@@ -871,11 +910,14 @@ class MuseekSetupGTK:
 		self.EntryDownloadDIr.set_editable(True)
 		self.EntryDownloadDIr.show()
 		self.EntryDownloadDIr.set_visibility(True)
+		self.EntryDownloadDIr.connect("changed", self.DownloadDirChanged)
+		
 		self.hbox16.pack_start(self.EntryDownloadDIr, True, True, 0)
 	
 		self.downloadDirButton = gtk.Button()
 		self.downloadDirButton.set_label(_("Select Directory"))
 		self.downloadDirButton.show()
+		
 		self.downloadDirButton.connect("clicked", self.OnDownloadDir)
 		
 	
@@ -898,11 +940,14 @@ class MuseekSetupGTK:
 		self.EntryIncompleteDir.set_editable(True)
 		self.EntryIncompleteDir.show()
 		self.EntryIncompleteDir.set_visibility(True)
+		self.EntryIncompleteDir.connect("changed", self.IncompleteDirChanged)
+		
 		self.hbox17.pack_start(self.EntryIncompleteDir, True, True, 0)
 	
 		self.incompleteDirButton = gtk.Button()
 		self.incompleteDirButton.set_label(_("Select Directory"))
 		self.incompleteDirButton.show()
+		
 		self.incompleteDirButton.connect("clicked", self.OnIncompleteDir)
 	
 		self.hbox17.pack_end(self.incompleteDirButton, False, False, 0)
@@ -924,12 +969,16 @@ class MuseekSetupGTK:
 		self.EntryDownloadsDBase.set_editable(True)
 		self.EntryDownloadsDBase.show()
 		self.EntryDownloadsDBase.set_visibility(True)
+		self.EntryDownloadsDBase.connect("changed", self.DownloadDBChanged)
+		
 		self.dButtons_hbox.pack_start(self.EntryDownloadsDBase, True, True, 0)
 		
 		self.downloadsDBaseButton = gtk.Button()
 		self.downloadsDBaseButton.set_label(_("Select Database"))
 		self.downloadsDBaseButton.show()
+		
 		self.downloadsDBaseButton.connect("clicked", self.OnDownloadDBase)
+		
 		self.dButtons_hbox.pack_end(self.downloadsDBaseButton, False, False, 0)
 	
 		self.vbox6.pack_start(self.dButtons_hbox, True, True, 0)
@@ -941,14 +990,6 @@ class MuseekSetupGTK:
 		self.TransfersLabel = gtk.Label(_("Transfers"))
 		self.TransfersLabel.set_padding(0, 0)
 		self.TransfersLabel.show()
-		self.scrolledwindow2 = gtk.ScrolledWindow()
-		self.scrolledwindow2.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-		self.scrolledwindow2.show()
-		self.scrolledwindow2.set_shadow_type(gtk.SHADOW_NONE)
-	
-		self.viewport1 = gtk.Viewport()
-		self.viewport1.show()
-		self.viewport1.set_shadow_type(gtk.SHADOW_IN)
 	
 		self.notebook3 = gtk.Notebook()
 		self.notebook3.set_tab_pos(gtk.POS_TOP)
@@ -966,6 +1007,9 @@ class MuseekSetupGTK:
 	
 		self.autojoinTreestore = gtk.TreeStore(  str, int )
 		self.autojoinTreeview = gtk.TreeView(self.autojoinTreestore)
+		self.autojoinTreeview.set_property("rules-hint", True)
+		self.autojoinTreestore.set_sort_column_id(0, gtk.SORT_ASCENDING)
+
 		self.autojoinTreeview.show()
 		self.autojoinTreeview.set_headers_visible(True)
 		column = gtk.TreeViewColumn('Rooms')
@@ -985,17 +1029,26 @@ class MuseekSetupGTK:
 		self.vbox17.set_spacing(5)
 		self.vbox17.set_border_width(3)
 	
-		self.button5 = gtk.Button()
-		self.button5.set_label(_("Add"))
-		self.button5.show()
+		self.AddAutojoin = gtk.Button()
+		self.AddAutojoin.set_label(_("Add"))
+		self.AddAutojoin.show()
 	
-		self.vbox17.pack_start(self.button5, False, False, 0)
+		self.vbox17.pack_start(self.AddAutojoin, False, False, 0)
+		
+		self.EditAutojoin = gtk.Button()
+		self.EditAutojoin.set_label(_("Edit"))
+		self.EditAutojoin.show()
 	
-		self.button6 = gtk.Button()
-		self.button6.set_label(_("Remove"))
-		self.button6.show()
-	
-		self.vbox17.pack_start(self.button6, False, False, 0)
+		self.vbox17.pack_start(self.EditAutojoin, False, False, 0)	
+		self.RemoveAutojoin = gtk.Button()
+		self.RemoveAutojoin.set_label(_("Remove"))
+		self.RemoveAutojoin.show()
+		
+		self.AddAutojoin.connect("clicked", self.OnAddAutojoin)
+		self.EditAutojoin.connect("clicked", self.OnEditAutojoin)
+		self.RemoveAutojoin.connect("clicked", self.OnRemoveAutojoin)
+		
+		self.vbox17.pack_start(self.RemoveAutojoin, False, False, 0)
 	
 		self.autojoin_hbox.pack_start(self.vbox17, False, True, 0)
 		self.autojoin_hbox.show()
@@ -1016,6 +1069,8 @@ class MuseekSetupGTK:
 	
 		self.encodingsTreestore = gtk.TreeStore(  str,str, int )
 		self.encodingsTreeview = gtk.TreeView(self.encodingsTreestore)
+		self.encodingsTreeview.set_property("rules-hint", True)
+		self.encodingsTreestore.set_sort_column_id(0, gtk.SORT_ASCENDING)
 		self.encodingsTreeview.show()
 		self.encodingsTreeview.set_headers_visible(True)
 		column = gtk.TreeViewColumn('Rooms')
@@ -1029,8 +1084,8 @@ class MuseekSetupGTK:
 		cell = gtk.CellRendererText()
 		cell.set_property('mode', gtk.CELL_RENDERER_MODE_EDITABLE)
 		column.pack_start(cell, True)
-		column.add_attribute(cell, 'text', 0)
-		column.set_sort_column_id(0)
+		column.add_attribute(cell, 'text', 1)
+		column.set_sort_column_id(1)
 		self.encodingsTreeview.append_column(column)
 		self.encodingsScrollWindow2.add(self.encodingsTreeview)
 		self.encodings_hbox.pack_start(self.encodingsScrollWindow2, True, True, 0)
@@ -1040,17 +1095,27 @@ class MuseekSetupGTK:
 		self.encodings_vbox.set_spacing(5)
 		self.encodings_vbox.set_border_width(3)
 	
-		self.addEncoding = gtk.Button()
-		self.addEncoding.set_label(_("Add"))
-		self.addEncoding.show()
+		self.AddEncoding = gtk.Button()
+		self.AddEncoding.set_label(_("Add"))
+		self.AddEncoding.show()
 	
-		self.encodings_vbox.pack_start(self.addEncoding, False, False, 0)
+		self.encodings_vbox.pack_start(self.AddEncoding, False, False, 0)
+		
+		self.EditEncoding = gtk.Button()
+		self.EditEncoding.set_label(_("Edit"))
+		self.EditEncoding.show()
 	
-		self.removeEncoding = gtk.Button()
-		self.removeEncoding.set_label(_("Remove"))
-		self.removeEncoding.show()
-	
-		self.encodings_vbox.pack_start(self.removeEncoding, False, False, 0)
+		self.encodings_vbox.pack_start(self.EditEncoding, False, False, 0)
+		
+		self.RemoveEncoding = gtk.Button()
+		self.RemoveEncoding.set_label(_("Remove"))
+		self.RemoveEncoding.show()
+		
+		self.AddEncoding.connect("clicked", self.OnAddEncoding)
+		self.EditEncoding.connect("clicked", self.OnEditEncoding)
+		self.RemoveEncoding.connect("clicked", self.OnRemoveEncoding)
+		
+		self.encodings_vbox.pack_start(self.RemoveEncoding, False, False, 0)
 	
 		self.encodings_hbox.pack_start(self.encodings_vbox, False, True, 0)
 	
@@ -1076,6 +1141,8 @@ class MuseekSetupGTK:
 		self.defaultTicker.set_editable(True)
 		self.defaultTicker.show()
 		self.defaultTicker.set_visibility(True)
+		self.defaultTicker.connect("changed", self.DefaultTickerChanged)
+		
 		self.hbox1.pack_start(self.defaultTicker, True, True, 0)
 	
 		self.vbox1.pack_start(self.hbox1, False, True, 0)
@@ -1089,10 +1156,28 @@ class MuseekSetupGTK:
 		self.tickersScrollWindow.show()
 		self.tickersScrollWindow.set_shadow_type(gtk.SHADOW_NONE)
 	
-		self.TickersTreeview = gtk.TreeView()
-		self.TickersTreeview.show()
-		self.TickersTreeview.set_headers_visible(True)
-		self.tickersScrollWindow.add(self.TickersTreeview)
+		self.tickersTreestore = gtk.TreeStore(  str,str, int )
+		self.tickersTreeview = gtk.TreeView(self.tickersTreestore)
+		self.tickersTreeview.set_property("rules-hint", True)
+		self.tickersTreestore.set_sort_column_id(0, gtk.SORT_ASCENDING)
+		self.tickersTreeview.show()
+		self.tickersTreeview.set_headers_visible(True)
+		column = gtk.TreeViewColumn('Rooms')
+		cell = gtk.CellRendererText()
+		cell.set_property('mode', gtk.CELL_RENDERER_MODE_EDITABLE)
+		column.pack_start(cell, True)
+		column.add_attribute(cell, 'text', 0)
+		column.set_sort_column_id(0)
+		self.tickersTreeview.append_column(column)
+		column = gtk.TreeViewColumn('Tickers')
+		cell = gtk.CellRendererText()
+		cell.set_property('mode', gtk.CELL_RENDERER_MODE_EDITABLE)
+		column.pack_start(cell, True)
+		column.add_attribute(cell, 'text', 1)
+		column.set_sort_column_id(1)
+		self.tickersTreeview.append_column(column)
+		
+		self.tickersScrollWindow.add(self.tickersTreeview)
 	
 		self.hbox34.pack_start(self.tickersScrollWindow, True, True, 0)
 	
@@ -1106,11 +1191,21 @@ class MuseekSetupGTK:
 		self.AddTicker.show()
 	
 		self.vbox15.pack_start(self.AddTicker, False, False, 0)
+		
+		self.EditTicker = gtk.Button()
+		self.EditTicker.set_label(_("Edit"))
+		self.EditTicker.show()
 	
+		self.vbox15.pack_start(self.EditTicker, False, False, 0)
+			
 		self.RemoveTicker = gtk.Button()
 		self.RemoveTicker.set_label(_("Remove"))
 		self.RemoveTicker.show()
-	
+		
+		self.AddTicker.connect("clicked", self.OnAddTicker)
+		self.EditTicker.connect("clicked", self.OnEditTicker)
+		self.RemoveTicker.connect("clicked", self.OnRemoveTicker)
+		
 		self.vbox15.pack_start(self.RemoveTicker, False, False, 0)
 	
 		self.hbox34.pack_start(self.vbox15, False, True, 0)
@@ -1126,13 +1221,10 @@ class MuseekSetupGTK:
 	
 		self.notebook3.append_page(self.vbox1, self.TickersLabel)
 	
-		self.viewport1.add(self.notebook3)
 	
-		self.scrolledwindow2.add(self.viewport1)
-	
-		self.label2 = gtk.Label(_("Chat Rooms"))
-		self.label2.set_padding(0, 0)
-		self.label2.show()
+		self.ChatRooms_Label = gtk.Label(_("Chat Rooms"))
+		self.ChatRooms_Label.set_padding(0, 0)
+		self.ChatRooms_Label.show()
 		self.notebook_users = gtk.Notebook()
 		self.notebook_users.set_tab_pos(gtk.POS_TOP)
 		self.notebook_users.set_scrollable(False)
@@ -1147,9 +1239,27 @@ class MuseekSetupGTK:
 		self.scrolledwindow19.show()
 		self.scrolledwindow19.set_shadow_type(gtk.SHADOW_NONE)
 	
-		self.BuddiesTreeview = gtk.TreeView()
+		self.BuddiesTreestore = gtk.TreeStore(  str,str, int )
+		self.BuddiesTreeview = gtk.TreeView(self.BuddiesTreestore)
+		self.BuddiesTreeview.set_property("rules-hint", True)
+		self.BuddiesTreestore.set_sort_column_id(0, gtk.SORT_ASCENDING)
 		self.BuddiesTreeview.show()
 		self.BuddiesTreeview.set_headers_visible(True)
+		column = gtk.TreeViewColumn(_('Users'))
+		cell = gtk.CellRendererText()
+		cell.set_property('mode', gtk.CELL_RENDERER_MODE_EDITABLE)
+		column.pack_start(cell, True)
+		column.add_attribute(cell, 'text', 0)
+		column.set_sort_column_id(0)
+		self.BuddiesTreeview.append_column(column)
+		column = gtk.TreeViewColumn(_('Comments'))
+		cell = gtk.CellRendererText()
+		cell.set_property('mode', gtk.CELL_RENDERER_MODE_EDITABLE)
+		column.pack_start(cell, True)
+		column.add_attribute(cell, 'text', 1)
+		column.set_sort_column_id(1)
+		self.BuddiesTreeview.append_column(column)
+		
 		self.scrolledwindow19.add(self.BuddiesTreeview)
 	
 		self.hbox22.pack_start(self.scrolledwindow19, True, True, 0)
@@ -1164,11 +1274,21 @@ class MuseekSetupGTK:
 		self.AddBuddy.show()
 	
 		self.vbox7.pack_start(self.AddBuddy, False, False, 0)
+		
+		self.EditBuddy = gtk.Button()
+		self.EditBuddy.set_label(_("Edit"))
+		self.EditBuddy.show()
 	
+		self.vbox7.pack_start(self.EditBuddy, False, False, 0)
+		
 		self.RemoveBuddy = gtk.Button()
 		self.RemoveBuddy.set_label(_("Remove"))
 		self.RemoveBuddy.show()
-	
+		
+		self.AddBuddy.connect("clicked", self.OnAddBuddy)
+		self.EditBuddy.connect("clicked", self.OnEditBuddy)
+		self.RemoveBuddy.connect("clicked", self.OnRemoveBuddy)
+		
 		self.vbox7.pack_start(self.RemoveBuddy, False, False, 0)
 	
 		self.hbox22.pack_start(self.vbox7, False, True, 0)
@@ -1180,17 +1300,36 @@ class MuseekSetupGTK:
 		self.hbox23.show()
 		self.hbox23.set_spacing(0)
 	
-		self.scrolledwindow20 = gtk.ScrolledWindow()
-		self.scrolledwindow20.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-		self.scrolledwindow20.show()
-		self.scrolledwindow20.set_shadow_type(gtk.SHADOW_NONE)
+		self.BannedScrollWindow = gtk.ScrolledWindow()
+		self.BannedScrollWindow.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		self.BannedScrollWindow.show()
+		self.BannedScrollWindow.set_shadow_type(gtk.SHADOW_NONE)
 	
-		self.BannedTreeView = gtk.TreeView()
-		self.BannedTreeView.show()
-		self.BannedTreeView.set_headers_visible(True)
-		self.scrolledwindow20.add(self.BannedTreeView)
 	
-		self.hbox23.pack_start(self.scrolledwindow20, True, True, 0)
+		self.BannedTreestore = gtk.TreeStore(  str,str, int )
+		self.BannedTreeview = gtk.TreeView(self.BannedTreestore)
+		self.BannedTreeview.set_property("rules-hint", True)
+		self.BannedTreestore.set_sort_column_id(0, gtk.SORT_ASCENDING)
+		self.BannedTreeview.show()
+		self.BannedTreeview.set_headers_visible(True)
+		column = gtk.TreeViewColumn(_('Users'))
+		cell = gtk.CellRendererText()
+		cell.set_property('mode', gtk.CELL_RENDERER_MODE_EDITABLE)
+		column.pack_start(cell, True)
+		column.add_attribute(cell, 'text', 0)
+		column.set_sort_column_id(0)
+		self.BannedTreeview.append_column(column)
+		column = gtk.TreeViewColumn(_('Comments'))
+		cell = gtk.CellRendererText()
+		cell.set_property('mode', gtk.CELL_RENDERER_MODE_EDITABLE)
+		column.pack_start(cell, True)
+		column.add_attribute(cell, 'text', 1)
+		column.set_sort_column_id(1)
+		self.BannedTreeview.append_column(column)
+
+		self.BannedScrollWindow.add(self.BannedTreeview)
+	
+		self.hbox23.pack_start(self.BannedScrollWindow, True, True, 0)
 	
 		self.vbox8 = gtk.VBox(False, 5)
 		self.vbox8.show()
@@ -1202,11 +1341,20 @@ class MuseekSetupGTK:
 		self.AddBanned.show()
 	
 		self.vbox8.pack_start(self.AddBanned, False, False, 0)
+		
+		self.EditBanned = gtk.Button()
+		self.EditBanned.set_label(_("Edit"))
+		self.EditBanned.show()
 	
+		self.vbox8.pack_start(self.EditBanned, False, False, 0)	
 		self.RemoveBanned = gtk.Button()
 		self.RemoveBanned.set_label(_("Remove"))
 		self.RemoveBanned.show()
-	
+		
+		self.EditBanned.connect("clicked", self.OnEditBanned)
+		self.AddBanned.connect("clicked", self.OnAddBanned)
+		self.RemoveBanned.connect("clicked", self.OnRemoveBanned)
+		
 		self.vbox8.pack_start(self.RemoveBanned, False, False, 0)
 	
 		self.hbox23.pack_start(self.vbox8, False, True, 0)
@@ -1218,17 +1366,35 @@ class MuseekSetupGTK:
 		self.hbox24.show()
 		self.hbox24.set_spacing(0)
 	
-		self.scrolledwindow21 = gtk.ScrolledWindow()
-		self.scrolledwindow21.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-		self.scrolledwindow21.show()
-		self.scrolledwindow21.set_shadow_type(gtk.SHADOW_NONE)
+		self.IgnoredScrollWindow = gtk.ScrolledWindow()
+		self.IgnoredScrollWindow.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		self.IgnoredScrollWindow.show()
+		self.IgnoredScrollWindow.set_shadow_type(gtk.SHADOW_NONE)
 	
-		self.IgnoredTreeview = gtk.TreeView()
+		self.IgnoredTreestore = gtk.TreeStore(  str,str, int )
+		self.IgnoredTreeview = gtk.TreeView(self.IgnoredTreestore)
+		self.IgnoredTreeview.set_property("rules-hint", True)
+		self.IgnoredTreestore.set_sort_column_id(0, gtk.SORT_ASCENDING)
 		self.IgnoredTreeview.show()
 		self.IgnoredTreeview.set_headers_visible(True)
-		self.scrolledwindow21.add(self.IgnoredTreeview)
+		column = gtk.TreeViewColumn(_('Users'))
+		cell = gtk.CellRendererText()
+		cell.set_property('mode', gtk.CELL_RENDERER_MODE_EDITABLE)
+		column.pack_start(cell, True)
+		column.add_attribute(cell, 'text', 0)
+		column.set_sort_column_id(0)
+		self.IgnoredTreeview.append_column(column)
+		column = gtk.TreeViewColumn(_('Comments'))
+		cell = gtk.CellRendererText()
+		cell.set_property('mode', gtk.CELL_RENDERER_MODE_EDITABLE)
+		column.pack_start(cell, True)
+		column.add_attribute(cell, 'text', 1)
+		column.set_sort_column_id(1)
+		self.IgnoredTreeview.append_column(column)
 	
-		self.hbox24.pack_start(self.scrolledwindow21, True, True, 0)
+		self.IgnoredScrollWindow.add(self.IgnoredTreeview)
+	
+		self.hbox24.pack_start(self.IgnoredScrollWindow, True, True, 0)
 	
 		self.vbox9 = gtk.VBox(False, 5)
 		self.vbox9.show()
@@ -1240,11 +1406,21 @@ class MuseekSetupGTK:
 		self.AddIgnored.show()
 	
 		self.vbox9.pack_start(self.AddIgnored, False, False, 0)
+		
+		self.EditIgnored = gtk.Button()
+		self.EditIgnored.set_label(_("Edit"))
+		self.EditIgnored.show()
 	
+		self.vbox9.pack_start(self.EditIgnored, False, False, 0)
+			
 		self.RemoveIgnored = gtk.Button()
 		self.RemoveIgnored.set_label(_("Remove"))
 		self.RemoveIgnored.show()
-	
+		
+		self.EditIgnored.connect("clicked", self.OnEditIgnored)
+		self.AddIgnored.connect("clicked", self.OnAddIgnored)
+		self.RemoveIgnored.connect("clicked", self.OnRemoveIgnored)	
+		
 		self.vbox9.pack_start(self.RemoveIgnored, False, False, 0)
 	
 		self.hbox24.pack_start(self.vbox9, False, True, 0)
@@ -1256,17 +1432,35 @@ class MuseekSetupGTK:
 		self.hbox25.show()
 		self.hbox25.set_spacing(0)
 	
-		self.scrolledwindow22 = gtk.ScrolledWindow()
-		self.scrolledwindow22.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-		self.scrolledwindow22.show()
-		self.scrolledwindow22.set_shadow_type(gtk.SHADOW_NONE)
+		self.TrustedScrollWindow = gtk.ScrolledWindow()
+		self.TrustedScrollWindow.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		self.TrustedScrollWindow.show()
+		self.TrustedScrollWindow.set_shadow_type(gtk.SHADOW_NONE)
+
+		self.TrustedTreestore = gtk.TreeStore(  str,str, int )
+		self.TrustedTreeview = gtk.TreeView(self.TrustedTreestore)
+		self.TrustedTreeview.set_property("rules-hint", True)
+		self.TrustedTreestore.set_sort_column_id(0, gtk.SORT_ASCENDING)
+		self.TrustedTreeview.show()
+		self.TrustedTreeview.set_headers_visible(True)
+		column = gtk.TreeViewColumn(_('Users'))
+		cell = gtk.CellRendererText()
+		cell.set_property('mode', gtk.CELL_RENDERER_MODE_EDITABLE)
+		column.pack_start(cell, True)
+		column.add_attribute(cell, 'text', 0)
+		column.set_sort_column_id(0)
+		self.TrustedTreeview.append_column(column)
+		column = gtk.TreeViewColumn(_('Comments'))
+		cell = gtk.CellRendererText()
+		cell.set_property('mode', gtk.CELL_RENDERER_MODE_EDITABLE)
+		column.pack_start(cell, True)
+		column.add_attribute(cell, 'text', 1)
+		column.set_sort_column_id(1)
+		self.TrustedTreeview.append_column(column)
+
+		self.TrustedScrollWindow.add(self.TrustedTreeview)
 	
-		self.TrustedTreevie = gtk.TreeView()
-		self.TrustedTreevie.show()
-		self.TrustedTreevie.set_headers_visible(True)
-		self.scrolledwindow22.add(self.TrustedTreevie)
-	
-		self.hbox25.pack_start(self.scrolledwindow22, True, True, 0)
+		self.hbox25.pack_start(self.TrustedScrollWindow, True, True, 0)
 	
 		self.trusted_vbox = gtk.VBox(False, 5)
 		self.trusted_vbox.show()
@@ -1276,13 +1470,23 @@ class MuseekSetupGTK:
 		self.AddTrusted = gtk.Button()
 		self.AddTrusted.set_label(_("Add"))
 		self.AddTrusted.show()
-	
+		
 		self.trusted_vbox.pack_start(self.AddTrusted, False, False, 0)
 	
+		self.EditTrusted = gtk.Button()
+		self.EditTrusted.set_label(_("Edit"))
+		self.EditTrusted.show()
+		
+		self.trusted_vbox.pack_start(self.EditTrusted, False, False, 0)
+		
 		self.RemoveTrusted = gtk.Button()
 		self.RemoveTrusted.set_label(_("Remove"))
 		self.RemoveTrusted.show()
-	
+		
+		self.AddTrusted.connect("clicked", self.OnAddTrusted)
+		self.EditTrusted.connect("clicked", self.OnEditTrusted)
+		self.RemoveTrusted.connect("clicked", self.OnRemoveTrusted)	
+		
 		self.trusted_vbox.pack_start(self.RemoveTrusted, False, False, 0)
 	
 		self.hbox25.pack_start(self.trusted_vbox, False, True, 0)
@@ -1317,10 +1521,10 @@ class MuseekSetupGTK:
 		self.vbox12.show()
 		self.vbox12.set_spacing(0)
 	
-		self.scrolledwindow23 = gtk.ScrolledWindow()
-		self.scrolledwindow23.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-		self.scrolledwindow23.show()
-		self.scrolledwindow23.set_shadow_type(gtk.SHADOW_NONE)
+		self.UserinfoTextScrollWindow = gtk.ScrolledWindow()
+		self.UserinfoTextScrollWindow.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		self.UserinfoTextScrollWindow.show()
+		self.UserinfoTextScrollWindow.set_shadow_type(gtk.SHADOW_NONE)
 		
 		self.userinfoBuffer = gtk.TextBuffer()
 		self.userinfoTextview = gtk.TextView(self.userinfoBuffer)
@@ -1328,9 +1532,11 @@ class MuseekSetupGTK:
 		self.userinfoTextview.set_editable(True)
 		self.userinfoTextview.set_wrap_mode(gtk.WRAP_WORD)
 		self.userinfoTextview.show()
-		self.scrolledwindow23.add(self.userinfoTextview)
+		self.userinfoBuffer.connect("changed", self.UserinfoTextChanged)
+		
+		self.UserinfoTextScrollWindow.add(self.userinfoTextview)
 	
-		self.vbox12.pack_start(self.scrolledwindow23, True, True, 0)
+		self.vbox12.pack_start(self.UserinfoTextScrollWindow, True, True, 0)
 	
 		self.hbox26 = gtk.HBox(False, 0)
 		self.hbox26.show()
@@ -1339,7 +1545,9 @@ class MuseekSetupGTK:
 		self.removeUserinfoText = gtk.Button()
 		self.removeUserinfoText.set_label(_("Clear"))
 		self.removeUserinfoText.show()
+		
 		self.removeUserinfoText.connect("clicked", self.OnClearUserinfo)
+		
 		self.hbox26.pack_start(self.removeUserinfoText, False, False, 0)
 	
 		self.selectUserinfoText = gtk.Button()
@@ -1410,10 +1618,10 @@ class MuseekSetupGTK:
 		self.userinfo__Label = gtk.Label(_("My Userinfo"))
 		self.userinfo__Label.set_padding(0, 0)
 		self.userinfo__Label.show()
-		self.scrolledwindow8 = gtk.ScrolledWindow()
-		self.scrolledwindow8.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-		self.scrolledwindow8.show()
-		self.scrolledwindow8.set_shadow_type(gtk.SHADOW_NONE)
+		self.databasesScrollWindow = gtk.ScrolledWindow()
+		self.databasesScrollWindow.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		self.databasesScrollWindow.show()
+		self.databasesScrollWindow.set_shadow_type(gtk.SHADOW_NONE)
 	
 		self.viewport7 = gtk.Viewport()
 		self.viewport7.show()
@@ -1441,6 +1649,9 @@ class MuseekSetupGTK:
 		self.EntryNormalShares.set_editable(True)
 		self.EntryNormalShares.show()
 		self.EntryNormalShares.set_visibility(True)
+		
+		self.EntryNormalShares.connect("changed", self.NormalSharesDBChanged)
+		
 		self.hbox29.pack_start(self.EntryNormalShares, True, True, 0)
 	
 		self.selectNormalDBase = gtk.Button()
@@ -1480,6 +1691,8 @@ class MuseekSetupGTK:
 		self.EntryBuddyOnlyShares.set_editable(True)
 		self.EntryBuddyOnlyShares.show()
 		self.EntryBuddyOnlyShares.set_visibility(True)
+		self.EntryBuddyOnlyShares.connect("changed", self.BuddySharesDBChanged)
+		
 		self.hbox28.pack_start(self.EntryBuddyOnlyShares, True, True, 0)
 	
 		self.selectBuddyOnlyDBase = gtk.Button()
@@ -1502,7 +1715,7 @@ class MuseekSetupGTK:
 	
 		self.viewport7.add(self.vbox13)
 	
-		self.scrolledwindow8.add(self.viewport7)
+		self.databasesScrollWindow.add(self.viewport7)
 	
 		self.sharesDBLabel = gtk.Label(_("Shares DBs"))
 		self.sharesDBLabel.set_padding(0, 0)
@@ -1526,10 +1739,22 @@ class MuseekSetupGTK:
 		self.alertScrollWindow.show()
 		self.alertScrollWindow.set_shadow_type(gtk.SHADOW_NONE)
 	
-		self.AlertTreeview = gtk.TreeView()
-		self.AlertTreeview.show()
-		self.AlertTreeview.set_headers_visible(True)
-		self.alertScrollWindow.add(self.AlertTreeview)
+	
+		self.AlertsTreestore = gtk.TreeStore(  str, int )
+		self.AlertsTreeview = gtk.TreeView(self.AlertsTreestore)
+		self.AlertsTreeview.set_property("rules-hint", True)
+		self.AlertsTreestore.set_sort_column_id(0, gtk.SORT_ASCENDING)
+		self.AlertsTreeview.show()
+		self.AlertsTreeview.set_headers_visible(True)
+		column = gtk.TreeViewColumn(_('Users'))
+		cell = gtk.CellRendererText()
+		cell.set_property('mode', gtk.CELL_RENDERER_MODE_EDITABLE)
+		column.pack_start(cell, True)
+		column.add_attribute(cell, 'text', 0)
+		column.set_sort_column_id(0)
+		self.AlertsTreeview.append_column(column)
+		
+		self.alertScrollWindow.add(self.AlertsTreeview)
 	
 		self.hbox32.pack_start(self.alertScrollWindow, True, True, 0)
 	
@@ -1543,11 +1768,20 @@ class MuseekSetupGTK:
 		self.AddAlert.show()
 	
 		self.vbox14.pack_start(self.AddAlert, False, False, 0)
+		
+		self.EditAlert = gtk.Button()
+		self.EditAlert.set_label(_("Edit"))
+		self.EditAlert.show()
 	
+		self.vbox14.pack_start(self.EditAlert, False, False, 0)
 		self.RemoveAlert = gtk.Button()
 		self.RemoveAlert.set_label(_("Remove"))
 		self.RemoveAlert.show()
-	
+		
+		self.EditAlert.connect("clicked", self.OnEditAlert)
+		self.AddAlert.connect("clicked", self.OnAddAlert)
+		self.RemoveAlert.connect("clicked", self.OnRemoveAlert)
+		
 		self.vbox14.pack_start(self.RemoveAlert, False, False, 0)
 	
 		self.hbox32.pack_start(self.vbox14, False, True, 0)
@@ -1559,21 +1793,22 @@ class MuseekSetupGTK:
 		self.alertsLabel = gtk.Label(_("Alerts"))
 		self.alertsLabel.set_padding(0, 0)
 		self.alertsLabel.show()
+		self.notebook_users.append_page(self.scrolledwindow10, self.alertsLabel)
 		self.notebook1.append_page(self.scrolledwindow1, self.label1)
 	
 		self.notebook1.append_page(self.scrolledwindow3, self.label3)
 	
 		self.notebook1.append_page(self.TransfersScrollWindow, self.TransfersLabel)
 	
-		self.notebook1.append_page(self.scrolledwindow2, self.label2)
+		self.notebook1.append_page(self.notebook3, self.ChatRooms_Label)
 	
 		self.notebook1.append_page(self.notebook_users, self.users_Label)
 	
 		self.notebook1.append_page(self.userinfoScrollWindow, self.userinfo__Label)
 	
-		self.notebook1.append_page(self.scrolledwindow8, self.sharesDBLabel)
+		self.notebook1.append_page(self.databasesScrollWindow, self.sharesDBLabel)
 	
-		self.notebook1.append_page(self.scrolledwindow10, self.alertsLabel)
+		
 
 		self.label_dialog = gtk.Label(_("General Settings"))
 		self.label_dialog.set_padding(0, 0)
@@ -1609,107 +1844,239 @@ class MuseekSetupGTK:
 			
 			
 	def createTreeFor(self, store, treeview, name):
-		if name == "interfaces":
-			dict = self.config["interfaces.bind"]
 		store.clear()
- 		parents = self.parents[name] = {}
-# 		lists = self.treestore
-		num = 0
-# 		return
-		for key, value in dict.items():
-			print key, value
+		if name in self.config:
+			dict = self.config[name]
 			
-			parents[num] =  store.append(None, [key, num])
-			num += 1
-		self.parents[name] = parents
+			parents = self.parents[name] = {}
+			num = 0
+			for key, value in dict.items():
+
+				if name in ("interfaces.bind", "autojoin", "alerts"):
+					parents[num] =  store.append(None, [key, num])
+				else:
+					parents[num] =  store.append(None, [key, value, num])
+				num += 1
+			self.parents[name] = parents
 
 	
 	
 	def populate_dialogs(self):
-# 		self.config
+
 		# Server
-		self.EntryServerHost.set_text(self.config["server"]["host"])
-		self.ServerPort.set_value(int(self.config["server"]["port"]))
-		self.EntryServerPassword.set_text(self.config["server"]["password"])
-		self.EntryServerUsername.set_text(self.config["server"]["username"])
-		if "default" in self.config["encoding"]:
-			self.defaultEncoding.child.set_text(str(self.config["encoding"]["default"]))
-		if "filesystem" in self.config["encoding"]:
-			self.filesystemEncoding.child.set_text(self.config["encoding"]["filesystem"])
-		if "network" in self.config["encoding"]:
-			self.networkEncoding.child.set_text(self.config["encoding"]["network"])
-		self.LastPort.set_value(int(self.config["clients.bind"]["last"]))
-		self.FirstPort.set_value(int(self.config["clients.bind"]["first"]))
-		
-		# Museek Clients
-		self.interfacePassword.set_text(str(self.config["interfaces"]["password"]))
-		self.createTreeFor( self.interfacesTreestore, self.interfacesTreeview, "interfaces")	
-		#str(self.config[""][""])
-		# Transfers
-		self.connectMode.child.set_text(str(self.config["clients"]["connectmode"]))
-# 		if str(self.config[""][""]) == "true":
-		if str(self.config["transfers"]["privilege_buddies"]) == "true":
-			self.privilege_buddies_Check.set_active(True)
-		else:
-			self.privilege_buddies_Check.set_active(False)
-		if "have_buddy_shares" in self.config["transfers"]:
-			if str(self.config["transfers"]["have_buddy_shares"]) == "true":
-				self.have_buddy_shares_Check.set_active(True)
+		try:
+			if self.CONFIG_PATH.rfind('.') > self.CONFIG_PATH.rfind('/'):
+				config_path = '.'.join(self.CONFIG_PATH.split('.')[:-1])
+			self.EntryServerHost.set_text(self.config["server"]["host"])
+			self.ServerPort.set_value(int(self.config["server"]["port"]))
+			self.EntryServerPassword.set_text(self.config["server"]["password"])
+			self.EntryServerUsername.set_text(self.config["server"]["username"])
+			if "default" in self.config["encoding"]:
+				self.defaultEncoding.child.set_text(str(self.config["encoding"]["default"]))
+			if "filesystem" in self.config["encoding"]:
+				self.filesystemEncoding.child.set_text(self.config["encoding"]["filesystem"])
+			if "network" in self.config["encoding"]:
+				self.networkEncoding.child.set_text(self.config["encoding"]["network"])
+			self.LastPort.set_value(int(self.config["clients.bind"]["last"]))
+			self.FirstPort.set_value(int(self.config["clients.bind"]["first"]))
+			
+			# Museek Clients
+			self.interfacePassword.set_text(str(self.config["interfaces"]["password"]))
+			self.createTreeFor( self.interfacesTreestore, self.interfacesTreeview, "interfaces.bind")	
+
+			# Transfers
+			self.connectMode.child.set_text(str(self.config["clients"]["connectmode"]))
+
+			if str(self.config["transfers"]["privilege_buddies"]) == "true":
+				self.privilege_buddies_Check.set_active(True)
+			else:
+				self.privilege_buddies_Check.set_active(False)
+			if "have_buddy_shares" in self.config["transfers"]:
+				if str(self.config["transfers"]["have_buddy_shares"]) == "true":
+					self.have_buddy_shares_Check.set_active(True)
+				else:
+					self.have_buddy_shares_Check.set_active(False)
 			else:
 				self.have_buddy_shares_Check.set_active(False)
-		else:
-			self.have_buddy_shares_Check.set_active(False)
-		if "trusting_uploads" in self.config["transfers"]:
-			if str(self.config["transfers"]["trusting_uploads"]) == "true":
-				self.trusting_uploads_Check.set_active(True)
+			if "trusting_uploads" in self.config["transfers"]:
+				if str(self.config["transfers"]["trusting_uploads"]) == "true":
+					self.trusting_uploads_Check.set_active(True)
+				else:
+					self.trusting_uploads_Check.set_active(False)
 			else:
 				self.trusting_uploads_Check.set_active(False)
-		else:
-			self.trusting_uploads_Check.set_active(False)
-		if str(self.config["transfers"]["only_buddies"]) == "true":
-			self.only_buddies_Check.set_active(True)
-		else:
-			self.only_buddies_Check.set_active(False)
-		if "user_warnings" in self.config["transfers"]:
-			if str(self.config["transfers"]["user_warnings"]) == "true":
-				self.user_warnings_Check.set_active(True)
+			if str(self.config["transfers"]["only_buddies"]) == "true":
+				self.only_buddies_Check.set_active(True)
+			else:
+				self.only_buddies_Check.set_active(False)
+			if "user_warnings" in self.config["transfers"]:
+				if str(self.config["transfers"]["user_warnings"]) == "true":
+					self.user_warnings_Check.set_active(True)
+				else:
+					self.user_warnings_Check.set_active(False)
 			else:
 				self.user_warnings_Check.set_active(False)
-		else:
-			self.user_warnings_Check.set_active(False)
-		self.uploadSlots.set_value(int(self.config["transfers"]["upload_slots"]))
-		self.EntryDownloadDIr.set_text(str(self.config["transfers"]["download-dir"]))
-		self.EntryIncompleteDir.set_text(str(self.config["transfers"]["incomplete-dir"]))
-		self.EntryDownloadsDBase.set_text(str(self.config["transfers"]["downloads"]))
-		# Chat rooms
-		if "default-ticker" in self.config:
-			if "ticker" in self.config["default-ticker"]:
-				self.defaultTicker.set_text(str(self.config["default-ticker"]["ticker"]))
-		#str(self.config[""][""])
-		# Users
-		
-		# My userinfo
-		s = self.userinfoBuffer.get_start_iter()
-		e = self.userinfoBuffer.get_end_iter()
-		self.userinfoBuffer.delete(s, e)
-# 		set_buffer(str(self.config["userinfo"]["text"]))
-# 		self.userinfoImage 
-			#image = gtk.Image()
-		self.userinfoImage.set_from_file(str(self.config["userinfo"]["image"]))
-		self.EntryImage.set_text(str(self.config["userinfo"]["image"]))
-# 		image.show()
-		s= self.userinfoBuffer.get_start_iter()
-		self.userinfoBuffer.insert(s, str(self.config["userinfo"]["text"]))
-		# Shares DBs
+			self.uploadSlots.set_value(int(self.config["transfers"]["upload_slots"]))
+			self.EntryDownloadDIr.set_text(str(self.config["transfers"]["download-dir"]))
+			self.EntryIncompleteDir.set_text(str(self.config["transfers"]["incomplete-dir"]))
+			self.EntryDownloadsDBase.set_text(str(self.config["transfers"]["downloads"]))
+			# Chat rooms
+			if "default-ticker" in self.config:
+				if "ticker" in self.config["default-ticker"]:
+					self.defaultTicker.set_text(str(self.config["default-ticker"]["ticker"]))
+			self.createTreeFor( self.autojoinTreestore, self.autojoinTreeview, "autojoin")
+			self.createTreeFor( self.encodingsTreestore, self.encodingsTreeview, "encoding.rooms")
+			self.createTreeFor( self.tickersTreestore, self.tickersTreeview, "tickers")
 
-		self.EntryNormalShares.set_text(str(self.config["shares"]["database"]))
-		self.EntryBuddyOnlyShares.set_text(str(self.config["buddy.shares"]["database"]))
-		# Alerts
+			# Users
+			self.createTreeFor( self.BuddiesTreestore, self.BuddiesTreeview, "buddies")
+			self.createTreeFor( self.BannedTreestore, self.BannedTreeview, "banned")
+			self.createTreeFor( self.IgnoredTreestore, self.IgnoredTreeview, "ignored")
+			
+			self.createTreeFor( self.TrustedTreestore, self.TrustedTreeview, "trusted")
+			
+			# My userinfo
+			self.importinguserinfo =1
+			
+			s = self.userinfoBuffer.get_start_iter()
+			e = self.userinfoBuffer.get_end_iter()
+			self.userinfoBuffer.delete(s, e)
+
+			self.userinfoImage.set_from_file(str(self.config["userinfo"]["image"]))
+			self.EntryImage.set_text(str(self.config["userinfo"]["image"]))
+
+			s= self.userinfoBuffer.get_start_iter()
+			self.userinfoBuffer.insert(s, str(self.config["userinfo"]["text"]))
+			self.importinguserinfo =0
+			# Shares DBs
+			
+	
+			self.EntryNormalShares.set_text(str(self.config["shares"]["database"]))
+			if "buddy.shares" not in self.config:
+				self.config["buddy.shares"] = {"database": config_path+".buddyshares"}
+			self.EntryBuddyOnlyShares.set_text(str(self.config["buddy.shares"]["database"]))
+			# Alerts
+			self.createTreeFor( self.AlertsTreestore, self.AlertsTreeview, "alerts")
+		except Exception, e:
+			self.Bug("Populating the Dialogs with config data failed:", str(e))
+			
+	def ServerHostChanged(self, widget):
+		if "server" in self.config:
+			self.config["server"]["host"] = self.EntryServerHost.get_text()
+			self.populate_store()
+	def ServerUsernameChanged(self, widget):
+		if "server" in self.config:
+			self.config["server"]["username"] = self.EntryServerUsername.get_text()
+			self.populate_store()
+	def ServerPortChanged(self, widget):
 		
+		if "server" in self.config:
+			self.config["server"]["port"] = int( self.ServerPort.get_value() )
+			self.populate_store()
+	def ServerPasswordChanged(self, widget):
+		if "server" in self.config:
+			self.config["server"]["password"] = self.EntryServerPassword.get_text()
+			self.populate_store()
+	def EncodingDefaultChanged(self, widget):
+		if "encoding" in self.config:
+			self.config["encoding"]["default"] = self.defaultEncoding.child.get_text()
+			self.populate_store()
+	def EncodingFSChanged(self, widget):
+		if "encoding" in self.config:
+			self.config["encoding"]["filesystem"] = self.filesystemEncoding.child.get_text()
+			self.populate_store()
+	def EncodingNWChanged(self, widget):
+		if "encoding" in self.config:
+			self.config["encoding"]["network"] = self.networkEncoding.child.get_text()
+			self.populate_store()
+	def LastPortChanged(self, widget):
+		if "clients.bind" in self.config:
+			self.config["clients.bind"]["last"] = str(int( self.LastPort.get_value() ))
+			self.populate_store()
+	def FirstPortChanged(self, widget):
+		if "clients.bind" in self.config:
+			self.config["clients.bind"]["first"] =str( int( self.FirstPort.get_value() ))
+			self.populate_store()
+	def InterfacePasswordChanged(self, widget):
+		if "interfaces" in self.config:
+			self.config["interfaces"]["password"] = self.interfacePassword.get_text()
+			self.populate_store()
+	def ConnectModeChanged(self, widget):
+		if "clients" in self.config:
+			self.config["clients"]["connectmode"] = self.connectMode.child.get_text()
+			self.populate_store()
 		
+	def PrivilegeBuddiesChanged(self, widget):
+		if self.privilege_buddies_Check.get_active() == True:
+			self.config["transfers"]["privilege_buddies"] = "true"
+		else:
+			self.config["transfers"]["privilege_buddies"] = "false"
+		self.populate_store()
+	def EnableBuddySharesChanged(self, widget):
+
+		if self.have_buddy_shares_Check.get_active() == True:
+			self.config["transfers"]["have_buddy_shares"] = "true"
+		else:
+			self.config["transfers"]["have_buddy_shares"] = "false"
+		self.populate_store()
+	def TrustUploadsChanged(self, widget):
+		if self.trusting_uploads_Check.get_active() == True:
+			self.config["transfers"]["trusting_uploads"] = "true"
+			
+		else:
+			self.config["transfers"]["trusting_uploads"] = "false"
+		self.populate_store()
+	def OnlyBuddiesChanged(self, widget):
+		if self.only_buddies_Check.get_active() == True:
+			self.config["transfers"]["only_buddies"] = "true"
+			
+		else:
+			self.config["transfers"]["only_buddies"] = "false"
+		self.populate_store()
+	def UserWarningsChanged(self, widget):
+		if self.user_warnings_Check.get_active() == True:
+			self.config["transfers"]["user_warnings"] = "true"
+			
+		else:
+			self.config["transfers"]["user_warnings"] = "false"
+		self.populate_store()
+	def UploadSlotsChanged(self, widget):
+		self.config["transfers"]["upload_slots"] = str(int( self.uploadSlots.get_value() ))
+		self.populate_store()
+	def DownloadDirChanged(self, widget):
+		self.config["transfers"]["download-dir"] = self.EntryDownloadDIr.get_text()
+		self.populate_store()
+	def IncompleteDirChanged(self, widget):
+		self.config["transfers"]["incomplete-dir"] = self.EntryIncompleteDir.get_text()
+		self.populate_store()
+	def DownloadDBChanged(self, widget):
+		self.config["transfers"]["downloads"] = self.EntryDownloadsDBase.get_text()
+		self.populate_store()
+	def NormalSharesDBChanged(self, widget):
+		self.config["shares"]["database"] = self.EntryNormalShares.get_text()
+		self.populate_store()
+	def BuddySharesDBChanged(self, widget):
+		self.config["buddy.shares"]["database"]= self.EntryBuddyOnlyShares.get_text()
+		self.populate_store()
+	def DefaultTickerChanged(self, widget):
+		self.config["default-ticker"]["ticker"] = self.defaultTicker.get_text()
+		self.populate_store()
+	def UserinfoTextChanged(self, widget):
+		if self.importinguserinfo == 1:
+			return
+		string = None
+ 		try:
+			string = self.userinfoBuffer.get_text(self.userinfoBuffer.get_start_iter(), self.userinfoBuffer.get_end_iter())
+		except Exception, e:
+			self.Bug("Loading userinfo into the Config failed..", str(e))
+			
+		if string is not None:
+			self.config["userinfo"]["text"] = string
+			self.populate_store()	
+
 	def populate_store(self):
 		self.treestore.clear()
- 		parents = self.parents = {}
+ 		parents = self.parents["config"] = {}
 		lists = self.treestore
 		for node in self.config.keys():
 			
@@ -1740,14 +2107,11 @@ class MuseekSetupGTK:
 		pass
 	
 	def readTemplate(self):
-# 		 'config.xml.tmpl' path =, config_path = 'config.xml'):
-# 		global config
 		
 		self.readConfig(self.TEMPLATE_PATH)
 		
 		if self.CONFIG_PATH.rfind('.') > self.CONFIG_PATH.rfind('/'):
 			config_path = '.'.join(self.CONFIG_PATH.split('.')[:-1])
-# 		print config_path
 		
 		user = pwd.getpwuid(os.getuid())[0]
 		for domain in self.config.values():
@@ -1774,13 +2138,13 @@ class MuseekSetupGTK:
 		try:
 			self.readConfig(self.CONFIG_PATH)
 		except Exception, e:
-			print "Config failed, reading from template", e
+			self.Bug("Config failed, reading from template", str(e))
 			self.readTemplate()
 			self.refreshConfigDisplay()
 			
 	def refreshConfigDisplay(self):
-		self.populate_store()
 		self.populate_dialogs()
+		self.populate_store()
 		
 	def readConfig(self, CONFIG):
 		
@@ -1798,8 +2162,8 @@ class MuseekSetupGTK:
 			image = file(self.config["userinfo"]["image"], "w")
 			image.close()
 			
-		self.populate_store()
-		self.populate_dialogs()
+		self.refreshConfigDisplay()
+		
 		self.Statusbar.pop(self.status_context_id)
 		self.Statusbar.push(self.status_context_id, CONFIG)
 		
@@ -1850,14 +2214,308 @@ class MuseekSetupGTK:
 		dialog.destroy()
 		return file
 		
+		
+		
+	def AddItemToList(self, node, message, message2):
+		
+		key, value = self.input_box(title="Add Config setting", message=message, message2=message2, key="", value="", modal= True, List=[], vlist=[], second=True)
+		if key in self.config[node]:
+			self.Bug("Item %s already in the %s list. Please edit instead," %(key, node), "")
+			return
+		
+		if node == None or key == None:
+			return
+		if key == "" or key.isspace():
+			return
+		
+		if value == None:
+			value = ""
+
+		if node in self.config:
+			if key in self.config[node]:
+				return
+			# a genuine new key
+			self.config[node][key] = value
+			z = 0
+			num = None
+			for n in self.parents["config"][node].keys():
+				if n != z:
+					num = z
+					break
+				z += 1
+			if num == None:
+				num = len(self.parents["config"][node].keys())
+
+			self.parents["config"][node][num] = self.treestore.append( self.parents["config"][node][0],  ["", key, value,  node, num])
+			self.populate_dialogs()
+		
+			
+			
+	def OnAddTrusted(self, widget):
+		self.AddItemToList("trusted", "Trusted User", "Comment")
+	
+	def OnAddBuddy(self, widget):
+		self.AddItemToList("buddies", "Buddied User", "Comment")
+	
+	def OnAddBanned(self, widget):
+		self.AddItemToList("banned", "Banned User", "Comment")
+
+	def OnAddInterface(self, widget):
+		self.AddItemToList("interfaces.bind", "Socket / Port", None)
+	
+	def OnAddIgnored(self, widget):
+		self.AddItemToList("ignored", "Ignored User", "Comment")
+	
+	def OnAddAlert(self, widget):
+		self.AddItemToList("alerts", "User Status Alert", None)
+	
+	def OnAddTicker(self, widget):
+		self.AddItemToList("tickers", "Ticker's Room", "Ticker")
+		
+	def OnAddEncoding(self, widget):
+		self.AddItemToList("encoding.rooms", "Room", "Encoding")
+		
+	def OnAddAutojoin(self, widget):
+		self.AddItemToList("autojoin", "AutoJoin Room", None)
+		
+	def TreeViewSelection3(self, model, path, iter):
+		key = model.get_value(iter, 0)
+		value = model.get_value(iter, 1)
+		num = model.get_value(iter, 2)
+		self.selected_items = [key, value, num]
+		
+	def TreeViewSelection2(self, model, path, iter):
+		key = model.get_value(iter, 0)
+		num = model.get_value(iter, 1)
+		self.selected_items = [key, num]
+		
+	def EditItemToList(self, node, message, message2, key, value, num):
+		self.key = key
+		self.value = value
+		key, value = self.input_box(title="Edit Config setting", message=message, message2=message2, key=key, value=value, modal= True, List=[], vlist=[], second=True)
+		
+		if node == None or key == None:
+			return
+		if key == "" or key.isspace():
+			return
+		
+		if value == None:
+			value = ""
+
+		if node in self.config:
+			# a genuine new key
+			self.config[node][key] = value
+
+			if self.key != key:
+				# Remove old key
+				del self.config[node][self.key]
+			self.populate_dialogs()
+			self.populate_store()
+			
+	def OnEditEncoding(self, widget):
+		# 3 column treeview
+		treeview = self.encodingsTreeview
+		self.selected_items = []
+		treeview.get_selection().selected_foreach(self.TreeViewSelection3)
+		if self.selected_items != []:
+			key, value, num = self.selected_items
+			self.EditItemToList("encoding.rooms", "Room", "Encoding", key, value, num)
+		
+
+	def OnEditAlert(self, widget):
+		# 2 column treeview
+		treeview = self.AlertsTreeview
+		self.selected_items = []
+		treeview.get_selection().selected_foreach(self.TreeViewSelection2)
+		if self.selected_items != []:
+			key, num = self.selected_items
+	 		
+			self.EditItemToList("alerts", "User Status Alert", None, key, None, num)
+			
+	def OnEditInterface(self, widget):
+		# 2 column treeview
+		treeview = self.interfacesTreeview
+		self.selected_items = []
+		treeview.get_selection().selected_foreach(self.TreeViewSelection2)
+		if self.selected_items != []:
+			key, num = self.selected_items
+	 		
+			self.EditItemToList("interfaces.bind", "Socket / Port", None, key, None, num)
+			
+	def OnEditAutojoin(self, widget):
+		# 2 column treeview
+		treeview = self.autojoinTreeview
+		self.selected_items = []
+		treeview.get_selection().selected_foreach(self.TreeViewSelection2)
+		if self.selected_items != []:
+			key, num = self.selected_items
+	 		
+			self.EditItemToList("autojoin", "AutoJoin Room", None, key, None, num)
+						
+	def OnEditTicker(self, widget):
+		# 3 column treeview
+		treeview = self.tickersTreeview
+		self.selected_items = []
+		treeview.get_selection().selected_foreach(self.TreeViewSelection3)
+		if self.selected_items != []:
+			key, value, num = self.selected_items
+			self.EditItemToList("tickers", "Ticker's Room", "Ticker", key, value, num)
+			
+	def OnEditTrusted(self, widget):
+		# 3 column treeview
+		treeview = self.TrustedTreeview
+		self.selected_items = []
+		treeview.get_selection().selected_foreach(self.TreeViewSelection3)
+		if self.selected_items != []:
+			key, value, num = self.selected_items
+			self.EditItemToList("trusted", "Trusted User", "Comment", key, value, num)
+			
+	def OnEditBuddy(self, widget):
+		# 3 column treeview
+		treeview = self.BuddiesTreeview
+		self.selected_items = []
+		treeview.get_selection().selected_foreach(self.TreeViewSelection3)
+		if self.selected_items != []:
+			key, value, num = self.selected_items
+			self.EditItemToList("buddies", "Buddied User", "Comment", key, value, num)
+	def OnEditBanned(self, widget):
+		# 3 column treeview
+		treeview = self.encodingsTreeview
+		self.selected_items = []
+		treeview.get_selection().selected_foreach(self.TreeViewSelection3)
+		if self.selected_items != []:
+			key, value, num = self.selected_items
+			self.EditItemToList("banned", "Banned User", "Comment", key, value, num)
+	
+	
+
+				
+	def OnEditIgnored(self, widget):
+		# 3 column treeview
+		treeview = self.encodingsTreeview
+		self.selected_items = []
+		treeview.get_selection().selected_foreach(self.TreeViewSelection3)
+		if self.selected_items != []:
+			key, value, num = self.selected_items
+			self.EditItemToList("ignored", "Ignored User", "Comment", key, value, num)
+
+	def RemoveItemFromList(self, node, key, value, num):
+		if node == None or key == None:
+			return
+		if key == "" or key.isspace():
+			return
+		
+		if node in self.config:
+			del self.config[node][key]
+			self.populate_dialogs()
+			self.populate_store()
+			
+	def OnRemoveAlert(self, widget):
+		# 2 column treeview
+		treeview = self.AlertsTreeview
+		node = "alerts"
+		self.selected_items = []
+		treeview.get_selection().selected_foreach(self.TreeViewSelection2)
+		if self.selected_items != []:
+			key, num = self.selected_items
+	 		
+			self.RemoveItemFromList(node, key, None, num)
+		
+	def OnRemoveTicker(self, widget):
+		# 3 column treeview
+		treeview = self.tickersTreeview
+		node="tickers"
+		self.selected_items = []
+		treeview.get_selection().selected_foreach(self.TreeViewSelection3)
+		if self.selected_items != []:
+			key, value, num = self.selected_items
+			self.RemoveItemFromList(node, key, value, num)
+		
+	def OnRemoveTrusted(self, widget):
+		# 3 column treeview
+		treeview = self.TrustedTreeview
+		node = "trusted"
+		self.selected_items = []
+		treeview.get_selection().selected_foreach(self.TreeViewSelection3)
+		if self.selected_items != []:
+			key, value, num = self.selected_items
+			self.RemoveItemFromList(node, key, value, num)
+		
+	def OnRemoveBuddy(self, widget):
+		# 3 column treeview
+		treeview = self.BuddiesTreeview
+		node="buddies"
+		self.selected_items = []
+		treeview.get_selection().selected_foreach(self.TreeViewSelection3)
+		if self.selected_items != []:
+			key, value, num = self.selected_items
+			self.RemoveItemFromList(node, key, None, num)
+		
+	def OnRemoveBanned(self, widget):
+		# 3 column treeview
+		treeview = self.BannedTreeview
+		node="banned"
+		self.selected_items = []
+		treeview.get_selection().selected_foreach(self.TreeViewSelection3)
+		if self.selected_items != []:
+			key, value, num = self.selected_items
+			
+			self.RemoveItemFromList(node, key, None, num)
+		
+	def OnRemoveIgnored(self, widget):
+		treeview = self.IgnoredTreeview
+		node="ignored"
+		self.selected_items = []
+		treeview.get_selection().selected_foreach(self.TreeViewSelection3)
+		if self.selected_items != []:
+			key, value, num = self.selected_items
+			
+			self.RemoveItemFromList(node, key, value, num)
+		
+	def OnRemoveInterface(self, widget):
+		# 2 column treeview
+		treeview = self.interfacesTreeview
+		node="interface"
+		self.selected_items = []
+		treeview.get_selection().selected_foreach(self.TreeViewSelection2)
+		if self.selected_items != []:
+			key, num = self.selected_items
+	 		
+			self.RemoveItemFromList(node, key, None, num)
+
+	def OnRemoveEncoding(self, widget):
+		# 3 column treeview
+		treeview = self.encodingsTreeview
+		node="encoding.rooms"
+		self.selected_items = []
+		treeview.get_selection().selected_foreach(self.TreeViewSelection3)
+		if self.selected_items != []:
+			key, value, num = self.selected_items
+			
+			self.RemoveItemFromList(node, key, value, num)
+
+	def OnRemoveAutojoin(self, widget):
+		# 2 column treeview
+		node ="autojoin"
+		treeview = self.autojoinTreeview
+		self.selected_items = []
+		treeview.get_selection().selected_foreach(self.TreeViewSelection2)
+		if self.selected_items != []:
+			key, num = self.selected_items
+
+			self.RemoveItemFromList(node, key, None, num)
+
+		
+
+
 	def OnClearUserinfo(self, widget):
 		self.config["userinfo"]["text"] = ""
 		self.refreshConfigDisplay()
 		
 	def OnImportUserinfo(self, widget):
+		self.importinguserinfo = 1
 		text = self.OpenFile(widget, _("Import Userinfo from a text file"), ["*"])
 		if text != None:
-# 			self.config["transfers"]["download-dir"] = directory
 			if os.path.getsize(text) > 100000:
 				self.Bug("Userinfo file is greater than 100KBytes, not using.", "")
 				return
@@ -1865,6 +2523,7 @@ class MuseekSetupGTK:
 
 			self.config["userinfo"]["text"] = textfile.read()
 			self.refreshConfigDisplay()
+		self.importinguserinfo = 0
 			
 	def OnDownloadDir(self, widget):
 		directory = self.OpenDirectory(widget, _("Choose a Download Directory"))
@@ -1905,27 +2564,26 @@ class MuseekSetupGTK:
 		if newimage != None:
 			try:
 				shutil.copy(newimage, self.config["userinfo"]["image"] )
-# 				os.system("cp \"%s\" \"%s\"" %(newimage, self.config["userinfo"]["image"] ))
+
 			except Exception, e:
 				self.Bug("Creating image", str(e))
 			self.refreshConfigDisplay()
 			
 	def OnClearImage(self, widget):
-# 		newimage = self.OpenImage(widget, _("Select an Userinfo Image"), ["*.jpg", "*.jpeg", "*.png","*.bmp", "*.xpm", "*.ico","*.gif"])
 		
 		os.remove(self.config["userinfo"]["image"])
 		image = file(self.config["userinfo"]["image"], "w")
 		image.close()
-# 		print image
-# 		image.flush()
-#   		image.write("")
-# 		image.close()
+
 		self.refreshConfigDisplay()
 			
 	def Bug(self, where, message):
 		try:
 			win = BugDialog(self, where, message)
-			win.set_title("Bug Detected")
+			if message != "":
+				win.set_title("Bug Detected")
+			else:
+				win.set_title("Problem Detected")
 			win.show()
 			win.run()
 			win.destroy()
@@ -1937,9 +2595,7 @@ class MuseekSetupGTK:
 		dialog = gtk.FileChooserDialog(title=title, parent=None, action=gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER, buttons=(gtk.STOCK_OK, gtk.RESPONSE_ACCEPT, gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT))
 		dialog.set_select_multiple(False)
 		dialog.set_current_folder_uri("file://"+pwd.getpwuid(os.getuid())[5])
-# 		ff = gtk.FileFilter()
-# 		ff.add_pattern("*.xml")
-# 		dialog.set_property("filter", ff)
+
 		response = dialog.run()
 		
 		if response == gtk.RESPONSE_ACCEPT:
@@ -2017,8 +2673,6 @@ class MainApp:
 	def MainLoop(self):
 		signal.signal(signal.SIGINT, signal.SIG_DFL)
 		
-		
-		#self.app.MuseekSetupGTK.show()
 		self.app.run()
 		mainloop = gobject.MainLoop()
 		mainloop.run()
