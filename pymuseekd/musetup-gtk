@@ -2582,7 +2582,7 @@ class MuseekSetupGTK:
 		try:
 			win = BugDialog(self, where, message)
 			if message != "":
-				win.set_title(_("Bug Detected"))
+				win.set_title(_("Exception Detected"))
 			else:
 				win.set_title(_("Problem Detected"))
 			win.show()
