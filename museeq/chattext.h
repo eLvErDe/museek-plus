@@ -32,6 +32,7 @@ public:
 public slots:
 	void append(const QString&, const QString&);
 	void append(uint, const QString&, const QString&);
+	void append(uint, const QString&);
 	void setSource(const QString&) { };
 	void backward() { };
 	void forward() { };

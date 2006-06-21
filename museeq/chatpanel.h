@@ -37,7 +37,7 @@ public:
 public slots:
 	void append(const QString&, const QString&);
 	void append(uint, const QString&, const QString&);
-	
+	void append(uint, const QString&);	
 signals:
 	void send(const QString&);
 	

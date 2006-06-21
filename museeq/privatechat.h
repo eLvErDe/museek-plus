@@ -28,14 +28,15 @@ class PrivateChat : public UserWidget {
 	Q_OBJECT
 public:
 	PrivateChat(const QString&, QWidget* = 0, const char* = 0);
-	
 public slots:
 	void append(uint, uint, const QString&, const QString&);
-	
+	void status(const QString&, uint);
+
 protected slots:
 	void slotSend(const QString&);
 	
 private:
+	uint mStatus;
 	ChatPanel* mChatPanel;
 };
 

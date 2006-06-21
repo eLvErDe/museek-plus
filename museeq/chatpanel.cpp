@@ -50,6 +50,11 @@ void ChatPanel::append(const QString& _u, const QString& _l) {
 
 }
 
+void ChatPanel::append(uint _ts, const QString& _l) {
+	mScroll->append(_ts, _l);
+
+}
+
 void ChatPanel::append(uint _ts, const QString& _u, const QString& _l) {
 	mScroll->append(_ts, _u, _l);
 

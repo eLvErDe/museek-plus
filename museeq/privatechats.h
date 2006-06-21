@@ -29,9 +29,11 @@ public:
 
 protected slots:
 	void append(uint, uint, const QString&, const QString&);
+	void setUserStatus(const QString&, uint );
 
 protected:
 	UserWidget* makeNewPage(const QString&);
 };
 
 #endif // PRIVATECHATS_H
+

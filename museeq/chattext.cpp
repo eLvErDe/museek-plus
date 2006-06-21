@@ -36,6 +36,18 @@ void ChatText::append(const QString& _u, const QString& _l) {
 	append(QDateTime::currentDateTime().toTime_t(), _u, _l);
 }
 
+void ChatText::append(uint ts,  const QString& _l) {
+	QString line ="";
+	QDateTime _t;
+	_t.setTime_t(ts);
+	if(mTimeFormat.isEmpty())
+		line = QString("<span style='"+museeq->mFontTime+"'><font color='"+museeq->mColorTime+"'>%1</font></span>").arg(_t.toString());
+	else
+		line = QString("<span style='"+museeq->mFontTime+"'><font color='"+museeq->mColorTime+"'>%1</font></span>").arg(_t.toString(mTimeFormat));
+	line +=  "<span style='" + museeq->mFontMessage +  "'><font color='"+museeq->mColorNickname+"'>  * " + _l +"</font></span>";
+	QTextBrowser::append(line);
+}
+
 #define escape QStyleSheet::escape
 static QRegExp url_rx("[a-zA-Z\\-]+:(//)?[0-9a-zA-Z:\\.]?[0-9a-zA-Z:\\.\\+/?,=%~_$&:#;{}@!\\\\|[\\]'-]+");
 

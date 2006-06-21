@@ -72,6 +72,8 @@ public:
 	QString mColorBanned, mColorBuddied, mColorTime, mColorMe, mColorNickname, mColorTrusted, mColorRemote, mFontTime, mFontMessage, mIconTheme;
 	bool isAway() const { return mAway; }
 	
+
+
 public slots:
 	inline const QStringList& banned() const { return mBanned; }
 	inline const QStringList& trusted() const { return mTrusted; }
@@ -122,6 +124,7 @@ public slots:
 	void sayRoom(const QString&, const QString&);
 	void sayPrivate(const QString&, const QString&);
 	void setTicker(const QString&, const QString&);
+	void slotUserExists(const QString&);
 	
 	void updateTransfer(const QString&, const QString&);
 	void downloadFile(const QString&, const QString&, Q_INT64);
@@ -157,7 +160,9 @@ public slots:
 	void connectServer();
 	void reloadShares();
 	void saveSettings();
-	 
+// public signals:
+// 	void userExists(const QString&);
+
 signals:
 	// Museekd related signals
 	void connected();
@@ -196,6 +201,7 @@ signals:
 
 	void userJoinedRoom(const QString&, const QString&, const NUserData&);
 	void userLeftRoom(const QString&, const QString&);
+
 	void saidChatroom(const QString&, const QString&, const QString&);
 	void autoJoin(const QString&, bool);
 	void roomTickers(const QString&, const NTickers&);
@@ -230,6 +236,8 @@ signals:
 	void userInfo(const QString&, const QString&, const QByteArray&, uint, uint, bool);
 	void userShares(const QString&, const NShares&);
 
+	
+
 
 
 protected slots:
@@ -248,6 +256,7 @@ protected slots:
 	void slotConfigRemove(const QString&, const QString&);
 	void slotJoinedRoom(const QString&, const NRoom&);
 	void slotLeftRoom(const QString&);
+	
 
 
 	void slotTransferRemoved(bool, const QString&, const QString&);

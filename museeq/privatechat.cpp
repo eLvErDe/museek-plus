@@ -18,20 +18,48 @@
  */
 
 #include "privatechat.h"
-
+#include "privatechats.h"
 #include <qcheckbox.h>
-
+#include <qdatetime.h>
+#include <qtextedit.h>
 #include "codeccombo.h"
 #include "chatpanel.h"
 #include "museeq.h"
-
+#include "aclineedit.h"
 PrivateChat::PrivateChat(const QString& _t, QWidget* _p, const char* _n)
             : UserWidget(_t, _p, _n) {
 	
 	mChatPanel = new ChatPanel(QString::null, this, "panel");
 	connect(mChatPanel, SIGNAL(send(const QString&)), this, SLOT(slotSend(const QString&)));
-	
+	mStatus = 3;
 	new CodecCombo("encoding.users", user(), mChatPanel->box(), "encoding");
+	
+}
+
+#define escape QStyleSheet::escape
+
+#define _TIME QString("<span style='"+museeq->mFontTime+"'><font color='"+museeq->mColorTime+"'>") + QDateTime::currentDateTime().toString("hh:mm:ss") + "</font></span> "
+
+#define _TIMES QDateTime::currentDateTime().toTime_t ()
+
+void PrivateChat::status(const QString& _u, uint _s) {
+	if (_s == mStatus)
+		return;
+	else
+		mStatus = _s;
+	if (! museeq->isIgnored(_u)) {
+		QString l = ""; 
+
+		if(_s == 0)
+			l += tr("%1 is offline").arg(_u);
+		else if(_s == 1)
+			l += tr("%1 is away").arg(_u);
+		else if(_s == 2)
+			l += tr("%1 is online").arg(_u);
+		if (_s == 0 || _s == 1 || _s == 2)
+			mChatPanel->append(_TIMES,  l);
+// 		}	
+	}
 }
 
 void PrivateChat::append(uint dir, uint ts, const QString& _u, const QString& _l) {

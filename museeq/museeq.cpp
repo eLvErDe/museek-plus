@@ -96,6 +96,9 @@ Museeq::Museeq(QApplication * app)
 	connect(mDriver, SIGNAL(leaveRoom(const QString&)), SLOT(slotLeftRoom(const QString&)));
 	connect(mDriver, SIGNAL(userJoined(const QString&, const QString&, const NUserData&)), SIGNAL(userJoinedRoom(const QString&, const QString&, const NUserData&)));
 	connect(mDriver, SIGNAL(userLeft(const QString&, const QString&)), SIGNAL(userLeftRoom(const QString&, const QString&)));
+
+// 	connect(mDriver, SIGNAL(userExists(const QString&)), SIGNAL(slotUserExists(const QString&)));
+
 	connect(mDriver, SIGNAL(sayChatroom(const QString&, const QString&, const QString&)), SIGNAL(saidChatroom(const QString&, const QString&, const QString&)));
 	connect(mDriver, SIGNAL(privateMessage(uint, uint, const QString&, const QString&)), SIGNAL(privateMessage(uint, uint, const QString&, const QString&)));
 	connect(mDriver, SIGNAL(searchResults(uint, const QString&, bool, uint, uint, const NFolder&)), SIGNAL(searchResults(uint, const QString&, bool, uint, uint, const NFolder&)));
@@ -177,6 +180,10 @@ void Museeq::slotConnectionClosed() {
 void Museeq::slotError(int err) {
 	if(err == QSocket::ErrSocketRead)
 		slotConnectionClosed();
+}
+
+void Museeq::slotUserExists(const QString& user) {
+	mDriver->getUserExists(user);
 }
 
 void Museeq::slotLoggedIn(bool success, const QString& msg) {
