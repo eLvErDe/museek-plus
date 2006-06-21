@@ -1,6 +1,9 @@
 Always compile Museek with the built-in version of scons
 UNRELEASED
 MUSEEK DAEMON
+* Bumped version to 0.1.11
+* Remove peer if status is 0
+* Try to logout when shutting down
 * Fixed the minPort == maxPort bug and maxPort > minPort bug, for peer
   connections. Previously, it'd skip the port listen attempt entirely. Now it
   tries the listen on minPort (if they equal) or on maxPort (if it's smaller 
@@ -8,15 +11,27 @@ MUSEEK DAEMON
 * SCons can now set CCFLAGS with the CFLAGS option
 
 MUSEEQ
+* Bumped version to 0.1.11
+* Ported all .ui dialogs to cpp
+* Added encodings comboboxes to settings dialog, as well as making the password dialog protected with ****s
 * Added Translation *Support*
 * Le_Vert translated museeq into French
+* Requiem translated museeq into Italian
+* Belegdol translated museeq into Polish 
 * Added more icons (ip, comments, alert, and small-icons for:  browse, userinfo, search, chatrooms, privatechat )
 
 MUCOUS
 * Add timestamps to Status Messages, bugfixes for browse mode, topbar variables
    merged into the new storage method
-
-
+   
+* MUSETUP
+  Try a little harder to find the template, if not run from /usr
+  More description on how to add download directory
+  
+* MUSETUP-GTK
+  Created a new settings tool. Musetup is now redundant for users who have X on their museek+ computer
+  
+  
 0.1.10:  June 9th 2006
 * Added WishList Searching from Client Interfaces, but no timer, yet. 
   ( IWishListSearch )

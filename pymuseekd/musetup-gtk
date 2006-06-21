@@ -9,8 +9,7 @@ import locale, gettext
 from xml.dom import minidom
 import signal
 import gtk, gobject
-import time, stat, string, pwd
-import os, sys, shutil
+import time, stat, string, pwd, shutil
 
 DATADIR = os.path.realpath(sys.argv[0])
 for i in range(2):

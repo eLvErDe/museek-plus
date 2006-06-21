@@ -42,15 +42,17 @@ SeeSchloss
    things, allows much greater flexibility in client programming and testing, 
    without the fears of damaging Soulseek, itself or getting banned.
 Daelstorm
-   For coding new features into museekd and museeq.
-sierracat
-   For explaining some of the Soulseek server and peer messages to daelstorm.
+   For coding new features into museekd, muscan, and museeq, and for writing mucous and musetup-gtk.
 Belegdol
-   For providing the GCC 4.1 compile fix to museeq and for his Fedora Core RPMs.
+   For providing the GCC 4.1 compile fix to museeq and for his Fedora Core RPMs and Polish Translation.
 stericho
    For the Gentoo ebuilds
 Le_Vert
    For the Debian / Ubuntu packages, the subversion repository, and the Trac, and French Translation
+Requiem1348
+   For the Italian Translation.
+sierracat
+   For explaining some of the Soulseek server and peer messages to daelstorm.
 
 Ideas for features from: mer.lin.ux, chs_kasper, Requiem1348, groovything, Belegdol, cravings
 and several other that I have forgotten, thanks to you, too.
