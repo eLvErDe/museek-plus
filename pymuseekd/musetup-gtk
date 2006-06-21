@@ -544,7 +544,7 @@ class MuseekSetupGTK:
 	
 		self.frame1 = gtk.Frame()
 		self.frame1.show()
-		self.frame1.set_shadow_type(gtk.SHADOW_NONE)
+		self.frame1.set_shadow_type(gtk.SHADOW_IN)
 	
 		self.alignment1 = gtk.Alignment(0.5, 0.5, 1, 1)
 		self.alignment1.show()
@@ -706,7 +706,7 @@ class MuseekSetupGTK:
 	
 		self.frame2 = gtk.Frame()
 		self.frame2.show()
-		self.frame2.set_shadow_type(gtk.SHADOW_NONE)
+		self.frame2.set_shadow_type(gtk.SHADOW_IN)
 	
 		self.alignment2 = gtk.Alignment(0.5, 0.5, 1, 1)
 		self.alignment2.show()
