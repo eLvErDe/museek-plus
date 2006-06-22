@@ -141,7 +141,7 @@ from muscons import Relay
 
 Import('env')
 
-ts_templates= ["fr", "it", "pl", "es"]
+ts_templates= ["fr", "it", "pl", "es", "de"]
 tr_dir = "translations/"
 translations = []
 qm_files = []
