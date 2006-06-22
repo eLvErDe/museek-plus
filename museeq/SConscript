@@ -141,7 +141,7 @@ from muscons import Relay
 
 Import('env')
 
-ts_templates= ["fr", "it", "pl"]
+ts_templates= ["fr", "it", "pl", "es"]
 tr_dir = "translations/"
 translations = []
 qm_files = []
@@ -156,19 +156,10 @@ make_qm(ts_templates)
 
 def translation_build(target, source, env):
  	print source[0], target[0]
-# 	print source[1]
 	ss = ""
 	for s in source:
 		ss +=  str(s)+" "
-	if os.path.exists(str(source[0])):
-# 	if os.path.exists(str(tr_dir+"museeq_"++".ts")):
-	#if os.path.exists("museeq_"+lang+".ts"):
-
-		print "Language: %s found, translation to be built" % lang
-		os.system("lrelease "+ str(ss)+" -qm "+ str(target[0]))
-	else:
-		print "Language: %s not found, translation not built" % lang
-		
+	os.system("lrelease "+ str(ss)+" -qm "+ str(target[0]))
 	
 	return 0
 
@@ -279,9 +270,23 @@ env_qt.Command('museekmessages.h', ['museekmessages.h.in', '../../museekd/IfaceM
 env_qt.Command('museekdriver.cpp', ['museekdriver.cpp.in', '../../museekd/IfaceMessages.hh'], iface_build)
 
 for lang in translations:
-	lsources = [ tr_dir+"museeq_"+lang+".ts" ]
+	lsources = []
+	mess = ""
+	if os.path.exists("../../museeq/"+tr_dir+"museeq_"+lang+".ts"):
+		lsources.append( tr_dir+"museeq_"+lang+".ts" )
+		mess += "Museeq "+lang+" translation found... "
+	else:
+		mess += "Museeq "+lang+" translation NOT found! "
 	if os.path.exists("../../museeq/"+tr_dir+"qt_"+lang+".ts"):
 		lsources.append(tr_dir+"qt_"+lang+".ts")
+		mess += "Qt "+lang+" translation found... "
+	else:
+		mess += "Qt "+lang+" translation NOT found!"
+	if lsources == []:
+		print "Neither museeq_"+lang+".ts nor qt_"+lang+".ts found. Translation skipped.."
+		continue
+	else:
+		print mess
 	env_qt.Command(tr_dir+"museeq_"+lang+".qm", lsources, translation_build)
 	qm_files.append(tr_dir+"museeq_"+lang+".qm")
 
