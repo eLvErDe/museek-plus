@@ -49,6 +49,7 @@ public slots:
 	
 protected slots:
 	void refilter();
+	void ignoreSearch();
 	
 private:
 	QString mQuery;

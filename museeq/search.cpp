@@ -38,7 +38,7 @@ Search::Search(const QString& query, QWidget* parent, const char* name)
 	box->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	mShowFilters = new QCheckBox(tr("Enable filters"), box);
 	(new QWidget(box))->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-	new QPushButton(tr("Ignore"), box);
+	QPushButton* mIgnore = new QPushButton(tr("Ignore"), box);
 	
 	mFilters = new SearchFilter(this);
 	
@@ -48,6 +48,7 @@ Search::Search(const QString& query, QWidget* parent, const char* name)
 	mFilters->hide();
 	
 	connect(mFilters, SIGNAL(filterChanged()), SLOT(refilter()));
+	connect(mIgnore, SIGNAL(clicked()), SLOT(ignoreSearch()));
 }
 
 Search::~Search() {
@@ -71,6 +72,10 @@ bool Search::hasToken(uint token) const {
 void Search::append(const QString& u, bool f, uint s, uint q, const NFolder& r) {
 	mResults->append(u, f, s, q, r);
 	emit highlight(1);
+}
+
+void Search::ignoreSearch() {
+	mTokens.clear();
 }
 
 void Search::refilter() {
