@@ -19,27 +19,27 @@
     </message>
     <message>
         <source> Language: </source>
-        <translation type="unfinished"></translation>
+        <translation> Langue: </translation>
     </message>
     <message>
         <source>Syntax: museeq [options]</source>
-        <translation type="unfinished"></translation>
+        <translation>Syntaxe: museeq [options]</translation>
     </message>
     <message>
         <source>Options:</source>
-        <translation type="unfinished"></translation>
+        <translation>Options:</translation>
     </message>
     <message>
         <source>-V --version<byte value="x9"/><byte value="x9"/>Display museeq version and quit</source>
-        <translation type="unfinished"></translation>
+        <translation>-V --version<byte value="x9"/><byte value="x9"/>Affiche la version de museeq puis quite</translation>
     </message>
     <message>
         <source>-h --help<byte value="x9"/><byte value="x9"/>Display this message and quit</source>
-        <translation type="unfinished"></translation>
+        <translation>-h --help<byte value="x9"/><byte value="x9"/>Affiche ce message puis quite</translation>
     </message>
     <message>
         <source>--no-tray<byte value="x9"/><byte value="x9"/>Don&apos;t load TrayIcon</source>
-        <translation type="unfinished"></translation>
+        <translation>--no-tray<byte value="x9"/><byte value="x9"/>Désactive la TrayIcon</translation>
     </message>
 </context>
 <context>
@@ -314,94 +314,94 @@
     <name>FontsAndColorsDialog</name>
     <message>
         <source>Fonts &amp; Colors</source>
-        <translation type="unfinished"></translation>
+        <translation>Couleurs &amp; Polices</translation>
     </message>
     <message>
         <source>OK</source>
-        <translation type="unfinished"></translation>
+        <translation>OK</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Annuler</translation>
     </message>
     <message>
         <source>Pick Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Choisissez une couleur</translation>
     </message>
     <message>
         <source>Pick Font</source>
-        <translation type="unfinished"></translation>
+        <translation>Choisissez une police</translation>
     </message>
     <message>
         <source>Time &amp; Brackets Text Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Couleur de l&apos;heure &amp; des [ ]</translation>
     </message>
     <message>
         <source>Time &amp; Brackets Font</source>
-        <translation type="unfinished"></translation>
+        <translation>Police de l&apos;heure &amp; des [ ]</translation>
     </message>
     <message>
         <source>/Me Text</source>
-        <translation type="unfinished"></translation>
+        <translation>Message de type &quot;/me&quot;</translation>
     </message>
     <message>
         <source>Trusted Users</source>
-        <translation type="unfinished"></translation>
+        <translation>Utilisateurs de confiance</translation>
     </message>
     <message>
         <source>Remote Text</source>
-        <translation type="unfinished"></translation>
+        <translation>Texte distant</translation>
     </message>
     <message>
         <source>Message Font</source>
-        <translation type="unfinished"></translation>
+        <translation>Police des messages</translation>
     </message>
     <message>
         <source>Buddied Users</source>
-        <translation type="unfinished"></translation>
+        <translation>Mes amis</translation>
     </message>
     <message>
         <source>My Text</source>
-        <translation type="unfinished"></translation>
+        <translation>Mon propre texte</translation>
     </message>
     <message>
         <source>Banned Users</source>
-        <translation type="unfinished"></translation>
+        <translation>Utilisateurs bannis</translation>
     </message>
 </context>
 <context>
     <name>IPDialog</name>
     <message>
         <source>User</source>
-        <translation type="unfinished">Utilisateur</translation>
+        <translation>Utilisateur</translation>
     </message>
     <message>
         <source>IP</source>
-        <translation type="unfinished"></translation>
+        <translation>IP</translation>
     </message>
     <message>
         <source>Port</source>
-        <translation type="unfinished"></translation>
+        <translation>Port</translation>
     </message>
     <message>
         <source>Hostname</source>
-        <translation type="unfinished"></translation>
+        <translation>Nom d&apos;hôte</translation>
     </message>
     <message>
         <source>IP Addresses</source>
-        <translation type="unfinished"></translation>
+        <translation>Adresses IP</translation>
     </message>
     <message>
         <source>&amp;Close</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Fermer</translation>
     </message>
     <message>
         <source>Alt+C</source>
-        <translation type="unfinished">Alt+R</translation>
+        <translation>Alt+F</translation>
     </message>
     <message>
         <source>Clear</source>
-        <translation type="unfinished">Effacer</translation>
+        <translation>Effacer</translation>
     </message>
 </context>
 <context>
@@ -442,7 +442,7 @@
     </message>
     <message>
         <source>Remove</source>
-        <translation type="unfinished"></translation>
+        <translation>Enlever</translation>
     </message>
     <message>
         <source>I hate:</source>
@@ -450,11 +450,11 @@
     </message>
     <message>
         <source>Recommendations for this Item</source>
-        <translation type="unfinished"></translation>
+        <translation>Recommandations</translation>
     </message>
     <message>
         <source>Similar Users for this Item</source>
-        <translation type="unfinished"></translation>
+        <translation>Utilisateurs similaires</translation>
     </message>
 </context>
 <context>
@@ -835,7 +835,7 @@
     </message>
     <message>
         <source>&amp;File</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Fichier</translation>
     </message>
     <message>
         <source>Toggled &amp;away</source>
@@ -843,114 +843,114 @@
     </message>
     <message>
         <source>Show T&amp;imestamps</source>
-        <translation type="unfinished"></translation>
+        <translation>Afficher l&apos;&amp;heure devant les messages</translation>
     </message>
 </context>
 <context>
     <name>OnlineAlert</name>
     <message>
         <source>Online alert</source>
-        <translation type="unfinished">Notification lors de sa présence</translation>
+        <translation>Notification lors de la présence</translation>
     </message>
     <message>
         <source>&amp;Remove</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Enlever</translation>
     </message>
     <message>
         <source>Alt+R</source>
-        <translation type="unfinished"></translation>
+        <translation>Alt+E</translation>
     </message>
     <message>
         <source>&amp;OK</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <source>Alt+O</source>
-        <translation type="unfinished">Alt+O</translation>
+        <translation>Alt+O</translation>
     </message>
     <message>
         <source>offline</source>
-        <translation type="unfinished"></translation>
+        <translation>déconnecté(e)</translation>
     </message>
     <message>
         <source>away</source>
-        <translation type="unfinished"></translation>
+        <translation>absent(e)</translation>
     </message>
     <message>
         <source>online</source>
-        <translation type="unfinished"></translation>
+        <translation>présent(e)</translation>
     </message>
     <message>
         <source>%1 user %2 is now %3</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 %2 est maintenant %3</translation>
     </message>
 </context>
 <context>
     <name>PrivateChat</name>
     <message>
         <source>%1 is offline</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 est déconnecté(e)</translation>
     </message>
     <message>
         <source>%1 is away</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 est absent(e)</translation>
     </message>
     <message>
         <source>%1 is online</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 est en ligne</translation>
     </message>
 </context>
 <context>
     <name>ProtocolDialog</name>
     <message>
         <source>Protocol</source>
-        <translation type="unfinished"></translation>
+        <translation>Protocole</translation>
     </message>
     <message>
         <source>Handler</source>
-        <translation type="unfinished"></translation>
+        <translation>Gestion</translation>
     </message>
     <message>
         <source>Protocol handlers</source>
-        <translation type="unfinished"></translation>
+        <translation>Gestion des protocoles</translation>
     </message>
     <message>
         <source>OK</source>
-        <translation type="unfinished"></translation>
+        <translation>OK</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Annuler</translation>
     </message>
     <message>
         <source>New</source>
-        <translation type="unfinished"></translation>
+        <translation>Nouveau</translation>
     </message>
 </context>
 <context>
     <name>RoomList</name>
     <message>
         <source>Create:</source>
-        <translation type="unfinished"></translation>
+        <translation>Créer:</translation>
     </message>
 </context>
 <context>
     <name>RoomListView</name>
     <message>
         <source>Room</source>
-        <translation type="unfinished"></translation>
+        <translation>Salon</translation>
     </message>
     <message>
         <source>Users</source>
-        <translation type="unfinished">Utilisateurs</translation>
+        <translation>Utilisateurs</translation>
     </message>
     <message>
         <source>Join room</source>
-        <translation type="unfinished"></translation>
+        <translation>Rejoindre le salon</translation>
     </message>
     <message>
         <source>Leave room</source>
-        <translation type="unfinished"></translation>
+        <translation>Quitter le salon</translation>
     </message>
     <message>
         <source>Refresh</source>
@@ -1141,135 +1141,135 @@
     <name>SettingsDialog</name>
     <message>
         <source>Museek Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Paramètres de Museek</translation>
     </message>
     <message>
         <source>Ok</source>
-        <translation type="unfinished"></translation>
+        <translation>OK</translation>
     </message>
     <message>
         <source>Save</source>
-        <translation type="unfinished">Enregistrer</translation>
+        <translation>Enregistrer</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Annuler</translation>
     </message>
     <message>
         <source>Default Encoding:</source>
-        <translation type="unfinished"></translation>
+        <translation>Encodage par défaut:</translation>
     </message>
     <message>
         <source>Filesystem Encoding:</source>
-        <translation type="unfinished"></translation>
+        <translation>Encodage du système de fichier:</translation>
     </message>
     <message>
         <source>Network Encoding:</source>
-        <translation type="unfinished"></translation>
+        <translation>Encodage du réseau:</translation>
     </message>
     <message>
         <source>Connect</source>
-        <translation type="unfinished"></translation>
+        <translation>Se connecter</translation>
     </message>
     <message>
         <source>Disconnect</source>
-        <translation type="unfinished"></translation>
+        <translation>Se déconnecter</translation>
     </message>
     <message>
         <source>Server Port:</source>
-        <translation type="unfinished"></translation>
+        <translation>Port du serveur:</translation>
     </message>
     <message>
         <source>Server Host:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nom d&apos;hôte du serveur:</translation>
     </message>
     <message>
         <source>Soulseek Username:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nom d&apos;utilisateur:</translation>
     </message>
     <message>
         <source>Soulseek Password:</source>
-        <translation type="unfinished"></translation>
+        <translation>Mot de passe:</translation>
     </message>
     <message>
         <source>Server</source>
-        <translation type="unfinished"></translation>
+        <translation>Serveur</translation>
     </message>
     <message>
         <source>&lt;p&gt;Configure your shares with musetup, or run &lt;u&gt;muscan -r &lt;/u&gt;to rescan your shares and then press:&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Configurez vos partages avec musetup, ou lancez &lt;u&gt;muscan -r&lt;/u&gt; pour mettre à jours la liste des fichiers partagés puis appuyez sur le bouton ci-dessous:&lt;/p&gt;</translation>
     </message>
     <message>
         <source>Connections</source>
-        <translation type="unfinished"></translation>
+        <translation>Connexions</translation>
     </message>
     <message>
         <source>Active Connections</source>
-        <translation type="unfinished"></translation>
+        <translation>Connexions actives</translation>
     </message>
     <message>
         <source>Passive Connections</source>
-        <translation type="unfinished"></translation>
+        <translation>Connexions passives</translation>
     </message>
     <message>
         <source>Reload Shares</source>
-        <translation type="unfinished"></translation>
+        <translation>Mettre à jour</translation>
     </message>
     <message>
         <source>Select..</source>
-        <translation type="unfinished"></translation>
+        <translation>Sélectionner..</translation>
     </message>
     <message>
         <source>Download Dir:</source>
-        <translation type="unfinished"></translation>
+        <translation>Répertoire de téléchargement:</translation>
     </message>
     <message>
         <source>Incomplete Dir:</source>
-        <translation type="unfinished"></translation>
+        <translation>Répertoire pour les fichiers incomplets:</translation>
     </message>
     <message>
         <source>Shares and Connections</source>
-        <translation type="unfinished"></translation>
+        <translation>Partages et connexions</translation>
     </message>
     <message>
         <source>Buddies are Privileged</source>
-        <translation type="unfinished"></translation>
+        <translation>Amis et utilisateurs privilégiés</translation>
     </message>
     <message>
         <source>Online Alerts in Log Window instead of popup</source>
-        <translation type="unfinished"></translation>
+        <translation>Afficher les notifications de présence dans la fenêtre de log plutôt que dans un pop-up</translation>
     </message>
     <message>
         <source>Share to Buddies Only</source>
-        <translation type="unfinished"></translation>
+        <translation>Partager aux amis uniquement</translation>
     </message>
     <message>
         <source>Trusted users can Send you Files</source>
-        <translation type="unfinished"></translation>
+        <translation>Les utilisateurs de confiance peuvent m&apos;envoyer des fichiers</translation>
     </message>
     <message>
         <source>Seperate Shares list for Buddies</source>
-        <translation type="unfinished"></translation>
+        <translation>Liste de fichiers partagés différente pour mes amis</translation>
     </message>
     <message>
         <source>Send automatic warnings to users via Private Chat</source>
-        <translation type="unfinished"></translation>
+        <translation>Envoyer automatiquement des avertissements via message privé</translation>
     </message>
     <message>
         <source>User Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Options des utilisateurs</translation>
     </message>
     <message>
         <source>Select a Directory to store your downloaded files.</source>
-        <translation type="unfinished"></translation>
+        <translation>Choisissez un répertoire pour stocket les fichiers téléchargés.</translation>
     </message>
     <message>
         <source>All files (*)</source>
-        <translation type="unfinished"></translation>
+        <translation>Tout les fichiers (*)</translation>
     </message>
     <message>
         <source>Select a Directory to store your incomplete downloading files.</source>
-        <translation type="unfinished"></translation>
+        <translation>Choisissez un répertoire pour stocket les fichiers incomplets.</translation>
     </message>
 </context>
 <context>
