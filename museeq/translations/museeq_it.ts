@@ -832,6 +832,10 @@
         <source>Toggled &amp;away</source>
         <translation>Imposta &amp;assente</translation>
     </message>
+    <message>
+        <source>Show T&amp;imestamps</source>
+        <translation>Mostra orar&amp;i</translation>
+    </message>
 </context>
 <context>
     <name>OnlineAlert</name>
@@ -870,6 +874,21 @@
     <message>
         <source>%1 user %2 is now %3</source>
         <translation>%1 l&apos;utente %2 è ora %3</translation>
+    </message>
+</context>
+<context>
+    <name>PrivateChat</name>
+    <message>
+        <source>%1 is offline</source>
+        <translation>%1 è offline</translation>
+    </message>
+    <message>
+        <source>%1 is away</source>
+        <translation>%1 è assente</translation>
+    </message>
+    <message>
+        <source>%1 is online</source>
+        <translation>%1 è online</translation>
     </message>
 </context>
 <context>
