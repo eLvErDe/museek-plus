@@ -841,6 +841,10 @@
         <source>Toggled &amp;away</source>
         <translation>S&apos;&amp;absenter / Revenir</translation>
     </message>
+    <message>
+        <source>Show T&amp;imestamps</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>OnlineAlert</name>
@@ -878,6 +882,21 @@
     </message>
     <message>
         <source>%1 user %2 is now %3</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PrivateChat</name>
+    <message>
+        <source>%1 is offline</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 is away</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 is online</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
