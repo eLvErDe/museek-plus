@@ -586,7 +586,10 @@ void MainWindow::slotStatusMessage(bool type, const QString& msg) {
 	QStringList wm = QStringList::split("\n", msg, true);
 	QStringList::iterator it = wm.begin();
 	for(; it != wm.end(); ++it) {
-		mLog->append(QString(_TIME+"<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+*it+"</font></span>"));
+		if (museeq->mShowTimestamps)
+			mLog->append(QString(_TIME+"<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+*it+"</font></span>"));
+		else
+			mLog->append(QString("<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+*it+"</font></span>"));
 	}
 }
 void MainWindow::slotUserStatus( const QString & user, uint status ) {
