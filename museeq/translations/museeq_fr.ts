@@ -765,7 +765,7 @@
     </message>
     <message>
         <source>&lt;h3&gt;While in a chat window, such as a Chat Room, or a Private Chat, there are a number of commands available for use.&lt;/h3&gt;&lt;b&gt;/c /chat&lt;/b&gt;   &lt;i&gt;(Switch to Chat Rooms)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/pm /private&lt;/b&gt; &amp;lt;nothing | username&amp;gt;  &lt;i&gt;(Switch to Private Chat and start chatting with a user, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/transfers&lt;/b&gt;   &lt;i&gt;(Switch to Transfers)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/s /search&lt;/b&gt; &amp;lt;nothing | query&gt;   &lt;i&gt;(Switch to Searchs and start a Search with &amp;lt;query&amp;gt; if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/u /userinfo&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Switch to userinfo, and attempt to get a user&apos;s info, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/b /browse&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Switch to Browse and initate browsing a user, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ip&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Get the IP of a user)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/log&lt;/b&gt;    &lt;i&gt;(Toggle displaying the Special Message Log)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/t /ticker /tickers&lt;/b&gt;   &lt;i&gt;(Toggle the showing of Tickers)&lt;/i&gt; &lt;br&gt;&lt;b&gt;/f /fonts /c /colors&lt;/b&gt;   &lt;i&gt;(Open the Fonts and Colors settings dialog)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ban /unban&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Disallow/Allow a user to recieve your shares and download from you)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ignore /unignore&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Block/Unblock chat messages from a user)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/buddy /unbuddy&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Add/Remove a user to keep track of it and add comments about it)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/trust /distrust&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Add/Remove a user to the optional list of users who can send files to you)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/me&lt;/b&gt; &lt;does something&gt;    &lt;i&gt;(Say something in the Third-Person)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/slap&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Typical Trout-slapping)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/j /join&lt;/b&gt; &amp;lt;room&amp;gt;    &lt;i&gt;(Join a Chat Room)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/l /p /leave /part&lt;/b&gt; &amp;lt;nothing | room&amp;gt;    &lt;i&gt;(Leave the current room or inputed room)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/about /help /commands&lt;/b&gt;    &lt;i&gt;(Display information)&lt;/i&gt;&lt;br&gt;&lt;br&gt;Do not type the brackets, they are there only to make clear that something (or nothing) can be typed after the /command.</source>
-        <translation type="unfinished">&lt;h3&gt;Dans une fenêtre de discussion, qu&apos;il s&apos;agisse d&apos;un salon ou d&apos;une discussion privées, il y a certaines commandes que vous pourriez utliser.&lt;/h3&gt;&lt;b&gt;/c /chat&lt;/b&gt;&lt;i&gt;(Changer de salon)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/pm /private&lt;/b&gt; &amp;lt;rien | utilisateur&amp;gt;&lt;i&gt;(Aller à l&apos;onglet Discussions privées et démarrer une discussion avec l&apos;utilisateur spécifié)</translation>
+        <translation>&lt;h3&gt;Dans une fenêtre de discussion, qu&apos;il s&apos;agisse d&apos;un salon ou d&apos;une discussion privées, il y a certaines commandes que vous pourriez utliser.&lt;/h3&gt;&lt;b&gt;/c /chat&lt;/b&gt;   &lt;i&gt;(Changer de salon)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/pm /private&lt;/b&gt; &amp;lt;rien | utilisateur&amp;gt;  &lt;i&gt;(Aller à l&apos;onglet Discussions privées et démarrer une discussion avec l&apos;utilisateur spécifié)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/transfers&lt;/b&gt;   &lt;i&gt;(Aller à l&apos;onglet Transferts)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/s /search&lt;/b&gt; &amp;lt;rien | mots clefs&gt;   &lt;i&gt;(Aller à l&apos;onglet Recherche et démarrer une rechercher sur les mots clefs spécifiés)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/u /userinfo&lt;/b&gt; &amp;lt;utilisateur&amp;gt;   &lt;i&gt;(Aller à l&apos;onglet Utilisateur et afficher les infos de l&apos;utilisateur spécifié)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/b /browse&lt;/b&gt; &amp;lt;utilisateur&amp;gt;   &lt;i&gt;(Aller à l&apos;onglet Partages et afficher les fichiers partagés de l&apos;utilisateur spécifié)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ip&lt;/b&gt; &amp;lt;utilisateur&amp;gt;   &lt;i&gt;(Afficher l&apos;adresse IP de l&apos;utilisateur)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/log&lt;/b&gt;   &lt;i&gt;(Activer/Désactiver l&apos;affichage des messages spéciaux dans la fenêtre de log)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/t /ticker /tickers&lt;/b&gt;   &lt;i&gt;(Activer/Désactiver l&apos;affichage des messages défilant)&lt;/i&gt; &lt;br&gt;&lt;b&gt;/f /fonts /c /colors&lt;/b&gt;   &lt;i&gt;(Afficher la fenêtre de configurations des couleurs et polices)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ban /unban&lt;/b&gt; &amp;lt;utilisateur&amp;gt;   &lt;i&gt;(Bannir/Débannir l&apos;utilisateur spécifié)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ignore /unignore&lt;/b&gt; &amp;lt;utilisateur&amp;gt;   &lt;i&gt;(Ignorer/Ne plus ignorer l&apos;utilisateur spécifié)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/buddy /unbuddy&lt;/b&gt; &amp;lt;utilisateur&amp;gt;   &lt;i&gt;(Ajouter/Supprimer l&apos;utilisateur spécifié de ma liste d&apos;amis)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/trust /distrust&lt;/b&gt; &amp;lt;utilisateur&amp;gt;   &lt;i&gt;(Ajouter/Supprimer l&apos;utilisateur spécifié de la liste d&apos;utilisateurs autorisés à m&apos;envoyer des fichiers)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/me&lt;/b&gt; &lt;texte&gt;   &lt;i&gt;(Dire le texte spécifié à la troisième personne)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/slap&lt;/b&gt; &amp;lt;utilisateur&amp;gt;   &lt;i&gt;(Slap l&apos;utilisateur spécifié)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/j /join&lt;/b&gt; &amp;lt;salon&amp;gt;   &lt;i&gt;(Rejoindre le salon spécifié)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/l /p /leave /part&lt;/b&gt; &amp;lt;rien | salon&amp;gt;   (Quitter la room actuelle ou la room spécifiée)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/about /help /commands&lt;/b&gt;   &lt;i&gt;(Affiche l&apos;aide)&lt;/i&gt;&lt;br&gt;&lt;br&gt;Ne tappez pas &amp;lt; &amp;gt; ! Ces symboles sont utilisés pour indiquer qu&apos;un paramètre est requis pour certaines commandes.</translation>
     </message>
     <message>
         <source>Museeq Help</source>
@@ -773,7 +773,7 @@
     </message>
     <message>
         <source>&lt;h3&gt;What&apos;s going on? I can&apos;t connect to a Soulseek Server with museeq!&lt;/h3&gt; You connect to museekd with museeq, so you need to have &lt;b&gt;museekd&lt;/b&gt; configured, running &lt;u&gt;and&lt;/u&gt; connected to a &lt;b&gt;Soulseek&lt;/b&gt; or Soulfind server. &lt;br&gt; &lt;h3&gt;Running for the first time?&lt;/h3&gt; Before you start museekd for the first time, you need to configure &lt;b&gt;museekd&lt;/b&gt; with &lt;b&gt;musetup&lt;/b&gt;,  a command-line configuration script.&lt;br&gt;&lt;br&gt; In musetup you &lt;b&gt;MUST&lt;/b&gt; configure the following items: Server, Username, Password, Interface Password, Download Dir&lt;br&gt; Also, take note of your interfaces, if you change them from the default localhost:2240 and /tmp/museek.&lt;tt&gt;USERNAME&lt;/tt&gt;, you&apos;ll need to know them for logging in with museeq. &lt;br&gt;&lt;br&gt; When you start museeq or choose File-&gt;Connect from the menu, you are asked to input the host and port, or Unix Socket of museekd, &lt;b&gt;not&lt;/b&gt; the Server.&lt;br&gt; &lt;h3&gt;Want to send someone a file?&lt;/h3&gt; Browse yourself, select file(s), and right-click-&gt;Upload. Input their name in the dialog box, and the upload should start, but it depends on if the user has place you on their &quot;trusted&quot; or &quot;uploads&quot; users list .&lt;br&gt;Once you&apos;re connected to museekd, change museekd options via Settings-&gt;Museek</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;h3&gt;Impossible de se connecter au réseau Soulseek avec Museeq?&lt;/h3&gt; Museeq se connecte au démon &lt;b&gt;museekd&lt;/b&gt; pour accèder au réseau. Le démon doit donc être configuré, en fonctionnement &lt;u&gt;et&lt;/u&gt; connecté à un serveur&lt;b&gt;Soulseek&lt;/b&gt; ou Soulfind. &lt;br&gt; &lt;h3&gt;Vous lancez museekd pour la première fois?&lt;/h3&gt; Avant de démarrer le démon, vous devez configurer &lt;b&gt;museekd&lt;/b&gt; via &lt;b&gt;musetup&lt;/b&gt;,  un utilitaire de configuration en ligne de commande.&lt;br&gt;&lt;br&gt; Dans musetup vous &lt;b&gt;DEVEZ&lt;/b&gt; configurer les options suivantes: Server, Username, Password, Interface Password, Download Dir&lt;br&gt; Vérifiez aussi la section Interfaces. Si vous choississez autre chose que localhost:2240 et /tmp/museek.&lt;tt&gt;USERNAME&lt;/tt&gt;, vous devrez renseigner ces paramètre dans Museeq. &lt;br&gt;&lt;br&gt; Lors du démarrage de Museeq, vous devrez entrez les paramètres de connexion à museekd (hôte et port ou chemin de la socket Unix.&lt;br&gt; &lt;h3&gt;Vous souhaitez envoyer un fichier à un utilisateur?&lt;/h3&gt; Parcourez vos propres fichiers partagés, selectionnez un ou plusieurs fichiers , puis fais un click droit et choisissez Envoyer. Saisissez le nom de l&apos;utilisateur dans la boite de dialogue qui va apparaître et l&apos;envoie devrait démarrer. Cependant ceci requiert évidemment que le destinataire vous ai ajoué dans sa liste d&apos;utilisateurs autorisés à envoyer des fichiers.&lt;br&gt;Une fois connecté à museekd vous pouvez changer les réglages depuis le menus Préférences-&gt;Museek dans Museeq</translation>
     </message>
     <message>
         <source>Delete handler</source>
@@ -1276,39 +1276,39 @@
     <name>TickerDialog</name>
     <message>
         <source>Set ticker...</source>
-        <translation type="unfinished"></translation>
+        <translation>Définir mon message défilant...</translation>
     </message>
     <message>
         <source>Set ticker to:</source>
-        <translation type="unfinished"></translation>
+        <translation>Définir le message pour:</translation>
     </message>
     <message>
         <source>Just this time</source>
-        <translation type="unfinished"></translation>
+        <translation>Uniquement cette fois-ci</translation>
     </message>
     <message>
         <source>Always for this room</source>
-        <translation type="unfinished"></translation>
+        <translation>Par défaut pour ce salon</translation>
     </message>
     <message>
         <source>Default for all rooms</source>
-        <translation type="unfinished"></translation>
+        <translation>Par défaut pour tout les salons</translation>
     </message>
     <message>
         <source>&amp;Cancel</source>
-        <translation type="unfinished">Annule&amp;r</translation>
+        <translation>Annule&amp;r</translation>
     </message>
     <message>
         <source>Alt+C</source>
-        <translation type="unfinished">Alt+R</translation>
+        <translation>Alt+R</translation>
     </message>
     <message>
         <source>&amp;OK</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <source>Alt+O</source>
-        <translation type="unfinished">Alt+O</translation>
+        <translation>Alt+O</translation>
     </message>
 </context>
 <context>
@@ -1481,11 +1481,11 @@
     </message>
     <message>
         <source>Uploads:</source>
-        <translation type="unfinished"></translation>
+        <translation>Envois:</translation>
     </message>
     <message>
         <source>slots</source>
-        <translation type="unfinished"></translation>
+        <translation>places libres en file d&apos;attentes</translation>
     </message>
 </context>
 <context>
@@ -1535,47 +1535,47 @@
     <name>UserInfoDialog</name>
     <message>
         <source>Change user info</source>
-        <translation type="unfinished"></translation>
+        <translation>Modifier mes informations personnelles</translation>
     </message>
     <message>
         <source>Image</source>
-        <translation type="unfinished"></translation>
+        <translation>Image</translation>
     </message>
     <message>
         <source>Clear</source>
-        <translation type="unfinished">Effacer</translation>
+        <translation>Effacer</translation>
     </message>
     <message>
         <source>Don&apos;t touch</source>
-        <translation type="unfinished"></translation>
+        <translation>Ne pas modifier</translation>
     </message>
     <message>
         <source>Upload:</source>
-        <translation type="unfinished"></translation>
+        <translation>Envois:</translation>
     </message>
     <message>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
     <message>
         <source>OK</source>
-        <translation type="unfinished"></translation>
+        <translation>OK</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Annuler</translation>
     </message>
     <message>
         <source>Images (*.png *.gif *.jpg *.jpeg)</source>
-        <translation type="unfinished"></translation>
+        <translation>Images (*.png *.gif *.jpg *.jpeg)</translation>
     </message>
     <message>
         <source>Select an Image for you User info</source>
-        <translation type="unfinished"></translation>
+        <translation>Choisissez une image pour vos informations</translation>
     </message>
     <message>
         <source>All files (*)</source>
-        <translation type="unfinished"></translation>
+        <translation>Tous les fichiers (*)</translation>
     </message>
 </context>
 <context>
