@@ -48,10 +48,14 @@ public:
 	void reconnect();
 	bool mKicked, mHaveBuddyShares;
 	bool is_privileged(const std::string& user);
+	bool is_receiving_shares(const std::string& user) const;
 	bool is_buddied(const std::string& user) const;
 	bool is_banned(const std::string& user) const;
 	bool is_trusted(const std::string& user) const;
-	
+
+	void add_receiving(const std::string&);
+	void remove_receiving(const std::string&);
+
 	inline bool privilege_buddies() const { return mPrivilegeBuddies; }
 	inline bool trusting_uploads() const { return mTrustedUploads; }
 	inline bool only_buddies() const { return mOnlyBuddies; }
@@ -192,7 +196,7 @@ private:
 	
 	std::string mIfacePassword;
 	std::vector<IfaceConnection*> mIfaces;
-	std::vector<std::string> mBanned, mTrusted;
+	std::vector<std::string> mBanned, mTrusted, mReceiving;
 	
 	bool mJoined;
 	

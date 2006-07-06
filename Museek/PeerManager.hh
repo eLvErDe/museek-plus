@@ -119,6 +119,7 @@ private:
 	std::vector<Transfer*> mTransfers;
 	std::vector<std::pair<uint, std::wstring> > mDownloadQueue;
 	Transfer* mUploading;
+	bool mReceiving;
 };
 
 class PeerManager {

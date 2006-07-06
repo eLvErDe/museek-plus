@@ -15,14 +15,15 @@ except:
 targets = [env.Command('musetup', ['musetup.in'], build_setup)]
 manfile = ["musetup.1"]
 
-try:
-	import gtk
-	print "PyGTK found, musetup-gtk will run properly."
-except:
-	print "\nWARNING: PyGTK not found, musetup-gtk will NOT run, but will be installed."
-
-targets.append('musetup-gtk')
-
+if env["MUSETUPGTK"]:
+	try:
+		import gtk
+		print "PyGTK found, musetup-gtk will run properly."
+	except:
+		print "\nWARNING: PyGTK not found, musetup-gtk will NOT run, but will be installed."
+	
+	targets.append('musetup-gtk')
+	manfile.append ("musetup-gtk.1")
 if 'swig' in env['TOOLS']:
 	targets.append('mulog')
 	targets.append('museekcontrol')

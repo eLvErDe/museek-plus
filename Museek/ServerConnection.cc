@@ -83,10 +83,14 @@ int ServerConnection::get_poll_mask() {
 	
 	time_t curtime = time(NULL);
 	if(mMuseek->logged_in()) {
-
-		next_event = mLastTraffic + 15;
-		mLastTraffic = curtime;
-	} else if(ready && curtime >= mLastTraffic + 60) {
+		if(curtime >= mLastTraffic + 45) {
+			CT("ping");
+			SPing s;
+			send(s);
+			mLastTraffic = curtime;
+		}
+		next_event = mLastTraffic + 45;
+	} else if(ready && curtime >= mLastTraffic + 90) {
 		cannot_login();
 		disconnect();
 		return 0;
@@ -185,7 +189,7 @@ void ServerConnection::process_message(uint32 code) {
 		break;
 	}
 	case 32:
-		DEBUG("pong!");
+		CT("pong!");
 		break;
 	case 36: {
 		PARSE(SGetUserStats)

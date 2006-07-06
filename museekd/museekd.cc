@@ -543,11 +543,19 @@ void Museekd::cb_iface_peer_address(IfaceConnection* conn, const string& user) {
 }
 
 void Museekd::cb_iface_info(IfaceConnection* conn, const string& user) {
-	mPeerManager->get_peer(user)->connection()->info();
+	if(user == mUsername) {
+		mPeerManager->get_peer(user)->connection()->local_userinfo_request();
+	} else {
+		mPeerManager->get_peer(user)->connection()->info();
+	}
 }
 
 void Museekd::cb_iface_shares(IfaceConnection* conn, const string& user) {
-	mPeerManager->get_peer(user)->connection()->shares();
+	if(user == mUsername) {
+		mPeerManager->get_peer(user)->connection()->local_shares_request();
+	} else {
+		mPeerManager->get_peer(user)->connection()->shares();
+	}
 }
 
 void Museekd::cb_iface_give_privileges(IfaceConnection* conn, const string& user, uint32 days) {
@@ -672,10 +680,12 @@ void Museekd::cb_peer_upload_blocked(const string& user) {
 void Museekd::cb_peer_sent_buddy_shares(const string& user) {
 	string _msg = ("Buddy Shares sent to: "+ user );
 	ALL_IFACES(status_message(1, _msg ));
+	
 }
 void Museekd::cb_peer_sent_normal_shares(const string& user) {
 	string _msg = ("Normal Shares sent to: "+ user );
 	ALL_IFACES(status_message(1, _msg ));
+	
 }
 void Museekd::cb_peer_sent_user_info(const string& user) {
 	string _msg = ("User Info sent to: "+ user );
@@ -1457,7 +1467,22 @@ void Museekd::unban(const string& user) {
 	if(it != mBanned.end())
 		mBanned.erase(it);
 }
-	
+
+void Museekd::remove_receiving(const string& user) {
+	vector<string>::iterator it = find(mReceiving.begin(), mReceiving.end(), user);
+	if(it != mReceiving.end())
+		mReceiving.erase(it);
+// 	remove_receiving(user);
+}
+void Museekd::add_receiving(const string& user) {
+	DEBUG ("Add to Receiving list: %s", user.c_str ());
+	if(find(mReceiving.begin(), mReceiving.end(), user) != mReceiving.end())
+		return;
+	mReceiving.push_back(user);
+}
+bool Museekd::is_receiving_shares(const string& user) const {
+	return find(mReceiving.begin(), mReceiving.end(), user) != mReceiving.end();
+}
 bool Museekd::is_banned(const string& user) const {
 	if(mOnlyBuddies && ! mBuddies->has(user))
 		return true;

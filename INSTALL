@@ -1,7 +1,7 @@
 Museek uses the SConstruct build system (www.scons.org) for building and
 installing all components. If you got Museek from as an official
 release tarball (ie. not from the Subversion repository, and not a
-snapshot), 'scons' should be included with the release and your can start
+snapshot), 'scons' should be included with the release and you can start
 scons using 'python scons/scons.py'.
 
 If you distrbutions provides a scons package, you should install it and 
@@ -25,14 +25,21 @@ Museek depends on:
 
 Museeq (the Qt GUI) depends on:
  - Qt 3.2 or newer
+ - Qt translation tools, lrelease and lupdate
  - QSA 1.1 or newer (optional) for scripting support
+
+Musetup-GTK depends on:
+ - PyGTK2
+
+Mucous depends on:
+- Python-Curses (included with Python)
 
 The build system depends on:
  - Python (including pyexpat for musetup)
  - SConstruct (included with release tarballs)
  - A C compiler
  - A C++ compiler with access to an STL implementation that has wstring
-   support (no MacOSX, Cygwin or FreeBSD4).
+   support (no MacOSX, Cygwin or FreeBSD4) such as GCC.
  - Development packages for libxml++ and optionally Qt
  - Swig, for the Mucipher python bindings
 
@@ -60,7 +67,7 @@ runs):
   DATADIR=prefix        [*] Data directory, where to install data files
                             (default: '$PREFIX/share/museek')
 
-  MANDIR=yes/no         [*] Man Page dictory, where to install man pages
+  MANDIR=prefix         [*] Man Page dictory, where to install man pages
                             (default: '$PREFIX/man/man1')
 
   DESTDIR=prefix            Installation destination dir, useful for package
@@ -93,6 +100,8 @@ runs):
 
   ONLYMUSEEQ=yes/no     [*] Only compile Mucipher and museeq
                             default: no
+
+  MUSEEQTRANSLATIONS=fr,de,it,es,pl  [*] Build translations for Museeq
 
   QSA=yes/no            [*] Test for QSA, and if available, build museeq with it
                             default: yes

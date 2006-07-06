@@ -140,7 +140,13 @@ bool Museek::is_privileged(const string& user) {
 	server_get_peer_privileged(user);
 	return false;
 }
-
+void Museek::add_receiving(const string& user){
+}
+void Museek::remove_receiving(const string& user){
+}
+bool Museek::is_receiving_shares(const string& user) const {
+	return false;
+}
 bool Museek::is_banned(const string& user) const {
 	return false;
 }

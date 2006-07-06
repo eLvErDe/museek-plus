@@ -42,10 +42,19 @@ BINRELOC=os.path.exists('/proc/self/maps')
 
 # Install Mucous
 MUCOUS=1
+
+# Install Musetup-GTK
+MUSETUPGTK=1
+
 # Build the Qt GUI
 MUSEEQ=1
+
 # Only Build the Qt GUI and Mucipher
 ONLYMUSEEQ=0
+
+# Build translations for Museeq
+MUSEEQTRANSLATIONS='fr,de,it,es,pl'
+
 # Use QSA if available
 QSA=1
 

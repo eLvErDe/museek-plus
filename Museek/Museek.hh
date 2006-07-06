@@ -105,6 +105,7 @@ public:
 	inline void set_connect_mode(ConnectMode connect_mode) { mConnectMode = connect_mode; }
 	
 	virtual bool is_privileged(const std::string& user);
+	virtual bool is_receiving_shares(const std::string& user)  const;
 	virtual bool is_buddied(const std::string& user)  const;
 	virtual bool is_banned(const std::string& user) const;
 	virtual bool is_trusted(const std::string& user) const;
@@ -259,7 +260,8 @@ public:
 	// Distributed network connection callbacks
 	virtual void cb_distrib_ping();
 	virtual void cb_distrib_search(STR user, uint32 ticket, WSTR query);
-	
+	virtual void add_receiving(const std::string& user) ;
+	virtual void remove_receiving(const std::string& user) ;
  	bool mUserWarnings, mBuddySharesHave, mBuddiesOnly;
 protected:
 	// Cycle callback, purges stuff we don't need / want anymore

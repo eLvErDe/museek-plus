@@ -127,7 +127,7 @@ Version: %s
 	sys.exit(2)
 	
 try:
-	opts, args = getopt.getopt(sys.argv[1:], "hc:vi:p:j:l:p:m:b:tar", ["help", "config=", "interface=", "password=", "transfers", "monitor-transfers", "info=",  "minfo", "browse=", "sprivates", "sprivate=", "leave=", "join=", "joined",  "sroom=", "stalk", "rooms", "bs=", "bsearch=", "rs=", "rsearch=", "gs=", "alltickers", "tickers=", "gsearch=", "version", "log=", "chat=", "pm=", "private=", "message=", "away", "download=", "mt", "mtransfers", "mb", "mbrowse", "buddy=", "unbuddy=", "ignore=", "uningore=", "ban=", "unban=", "trust=", "distrust=", "comment=", "roomlist", "abortdown=", "abortup=", "retryup=", "retrydown=", "removeup=", "removedown=", "upload=", "roominfo=", "roomsinfo", "ip=", "setticker=", "settempticker=", "setdefaultticker", "reloadshares", "disconnect", "connect" ])
+	opts, args = getopt.getopt(sys.argv[1:], "hc:vi:p:j:l:p:m:b:tar", ["help", "config=", "interface=", "password=", "transfers", "monitor-transfers", "info=",  "minfo", "browse=", "sprivates", "sprivate=", "leave=", "join=", "joined",  "sroom=", "stalk", "rooms", "bs=", "bsearch=", "rs=", "rsearch=", "gs=", "alltickers", "tickers=", "gsearch=", "version", "log=", "chat=", "pm=", "private=", "message=", "away", "download=", "mt", "mtransfers", "mb", "mbrowse", "buddy=", "unbuddy=", "ignore=", "uningore=", "ban=", "unban=", "trust=", "distrust=", "comment=", "roomlist", "abortdown=", "abortup=", "retryup=", "retrydown=", "removeup=", "removedown=", "upload=", "roominfo=", "roomsinfo", "ip=", "iproom=", "setticker=", "settempticker=", "setdefaultticker", "reloadshares", "disconnect", "connect" ])
 except getopt.GetoptError:
 	usage()
 	sys.exit(2)
@@ -188,6 +188,9 @@ for opts, args in opts:
 		room = str(args)
 	elif opts == "--roomsinfo":
 		want = "roominfo"
+	elif opts ==  "--iproom":
+		want ="iproom"
+		room=str(args)
 	elif opts == "--joined":
 		want = "joined"
 	elif opts in ( "--pm", "--private"):
@@ -629,6 +632,7 @@ class museekcontrol(driver.Driver):
 		elif status == 2:
 			stat = "Online"
 		return stat
+		
 	def cb_room_state(self, roomlist, joined, tickers):
 		self.connected = 1
 		if want == "rooms":
@@ -639,6 +643,23 @@ class museekcontrol(driver.Driver):
 			for s in x:
 				print "%s\t%s" % (roomlist[s], s)
 			sys.exit()
+		elif want == "iproom":
+			x = joined.keys()
+			x.sort()
+			if room in x:
+				print room
+				r = joined[room]
+				list = joined[room].keys()
+				list.sort()
+				for u in list:
+					
+					print u
+					sleep(3)
+					self.send(messages.PeerAddress(u))
+			else:
+				print "%s not joined" % room
+				sys.exit()
+
 		elif want == "roominfo":
 			x = joined.keys()
 			x.sort()
@@ -873,6 +894,8 @@ class museekcontrol(driver.Driver):
 				if user == username:
 					print "%s's IP: %s Port: %s"  % (user, str(ip), str(port))
 					sys.exit()
+		if want == "iproom":
+			print "%s  IP: %s Port: %s"  % (username, str(ip), str(port))
 					
 	def cb_peer_stats(self, username, avgspeed, numdownloads, numfiles, numdirs):
 		if want == "stats":

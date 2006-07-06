@@ -3,145 +3,145 @@
     <name>@default</name>
     <message>
         <source> Language: </source>
-        <translation> Sprache: </translation>
+        <translation>Lenguaje:</translation>
     </message>
     <message>
         <source>Syntax: museeq [options]</source>
-        <translation>Syntax: museeq [Optionen]</translation>
+        <translation>Sintaxis: museeq [opciones]</translation>
     </message>
     <message>
         <source>Options:</source>
-        <translation>Optionen:</translation>
+        <translation>Opciones:</translation>
     </message>
     <message>
         <source>-V --version<byte value="x9"/><byte value="x9"/>Display museeq version and quit</source>
-        <translation>-V --version<byte value="x9"/><byte value="x9"/>Version anzeigen und beenden</translation>
+        <translation>-V --version<byte value="x9"/><byte value="x9"/>Mostrar versión de museeq y terminar</translation>
     </message>
     <message>
         <source>-h --help<byte value="x9"/><byte value="x9"/>Display this message and quit</source>
-        <translation>-h --help<byte value="x9"/><byte value="x9"/>Diese Hilfe anzeigen und beenden</translation>
+        <translation>-h --help<byte value="x9"/><byte value="x9"/>Mostrar este mensaje y terminar</translation>
     </message>
     <message>
         <source>--no-tray<byte value="x9"/><byte value="x9"/>Don&apos;t load TrayIcon</source>
-        <translation>--no-tray<byte value="x9"/><byte value="x9"/>Ohne Trayicon starten</translation>
+        <translation>--no-tray<byte value="x9"/><byte value="x9"/>No cargue el TrayIcon</translation>
     </message>
     <message>
         <source>&amp;Restore</source>
-        <translation>&amp;Wiederherstellen</translation>
+        <translation>&amp;Restaurar</translation>
     </message>
     <message>
         <source>&amp;Hide</source>
-        <translation>&amp;Verbergen</translation>
+        <translation>&amp;Esconder</translation>
     </message>
     <message>
         <source>&amp;Quit</source>
-        <translation>&amp;Beenden</translation>
+        <translation>&amp;Terminar</translation>
     </message>
     <message>
         <source>MuseeqTray</source>
-        <translation>Museeq-Tray</translation>
+        <translation>MuseeqTray</translation>
     </message>
 </context>
 <context>
     <name>BanList</name>
     <message>
         <source>Add:</source>
-        <translation>Hinzufügen:</translation>
+        <translation>Añadir:</translation>
     </message>
     <message>
         <source>Comments</source>
-        <translation>Kommentar</translation>
+        <translation>Comentarios</translation>
     </message>
     <message>
         <source>Comments for </source>
-        <translation>Kommentar zu </translation>
+        <translation>Comentarios para</translation>
     </message>
 </context>
 <context>
     <name>Browser</name>
     <message>
         <source>Search files and folders</source>
-        <translation>Nach Dateien und Ordnern suchen</translation>
+        <translation>Buscar archivos y carpetas</translation>
     </message>
     <message>
         <source>Haven&apos;t received shares</source>
-        <translation>Warte auf Liste …</translation>
+        <translation>No ha recivido archivos compartidos</translation>
     </message>
     <message>
         <source>Refresh</source>
-        <translation>Aktualisieren</translation>
+        <translation>Actualizar</translation>
     </message>
     <message>
         <source>directories</source>
-        <translation>Ordner</translation>
+        <translation>directorios</translation>
     </message>
     <message>
         <source>Sharing nothing..</source>
-        <translation>Nichts freigegeben.</translation>
+        <translation>Compartiendo nada..</translation>
     </message>
 </context>
 <context>
     <name>BuddyList</name>
     <message>
         <source>Add:</source>
-        <translation>Hinzufügen:</translation>
+        <translation>Añadir:</translation>
     </message>
     <message>
         <source>Comments</source>
-        <translation>Kommentar</translation>
+        <translation>Comentarios</translation>
     </message>
     <message>
         <source>Comments for </source>
-        <translation>Kommentar zu </translation>
+        <translation>Comentarios para</translation>
     </message>
 </context>
 <context>
     <name>ChatRoom</name>
     <message>
         <source>Auto-join</source>
-        <translation>Automatisch betreten</translation>
+        <translation>Connexión Automática</translation>
     </message>
     <message>
         <source>%1 joined the room</source>
-        <translation>%1 hat den Raum betreten.</translation>
+        <translation>%1 se ha unido a la sala</translation>
     </message>
     <message>
         <source>%1 left the room</source>
-        <translation>%1 hat den Raum verlassen.</translation>
+        <translation>%1 salió de la sala</translation>
     </message>
     <message>
         <source>%1 has gone away</source>
-        <translation>%1 ist abwesend.</translation>
+        <translation>%1 está ausente</translation>
     </message>
     <message>
         <source>%1 has returned</source>
-        <translation>%1 ist wieder anwesend.</translation>
+        <translation>%1 ha vuelto</translation>
     </message>
 </context>
 <context>
     <name>ChatRooms</name>
     <message>
         <source>*Rooms*</source>
-        <translation>*Räume*</translation>
+        <translation>*Salas*</translation>
     </message>
 </context>
 <context>
     <name>ConnectDialog</name>
     <message>
         <source>Connect to Museekd...</source>
-        <translation>Zu museekd verbinden</translation>
+        <translation>Conectarse a Museekd...</translation>
     </message>
     <message>
         <source>Host / path:</source>
-        <translation>Host/Pfad:</translation>
+        <translation>Servidor / ruta:</translation>
     </message>
     <message>
         <source>Password:</source>
-        <translation>Passwort:</translation>
+        <translation>Contraseña:</translation>
     </message>
     <message>
         <source>&amp;Save Password</source>
-        <translation>Passwort &amp;speichern</translation>
+        <translation>Guardar Contra&amp;seña</translation>
     </message>
     <message>
         <source>Alt+S</source>
@@ -149,7 +149,7 @@
     </message>
     <message>
         <source>Connect to:</source>
-        <translation>Verbinden via:</translation>
+        <translation>Conectarse a:</translation>
     </message>
     <message>
         <source>&amp;TCP</source>
@@ -161,7 +161,7 @@
     </message>
     <message>
         <source>&amp;Unix socket</source>
-        <translation>&amp;Unix-Socket</translation>
+        <translation>Socket de &amp;Unix</translation>
     </message>
     <message>
         <source>Alt+U</source>
@@ -169,11 +169,11 @@
     </message>
     <message>
         <source>Daemon O&amp;ptions...</source>
-        <translation>Daemon-&amp;Optionen</translation>
+        <translation>O&amp;pciones del Daemon...</translation>
     </message>
     <message>
         <source>Start &amp;Daemon</source>
-        <translation>&amp;Daemon starten</translation>
+        <translation>Empezar el &amp;Daemon</translation>
     </message>
     <message>
         <source>Alt+D</source>
@@ -181,195 +181,195 @@
     </message>
     <message>
         <source>St&amp;op Daemon</source>
-        <translation>Daemon an&amp;halten</translation>
+        <translation>Detener el Daem&amp;on</translation>
     </message>
     <message>
         <source>Alt+O</source>
-        <translation>Alt+H</translation>
+        <translation>Alt+O</translation>
     </message>
     <message>
         <source>Museek Daemon Config:</source>
-        <translation>mussekd-Konfiguration:</translation>
+        <translation>Configuración del Museek Daemon:</translation>
     </message>
     <message>
         <source>Se&amp;lect...</source>
-        <translation>Aus&amp;wählen …</translation>
+        <translation>Se&amp;leccionar...</translation>
     </message>
     <message>
         <source>Alt+L</source>
-        <translation>Alt+W</translation>
+        <translation>Alt+L</translation>
     </message>
     <message>
         <source>Co&amp;nnect</source>
-        <translation>&amp;Verbinden</translation>
+        <translation>Co&amp;néctate</translation>
     </message>
     <message>
         <source>Alt+N</source>
-        <translation>Alt+V</translation>
+        <translation>Alt+N</translation>
     </message>
     <message>
         <source>Save</source>
-        <translation>Speichern</translation>
+        <translation>Guardar Cambios</translation>
     </message>
     <message>
         <source>&amp;Cancel</source>
-        <translation>&amp;Abbrechen</translation>
+        <translation>&amp;Cancelar</translation>
     </message>
     <message>
         <source>Alt+C</source>
-        <translation>Alt+A</translation>
+        <translation>Alt+C</translation>
     </message>
     <message>
         <source>&amp;AutoStart Museek Daemon</source>
-        <translation>Daemon a&amp;utomatisch starten</translation>
+        <translation>&amp;AutoComenzar Museek Daemon</translation>
     </message>
     <message>
         <source>Alt+A</source>
-        <translation>Alt+U</translation>
+        <translation>Alt+A</translation>
     </message>
     <message>
         <source>S&amp;hutDown Daemon on Exit</source>
-        <translation>Daemon beim &amp;Beenden herunterfahren</translation>
+        <translation>Cerrar Daemon a la &amp;hora de salida</translation>
     </message>
     <message>
         <source>Alt+H</source>
-        <translation>Alt+B</translation>
+        <translation>Alt+H</translation>
     </message>
 </context>
 <context>
     <name>FileListView</name>
     <message>
         <source>Filename</source>
-        <translation>Dateiname</translation>
+        <translation>Nombre de archivo</translation>
     </message>
     <message>
         <source>Size</source>
-        <translation>Dateigröße</translation>
+        <translation>Tamaño</translation>
     </message>
     <message>
         <source>Length</source>
-        <translation>Länge</translation>
+        <translation>Duración</translation>
     </message>
     <message>
         <source>Bitrate</source>
-        <translation>Bitrate</translation>
+        <translation>Velocidad</translation>
     </message>
     <message>
         <source>Download files</source>
-        <translation>Datei(en) herunterladen</translation>
+        <translation>Descargar archivos</translation>
     </message>
     <message>
         <source>Upload files</source>
-        <translation>Datei(en) hochladen</translation>
+        <translation>Transferir archivos</translation>
     </message>
     <message>
         <source>Copy URL</source>
-        <translation>URL in die Zwischenablage kopieren</translation>
+        <translation>Copiar el URL</translation>
     </message>
     <message>
         <source>1 file</source>
-        <translation>1 Datei</translation>
+        <translation>1 archivo</translation>
     </message>
     <message>
         <source>%1 files</source>
-        <translation>%1 Dateien</translation>
+        <translation>%1 archivos</translation>
     </message>
     <message>
         <source>Upload File(s)</source>
-        <translation>Datei(en) hochladen</translation>
+        <translation>Transferir Archivo(s)</translation>
     </message>
     <message>
         <source>Which user do you wish to upload these to?</source>
-        <translation>Welchem Benutzer willst du die Datei(en) hochladen?</translation>
+        <translation>¿A qué usuario le desea transferir lo elegido?</translation>
     </message>
 </context>
 <context>
     <name>FolderListView</name>
     <message>
         <source>Folder</source>
-        <translation>Ordner</translation>
+        <translation>Carpeta</translation>
     </message>
     <message>
         <source>Download folder</source>
-        <translation>Ordner herunterladen</translation>
+        <translation>Descargar carpeta</translation>
     </message>
     <message>
         <source>Copy URL</source>
-        <translation>URL in die Zwischenablage kopieren</translation>
+        <translation>Copiar el URL</translation>
     </message>
     <message>
         <source>1 folder</source>
-        <translation>1 Ordner</translation>
+        <translation>1 archivo</translation>
     </message>
     <message>
         <source>%1 folders</source>
-        <translation>%1 Ordner</translation>
+        <translation>%1 archivos</translation>
     </message>
 </context>
 <context>
     <name>FontsAndColorsDialog</name>
     <message>
         <source>Fonts &amp; Colors</source>
-        <translation>Schriftarten und -farben</translation>
+        <translation>Letras &amp; Colores</translation>
     </message>
     <message>
         <source>OK</source>
-        <translation>OK</translation>
+        <translation>Aceptar</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Abbrechen</translation>
+        <translation>Cancelar</translation>
     </message>
     <message>
         <source>Pick Color</source>
-        <translation>Farbe wählen</translation>
+        <translation>Escoger Color</translation>
     </message>
     <message>
         <source>Pick Font</source>
-        <translation>Schriftart wählen</translation>
+        <translation>Escoger Tipo de Letra</translation>
     </message>
     <message>
         <source>Time &amp; Brackets Text Color</source>
-        <translation>Textfarbe für Zeit und Klammern</translation>
+        <translation>Color del Tiempo &amp; Paréntesis</translation>
     </message>
     <message>
         <source>Time &amp; Brackets Font</source>
-        <translation>Schriftart für Zeit und Klammern</translation>
+        <translation>Letra del Tiempo &amp; Paréntesis</translation>
     </message>
     <message>
         <source>/Me Text</source>
-        <translation>/me-Text</translation>
+        <translation>/Me Texto</translation>
     </message>
     <message>
         <source>Trusted Users</source>
-        <translation>Vertrauenswürdige Benutzer</translation>
+        <translation>Usuarios de Confianza</translation>
     </message>
     <message>
         <source>Remote Text</source>
-        <translation>Fremder Text</translation>
+        <translation>Texto Remoto</translation>
     </message>
     <message>
         <source>Message Font</source>
-        <translation>Schriftart für Nachrichten</translation>
+        <translation>Letra de Mensajes</translation>
     </message>
     <message>
         <source>Buddied Users</source>
-        <translation>Freunde</translation>
+        <translation>Usuarios Amigos</translation>
     </message>
     <message>
         <source>My Text</source>
-        <translation>Eigener Text</translation>
+        <translation>Mi texto</translation>
     </message>
     <message>
         <source>Banned Users</source>
-        <translation>Gesperrte Benutzer</translation>
+        <translation>Usuarios Excluidos</translation>
     </message>
 </context>
 <context>
     <name>IPDialog</name>
     <message>
         <source>User</source>
-        <translation>Benutzer</translation>
+        <translation>Usuario</translation>
     </message>
     <message>
         <source>IP</source>
@@ -377,87 +377,87 @@
     </message>
     <message>
         <source>Port</source>
-        <translation>Port</translation>
+        <translation>Puerto</translation>
     </message>
     <message>
         <source>Hostname</source>
-        <translation>Hostname</translation>
+        <translation>Nombre de Equipo</translation>
     </message>
     <message>
         <source>IP Addresses</source>
-        <translation>IP-Adressen</translation>
+        <translation>Direcciones IP</translation>
     </message>
     <message>
         <source>&amp;Close</source>
-        <translation>&amp;Schließen</translation>
+        <translation>&amp;Cerrar</translation>
     </message>
     <message>
         <source>Alt+C</source>
-        <translation>Alt+S</translation>
+        <translation>Alt+C</translation>
     </message>
     <message>
         <source>Clear</source>
-        <translation>Aufräumen</translation>
+        <translation>Limpiar</translation>
     </message>
 </context>
 <context>
     <name>IgnoreList</name>
     <message>
         <source>Add:</source>
-        <translation>Hinzufügen:</translation>
+        <translation>Añadir:</translation>
     </message>
     <message>
         <source>Comments</source>
-        <translation>Kommentar</translation>
+        <translation>Comentarios</translation>
     </message>
     <message>
         <source>Comments for </source>
-        <translation>Kommentar zu </translation>
+        <translation>Comentarios para</translation>
     </message>
 </context>
 <context>
     <name>InterestList</name>
     <message>
         <source>Add:</source>
-        <translation>Hinzufügen:</translation>
+        <translation>Añadir:</translation>
     </message>
     <message>
         <source>I like:</source>
-        <translation>Ich mag:</translation>
+        <translation>Me gusta:</translation>
     </message>
     <message>
         <source>I hate:</source>
-        <translation>Ich hasse:</translation>
+        <translation>No me gusta:</translation>
     </message>
 </context>
 <context>
     <name>InterestListView</name>
     <message>
         <source>I like:</source>
-        <translation>Ich mag:</translation>
+        <translation>Me gusta:</translation>
     </message>
     <message>
         <source>Remove</source>
-        <translation>Entfernen</translation>
+        <translation>Eliminar</translation>
     </message>
     <message>
         <source>I hate:</source>
-        <translation>Ich hasse:</translation>
+        <translation>No me gusta:</translation>
     </message>
     <message>
         <source>Recommendations for this Item</source>
-        <translation>Empfehlungen zu diesem Eintrag</translation>
+        <translation>Sugerencias basadas en esto</translation>
     </message>
     <message>
         <source>Similar Users for this Item</source>
-        <translation>Benutzer mit gleichem Interesse</translation>
+        <translation>Usuarios similares basado en esto</translation>
     </message>
 </context>
 <context>
     <name>Interests</name>
     <message>
         <source>Interests</source>
-        <translation>Interessen</translation>
+        <translation>Interéses</translation>
     </message>
     <message>
         <source>Global</source>
@@ -465,391 +465,386 @@
     </message>
     <message>
         <source>Recommend</source>
-        <translation>Empfehlen</translation>
+        <translation>Recomendado</translation>
     </message>
     <message>
         <source>Similar</source>
-        <translation>Ähnlich</translation>
+        <translation>Similar</translation>
     </message>
     <message>
         <source>I like:</source>
-        <translation>Ich mag:</translation>
+        <translation>Me gusta:</translation>
     </message>
     <message>
         <source>I hate:</source>
-        <translation>Ich hasse:</translation>
+        <translation>No me gusta:</translation>
     </message>
 </context>
 <context>
     <name>MainWindow</name>
     <message>
         <source>museeq </source>
-        <translation>museeq </translation>
+        <translation>museeq</translation>
     </message>
     <message>
         <source>&amp;Connect...</source>
-        <translation>&amp;Verbinden</translation>
+        <translation>&amp;Conéctate...</translation>
     </message>
     <message>
         <source>&amp;Disconnect</source>
-        <translation>Verbindung &amp;trennen</translation>
+        <translation>&amp;Desconéctate</translation>
     </message>
     <message>
         <source>Toggled &amp;away</source>
-        <translation>&amp;Abwesend</translation>
+        <translation>Cambiar est&amp;ado</translation>
     </message>
     <message>
         <source>Check &amp;privileges</source>
-        <translation>&amp;Privilegien abfragen</translation>
+        <translation>Ver &amp;privilegios</translation>
     </message>
     <message>
         <source>&amp;Browse My Shares</source>
-        <translation>&amp;Eigene Freigaben ansehen</translation>
+        <translation>&amp;Buscar Mis Archivos Compartidos</translation>
     </message>
     <message>
         <source>E&amp;xit</source>
-        <translation>&amp;Schließen</translation>
+        <translation>S&amp;alir</translation>
     </message>
     <message>
         <source>&amp;File</source>
-        <translation>&amp;Datei</translation>
+        <translation>&amp;Archivo</translation>
     </message>
     <message>
         <source>&amp;Protocol handlers...</source>
-        <translation>&amp;Protokoll-Handhabung</translation>
+        <translation>Controles de &amp;Protocolo...</translation>
     </message>
     <message>
         <source>&amp;User info...</source>
-        <translation>&amp;Benutzerinfo</translation>
+        <translation>Perfil de &amp;usuario...</translation>
     </message>
     <message>
         <source>&amp;Museek...</source>
-        <translation>&amp;Museek</translation>
+        <translation>&amp;Museek...</translation>
     </message>
     <message>
         <source>&amp;Colors and Fonts...</source>
-        <translation>&amp;Schriftarten und -farben</translation>
+        <translation>&amp;Colores y Letras</translation>
     </message>
     <message>
         <source>Pick &amp;Icon Theme... (Requires Restart)</source>
-        <translation>Icon-Theme auswählen (erfordert Neustart)</translation>
+        <translation>Elige Tema de &amp;Iconos... (Requiere Reiniciar)</translation>
     </message>
     <message>
         <source>Show &amp;Tickers</source>
-        <translation>Ticker anzeigen</translation>
+        <translation>Mostrar &amp;Tickers</translation>
     </message>
     <message>
         <source>Show &amp;Log</source>
-        <translation>&amp;Log anzeigen</translation>
-    </message>
-    <message>
-        <source>Show T&amp;imestamps</source>
-        <translation>Ze&amp;itstempel anzeigen</translation>
+        <translation>Mostrar &amp;Registros</translation>
     </message>
     <message>
         <source>&amp;Settings</source>
-        <translation>&amp;Einstellungen</translation>
+        <translation>&amp;Configuración</translation>
     </message>
     <message>
         <source>&amp;Chat Rooms</source>
-        <translation>&amp;Chat-Räume</translation>
+        <translation>&amp;Salas de Charla</translation>
     </message>
     <message>
         <source>&amp;Private Chat</source>
-        <translation>&amp;Privater Chat</translation>
+        <translation>&amp;Charla Privada</translation>
     </message>
     <message>
         <source>&amp;Transfers</source>
-        <translation>&amp;Transferliste</translation>
+        <translation>&amp;Transferencias</translation>
     </message>
     <message>
         <source>&amp;Search</source>
-        <translation>&amp;Suche</translation>
+        <translation>&amp;Buscar</translation>
     </message>
     <message>
         <source>&amp;User Info</source>
-        <translation>&amp;Benutzerinfo</translation>
+        <translation>Perfil de &amp;Usuario</translation>
     </message>
     <message>
         <source>&amp;Browse Shares</source>
-        <translation>&amp;Browser</translation>
+        <translation>&amp;Mirar archivos Compartidos</translation>
     </message>
     <message>
         <source>&amp;Modes</source>
-        <translation>&amp;Modi</translation>
+        <translation>&amp;Modos</translation>
     </message>
     <message>
         <source>&amp;About...</source>
-        <translation>&amp;Über …</translation>
+        <translation>&amp;Acerca...</translation>
     </message>
     <message>
         <source>&amp;Commands...</source>
-        <translation>&amp;Kommandos</translation>
+        <translation>&amp;Comandos...</translation>
     </message>
     <message>
         <source>&amp;Help...</source>
-        <translation>&amp;Hilfe</translation>
+        <translation>&amp;Ayuda...</translation>
     </message>
     <message>
         <source>&amp;Help</source>
-        <translation>&amp;Hilfe</translation>
+        <translation>&amp;Ayuda</translation>
     </message>
     <message>
         <source>&amp;Load script...</source>
-        <translation>&amp;Skript laden</translation>
+        <translation>&amp;Cargar guión...</translation>
     </message>
     <message>
         <source>&amp;Unload script</source>
-        <translation>Skript entfernen</translation>
+        <translation>&amp;Descargar guión</translation>
     </message>
     <message>
         <source>Sc&amp;ripts</source>
-        <translation>Skripte</translation>
+        <translation>Gu&amp;iones</translation>
     </message>
     <message>
         <source>File</source>
-        <translation>Datei</translation>
+        <translation>Archivo</translation>
     </message>
     <message>
         <source>Settings</source>
-        <translation>Einstellungen</translation>
+        <translation>Configuración</translation>
     </message>
     <message>
         <source>Scripts</source>
-        <translation>Skripte</translation>
+        <translation>Guiones</translation>
     </message>
     <message>
         <source>Welcome to Museeq</source>
-        <translation>Hallo</translation>
+        <translation>Bienvenido a Museeq</translation>
     </message>
     <message>
         <source>Chat rooms</source>
-        <translation>Chat-Räume</translation>
+        <translation>Salas de charla</translation>
     </message>
     <message>
         <source>Private chat</source>
-        <translation>Privater Chat</translation>
+        <translation>Charla Privada</translation>
     </message>
     <message>
         <source>Transfers</source>
-        <translation>Transferliste</translation>
+        <translation>Transferencias</translation>
     </message>
     <message>
         <source>Search</source>
-        <translation>Suche</translation>
+        <translation>Buscar</translation>
     </message>
     <message>
         <source>User info</source>
-        <translation>Benutzerinfo</translation>
+        <translation>Perfil de usuario</translation>
     </message>
     <message>
         <source>Browse</source>
-        <translation>Browser</translation>
+        <translation>Navegar</translation>
     </message>
     <message>
         <source>Launched Museek Daemon...</source>
-        <translation>Museek-Daemon gestartet.</translation>
+        <translation>Abrir el Museek Daemon...</translation>
     </message>
     <message>
         <source>Failed Launching Museek Daemon...</source>
-        <translation>Starten des Museek-Daemons fehlgeschlagen.</translation>
+        <translation>No se pudo abrir el Museek Daemon...</translation>
     </message>
     <message>
         <source>No Config for Museek Daemon selected, giving up...</source>
-        <translation>Keine Konfiguration für den Daemon ausgewählt!</translation>
+        <translation>No hay configuración para el Museek Daemon seleccionado, abortando...</translation>
     </message>
     <message>
         <source>Museek Daemon is already running...</source>
-        <translation>Der Museek-Daemon läuft bereits.</translation>
+        <translation>El Museek Daemon ya esta en función...</translation>
     </message>
     <message>
         <source>Terminating Museek Daemon...</source>
-        <translation>Beende den Museek-Daemon …</translation>
+        <translation>Cerrando el Museek Daemon...</translation>
     </message>
     <message>
         <source>Museek Daemon not running, no need to stop it...</source>
-        <translation>Der Museek-Daemon läuft nicht, ist also auch nicht stoppbar.</translation>
+        <translation>El Museek Daemon no esta en función, no hay necesidad de pararlo...</translation>
     </message>
     <message>
         <source>Museek Daemon has Shut Down...</source>
-        <translation>Der Museek-Daemon wurde beendet.</translation>
+        <translation>El Museek Daemon se ha Cerrado...</translation>
     </message>
     <message>
         <source>Connecting to museek... Looking up host</source>
-        <translation>Verbinde mit museek … suche Host …</translation>
+        <translation>Conectándose a museek... Buscando el servidor</translation>
     </message>
     <message>
         <source>Connecting to museek...</source>
-        <translation>Verbinde mit museek …</translation>
+        <translation>Conectándose a museek...</translation>
     </message>
     <message>
         <source>Connecting to museek... Connecting</source>
-        <translation>Verbinde mit museek … verbinde …</translation>
+        <translation>Conectándose a museek... Conectándose</translation>
     </message>
     <message>
         <source>Connecting to museek... Logging in</source>
-        <translation>Verbinde mit museek … logge ein …</translation>
+        <translation>Conectándose a museek... Entrando</translation>
     </message>
     <message>
         <source>Disconnected from museek</source>
-        <translation>Verbindung zu museek verloren.</translation>
+        <translation>Desconectado de museek</translation>
     </message>
     <message>
         <source>Cannot connect to museek... Connection refused</source>
-        <translation>Verbindung zu museek fehlgeschlagen: Verbindung abgelehnt.</translation>
+        <translation>No puede conectarse a museek... Conexión rechazada</translation>
     </message>
     <message>
         <source>Cannot connect to museek... Host not found</source>
-        <translation>Verbindung zu museek fehlgeschlagen: Host nicht gefunden.</translation>
+        <translation>No puede conectarse a museek... Servidor no encontrado</translation>
     </message>
     <message>
         <source>Logged in to museek</source>
-        <translation>Verbunden zu museek</translation>
+        <translation>En museek</translation>
     </message>
     <message>
         <source>Login error: </source>
-        <translation>Login-Fehler: </translation>
+        <translation>Error de entrada:</translation>
     </message>
     <message>
         <source>Connected to soulseek, your nickname: </source>
-        <translation>Verbunden, dein Benutzername: </translation>
+        <translation>Conectado a soulseek, su nombre de usuario:</translation>
     </message>
     <message>
         <source> Status: Away</source>
-        <translation> Status: Abwesend</translation>
+        <translation>Estado: Ausente</translation>
     </message>
     <message>
         <source> Status: Online</source>
-        <translation> Status: Online</translation>
+        <translation>Estado: Conectado</translation>
     </message>
     <message>
         <source>Disconnected from soulseek</source>
-        <translation>Verbindung zu Soulseek verloren.</translation>
+        <translation>Desconectado de soulseek</translation>
     </message>
     <message>
         <source>waiting</source>
-        <translation>warte …</translation>
+        <translation>esperando</translation>
     </message>
     <message>
         <source>Enter a Museeq Icon Theme Directory</source>
-        <translation>Museeq-Icon-Theme-Verzeichnis wählen …</translation>
+        <translation>Ponga un Directorio de Tema de Icono Museeq</translation>
     </message>
     <message>
         <source>Museeq&apos;s Icon Theme (*.png)</source>
-        <translation>Museeq-Icon-Theme (*.png)</translation>
+        <translation>Tema de Icono de Museeq (*.png)</translation>
     </message>
     <message>
         <source>Offline</source>
-        <translation>Offline</translation>
+        <translation>Desconectado</translation>
     </message>
     <message>
         <source>Error</source>
-        <translation>Fehler</translation>
+        <translation>Error</translation>
     </message>
     <message>
         <source>Couldn&apos;t open image file for reading</source>
-        <translation>Konnte Billddatei nicht zum Lesen öffnen.</translation>
+        <translation>No pudo leer archivo imagen</translation>
     </message>
     <message>
         <source>About Museeq</source>
-        <translation>Über Museeq</translation>
+        <translation>Acerca de Museeq</translation>
     </message>
     <message>
         <source>&lt;p align=&quot;center&quot;&gt;Museeq </source>
-        <translation>&lt;p align=&quot;center&quot;&gt;Museeq </translation>
+        <translation>&lt;p align=&quot;center&quot;&gt;Museeq</translation>
     </message>
     <message>
         <source> is a GUI for the Museek Daemon&lt;/p&gt;The programs, museeq and museekd and muscan, were created by Hyriand 2003-2005&lt;br&gt;&lt;br&gt;Additions by Daelstorm and SeeSchloss in 2006&lt;br&gt;This project is released under the GPL license.&lt;br&gt;Code and ideas taken from other opensource projects and people are mentioned in the CREDITS file included in the source tarball.</source>
-        <translation> ist eine grafische Benutzeroberfläche für den Museek-Daemon.&lt;/p&gt;Die Programme museekd, museeq und muscan wurden zwischen 2003 und 2005 von Hyriand geschrieben.&lt;br&gt;&lt;br&gt;Ergänzungen durch Daelstorm und Seeschloss 2006.&lt;br&gt;Dieses Projekt wird unter der GPL veröffentlicht.&lt;br&gt;Code und Ideen wurden anderen Open-Source-Projekten entliehen, Mitwirkende werden in der CREDITS-Datei im Souce-Tarball genannt.</translation>
+        <translation>es un GUI para el Museek Daemon&lt;/p&gt; Los programas, museeq y museekd y muscan, fueron creados por Hyriand 2003-2005&lt;br&gt;&lt;br&gt;Adiciones por Daelstorm y SeeSchloss en el 2006&lt;br&gt; Este proyecto ha sido publicado con la licencia GPL.&lt;br&gt;Código e ideas tomadas de otros proyectos de código abierto y de otra gente han sido mencionados en el archivo llamado CREDITOS incluido en la fuente tarball.</translation>
     </message>
     <message>
         <source>Museeq Commands</source>
-        <translation>Museeq-Kommandos</translation>
+        <translation>Comandos de Museeq</translation>
     </message>
     <message>
         <source>&lt;h3&gt;While in a chat window, such as a Chat Room, or a Private Chat, there are a number of commands available for use.&lt;/h3&gt;&lt;b&gt;/c /chat&lt;/b&gt;   &lt;i&gt;(Switch to Chat Rooms)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/pm /private&lt;/b&gt; &amp;lt;nothing | username&amp;gt;  &lt;i&gt;(Switch to Private Chat and start chatting with a user, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/transfers&lt;/b&gt;   &lt;i&gt;(Switch to Transfers)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/s /search&lt;/b&gt; &amp;lt;nothing | query&gt;   &lt;i&gt;(Switch to Searchs and start a Search with &amp;lt;query&amp;gt; if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/u /userinfo&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Switch to userinfo, and attempt to get a user&apos;s info, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/b /browse&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Switch to Browse and initate browsing a user, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ip&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Get the IP of a user)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/log&lt;/b&gt;    &lt;i&gt;(Toggle displaying the Special Message Log)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/t /ticker /tickers&lt;/b&gt;   &lt;i&gt;(Toggle the showing of Tickers)&lt;/i&gt; &lt;br&gt;&lt;b&gt;/f /fonts /c /colors&lt;/b&gt;   &lt;i&gt;(Open the Fonts and Colors settings dialog)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ban /unban&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Disallow/Allow a user to recieve your shares and download from you)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ignore /unignore&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Block/Unblock chat messages from a user)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/buddy /unbuddy&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Add/Remove a user to keep track of it and add comments about it)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/trust /distrust&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Add/Remove a user to the optional list of users who can send files to you)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/me&lt;/b&gt; &lt;does something&gt;    &lt;i&gt;(Say something in the Third-Person)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/slap&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Typical Trout-slapping)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/j /join&lt;/b&gt; &amp;lt;room&amp;gt;    &lt;i&gt;(Join a Chat Room)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/l /p /leave /part&lt;/b&gt; &amp;lt;nothing | room&amp;gt;    &lt;i&gt;(Leave the current room or inputed room)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/about /help /commands&lt;/b&gt;    &lt;i&gt;(Display information)&lt;/i&gt;&lt;br&gt;&lt;br&gt;Do not type the brackets, they are there only to make clear that something (or nothing) can be typed after the /command.</source>
-        <translation>&lt;h3&gt;In einem Chat-Fenster – etwa einem Raum oder einem privaten Chat – kann man eine Handvoll Kommandos anwenden.&lt;/h3&gt;&lt;b&gt;/c /chat&lt;/b&gt;   &lt;i&gt;(zu den Chaträumen wechseln)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/pm /private&lt;/b&gt; &amp;lt;nichts | Benutzer&amp;gt;  &lt;i&gt;(Zum privaten Chat wechseln und einen Chat mit einem Benutzer beginnen, wenn angegeben)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/transfers&lt;/b&gt;   &lt;i&gt;(Zur Transferliste wechseln)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/s /search&lt;/b&gt; &amp;lt;nichts | Suchwort&gt;   &lt;i&gt;(Zur Suche wechseln und nach &amp;lt;Suchwort&amp;gt; suchen, wenn angegeben)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/u /userinfo&lt;/b&gt; &amp;lt;Benutzer&amp;gt;   &lt;i&gt;(Zur Benutzerinfo wechseln und versuchen, die Info eines Benutzers abzufragen, wenn angegeben)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/b /browse&lt;/b&gt; &amp;lt;Benutzer&amp;gt;    &lt;i&gt;(Zum Browser wechseln und die Dateien eines Benutzers durchstöbern, wenn angegeben)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ip&lt;/b&gt; &amp;lt;Benutzer&amp;gt;   &lt;i&gt;(Die IP eines Benutzers abfragen)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/log&lt;/b&gt;    &lt;i&gt;(Anzeige des Logs an-/ausschalten)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/t /ticker /tickers&lt;/b&gt;   &lt;i&gt;(Anzeige des Tickers an-/ausschalten)&lt;/i&gt; &lt;br&gt;&lt;b&gt;/f /fonts /c /colors&lt;/b&gt;   &lt;i&gt;(Schriftarten-und-Schriftfarben-Dialog öffnen)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ban /unban&lt;/b&gt; &amp;lt;Benutzer&amp;gt;   &lt;i&gt;(Einem Benutzer verbieten/erlauben, von sich herunterzuladen und seine Dateifreigaben zu sehen)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ignore /unignore&lt;/b&gt; &amp;lt;Benutzer&amp;gt;    &lt;i&gt;(Chat-Nachrichten eines Benutzers blockieren/durchlassen)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/buddy /unbuddy&lt;/b&gt; &amp;lt;Benutzer&amp;gt;   &lt;i&gt;(Einen Benutzer zur Liste seiner Freunde hinzufügen/davon streichen)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/trust /distrust&lt;/b&gt; &amp;lt;Benutzer&amp;gt;    &lt;i&gt;(Einen Benutzer zur Liste vertrauenswürdiger (d. h. uploadbefähigter) Benutzer hinzufügen/davon streichen)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/me&lt;/b&gt; &lt;tut etwas&gt;    &lt;i&gt;(Etwas über sich in der Dritten Person aussagen)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/slap&lt;/b&gt; &amp;lt;Benutzer&amp;gt;   &lt;i&gt;(Klassisches „trout slapping“)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/j /join&lt;/b&gt; &amp;lt;Raum&amp;gt;    &lt;i&gt;(Einen Raum betreten)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/l /p /leave /part&lt;/b&gt; &amp;lt;nichts | Raum&amp;gt;    &lt;i&gt;(Den aktiven oder angegebenen Raum verlassen)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/about /help /commands&lt;/b&gt;    &lt;i&gt;(Verschiedene Informationen anzeigen)&lt;/i&gt;&lt;br&gt;&lt;br&gt;Die Klammern hinter den Kommandos sind nicht mitzutippen.</translation>
+        <translation>&lt;h3&gt;Mientras uno está en una ventana de charlas, asi como una Sala de Charlas, o una Charla Privada, hay un número de comandos disponibles para su uso.&lt;/h3&gt;&lt;b&gt;/c chat&lt;/b&gt;   &lt;i&gt;(Cambiar a Salas de Charla)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/pm /private&lt;/b&gt; &amp;lt;nada | nombre de usuario&amp;gt;  &lt;i&gt;(Cambiar a Charla Privada y comenzar a charlar con un usuario especificado, si lo ha incluido)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/transfers&lt;/b&gt;   &lt;i&gt;(Cambiar a Transferencias)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/s /search&lt;/b&gt; &amp;lt;nada | consulta&gt;   &lt;i&gt;(Cambio a Busquedas y comenzar busqueda con &amp;lt;consulta&amp;gt; si la ha incluido)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/u /userinfo&lt;/b&gt; &amp;lt;nombre de usuario&amp;gt;   &lt;i&gt;(Cambiar a Perfil de usuario, y tratar de obtener perfil de usuario especificado, si lo ha incluido)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/b /browse&lt;/b&gt; &amp;lt;nombre de usuario&amp;gt;   &lt;i&gt;(Cambiar a Navegar y comience a mirar archivos de usuario especificado, si lo ha incluido)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ip&lt;/b&gt; &amp;lt;nombre de usuario&amp;gt;   &lt;i&gt;(Obtener IP del usuario)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/log&lt;/b&gt;    &lt;i&gt;(Cambiar a Log (Registro) de Mensajes Especiales)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/t /ticker /tickers&lt;/b&gt;&lt;i&gt;(Mostrar o esconder Tickers)    &lt;/i&gt; &lt;br&gt;&lt;b&gt;/f /fonts /c /colors&lt;/b&gt;   &lt;i&gt;(Abrir el diálogo de configuración de Letras y Colores)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ban /unban&lt;/b&gt; &amp;lt;nombre de usuario&amp;gt;   &lt;i&gt;(Prohibir/Permitir a un usuario que reciba tus archivos compartidos y que descargue tus archivos)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ignore /unignore&lt;/b&gt; &amp;lt;nombre de usuario&amp;gt;   &lt;i&gt;(Prohibir/Permitir mensajes de un usuario)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/buddy /unbuddy&lt;/b&gt; &amp;lt;nombre de usuario&amp;gt;   &lt;i&gt;(Añadir/Eliminar a un usuario para mantenerse informado de este y añadir comentarios sobre este)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/trust /distrust&lt;/b&gt; &amp;lt;nombre de usuario&amp;gt;    &lt;i&gt;(Añadir/Eliminar a un usuario a la lista opcional de usuarios que te pueden enviar archivos&lt;/i&gt;&lt;br&gt;&lt;b&gt;/me&lt;/b&gt; &lt;hace algo&gt;    &lt;i&gt;(Di algo en tercera persona)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/slap&lt;/b&gt; &amp;lt;nombre de usuario&amp;gt;    &lt;i&gt;(Típica paliza usando una trucha)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/j /join&lt;/b&gt; &amp;lt;sala&amp;gt;   &lt;i&gt;(Entrar a Sala de Charla)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/l /p /leave /part&lt;/b&gt; &amp;lt;nada | sala&amp;gt;    &lt;i&gt;(Salir de la sala o de una sala específica)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/about /help /commands&lt;/b&gt;    &lt;i&gt;(Mostrar información)&lt;/i&gt;&lt;br&gt;&lt;br&gt;No tiene que tipear los paréntesis, ellos han sido usados solo para indicar que algo (o nada) puede ser tipeado después del /comando.</translation>
     </message>
     <message>
         <source>Museeq Help</source>
-        <translation>Museeq-Hilfe</translation>
+        <translation>Ayuda con Museeq</translation>
     </message>
     <message>
         <source>&lt;h3&gt;What&apos;s going on? I can&apos;t connect to a Soulseek Server with museeq!&lt;/h3&gt; You connect to museekd with museeq, so you need to have &lt;b&gt;museekd&lt;/b&gt; configured, running &lt;u&gt;and&lt;/u&gt; connected to a &lt;b&gt;Soulseek&lt;/b&gt; or Soulfind server. &lt;br&gt; &lt;h3&gt;Running for the first time?&lt;/h3&gt; Before you start museekd for the first time, you need to configure &lt;b&gt;museekd&lt;/b&gt; with &lt;b&gt;musetup&lt;/b&gt;,  a command-line configuration script.&lt;br&gt;&lt;br&gt; In musetup you &lt;b&gt;MUST&lt;/b&gt; configure the following items: Server, Username, Password, Interface Password, Download Dir&lt;br&gt; Also, take note of your interfaces, if you change them from the default localhost:2240 and /tmp/museek.&lt;tt&gt;USERNAME&lt;/tt&gt;, you&apos;ll need to know them for logging in with museeq. &lt;br&gt;&lt;br&gt; When you start museeq or choose File-&gt;Connect from the menu, you are asked to input the host and port, or Unix Socket of museekd, &lt;b&gt;not&lt;/b&gt; the Server.&lt;br&gt; &lt;h3&gt;Want to send someone a file?&lt;/h3&gt; Browse yourself, select file(s), and right-click-&gt;Upload. Input their name in the dialog box, and the upload should start, but it depends on if the user has place you on their &quot;trusted&quot; or &quot;uploads&quot; users list .&lt;br&gt;Once you&apos;re connected to museekd, change museekd options via Settings-&gt;Museek</source>
-        <translation>&lt;h3&gt;Was ist da los?! Ich kann mich mit museeq zu keinem Soulseek-Server verbinden!&lt;/h3&gt;Mit museeq verbindest du dich lediglich zu museekd, du musst also &lt;b&gt;museekd&lt;/b&gt; konfiguriert, am Laufen, und zu einem Soulseek- oder Soulfind-Server verbunden haben.&lt;br&gt;&lt;h3&gt;Dein erstes Mal mit museek?&lt;/h3&gt;Bevor du museekd zum ersten Mal startest, musst du ihn mit &lt;b&gt;musetup&lt;/b&gt;, einem Kommandozeilen-Konfigurationsskript, einrichten.&lt;br&gt;&lt;br&gt;Folgende Punkte sind bei musetup obligatorisch: Server, Benutzername, Passwort, Interface-Passwort, Download-Verzeichnis.&lt;br&gt;Des weiteren solltest du auf deine Interfaces achten. Wenn du die Standardwerte „localhost:2240“ und „/tmp/museek.&lt;tt&gt;BENUTZERNAME&lt;/tt&gt;“ veränderst, musst du sie kennen um museeq zu verwenden.&lt;br&gt;&lt;br&gt;Wenn du museeq startest oder „Verbinden“ aus dem „Datei“-Menü wählst, werden Host und Port oder Unix-Socket des Daemons abgefragt, nicht der Soulseek-Server.&lt;br&gt;&lt;h3&gt;Du willst jemandem eine Datei senden?&lt;/h3&gt;Gehe zu deinen eigenen Dateifreigaben, wähle gewünschte Datei(en) aus und wähle „Hochladen“ aus dem Rechtsklick-Menü. Gib den Namen des Benutzers an, dem du die Datei hochladen willst, und die Übertragung sollte beginnen, allerdings nur sofern der andere Benutzer dich als vertrauenswürdig oder uploadbefähigt eingestuft hat.&lt;br&gt;Solbald du zu museekd verbunden bist, kannst du die Optionen über „Museek“ im „Einstellungen“-Menü anpassen.</translation>
+        <translation>&lt;h3&gt;¿Qué está sucediendo? ¡No me puedo conectar al Servidor de Soulseek con museeq!&lt;/h3&gt; Uno se conecta a museekd con museeq, es por eso que es necesario que &lt;b&gt;museekd&lt;/b&gt; este configurado, funcionando, &lt;u&gt;y&lt;/u&gt; conectado a un servidor de &lt;b&gt;Soulseek&lt;/b&gt; o Soulfind. &lt;br&gt; &lt;h3&gt;¿Utilizandolo por primera vez?&lt;/h3&gt; Antes que utilice museekd por primera vez, necesita configurar &lt;b&gt;museekd&lt;/b&gt; con &lt;b&gt;musetup&lt;/b&gt;,   un guión de configuración de línea de comando.&lt;br&gt;&lt;br&gt; En musetup uno &lt;b&gt;NECESITA&lt;/b&gt; configurar lo siguiente: Server (Servidor), Username (Nombre de usuario), Password (Contraseña), Interface Password (Contraseña de interfaz), Download Dir (Directorio de descarga)&lt;br&gt; Además, tome nota de sus interfaces, si las cambia de los valores predetermindados localhost:2240 y /tmp/museek.&lt;tt&gt;NOMBRE-DE-USUARIO&lt;/tt&gt;, va a tener que saberlos para iniciar su sesión con museeq. &lt;br&gt;&lt;br&gt; Cuando abra museeq o escoja Archivo-&gt;Conéctate del menú, se requiere que ponga el equipo y el puerto, o Socket de Unix de museekd, &lt;b&gt;no&lt;/b&gt; el del Servidor.&lt;br&gt; &lt;h3&gt;¿Quiere enviarle un archivo a alguien?&lt;/h3&gt; Mire sus propios archivos, seleccione uno o varios archivos, y pulse el botón derecho del ratón -&gt; Subida. Tipea el nombre del usuario en la ventana de diálogo, y la transferencia debería comenzar, pero eso depende si el usuario lo ha colocado en su lista de &quot;usuarios de confianza&quot; o &quot;subida.&quot; &lt;br&gt;Una vez que este conectado a museekd, cambie las opciones de museekd a través de Configuración-&gt;Museek</translation>
     </message>
     <message>
         <source>Delete handler</source>
-        <translation>Entfernen</translation>
+        <translation>Borrar gestor</translation>
     </message>
     <message>
         <source>Delete</source>
-        <translation>Löschen</translation>
+        <translation>Borrar</translation>
     </message>
     <message>
         <source>Give privileges</source>
-        <translation>Privilegien vergeben</translation>
+        <translation>Dar privilegios</translation>
     </message>
     <message>
         <source>How many days worth of privileges 
 </source>
-        <translation>Wie viele Tage an Privilegien
-</translation>
+        <translation>Cuantos días de privilegio</translation>
     </message>
     <message>
         <source>do you wish to give to user </source>
-        <translation>willst du vergeben an </translation>
+        <translation>desea darle al usuario</translation>
     </message>
     <message>
         <source>Museeq - Soulseek Privileges</source>
-        <translation>Museeq – Soulseek-Privilegien</translation>
+        <translation>Museeq - Privilegios de Soulseek</translation>
     </message>
     <message>
         <source>You have %1 days, %2 hours, %3 minutes and %4 seconds of privileges left</source>
-        <translation>Du hast noch %1 Tag(e), %2 Stunde(n), %3 Minute(n) und %4 Sekunde(n) an Privilegien übrig.</translation>
+        <translation>Le quedan %1 días, %2 horas, %3 minutos y %segundos de privilegio</translation>
     </message>
     <message>
         <source>Shutdown Museeq</source>
-        <translation>Museeq beenden</translation>
+        <translation>Cerrar Museeq</translation>
     </message>
     <message>
         <source>The Museek Daemon was launched by Museeq and is still running, and will be shut down if you close Museeq, are you sure you want to?</source>
-        <translation>Der Museek-Daemon wurde von Museeq gestartet und wird beendet, wenn du Museeq schließt. Bist du sicher?</translation>
+        <translation>El Museek Daemon ha sido comenzado por Museeq y sigue funcionando, y va a ser apagado si no cierra Museeq, ¿está seguro(a) que quiere hacer esto?</translation>
     </message>
     <message>
         <source>&amp;Yes</source>
-        <translation>&amp;Ja</translation>
+        <translation>&amp;Sí</translation>
     </message>
     <message>
         <source>&amp;No</source>
-        <translation>&amp;Nein</translation>
+        <translation>&amp;No</translation>
     </message>
     <message>
         <source>The Museek Daemon was launched by Museeq and is still running, but will &lt;b&gt;not&lt;/b&gt; be shut down if you close Museeq. Are you sure you want to?</source>
-        <translation>Der Museek-Daemon wurde von Museeq gestartet und wird &lt;b&gt;nicht&lt;/b&gt; beendet wenn du Museeq schließt. Bist du sicher?</translation>
+        <translation>El Museek Daemon ha sido iniciado por Museeq y sigue funcionando, pero &lt;b&gt;no&lt;/b&gt; va a ser terminado si cierras Museeq. ¿Está seguro(a) que quiere hacer esto?</translation>
     </message>
     <message>
         <source>It&apos;s safe to close Museeq, but are you sure you want to?</source>
-        <translation>Es ist zwar unproblematisch, Museeq zu schließen aber bist du auch sicher, dass du das willst?</translation>
+        <translation>Es seguro que cierre Museeq, pero ¿quiere hacer esto?</translation>
     </message>
     <message>
         <source>Load Script</source>
-        <translation>Skript laden</translation>
+        <translation>Cargar Guión</translation>
     </message>
 </context>
 <context>
     <name>OnlineAlert</name>
     <message>
         <source>Online alert</source>
-        <translation>Online-Benachrichtigung</translation>
+        <translation>Alerta de conexión</translation>
     </message>
     <message>
         <source>&amp;Remove</source>
-        <translation>&amp;Entfernen</translation>
+        <translation>Elimina&amp;r</translation>
     </message>
     <message>
         <source>Alt+R</source>
-        <translation>Alt+E</translation>
+        <translation>Alt+R</translation>
     </message>
     <message>
         <source>&amp;OK</source>
@@ -861,132 +856,117 @@
     </message>
     <message>
         <source>offline</source>
-        <translation>offline</translation>
+        <translation>desconectado</translation>
     </message>
     <message>
         <source>away</source>
-        <translation>abwesend</translation>
+        <translation>ausente</translation>
     </message>
     <message>
         <source>online</source>
-        <translation>online</translation>
+        <translation>conectado</translation>
     </message>
     <message>
         <source>%1 user %2 is now %3</source>
-        <translation>%1 – Benutzer %2 ist jetzt %3.</translation>
-    </message>
-</context>
-<context>
-    <name>PrivateChat</name>
-    <message>
-        <source>%1 is offline</source>
-        <translation>%1 ist offline.</translation>
-    </message>
-    <message>
-        <source>%1 is away</source>
-        <translation>%1 ist abwesend.</translation>
-    </message>
-    <message>
-        <source>%1 is online</source>
-        <translation>%1 ist online.</translation>
+        <translation>%1 usuario %2 está %3</translation>
     </message>
 </context>
 <context>
     <name>ProtocolDialog</name>
     <message>
         <source>Protocol</source>
-        <translation>Protokoll</translation>
+        <translation>Protocolo</translation>
     </message>
     <message>
         <source>Handler</source>
-        <translation>Anwendung</translation>
+        <translation>Gestor</translation>
     </message>
     <message>
         <source>Protocol handlers</source>
-        <translation>Protokoll-Handhabung</translation>
+        <translation>Controles de Protocolo</translation>
     </message>
     <message>
         <source>OK</source>
-        <translation>OK</translation>
+        <translation>Aceptar</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Abbrechen</translation>
+        <translation>Cancelar</translation>
     </message>
     <message>
         <source>New</source>
-        <translation>Neu</translation>
+        <translation>Nuevo</translation>
     </message>
 </context>
 <context>
     <name>RoomList</name>
     <message>
         <source>Create:</source>
-        <translation>Raum erstellen oder betreten:</translation>
+        <translation>Crear:</translation>
     </message>
 </context>
 <context>
     <name>RoomListView</name>
     <message>
         <source>Room</source>
-        <translation>Raum</translation>
+        <translation>Sala</translation>
     </message>
     <message>
         <source>Users</source>
-        <translation>Benutzer</translation>
+        <translation>Usuarios</translation>
     </message>
     <message>
         <source>Join room</source>
-        <translation>Raum betreten</translation>
+        <translation>Entrar a la sala</translation>
     </message>
     <message>
         <source>Leave room</source>
-        <translation>Raum verlassen</translation>
+        <translation>Dejar la sala</translation>
     </message>
     <message>
         <source>Refresh</source>
-        <translation>Aktualisieren</translation>
+        <translation>Actualizar</translation>
     </message>
 </context>
 <context>
     <name>ScrollImage</name>
     <message>
         <source>Save picture...</source>
-        <translation>Bild lokal speichern</translation>
+        <translation>Guardar foto...</translation>
     </message>
 </context>
 <context>
     <name>Search</name>
     <message>
         <source>Enable filters</source>
-        <translation>Filter verwenden:</translation>
+        <translation>Permitir filtros</translation>
     </message>
     <message>
         <source>Ignore</source>
-        <translation>Ignorieren</translation>
+        <translation>Ignorar</translation>
     </message>
 </context>
 <context>
     <name>SearchFilter</name>
     <message>
         <source>Size:</source>
-        <translation>Größe:</translation>
+        <translation>Tamaño:</translation>
     </message>
     <message>
         <source>Bitrate:</source>
-        <translation>Bitrate:</translation>
+        <translation>Velocidad:</translation>
     </message>
     <message>
         <source>Free slot</source>
-        <translation>Freier Slot</translation>
+        <translation>Espacio libre</translation>
     </message>
     <message>
         <source>Warning - Museeq</source>
-        <translation>Warnung – Museeq</translation>
+        <translation>Alerta - Museeq</translation>
     </message>
     <message>
         <source>Invalid regular expression, disabling it</source>
-        <translation>Ungültiger Regulärer Ausdruck, dieser Filter wird ignoriert.</translation>
+        <translation>Expresion regular inválida, desactivándola</translation>
     </message>
     <message>
         <source>k</source>
@@ -1002,11 +982,11 @@
     </message>
     <message>
         <source>Invalid size filter, disabling it</source>
-        <translation>Ungültiger Wert für „Größe“, dieser Filter wird ignoriert.</translation>
+        <translation>Filtro de tamaño inválido, desactivándolo</translation>
     </message>
     <message>
         <source>Invalid bitrate filter, disabling it</source>
-        <translation>Ungültiger Wert für „Bitrate“, dieser Filter wird ignoriert.</translation>
+        <translation>Filtro de velocidad inválido, desactivándolo</translation>
     </message>
 </context>
 <context>
@@ -1017,89 +997,89 @@
     </message>
     <message>
         <source>Y</source>
-        <translation>Ja</translation>
+        <translation>S</translation>
     </message>
     <message>
         <source>N</source>
-        <translation>Nein</translation>
+        <translation>N</translation>
     </message>
 </context>
 <context>
     <name>SearchListView</name>
     <message>
         <source>User</source>
-        <translation>Benutzer</translation>
+        <translation>Usuario</translation>
     </message>
     <message>
         <source>Filename</source>
-        <translation>Dateiname</translation>
+        <translation>Nombre de archivo</translation>
     </message>
     <message>
         <source>Size</source>
-        <translation>Dateigröße</translation>
+        <translation>Tamaño</translation>
     </message>
     <message>
         <source>Speed</source>
-        <translation>Geschwindigkeit</translation>
+        <translation>Velocidad</translation>
     </message>
     <message>
         <source>Queued</source>
-        <translation>Warteschlangengröße</translation>
+        <translation>En Fila</translation>
     </message>
     <message>
         <source>Imm.</source>
-        <translation>Freier Slot</translation>
+        <translation>Imm.</translation>
     </message>
     <message>
         <source>Length</source>
-        <translation>Länge</translation>
+        <translation>Duración</translation>
     </message>
     <message>
         <source>Bitrate</source>
-        <translation>Bitrate</translation>
+        <translation>Flujo</translation>
     </message>
     <message>
         <source>Path</source>
-        <translation>Pfad</translation>
+        <translation>Ruta</translation>
     </message>
     <message>
         <source>Download file(s)</source>
-        <translation>Ausgewählte Datei(en) herunterladen</translation>
+        <translation>Descargar archivo(s)</translation>
     </message>
     <message>
         <source>Download selected folder(s)</source>
-        <translation>Ausgewählte(n) Ordner herunterladen</translation>
+        <translation>Descargar carpeta(s) seleccionada(s)</translation>
     </message>
     <message>
         <source>Users</source>
-        <translation>Benutzer</translation>
+        <translation>Usuarios</translation>
     </message>
     <message>
         <source>1 search result (1 user)</source>
-        <translation>1 Resultate von 1 Benutzer</translation>
+        <translation>1 resultado de busqueda (1 usuario)</translation>
     </message>
     <message>
         <source>%1 search results (1 user)</source>
-        <translation>%1 Resultate von 1 Benutzer</translation>
+        <translation>%1 resultados de busqueda (1 usuario)</translation>
     </message>
     <message>
         <source>%1 search results (%2 users)</source>
-        <translation>%1 Resultate von %2 Beuntzern</translation>
+        <translation>%1 resultados de busqueda (%2 usuarios)</translation>
     </message>
 </context>
 <context>
     <name>Searches</name>
     <message>
         <source>User:</source>
-        <translation>Benutzer:</translation>
+        <translation>Usuario:</translation>
     </message>
     <message>
         <source>Search</source>
-        <translation>Suche</translation>
+        <translation>Buscar</translation>
     </message>
     <message>
         <source>Method</source>
-        <translation>Methode</translation>
+        <translation>Método</translation>
     </message>
     <message>
         <source>Global</source>
@@ -1107,189 +1087,189 @@
     </message>
     <message>
         <source>Rooms</source>
-        <translation>Räume</translation>
+        <translation>Salas</translation>
     </message>
     <message>
         <source>Buddies</source>
-        <translation>Freunde</translation>
+        <translation>Amigos</translation>
     </message>
     <message>
         <source>WishList</source>
-        <translation>Wunschliste</translation>
+        <translation>Lista de Deseos</translation>
     </message>
     <message>
         <source>User</source>
-        <translation>Benutzer</translation>
+        <translation>Usuario</translation>
     </message>
     <message>
         <source>*Search*</source>
-        <translation>*Suche*</translation>
+        <translation>*Buscar*</translation>
     </message>
 </context>
 <context>
     <name>SettingsDialog</name>
     <message>
         <source>Museek Settings</source>
-        <translation>Museek-Einstellungen</translation>
+        <translation>Configuración de Museek</translation>
     </message>
     <message>
         <source>Ok</source>
-        <translation>OK</translation>
+        <translation>Aceptar</translation>
     </message>
     <message>
         <source>Save</source>
-        <translation>Speichern</translation>
+        <translation>Guardar Cambios</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Abbrechen</translation>
+        <translation>Cancelar</translation>
     </message>
     <message>
         <source>Default Encoding:</source>
-        <translation>Standard-Zeichenkodierung</translation>
+        <translation>Codificación Predeterminada:</translation>
     </message>
     <message>
         <source>Filesystem Encoding:</source>
-        <translation>Dateisystem-Zeichenkodierung:</translation>
+        <translation>Codificación del sistema de archivos:</translation>
     </message>
     <message>
         <source>Network Encoding:</source>
-        <translation>Netzwerk-Zeichenkodierung:</translation>
+        <translation>Codificación de la red:</translation>
     </message>
     <message>
         <source>Connect</source>
-        <translation>Verbinden</translation>
+        <translation>Conectar</translation>
     </message>
     <message>
         <source>Disconnect</source>
-        <translation>Verbindung trennen</translation>
+        <translation>Desconectar</translation>
     </message>
     <message>
         <source>Server Port:</source>
-        <translation>Server-Port:</translation>
+        <translation>Puerto del Servidor:</translation>
     </message>
     <message>
         <source>Server Host:</source>
-        <translation>Server-Host:</translation>
+        <translation>Equipo del Servidor:</translation>
     </message>
     <message>
         <source>Soulseek Username:</source>
-        <translation>Soulseek-Benutzername:</translation>
+        <translation>Nick de Soulseek:</translation>
     </message>
     <message>
         <source>Soulseek Password:</source>
-        <translation>Soulseek-Passwort:</translation>
+        <translation>Contraseña de Soulseek:</translation>
     </message>
     <message>
         <source>Server</source>
-        <translation>Server</translation>
+        <translation>Servidor</translation>
     </message>
     <message>
         <source>&lt;p&gt;Configure your shares with musetup, or run &lt;u&gt;muscan -r &lt;/u&gt;to rescan your shares and then press:&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Konfiguriere deine Freigaben mit musetup, oder führe &lt;u&gt;muscan -r&lt;/u&gt; aus, um deine Freigaben neu zu indizieren. Anschließend drücke:&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;Configure sus archivos compartidos con musetup, o ejecute &lt;u&gt;muscan -r &lt;/u&gt;para volver a examinar sus archivos compartidos y después pulse:&lt;/p&gt;</translation>
     </message>
     <message>
         <source>Connections</source>
-        <translation>Verbindungsart</translation>
+        <translation>Conecciones</translation>
     </message>
     <message>
         <source>Active Connections</source>
-        <translation>Aktive Verbindungen</translation>
+        <translation>Conecciones Activas</translation>
     </message>
     <message>
         <source>Passive Connections</source>
-        <translation>Passive Verbindungen</translation>
+        <translation>Conecciones Pasivas</translation>
     </message>
     <message>
         <source>Reload Shares</source>
-        <translation>Freigaben aktualisieren</translation>
+        <translation>Recargar Archivos Compartidos</translation>
     </message>
     <message>
         <source>Select..</source>
-        <translation>Auswählen …</translation>
+        <translation>Seleccionar..</translation>
     </message>
     <message>
         <source>Download Dir:</source>
-        <translation>Download-Verzeichnis:</translation>
+        <translation>Directorio de Descarga:</translation>
     </message>
     <message>
         <source>Incomplete Dir:</source>
-        <translation>Temporär-Verzeichnis:</translation>
+        <translation>Directorio de Incompletos:</translation>
     </message>
     <message>
         <source>Shares and Connections</source>
-        <translation>Freigaben und Verbindung</translation>
+        <translation>Archivos Compartidos y Conexiones</translation>
     </message>
     <message>
         <source>Buddies are Privileged</source>
-        <translation>Privilegiere Freunde</translation>
+        <translation>Amigos son Privilegiados</translation>
     </message>
     <message>
         <source>Online Alerts in Log Window instead of popup</source>
-        <translation>Online-Benachrichtigungen im Log-Fenster anstatt eines Popups</translation>
+        <translation>Alertas de conexión en ventana de Log, no como pop-up</translation>
     </message>
     <message>
         <source>Share to Buddies Only</source>
-        <translation>Dateien nur an Freunde freigeben</translation>
+        <translation>Compartir Solo con Amigos</translation>
     </message>
     <message>
         <source>Trusted users can Send you Files</source>
-        <translation>Vertrauenswürdige Benutzer können dir Dateien hochladen</translation>
+        <translation>Usuarios de confianza pueden Enviarte Archivos</translation>
     </message>
     <message>
         <source>Seperate Shares list for Buddies</source>
-        <translation>Separate Freigabenliste für Freunde</translation>
+        <translation>Lista aparte para Amigos</translation>
     </message>
     <message>
         <source>Send automatic warnings to users via Private Chat</source>
-        <translation>Sende automatische Warnungen an Benutzer</translation>
+        <translation>Enviar alertas automáticos a usuarios a través de Charla Privada</translation>
     </message>
     <message>
         <source>User Options</source>
-        <translation>Benutzeroptionen</translation>
+        <translation>Opciones de Usuario</translation>
     </message>
     <message>
         <source>Select a Directory to store your downloaded files.</source>
-        <translation>Verzeichnis für Downloads wählen …</translation>
+        <translation>Selecciona un directorio para guardar tus descargas.</translation>
     </message>
     <message>
         <source>All files (*)</source>
-        <translation>Alle Dateien (*)</translation>
+        <translation>Todos los archivos (*)</translation>
     </message>
     <message>
         <source>Select a Directory to store your incomplete downloading files.</source>
-        <translation>Verzeichnis für unfertige Downloads wählen …</translation>
+        <translation>Selecciona un Directorio para guardar tus descargas incompletas.</translation>
     </message>
 </context>
 <context>
     <name>TickerDialog</name>
     <message>
         <source>Set ticker...</source>
-        <translation>Ticker setzen …</translation>
+        <translation>Asignar ticker...</translation>
     </message>
     <message>
         <source>Set ticker to:</source>
-        <translation>Ticker setzen auf:</translation>
+        <translation>Asignar ticker a:</translation>
     </message>
     <message>
         <source>Just this time</source>
-        <translation>Nur dieses eine Mal</translation>
+        <translation>Solo esta vez</translation>
     </message>
     <message>
         <source>Always for this room</source>
-        <translation>Standard für diesen Raum</translation>
+        <translation>Siempre para esta sala</translation>
     </message>
     <message>
         <source>Default for all rooms</source>
-        <translation>Standard für alle Räume</translation>
+        <translation>Por defecto para todas las salas</translation>
     </message>
     <message>
         <source>&amp;Cancel</source>
-        <translation>&amp;Abbrechen</translation>
+        <translation>&amp;Cancelar</translation>
     </message>
     <message>
         <source>Alt+C</source>
-        <translation>Alt+A</translation>
+        <translation>Alt+C</translation>
     </message>
     <message>
         <source>&amp;OK</source>
@@ -1304,59 +1284,59 @@
     <name>TransferListItem</name>
     <message>
         <source>Finished</source>
-        <translation>Fertig.</translation>
+        <translation>Terminado</translation>
     </message>
     <message>
         <source>Transferring</source>
-        <translation>Übertrage …</translation>
+        <translation>Transfiriendo</translation>
     </message>
     <message>
         <source>Negotiating</source>
-        <translation>Handle aus …</translation>
+        <translation>Negociando</translation>
     </message>
     <message>
         <source>Waiting</source>
-        <translation>Warte …</translation>
+        <translation>Esperando</translation>
     </message>
     <message>
         <source>Establishing</source>
-        <translation>Etabliere …</translation>
+        <translation>Estableciendo</translation>
     </message>
     <message>
         <source>Initiating</source>
-        <translation>Initiiere …</translation>
+        <translation>Iniciando</translation>
     </message>
     <message>
         <source>Connecting</source>
-        <translation>Verbinde …</translation>
+        <translation>Conectando</translation>
     </message>
     <message>
         <source>Queued</source>
-        <translation>In Warteschlange</translation>
+        <translation>En Fila</translation>
     </message>
     <message>
         <source>Getting address</source>
-        <translation>Erfrage Adresse …</translation>
+        <translation>Obteniendo dirección</translation>
     </message>
     <message>
         <source>Getting status</source>
-        <translation>Erfrage Satus …</translation>
+        <translation>Obteniendo estado</translation>
     </message>
     <message>
         <source>User Offline</source>
-        <translation>Benutzer offline</translation>
+        <translation>Usuario Desconectado</translation>
     </message>
     <message>
         <source>Connection closed by peer</source>
-        <translation>Verbindung von Gegenseite beendet.</translation>
+        <translation>Conexión cerrada por persona</translation>
     </message>
     <message>
         <source>Cannot connect</source>
-        <translation>Verbindung fehlgeschlagen.</translation>
+        <translation>No se puede conectar</translation>
     </message>
     <message>
         <source>Aborted</source>
-        <translation>Abgebrochen.</translation>
+        <translation>Abortado</translation>
     </message>
     <message>
         <source>/s</source>
@@ -1367,285 +1347,285 @@
     <name>TransferListView</name>
     <message>
         <source>User</source>
-        <translation>Benutzer</translation>
+        <translation>Usuario</translation>
     </message>
     <message>
         <source>File</source>
-        <translation>Dateiname</translation>
+        <translation>Archivo</translation>
     </message>
     <message>
         <source>Status</source>
-        <translation>Status</translation>
+        <translation>Estado</translation>
     </message>
     <message>
         <source>Place</source>
-        <translation>Warteschlangenposition</translation>
+        <translation>Lugar</translation>
     </message>
     <message>
         <source>Position</source>
-        <translation>Übertragen</translation>
+        <translation>Posición</translation>
     </message>
     <message>
         <source>Size</source>
-        <translation>Dateigröße</translation>
+        <translation>Tamaño</translation>
     </message>
     <message>
         <source>Speed</source>
-        <translation>Geschwindigkeit</translation>
+        <translation>Velocidad</translation>
     </message>
     <message>
         <source>Path</source>
-        <translation>Pfad</translation>
+        <translation>Ruta</translation>
     </message>
     <message>
         <source>1 transfer (1 user)</source>
-        <translation>1 Dateiübertragung von 1 Benutzer</translation>
+        <translation>1 transferencia (1 usuario)</translation>
     </message>
     <message>
         <source>%1 transfers (1 user)</source>
-        <translation>%1 Dateiübertragungen von 1 Benutzer</translation>
+        <translation>%1 transferencias (1 usuario)</translation>
     </message>
     <message>
         <source>%1 transfers (%2 users)</source>
-        <translation>%1 Dateiübertragungen von %2 Benutzern</translation>
+        <translation>%1 transferencias (%2 usuarios)</translation>
     </message>
 </context>
 <context>
     <name>Transfers</name>
     <message>
         <source>Downloads:</source>
-        <translation>Downloads</translation>
+        <translation>Descargas:</translation>
     </message>
     <message>
         <source>Group by user</source>
-        <translation>Nach Benutzer gruppieren</translation>
+        <translation>Agrupar por usuario</translation>
     </message>
     <message>
         <source>Uploads:</source>
-        <translation>Uploads</translation>
+        <translation>Subidas:</translation>
     </message>
     <message>
         <source>slots</source>
-        <translation>Slots freigeben</translation>
+        <translation>espacios</translation>
     </message>
     <message>
         <source>Retry</source>
-        <translation>Neustarten</translation>
+        <translation>Tratar Nuevamente</translation>
     </message>
     <message>
         <source>Abort</source>
-        <translation>Abbrechen</translation>
+        <translation>Abortar</translation>
     </message>
     <message>
         <source>Check Position</source>
-        <translation>Frage Warteschlangenposition ab</translation>
+        <translation>Ver Posición</translation>
     </message>
     <message>
         <source>Selected</source>
-        <translation>Auswahl</translation>
+        <translation>Seleccionado</translation>
     </message>
     <message>
         <source>Finished</source>
-        <translation>Fertig</translation>
+        <translation>Terminado</translation>
     </message>
     <message>
         <source>Aborted</source>
-        <translation>Abgebrochen</translation>
+        <translation>Abortado</translation>
     </message>
     <message>
         <source>Offline</source>
-        <translation>Offline</translation>
+        <translation>Desconectado</translation>
     </message>
     <message>
         <source>Cruft</source>
-        <translation>Schrott</translation>
+        <translation>Obsoleto</translation>
     </message>
     <message>
         <source>Finished / aborted</source>
-        <translation>Fertig/abgebrochen</translation>
+        <translation>Terminado / abortado</translation>
     </message>
     <message>
         <source>Queued</source>
-        <translation>In Warteschlange</translation>
+        <translation>En Fila</translation>
     </message>
     <message>
         <source>Clear</source>
-        <translation>Aufräumen</translation>
+        <translation>Limpiar</translation>
     </message>
     <message>
         <source>Users</source>
-        <translation>Benutzer</translation>
+        <translation>Usuarios</translation>
     </message>
 </context>
 <context>
     <name>UserInfo</name>
     <message>
         <source>Description</source>
-        <translation>Beschreibung</translation>
+        <translation>Descripción</translation>
     </message>
     <message>
         <source>Information</source>
-        <translation>Technisches</translation>
+        <translation>Información</translation>
     </message>
     <message>
         <source>Uploads allowed</source>
-        <translation>Gleichzeitige Uploads</translation>
+        <translation>Transferencias permitidas</translation>
     </message>
     <message>
         <source>unknown</source>
-        <translation>…</translation>
+        <translation>desconocido</translation>
     </message>
     <message>
         <source>Queue size</source>
-        <translation>Warteschlangengröße</translation>
+        <translation>Tamaño de fila</translation>
     </message>
     <message>
         <source>Slots available</source>
-        <translation>Freier Slot</translation>
+        <translation>Espacios disponibles</translation>
     </message>
     <message>
         <source>Refresh</source>
-        <translation>Aktualisieren</translation>
+        <translation>Actualizar</translation>
     </message>
     <message>
         <source>Picture</source>
-        <translation>Bild</translation>
+        <translation>Foto</translation>
     </message>
     <message>
         <source>yes</source>
-        <translation>Ja</translation>
+        <translation>sí</translation>
     </message>
     <message>
         <source>no</source>
-        <translation>Nein</translation>
+        <translation>no</translation>
     </message>
 </context>
 <context>
     <name>UserInfoDialog</name>
     <message>
         <source>Change user info</source>
-        <translation>Benutzerinfo bearbeiten</translation>
+        <translation>Cambiar perfil de usuario</translation>
     </message>
     <message>
         <source>Image</source>
-        <translation>Bild</translation>
+        <translation>Imagen</translation>
     </message>
     <message>
         <source>Clear</source>
-        <translation>Kein Bild</translation>
+        <translation>Limpiar</translation>
     </message>
     <message>
         <source>Don&apos;t touch</source>
-        <translation>Nichts verändern</translation>
+        <translation>No tocar</translation>
     </message>
     <message>
         <source>Upload:</source>
-        <translation>Bilddatei:</translation>
+        <translation>Subida:</translation>
     </message>
     <message>
         <source>...</source>
-        <translation>…</translation>
+        <translation>...</translation>
     </message>
     <message>
         <source>OK</source>
-        <translation>OK</translation>
+        <translation>Aceptar</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Abbrechen</translation>
+        <translation>Cancelar</translation>
     </message>
     <message>
         <source>Images (*.png *.gif *.jpg *.jpeg)</source>
-        <translation>Bilder (*.png *.gif *.jpg *.jpeg)</translation>
+        <translation>Imágenes (*.png *.gif *.jpg *.jpeg)</translation>
     </message>
     <message>
         <source>Select an Image for you User info</source>
-        <translation>Wähle ein Bild für deine Benutzerinfo</translation>
+        <translation>Selecciona una Imagen para tu perfil de Usuario</translation>
     </message>
     <message>
         <source>All files (*)</source>
-        <translation>Alle Dateien (*)</translation>
+        <translation>Todos los archivos (*)</translation>
     </message>
 </context>
 <context>
     <name>UserListView</name>
     <message>
         <source>User</source>
-        <translation>Benutzer</translation>
+        <translation>Usuario</translation>
     </message>
     <message>
         <source>Speed</source>
-        <translation>Geschwindigkeit</translation>
+        <translation>Velocidad</translation>
     </message>
     <message>
         <source>Files</source>
-        <translation>Freigegebene Dateien</translation>
+        <translation>Archivos</translation>
     </message>
     <message>
         <source>Comments</source>
-        <translation>Kommentar</translation>
+        <translation>Comentarios</translation>
     </message>
 </context>
 <context>
     <name>UserTabWidget</name>
     <message>
         <source>*Buddies*</source>
-        <translation>*Freunde*</translation>
+        <translation>*Amigos*</translation>
     </message>
     <message>
         <source>*Ignored*</source>
-        <translation>*Ignoriert*</translation>
+        <translation>*Ignorados*</translation>
     </message>
     <message>
         <source>*Banned*</source>
-        <translation>*Gesperrt*</translation>
+        <translation>*Excluidos*</translation>
     </message>
 </context>
 <context>
     <name>Usermenu</name>
     <message>
         <source>Private chat</source>
-        <translation>Privater Chat</translation>
+        <translation>Chat Privado</translation>
     </message>
     <message>
         <source>Get user info</source>
-        <translation>Benutzerinfo abrufen</translation>
+        <translation>Adquirir información del usuario</translation>
     </message>
     <message>
         <source>Get user shares</source>
-        <translation>Dateifreigaben ansehen</translation>
+        <translation>Obtener archivos compartidos</translation>
     </message>
     <message>
         <source>Give Soulseek privileges</source>
-        <translation>Soulseek-Privilegien vergeben</translation>
+        <translation>Dar privilegios de Soulseek</translation>
     </message>
     <message>
         <source>Buddy</source>
-        <translation>Freund</translation>
+        <translation>Amigo</translation>
     </message>
     <message>
         <source>Trusted</source>
-        <translation>Vertrauenswürdig</translation>
+        <translation>Confiado</translation>
     </message>
     <message>
         <source>Banned</source>
-        <translation>Gesperrt</translation>
+        <translation>Excluir</translation>
     </message>
     <message>
         <source>Ignored</source>
-        <translation>Ignoriert</translation>
+        <translation>Ignorado</translation>
     </message>
     <message>
         <source>Show IP</source>
-        <translation>IP-Adresse abfragen</translation>
+        <translation>Mostrar IP</translation>
     </message>
     <message>
         <source>Online alert</source>
-        <translation>Online-Benachrichtigung</translation>
+        <translation>Alerta de conexión</translation>
     </message>
     <message>
         <source>Edit Comments</source>
-        <translation>Kommentar bearbeiten</translation>
+        <translation>Editar Comentarios</translation>
     </message>
 </context>
 <context>
@@ -1676,7 +1656,7 @@
     </message>
     <message>
         <source>(vbr) %1</source>
-        <translation>(VBR) %1</translation>
+        <translation>(vbr) %1</translation>
     </message>
 </context>
 </TS>

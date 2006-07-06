@@ -177,17 +177,24 @@ bool PeerManager::pierced_firewall(int sock, uint32 token) {
 Peer::Peer(PeerManager* manager, const string& user)
      : mManager(manager), mRefCount(0), mUser(user),
        mSubscribed(false), mHaveExists(false), mHaveStatus(false), mHaveAddress(false), mHaveStats(false),
-       mPort(0), mStatus(0), mAvgSpeed(0), mDownloadNum(0), mFiles(0), mDirs(0), mUploading(false) {
+       mPort(0), mStatus(0), mAvgSpeed(0), mDownloadNum(0), mFiles(0), mDirs(0), mUploading(false), mReceiving(false) {
 	CT("Peer %s", user.c_str());
 	mPrivileged = mManager->museek()->is_privileged(user);
 	mAllowUploads = mManager->museek()->is_trusted(user);
+	mReceiving = mManager->museek()->is_receiving_shares(user);
 }
 
 Peer::~Peer() {
 	CT("~Peer (%s)", mUser.c_str());
 	
 	DEBUG("gurgle gurgle... %s is removed from the list of peers", mUser.c_str());
+	if (mReceiving)  {
+		// Remove user from receiving list, very lame to have it here.
+		DEBUG("User %s is in list of receiving users, removing it.", mUser.c_str());
+		mManager->museek()->remove_receiving(mUser);
+	}
 	mManager->remove_peer(this);
+
 }
 
 void Peer::server_connected() {

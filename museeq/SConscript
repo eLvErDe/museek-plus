@@ -1,6 +1,6 @@
 
 import os
-import sys
+import sys, commands
 
 sources = Split("""
   prefix.c
@@ -141,7 +141,7 @@ from muscons import Relay
 
 Import('env')
 
-ts_templates= ["fr", "it", "pl", "es", "de"]
+ts_templates= env['MUSEEQTRANSLATIONS']
 tr_dir = "translations/"
 translations = []
 qm_files = []
@@ -151,8 +151,14 @@ def make_qm(ts_templates):
 		translations.append(lang)
 
 make_qm(ts_templates)
-
-
+if ts_templates != []:
+	if os.system("lrelease -help 2> /dev/null") == 0:
+		print "Qt translation app 'lrelease' found."
+	else:
+		print "Qt translation app 'lrelease' not found in the path. Aborting!"
+		sys.exit()
+else:
+	print "No Museeq translations will be built."
 
 def translation_build(target, source, env):
  	print source[0], target[0]
@@ -197,6 +203,8 @@ env_qt.Replace(QT_LIB = env['QT_LIB'])
 env_qt.Replace(QT_MOC = env['QT_MOC'])
 env_qt.Replace(QT_UIC = env['QT_UIC'])
 
+
+ 
 # Hint for building with a statically linked Qt on Linux/XFree86
 #env_qt.Append(LIBS = ["Xrender", "Xrandr", "Xcursor", "Xinerama", "Xft", "freetype", "fontconfig", "X11", "m", "SM", "ICE", "dl"])
 

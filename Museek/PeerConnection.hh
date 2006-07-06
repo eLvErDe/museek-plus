@@ -37,6 +37,8 @@ public:
 	void shares();
 	void info();
 	void upload_notification();
+	void local_shares_request();
+	void local_userinfo_request();
 	void folder_contents(const std::wstring& folder);
 	void folder_contents(const WStringList& folders);
 	void search(uint32 ticket, const std::wstring& query);

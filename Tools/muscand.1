@@ -1,4 +1,4 @@
-.TH "MUSCAND" "1" "Release 0.1.10" "daelstorm" "Museek Daemon Plus"
+.TH "MUSCAND" "1" "Release 0.1.11" "daelstorm" "Museek Daemon Plus"
 .SH "NAME"
 .LP 
 \fBMuscand\fR \- File scanner daemon for Museek
@@ -12,7 +12,7 @@
 .LP 
 Muscand is a FAM service that scans paths already configured by \fImuscan\fP(1) or \fImusetup\fP(1). If it detects changes to the paths, it will update the Shares Database it is watching after a few seconds. There are two available shares databases, Normal and Buddies\-Only. Buddies\-Only is an optional shares database that, if enabled, is only accessable by the users you've chosen as "Buddies".
 .LP 
-Before running muscand, you will need a configure museekd with \fImusetup\fP(1) and add some shared paths with either \fImusetup\fP(1) or \fImuscan\fP(1).
+Before running muscand, you will need a configured museekd,  which can be done with \fImusetup\fP(1) or fI>musetup\-gtk\fP(1), and add some shared paths with either of the setup tools or with \fImuscan\fP(1).
 .SH "OPTIONS"
 .LP 
 Muscand accepts the following options:
@@ -62,4 +62,4 @@ Hyriand <hyriand@thegraveyard.org>
 daelstorm <daelstorm@gmail.com>
 .SH "SEE ALSO"
 .LP 
-\fImuseekd\fP(1) \fImuscan\fP(1) \fImusetup\fP(1) \fImuseekcontrol\fP(1) \fImucous\fP(1) \fImulog\fP(1) \fImuseeq\fP(1)
+\fImucous\fP(1) \fImulog\fP(1) \fImuscan\fP(1) \fImuseekcontrol\fP(1) \fImuseekd\fP(1) \fImuseeq\fP(1) \fImusetup\fP(1) \fImusetup\-gtk\fP(1)

@@ -4,12 +4,13 @@
 # Requires: Python, PyGTK2
 # Credit: thanks for the help with the xml parser, Hyriand
 #         large amount of XML code taken from musetup
-import commands, os, sys, getopt
+import commands, os, sys, getopt, subprocess
 import locale, gettext
 from xml.dom import minidom
 import signal
 import gtk, gobject
 import time, stat, string, pwd, shutil
+from time import sleep
 
 DATADIR = os.path.realpath(sys.argv[0])
 for i in range(2):
@@ -312,7 +313,7 @@ class MuseekSetupGTK:
 			self.accel_group = accel_group
 		if create:
 			self.MuseekSetupGTK = gtk.Window(gtk.WINDOW_TOPLEVEL)
-			self.MuseekSetupGTK.set_default_size(600, 400)
+			self.MuseekSetupGTK.set_default_size(600, 450)
 			self.MuseekSetupGTK.set_position(gtk.WIN_POS_CENTER)
 			self.MuseekSetupGTK.add_accel_group(self.accel_group)
 			self.MuseekSetupGTK.show()
@@ -325,6 +326,7 @@ class MuseekSetupGTK:
 		self.TEMPLATE_PATH = DEFAULT_TEMPLATE
 		self.parents= {}
 		self.config= {}
+		self.SharedDirs = {"normal":[], "buddy":[] }
 		self.importinguserinfo = 0
 		vbox_msetup = self.vbox_msetup = gtk.VBox()
 		vbox_msetup.set_spacing(2)
@@ -1672,6 +1674,132 @@ class MuseekSetupGTK:
 	
 		self.vbox13.pack_start(self.frame3, False, True, 0)
 	
+		# -----------------------------------
+
+		self.sharesdirshbox = gtk.HBox(False, 0)
+		self.sharesdirshbox.show()
+		self.sharesdirshbox.set_spacing(0)
+		self.sharesdirshbox.set_border_width(5)
+	
+		self.sharesdirsScrollWindow = gtk.ScrolledWindow()
+		self.sharesdirsScrollWindow.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		self.sharesdirsScrollWindow.show()
+		self.sharesdirsScrollWindow.set_shadow_type(gtk.SHADOW_NONE)
+		
+		self.NormalDirTreestore = gtk.TreeStore(  str,int )
+		self.NormalDirTreeview = gtk.TreeView(self.NormalDirTreestore)
+		self.NormalDirTreeview.show()
+		self.NormalDirTreeview.set_headers_visible(True)
+		
+		self.NormalDirTreeview.set_property("rules-hint", True)
+		self.NormalDirTreestore.set_sort_column_id(0, gtk.SORT_ASCENDING)
+		column = gtk.TreeViewColumn(_('Directories'))
+		cell = gtk.CellRendererText()
+		cell.set_property('mode', gtk.CELL_RENDERER_MODE_EDITABLE)
+		column.pack_start(cell, True)
+		column.add_attribute(cell, 'text', 0)
+		column.set_sort_column_id(0)
+		self.NormalDirTreeview.append_column(column)
+		
+		self.sharesdirsScrollWindow.add(self.NormalDirTreeview)
+	
+		self.sharesdirshbox.pack_start(self.sharesdirsScrollWindow, True, True, 0)
+	
+		self.nSharesButtonsVbox = gtk.VBox(False, 1)
+		self.nSharesButtonsVbox.show()
+		self.nSharesButtonsVbox.set_spacing(1)
+		self.nSharesButtonsVbox.set_border_width(5)
+	
+		self.refreshNormalDir = gtk.Button()
+		self.refreshNormalDir.set_label(_("Refresh list"))
+		self.refreshNormalDir.show()
+		self.refreshNormalDir.connect("clicked", self.OnRefreshNormalDirs)
+		self.nSharesButtonsVbox.pack_start(self.refreshNormalDir, False, False, 0)
+		
+		self.rescanNormalDir = gtk.Button()
+		self.rescanNormalDir.set_label(_("Rescan shares"))
+		self.rescanNormalDir.show()
+		self.rescanNormalDir.connect("clicked", self.OnRescanNormalDirs)
+		self.nSharesButtonsVbox.pack_start(self.rescanNormalDir, False, False, 0)
+	
+		self.addNormalDir = gtk.Button()
+		self.addNormalDir.set_label(_("Add dir"))
+		self.addNormalDir.show()
+		self.addNormalDir.connect("clicked", self.OnAddNormalDirs)
+		
+		self.nSharesButtonsVbox.pack_start(self.addNormalDir, False, False, 0)
+	
+		self.removeNormalDir = gtk.Button()
+		self.removeNormalDir.set_label(_("Remove dir"))
+		self.removeNormalDir.show()
+		self.removeNormalDir.connect("clicked", self.OnRemoveNormalDirs)
+	
+		self.nSharesButtonsVbox.pack_end(self.removeNormalDir, False, False, 0)
+	
+		self.sharesdirshbox.pack_start(self.nSharesButtonsVbox, False, True, 0)
+	
+		self.vbox13.pack_start(self.sharesdirshbox, True, True, 0)
+	
+		self.bSharedDirsVbox = gtk.HBox(False, 0)
+		self.bSharedDirsVbox.show()
+		self.bSharedDirsVbox.set_spacing(0)
+		self.bSharedDirsVbox.set_border_width(5)
+	
+		self.bsharesdirsScrollWindow = gtk.ScrolledWindow()
+		self.bsharesdirsScrollWindow.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		self.bsharesdirsScrollWindow.show()
+		self.bsharesdirsScrollWindow.set_shadow_type(gtk.SHADOW_NONE)
+	
+		self.BuddyDirTreestore = gtk.TreeStore(  str, int )
+		self.BuddyDirTreeview = gtk.TreeView(self.BuddyDirTreestore)
+		self.BuddyDirTreeview.show()
+		self.BuddyDirTreeview.set_headers_visible(True)
+		self.BuddyDirTreeview.set_property("rules-hint", True)
+		self.BuddyDirTreestore.set_sort_column_id(0, gtk.SORT_ASCENDING)
+		column = gtk.TreeViewColumn(_('Directories'))
+		cell = gtk.CellRendererText()
+		cell.set_property('mode', gtk.CELL_RENDERER_MODE_EDITABLE)
+		column.pack_start(cell, True)
+		column.add_attribute(cell, 'text', 0)
+		column.set_sort_column_id(0)
+		self.BuddyDirTreeview.append_column(column)
+		self.bsharesdirsScrollWindow.add(self.BuddyDirTreeview)
+	
+		self.bSharedDirsVbox.pack_start(self.bsharesdirsScrollWindow, True, True, 0)
+	
+		self.bSharesButtonsVbox = gtk.VBox(False, 1)
+		self.bSharesButtonsVbox.show()
+		self.bSharesButtonsVbox.set_spacing(1)
+		self.bSharesButtonsVbox.set_border_width(5)
+	
+		self.refreshBuddyDir = gtk.Button()
+		self.refreshBuddyDir.set_label(_("Refresh list"))
+		self.refreshBuddyDir.show()
+		self.refreshBuddyDir.connect("clicked", self.OnRefreshBuddyDirs)
+	
+		self.bSharesButtonsVbox.pack_start(self.refreshBuddyDir, False, False, 0)
+		
+		self.rescanBuddyDir = gtk.Button()
+		self.rescanBuddyDir.set_label(_("Rescan shares"))
+		self.rescanBuddyDir.show()
+		self.rescanBuddyDir.connect("clicked", self.OnRescanBuddyDirs)
+		self.bSharesButtonsVbox.pack_start(self.rescanBuddyDir, False, False, 0)
+		
+		self.addBuddyDir = gtk.Button()
+		self.addBuddyDir.set_label(_("Add dir"))
+		self.addBuddyDir.show()
+		self.addBuddyDir.connect("clicked", self.OnAddBuddyDirs)
+		self.bSharesButtonsVbox.pack_start(self.addBuddyDir, False, False, 0)
+	
+		self.removeBuddyDir = gtk.Button()
+		self.removeBuddyDir.set_label(_("Remove dir"))
+		self.removeBuddyDir.show()
+		self.removeBuddyDir.connect("clicked", self.OnRemoveBuddyDirs)
+		self.bSharesButtonsVbox.pack_end(self.removeBuddyDir, False, False, 0)
+	
+		self.bSharedDirsVbox.pack_start(self.bSharesButtonsVbox, False, True, 0)
+	
+		# ------------------------
 		self.frame4 = gtk.Frame()
 		self.frame4.show()
 		self.frame4.set_border_width(3)
@@ -1711,15 +1839,17 @@ class MuseekSetupGTK:
 		self.frame4.set_label_widget(self.label39)
 	
 		self.vbox13.pack_start(self.frame4, False, True, 0)
-	
+		
+		self.vbox13.pack_start(self.bSharedDirsVbox, True, True, 0)
+		# -----------------------------------
 		self.viewport7.add(self.vbox13)
 	
 		self.databasesScrollWindow.add(self.viewport7)
 	
-		self.sharesDBLabel = gtk.Label(_("Shares DBs"))
+		self.sharesDBLabel = gtk.Label(_("Shares"))
 		self.sharesDBLabel.set_padding(0, 0)
 		self.sharesDBLabel.show()
-
+		# -----------------------------------
 		self.alert_hbox = gtk.HBox(False, 0)
 		self.alert_hbox.show()
 		self.alert_hbox.set_spacing(0)
@@ -1831,7 +1961,19 @@ class MuseekSetupGTK:
 			
 	def createTreeFor(self, store, treeview, name):
 		store.clear()
-		if name in self.config:
+		if name in ("normaldirs", "buddydirs"):
+			if name == "normaldirs":
+				dict = self.SharedDirs["normal"]
+			elif name == "buddydirs":
+				dict = self.SharedDirs["buddy"]
+			parents = self.parents[name] = {}
+			num = 0
+			for key in dict:
+				parents[num] =  store.append(None, [key, num])
+				num += 1
+			self.parents[name] = parents
+			
+		elif name in self.config:
 			dict = self.config[name]
 			
 			parents = self.parents[name] = {}
@@ -1944,6 +2086,8 @@ class MuseekSetupGTK:
 			self.EntryBuddyOnlyShares.set_text(str(self.config["buddy.shares"]["database"]))
 			# Alerts
 			self.createTreeFor( self.AlertsTreestore, self.AlertsTreeview, "alerts")
+			self.OnRefreshNormalDirs(None)
+			self.OnRefreshBuddyDirs(None)
 		except Exception, e:
 			self.Bug(_("Populating the Dialogs with config data failed:"), str(e))
 			
@@ -2563,7 +2707,94 @@ class MuseekSetupGTK:
 		image.close()
 
 		self.refreshConfigDisplay()
+		
+	def OnAddNormalDirs(self, widget):
+		directory = self.OpenDirectory(widget, _("Add a buddy-only Shared Directory"))
+		if directory != None:
+			self.muscan_execute(["muscan", "-c", self.CONFIG_PATH, "-v", "-s", directory])
+			self.OnRefreshNormalDirs(None)
+	def OnAddBuddyDirs(self, widget):
+		directory = self.OpenDirectory(widget, _("Add a buddy-only Shared Directory"))
+		if directory != None:
+			self.muscan_execute(["muscan", "-c", self.CONFIG_PATH, "-v", "-b", "-s", directory])
+			self.OnRefreshBuddyDirs(None)
+	def OnRemoveBuddyDirs(self, widget):
+		treeview = self.BuddyDirTreeview
+		self.selected_items = []
+		treeview.get_selection().selected_foreach(self.TreeViewSelection2)
+		if self.selected_items != []:
+			key, num = self.selected_items
+			if key != "" and key is not None:
+				self.muscan_execute(["muscan", "-c", self.CONFIG_PATH, "-b", "-v",  "-u", key])
+				self.OnRefreshBuddyDirs(None)
 			
+	def OnRemoveNormalDirs(self, widget):
+		treeview = self.NormalDirTreeview
+
+		self.selected_items = []
+		treeview.get_selection().selected_foreach(self.TreeViewSelection2)
+		if self.selected_items != []:
+			key, num = self.selected_items
+			if key != "" and key is not None:
+				self.muscan_execute(["muscan", "-c", self.CONFIG_PATH, "-v",  "-u", key])
+				self.OnRefreshNormalDirs(None)
+				
+	def muscan_execute(self, command):
+		z= subprocess.Popen( command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+		#stdout_text, stderr_text = z.communicate()
+		z.wait()
+		#stdout_text = stdout_text.split('\n')
+		#for line in stdout_text:
+			#if line.isspace() or line == '':
+				#pass
+			#else:
+				#print line
+
+	def OnRescanBuddyDirs(self, widget):
+		
+		self.muscan_execute(["muscan", "-c", self.CONFIG_PATH,  "-b", "-v", "-r"])
+		self.Statusbar.pop(self.status_context_id)
+		self.Statusbar.push(self.status_context_id, "Rescanned Buddy shares")
+		
+	def OnRescanNormalDirs(self, widget):
+		self.muscan_execute(["muscan", "-c", self.CONFIG_PATH,"-v", "-r"])
+		self.Statusbar.pop(self.status_context_id)
+		self.Statusbar.push(self.status_context_id, "Rescanned Normal shares")
+		
+	def OnRefreshBuddyDirs(self, widget):
+		p = "/usr/bin/muscan"
+		if os.path.exists(p):
+		
+			z = subprocess.Popen( ["muscan", "-c", self.CONFIG_PATH, "-b", "-l"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+			stdout_text, stderr_text = z.communicate()
+			z.wait()
+			
+			stdout_text = stdout_text.split('\n')
+			self.SharedDirs["buddy"] = []
+			for line in stdout_text:
+				if line.isspace() or line == '':
+					pass
+				else:
+					self.SharedDirs["buddy"].append(line)
+			self.createTreeFor( self.BuddyDirTreestore, self.BuddyDirTreeview, "buddydirs")
+			
+	def OnRefreshNormalDirs(self, widget):
+		p = "/usr/bin/muscan"
+		if os.path.exists(p):
+		
+			z = subprocess.Popen( ["muscan", "-c", self.CONFIG_PATH, "-l"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+			stdout_text, stderr_text = z.communicate()
+			z.wait()
+			
+			stdout_text = stdout_text.split('\n')
+			self.SharedDirs["normal"] = []
+			for line in stdout_text:
+				if line.isspace() or line == '':
+					pass
+				else:
+					self.SharedDirs["normal"].append(line)
+			self.createTreeFor( self.NormalDirTreestore, self.NormalDirTreeview, "normaldirs")
+					
 	def Bug(self, where, message):
 		try:
 			win = BugDialog(self, where, message)
