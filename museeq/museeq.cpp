@@ -909,13 +909,11 @@ int main(int argc, char **argv) {
 	QString lang, lang2, langpath;
 	lang = QString(QTextCodec::locale());
 	langpath = lang.mid(0,5); // to fix \ shorten long locales like from "fr_FR.utf8" to "fr_FR"
-	printf(langpath);
 	lang2 =  (QString(DATADIR) + QString("/museek/museeq/translations/museeq_") + langpath + QString(".qm") );
 	QFileInfo fi( lang2 );
 	if ( !fi.exists() ) {
 		// if longer locale isn't found, try two-character locale such as "fr"
 		langpath = lang.mid(0,2);
-		printf(langpath);
 		lang2 =  (QString(DATADIR) + QString("/museek/museeq/translations/museeq_") + langpath + QString(".qm") );
 		QFileInfo fi( lang2 );
 		if ( fi.exists() ) {
@@ -926,8 +924,6 @@ int main(int argc, char **argv) {
 		translation.load( lang2);
 		a.installTranslator( &translation );
 	}
-
-
 	
 	
 	new Museeq(&a);
@@ -957,13 +953,6 @@ int main(int argc, char **argv) {
 		}
 			
 	}
-// Annoying popup
-// 	if ( !fi.exists() and lang != "en") {
-// 		QMessageBox::warning( 0, "File error",
-// 			      QString("Cannot find translation for language: "+lang+
-// 				      "\n(try eg. LANG='en' museeq, LANG='fr' museeq)") );
-// // 		return 0; // QUIT
-// 	}	
 	if (usetray == "yes") {
 		QPopupMenu menutray;
 		menutray.insertItem(QT_TR_NOOP("&Restore"),museeq->mainwin() , SLOT( showNormal() ) );
