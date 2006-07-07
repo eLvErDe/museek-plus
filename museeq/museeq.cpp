@@ -904,22 +904,31 @@ int main(int argc, char **argv) {
 	QApplication a(argc, argv);
 
 	
-	// translation file for Qt
-        QTranslator qta( 0 );
-        qta.load( QString( "qt_" ) + QTextCodec::locale(), "." );
-        a.installTranslator( &qta );
-
         // translation file for application strings
 	QTranslator translation( 0 );
-	QString lang, lang2;
+	QString lang, lang2, langpath;
 	lang = QString(QTextCodec::locale());
-	lang = lang.mid(0,2); // to fix \ shorten long locales like "en_US.utf8" to "en"
-	lang2 =  (QString(DATADIR) + QString("/museek/museeq/translations/museeq_") + lang + QString(".qm") );
+	langpath = lang.mid(0,5); // to fix \ shorten long locales like from "fr_FR.utf8" to "fr_FR"
+	printf(langpath);
+	lang2 =  (QString(DATADIR) + QString("/museek/museeq/translations/museeq_") + langpath + QString(".qm") );
 	QFileInfo fi( lang2 );
-	
-	translation.load( lang2);
+	if ( !fi.exists() ) {
+		// if longer locale isn't found, try two-character locale such as "fr"
+		langpath = lang.mid(0,2);
+		printf(langpath);
+		lang2 =  (QString(DATADIR) + QString("/museek/museeq/translations/museeq_") + langpath + QString(".qm") );
+		QFileInfo fi( lang2 );
+		if ( fi.exists() ) {
+			translation.load( lang2);
+			a.installTranslator( &translation );
+		}
+	} else {
+		translation.load( lang2);
+		a.installTranslator( &translation );
+	}
 
-	a.installTranslator( &translation );
+
+	
 	
 	new Museeq(&a);
 	a.setMainWidget(museeq->mainwin());
@@ -948,13 +957,13 @@ int main(int argc, char **argv) {
 		}
 			
 	}
-
-	if ( !fi.exists() and lang != "en") {
-		QMessageBox::warning( 0, "File error",
-			      QString("Cannot find translation for language: "+lang+
-				      "\n(try eg. LANG='en' museeq, LANG='fr' museeq)") );
-// 		return 0; // QUIT
-	}	
+// Annoying popup
+// 	if ( !fi.exists() and lang != "en") {
+// 		QMessageBox::warning( 0, "File error",
+// 			      QString("Cannot find translation for language: "+lang+
+// 				      "\n(try eg. LANG='en' museeq, LANG='fr' museeq)") );
+// // 		return 0; // QUIT
+// 	}	
 	if (usetray == "yes") {
 		QPopupMenu menutray;
 		menutray.insertItem(QT_TR_NOOP("&Restore"),museeq->mainwin() , SLOT( showNormal() ) );

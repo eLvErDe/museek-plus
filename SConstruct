@@ -32,7 +32,7 @@ opts.Add(BoolOption('BUILDDIR', 'Build to build-*-* directory', ''))
 opts.Add(BoolOption('PROFILE', 'Build for profiling (gcc only)', ''))
 opts.Add(BoolOption('RELEASE', 'Build for release', ''))
 opts.Add(ListOption('MULOG', 'Set debug output', '', ['debug', 'cycle', 'calltrace', 'traffictime']))
-opts.Add(ListOption('MUSEEQTRANSLATIONS', 'Build translations for', '', ['fr','de','es','it','pl','ru','pt','ja','zh','sk','he', 'ar', 'cs' ]))
+opts.Add(ListOption('MUSEEQTRANSLATIONS', 'Build translations for', '', ['fr','de','es','it','pl','ru','pt_BR','ja','zh','sk','he', 'ar', 'cs' ]))
 print "Reading CFLAGS from defaults.py and Command Line arguments"
 opts.Add(ListOption('CFLAGS', 'Set your CCFLAGS here', '', ['fPIC', 'Wall', 'pipe', "g", "O0", "O1", "O2", "O3", "funrollloop", "Os", "fomit-frame-pointer"]))
 # New CCFLAGS must be added to the above option, or you'll just get error messages

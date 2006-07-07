@@ -53,7 +53,7 @@ MUSEEQ=1
 ONLYMUSEEQ=0
 
 # Build translations for Museeq
-MUSEEQTRANSLATIONS='fr,de,it,es,pl'
+MUSEEQTRANSLATIONS='fr,de,it,es,pl,pt_BR'
 
 # Use QSA if available
 QSA=1
