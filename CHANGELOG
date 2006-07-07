@@ -1,5 +1,5 @@
 
-0.1.11:  July 5th 2006
+0.1.11:  July 7th 2006
 
 MUSEEK DAEMON
 * ReAdd the server ping, but change the delay between them from 15 to 45 seconds
@@ -9,7 +9,11 @@ MUSEEK DAEMON
   connections. Previously, it'd skip the port listen attempt entirely. Now it
   tries the listen on minPort (if they equal) or on maxPort (if it's smaller 
   than minport) and  then gives up if it fails. 
-* SCons can now set CCFLAGS with the CFLAGS option
+* SCons can now set CCFLAGS with the CFLAGS list option
+* Enable or disable installation of musetup-gtk with Scons bool option:
+  MUSETUPGTK
+* Choose which translations to install with the MUSEEQTRANSLATIONS Scons list
+  option. (New translations may require modification to the SConstruct file)
 
 MUSEEQ
 * Added Timestamp toggle to the Settings menu
@@ -21,7 +25,9 @@ MUSEEQ
 * Le_Vert translated museeq into French
 * Requiem translated museeq into Italian
 * Belegdol translated museeq into Polish
-* The user () translated museeq into German
+* SyphiliticVagina translated museeq into Spanish
+* () translated museeq into German
+* Senhor_das_Moscas translated museeq into Brazilian Portuguese
 * Added more icons (ip, comments, alert, and small-icons for:  browse, userinfo,
   search, chatrooms, privatechat )
 
