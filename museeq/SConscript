@@ -128,6 +128,56 @@ bluebox_images = Split("""
   bluebox/userinfo.png
 """)
 
+mikelabo_silk_images = Split("""
+  mikelabo-silk/away.png
+  mikelabo-silk/away-buddied.png
+  mikelabo-silk/away-banned.png
+  mikelabo-silk/away-trusted.png
+  mikelabo-silk/away-ignored.png
+  mikelabo-silk/browser.png
+  mikelabo-silk/chatroom.png
+  mikelabo-silk/offline.png
+  mikelabo-silk/offline-buddied.png
+  mikelabo-silk/offline-banned.png
+  mikelabo-silk/offline-trusted.png
+  mikelabo-silk/offline-ignored.png
+  mikelabo-silk/online.png
+  mikelabo-silk/online-buddied.png
+  mikelabo-silk/online-banned.png
+  mikelabo-silk/online-trusted.png
+  mikelabo-silk/online-ignored.png
+  mikelabo-silk/privatechat.png
+  mikelabo-silk/search.png
+  mikelabo-silk/tab_remove.png
+  mikelabo-silk/transfer.png
+  mikelabo-silk/userinfo.png
+""")
+
+mikelabo_tri_images = Split("""
+  mikelabo-tri/away.png
+  mikelabo-tri/away-buddied.png
+  mikelabo-tri/away-banned.png
+  mikelabo-tri/away-trusted.png
+  mikelabo-tri/away-ignored.png
+  mikelabo-tri/browser.png
+  mikelabo-tri/chatroom.png
+  mikelabo-tri/offline.png
+  mikelabo-tri/offline-buddied.png
+  mikelabo-tri/offline-banned.png
+  mikelabo-tri/offline-trusted.png
+  mikelabo-tri/offline-ignored.png
+  mikelabo-tri/online.png
+  mikelabo-tri/online-buddied.png
+  mikelabo-tri/online-banned.png
+  mikelabo-tri/online-trusted.png
+  mikelabo-tri/online-ignored.png
+  mikelabo-tri/privatechat.png
+  mikelabo-tri/search.png
+  mikelabo-tri/tab_remove.png
+  mikelabo-tri/transfer.png
+  mikelabo-tri/userinfo.png
+""")
+
 scripts = Split("""
   uptime.qs
   nowplaying.qs
@@ -303,6 +353,8 @@ museeq = env_qt.Program('museeq', sources)
 bin_install = env_qt.Install(env['DESTDIR'] + env['BINDIR'], [museeq])
 img_install = env_qt.Install(env['DESTDIR'] + os.path.join(env_qt['DATADIR'], 'museek', 'museeq', 'default'), default_images)
 img_b_install = env_qt.Install(env['DESTDIR'] + os.path.join(env_qt['DATADIR'], 'museek', 'museeq', 'bluebox'), bluebox_images)
+img_ml_s_install = env_qt.Install(env['DESTDIR'] + os.path.join(env_qt['DATADIR'], 'museek', 'museeq', 'mikelabo-silk'), mikelabo_silk_images)
+img_ml_t_install = env_qt.Install(env['DESTDIR'] + os.path.join(env_qt['DATADIR'], 'museek', 'museeq', 'mikelabo-tri'), mikelabo_tri_images)
 script_install = env_qt.Install(env['DESTDIR'] + os.path.join(env_qt['DATADIR'], 'museek', 'museeq'), scripts)
 
 translations_install = env_qt.Install(env['DESTDIR'] + os.path.join(env_qt['DATADIR'], 'museek', 'museeq', "translations"), qm_files)
@@ -312,6 +364,8 @@ man_install = env_qt.Install(env['DESTDIR'] + env['MANDIR'], manfile)
 env.Alias('install_museeq', translations_install)
 env.Alias('install_museeq', img_install)
 env.Alias('install_museeq', img_b_install)
+env.Alias('install_museeq', img_ml_s_install)
+env.Alias('install_museeq', img_ml_t_install)
 env.Alias('install_museeq', script_install)
 env.Alias('install_museeq', bin_install)
 env.Alias('install_museeq', man_install)
