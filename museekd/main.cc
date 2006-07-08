@@ -48,7 +48,6 @@ RETSIGTYPE reconnect(int signal) {
 RETSIGTYPE terminate(int signal) {
 	if(museekd != 0) {
 		DEBUG("terminating...");
-		museekd->cb_server_kicked();
 		museekd->die();
 	}
 #if RETSIGTYPE != void
@@ -100,7 +99,6 @@ int main(int argc, char **argv) {
 	signal(SIGALRM, reconnect);
 	signal(SIGHUP, hangup);
 	signal(SIGINT, terminate);
-	signal(SIGSEGV, terminate);
 	signal(SIGTERM, terminate);
 	
 	museekd = new Museekd(config);
