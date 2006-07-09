@@ -545,8 +545,8 @@ class mucous(driver.Driver):
 "/downpath", "/downpathdir",  "/chat", "/ignorelist", "/banlist", "/transfer", "/transfers", "/private",\
 "/buddylist", "/setup", "/quit",  "/share-mode", "/logging", "/reloadshares", "/rescanshares", "/version", "/extra", \
 "/logout", "/login", "/like ", "/donotlike ", "/donothate ", "/hate ", "/similar", "/globalrex", "/recommendations", "/rex", "/itemsimilar ", "/itemrex ", "/uploadto ", "/upload ", "/ctcpversion ", "/defaulttick ", "/settemptick ", "/settick "]
-
- 		for alias in mucous_config["aliases"].keys():
+		
+		for alias in mucous_config["aliases"].keys():
 			self.commandlist.append("/"+alias)
 	
 		# Startup Size Check
@@ -2401,7 +2401,7 @@ class mucous(driver.Driver):
 			for room in self.data["rooms"].keys():
 				self.data["rooms"][room] = {}
 				self.data["tickers"][room] = {}
-				
+
 			if self.display["mode"] == "chat":
 				self.chat_mode()
 			elif self.display["mode"] == "transfer":
@@ -2774,6 +2774,7 @@ class mucous(driver.Driver):
 			if room not in self.logs["rooms"]:
 				self.logs["rooms"][room] = []
 				self.logs["roomstatus"][room] = []
+				self.add_logs_to_chat(room)
 				
 			for users, stats in list_of_users.items():
 				self.user["statistics"][users] = stats[1], stats[2 ], stats[3], stats[4] #avgspeed, numdownloads, numfiles, numdirs
@@ -2791,6 +2792,7 @@ class mucous(driver.Driver):
 			joined = self.data["rooms"].keys()
 			joined.sort()
 			del self.data["rooms"][room]
+			
 			if room == self.Spl["room"]:
 				if len(joined) == 1:
 					self.change_room(None)
@@ -2803,7 +2805,9 @@ class mucous(driver.Driver):
 					self.change_room(joined[ix])
 					self.say("Status", joined[ix], '!!!!', "Left room %s" % room)
 			joined.remove(room)
-			
+			del self.logs["rooms"][room]
+			del self.data["tickers"][room]
+			del self.logs["roomstatus"][room]
 			if joined == []:
 				self.change_room(None)
 				self.drawchatwindow()
@@ -3362,7 +3366,7 @@ class mucous(driver.Driver):
 			self.Hlog("debug", "cb_transfer_state: " + str(e))
 		
 		
- 	def cb_transfer_update(self, transfer):
+	def cb_transfer_update(self, transfer):
 		try:
 			if transfer.is_upload:
 				
@@ -3584,7 +3588,7 @@ class mucous(driver.Driver):
 			else:
 				self.SendMessage(messages.PrivateMessage(1, user, self.decode_language(message) ) )
 		
-		 	if message == curses.ascii.ctrl("A")+"VERSION"+curses.ascii.ctrl("A"):
+			if message == curses.ascii.ctrl("A")+"VERSION"+curses.ascii.ctrl("A"):
 				message = "CTCP VERSION"
 			if mucous_config["mucous"]["logging"] in (True, "True"):
 				self.log_to_file("private", time.strftime("%d %b %Y %H:%M:%S"), user, "["+self.usernames["username"]+"]\t" +message )
@@ -4457,7 +4461,7 @@ class mucous(driver.Driver):
 	
 		
 	# Rebuild Buddylist from self.config
- 	def buddylist(self):
+	def buddylist(self):
 		try:
 			if "buddies" in self.config.keys():
 				self.logs["buddied"] = []
@@ -4486,7 +4490,7 @@ class mucous(driver.Driver):
 		except Exception, e:
 			self.Hlog("debug", "buddylist: " + str(e))
 	# Rebuild Trustlist from self.config
- 	def trustlist(self):
+	def trustlist(self):
 		try:
 			if "trusted" in self.config.keys():
 				self.logs["trusted"] = []
@@ -4523,7 +4527,7 @@ class mucous(driver.Driver):
 		except Exception, e:
 			self.Hlog("debug", "trustlist: " + str(e))
 	# Rebuild Banlist from self.config
- 	def banlist(self):
+	def banlist(self):
 		try:
 			if "banned" in self.config.keys():
 				self.logs["banned"] = []
@@ -4914,10 +4918,10 @@ class mucous(driver.Driver):
 				left = 25; top = 2; width = 20
 				title = "%s" % (this_list[self.scrolling[mode]])[1][:16]
 				name = this_list[self.scrolling[mode]][1]
- 				number = self.scrolling[mode] +1 
- 				
+				number = self.scrolling[mode] +1
+				
 				items = [["Private Message", "all"], ["Userinfo", "all"], ["IP Address", "all"], ["Browse", "all"], ["", "line"], ["Buddy", "buddies"], ["Ban", "banned"], ["Ignore", "ignored"], ["Trusted", "trusted"], ["Give Privileges", "giveprivs"]  ]
-				height = len(items) + 2	
+				height = len(items) + 2
 				
 			elif menu == "transfers":
 				mode = self.display["transfers"]
@@ -10407,7 +10411,7 @@ class mucous(driver.Driver):
 			
 			if self.display["mode"] == "chat" and yes == 1:
 				if self.scrolling["roomstatus"] >= oldlen -1:
-					if len(self.logs["roomstatus"]) > 1000:
+					if len(self.logs["roomstatus"][room]) > 305:
 						del self.logs["roomstatus"][room][0]
 					self.scrolling["roomstatus"] = -1
 					self.display_status_log()
