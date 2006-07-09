@@ -190,7 +190,10 @@ scripts = Split("""
 from muscons import Relay
 
 Import('env')
+QTDIR = env['QTDIR']
 
+if not QTDIR and os.environ.has_key('QTDIR'):
+    QTDIR = os.environ['QTDIR']
 ts_templates= env['MUSEEQTRANSLATIONS']
 tr_dir = "translations/"
 translations = []
@@ -201,11 +204,17 @@ def make_qm(ts_templates):
 		translations.append(lang)
 
 make_qm(ts_templates)
+lrelease = ""
 if ts_templates != []:
-	if os.system("lrelease -help 2> /dev/null") == 0:
-		print "Qt translation app 'lrelease' found."
+	if os.system(QTDIR+"/bin/"+"lrelease -help 2> /dev/null") == 0:
+		print "Qt translation app 'lrelease' found in",QTDIR+"/bin/" 
+		lrelease = QTDIR+"/bin/"+"lrelease"
 	else:
-		print "Qt translation app 'lrelease' not found in the path. Aborting!"
+		if os.system("lrelease -help 2> /dev/null") == 0:
+			print "Qt translation app 'lrelease' found in the path."
+			lrelease = "lrelease"
+		else:
+			print "Qt translation app 'lrelease' not found in the path or QTDIR", QTDIR+"/bin/ Aborting!"
 		sys.exit()
 else:
 	print "No Museeq translations will be built."
@@ -215,7 +224,7 @@ def translation_build(target, source, env):
 	ss = ""
 	for s in source:
 		ss +=  str(s)+" "
-	os.system("lrelease "+ str(ss)+" -qm "+ str(target[0]))
+	os.system(lrelease+" "+ str(ss)+" -qm "+ str(target[0]))
 	
 	return 0
 
@@ -237,9 +246,7 @@ commandline.
 """)
     Exit(1)
 
-QTDIR = env['QTDIR']
-if not QTDIR and os.environ.has_key('QTDIR'):
-    QTDIR = os.environ['QTDIR']
+
 
 env_qt = Environment(tools = ['default', 'qt'], CC = env['CC'], CXX = env['CXX'], CCFLAGS = env['CCFLAGS'], QTDIR = QTDIR)
 env_qt.SConsignFile()
