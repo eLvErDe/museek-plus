@@ -359,16 +359,17 @@ else:
 
 	subdirs = ['Muhelp', 'Mucipher', 'Museekal', 'Museek', 'Tools', 'museekd', 'doc', 'pymuseekd']
 	print "Compiling Muhelp, Mucipher, Museekal, Museek, museekd, Tools, doc, pymuseekd..."
-	if env['MUSEEQ']:
-		subdirs.append('museeq')
-		print "and Museeq..."
-	else:
-		print "Without Museeq."
 	if env['MUCOUS']:
 		subdirs.append('mucous')
 		print "and Mucous..."
 	else:
 		print "Without Mucous."
+	if env['MUSEEQ']:
+		subdirs.append('museeq')
+		print "and Museeq..."
+	else:
+		print "Without Museeq."
+
 for dir in subdirs:
 	if dir in ['Muhelp', 'Museekal', 'Museek', 'Mucipher',  'Tools', 'museeq', "mucous", "pymuseekd"]:
 		print "Headers for %s..." % dir
