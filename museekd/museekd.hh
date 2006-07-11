@@ -159,6 +159,7 @@ public:
 	void cb_peer_sent_buddy_shares(const std::string& user);
 	void cb_peer_sent_normal_shares(const std::string& user);
 	void cb_peer_sent_user_info(const std::string& user);
+	void cb_server_global_message(const std::string& message);
 
 	void cb_peer_shares(const std::string& user, const WShares& shares);
 	void cb_peer_info(const std::string& user, const std::wstring& info, const std::vector<unsigned char>& pic, uint32 totalupl, uint32 queuelen, bool slotfree);

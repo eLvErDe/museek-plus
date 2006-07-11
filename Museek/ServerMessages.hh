@@ -463,6 +463,17 @@ SERVERMESSAGE(SExactFileSearch, 65)
 	off_t filesize;
 END
 
+SSTRINGMESSAGE(SGlobalMessage, 66)
+// SERVERMESSAGE(SGlobalMessage, 66)
+// 	SGlobalMessage() {};
+// 	
+// 	PARSE
+// 		msg = unpack_string();
+// 	END_PARSE
+// 	
+// 	std::string msg;
+// END
+
 SSTRINGSMESSAGE(SPrivilegedUsers, 69)
 
 SERVERMESSAGE(SHaveNoParents, 71)

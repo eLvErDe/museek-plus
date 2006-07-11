@@ -2384,6 +2384,13 @@ class mucous(driver.Driver):
 					pass
 			self.Spl["connected"] = 0
 			self.logs["onlinestatus"]="Closed"
+			self.muscan_timer.cancel()
+			self.timer.cancel()
+			self.ticker_timer.cancel()
+			self.retry_timer.cancel()
+			self.clear_timer.cancel()
+			self.timeout_timer.cancel()
+			
 			osw = self.windows["border"]["onlinestatus"]
 			osw.erase()
 			osw.addstr(self.logs["onlinestatus"], self.colors["red"] | curses.A_BOLD |curses.A_REVERSE)
@@ -2393,14 +2400,15 @@ class mucous(driver.Driver):
 			for room in self.data["rooms"].keys():
 				msg = ("--- Disconnected from the Museek Daemon ---")
 				self.say("Status", room, '!!!!', msg)
+				self.data["rooms"][room] = {}
+				self.data["tickers"][room] = {}
 			uploadlist = []
 			self.data["uploads"] = {}
+			self.data["downloads"] = {}
 			self.transfers["downloads"] = {}
 			self.transfers["uploads"] = {}
 			self.config = {}
-			for room in self.data["rooms"].keys():
-				self.data["rooms"][room] = {}
-				self.data["tickers"][room] = {}
+			
 
 			if self.display["mode"] == "chat":
 				self.chat_mode()
@@ -2409,12 +2417,7 @@ class mucous(driver.Driver):
 			self.update_title()
 			self.upload_status("0")
 			self.download_status("0")
-			self.muscan_timer.cancel()
-			self.timer.cancel()
-			self.ticker_timer.cancel()
-			self.retry_timer.cancel()
-			self.clear_timer.cancel()
-			self.timeout_timer.cancel()
+
 			self.refresh_windows()
 		except Exception,e:
 			self.Hlog("debug", "cb_disconnected: " + str(e))
@@ -6007,7 +6010,7 @@ class mucous(driver.Driver):
 							self.chat_display()
 						elif self.display["chat"] == "roombox":
 							self.scrolling["roombox"] = len(self.data["rooms"][self.Spl["room"]])
-	 						self.chat_mode()
+							self.chat_mode()
 					elif key == "KEY_HOME":
 						if self.display["chat"] == "chatroom":
 							self.scrolling["chatroom"] = 0 
@@ -6452,7 +6455,7 @@ class mucous(driver.Driver):
 								
 								if y  + w["start"] in range(len(this_list)):
 									self.scrolling[self.display["interests"]]  = y  + w["start"]
- 									self.line = self.logs[self.display["interests"]][self.scrolling[self.display["interests"]]]
+									self.line = self.logs[self.display["interests"]][self.scrolling[self.display["interests"]]]
 
 								
 							self.interests_mode()
@@ -7728,7 +7731,7 @@ class mucous(driver.Driver):
 					ibw.addstr(0, self.w-2, ">")
 				except:
 					pass
- 				ibw.noutrefresh()
+				ibw.noutrefresh()
 				self.windows["text"]["input"].noutrefresh()
 				self.check_alert_state()
 	
@@ -9013,7 +9016,7 @@ class mucous(driver.Driver):
 # 			win = curses.newwin(w["height"]+2, w["width"]+2, w["top"]-1, w["left"]-1)
 			mw.erase()
 			mw.border()
- 			mw.addstr(0, 3, "< Buddied >",  self.colors["green"])
+			mw.addstr(0, 3, "< Buddied >",  self.colors["green"])
 			mw.addstr(0, 16, "< Banned >", self.colors["green"])
 			mw.addstr(0, 28, "< Ignored >", self.colors["green"])
 			mw.addstr(0, 40, "< Trusted >", self.colors["green"] )
@@ -9021,7 +9024,7 @@ class mucous(driver.Driver):
 			mw.noutrefresh()
 	
 
-  			if self.display["interests"] == "likes":
+			if self.display["interests"] == "likes":
 				if self.Spl["interests_input"] not in ("add_likes", "del_likes"):
 					self.Spl["interests_input"] = "add_likes"
 				if self.Spl["interests_input"] == "add_likes":

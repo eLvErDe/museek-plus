@@ -247,6 +247,12 @@ void ServerConnection::process_message(uint32 code) {
 		mMuseek->cb_server_exact_file_search(s.user, s.ticket, s.filename, s.path, s.filesize, s.checksum);
 		break;
 	}
+	case 66: {
+		PARSE(SGlobalMessage)
+		DEBUG("got global message, %s", s.value.c_str());
+		mMuseek->cb_server_global_message(s.value);
+		break;
+	}
 	case 69: {
 		PARSE(SPrivilegedUsers)
 		DEBUG("got privileged user list, <...> (%d)", s.values.size());

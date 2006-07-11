@@ -601,6 +601,8 @@ void Museek::cb_peer_sent_normal_shares(const string& user) {
 }
 void Museek::cb_peer_sent_user_info(const string& user) {
 }
+void Museek::cb_server_global_message(const string& message) {
+}
 
 void Museek::cb_peer_results(uint32 ticket, const string& user, const WFolder& results, uint32 avgspeed, uint32 queuelen, bool slotfree) {
 }

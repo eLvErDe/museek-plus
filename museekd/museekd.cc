@@ -691,7 +691,10 @@ void Museekd::cb_peer_sent_user_info(const string& user) {
 	string _msg = ("User Info sent to: "+ user );
 	ALL_IFACES(status_message(1, _msg ));
 }
-
+void Museekd::cb_server_global_message(const string& message) {
+	string _msg = ("Global Message: "+ message );
+	ALL_IFACES(status_message(0, _msg ));
+}
 
 void Museekd::cb_iface_say_room(IfaceConnection* conn, const string& room, const string& message) {
 	if(mJoinedRooms.find(room) == mJoinedRooms.end() || message.empty())
