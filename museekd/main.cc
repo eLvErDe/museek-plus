@@ -67,7 +67,8 @@ RETSIGTYPE hangup(int signal) {
 
 int main(int argc, char **argv) {
 	std::string config = string(getenv("HOME")) + "/.museekd/config.xml";
-	std::string version = string("museekd :: Version 0.1.11 :: Museek Daemon Plus");
+	std::string version = string("0.1.12");
+	std::string version2 = string("museekd :: Version "+ version +" :: Museek Daemon Plus");
 	for(int i = 1; i < argc; i++) {
 		string arg = argv[i];
 		if(arg == "--config" || arg == "-c") {
@@ -78,10 +79,10 @@ int main(int argc, char **argv) {
 				return -1;
 			}
 		} else if(arg == "--version" || arg == "-V" ) {
-			std::cout << version << std::endl << std::endl;
+			std::cout << version2 << std::endl << std::endl;
 			return 0;
 		} else if(arg == "--help" || arg == "-h") {
-			std::cout << version << std::endl;
+			std::cout << version2 << std::endl;
 			std::cout << "Syntax: museekd [options]" << std::endl << std::endl;
 			std::cout << "Options:" << std::endl;
 			std::cout << "-c --config <config file>\tUse alternative config file" << std::endl;
@@ -95,13 +96,13 @@ int main(int argc, char **argv) {
 		}
 			
 	}
-	std::cout << version << std::endl << std::endl;
+	std::cout << version2 << std::endl << std::endl;
 	signal(SIGALRM, reconnect);
 	signal(SIGHUP, hangup);
 	signal(SIGINT, terminate);
 	signal(SIGTERM, terminate);
 	
-	museekd = new Museekd(config);
+	museekd = new Museekd(config, version);
 	if(! museekd->load_config()) {
 		delete museekd;
 		std::cerr << "Error loading configuration! Please run musetup and configure any unset options." << std::endl;

@@ -43,8 +43,8 @@ using std::map;
 using std::cerr;
 using std::endl;
 
-Museekd::Museekd(const string& config)
-        : Museek(), mKicked(false), mHaveBuddyShares(false), mReconnectTime(15), mConfigFile(config), mConfig(mConfigFile), 
+Museekd::Museekd(const string& config, const string& version)
+        : Museek(),  mVersion(version), mKicked(false), mHaveBuddyShares(false), mReconnectTime(15), mConfigFile(config), mConfig(mConfigFile),
            mStatus(0), mPrivilegeBuddies(false), mOnlyBuddies(false),  mTrustedUploads(false), mJoined(false), mDontSaveDownloads(false), mSaveDownloads(false), mLastSave(0),
           mPonged(false), mPingTime(0) {
 	CT("Museekd");
@@ -402,6 +402,8 @@ void Museekd::cb_iface_login(IfaceConnection* conn, const string& algorithm, con
 			}
 			mPrivateMessages.clear();
 		}
+		string _msg = ("Museek Daemon Version: "+ mVersion );
+		conn->status_message(0, _msg );
 	}
 }
 

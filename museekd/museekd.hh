@@ -32,7 +32,7 @@ class Buddies;
 
 class Museekd : public Museek {
 public:
-	Museekd(const std::string& config);
+	Museekd(const std::string& config, const std::string& version);
 	
 	bool load_config();
 	
@@ -46,6 +46,7 @@ public:
 	void load_buddy_shares();
 	
 	void reconnect();
+	std::string mVersion;
 	bool mKicked, mHaveBuddyShares;
 	bool is_privileged(const std::string& user);
 	bool is_receiving_shares(const std::string& user) const;
