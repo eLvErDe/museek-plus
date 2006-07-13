@@ -59,124 +59,59 @@ sources = Split("""
   connect.cpp
 """)
 
-default_images = Split("""
-  default/away.png
-  default/away-buddied.png
-  default/away-banned.png
-  default/away-trusted.png
-  default/away-ignored.png
-  default/connect.png
-  default/disconnect.png
-  default/help.png
-  default/colors.png
-  default/settings.png
-  default/exit.png
-  default/protocol.png
-  default/privileges.png
-  default/ip.png
-  default/refresh.png
-  default/alert.png
-  default/comments.png
-  default/browser.png
-  default/browser-small.png
-  default/chatroom.png
-  default/chatroom-small.png
-  default/privatechat.png
-  default/privatechat-small.png
-  default/search.png
-  default/search-small.png
-  default/transfer.png
-  default/transfer-small.png
-  default/userinfo.png
-  default/userinfo-small.png
-  default/offline.png
-  default/offline-buddied.png
-  default/offline-banned.png
-  default/offline-trusted.png
-  default/offline-ignored.png
-  default/online.png
-  default/online-buddied.png
-  default/online-banned.png
-  default/online-trusted.png
-  default/online-ignored.png
-  default/tab_remove.png
-  default/logo.png
-  default/icon.png
-""")
-bluebox_images = Split("""
-  bluebox/away.png
-  bluebox/away-buddied.png
-  bluebox/away-banned.png
-  bluebox/away-trusted.png
-  bluebox/away-ignored.png
-  bluebox/browser.png
-  bluebox/chatroom.png
-  bluebox/offline.png
-  bluebox/offline-buddied.png
-  bluebox/offline-banned.png
-  bluebox/offline-trusted.png
-  bluebox/offline-ignored.png
-  bluebox/online.png
-  bluebox/online-buddied.png
-  bluebox/online-banned.png
-  bluebox/online-trusted.png
-  bluebox/online-ignored.png
-  bluebox/privatechat.png
-  bluebox/search.png
-  bluebox/tab_remove.png
-  bluebox/transfer.png
-  bluebox/userinfo.png
-""")
 
-mikelabo_silk_images = Split("""
-  mikelabo-silk/away.png
-  mikelabo-silk/away-buddied.png
-  mikelabo-silk/away-banned.png
-  mikelabo-silk/away-trusted.png
-  mikelabo-silk/away-ignored.png
-  mikelabo-silk/browser.png
-  mikelabo-silk/chatroom.png
-  mikelabo-silk/offline.png
-  mikelabo-silk/offline-buddied.png
-  mikelabo-silk/offline-banned.png
-  mikelabo-silk/offline-trusted.png
-  mikelabo-silk/offline-ignored.png
-  mikelabo-silk/online.png
-  mikelabo-silk/online-buddied.png
-  mikelabo-silk/online-banned.png
-  mikelabo-silk/online-trusted.png
-  mikelabo-silk/online-ignored.png
-  mikelabo-silk/privatechat.png
-  mikelabo-silk/search.png
-  mikelabo-silk/tab_remove.png
-  mikelabo-silk/transfer.png
-  mikelabo-silk/userinfo.png
+all_images = Split("""
+  away.png
+  away-buddied.png
+  away-banned.png
+  away-trusted.png
+  away-ignored.png
+  connect.png
+  disconnect.png
+  help.png
+  colors.png
+  settings.png
+  exit.png
+  protocol.png
+  privileges.png
+  ip.png
+  refresh.png
+  alert.png
+  comments.png
+  browser.png
+  browser-small.png
+  chatroom.png
+  chatroom-small.png
+  privatechat.png
+  privatechat-small.png
+  search.png
+  search-small.png
+  transfer.png
+  transfer-small.png
+  userinfo.png
+  userinfo-small.png
+  offline.png
+  offline-buddied.png
+  offline-banned.png
+  offline-trusted.png
+  offline-ignored.png
+  online.png
+  online-buddied.png
+  online-banned.png
+  online-trusted.png
+  online-ignored.png
+  tab_remove.png
+  logo.png
+  icon.png
 """)
-
-mikelabo_tri_images = Split("""
-  mikelabo-tri/away.png
-  mikelabo-tri/away-buddied.png
-  mikelabo-tri/away-banned.png
-  mikelabo-tri/away-trusted.png
-  mikelabo-tri/away-ignored.png
-  mikelabo-tri/browser.png
-  mikelabo-tri/chatroom.png
-  mikelabo-tri/offline.png
-  mikelabo-tri/offline-buddied.png
-  mikelabo-tri/offline-banned.png
-  mikelabo-tri/offline-trusted.png
-  mikelabo-tri/offline-ignored.png
-  mikelabo-tri/online.png
-  mikelabo-tri/online-buddied.png
-  mikelabo-tri/online-banned.png
-  mikelabo-tri/online-trusted.png
-  mikelabo-tri/online-ignored.png
-  mikelabo-tri/privatechat.png
-  mikelabo-tri/search.png
-  mikelabo-tri/tab_remove.png
-  mikelabo-tri/transfer.png
-  mikelabo-tri/userinfo.png
-""")
+themes = ["default", "mikelabo-tri", "bluebox", "mikelabo-silk"]
+theme_lists = {}
+# FIND ICONS IN THEMES
+for theme in themes:
+	theme_lists[theme] = []
+	for icon in all_images:
+		if os.path.exists("../../museeq/%s/%s" %(theme, icon) ):
+			theme_lists[theme].append(theme+"/"+icon)
 
 scripts = Split("""
   uptime.qs
@@ -218,6 +153,7 @@ if ts_templates != []:
 		sys.exit()
 else:
 	print "No Museeq translations will be built."
+
 
 def translation_build(target, source, env):
  	print source[0], target[0]
@@ -358,10 +294,7 @@ for lang in translations:
 museeq = env_qt.Program('museeq', sources)
 
 bin_install = env_qt.Install(env['DESTDIR'] + env['BINDIR'], [museeq])
-img_install = env_qt.Install(env['DESTDIR'] + os.path.join(env_qt['DATADIR'], 'museek', 'museeq', 'default'), default_images)
-img_b_install = env_qt.Install(env['DESTDIR'] + os.path.join(env_qt['DATADIR'], 'museek', 'museeq', 'bluebox'), bluebox_images)
-img_ml_s_install = env_qt.Install(env['DESTDIR'] + os.path.join(env_qt['DATADIR'], 'museek', 'museeq', 'mikelabo-silk'), mikelabo_silk_images)
-img_ml_t_install = env_qt.Install(env['DESTDIR'] + os.path.join(env_qt['DATADIR'], 'museek', 'museeq', 'mikelabo-tri'), mikelabo_tri_images)
+
 script_install = env_qt.Install(env['DESTDIR'] + os.path.join(env_qt['DATADIR'], 'museek', 'museeq'), scripts)
 
 translations_install = env_qt.Install(env['DESTDIR'] + os.path.join(env_qt['DATADIR'], 'museek', 'museeq', "translations"), qm_files)
@@ -369,10 +302,14 @@ manfile = ["museeq.1"]
 man_install = env_qt.Install(env['DESTDIR'] + env['MANDIR'], manfile)
 
 env.Alias('install_museeq', translations_install)
-env.Alias('install_museeq', img_install)
-env.Alias('install_museeq', img_b_install)
-env.Alias('install_museeq', img_ml_s_install)
-env.Alias('install_museeq', img_ml_t_install)
+
+# INSTALL THEMES
+for theme in theme_lists:
+	if theme_lists[theme] != []:
+		print "Museeq theme, %s to be installed. %d Icons" % ( theme, len(theme_lists[theme]) )
+		env.Alias('install_museeq', env_qt.Install(env['DESTDIR'] + os.path.join(env_qt['DATADIR'], 'museek', 'museeq', theme), theme_lists[theme]))
+
+
 env.Alias('install_museeq', script_install)
 env.Alias('install_museeq', bin_install)
 env.Alias('install_museeq', man_install)
