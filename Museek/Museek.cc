@@ -380,7 +380,11 @@ void Museek::cb_server_privileged_users(const StringList& users) {
 		for(it = peers.begin(); it != end; ++it)
 			(*it).second->set_privileged(is_privileged((*it).first));
 	}
+	msg_server_privileged_users( users.size() );
+	
 }
+
+void Museek::msg_server_privileged_users( uint32 size ) {}
 
 void Museek::cb_server_add_privileged_user(const string& user) {
 	mPrivileged[user] = true;

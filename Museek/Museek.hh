@@ -250,6 +250,7 @@ public:
 	virtual void cb_server_global_message(STR message);
 	virtual void cb_peer_sent_user_info(STR user);
 	virtual void cb_peer_transfer_finished(WSTR path, STR user);
+	virtual void msg_server_privileged_users(uint32 size);
 	void peer_banned(STR user);
 	void peer_upload_blocked(STR user);
 

@@ -641,6 +641,9 @@ class mucous(driver.Driver):
 				# Terminal resized
 				pass
 			except Exception, e:
+				self.help_mode()
+				self.Hlog("debug", str(e) )
+				sleep(1)
 				self.shutdown()
 
 	
@@ -1116,7 +1119,8 @@ class mucous(driver.Driver):
 						
 				elif line == "/beep":
 					self.toggle_beep()
-					
+				elif line =="/ping":
+					self.SendMessage(messages.Ping(1) )
 				elif line[:6] == "/close":
 					user = None
 					if line[6:7] == " " and line[7:] != '':
@@ -2179,9 +2183,10 @@ class mucous(driver.Driver):
 		try:
 			if self.Spl["connected"] == 0: return
 			self.send(message)
-		except:
-			self.Hlog("debug", "doJoin: " + str(core))
-			
+		except Exception, e:
+			self.Hlog("debug", "SendMessage: " + str(e))
+	def cb_ping(self):
+		self.Hlog("debug", "Recieved ping from daemon...")
 	def doJoin(self, room):
 		try:
 			self.SendMessage(messages.JoinRoom( self.decode_language( room ) ))
@@ -2429,6 +2434,8 @@ class mucous(driver.Driver):
 				stype = "Peer"
 			elif type == 0:
 				stype = "Server"
+			elif type == 2:
+				stype = "Daemon"
 			self.Hlog("status", "%s Message: %s" % (stype, message))
 		except Exception,e:
 			self.Hlog("debug", "cb_status_message: " +str( e) )	

@@ -23,7 +23,7 @@
 #include <Museek/Museek.hh>
 #include <Muhelp/Muconf.hh>
 #include <museekd/MuseekdTypes.hh>
-
+#include <sstream>
 #include <list>
 
 class IfaceListener;
@@ -161,6 +161,7 @@ public:
 	void cb_peer_sent_normal_shares(const std::string& user);
 	void cb_peer_sent_user_info(const std::string& user);
 	void cb_server_global_message(const std::string& message);
+	void msg_server_privileged_users(uint32 size);
 
 	void cb_peer_shares(const std::string& user, const WShares& shares);
 	void cb_peer_info(const std::string& user, const std::wstring& info, const std::vector<unsigned char>& pic, uint32 totalupl, uint32 queuelen, bool slotfree);
@@ -182,6 +183,13 @@ protected:
 	void unban(const std::string&);
 	void trust(const std::string&);
 	void untrust(const std::string&);	
+// 	std::string int_to_string(uint32 number){}
+	inline std::string itos(const int i) {
+		std::stringstream s;
+		s << i;
+		return s.str();
+	}
+
 private:
 	void save_downloads();
 	void load_downloads();

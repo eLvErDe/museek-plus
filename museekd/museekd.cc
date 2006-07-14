@@ -698,6 +698,12 @@ void Museekd::cb_server_global_message(const string& message) {
 	ALL_IFACES(status_message(0, _msg ));
 }
 
+void Museekd::msg_server_privileged_users(uint32 _size) {
+	string _msg = string("Privileged users: " + itos(_size) );
+	ALL_IFACES(status_message(0, _msg));
+}
+
+
 void Museekd::cb_iface_say_room(IfaceConnection* conn, const string& room, const string& message) {
 	if(mJoinedRooms.find(room) == mJoinedRooms.end() || message.empty())
 		return;
