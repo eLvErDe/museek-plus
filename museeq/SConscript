@@ -150,7 +150,7 @@ if ts_templates != []:
 			lrelease = "lrelease"
 		else:
 			print "Qt translation app 'lrelease' not found in the path or QTDIR", QTDIR+"/bin/ Aborting!"
-		sys.exit()
+			sys.exit()
 else:
 	print "No Museeq translations will be built."
 
