@@ -75,7 +75,7 @@ extern int libqsa_is_present; // defined in either museeq.cpp or the relay stub
 
 
 MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, name), mWaitingPrivs(false) {
-	mVersion = "0.1.11";
+	mVersion = "0.1.12";
 	setCaption(tr("museeq ")+mVersion);
 	setIcon(IMG("icon"));
 	connect(museeq->driver(), SIGNAL(hostFound()), SLOT(slotHostFound()));

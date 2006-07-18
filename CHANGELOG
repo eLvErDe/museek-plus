@@ -1,8 +1,11 @@
 Unreleased
 
+MUSEEK DAEMON
  * Added Global message (66) handler, and pass it to the clients
-
-
+ * Removed disconnect-on-hangup-signal (caused a loop)
+MUSEEQ
+ * Added /commands to private chat
+ 
 0.1.11:  July 7th 2006
 
 MUSEEK DAEMON
