@@ -54,7 +54,7 @@
     </message>
     <message>
         <source>Comments for </source>
-        <translation>Comentarios para</translation>
+        <translation>Comentarios para </translation>
     </message>
 </context>
 <context>
@@ -326,7 +326,7 @@
     </message>
     <message>
         <source>Pick Font</source>
-        <translation>Escoger Tipo de Letra</translation>
+        <translation>Escoger Tipo</translation>
     </message>
     <message>
         <source>Time &amp; Brackets Text Color</source>
@@ -334,7 +334,7 @@
     </message>
     <message>
         <source>Time &amp; Brackets Font</source>
-        <translation>Letra del Tiempo &amp; Paréntesis</translation>
+        <translation>Tipo del Tiempo &amp; Paréntesis</translation>
     </message>
     <message>
         <source>/Me Text</source>
@@ -568,7 +568,7 @@
     </message>
     <message>
         <source>&amp;Browse Shares</source>
-        <translation>&amp;Mirar archivos Compartidos</translation>
+        <translation>&amp;Navegar</translation>
     </message>
     <message>
         <source>&amp;Modes</source>
@@ -704,19 +704,19 @@
     </message>
     <message>
         <source>Login error: </source>
-        <translation>Error de entrada:</translation>
+        <translation>Error de entrada: </translation>
     </message>
     <message>
         <source>Connected to soulseek, your nickname: </source>
-        <translation>Conectado a soulseek, su nombre de usuario:</translation>
+        <translation>Conectado a soulseek, su nombre de usuario: </translation>
     </message>
     <message>
         <source> Status: Away</source>
-        <translation>Estado: Ausente</translation>
+        <translation> Estado: Ausente</translation>
     </message>
     <message>
         <source> Status: Online</source>
-        <translation>Estado: Conectado</translation>
+        <translation> Estado: Conectado</translation>
     </message>
     <message>
         <source>Disconnected from soulseek</source>
@@ -752,11 +752,11 @@
     </message>
     <message>
         <source>&lt;p align=&quot;center&quot;&gt;Museeq </source>
-        <translation>&lt;p align=&quot;center&quot;&gt;Museeq</translation>
+        <translation>&lt;p align=&quot;center&quot;&gt;Museeq </translation>
     </message>
     <message>
         <source> is a GUI for the Museek Daemon&lt;/p&gt;The programs, museeq and museekd and muscan, were created by Hyriand 2003-2005&lt;br&gt;&lt;br&gt;Additions by Daelstorm and SeeSchloss in 2006&lt;br&gt;This project is released under the GPL license.&lt;br&gt;Code and ideas taken from other opensource projects and people are mentioned in the CREDITS file included in the source tarball.</source>
-        <translation>es un GUI para el Museek Daemon&lt;/p&gt; Los programas, museeq y museekd y muscan, fueron creados por Hyriand 2003-2005&lt;br&gt;&lt;br&gt;Adiciones por Daelstorm y SeeSchloss en el 2006&lt;br&gt; Este proyecto ha sido publicado con la licencia GPL.&lt;br&gt;Código e ideas tomadas de otros proyectos de código abierto y de otra gente han sido mencionados en el archivo llamado CREDITOS incluido en la fuente tarball.</translation>
+        <translation> es un GUI para el Museek Daemon&lt;/p&gt; Los programas, museeq y museekd y muscan, fueron creados por Hyriand 2003-2005&lt;br&gt;&lt;br&gt;Adiciones por Daelstorm y SeeSchloss fueron hechas en el 2006.&lt;br&gt; Este proyecto ha sido publicado con la licencia GPL.&lt;br&gt;Código e ideas tomadas de otros proyectos de código abierto y de otra gente han sido mencionados en el archivo llamado CREDITOS incluido en la fuente tarball.</translation>
     </message>
     <message>
         <source>Museeq Commands</source>
@@ -764,7 +764,7 @@
     </message>
     <message>
         <source>&lt;h3&gt;While in a chat window, such as a Chat Room, or a Private Chat, there are a number of commands available for use.&lt;/h3&gt;&lt;b&gt;/c /chat&lt;/b&gt;   &lt;i&gt;(Switch to Chat Rooms)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/pm /private&lt;/b&gt; &amp;lt;nothing | username&amp;gt;  &lt;i&gt;(Switch to Private Chat and start chatting with a user, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/transfers&lt;/b&gt;   &lt;i&gt;(Switch to Transfers)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/s /search&lt;/b&gt; &amp;lt;nothing | query&gt;   &lt;i&gt;(Switch to Searchs and start a Search with &amp;lt;query&amp;gt; if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/u /userinfo&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Switch to userinfo, and attempt to get a user&apos;s info, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/b /browse&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Switch to Browse and initate browsing a user, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ip&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Get the IP of a user)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/log&lt;/b&gt;    &lt;i&gt;(Toggle displaying the Special Message Log)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/t /ticker /tickers&lt;/b&gt;   &lt;i&gt;(Toggle the showing of Tickers)&lt;/i&gt; &lt;br&gt;&lt;b&gt;/f /fonts /c /colors&lt;/b&gt;   &lt;i&gt;(Open the Fonts and Colors settings dialog)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ban /unban&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Disallow/Allow a user to recieve your shares and download from you)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ignore /unignore&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Block/Unblock chat messages from a user)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/buddy /unbuddy&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Add/Remove a user to keep track of it and add comments about it)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/trust /distrust&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Add/Remove a user to the optional list of users who can send files to you)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/me&lt;/b&gt; &lt;does something&gt;    &lt;i&gt;(Say something in the Third-Person)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/slap&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Typical Trout-slapping)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/j /join&lt;/b&gt; &amp;lt;room&amp;gt;    &lt;i&gt;(Join a Chat Room)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/l /p /leave /part&lt;/b&gt; &amp;lt;nothing | room&amp;gt;    &lt;i&gt;(Leave the current room or inputed room)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/about /help /commands&lt;/b&gt;    &lt;i&gt;(Display information)&lt;/i&gt;&lt;br&gt;&lt;br&gt;Do not type the brackets, they are there only to make clear that something (or nothing) can be typed after the /command.</source>
-        <translation>&lt;h3&gt;Mientras uno está en una ventana de charlas, asi como una Sala de Charlas, o una Charla Privada, hay un número de comandos disponibles para su uso.&lt;/h3&gt;&lt;b&gt;/c chat&lt;/b&gt;   &lt;i&gt;(Cambiar a Salas de Charla)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/pm /private&lt;/b&gt; &amp;lt;nada | nombre de usuario&amp;gt;  &lt;i&gt;(Cambiar a Charla Privada y comenzar a charlar con un usuario especificado, si lo ha incluido)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/transfers&lt;/b&gt;   &lt;i&gt;(Cambiar a Transferencias)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/s /search&lt;/b&gt; &amp;lt;nada | consulta&gt;   &lt;i&gt;(Cambio a Busquedas y comenzar busqueda con &amp;lt;consulta&amp;gt; si la ha incluido)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/u /userinfo&lt;/b&gt; &amp;lt;nombre de usuario&amp;gt;   &lt;i&gt;(Cambiar a Perfil de usuario, y tratar de obtener perfil de usuario especificado, si lo ha incluido)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/b /browse&lt;/b&gt; &amp;lt;nombre de usuario&amp;gt;   &lt;i&gt;(Cambiar a Navegar y comience a mirar archivos de usuario especificado, si lo ha incluido)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ip&lt;/b&gt; &amp;lt;nombre de usuario&amp;gt;   &lt;i&gt;(Obtener IP del usuario)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/log&lt;/b&gt;    &lt;i&gt;(Cambiar a Log (Registro) de Mensajes Especiales)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/t /ticker /tickers&lt;/b&gt;&lt;i&gt;(Mostrar o esconder Tickers)    &lt;/i&gt; &lt;br&gt;&lt;b&gt;/f /fonts /c /colors&lt;/b&gt;   &lt;i&gt;(Abrir el diálogo de configuración de Letras y Colores)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ban /unban&lt;/b&gt; &amp;lt;nombre de usuario&amp;gt;   &lt;i&gt;(Prohibir/Permitir a un usuario que reciba tus archivos compartidos y que descargue tus archivos)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ignore /unignore&lt;/b&gt; &amp;lt;nombre de usuario&amp;gt;   &lt;i&gt;(Prohibir/Permitir mensajes de un usuario)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/buddy /unbuddy&lt;/b&gt; &amp;lt;nombre de usuario&amp;gt;   &lt;i&gt;(Añadir/Eliminar a un usuario para mantenerse informado de este y añadir comentarios sobre este)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/trust /distrust&lt;/b&gt; &amp;lt;nombre de usuario&amp;gt;    &lt;i&gt;(Añadir/Eliminar a un usuario a la lista opcional de usuarios que te pueden enviar archivos&lt;/i&gt;&lt;br&gt;&lt;b&gt;/me&lt;/b&gt; &lt;hace algo&gt;    &lt;i&gt;(Di algo en tercera persona)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/slap&lt;/b&gt; &amp;lt;nombre de usuario&amp;gt;    &lt;i&gt;(Típica paliza usando una trucha)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/j /join&lt;/b&gt; &amp;lt;sala&amp;gt;   &lt;i&gt;(Entrar a Sala de Charla)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/l /p /leave /part&lt;/b&gt; &amp;lt;nada | sala&amp;gt;    &lt;i&gt;(Salir de la sala o de una sala específica)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/about /help /commands&lt;/b&gt;    &lt;i&gt;(Mostrar información)&lt;/i&gt;&lt;br&gt;&lt;br&gt;No tiene que tipear los paréntesis, ellos han sido usados solo para indicar que algo (o nada) puede ser tipeado después del /comando.</translation>
+        <translation>&lt;h3&gt;Mientras uno está en una ventana de charlas, asi como una Sala de Charlas, o una Charla Privada, hay un número de comandos disponibles para su uso.&lt;/h3&gt;&lt;b&gt;/c chat&lt;/b&gt;   &lt;i&gt;(Cambiar a Salas de Charla)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/pm /private&lt;/b&gt; &amp;lt;nada | nombre de usuario&amp;gt;  &lt;i&gt;(Cambiar a Charla Privada y comenzar a charlar con un usuario especificado, si lo ha incluido)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/transfers&lt;/b&gt;   &lt;i&gt;(Cambiar a Transferencias)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/s /search&lt;/b&gt; &amp;lt;nada | consulta&gt;   &lt;i&gt;(Cambiar a Buscar y comenzar busqueda con &amp;lt;consulta&amp;gt; si la ha incluido)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/u /userinfo&lt;/b&gt; &amp;lt;nombre de usuario&amp;gt;   &lt;i&gt;(Cambiar a Perfil de usuario, y tratar de obtener perfil de usuario especificado, si lo ha incluido)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/b /browse&lt;/b&gt; &amp;lt;nombre de usuario&amp;gt;   &lt;i&gt;(Cambiar a Navegar y comience a mirar archivos de usuario especificado, si lo ha incluido)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ip&lt;/b&gt; &amp;lt;nombre de usuario&amp;gt;   &lt;i&gt;(Obtener IP del usuario)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/log&lt;/b&gt;    &lt;i&gt;(Cambiar a Log (Registro) de Mensajes Especiales)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/t /ticker /tickers&lt;/b&gt;&lt;i&gt; (Mostrar o esconder Tickers)    &lt;/i&gt; &lt;br&gt;&lt;b&gt;/f /fonts /c /colors&lt;/b&gt;   &lt;i&gt;(Abrir el diálogo de configuración de Letras y Colores)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ban /unban&lt;/b&gt; &amp;lt;nombre de usuario&amp;gt;   &lt;i&gt;(Prohibir/Permitir a un usuario que reciba tus archivos compartidos y que descargue tus archivos)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ignore /unignore&lt;/b&gt; &amp;lt;nombre de usuario&amp;gt;   &lt;i&gt;(Prohibir/Permitir mensajes de un usuario)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/buddy /unbuddy&lt;/b&gt; &amp;lt;nombre de usuario&amp;gt;   &lt;i&gt;(Añadir/Eliminar a un usuario para mantenerse informado de este y añadir comentarios sobre este)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/trust /distrust&lt;/b&gt; &amp;lt;nombre de usuario&amp;gt;    &lt;i&gt;(Añadir/Eliminar a un usuario de la lista opcional de usuarios confiados que te pueden enviar archivos)  &lt;/i&gt;&lt;br&gt;&lt;b&gt;/me&lt;/b&gt; &lt;hace algo&gt;    &lt;i&gt;(Di algo en tercera persona)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/slap&lt;/b&gt; &amp;lt;nombre de usuario&amp;gt;    &lt;i&gt;(Típica paliza usando una trucha)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/j /join&lt;/b&gt; &amp;lt;sala&amp;gt;   &lt;i&gt;(Entrar a Sala de Charla)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/l /p /leave /part&lt;/b&gt; &amp;lt;nada | sala&amp;gt;    &lt;i&gt;(Salir de la sala o de una sala específica)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/about /help /commands&lt;/b&gt;    &lt;i&gt;(Mostrar información)&lt;/i&gt;&lt;br&gt;&lt;br&gt;No tiene que tipear los paréntesis, ellos han sido usados solo para indicar que algo (o nada) puede ser tipeado después del /comando.</translation>
     </message>
     <message>
         <source>Museeq Help</source>
@@ -772,7 +772,7 @@
     </message>
     <message>
         <source>&lt;h3&gt;What&apos;s going on? I can&apos;t connect to a Soulseek Server with museeq!&lt;/h3&gt; You connect to museekd with museeq, so you need to have &lt;b&gt;museekd&lt;/b&gt; configured, running &lt;u&gt;and&lt;/u&gt; connected to a &lt;b&gt;Soulseek&lt;/b&gt; or Soulfind server. &lt;br&gt; &lt;h3&gt;Running for the first time?&lt;/h3&gt; Before you start museekd for the first time, you need to configure &lt;b&gt;museekd&lt;/b&gt; with &lt;b&gt;musetup&lt;/b&gt;,  a command-line configuration script.&lt;br&gt;&lt;br&gt; In musetup you &lt;b&gt;MUST&lt;/b&gt; configure the following items: Server, Username, Password, Interface Password, Download Dir&lt;br&gt; Also, take note of your interfaces, if you change them from the default localhost:2240 and /tmp/museek.&lt;tt&gt;USERNAME&lt;/tt&gt;, you&apos;ll need to know them for logging in with museeq. &lt;br&gt;&lt;br&gt; When you start museeq or choose File-&gt;Connect from the menu, you are asked to input the host and port, or Unix Socket of museekd, &lt;b&gt;not&lt;/b&gt; the Server.&lt;br&gt; &lt;h3&gt;Want to send someone a file?&lt;/h3&gt; Browse yourself, select file(s), and right-click-&gt;Upload. Input their name in the dialog box, and the upload should start, but it depends on if the user has place you on their &quot;trusted&quot; or &quot;uploads&quot; users list .&lt;br&gt;Once you&apos;re connected to museekd, change museekd options via Settings-&gt;Museek</source>
-        <translation>&lt;h3&gt;¿Qué está sucediendo? ¡No me puedo conectar al Servidor de Soulseek con museeq!&lt;/h3&gt; Uno se conecta a museekd con museeq, es por eso que es necesario que &lt;b&gt;museekd&lt;/b&gt; este configurado, funcionando, &lt;u&gt;y&lt;/u&gt; conectado a un servidor de &lt;b&gt;Soulseek&lt;/b&gt; o Soulfind. &lt;br&gt; &lt;h3&gt;¿Utilizandolo por primera vez?&lt;/h3&gt; Antes que utilice museekd por primera vez, necesita configurar &lt;b&gt;museekd&lt;/b&gt; con &lt;b&gt;musetup&lt;/b&gt;,   un guión de configuración de línea de comando.&lt;br&gt;&lt;br&gt; En musetup uno &lt;b&gt;NECESITA&lt;/b&gt; configurar lo siguiente: Server (Servidor), Username (Nombre de usuario), Password (Contraseña), Interface Password (Contraseña de interfaz), Download Dir (Directorio de descarga)&lt;br&gt; Además, tome nota de sus interfaces, si las cambia de los valores predetermindados localhost:2240 y /tmp/museek.&lt;tt&gt;NOMBRE-DE-USUARIO&lt;/tt&gt;, va a tener que saberlos para iniciar su sesión con museeq. &lt;br&gt;&lt;br&gt; Cuando abra museeq o escoja Archivo-&gt;Conéctate del menú, se requiere que ponga el equipo y el puerto, o Socket de Unix de museekd, &lt;b&gt;no&lt;/b&gt; el del Servidor.&lt;br&gt; &lt;h3&gt;¿Quiere enviarle un archivo a alguien?&lt;/h3&gt; Mire sus propios archivos, seleccione uno o varios archivos, y pulse el botón derecho del ratón -&gt; Subida. Tipea el nombre del usuario en la ventana de diálogo, y la transferencia debería comenzar, pero eso depende si el usuario lo ha colocado en su lista de &quot;usuarios de confianza&quot; o &quot;subida.&quot; &lt;br&gt;Una vez que este conectado a museekd, cambie las opciones de museekd a través de Configuración-&gt;Museek</translation>
+        <translation>&lt;h3&gt;¿Qué está sucediendo? ¡No me puedo conectar al Servidor de Soulseek con museeq!&lt;/h3&gt; Uno se conecta a museekd con museeq, es por eso que es necesario que &lt;b&gt;museekd&lt;/b&gt; este configurado, funcionando, &lt;u&gt;y&lt;/u&gt; conectado a un servidor de &lt;b&gt;Soulseek&lt;/b&gt; o Soulfind. &lt;br&gt; &lt;h3&gt;¿Utilizandolo por primera vez?&lt;/h3&gt; Antes que utilice museekd por primera vez, necesita configurar &lt;b&gt;museekd&lt;/b&gt; con &lt;b&gt;musetup&lt;/b&gt;,   un guión de configuración de línea de comando.&lt;br&gt;&lt;br&gt; En musetup uno &lt;b&gt;NECESITA&lt;/b&gt; configurar lo siguiente: Server (Servidor), Username (Nombre de usuario), Password (Contraseña), Interface Password (Contraseña de interfaz), Download Dir (Directorio de descarga).&lt;br&gt; Además, tome nota de sus interfaces, si las cambia de los valores predetermindados localhost:2240 y /tmp/museek.&lt;tt&gt;NOMBRE-DE-USUARIO&lt;/tt&gt;, va a tener que saber esta información para iniciar su sesión con museeq. &lt;br&gt;&lt;br&gt; Cuando abra museeq o escoja Archivo-&gt;Conéctate del menú, se requiere que ponga el equipo y el puerto, o Socket de Unix de museekd, &lt;b&gt;no&lt;/b&gt; el del Servidor.&lt;br&gt; &lt;h3&gt;¿Quiere enviarle un archivo a alguien?&lt;/h3&gt; Mire sus propios archivos, seleccione uno o varios archivos, y pulse el botón derecho del ratón -&gt; Transferir archivos. Tipea el nombre del usuario en la ventana de diálogo, y la transferencia debería comenzar, pero eso depende si el usuario lo ha colocado en su lista de &quot;usuarios de confianza&quot; o &quot;subida.&quot; &lt;br&gt;Una vez que este conectado a museekd, cambie las opciones de museekd a través de Configuración-&gt;Museek</translation>
     </message>
     <message>
         <source>Delete handler</source>
@@ -789,11 +789,12 @@
     <message>
         <source>How many days worth of privileges 
 </source>
-        <translation>Cuantos días de privilegio</translation>
+        <translation>Cuantos días de privilegio
+</translation>
     </message>
     <message>
         <source>do you wish to give to user </source>
-        <translation>desea darle al usuario</translation>
+        <translation>desea darle al usuario </translation>
     </message>
     <message>
         <source>Museeq - Soulseek Privileges</source>
@@ -801,7 +802,7 @@
     </message>
     <message>
         <source>You have %1 days, %2 hours, %3 minutes and %4 seconds of privileges left</source>
-        <translation>Le quedan %1 días, %2 horas, %3 minutos y %segundos de privilegio</translation>
+        <translation>Le quedan %1 días, %2 horas, %3 minutos y %4 segundos de privilegio</translation>
     </message>
     <message>
         <source>Shutdown Museeq</source>
@@ -809,7 +810,7 @@
     </message>
     <message>
         <source>The Museek Daemon was launched by Museeq and is still running, and will be shut down if you close Museeq, are you sure you want to?</source>
-        <translation>El Museek Daemon ha sido comenzado por Museeq y sigue funcionando, y va a ser apagado si no cierra Museeq, ¿está seguro(a) que quiere hacer esto?</translation>
+        <translation>El Museek Daemon ha sido comenzado por Museeq y sigue funcionando, y va a ser apagado si cierra Museeq, ¿está seguro(a) que quiere hacer esto?</translation>
     </message>
     <message>
         <source>&amp;Yes</source>
@@ -821,7 +822,7 @@
     </message>
     <message>
         <source>The Museek Daemon was launched by Museeq and is still running, but will &lt;b&gt;not&lt;/b&gt; be shut down if you close Museeq. Are you sure you want to?</source>
-        <translation>El Museek Daemon ha sido iniciado por Museeq y sigue funcionando, pero &lt;b&gt;no&lt;/b&gt; va a ser terminado si cierras Museeq. ¿Está seguro(a) que quiere hacer esto?</translation>
+        <translation>El Museek Daemon ha sido iniciado por Museeq y sigue funcionando, pero &lt;b&gt;no&lt;/b&gt; va a ser terminado si cierra Museeq. ¿Está seguro(a) que quiere hacer esto?</translation>
     </message>
     <message>
         <source>It&apos;s safe to close Museeq, but are you sure you want to?</source>
@@ -1166,7 +1167,7 @@
     </message>
     <message>
         <source>&lt;p&gt;Configure your shares with musetup, or run &lt;u&gt;muscan -r &lt;/u&gt;to rescan your shares and then press:&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Configure sus archivos compartidos con musetup, o ejecute &lt;u&gt;muscan -r &lt;/u&gt;para volver a examinar sus archivos compartidos y después pulse:&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;Configure sus archivos compartidos con musetup, o ejecute &lt;u&gt;muscan -r&lt;/u&gt; para volver a examinar sus archivos compartidos y después pulse:&lt;/p&gt;</translation>
     </message>
     <message>
         <source>Connections</source>
@@ -1206,7 +1207,7 @@
     </message>
     <message>
         <source>Online Alerts in Log Window instead of popup</source>
-        <translation>Alertas de conexión en ventana de Log, no como pop-up</translation>
+        <translation>Alertas de conexión en ventana de Log (registro), no como pop-up</translation>
     </message>
     <message>
         <source>Share to Buddies Only</source>
@@ -1214,7 +1215,7 @@
     </message>
     <message>
         <source>Trusted users can Send you Files</source>
-        <translation>Usuarios de confianza pueden Enviarte Archivos</translation>
+        <translation>Usuarios de confianza pueden Enviarle Archivos</translation>
     </message>
     <message>
         <source>Seperate Shares list for Buddies</source>
@@ -1516,11 +1517,11 @@
     </message>
     <message>
         <source>Don&apos;t touch</source>
-        <translation>No tocar</translation>
+        <translation>Dejar</translation>
     </message>
     <message>
         <source>Upload:</source>
-        <translation>Subida:</translation>
+        <translation>Subir:</translation>
     </message>
     <message>
         <source>...</source>
@@ -1585,7 +1586,7 @@
     <name>Usermenu</name>
     <message>
         <source>Private chat</source>
-        <translation>Chat Privado</translation>
+        <translation>Charla Privada</translation>
     </message>
     <message>
         <source>Get user info</source>
@@ -1609,7 +1610,7 @@
     </message>
     <message>
         <source>Banned</source>
-        <translation>Excluir</translation>
+        <translation>Excluido</translation>
     </message>
     <message>
         <source>Ignored</source>
