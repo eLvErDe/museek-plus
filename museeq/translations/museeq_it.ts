@@ -280,7 +280,7 @@
     </message>
     <message>
         <source>Which user do you wish to upload these to?</source>
-        <translation>A quale utente vuoi inviare quest file?</translation>
+        <translation>A quale utente vuoi inviare questi file?</translation>
     </message>
 </context>
 <context>
@@ -838,11 +838,11 @@
     </message>
     <message>
         <source>IP of </source>
-        <translation type="unfinished"></translation>
+        <translation> IP di</translation>
     </message>
     <message>
         <source>Port:</source>
-        <translation type="unfinished"></translation>
+        <translation>Porta:</translation>
     </message>
 </context>
 <context>
@@ -1270,7 +1270,7 @@
     </message>
     <message>
         <source>IP addresses in Log Window instead of popup</source>
-        <translation type="unfinished"></translation>
+        <translation>Indirizzi IP nella finestra di log invece che popup</translation>
     </message>
 </context>
 <context>
