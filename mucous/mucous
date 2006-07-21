@@ -4689,15 +4689,8 @@ class mucous(driver.Driver):
 					scrolltext = "roomlist"
 					scrolldiff = self.windows["dimensions"][ self.display["mode"] ]["height"]
 				elif self.display["mode"] == "transfer":
-					if mucous_config["mucous"]["transbox"] == "split":
-						if self.display["transfers"] == "uploads":
-							scrolltext = "uploads"
-							scrolldiff = self.windows["dimensions"]["uploads"]["height"]-1
-						elif self.display["transfers"] == "downloads":
-							scrolltext = "downloads"
-							scrolldiff = self.windows["dimensions"]["downloads"]["height"]-1
-					else:
-						scrolldiff = self.h-7
+					scrolltext = self.display["transfers"]
+					scrolldiff = self.windows["dimensions"][scrolltext]["height"]-1
 						
 				if key == "KEY_UP":	
 					self.scrolling[scrolltext] -= 1
