@@ -76,7 +76,7 @@ Museeq::Museeq(QApplication * app)
 	mOnlineAlert =  false;
 	mColorBanned = mColorBuddied = mColorTime = mColorNickname = mColorTrusted = mColorRemote = mColorMe = "";
 	mShowTimestamps = true;
-
+	mIPLog = true;
 	connect(mDriver, SIGNAL(connectionClosed()), SLOT(slotConnectionClosed()));
 	connect(mDriver, SIGNAL(error(int)), SLOT(slotError(int)));
 	connect(mDriver, SIGNAL(loggedIn(bool, const QString&)), SLOT(slotLoggedIn(bool, const QString&)));
@@ -281,18 +281,25 @@ void Museeq::slotConfigSet(const QString& domain, const QString& key, const QStr
 			mMainWin->mMenuSettings->setItemChecked(5, museeq->mShowTickers);
 			emit hideAllTickers();
 			}
-	} else if(domain == "museeq.statuslog" && key =="show") {
-		if(value == "true" || value == true) {
-			mShowStatusLog = true;
-			mMainWin->mMenuSettings->setItemChecked(6, museeq->mShowStatusLog);
-			mMainWin->mLog->show();
-			}
-		else if(value == "false" || value == false)
-			{
-			mShowStatusLog = false;
-			mMainWin->mMenuSettings->setItemChecked(6, museeq->mShowStatusLog);
-			mMainWin->mLog->hide();
-			}
+	} else if(domain == "museeq.statuslog") {
+		if (key =="show") {
+			if(value == "true" || value == true) {
+				mShowStatusLog = true;
+				mMainWin->mMenuSettings->setItemChecked(6, museeq->mShowStatusLog);
+				mMainWin->mLog->show();
+				}
+			else if(value == "false" || value == false)
+				{
+				mShowStatusLog = false;
+				mMainWin->mMenuSettings->setItemChecked(6, museeq->mShowStatusLog);
+				mMainWin->mLog->hide();
+				}
+		} else if (key =="ip") {
+			if(value == "true" || value == true)
+				mIPLog = true;
+			else if(value == "false" || value == false)
+				mIPLog = false;
+		}
 	} else if(domain == "museeq.alerts") {
 		if (key == "log_window") {
 			if(value == "true" || value == true) {

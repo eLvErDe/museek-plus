@@ -64,12 +64,7 @@ public:
 	QLineEdit* SServerHost;
 	QLineEdit* SDownDir;
 	QLineEdit* SIncompleteDir;
-	QCheckBox* SBuddiesPrivileged;
-	QCheckBox* SOnlineAlerts;
-	QCheckBox* SShareBuddiesOnly;
-	QCheckBox* STrustedUsers;
-	QCheckBox* SBuddiesShares;
-	QCheckBox* SUserWarnings;
+	QCheckBox* SBuddiesPrivileged, * SOnlineAlerts,* SShareBuddiesOnly, * STrustedUsers, * SBuddiesShares, * SUserWarnings, * SIPLog;
 
 public slots:
 	void SConnect_clicked();

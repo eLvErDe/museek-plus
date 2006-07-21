@@ -638,8 +638,9 @@ void MainWindow::showIPDialog(const QString& user) {
 	}
 	
 	museeq->driver()->doGetIPAddress(user);
-	
-	mIPDialog->show();
+	if (! museeq->mIPLog) {
+		mIPDialog->show();
+	}
 }
 
 void MainWindow::slotAddressActivated(const QString& server) {
@@ -705,7 +706,13 @@ void MainWindow::slotConfigChanged(const QString& domain, const QString& key, co
 			mColorsDialog->SRemoteText->setText(value);}
 		else if (key == "colorTime") {
 			mColorsDialog->STimeText->setText(value);}
-
+	} else if (domain == "museeq.statuslog") {
+		if (key =="ip") {
+			if(value == "true")
+				mSettingsDialog->SIPLog->setChecked(true);
+			else if(value == "false")
+				mSettingsDialog->SIPLog->setChecked(false);
+		}
 	} else if(domain == "userinfo" && key == "text") {
 		mUserInfoDialog->mText->setText(value);
 	} else if(domain == "server" && key == "host") {
@@ -783,8 +790,14 @@ void MainWindow::slotUserAddress(const QString& user, const QString& ip, uint po
 			}
 #endif // HAVE_NETDB_H
 		}
-			
 	}
+	if (museeq->mIPLog) {
+		if (museeq->mShowTimestamps)
+				mLog->append(QString(_TIME+"<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+tr("IP of ")+user+": "+ ip +" "+ tr("Port:")+" "+QString::number(port)+"</font></span>"));
+			else
+				mLog->append(QString("<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+tr("IP of ")+user+": "+ ip +" "+ tr("Port:")+" "+QString::number(port)+"</font></span>"));
+		}
+	
 }
 void MainWindow::toggleTickers() {
 	if (museeq->mShowTickers == true)
@@ -861,8 +874,11 @@ void MainWindow::saveSettings() {
 		museeq->setConfig("transfers", "incomplete-dir", mSettingsDialog->SIncompleteDir->text());
 	if(mSettingsDialog->SOnlineAlerts->isChecked()) {
 		museeq->setConfig("museeq.alerts", "log_window", "true");
-	}
-	else {  museeq->setConfig("museeq.alerts", "log_window", "false");  }
+	} else {  museeq->setConfig("museeq.alerts", "log_window", "false");  }
+	if (mSettingsDialog->SIPLog->isChecked()) {
+		museeq->setConfig("museeq.statuslog", "ip", "true");
+	} else { museeq->setConfig("museeq.statuslog", "ip", "false"); }
+
 	if(mSettingsDialog->SActive->isChecked()) {
 		museeq->setConfig("clients", "connectmode", "active");
 	}

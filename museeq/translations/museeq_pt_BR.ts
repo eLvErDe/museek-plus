@@ -836,6 +836,14 @@
         <source>Load Script</source>
         <translation>Carregando o Script</translation>
     </message>
+    <message>
+        <source>IP of </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Port:</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>OnlineAlert</name>
@@ -907,7 +915,7 @@
     </message>
     <message>
         <source>OK</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">OK</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -1260,6 +1268,10 @@
         <source>Select a Directory to store your incomplete downloading files.</source>
         <translation>Selecione um diretório para armazenar seus downloads incompletos.</translation>
     </message>
+    <message>
+        <source>IP addresses in Log Window instead of popup</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>TickerDialog</name>
@@ -1548,7 +1560,7 @@
     </message>
     <message>
         <source>OK</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">OK</translation>
     </message>
     <message>
         <source>Cancel</source>

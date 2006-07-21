@@ -836,6 +836,14 @@
         <source>Show T&amp;imestamps</source>
         <translation>Mostra orar&amp;i</translation>
     </message>
+    <message>
+        <source>IP of </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Port:</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>OnlineAlert</name>
@@ -1259,6 +1267,10 @@
     <message>
         <source>Select a Directory to store your incomplete downloading files.</source>
         <translation>Seleziona una cartella per i tuoi download incompleti.</translation>
+    </message>
+    <message>
+        <source>IP addresses in Log Window instead of popup</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

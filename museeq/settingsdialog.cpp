@@ -219,9 +219,6 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, W
 	SBuddiesPrivileged = new QCheckBox( usersTab, "SBuddiesPrivileged" );
 	usersLayout->addWidget( SBuddiesPrivileged );
 	
-	SOnlineAlerts = new QCheckBox( usersTab, "SOnlineAlerts" );
-	usersLayout->addWidget( SOnlineAlerts );
-	
 	SShareBuddiesOnly = new QCheckBox( usersTab, "SShareBuddiesOnly" );
 	usersLayout->addWidget( SShareBuddiesOnly );
 	
@@ -233,6 +230,12 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, W
 	
 	SUserWarnings = new QCheckBox( usersTab, "SUserWarnings" );
 	usersLayout->addWidget( SUserWarnings );
+
+	SOnlineAlerts = new QCheckBox( usersTab, "SOnlineAlerts" );
+	usersLayout->addWidget( SOnlineAlerts );
+
+	SIPLog = new QCheckBox( usersTab, "SIPLog" );
+	usersLayout->addWidget( SIPLog );
 
 	mTabHolder->insertTab( usersTab, QString::fromLatin1("") );
 	languageChange();
@@ -312,6 +315,7 @@ void SettingsDialog::languageChange()
     STrustedUsers->setText( tr( "Trusted users can Send you Files" ) );
     SBuddiesShares->setText( tr( "Seperate Shares list for Buddies" ) );
     SUserWarnings->setText( tr( "Send automatic warnings to users via Private Chat" ) );
+    SIPLog->setText( tr( "IP addresses in Log Window instead of popup" ) );
     mTabHolder->changeTab( usersTab, tr( "User Options" ) );
 }
 

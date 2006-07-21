@@ -15,15 +15,15 @@
     </message>
     <message>
         <source>-V --versionDisplay museeq version and quit</source>
-        <translation>-V --versionPokaż wersję museeq-a i zakończ</translation>
+        <translation type="obsolete">-V --versionPokaż wersję museeq-a i zakończ</translation>
     </message>
     <message>
         <source>-h --helpDisplay this message and quit</source>
-        <translation>-h --helpPokaż tę wiadomość i zakończ</translation>
+        <translation type="obsolete">-h --helpPokaż tę wiadomość i zakończ</translation>
     </message>
     <message>
         <source>--no-trayDon&apos;t load TrayIcon</source>
-        <translation>--no-trayNIe ładuj ikony zasobnika</translation>
+        <translation type="obsolete">--no-trayNIe ładuj ikony zasobnika</translation>
     </message>
     <message>
         <source>&amp;Restore</source>
@@ -40,6 +40,18 @@
     <message>
         <source>MuseeqTray</source>
         <translation></translation>
+    </message>
+    <message>
+        <source>-V --version<byte value="x9"/><byte value="x9"/>Display museeq version and quit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>-h --help<byte value="x9"/><byte value="x9"/>Display this message and quit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>--no-tray<byte value="x9"/><byte value="x9"/>Don&apos;t load TrayIcon</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -832,6 +844,18 @@
         <source>Load Script</source>
         <translation>Załaduj Skrypt</translation>
     </message>
+    <message>
+        <source>Show T&amp;imestamps</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>IP of </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Port:</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>OnlineAlert</name>
@@ -870,6 +894,21 @@
     <message>
         <source>%1 user %2 is now %3</source>
         <translation>%1 użytkownik %2 jest teraz %3</translation>
+    </message>
+</context>
+<context>
+    <name>PrivateChat</name>
+    <message>
+        <source>%1 is offline</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 is away</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 is online</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1240,6 +1279,10 @@
     <message>
         <source>Select a Directory to store your incomplete downloading files.</source>
         <translation>Wybierz katalog do przechowywania swoich niekompletnych pobieranych plików.</translation>
+    </message>
+    <message>
+        <source>IP addresses in Log Window instead of popup</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

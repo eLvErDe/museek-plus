@@ -831,6 +831,18 @@
         <source>Load Script</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Show T&amp;imestamps</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>IP of </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Port:</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>OnlineAlert</name>
@@ -868,6 +880,21 @@
     </message>
     <message>
         <source>%1 user %2 is now %3</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PrivateChat</name>
+    <message>
+        <source>%1 is offline</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 is away</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 is online</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1238,6 +1265,10 @@
     </message>
     <message>
         <source>Select a Directory to store your incomplete downloading files.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>IP addresses in Log Window instead of popup</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
