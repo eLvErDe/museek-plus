@@ -59,7 +59,11 @@ ConnectDialog::ConnectDialog(QWidget *parent, const char *name)
 	mUnix->setText( tr( "&Unix socket" ) );
 	mUnix->setAccel( QKeySequence( tr( "Alt+U" ) ) );
 	buttonGroup4->insert( mUnix, 1 );
-	
+
+	mAutoConnect = new QCheckBox( boxconnect, "mAutoConnect" );
+	mAutoConnect->setText( tr( "Auto-Conn&ect to Daemon" ) );
+	mAutoConnect->setAccel( QKeySequence( tr( "Alt+E" ) ) );
+
 	spacer1 =  new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
 	mExtra = new QPushButton( this, "ExtraOptions" );
 	mExtra->setText( tr( "Daemon O&ptions..." ) );

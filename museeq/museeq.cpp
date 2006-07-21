@@ -973,6 +973,7 @@ int main(int argc, char **argv) {
 		mTray.show();
 		museeq->mainwin()->show();
 		museeq->mainwin()->connectToMuseek();
+
 		return a.exec();
 	} else {
 		museeq->mainwin()->show();

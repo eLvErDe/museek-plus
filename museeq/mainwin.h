@@ -63,6 +63,8 @@ public slots:
 	void changeUMode();
 	void changeMode(uint);
 	void connectToMuseek();
+	void connectToMuseekPS(const QString&, const QString&);
+	void doNotAutoConnect();
 	void saveConnectConfig();
 	void saveSettings();
 	void doDaemon();
@@ -75,6 +77,7 @@ public slots:
 	void toggleTickers();
 	void toggleTimestamps();
 	void toggleLog();
+	void toggleAutoConnect();
 	void toggleVisibility();
 
 	void showIPDialog();

@@ -116,6 +116,7 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 	mMenuSettings->insertItem(tr("Show &Tickers"), this, SLOT(toggleTickers()), 0, 5);
 	mMenuSettings->insertItem(tr("Show &Log"), this, SLOT(toggleLog()), 0, 6);
 	mMenuSettings->insertItem(tr("Show T&imestamps"), this, SLOT(toggleTimestamps()), 0, 7);
+	mMenuSettings->insertItem(tr("Auto-Connect to Daemon"), this, SLOT(toggleAutoConnect()), 0, 8);
 	mMenuSettings->insertSeparator();
 	mMenuSettings->setItemEnabled(1, false);
 	mMenuSettings->setItemEnabled(2, false);
@@ -127,6 +128,8 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 	mMenuSettings->setItemChecked(6, museeq->mShowStatusLog);
 	mMenuSettings->setItemEnabled(7, false);
 	mMenuSettings->setItemChecked(7, museeq->mShowTimestamps);
+	mMenuSettings->setItemEnabled(8, true);
+	
 	menuBar()->insertItem(tr("&Settings"), mMenuSettings);
 	mMenuModes = new QPopupMenu(this);
 	mMenuModes->insertItem( IMG("chatroom-small"), tr("&Chat Rooms"), this, SLOT(changeCMode()), 0, 0);
@@ -384,6 +387,12 @@ void MainWindow::saveConnectConfig() {
 	} else {
 		settings.removeEntry("/TheGraveyard.org/Museeq/LaunchMuseekDaemon");
 	}
+	if(mConnectDialog->mAutoConnect->isChecked()) {
+		settings.writeEntry("/TheGraveyard.org/Museeq/AutoConnect", "yes");
+	} else {
+		settings.removeEntry("/TheGraveyard.org/Museeq/AutoConnect");
+	}
+	
 	if ( ! mConnectDialog->mMuseekConfig->text().isEmpty() )
 		settings.writeEntry("/TheGraveyard.org/Museeq/MuseekConfigFile", mConnectDialog->mMuseekConfig->text() );
 	else
@@ -423,8 +432,9 @@ void MainWindow::connectToMuseek() {
 	QSettings settings;
 	QString museekConfig;
 	QString password;
-	QString savePassword = settings.readEntry("/TheGraveyard.org/Museeq/SavePassword");
 
+	QString savePassword = settings.readEntry("/TheGraveyard.org/Museeq/SavePassword");
+	
  	if (! savePassword.isEmpty())	
 		if (savePassword == "yes") {
 			mConnectDialog->mSavePassword->setChecked(true);
@@ -471,14 +481,16 @@ void MainWindow::connectToMuseek() {
 ;
 	}
 	QStringList s_keys = settings.entryList("/TheGraveyard.org/Museeq/Servers");
+	QString cServer;
 	if(! s_keys.isEmpty()) {
 		for(QStringList::Iterator it = s_keys.begin(); it != s_keys.end(); ++it)
 		{
-			QString s = settings.readEntry("/TheGraveyard.org/Museeq/Servers/" + (*it));
-			mConnectDialog->mAddress->insertItem(s);
+			cServer = settings.readEntry("/TheGraveyard.org/Museeq/Servers/" + (*it));
+			mConnectDialog->mAddress->insertItem(cServer);
 		}
 	} else {
-		mConnectDialog->mAddress->insertItem("localhost:2240");
+		cServer = "localhost:2240";
+		mConnectDialog->mAddress->insertItem(cServer);
 #ifdef HAVE_SYS_UN_H
 # ifdef HAVE_PWD_H
 		struct passwd *pw = getpwuid(getuid());
@@ -490,28 +502,42 @@ void MainWindow::connectToMuseek() {
 	mConnectDialog->mAddress->setCurrentItem(mConnectDialog->mAddress->count() - 1);
 	slotAddressActivated(mConnectDialog->mAddress->currentText());
 	// Display Connect Dialog
+	QString autoConnect = settings.readEntry("/TheGraveyard.org/Museeq/AutoConnect");
+	if (! autoConnect.isEmpty())	 {
+		if ( autoConnect == "yes") {
+			mConnectDialog->mAutoConnect->setChecked(true);
+			if (savePassword == "yes" and ! password.isEmpty() ) {
+				connectToMuseekPS(cServer, password);
+				return;
+			}
+		} else {
+			mConnectDialog->mAutoConnect->setChecked(false);
+		}
+	}
+	
 	if(mConnectDialog->exec() == QDialog::Accepted) {
-		saveConnectConfig();
 		QString server = mConnectDialog->mAddress->currentText(),
 			password = mConnectDialog->mPassword->text().utf8();
 		saveConnectConfig();
-		mMenuFile->setItemEnabled(1, true);
-
+		connectToMuseekPS(server, password);
 		
-		if(mConnectDialog->mTCP->isChecked()) {
-			int ix = server.find(':');
-			Q_UINT16 port = server.mid(ix+1).toUInt();
-			statusBar()->message(tr("Connecting to museek... Looking up host"));
-			museeq->driver()->connectToHost(server.left(ix), port, password);
-		} else {
-			statusBar()->message(tr("Connecting to museek..."));
-			museeq->driver()->connectToUnix(server, password);
-		}
+
 	} else {
 		mMenuFile->setItemEnabled(0, true);
 	}
 }
-
+void MainWindow::connectToMuseekPS(const QString& server, const QString& password) {
+	mMenuFile->setItemEnabled(1, true);
+	if(mConnectDialog->mTCP->isChecked()) {
+		int ix = server.find(':');
+		Q_UINT16 port = server.mid(ix+1).toUInt();
+		statusBar()->message(tr("Connecting to museek... Looking up host"));
+		museeq->driver()->connectToHost(server.left(ix), port, password);
+	} else {
+		statusBar()->message(tr("Connecting to museek..."));
+		museeq->driver()->connectToUnix(server, password);
+	}
+}
 void MainWindow::slotHostFound() {
 	statusBar()->message(tr("Connecting to museek... Connecting"));
 }
@@ -548,9 +574,10 @@ void MainWindow::slotError(int e) {
 		statusBar()->message(tr("Cannot connect to museek... Host not found"));
 		break;
 	}
-	
+	doNotAutoConnect();	
 	mMenuFile->setItemEnabled(0, true);
 	mMenuFile->setItemEnabled(1, false);
+	
 }
 
 void MainWindow::slotLoggedIn(bool success, const QString& msg) {
@@ -574,11 +601,20 @@ void MainWindow::slotLoggedIn(bool success, const QString& msg) {
 		mMenuFile->setItemEnabled(0, true);
 		mMenuFile->setItemEnabled(1, false);
 		mMenuFile->setItemEnabled(2, false);
-		
 		mMenuFile->setItemEnabled(3, false);
-
+		doNotAutoConnect();
+		
 	}
 }
+void MainWindow::doNotAutoConnect() {
+	if(mConnectDialog->mAutoConnect->isChecked()) {
+		QSettings settings;
+		settings.removeEntry("/TheGraveyard.org/Museeq/AutoConnect");
+		mConnectDialog->mAutoConnect->setChecked(false);
+		mMenuSettings->setItemChecked(8, false);
+	}
+}
+
 #define _TIME QString("<span style='"+museeq->mFontTime+"'><font color='"+museeq->mColorTime+"'>") + QDateTime::currentDateTime().toString("hh:mm:ss") + "</font></span> "
 void MainWindow::slotStatusMessage(bool type, const QString& msg) {
 
@@ -790,14 +826,14 @@ void MainWindow::slotUserAddress(const QString& user, const QString& ip, uint po
 			}
 #endif // HAVE_NETDB_H
 		}
-	}
-	if (museeq->mIPLog) {
-		if (museeq->mShowTimestamps)
-				mLog->append(QString(_TIME+"<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+tr("IP of ")+user+": "+ ip +" "+ tr("Port:")+" "+QString::number(port)+"</font></span>"));
-			else
-				mLog->append(QString("<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+tr("IP of ")+user+": "+ ip +" "+ tr("Port:")+" "+QString::number(port)+"</font></span>"));
-		}
 	
+		if (museeq->mIPLog) {
+			if (museeq->mShowTimestamps)
+					mLog->append(QString(_TIME+"<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+tr("IP of ")+user+": "+ ip +" "+ tr("Port:")+" "+QString::number(port)+"</font></span>"));
+				else
+					mLog->append(QString("<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+tr("IP of ")+user+": "+ ip +" "+ tr("Port:")+" "+QString::number(port)+"</font></span>"));
+			}
+	}
 }
 void MainWindow::toggleTickers() {
 	if (museeq->mShowTickers == true)
@@ -816,6 +852,16 @@ void MainWindow::toggleLog() {
 		museeq->setConfig("museeq.statuslog", "show", "false");
 	else if (museeq->mShowStatusLog == false)
 		museeq->setConfig("museeq.statuslog", "show", "true");
+}
+void MainWindow::toggleAutoConnect() {
+	QSettings settings;
+	if(mConnectDialog->mAutoConnect->isChecked()) {
+		settings.removeEntry("/TheGraveyard.org/Museeq/AutoConnect");
+		mMenuSettings->setItemChecked(8, false);
+	} else {
+		settings.writeEntry("/TheGraveyard.org/Museeq/AutoConnect", "yes");
+		mMenuSettings->setItemChecked(8, true);
+	}
 }
 void MainWindow::changeColors() {
 	if(mColorsDialog->exec() == QDialog::Accepted) {

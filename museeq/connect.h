@@ -39,9 +39,7 @@ public:
 	QRadioButton *mTCP;
 	QLabel *textLabel2;
 	QLabel *textLabel1;
-	QCheckBox *mSavePassword;
-	QCheckBox *mAutoStartDaemon;
-	QCheckBox *mShutDownDaemonOnExit;
+	QCheckBox *mSavePassword, *mAutoStartDaemon, *mShutDownDaemonOnExit, *mAutoConnect;
 	QHBoxLayout *extraLayout, *controldLayout, *connectLayout;
 	QHBox *box1, *box2, *box3;
 	bool extra;
