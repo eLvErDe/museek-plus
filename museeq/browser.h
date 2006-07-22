@@ -94,6 +94,7 @@ protected:
 protected slots:
 	void doPopupMenu(QListViewItem *, const QPoint&, int);
 	void doDownloadFiles();
+	void doDownloadFilesTo();
 	void doUploadFiles();
 	void doCopyURL();
 private:

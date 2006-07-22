@@ -187,14 +187,13 @@ Peer::Peer(PeerManager* manager, const string& user)
 Peer::~Peer() {
 	CT("~Peer (%s)", mUser.c_str());
 	
-	DEBUG("gurgle gurgle... %s is removed from the list of peers", mUser.c_str());
+	DEBUG("Connection complete, %s is removed from the list of peers", mUser.c_str());
 	if (mReceiving)  {
 		// Remove user from receiving list, very lame to have it here.
 		DEBUG("User %s is in list of receiving users, removing it.", mUser.c_str());
 		mManager->museek()->remove_receiving(mUser);
 	}
 	mManager->remove_peer(this);
-
 }
 
 void Peer::server_connected() {

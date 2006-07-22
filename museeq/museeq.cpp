@@ -539,6 +539,10 @@ void Museeq::downloadFile(const QString& user, const QString& path, Q_INT64 size
 	mDriver->doDownloadFile(user, path, size);
 }
 
+void Museeq::downloadFileTo(const QString& user, const QString& path, const QString& localpath, Q_INT64 size) {
+	mDriver->doDownloadFileTo(user, path, localpath, size);
+}
+
 void Museeq::downloadFolder(const QString& user, const QString& path) {
 	mDriver->getFolderContents(user, path);
 }

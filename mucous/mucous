@@ -463,7 +463,7 @@ class mucous(driver.Driver):
 		driver.Driver.__init__(self)
 		self.config = {}
 		self.usernames = {"username": None, "download": None, "private":None, "info": None, "upload": None, "search": None, "privileges": None, "browse": "default__"}
-		self.Spl = {"menunumber": 0, "title": None,  "status": None, "connected": 0, "room": None, "history_count": 0, "current_search": "default__",  "dir_browse": "", "search_method": "globally", "search_order": "num", "show_menu": False, "current_menu": None, "setup_input": "default", "interests_input": "add_likes", "ticker_room": None, "uploads": 0, "downloads": 0 , "search_reverse": False, "recommend_sort": "alpha", "ticker_num":  0}
+		self.Spl = {"menunumber": 0, "title": None,  "status": None, "connected": 0, "room": None, "history_count": 0, "current_search": "default__",  "dir_browse": "", "search_method": "globally", "search_order": "num", "show_menu": False, "current_menu": None, "setup_input": "default", "interests_input": "add_likes", "ticker_room": None, "uploads": 0, "downloads": 0 , "search_reverse": False, "recommend_sort": "alpha", "ticker_num":  0, "downloaddir": os.path.expanduser("~/")}
 		self.data = {"rooms": {}, "tickers": {}, "shares": {} , "roomlist": {}, "search_tickets": {}, "search_results": {}, "browse_num": {}, "browse_results": {}, "mystats": [], "downloads": {}, "uploads": {}, "recommendations": {}, "similar_users": {} }
 		self.logs = {"buddied": [], "banned": [], "ignored": [], "trusted": [], "uploads": "Up: 0", "downloads": "Down: 0", "tab_completion": [], "search_count": ["Results: ", 0], "history": [], "alert": "", "onlinestatus": "Offline", "info": {}, "private": {}, "rooms": {}, "browse": {}, "search":{} , "roombox": {} , "roomstatus": {} , "recommendations": [], "likes": [], "hates": [], "similar_users":[]    }
 		self.activeitems = {"info": [], "search": [], "browse": [], "private": [], "positions": {}}
@@ -1714,13 +1714,20 @@ class mucous(driver.Driver):
 					self.transfer_mode()
 					self.usernames["download"] = line[10:]
 					self.set_edit_title("% % User: "+line[10:] + " (input download path) % %")
-						
+					
+				elif line[:9] == "/downdir " and  line[9:] != '':
+					self.transfer_mode()
+					self.Spl["downloaddir"] = line[9:]
+					self.set_edit_title("Download directory set to: "+self.Spl["downloaddir"] )
+							
 				elif line[:10] == "/downpath " and line[10:] != '':
 					path = line[10:]
 					if self.usernames["download"] != None and self.usernames["download"] != '':
 						user = self.usernames["download"]
-						self.SendMessage(messages.DownloadFile(user, path))
-						self.Hlog("status", "Trying to Download: " + path+" from "+ user)
+						p = path.split("\\")
+						
+						self.SendMessage(messages.DownloadFileTo(user, path, self.Spl["downloaddir"]+"/"+p[-1]))
+						self.Hlog("status", "Trying to Download: " + path+" from "+ user+"to "+self.Spl["downloaddir"])
 				elif line[:13] == "/downpathdir " and line[13:] != '':
 					directory = line[13:]
 					if self.usernames["download"] != None and self.usernames["download"] != '':
@@ -2436,7 +2443,7 @@ class mucous(driver.Driver):
 				stype = "Server"
 			elif type == 2:
 				stype = "Daemon"
-			self.Hlog("status", "%s Message: %s" % (stype, message))
+			self.Hlog("status", "%d, %s Message: %s" % (len(message), stype, message))
 		except Exception,e:
 			self.Hlog("debug", "cb_status_message: " +str( e) )	
 			
@@ -10379,8 +10386,10 @@ class mucous(driver.Driver):
 
 	def log_window(self, user, room, did, what):
 		try:
+
 			yes = 0
-			tw = self.windows["text"]["roomstatus"]
+			
+			
 			if room not in self.logs["roomstatus"]:
 				self.logs["roomstatus"][room] = []
 			oldlen = len(self.logs["roomstatus"][room])
@@ -10411,7 +10420,9 @@ class mucous(driver.Driver):
 							if rooms11 == self.Spl["room"]:
 								yes = 1
 								
-			
+			if "roomstatus" not in self.windows["text"]:
+				return			
+			tw = self.windows["text"]["roomstatus"]
 			if self.display["mode"] == "chat" and yes == 1:
 				if self.scrolling["roomstatus"] >= oldlen -1:
 					if len(self.logs["roomstatus"][room]) > 305:

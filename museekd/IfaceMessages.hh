@@ -1160,6 +1160,31 @@ IFACEMESSAGE(IDownloadFile, 0x0503)
 	off_t size;
 END
 
+IFACEMESSAGE(IDownloadFileTo, 0x0507)
+/*
+	Download file to -- Download a file to a directory
+	
+	string username -- Username to download a file from
+	string path -- Path of the file to download
+	string localpath -- Path to store the file name
+	off_t size -- File's size (can be 0)
+	
+	*not sent*
+*/
+	
+	IDownloadFileTo() : user(""), path(""), localpath("") {}
+
+	PARSE
+		user = unpack_string();
+		path = unpack_string();
+		localpath = unpack_string();
+		size = unpack_off();
+	END_PARSE
+
+	std::string user, path, localpath;
+	off_t size;
+END
+
 IFACEMESSAGE(IDownloadFolder, 0x0504)
 /*
 	Download folder -- Download a folder recursively

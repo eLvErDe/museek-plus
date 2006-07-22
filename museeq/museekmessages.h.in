@@ -730,6 +730,15 @@ MESSAGE(NDownloadFile, @@IDownloadFile@@)
 	}
 END
 
+MESSAGE(NDownloadFileTo, @@IDownloadFileTo@@)
+	NDownloadFileTo(const QString& _user, const QString& _path, const QString& _local, Q_INT64 _size) {
+		pack(_user);
+		pack(_path);
+		pack(_local);
+		pack(_size);
+	}
+END
+
 MESSAGE(NFolderContents, @@IDownloadFolder@@)
 	NFolderContents(const QString& _user, const QString& _path) {
 		pack(_user);

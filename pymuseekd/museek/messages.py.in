@@ -759,6 +759,19 @@ class DownloadFile(BaseMessage):
 			self.pack_string(self.user) + \
 			self.pack_string(self.path)
 
+class DownloadFileTo(BaseMessage):
+	code = @@IDownloadFileTo@@
+	
+	def __init__(self, user = None, path = None, dpath = None):
+		self.user = user
+		self.path = path
+		self.dpath = dpath
+
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.user) + \
+			self.pack_string(self.path) + self.pack_string(self.dpath)
+
 class GetFolderContents(BaseMessage):
 	code = @@IDownloadFolder@@
 	

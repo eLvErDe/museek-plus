@@ -128,6 +128,7 @@ public slots:
 	
 	void updateTransfer(const QString&, const QString&);
 	void downloadFile(const QString&, const QString&, Q_INT64);
+	void downloadFileTo(const QString&, const QString&, const QString&,Q_INT64);
 	void downloadFolder(const QString&, const QString&);
 	void uploadFile(const QString&, const QString&);
 	

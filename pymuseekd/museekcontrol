@@ -822,7 +822,7 @@ class museekcontrol(driver.Driver):
 				if ftype in ("mp3", "ogg", "MP3", "OGG"):
 					output('['+str(number)+'] ' + "Size: " + str(size) +"\t" + "slsk://%s/%s" % (username, dirs) +"\\"+str(filez)+ "\nLength: " + str(length) + " Bitrate: " + str(bitrate) )
 				else:
-					output('['+str(number)+'] '+ "Size: " + str(size) +"\t" + "slsk://%s/%s" % (username, dirs) +"\\"+  str(filez)  )
+					output('['+str(number)+'] '+ "Size: " + str(size) +"\t" + "slsk://%s/%s" % (username, dirs) +"\\"+  str(filez)  +"Filetype"+ ftype )
 		output("Finished browsing: " + username)
 		
 	def cb_user_shares(self, username, shares):
@@ -851,7 +851,7 @@ class museekcontrol(driver.Driver):
 				# clear it next interation
 	
 				result_list = ticket, user, free, speed, queue, result[0], result[1], result[2], result[3]
-				
+				#ticket, user, free, speed, queue, path, size, filetype, [bitrate, length]
 				# Count Search Result
 				self.search_number += 1
 				# Display Search Result
@@ -859,11 +859,12 @@ class museekcontrol(driver.Driver):
 				path = result[0]
 				size = str(result[1]/1024)+'KB'
 				ftype = result[2]
-	
+
 				if ftype in ('mp3', 'ogg'):
 					if result[3] != []:
 						bitrate = result[3][0]
 						length = result[3][1]
+						vbr = result[3][2]
 						minutes = int(length)/60
 						seconds = str(length - (60 * minutes))
 						
@@ -884,7 +885,7 @@ class museekcontrol(driver.Driver):
 				else:
 					free = 'N'
 				output("[%s] slsk://%s/%s" % (str(self.search_number), user, path.replace("\\", "/")))
-				output("Size: "+str(size)+ " Bitrate: "+ str(bitrate) + " Length: " + str(minutes)+":"+seconds +" Queue: "+str(queue)+" Speed: "+str(speed) +" Free: " +free)
+				output("Size: "+str(size)+ " Bitrate: "+ str(bitrate) + " Length: " + str(minutes)+":"+seconds +" Queue: "+str(queue)+" Speed: "+str(speed) +" Free: " +free+" filetype: " +ftype)
 				output(" ")
 			
 				

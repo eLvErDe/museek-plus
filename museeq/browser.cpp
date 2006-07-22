@@ -23,6 +23,8 @@
 
 #include <qlineedit.h>
 #include <qinputdialog.h>
+#include <qfile.h>
+#include <qfiledialog.h>
 #include <qsplitter.h>
 #include <qlistview.h>
 #include <qlabel.h>
@@ -207,6 +209,7 @@ FolderListView::FolderListView(const QString& user, QWidget* parent, const char*
 	
 	mPopupMenu = new QPopupMenu(this);
 	mPopupMenu->insertItem(tr("Download folder"), this, SLOT(doDownloadFolder()));
+	mPopupMenu->insertItem(tr("Download folder to.."), this, SLOT(doDownloadFolder()));
 	mPopupMenu->insertItem(tr("Copy URL"), this, SLOT(doCopyURL()));
 	connect(this, SIGNAL(contextMenuRequested(QListViewItem*, const QPoint&, int)), SLOT(doPopupMenu(QListViewItem*, const QPoint&, int)));	
 	connect(this, SIGNAL(currentChanged(QListViewItem*)), SLOT(doCurrentChanged(QListViewItem*)));
@@ -363,6 +366,7 @@ FileListView::FileListView(const QString& user, QWidget* parent, const char* nam
 	
 	mPopupMenu = new QPopupMenu(this);
 	mPopupMenu->insertItem(tr("Download files"), this, SLOT(doDownloadFiles()));
+	mPopupMenu->insertItem(tr("Download files to.."), this, SLOT(doDownloadFilesTo()));
 	if (museeq->nickname() == mUser) {
 		mPopupMenu->insertItem(tr("Upload files"), this, SLOT(doUploadFiles()));
 		}
@@ -435,6 +439,25 @@ void FileListView::doDownloadFiles() {
 		museeq->downloadFile(mUser, mPath + _item->filename(), data.size);
 	}
 }
+
+void FileListView::doDownloadFilesTo() {
+	QListViewItemIterator item(firstChild(), QListViewItemIterator::Selected);
+	QFileDialog * fd = new QFileDialog( QDir::homeDirPath(), "", this);
+	fd->setCaption(tr("Select a Directory for current download(s)"));
+	fd->setMode(QFileDialog::Directory);
+	if(fd->exec() == QDialog::Accepted){
+		QString localpath = fd->dirPath();
+		for(; item.current() != 0; ++item) {
+			FileListItem* _item = static_cast<FileListItem*>(item.current());
+			NFileData data = _item->data();
+			museeq->downloadFileTo(mUser, mPath + _item->filename(), localpath +"/"+ _item->filename(), data.size);
+		}
+	}
+	delete fd;
+
+	
+}
+
 void FileListView::doCopyURL() {
 	QClipboard *cb = QApplication::clipboard();
 	QListViewItemIterator item(firstChild(), QListViewItemIterator::Selected);

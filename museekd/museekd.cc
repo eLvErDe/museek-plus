@@ -44,9 +44,11 @@ using std::cerr;
 using std::endl;
 
 Museekd::Museekd(const string& config, const string& version)
-        : Museek(),  mVersion(version), mKicked(false), mHaveBuddyShares(false), mReconnectTime(15), mConfigFile(config), mConfig(mConfigFile),
-           mStatus(0), mPrivilegeBuddies(false), mOnlyBuddies(false),  mTrustedUploads(false), mJoined(false), mDontSaveDownloads(false), mSaveDownloads(false), mLastSave(0),
-          mPonged(false), mPingTime(0) {
+        : Museek(),  mVersion(version), mKicked(false), 
+	mHaveBuddyShares(false), mReconnectTime(15), mConfigFile(config), mConfig(mConfigFile), 
+	mStatus(0), mPrivilegeBuddies(false), mOnlyBuddies(false),  mTrustedUploads(false), 
+	mJoined(false), mDontSaveDownloads(false), mSaveDownloads(false), mLastSave(0),
+	mPonged(false), mPingTime(0) {
 	CT("Museekd");
 }
 
@@ -820,6 +822,10 @@ void Museekd::cb_iface_upload_file(IfaceConnection* conn, const string& user, co
 void Museekd::cb_iface_download_file(IfaceConnection* conn, const string& user, const string& path, off_t size) {
 	if(! (user.empty() || path.empty()))
 		mTransferManager->new_download(user, mRecoder->decode_utf8(path), wstring(), wstring(), size);
+}
+void Museekd::cb_iface_download_file_to(IfaceConnection* conn, const string& user, const string& path, off_t size, const string& dpath) {
+	if(! (user.empty() || path.empty()))
+		mTransferManager->new_download(user, mRecoder->decode_utf8(path), mRecoder->decode_utf8(dpath), wstring(), size);
 }
 
 void Museekd::cb_iface_download_folder(IfaceConnection* conn, const string& user, const string& folder) {

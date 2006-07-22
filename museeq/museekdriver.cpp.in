@@ -395,8 +395,8 @@ void MuseekDriver::getUserInfo(const QString& user) {
 	send(NUserInfo(user));
 }
 
-void MuseekDriver::doDownloadFile(const QString& user, const QString& path, const QString& local, Q_INT64 size) {
-	send(NDownloadFile(user, path, local, size));
+void MuseekDriver::doDownloadFileTo(const QString& user, const QString& path, const QString& local, Q_INT64 size) {
+	send(NDownloadFileTo(user, path, local, size));
 }
 
 void MuseekDriver::doDownloadFile(const QString& user, const QString& path, Q_INT64 size) {

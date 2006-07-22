@@ -118,7 +118,7 @@ public slots:
 	void getUserShares(const QString&);
 	void givePrivileges(const QString&, uint);
 	void doDownloadFile(const QString&, const QString&, Q_INT64);
-	void doDownloadFile(const QString&, const QString&, const QString&, Q_INT64);
+	void doDownloadFileTo(const QString&, const QString&, const QString&, Q_INT64);
 	void getFolderContents(const QString&, const QString&);
 	void doUploadFile(const QString&, const QString&);
 	void getUserExists(const QString&);
