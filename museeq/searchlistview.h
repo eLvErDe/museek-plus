@@ -41,6 +41,7 @@ protected:
 protected slots:
 	void popupMenu(QListViewItem*, const QPoint&, int);
 	void downloadFiles();
+	void downloadFilesTo();
 	void downloadFolders();
 	
 private:

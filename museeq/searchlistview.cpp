@@ -24,7 +24,8 @@
 #include "usermenu.h"
 #include "museeq.h"
 #include "searchfilter.h"
-
+#include <qfile.h>
+#include <qfiledialog.h>
 #include <qpopupmenu.h>
 
 SearchListView::SearchListView(SearchFilter* filter, QWidget* parent, const char* name)
@@ -55,6 +56,7 @@ SearchListView::SearchListView(SearchFilter* filter, QWidget* parent, const char
 	
 	mPopupMenu = new QPopupMenu(this);
 	mPopupMenu->insertItem(tr("Download file(s)"), this, SLOT(downloadFiles()));
+	mPopupMenu->insertItem(tr("Download file(s) to.."), this, SLOT(downloadFilesTo()));
 	mPopupMenu->insertItem(tr("Download selected folder(s)"), this, SLOT(downloadFolders()));
 	mPopupMenu->insertSeparator();
 	mUsersMenu = new QPopupMenu(mPopupMenu);
@@ -91,6 +93,30 @@ void SearchListView::downloadFiles() {
 		SearchListItem* item = static_cast<SearchListItem*>(*it);
 		museeq->downloadFile(item->user(), item->path(), item->size());
 	}
+}
+
+void SearchListView::downloadFilesTo() {
+	QListViewItemIterator it(this, QListViewItemIterator::Selected|QListViewItemIterator::Visible);
+
+	QFileDialog * fd = new QFileDialog( QDir::homeDirPath(), "", this);
+	fd->setCaption(tr("Select a Directory for current download(s)"));
+	fd->setMode(QFileDialog::Directory);
+	if(fd->exec() == QDialog::Accepted){
+		QString localpath = fd->dirPath();
+		QString filename;
+		for(; *it; ++it) {
+			SearchListItem* item = static_cast<SearchListItem*>(*it);
+			int ix = item->path().findRev('\\');
+			if(ix != -1) {
+				filename = item->path().mid(ix + 1);
+			} else {
+				filename = item->path();
+			}
+			museeq->downloadFileTo(item->user(), item->path(), localpath +"/"+ filename,  item->size());
+			
+		}
+	}
+	delete fd;
 }
 
 void SearchListView::downloadFolders() {
