@@ -209,7 +209,6 @@ FolderListView::FolderListView(const QString& user, QWidget* parent, const char*
 	
 	mPopupMenu = new QPopupMenu(this);
 	mPopupMenu->insertItem(tr("Download folder"), this, SLOT(doDownloadFolder()));
-	mPopupMenu->insertItem(tr("Download folder to.."), this, SLOT(doDownloadFolder()));
 	mPopupMenu->insertItem(tr("Copy URL"), this, SLOT(doCopyURL()));
 	connect(this, SIGNAL(contextMenuRequested(QListViewItem*, const QPoint&, int)), SLOT(doPopupMenu(QListViewItem*, const QPoint&, int)));	
 	connect(this, SIGNAL(currentChanged(QListViewItem*)), SLOT(doCurrentChanged(QListViewItem*)));
