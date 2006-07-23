@@ -235,6 +235,14 @@
         <source>Alt+H</source>
         <translation>Alt+H</translation>
     </message>
+    <message>
+        <source>Auto-Conn&amp;ect to Daemon</source>
+        <translation>Conn&amp;etti automaticamente al daemon</translation>
+    </message>
+    <message>
+        <source>Alt+E</source>
+        <translation>Alt+E</translation>
+    </message>
 </context>
 <context>
     <name>FileListView</name>
@@ -281,6 +289,14 @@
     <message>
         <source>Which user do you wish to upload these to?</source>
         <translation>A quale utente vuoi inviare questi file?</translation>
+    </message>
+    <message>
+        <source>Download files to..</source>
+        <translation>Scarica files in..</translation>
+    </message>
+    <message>
+        <source>Select a Directory for current download(s)</source>
+        <translation>Seleziona una cartella per i download correnti</translation>
     </message>
 </context>
 <context>
@@ -844,6 +860,10 @@
         <source>Port:</source>
         <translation>Porta:</translation>
     </message>
+    <message>
+        <source>Auto-Connect to Daemon</source>
+        <translation>Connetti automaticamente al daemon</translation>
+    </message>
 </context>
 <context>
     <name>OnlineAlert</name>
@@ -1093,6 +1113,14 @@
     <message>
         <source>%1 search results (%2 users)</source>
         <translation>%1 risultati (%2 utenti)</translation>
+    </message>
+    <message>
+        <source>Download file(s) to..</source>
+        <translation>Scarica files in..</translation>
+    </message>
+    <message>
+        <source>Select a Directory for current download(s)</source>
+        <translation>Seleziona una cartella per i download correnti</translation>
     </message>
 </context>
 <context>
