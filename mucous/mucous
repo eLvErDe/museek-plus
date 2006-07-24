@@ -5887,6 +5887,562 @@ class mucous(driver.Driver):
 		except Exception, e:
 			self.Hlog("debug", "setup_mouse: " +str(e) )
 			
+	def mouse_xy(self, line):
+		try:
+			(id,x,y,z,event)=curses.getmouse()
+			#self.Hlog("debug", "%d %d %d %d %d" % (id, x, y, z,event))
+			if event in (1, 128, 8192):
+				# Ignore PRESSED and RELEASED
+				return
+			if x in range(8) and y == 0:
+				if self.Spl["connected"] == 0:
+					self.connect()
+				elif self.Spl["connected"] == 1:
+					self.toggle_away()
+				return
+# 1Chat 2Private 3Transfers 4Search 5Info 6Browse 7Users 8Rooms 9Setup 10Help
+			if y >= self.h-1:
+				# clickable mode switching
+				if x >= 0 and x < 7:
+					self.chat_mode()
+				elif x >= 7 and x < 16:
+					self.private_mode()
+				elif x >= 16 and x < 27:
+					self.transfer_mode()
+				elif x >= 27 and x < 35:
+					self.search_mode()
+				elif x >= 35 and x < 41:
+					self.info_mode()
+				elif x >= 41 and x < 49:
+					self.browse_mode()
+				elif x >= 49 and x < 56:
+					self.list_mode()
+				elif x >= 56 and x < 63:
+					self.rooms_mode()
+				elif x >= 63 and x < 70:
+					self.setup_switch()
+				elif x >= 70 and x < 76:
+					self.help_mode()
+				return
+			if self.Spl["show_menu"] == True and self.Spl["current_menu"] != None:
+				width = self.menus[self.Spl["current_menu"]]["width"]
+				top = self.menus[self.Spl["current_menu"]]["top"]
+				height = self.menus[self.Spl["current_menu"]]["height"]
+				left = self.menus[self.Spl["current_menu"]]["left"]
+				if x >= left and x < left+width and y >= top and y < top+height:
+					self.pick_menu_item(x, y, event)
+					return
+				else:
+					self.menu_clear()
+
+			if self.display["mode"] == "chat":
+				w = self.windows["dimensions"]["chat"]
+				if y == w["top"]-1 and x >= w["left"]-1 and x < w["left"]+3:
+					self.chat_room_cycle()
+					return
+				# Clickable room switch
+				
+				if "roombox" in self.windows["dimensions"] and self.display["chatshape"] not in ( "noroombox", "chat-only"):
+					roombox = self.windows["dimensions"]["roombox"]
+					if y >= roombox["top"]-1 and y < roombox["top"] + roombox["height"] and x < roombox["width"] + roombox["left"] and x > roombox["left"]:
+						if self.display["chat"] != "roombox":
+							self.display["chat"] = "roombox"
+							self.chat_mode()
+						y -= roombox["top"]
+						if "start" not in roombox:
+							return
+						if y  + roombox["start"] in range(len(self.logs["roombox"][self.Spl["room"]])):
+							
+							sup = y  + roombox["start"]
+							if event in ( 4096, 16384):
+								if sup != self.scrolling["roombox"]:
+									self.scrolling["roombox"] = sup
+								self.roomuserbox()
+								
+								self.Spl["show_menu"] = True
+								self.create_menu("roombox", 0)
+								curses.doupdate()
+							else:
+								if sup != self.scrolling["roombox"]:
+									self.scrolling["roombox"] = sup
+									self.roomuserbox()
+									curses.doupdate()
+						return
+					elif y == roombox["top"] + roombox["height"] and x < roombox["width"] + roombox["left"] and x > roombox["left"]:
+						self.mod_config("autojoin", self.Spl["room"], '')
+							
+				if y == self.h-3 or y == self.h-4:
+					if x>= self.w-27 and x < self.w-18:
+						self.Spl["show_menu"] = True
+						self.create_menu("encoding", 0)
+					
+					elif x >= self.w-17 and x < self.w-1:
+						joined = self.data["rooms"].keys()
+						joined.sort()
+						if not self.Spl["room"] in joined:
+							ix = 0
+						else:
+							ix = joined.index(self.Spl["room"])
+							
+							if x >= self.w-9 and x < self.w-1:
+								# Next Button
+								ix += 1
+							elif x <= self.w-10 and x >= self.w-17:
+								# Prev Button
+								ix -= 1
+							else:
+								return
+							if ix < 0:
+								ix = -1
+							elif ix >= len(joined):
+								ix = 0
+						self.change_room(joined[ix])
+						
+				elif y  in (w["top"] + w["height"], w["top"] + w["height"]-1) and x >= w["left"] + w["width"]-5 and x <= w["left"] + w["width"]:
+					self.key = "KEY_NPAGE"
+					self.scrolltext(line)
+					
+				elif y in ( w["top"], w["top"]+1)  and x >= w["left"] + w["width"]-5 and x <= w["left"] + w["width"]:
+					self.key = "KEY_PPAGE"
+					self.scrolltext(line)
+				else:
+					if y >= w["top"]-1 and y < w["top"] + w["height"] +1 and x >= w["left"] -1 and x < w["left"] +w["width"]+1:
+						if self.display["chat"] != "chatroom":
+							self.display["chat"] = "chatroom"
+							self.chat_mode()
+					if "roomstatus" in self.windows["dimensions"] and self.display["chatshape"] not in ( "nostatuslog", "chat-only") and self.display["chat"] != "roomstatus":
+						w =  self.windows["dimensions"]["roomstatus"]
+						if y >= w["top"]-1 and y < w["top"] + w["height"] +1 and x >= w["left"] -1 and x < w["left"] +w["width"]+1:
+							self.display["chat"] = "roomstatus"
+							self.chat_mode()
+
+				
+			elif self.display["mode"] == "private":
+				# Clickable private message switch
+				if self.usernames["private"] != None:
+					if y in (2, 3, 4):
+						if len(self.logs["private"].keys()) > 1:
+							pmusers =  self.logs["private"].keys()
+							pmusers.sort()
+							self.usernames["private"], match = self.tab_click(x, self.usernames["private"])
+							if match == None:
+								s = pmusers.index(self.usernames["private"])
+								self.usernames["private"] = pmusers[s-1]
+							self.start_pm(self.usernames["private"])
+							self.private_mode()
+							
+					if y == self.h-3 or y == self.h-4:
+						if x>= self.w-27 and x < self.w-18:
+							self.Spl["show_menu"] = True
+							self.create_menu("encoding", 0)
+						elif x >=self.w-10 and x < self.w-1:
+							self.close_private_chat(self.usernames["private"])
+							
+			elif self.display["mode"] == "browse":
+				d = self.windows["dimensions"]["directories"]
+				w = self.windows["dimensions"]["browse"]
+				if y in (1, 2, 3):
+					if len(self.activeitems["browse"]) >= 1:
+						
+						if self.usernames["browse"] == "default__":
+							self.usernames["browse"] = self.activeitems["browse"][0]
+						else:
+							self.usernames["browse"], match = self.tab_click(x, self.usernames["browse"])
+							if match == None:
+								s = self.activeitems["browse"].index(self.usernames["browse"])
+								self.usernames["browse"] = self.activeitems["browse"][s-1]
+							sdirs =  self.data["browse_results"][self.usernames["browse"]].keys()
+							sdirs.sort()
+							self.Spl["dir_browse"]=sdirs[0]
+						
+						self.browse_mode()
+				
+				elif y == w["top"]-1:
+					if x >=self.w-17 and self.usernames["browse"] != "default__":
+						self.usernames["browse"]="default__"
+						self.browse_mode()
+				elif x in range(d["width"]) and y >= d["top"] and y <= d["top"] + d["height"]:
+					if self.usernames["browse"] == "default__":
+						return
+					if self.display["browse"] != "directories":
+						self.display["browse"] = "directories"
+						self.browse_redraw()
+						
+					self.scrolling["browsedir"] = y - d["top"] + d["start"]
+					self.browse_display()
+					
+					if event in ( 4096, 16384):
+						self.roomuserbox()
+						self.Spl["show_menu"] = True
+						self.create_menu("browse-dirs", 0)
+					else:
+						self.roomuserbox()
+					curses.doupdate()
+					
+				elif x >=  w["left"] and y >= w["top"] and y <= w["top"] + w["height"]:
+					if self.usernames["browse"] == "default__":
+						return
+					if self.display["browse"] != "files":
+						self.display["browse"] = "files"
+						self.browse_redraw()
+					self.scrolling["browsefile"] = y - w["top"]+ w["start"]
+					self.browse_display()
+					
+					if event in ( 4096, 16384):
+						self.roomuserbox()
+						self.Spl["show_menu"] = True
+						self.create_menu("browse-files", 0)
+					else:
+						self.roomuserbox()
+					curses.doupdate()
+					
+				elif y in ( self.h-5, self.h-6):
+					if x>= self.w-27 and x < self.w-18:
+						self.Spl["show_menu"] = True
+						self.create_menu("encoding", 0)
+						return
+					elif x >=self.w-10 and x < self.w-1 and self.usernames["browse"] != "default__":
+						self.close_browse(self.usernames["browse"])
+						
+							
+			elif self.display["mode"] == "info":
+				# Clickable user info tabs
+				
+				if y in (2, 3, 4):
+					if len(self.activeitems["info"]) >= 1:
+						
+						if self.usernames["info"] == None:
+							self.usernames["info"] = self.activeitems["info"][0]
+						self.usernames["info"], match = self.tab_click(x, self.usernames["info"])
+						if match == None:
+							s = self.activeitems["info"].index(self.usernames["info"])
+							self.usernames["info"] = self.activeitems["info"][s-1]
+						#self.display_userinfo_log()
+						self.info_mode()
+						
+				if self.usernames["info"] != None:
+					if y  in (5,6):
+						if x >=self.w-19-2-16 and x < self.w-12:
+							self.usernames["info"]=None
+							self.info_mode()
+					elif y in ( self.h-3, self.h-4, self.h-5):
+						if x >=self.w-10 and x < self.w-1:
+							self.close_userinfo(self.usernames["info"])
+			
+			elif self.display["mode"] == "search":
+				w = self.windows["dimensions"]["search"]
+				if self.Spl["current_search"] != "default__":
+					if y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
+						#self.Hlog("debug", "%d:%d::%d" %(x,y,w["top"]) )
+						y1 = y- w["top"]
+						
+						if y1  + w["start"] in range(self.search_number):
+							self.scrolling["search"]  = y1  + w["start"]
+							self.search_display()
+							if event in ( 4096, 16384):
+								self.Spl["show_menu"] = True
+								self.create_menu("search", 0)
+								return
+
+				if y in (1, 2, 3):
+					if len(self.data["search_tickets"].keys()) >= 1:
+						
+						
+						if self.Spl["current_search"] == "default__":
+							self.Spl["current_search"] = self.data["search_tickets"].keys()[0]
+
+						self.Spl["current_search"], match = self.tab_click(x, self.Spl["current_search"])	
+							
+						if match == None:
+							s = self.data["search_tickets"].keys().index(self.Spl["current_search"])
+							self.Spl["current_search"] = self.data["search_tickets"].keys()[s-1]
+						self.search_mode()
+
+				elif y in ( self.h-3, self.h-4):
+					if x >= 10 and x <= 20:
+						# Toggle type of search
+						if self.Spl["search_method"] == "globally":
+							self.Spl["search_method"] = "buddies"
+						elif self.Spl["search_method"] == "buddies":
+							self.Spl["search_method"] = "rooms"
+						elif self.Spl["search_method"] == "rooms":
+							self.Spl["search_method"] = "globally"
+						self.search_mode()
+						
+				elif y in ( self.h-5, self.h-6):
+#m< Num|User|Free|Speed|Que|Path|Size|File|Bitrate|Time >< Reverse >
+
+					change = 0
+					if x >= 2 and x <= 6 and self.Spl["search_order"] != "num":
+						self.Spl["search_order"] = "num"
+						change = 1
+					elif x >= 7 and x <= 11 and self.Spl["search_order"] != "user":
+						self.Spl["search_order"] = "user"
+						change = 1
+					elif x >= 12 and x <= 16  and self.Spl["search_order"] != "free":
+						self.Spl["search_order"] = "free"
+						change = 1
+					elif x >= 17 and x <= 22  and self.Spl["search_order"] != "speed":
+						self.Spl["search_order"] = "speed"
+						change = 1
+					elif x >= 23 and x <= 26  and self.Spl["search_order"] != "que":
+						self.Spl["search_order"] = "que"
+						change = 1
+					elif x >= 27 and x <= 31  and self.Spl["search_order"] != "path":
+						self.Spl["search_order"] = "path"
+						change = 1
+					elif x >= 33 and x <= 36  and self.Spl["search_order"] != "size":
+						self.Spl["search_order"] = "size"
+						change = 1
+					elif x >= 37 and x <= 41  and self.Spl["search_order"] != "file":
+						self.Spl["search_order"] = "file"
+						change = 1
+					elif x >= 42 and x <= 49  and self.Spl["search_order"] != "bitrate":
+						self.Spl["search_order"] = "bitrate"
+						change = 1
+					elif x >= 50 and x <= 54  and self.Spl["search_order"] != "time":
+						self.Spl["search_order"] = "time"
+						change = 1
+					elif x >= 56 and x <= self.w-10:
+						if self.Spl["search_reverse"] == True:
+							self.Spl["search_reverse"] = False
+						elif self.Spl["search_reverse"] == False:
+							self.Spl["search_reverse"]= True
+						change = 1
+					elif x >=self.w-10 and x < self.w-1:
+						self.close_search(self.Spl["current_search"])
+					if change == 1:
+						self.search_mode()
+				
+				elif y == 4:
+					if self.Spl["current_search"] != "default__":
+						if x >=self.w-18:
+							self.Spl["current_search"]="default__"
+							self.search_mode()
+
+			elif self.display["mode"] == "roomlist":
+				# ROOMLIST BUTTONS
+				if y == self.h-5:
+					if x >= 14 and x <= 22:
+						mucous_config["mucous"]["rooms_sort"] = "alpha"
+						self.rooms_mode()
+					elif x >= 24 and x <= 35:
+						mucous_config["mucous"]["rooms_sort"] = "alpha-reversed"
+						self.rooms_mode()
+					elif x >= 37 and x <= 46:
+						mucous_config["mucous"]["rooms_sort"] = "size"
+						self.rooms_mode()
+					elif x >= 47 and x <= 56:
+						mucous_config["mucous"]["rooms_sort"] = "size-reversed"
+						self.rooms_mode()
+					elif x >= self.w-16:
+						self.SendMessage(messages.RoomList())
+						
+				w = self.windows["dimensions"]["roomlist"]
+				if y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
+					y -= w["top"]
+					if y  + w["start"] in range(len(self.sizedrooms)):
+						self.scrolling["roomlist"]  = y  + w["start"]
+						self.display_room_list_mode()
+						return self.sizedrooms[self.scrolling["roomlist"]]
+
+						
+			elif self.display["mode"] == "lists":
+				w = self.windows["dimensions"][self.display["list"]]
+				if y == 1:
+					if x >= 4 and x <= 15:
+						self.display["list"]="buddied"
+						self.list_mode()
+					elif x >= 17 and x <= 27:
+						self.display["list"]="banned"
+						self.list_mode()
+					elif x >= 29 and x <= 40:
+						self.display["list"]="ignored"
+						self.list_mode()
+					elif x >= 42 and x <= 51:
+						self.display["list"]="trusted"
+						self.list_mode()
+					elif x >= 52 and x <= 64:
+						self.display["list"]="interests"
+						self.list_mode()
+					return
+				if self.display["list"] == "interests":
+					rexw = self.windows["dimensions"]["recommendations"]
+					userw = self.windows["dimensions"]["similar_users"]
+					hatew = self.windows["dimensions"]["hates"]
+					likew = self.windows["dimensions"]["likes"]
+					
+					if y >= userw["top"]-1 and y < userw["top"] + userw["height"]+1 and x >= userw["left"]-1 and x < userw["left"]+1 +userw["width"]:
+						w = userw
+						if self.display["interests"] != "similar_users":
+							self.display["interests"] = "similar_users"
+					
+						if y == w["top"] + w["height"]:
+							if x >= w["left"]+w["width"] -11 and x <=  w["left"]+w["width"]:
+								self.SendMessage(messages.GetSimilarUsers())
+						if y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
+							y -= w["top"]
+							this_list = self.logs[self.display["interests"]]
+							if y  + w["start"] in range(len(this_list)):
+								self.scrolling[self.display["interests"]]  = y  + w["start"]
+								self.line = str(self.logs[self.display["interests"]][self.scrolling[self.display["interests"]]][0])
+						self.interests_mode()
+						return self.line
+					elif y >= likew["top"]-1 and y < likew["top"] + likew["height"]+1 and x >= likew["left"]-1 and x < likew["left"]+1 +likew["width"]:
+						w = likew
+						if self.display["interests"] != "likes":
+							self.display["interests"] = "likes"
+							
+						
+						if y == w["top"] + w["height"]:
+							
+							if x >= w["left"]+2 and x <= w["left"]+7:
+								
+								if self.Spl["interests_input"] == "add_likes":
+									self.send_add_interest(self.line)
+								else:
+									self.Spl["interests_input"] = "add_likes"
+							elif x >= w["left"]+9 and x <= w["left"]+w["width"]:
+								if self.Spl["interests_input"] == "del_likes":
+									self.send_remove_interest(self.line)
+								else:
+									self.Spl["interests_input"] = "del_likes"
+								
+						if y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
+							y -= w["top"]
+							this_list = self.logs[self.display["interests"]]
+							
+							if y  + w["start"] in range(len(this_list)):
+								self.scrolling[self.display["interests"]]  = y  + w["start"]
+								self.line = self.logs[self.display["interests"]][self.scrolling[self.display["interests"]]]
+
+							
+						self.interests_mode()
+						return self.line
+					elif y >= hatew["top"]-1 and y < hatew["top"] + hatew["height"]+1 and x >= hatew["left"]-1 and x < hatew["left"]+1 +hatew["width"]:
+						w = hatew
+						if self.display["interests"] != "hates":
+							self.display["interests"] = "hates"
+						if y == w["top"] + w["height"]:
+							if x >= 2 and x <= 7:
+								if self.Spl["interests_input"] == "add_hates":
+									self.send_add_hated_interest(self.line)
+								else:
+									self.Spl["interests_input"] = "add_hates"
+								
+							elif x >= w["left"]+9 and x <= w["left"]+w["width"]:
+								if self.Spl["interests_input"] == "del_hates":
+									self.send_remove_hated_interest(self.line)
+								else:
+									self.Spl["interests_input"] = "del_hates"
+						if y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
+							y -= w["top"]
+							this_list = self.logs[self.display["interests"]]
+							if y  + w["start"] in range(len(this_list)):
+								self.scrolling[self.display["interests"]]  = y  + w["start"]
+								self.line = self.logs[self.display["interests"]][self.scrolling[self.display["interests"]]]
+						self.interests_mode()
+						return self.line
+					elif y >= rexw["top"]-1 and y < rexw["top"] + rexw["height"]+1 and x >= rexw["left"]-1 and x < rexw["left"]+1 +rexw["width"]:
+						w = rexw
+						if self.display["interests"] != "recommendations":
+							self.display["interests"] = "recommendations"
+						if y == w["top"] -1:
+							if x >= w["left"]+w["width"] -len(self.Spl["recommend_sort"]) -5 and x <=  w["left"]+w["width"]:
+								if self.Spl["recommend_sort"] == "size":
+									self.Spl["recommend_sort"] = "alpha"
+								elif self.Spl["recommend_sort"] == "alpha":
+									self.Spl["recommend_sort"] = "size"
+						elif y == w["top"] + w["height"]:
+							if x >= w["left"]+ 1 and x <=  w["left"]+12:
+								self.SendMessage(messages.GetRecommendations())
+							elif x >= w["left"]+w["width"] -10 and x <=  w["left"]+w["width"]:
+								self.SendMessage(messages.GetGlobalRecommendations())
+						elif y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
+							y -= w["top"]
+							this_list = self.logs[self.display["interests"]]
+							if y  + w["start"] in range(len(this_list)):
+								self.scrolling[self.display["interests"]]  = y  + w["start"]
+								self.line = self.logs[self.display["interests"]][self.scrolling[self.display["interests"]]][0]
+								
+						self.interests_mode()
+						return self.line
+				elif self.display["list"] in ("buddied", "banned", "ignored", "trusted"):
+					# clicking on items in lists
+					if y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
+						y -= w["top"]
+						
+						this_list = self.logs[self.display["list"]]
+						if y  + w["start"] in range(len(this_list)):
+							self.scrolling[self.display["list"]]  = y  + w["start"]
+							
+							if event in ( 4096, 16384):
+								self.display_lists()
+								self.Spl["show_menu"] = True
+								self.create_menu("lists", 0)
+							else:
+								self.display_lists()
+						
+						
+			elif self.display["mode"] == "transfer":
+				# TRANSFERS BUTTONS
+				# Clickable transfer type switcher
+				up = self.scrolling[self.display["transfers"]]
+				if mucous_config["mucous"]["transbox"]=="split":
+					u = self.windows["dimensions"]["uploads"]
+					d = self.windows["dimensions"]["downloads"]
+					
+					w = None
+					
+					if y >= u["top"]+1 and y <= u["top"] + u["height"] and x >= u["left"] and x < u["left"] +u["width"]:
+						if self.display["transfers"] != "uploads":
+							self.display["transfers"] = "uploads"
+							self.transfer_mode()
+						w = u
+						#y -= w["top"]+1
+					elif y >= d["top"]+1 and y <= d["top"] + d["height"] and x >= d["left"] and x < d["left"] +d["width"]:
+						if self.display["transfers"] != "downloads":
+							self.display["transfers"] = "downloads"
+							self.transfer_mode()
+						w = d
+
+					if w != None:
+						if self.math_transfer_window(w, event, x, y, up) == 1:
+							return
+
+				else:
+					if y == 1:
+						if x >=2 and x < 26:
+							self.display["transfers"]="uploads"
+						elif x >=27 and x < 40:	
+							self.display["transfers"]="downloads"
+						self.transfer_mode()
+						return
+						
+					if self.display["transfers"] == "uploads":
+						w = self.windows["dimensions"]["uploads"]
+					else:
+						w = self.windows["dimensions"]["downloads"]
+					r = self.math_transfer_window(w, event, x, y, up)
+					if r == 1:
+						return	
+	
+			elif self.display["mode"] == "setup":
+				self.setup_mouse(x, y)
+				
+
+			elif self.display["mode"] in ("help", "debug"):
+				if y == self.windows["dimensions"]["help"]["top"]-1:
+					if x >= 4 and x <= 16 and self.display["mode"] != "help":
+						self.display["mode"] = "help"
+						self.help_mode()
+					elif x >= 18 and x <= 31 and self.display["mode"] != "debug":
+						self.display["mode"] = "debug"
+						self.help_mode()
+			# END OF MOUSE
+			return line
+		except Exception, e:
+			self.Hlog("debug", "mouse_xy: "+str(e) )
 	def key_mouse_funks(self, key, line):
 		try:
 			if key == "KEY_RESIZE":
@@ -6040,560 +6596,10 @@ class mucous(driver.Driver):
 					self.interests_mode()
 					
 			elif key == "KEY_MOUSE":
-				(id,x,y,z,event)=curses.getmouse()
-				#self.Hlog("debug", "%d %d %d %d %d" % (id, x, y, z,event))
-				if event in (1, 128, 8192):
-					# Ignore PRESSED and RELEASED
-					return
-				if x in range(8) and y == 0:
-					if self.Spl["connected"] == 0:
-						self.connect()
-					elif self.Spl["connected"] == 1:
-						self.toggle_away()
-					return
-# 1Chat 2Private 3Transfers 4Search 5Info 6Browse 7Users 8Rooms 9Setup 10Help
-				if y >= self.h-1:
-					# clickable mode switching
-					if x >= 0 and x < 7:
-						self.chat_mode()
-					elif x >= 7 and x < 16:
-						self.private_mode()
-					elif x >= 16 and x < 27:
-						self.transfer_mode()
-					elif x >= 27 and x < 35:
-						self.search_mode()
-					elif x >= 35 and x < 41:
-						self.info_mode()
-					elif x >= 41 and x < 49:
-						self.browse_mode()
-					elif x >= 49 and x < 56:
-						self.list_mode()
-					elif x >= 56 and x < 63:
-						self.rooms_mode()
-					elif x >= 63 and x < 70:
-						self.setup_switch()
-					elif x >= 70 and x < 76:
-						self.help_mode()
-					return
-				if self.Spl["show_menu"] == True and self.Spl["current_menu"] != None:
-					width = self.menus[self.Spl["current_menu"]]["width"]
-					top = self.menus[self.Spl["current_menu"]]["top"]
-					height = self.menus[self.Spl["current_menu"]]["height"]
-					left = self.menus[self.Spl["current_menu"]]["left"]
-					if x >= left and x < left+width and y >= top and y < top+height:
-						self.pick_menu_item(x, y, event)
-						return
-					else:
-						self.menu_clear()
-	
-				if self.display["mode"] == "chat":
-					w = self.windows["dimensions"]["chat"]
-					if y == w["top"]-1 and x >= w["left"]-1 and x < w["left"]+3:
-						self.chat_room_cycle()
-						return
-					# Clickable room switch
-					
-					if "roombox" in self.windows["dimensions"] and self.display["chatshape"] not in ( "noroombox", "chat-only"):
-						roombox = self.windows["dimensions"]["roombox"]
-						if y >= roombox["top"] and y < roombox["top"] + roombox["height"] and x < roombox["width"] + roombox["left"] and x > roombox["left"]:
-							if self.display["chat"] != "roombox":
-								self.display["chat"] = "roombox"
-								self.chat_mode()
-							y -= roombox["top"]
-							if "start" not in roombox:
-								return
-							if y  + roombox["start"] in range(len(self.logs["roombox"][self.Spl["room"]])):
-								
-								sup = y  + roombox["start"]
-								if event in ( 4096, 16384):
-									if sup != self.scrolling["roombox"]:
-										self.scrolling["roombox"] = sup
-									self.roomuserbox()
-									
-									self.Spl["show_menu"] = True
-									self.create_menu("roombox", 0)
-									curses.doupdate()
-								else:
-									if sup != self.scrolling["roombox"]:
-										self.scrolling["roombox"] = sup
-										self.roomuserbox()
-										curses.doupdate()
-							return
-								
-					if y == self.h-3 or y == self.h-4:
-						if x>= self.w-27 and x < self.w-18:
-							self.Spl["show_menu"] = True
-							self.create_menu("encoding", 0)
-						
-						elif x >= self.w-17 and x < self.w-1:
-							joined = self.data["rooms"].keys()
-							joined.sort()
-							if not self.Spl["room"] in joined:
-								ix = 0
-							else:
-								ix = joined.index(self.Spl["room"])
-								
-								if x >= self.w-9 and x < self.w-1:
-									# Next Button
-									ix += 1
-								elif x <= self.w-10 and x >= self.w-17:
-									# Prev Button
-									ix -= 1
-								else:
-									return
-								if ix < 0:
-									ix = -1
-								elif ix >= len(joined):
-									ix = 0
-							self.change_room(joined[ix])
-							
-					elif y  in (w["top"] + w["height"], w["top"] + w["height"]-1) and x >= w["left"] + w["width"]-5 and x <= w["left"] + w["width"]:
-						self.key = "KEY_NPAGE"
-						self.scrolltext(line)
-						
-					elif y in ( w["top"], w["top"]+1)  and x >= w["left"] + w["width"]-5 and x <= w["left"] + w["width"]:
-						self.key = "KEY_PPAGE"
-						self.scrolltext(line)
-					else:
-						if y >= w["top"]-1 and y < w["top"] + w["height"] +1 and x >= w["left"] -1 and x < w["left"] +w["width"]+1:
-							if self.display["chat"] != "chatroom":
-								self.display["chat"] = "chatroom"
-								self.chat_mode()
-							
-					
-				elif self.display["mode"] == "private":
-					# Clickable private message switch
-					if self.usernames["private"] != None:
-						if y in (2, 3, 4):
-							if len(self.logs["private"].keys()) > 1:
-								pmusers =  self.logs["private"].keys()
-								pmusers.sort()
-								self.usernames["private"], match = self.tab_click(x, self.usernames["private"])
-								if match == None:
-									s = pmusers.index(self.usernames["private"])
-									self.usernames["private"] = pmusers[s-1]
-								self.start_pm(self.usernames["private"])
-								self.private_mode()
-								
-						if y == self.h-3 or y == self.h-4:
-							if x>= self.w-27 and x < self.w-18:
-								self.Spl["show_menu"] = True
-								self.create_menu("encoding", 0)
-							elif x >=self.w-10 and x < self.w-1:
-								self.close_private_chat(self.usernames["private"])
-								
-				elif self.display["mode"] == "browse":
-					d = self.windows["dimensions"]["directories"]
-					w = self.windows["dimensions"]["browse"]
-					if y in (1, 2, 3):
-						if len(self.activeitems["browse"]) >= 1:
-							
-							if self.usernames["browse"] == "default__":
-								self.usernames["browse"] = self.activeitems["browse"][0]
-							else:
-								self.usernames["browse"], match = self.tab_click(x, self.usernames["browse"])
-								if match == None:
-									s = self.activeitems["browse"].index(self.usernames["browse"])
-									self.usernames["browse"] = self.activeitems["browse"][s-1]
-								sdirs =  self.data["browse_results"][self.usernames["browse"]].keys()
-								sdirs.sort()
-								self.Spl["dir_browse"]=sdirs[0]
-							
-							self.browse_mode()
-					
-					elif y == w["top"]-1:
-						if x >=self.w-17 and self.usernames["browse"] != "default__":
-							self.usernames["browse"]="default__"
-							self.browse_mode()
-					elif x in range(d["width"]) and y >= d["top"] and y <= d["top"] + d["height"]:
-						if self.usernames["browse"] == "default__":
-							return
-						if self.display["browse"] != "directories":
-							self.display["browse"] = "directories"
-							self.browse_redraw()
-							
-						self.scrolling["browsedir"] = y - d["top"] + d["start"]
-						self.browse_display()
-						
-						if event in ( 4096, 16384):
-							self.roomuserbox()
-							self.Spl["show_menu"] = True
-							self.create_menu("browse-dirs", 0)
-						else:
-							self.roomuserbox()
-						curses.doupdate()
-						
-					elif x >=  w["left"] and y >= w["top"] and y <= w["top"] + w["height"]:
-						if self.usernames["browse"] == "default__":
-							return
-						if self.display["browse"] != "files":
-							self.display["browse"] = "files"
-							self.browse_redraw()
-						self.scrolling["browsefile"] = y - w["top"]+ w["start"]
-						self.browse_display()
-						
-						if event in ( 4096, 16384):
-							self.roomuserbox()
-							self.Spl["show_menu"] = True
-							self.create_menu("browse-files", 0)
-						else:
-							self.roomuserbox()
-						curses.doupdate()
-						
-					elif y in ( self.h-5, self.h-6):
-						if x>= self.w-27 and x < self.w-18:
-							self.Spl["show_menu"] = True
-							self.create_menu("encoding", 0)
-							return
-						elif x >=self.w-10 and x < self.w-1 and self.usernames["browse"] != "default__":
-							self.close_browse(self.usernames["browse"])
-							
-								
-				elif self.display["mode"] == "info":
-					# Clickable user info tabs
-					
-					if y in (2, 3, 4):
-						if len(self.activeitems["info"]) >= 1:
-							
-							if self.usernames["info"] == None:
-								self.usernames["info"] = self.activeitems["info"][0]
-							self.usernames["info"], match = self.tab_click(x, self.usernames["info"])
-							if match == None:
-								s = self.activeitems["info"].index(self.usernames["info"])
-								self.usernames["info"] = self.activeitems["info"][s-1]
-							#self.display_userinfo_log()
-							self.info_mode()
-							
-					if self.usernames["info"] != None:
-						if y  in (5,6):
-							if x >=self.w-19-2-16 and x < self.w-12:
-								self.usernames["info"]=None
-								self.info_mode()
-						elif y in ( self.h-3, self.h-4, self.h-5):
-							if x >=self.w-10 and x < self.w-1:
-								self.close_userinfo(self.usernames["info"])
-				
-				elif self.display["mode"] == "search":
-					w = self.windows["dimensions"]["search"]
-					if self.Spl["current_search"] != "default__":
-						if y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
-							#self.Hlog("debug", "%d:%d::%d" %(x,y,w["top"]) )
-							y1 = y- w["top"]
-							
-							if y1  + w["start"] in range(self.search_number):
-								self.scrolling["search"]  = y1  + w["start"]
-								self.search_display()
-								if event in ( 4096, 16384):
-									self.Spl["show_menu"] = True
-									self.create_menu("search", 0)
-									return
-
-					if y in (1, 2, 3):
-						if len(self.data["search_tickets"].keys()) >= 1:
-							
-							
-							if self.Spl["current_search"] == "default__":
-								self.Spl["current_search"] = self.data["search_tickets"].keys()[0]
-
-							self.Spl["current_search"], match = self.tab_click(x, self.Spl["current_search"])	
-								
-							if match == None:
-								s = self.data["search_tickets"].keys().index(self.Spl["current_search"])
-								self.Spl["current_search"] = self.data["search_tickets"].keys()[s-1]
-							self.search_mode()
-	
-					elif y in ( self.h-3, self.h-4):
-						if x >= 10 and x <= 20:
-							# Toggle type of search
-							if self.Spl["search_method"] == "globally":
-								self.Spl["search_method"] = "buddies"
-							elif self.Spl["search_method"] == "buddies":
-								self.Spl["search_method"] = "rooms"
-							elif self.Spl["search_method"] == "rooms":
-								self.Spl["search_method"] = "globally"
-							self.search_mode()
-							
-					elif y in ( self.h-5, self.h-6):
-#m< Num|User|Free|Speed|Que|Path|Size|File|Bitrate|Time >< Reverse >
-
-						change = 0
-						if x >= 2 and x <= 6 and self.Spl["search_order"] != "num":
-							self.Spl["search_order"] = "num"
-							change = 1
-						elif x >= 7 and x <= 11 and self.Spl["search_order"] != "user":
-							self.Spl["search_order"] = "user"
-							change = 1
-						elif x >= 12 and x <= 16  and self.Spl["search_order"] != "free":
-							self.Spl["search_order"] = "free"
-							change = 1
-						elif x >= 17 and x <= 22  and self.Spl["search_order"] != "speed":
-							self.Spl["search_order"] = "speed"
-							change = 1
-						elif x >= 23 and x <= 26  and self.Spl["search_order"] != "que":
-							self.Spl["search_order"] = "que"
-							change = 1
-						elif x >= 27 and x <= 31  and self.Spl["search_order"] != "path":
-							self.Spl["search_order"] = "path"
-							change = 1
-						elif x >= 33 and x <= 36  and self.Spl["search_order"] != "size":
-							self.Spl["search_order"] = "size"
-							change = 1
-						elif x >= 37 and x <= 41  and self.Spl["search_order"] != "file":
-							self.Spl["search_order"] = "file"
-							change = 1
-						elif x >= 42 and x <= 49  and self.Spl["search_order"] != "bitrate":
-							self.Spl["search_order"] = "bitrate"
-							change = 1
-						elif x >= 50 and x <= 54  and self.Spl["search_order"] != "time":
-							self.Spl["search_order"] = "time"
-							change = 1
-						elif x >= 56 and x <= self.w-10:
-							if self.Spl["search_reverse"] == True:
-								self.Spl["search_reverse"] = False
-							elif self.Spl["search_reverse"] == False:
-								self.Spl["search_reverse"]= True
-							change = 1
-						elif x >=self.w-10 and x < self.w-1:
-							self.close_search(self.Spl["current_search"])
-						if change == 1:
-							self.search_mode()
-					
-					elif y == 4:
-						if self.Spl["current_search"] != "default__":
-							if x >=self.w-18:
-								self.Spl["current_search"]="default__"
-								self.search_mode()
-	
-				elif self.display["mode"] == "roomlist":
-					# ROOMLIST BUTTONS
-					if y == self.h-5:
-						if x >= 14 and x <= 22:
-							mucous_config["mucous"]["rooms_sort"] = "alpha"
-							self.rooms_mode()
-						elif x >= 24 and x <= 35:
-							mucous_config["mucous"]["rooms_sort"] = "alpha-reversed"
-							self.rooms_mode()
-						elif x >= 37 and x <= 46:
-							mucous_config["mucous"]["rooms_sort"] = "size"
-							self.rooms_mode()
-						elif x >= 47 and x <= 56:
-							mucous_config["mucous"]["rooms_sort"] = "size-reversed"
-							self.rooms_mode()
-						elif x >= self.w-16:
-							self.SendMessage(messages.RoomList())
-							
-					w = self.windows["dimensions"]["roomlist"]
-					if y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
-						y -= w["top"]
-						if y  + w["start"] in range(len(self.sizedrooms)):
-							self.scrolling["roomlist"]  = y  + w["start"]
-							self.display_room_list_mode()
-							return self.sizedrooms[self.scrolling["roomlist"]]
-
-							
-				elif self.display["mode"] == "lists":
-					w = self.windows["dimensions"][self.display["list"]]
-					if y == 1:
-						if x >= 4 and x <= 15:
-							self.display["list"]="buddied"
-							self.list_mode()
-						elif x >= 17 and x <= 27:
-							self.display["list"]="banned"
-							self.list_mode()
-						elif x >= 29 and x <= 40:
-							self.display["list"]="ignored"
-							self.list_mode()
-						elif x >= 42 and x <= 51:
-							self.display["list"]="trusted"
-							self.list_mode()
-						elif x >= 52 and x <= 64:
-							self.display["list"]="interests"
-							self.list_mode()
-						return
-					if self.display["list"] == "interests":
-						rexw = self.windows["dimensions"]["recommendations"]
-						userw = self.windows["dimensions"]["similar_users"]
-						hatew = self.windows["dimensions"]["hates"]
-						likew = self.windows["dimensions"]["likes"]
-						
-# 						self.Hlog("debug", "%d %d" % (x, y) )
-						if y >= userw["top"]-1 and y < userw["top"] + userw["height"]+1 and x >= userw["left"]-1 and x < userw["left"]+1 +userw["width"]:
-# 							self.Hlog("debug", "sim")
-							w = userw
-							if self.display["interests"] != "similar_users":
-								self.display["interests"] = "similar_users"
-						
-							if y == w["top"] + w["height"]:
-								if x >= w["left"]+w["width"] -11 and x <=  w["left"]+w["width"]:
-									self.SendMessage(messages.GetSimilarUsers())
-							if y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
-								y -= w["top"]
-								this_list = self.logs[self.display["interests"]]
-								if y  + w["start"] in range(len(this_list)):
-									self.scrolling[self.display["interests"]]  = y  + w["start"]
-									self.line = str(self.logs[self.display["interests"]][self.scrolling[self.display["interests"]]][0])
-							self.interests_mode()
-							return self.line
-						elif y >= likew["top"]-1 and y < likew["top"] + likew["height"]+1 and x >= likew["left"]-1 and x < likew["left"]+1 +likew["width"]:
-# 							self.Hlog("debug", "lik")
-							w = likew
-							if self.display["interests"] != "likes":
-								self.display["interests"] = "likes"
-								
-							
-							if y == w["top"] + w["height"]:
-								
-								if x >= w["left"]+2 and x <= w["left"]+7:
-									
-									if self.Spl["interests_input"] == "add_likes":
-										self.send_add_interest(self.line)
-									else:
-										self.Spl["interests_input"] = "add_likes"
-								elif x >= w["left"]+9 and x <= w["left"]+w["width"]:
-									if self.Spl["interests_input"] == "del_likes":
-										self.send_remove_interest(self.line)
-									else:
-										self.Spl["interests_input"] = "del_likes"
-									
-							if y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
-								y -= w["top"]
-								this_list = self.logs[self.display["interests"]]
-								
-								if y  + w["start"] in range(len(this_list)):
-									self.scrolling[self.display["interests"]]  = y  + w["start"]
-									self.line = self.logs[self.display["interests"]][self.scrolling[self.display["interests"]]]
-
-								
-							self.interests_mode()
-							return self.line
-						elif y >= hatew["top"]-1 and y < hatew["top"] + hatew["height"]+1 and x >= hatew["left"]-1 and x < hatew["left"]+1 +hatew["width"]:
-# 							self.Hlog("debug", "hat")
-							w = hatew
-							if self.display["interests"] != "hates":
-								self.display["interests"] = "hates"
-							if y == w["top"] + w["height"]:
-								if x >= 2 and x <= 7:
-									if self.Spl["interests_input"] == "add_hates":
-										self.send_add_hated_interest(self.line)
-									else:
-										self.Spl["interests_input"] = "add_hates"
-									
-								elif x >= w["left"]+9 and x <= w["left"]+w["width"]:
-									if self.Spl["interests_input"] == "del_hates":
-										self.send_remove_hated_interest(self.line)
-									else:
-										self.Spl["interests_input"] = "del_hates"
-							if y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
-								y -= w["top"]
-								this_list = self.logs[self.display["interests"]]
-								if y  + w["start"] in range(len(this_list)):
-									self.scrolling[self.display["interests"]]  = y  + w["start"]
-									self.line = self.logs[self.display["interests"]][self.scrolling[self.display["interests"]]]
-							self.interests_mode()
-							return self.line
-						elif y >= rexw["top"]-1 and y < rexw["top"] + rexw["height"]+1 and x >= rexw["left"]-1 and x < rexw["left"]+1 +rexw["width"]:
-							w = rexw
-# 							self.Hlog("debug", "rec")
-							if self.display["interests"] != "recommendations":
-								self.display["interests"] = "recommendations"
-							if y == w["top"] -1:
-# 								self.Hlog("debug", w["left"]+w["width"] -len(self.Spl["interests_input"]) -5)
-# 								self.Hlog("debug", w["left"]+w["width"])
-								if x >= w["left"]+w["width"] -len(self.Spl["recommend_sort"]) -5 and x <=  w["left"]+w["width"]:
-									if self.Spl["recommend_sort"] == "size":
-										self.Spl["recommend_sort"] = "alpha"
-									elif self.Spl["recommend_sort"] == "alpha":
-										self.Spl["recommend_sort"] = "size"
-							elif y == w["top"] + w["height"]:
-								if x >= w["left"]+ 1 and x <=  w["left"]+12:
-									self.SendMessage(messages.GetRecommendations())
-								elif x >= w["left"]+w["width"] -10 and x <=  w["left"]+w["width"]:
-									self.SendMessage(messages.GetGlobalRecommendations())
-							elif y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
-								y -= w["top"]
-								this_list = self.logs[self.display["interests"]]
-								if y  + w["start"] in range(len(this_list)):
-									self.scrolling[self.display["interests"]]  = y  + w["start"]
-									self.line = self.logs[self.display["interests"]][self.scrolling[self.display["interests"]]][0]
-									
-							self.interests_mode()
-							return self.line
-					elif self.display["list"] in ("buddied", "banned", "ignored", "trusted"):
-						# clicking on items in lists
-						if y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
-							y -= w["top"]
-							
-							this_list = self.logs[self.display["list"]]
-							if y  + w["start"] in range(len(this_list)):
-								self.scrolling[self.display["list"]]  = y  + w["start"]
-								
-								if event in ( 4096, 16384):
-									self.display_lists()
-									self.Spl["show_menu"] = True
-									self.create_menu("lists", 0)
-								else:
-									self.display_lists()
-							
-							
-				elif self.display["mode"] == "transfer":
-					# TRANSFERS BUTTONS
-					# Clickable transfer type switcher
-					up = self.scrolling[self.display["transfers"]]
-					if mucous_config["mucous"]["transbox"]=="split":
-						u = self.windows["dimensions"]["uploads"]
-						d = self.windows["dimensions"]["downloads"]
-						
-						w = None
-						
-						if y >= u["top"]+1 and y <= u["top"] + u["height"] and x >= u["left"] and x < u["left"] +u["width"]:
-							if self.display["transfers"] != "uploads":
-								self.display["transfers"] = "uploads"
-								self.transfer_mode()
-							w = u
-							#y -= w["top"]+1
-						elif y >= d["top"]+1 and y <= d["top"] + d["height"] and x >= d["left"] and x < d["left"] +d["width"]:
-							if self.display["transfers"] != "downloads":
-								self.display["transfers"] = "downloads"
-								self.transfer_mode()
-							w = d
-	
-						if w != None:
-							if self.math_transfer_window(w, event, x, y, up) == 1:
-								return
-	
-					else:
-						if y == 1:
-							if x >=2 and x < 26:
-								self.display["transfers"]="uploads"
-							elif x >=27 and x < 40:	
-								self.display["transfers"]="downloads"
-							self.transfer_mode()
-							return
-							
-						if self.display["transfers"] == "uploads":
-							w = self.windows["dimensions"]["uploads"]
-						else:
-							w = self.windows["dimensions"]["downloads"]
-						r = self.math_transfer_window(w, event, x, y, up)
-						if r == 1:
-							return	
-		
-				elif self.display["mode"] == "setup":
-					self.setup_mouse(x, y)
-					
-	
-				elif self.display["mode"] in ("help", "debug"):
-					if y == self.windows["dimensions"]["help"]["top"]-1:
-						if x >= 4 and x <= 16 and self.display["mode"] != "help":
-							self.display["mode"] = "help"
-							self.help_mode()
-						elif x >= 18 and x <= 31 and self.display["mode"] != "debug":
-							self.display["mode"] = "debug"
-							self.help_mode()
-				# END OF MOUSE
+				line = self.mouse_xy(line)
 				
 				
-			if key in( "KEY_LEFT", chr(91), chr(34), "KEY_RIGHT", chr(93), chr(35), "KEY_IC"):
+			elif key in( "KEY_LEFT", chr(91), chr(34), "KEY_RIGHT", chr(93), chr(35), "KEY_IC"):
 				if key == "KEY_LEFT" or key == chr(91) or key == chr(34):
 					direction = "left"
 				elif key == "KEY_RIGHT" or key == chr(93) or key == chr(35) or key == "KEY_IC":
