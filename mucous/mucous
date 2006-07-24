@@ -814,7 +814,8 @@ class mucous(driver.Driver):
 		try:
 			if self.display["mode"] == "chat":
 				mw = self.windows["border"]["chat"]
-				bw = self.windows["border"]["roomstatus"]
+				if "roomstatus" in self.windows["border"]:
+					bw = self.windows["border"]["roomstatus"]
 				s = self.windows["dimensions"]["chat"]
 				for rooms8, ticks in self.data["tickers"].items():
 					if rooms8 == self.Spl["room"]:
@@ -827,15 +828,15 @@ class mucous(driver.Driver):
 									self.Spl["ticker_num"] = 0
 								if names == ttickers[self.Spl["ticker_num"]]:
 									n= len(names)
-									
+#Oo < Chat Rooms >  < [] 
 									try:
 										if self.Spl["show_menu"] == True: raise  Exception,  "Noticker"
 										if self.display["chatshape"] not in ("nostatuslog", "chat-only"):
 											if self.display["chatshape"] == "noroombox":
-												ticker = "< ["+names+"] "+str(ticks[names][:self.w-2-9-n])
+												ticker = "< ["+names+"] "+str(ticks[names][:self.w-9-n])
 											else:
-												ticker = "< ["+names+"] "+str(ticks[names][:self.w-15-2-9-n])
-											bw.addstr(5, 3, self.decode_language( ticker ))
+												ticker = "< ["+names+"] "+str(ticks[names][:self.w-15-9-n])
+											bw.addstr(5, 1, self.decode_language( ticker ))
 											t = len(ticker)
 											fill = ""
 											while len(fill) < s["width"]-4-t:
@@ -844,11 +845,11 @@ class mucous(driver.Driver):
 											bw.addstr(fill)
 											bw.refresh()
 										elif self.display["chatshape"] in ("nostatuslog", "chat-only"):
-											ticker = "< ["+names+"] "+str(ticks[names][:s["width"]-15-9-n])
-											mw.addstr(0, 19, self.decode_language( ticker ))
+											ticker = "< ["+names+"] "+str(ticks[names][:s["width"]-25-n])
+											mw.addstr(0, 18, self.decode_language( ticker ))
 											t = len(ticker)
 											fill = ""
-											while len(fill) < s["width"]-4-15-t:
+											while len(fill) < s["width"]-t-20:
 												fill += " "
 											fill += ">"
 											mw.addstr(fill)
@@ -2441,9 +2442,7 @@ class mucous(driver.Driver):
 				stype = "Peer"
 			elif type == 0:
 				stype = "Server"
-			elif type == 2:
-				stype = "Daemon"
-			self.Hlog("status", "%d, %s Message: %s" % (len(message), stype, message))
+			self.Hlog("status", "%s Message: %s" % (stype, message))
 		except Exception,e:
 			self.Hlog("debug", "cb_status_message: " +str( e) )	
 			
@@ -6857,10 +6856,10 @@ class mucous(driver.Driver):
 								attrib = curses.A_BOLD | curses.A_REVERSE 
 							else:
 								attrib = curses.A_NORMAL
-						if len(users[:w["width"]-2]) < w["width"]-2:
-							space = " " * ( w["width"]-2 - len(users[:w["width"]-2]))
+						if len(users[:w["twidth"]-2]) < w["twidth"]-2:
+							space = " " * ( w["twidth"]-2 - len(users[:w["twidth"]-2]))
 						else: space =''
-						tw.addstr(self.decode_language(users[:w["width"]-2])+space, attrib)	
+						tw.addstr(self.decode_language(users[:w["twidth"]-2])+space, attrib)	
 						
 					except:
 						pass
@@ -6877,24 +6876,30 @@ class mucous(driver.Driver):
 				if self.display["chatshape"] in ("big", "nostatuslog", "widelist", "rightlist"):
 					w = self.windows["dimensions"]["chat"]
 					if self.display["chatshape"] == "rightlist":
-						s = self.windows["dimensions"]["roombox"] = {"height": self.h-7, "top": 2, "left": (4+w["width"])-1, "width": self.w-4-w["width"], "start": -1 }
+						s = self.windows["dimensions"]["roombox"] = {"height": self.h-7, "top": 2, "left": (w["width"]), "width": self.w-w["width"], "start": -1 }
 					else:
-						s = self.windows["dimensions"]["roombox"] = {"height": self.h-7, "top": 2, "left": 1, "width": self.w-4-w["width"], "start": -1 }
-					#s = self.windows["dimensions"]["roombox"] = {"height": self.h-7, "top": 2, "left": 1, "width": 13}
-					mw = self.windows["border"]["roombox"]  = curses.newwin(s["height"]+2, s["width"]+2, s["top"]-1, s["left"]-1)
+						s = self.windows["dimensions"]["roombox"] = {"height": self.h-7, "top": 2, "left": 0, "width": self.w-w["width"], "start": -1 }
+					mw = self.windows["border"]["roombox"]  = curses.newwin(s["height"]+2, s["width"], s["top"]-1, s["left"])
 					if self.display["chat"] == "roombox":
 						mw.attron(self.colors["green"])
-					mw.border()
+
 					mw.attroff(self.colors["green"])
-					tw = self.windows["text"]["roombox"] = mw.subwin(s["height"], s["width"], s["top"], s["left"])
+					if self.display["chatshape"] == "rightlist":
+						self.windows["dimensions"]["roombox"]["twidth"] = s["width"]-1
+						self.windows["dimensions"]["roombox"]["tleft"] = s["left"]+1
+					else:
+						self.windows["dimensions"]["roombox"]["twidth"] = s["width"]-1
+						self.windows["dimensions"]["roombox"]["tleft"] = s["left"]
+					tw = self.windows["text"]["roombox"] = mw.subwin(s["height"], s["twidth"], s["top"], s["tleft"])
 				elif self.display["chatshape"] == "small":
-					s = self.windows["dimensions"]["roombox"] = {"height": 4, "top": 2, "left": 1,  "width": 13}
-					mw = self.windows["border"]["roombox"] = curses.newwin(s["height"]+2, s["width"]+2, s["top"]-1, s["left"]-1)
+					s = self.windows["dimensions"]["roombox"] = {"height": 4, "top": 2, "left": 0,  "width": 15}
+					mw = self.windows["border"]["roombox"] = curses.newwin(s["height"]+2, s["width"], s["top"]-1, s["left"])
 					if self.display["chat"] == "roombox":
 						mw.attron(self.colors["green"])
-					mw.border()
+
 					mw.attroff(self.colors["green"])
-					tw = self.windows["text"]["roombox"] = mw.subwin(s["height"], s["width"], s["top"], s["left"])
+					self.windows["dimensions"]["roombox"]["twidth"] = s["width"] -1
+					tw = self.windows["text"]["roombox"] = mw.subwin(s["height"], s["twidth"], s["top"], s["left"])
 					
 				if self.display["chatshape"] in ("big", "small", "nostatuslog", "widelist", "rightlist"):
 					tw.scrollok(0)
@@ -6904,21 +6909,27 @@ class mucous(driver.Driver):
 					if self.Spl["room"] != None:
 						try:
 							if self.display["chat"] == "roombox":
-								
-								mw.addstr(0, 1, "<           >", self.colors["green"])
-								mw.addstr(0, 2, "Users: "+str(len(self.data["rooms"][self.Spl["room"]])), self.colors["green"]|curses.A_BOLD)
+								mw.addstr(0, 0, "Users: "+str(len(self.data["rooms"][self.Spl["room"]])), self.colors["green"]|curses.A_BOLD)
 							else:
-								mw.addstr(0, 1, "<           >")
-								mw.addstr(0, 2, "Users: "+str(len(self.data["rooms"][self.Spl["room"]])),  curses.A_BOLD)
+
+								mw.addstr(0, 0, "Users: "+str(len(self.data["rooms"][self.Spl["room"]])),  curses.A_BOLD)
 							
 						except:
 							pass
 						if "autojoin" in self.config:
-							if self.Spl["room"] in self.config["autojoin"].keys():
-								try:
-									mw.addstr(self.windows["dimensions"]["roombox"]["height"]+1, 2, "Auto-Joined",  curses.A_BOLD)
-								except Exception, e:
-									self.Hlog("debug", "AutoJoined: " + str(e))
+							try:
+								if self.display["chat"] == "roombox":
+									cs  = self.colors["green"] |curses.A_BOLD
+								else:
+									cs  = curses.A_BOLD
+								if self.Spl["room"] in self.config["autojoin"].keys():
+									
+									mw.addstr(self.windows["dimensions"]["roombox"]["height"]+1, 0, "[x] AutoJoined",  cs)
+								else:
+									mw.addstr(self.windows["dimensions"]["roombox"]["height"]+1, 0, "[ ] AutoJoined",  cs)
+							except Exception, e:
+								self.Hlog("debug", "AutoJoined: " + str(e))
+								
 					mw.noutrefresh()
 				
 					if self.Spl["room"] != None:
@@ -6951,25 +6962,25 @@ class mucous(driver.Driver):
 			# Arrangements: 
 			cs = None
 			if self.display["chatshape"] == "big":
-				w = self.windows["dimensions"]["chat"] = {"height": self.h-13, "width": self.w-17, "top": 8, "left": 16}
-				cs = self.windows["dimensions"]["roomstatus"] = {"height": 4, "width": w["width"], "top": 2, "left": w["left"]}
+				w = self.windows["dimensions"]["chat"] = {"height": self.h-13, "width": self.w-15, "top": 8, "left": 16}
+				cs = self.windows["dimensions"]["roomstatus"] = {"height": 4, "width": w["width"]-2, "top": 2, "left": w["left"]}
 			elif self.display["chatshape"] == "widelist":
-				w = self.windows["dimensions"]["chat"] = {"height": self.h-13, "width": self.w-27, "top": 8, "left": 26}
-				cs = self.windows["dimensions"]["roomstatus"] ={"height": 4, "width": w["width"], "top": 2, "left": w["left"]}
+				w = self.windows["dimensions"]["chat"] = {"height": self.h-13, "width": self.w-25, "top": 8, "left": 26}
+				cs = self.windows["dimensions"]["roomstatus"] ={"height": 4, "width": w["width"]-2, "top": 2, "left": w["left"]}
 			elif self.display["chatshape"] in ("noroombox", "small"):
-				w = self.windows["dimensions"]["chat"] = {"height": self.h-13, "width": self.w-2, "top": 8, "left": 1}
+				w = self.windows["dimensions"]["chat"] = {"height": self.h-13, "width": self.w, "top": 8, "left": 1}
 				if self.display["chatshape"] in ("noroombox"):
-					cs = self.windows["dimensions"]["roomstatus"] = {"height": 4, "width": w["width"], "top": 2, "left": 1}
+					cs = self.windows["dimensions"]["roomstatus"] = {"height": 4, "width": w["width"]-2, "top": 2, "left": 1}
 					#cs["height"]-2, cs["width"]-1, cs["top"]+1,cs["left"]+1
 				elif self.display["chatshape"] in ("small"):
-					cs = self.windows["dimensions"]["roomstatus"] = {"height": 4, "width": w["width"]-15, "top": 2, "left": 16}
+					cs = self.windows["dimensions"]["roomstatus"] = {"height": 4, "width": w["width"]-15-2, "top": 2, "left": 16}
 			elif self.display["chatshape"] == "rightlist":
-				w = self.windows["dimensions"]["chat"] = {"height": self.h-13, "width": self.w-17, "top": 8, "left": 1}
-				cs = self.windows["dimensions"]["roomstatus"] = {"height": 4, "width": w["width"], "top": 2, "left": 1}
+				w = self.windows["dimensions"]["chat"] = {"height": self.h-13, "width": self.w-15, "top": 8, "left": 1}
+				cs = self.windows["dimensions"]["roomstatus"] = {"height": 4, "width": w["width"]-2, "top": 2, "left": 1}
 			elif self.display["chatshape"] == "nostatuslog":
-				w = self.windows["dimensions"]["chat"] = {"height": self.h-7, "width": self.w-17, "top": 2, "left": 16}
+				w = self.windows["dimensions"]["chat"] = {"height": self.h-7, "width": self.w-15, "top": 2, "left": 16}
 			elif self.display["chatshape"] == "chat-only":
-				w = self.windows["dimensions"]["chat"] = {"height": self.h-7, "width": self.w-2, "top": 2, "left": 1}
+				w = self.windows["dimensions"]["chat"] = {"height": self.h-7, "width": self.w, "top": 2, "left": 1}
 			
 			if cs != None:
 				brw = self.windows["border"]["roomstatus"] = curses.newwin(cs["height"]+2, cs["width"]+2, cs["top"]-1, cs["left"]-1)
@@ -6978,12 +6989,12 @@ class mucous(driver.Driver):
 					
 			self.windows["dimensions"]["chat"]["start"] = 0
 			try:
-				mw = self.windows["border"]["chat"] = curses.newwin(w["height"]+2, w["width"]+2, w["top"]-1, w["left"]-1)
+				mw = self.windows["border"]["chat"] = curses.newwin(w["height"]+2, w["width"], w["top"]-1, w["left"]-1)
 				if self.usernames["username"] == None:
-					mw.border()
+					#mw.border()
 					mw.noutrefresh()
 					
-				tw =self.windows["text"]["chat"] = self.windows["border"]["chat"].subwin(w["height"], w["width"], w["top"], w["left"])
+				tw =self.windows["text"]["chat"] = self.windows["border"]["chat"].subwin(w["height"], w["width"], w["top"], w["left"]-1)
 			except Exception, e:
 				self.Hlog("debug", "Chat Mode: " + str(e))
 
@@ -7587,24 +7598,27 @@ class mucous(driver.Driver):
 			mw = self.windows["border"]["chat"]
 			if self.display["chat"] == "chatroom":
 				mw.attron(self.colors["green"])
-				mw.border()
+				mw.hline(0, 0, curses.ACS_HLINE, s["width"]-1)
+				mw.hline(s["height"]+1, 0, curses.ACS_HLINE, s["width"]-1)
 				mw.addstr(0, 0, "Oo",  self.colors["green"] | curses.A_BOLD)
 				mw.addstr(0, 3, "< Chat Rooms >",  self.colors["green"] | curses.A_BOLD)
-				mw.addstr(1, s["width"]+1, "^",  self.colors["green"] | curses.A_BOLD)
-				mw.addstr(s["height"], s["width"]+1, "v",  self.colors["green"] | curses.A_BOLD)
-				
+				mw.addstr(0, s["width"]-1, "^",  self.colors["green"] | curses.A_BOLD)
+				try:
+					mw.addstr(s["height"]+1, s["width"]-1, "v",  self.colors["green"] | curses.A_BOLD)
+				except: pass
 				mw.addstr(s["height"]+1, 2, "< "+str(abs(self.scrolling["chatroom"]))+" >", self.colors["green"] | curses.A_BOLD)
-# 				self.Hlog("debug", "rR")
 				if self.Spl["room"] != None:
 					if len(self.logs["rooms"][self.Spl["room"]]) -1 <= abs(self.scrolling["chatroom"]):
 						mw.addstr(s["height"]+1, 10, "< AutoScrolling >", self.colors["green"] | curses.A_BOLD)
 				
 			else:
-				mw.border()
+				mw.hline(0, 0, curses.ACS_HLINE, s["width"]-1)
 				mw.addstr(0, 0, "Oo", curses.A_BOLD)
 				mw.addstr(0, 3, "< Chat Rooms >",   curses.A_BOLD)
-				mw.addstr(1, s["width"]+1, "^",  curses.A_BOLD)
-				mw.addstr(s["height"], s["width"]+1, "v",  curses.A_BOLD)
+				mw.addstr(0, s["width"]-1, "^",  curses.A_BOLD)
+				try:
+					mw.addstr(s["height"]+1, s["width"]-1, "v",  curses.A_BOLD)
+				except: pass
 # 				mw.addstr(s["height"]+1, 2, "< "+str(abs(self.scrolling["chatroom"]))+" >", curses.A_BOLD)
 			mw.noutrefresh()
 			
@@ -7659,9 +7673,6 @@ class mucous(driver.Driver):
 		try:
 # 			[ "small","big","widelist","rightlist","nostatuslog","chat-only","noroombox"]
 
-			
-			
-			
 			if self.display["chatshape"] == "noroombox":
 				self.display["chatshape"] = "small"
 				self.display["chat"]  = "roombox"
@@ -7694,27 +7705,29 @@ class mucous(driver.Driver):
 		self.display["mode"] = "private"
 		self.Spl["show_menu"] = False
 		try:
-			w = self.windows["dimensions"]["private"] = {"height": self.h-10, "width": self.w-2, "top": 5, "left": 1}
-			mw = self.windows["border"]["private"] = curses.newwin(w["height"]+2,w["width"]+2, w["top"]-1, w["left"]-1)
+			#w = self.windows["dimensions"]["private"] = {"height": self.h-10, "width": self.w-2, "top": 5, "left": 1}
+			w = self.windows["dimensions"]["private"] = {"height": self.h-8, "width": self.w, "top": 4, "left": 0}
+			#mw = self.windows["border"]["private"] = curses.newwin(w["height"]+2,w["width"]+2, w["top"]-1, w["left"]-1)
 			
-			if self.usernames["private"] != None:
-				mw.attron(self.colors["green"])
-				attr = self.colors["green"]
-			else:
-				attr = curses.A_NORMAL
-			mw.border()
-			try:
-				mw.addstr(0, 3, "< ", attr)
-				if self.usernames["private"] == None:
-					mw.addstr(0, 5, "Private Chat",  self.colors["green"] | curses.A_BOLD)
-					mw.addstr(0, 17, " >", attr)
-				else:
-					mw.addstr(0, 5, "Private Chat with %s" % self.usernames["private"],  self.colors["green"] | curses.A_BOLD)
-					mw.addstr(0, 23+len(self.usernames["private"]), " >", attr)
-				mw.refresh()
-			except:
-				pass
-			tw =  self.windows["text"]["private"] = mw.subwin(w["height"], w["width"], w["top"], w["left"])
+			#if self.usernames["private"] != None:
+				#mw.attron(self.colors["green"])
+				#attr = self.colors["green"]
+			#else:
+				#attr = curses.A_NORMAL
+			#mw.border()
+			#try:
+				#mw.addstr(0, 3, "< ", attr)
+				#if self.usernames["private"] == None:
+					#mw.addstr(0, 5, "Private Chat",  self.colors["green"] | curses.A_BOLD)
+					#mw.addstr(0, 17, " >", attr)
+				#else:
+					#mw.addstr(0, 5, "Private Chat with %s" % self.usernames["private"],  self.colors["green"] | curses.A_BOLD)
+					#mw.addstr(0, 23+len(self.usernames["private"]), " >", attr)
+				#mw.refresh()
+			#except:
+				#pass
+			tw =  self.windows["text"]["private"] = curses.newwin(w["height"], w["width"], w["top"], w["left"])				
+			#tw =  self.windows["text"]["private"] = mw.subwin(w["height"], w["width"], w["top"], w["left"])
 			
 			tw.scrollok(0)
 			tw.idlok(1)
