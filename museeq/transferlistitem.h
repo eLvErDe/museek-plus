@@ -33,7 +33,10 @@ public:
 	void update(const NTransfer&);
 	void remove(const QString&);
 	void updateStats();
-	
+
+	const uint getSeparation() const { return separation; }
+	void setSeparation(uint s) { separation = s; }
+
 	QString user() const;
 	QString path() const;
 	uint state() const;
@@ -41,7 +44,8 @@ public:
 	Q_INT64 position() const;
 	Q_INT64 size() const;
 	uint rate() const;
-	
+	void paintCell(QPainter *, const QColorGroup &, int, int, int);
+
 protected:
 	void updatePath();
 	void update(const NTransfer&, bool);
@@ -50,6 +54,7 @@ private:
 	uint mState, mRate, mPlaceInQueue;
 	QString mUser, mPath, mError;
 	Q_INT64 mPosition, mSize;
+	uint separation;
 };
 
 

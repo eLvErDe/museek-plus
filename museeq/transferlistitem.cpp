@@ -21,7 +21,7 @@
 #include "util.h"
 #include "museeq.h"
 TransferListItem::TransferListItem(QListView* p, const QString& _u, const QString& _p)
-                 : QListViewItem(p), mUser(_u), mPath(_p) {
+                 : QListViewItem(p), mUser(_u), mPath(_p), separation(10) {
 	
 	setSelectable(! mPath.isNull());
 	setDragEnabled(true);
@@ -39,7 +39,7 @@ TransferListItem::TransferListItem(QListView* p, const QString& _u, const QStrin
 }
 
 TransferListItem::TransferListItem(QListViewItem* p, const QString& _u, const QString& _p)
-                 : QListViewItem(p), mUser(_u), mPath(_p) {
+                : QListViewItem(p), mUser(_u), mPath(_p), separation(10) {
 	
 	setDragEnabled(true);
 	setText(0, mUser);
@@ -243,4 +243,70 @@ int TransferListItem::compare(QListViewItem* i, int col, bool) const {
 	case 7: return text(7).localeAwareCompare(item->text(7));
 	}
 	return 0;
+}
+
+// stolen from qt's qlistview.cpp
+static QString qEllipsisText( const QString &org, const QFontMetrics &fm, int width, int align ) {
+	int ellWidth = fm.width( "..." );
+	QString text = QString::fromLatin1("");
+	int i = 0;
+	int len = org.length();
+	int offset = (align & Qt::AlignRight) ? (len-1) - i : i;
+	while ( i < len && fm.width( text + org[ offset ] ) + ellWidth < width ) {
+		if ( align & Qt::AlignRight )
+			text.prepend( org[ offset ] );
+		else
+			text += org[ offset ];
+			offset = (align & Qt::AlignRight) ? (len-1) - ++i : ++i;
+	}
+	if ( text.isEmpty() )
+		text = ( align & Qt::AlignRight ) ? org.right( 1 ) : text = org.left( 1 );
+	if ( align & Qt::AlignRight )
+		text.prepend( "..." );
+	else
+		text += "...";
+	return text;
+}
+
+
+void TransferListItem::paintCell(QPainter * p, const QColorGroup & cg, int column, int width, int align) {
+	// colour based on status
+	QColor base(cg.base());
+	switch(state()) {
+	case 0:
+		base.setRgb(225,240,227);
+		break;
+	case 1:
+		base.setRgb(226,234,240);
+		break;
+	case 11:
+		base.setRgb(233,212,197);
+		break;
+	case 12:
+	case 13:
+		base.setRgb(233,197,197);
+		break;
+  	}
+	if(isSelected()) {
+		int r = base.red();
+		int g = base.green();
+		int b = base.blue();
+		if(r==255&&g==255&b==255)
+			base.setRgb(cg.highlight().rgb());
+		else {
+			r = (r + cg.highlight().red())/2;
+			g = (g + cg.highlight().green())/2;
+			b = (b + cg.highlight().blue())/2;
+			base.setRgb(r,g,b);
+		}
+	}
+	p->fillRect(0, 0, width, height(), base);
+	// draw the text of the column, indented byb separation
+	QString t = text(column);
+	QFontMetrics fm(p->fontMetrics());
+	
+	if( (fm.width(t) + 10) > width)
+		t = qEllipsisText(t,fm,(width-10),align);
+	
+	p->drawText(separation, 0, width - separation, height(), align,t );
 }
