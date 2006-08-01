@@ -105,8 +105,8 @@ mucous_config = {"connection":{"interface":'localhost:2240', "passw":None}, \
 	"roombox": "big", "log_dir": "~/.mucous/logs/", "now-playing": "default", \
 	"now-playing-prefix": None, "browse_display_mode": "filesystem", \
 	"url reader": "firefox", "url custom prefix": "", "url custom suffix": "", \
-	"transbox" : "split", "language": "iso-8859-1", "beep": "True", "autoaway": "yes", \
-	"Auto-Retry": "True", "Auto-Clear": "False", "logging": "True", "extra_requests": "Yes"}, \
+	"transbox" : "split", "language": "iso-8859-1", "beep": "yes", "autoaway": "yes", \
+	"auto-retry": "yes", "auto-clear": "no", "logging": "yes", "extra_requests": "Yes"}, \
 	"tickers":{'tickers_enabled': 'yes', "ticker_cycle": "yes", "rooms":{} }, \
 	"aliases": {"mucous":"Mucous is a Curses client for the Museek Soulseek Daemon. Website: http://thegraveyard.org/daelstorm/mucous.php", "museek":"Museek is a Soulseek Daemon/Client. The website is http://museek.thegraveyard.org/"},\
 	"rooms": {"default_room":"museek"}\
@@ -208,7 +208,8 @@ if log_dir != None and log_dir != "":
 elif "log_dir" in mucous_config["mucous"]:
 	if mucous_config["mucous"]["log_dir"] in ("", None, "None"):
 		mucous_config["mucous"]["log_dir"] = str(os.path.expanduser("~/.mucous/logs/"))
-
+if str(mucous_config["mucous"]["logging"]) == "True":
+	mucous_config["mucous"]["logging"] = "yes"
 
 		
 # This is the input line/bar
@@ -222,7 +223,6 @@ class editor(threading.Thread):
 		self.history = mucous.history
 		self.h, self.w = win.getmaxyx()
 		self.scroll = 0
-# 		self.textwin = mucous.windows["text"][mucous.display["mode"]]
 		self.line = mucous.line
 		self.x = len(self.line)
 		self.fixpos()
@@ -441,7 +441,6 @@ class editor(threading.Thread):
 				self.win.addstr(self.line[self.scroll:self.scroll+self.w-1])
 			except Exception, e:
 				self.mucous.Hlog("debug", "Editwin: "+ str(e))
-				#pass
 			self.win.refresh()
 		except Exception, e:
 			self.mucous.Hlog("debug", "fixpos: \""+str(self.line)+"\" "+ str(e))
@@ -543,7 +542,7 @@ class mucous(driver.Driver):
 "/search", "/searchfor", "/searchbuddy", "/searchroom", "/download", "/downdir", "/browse",\
 "/browseuser", "/browsesearch", "/browsedown",  "/downuser",\
 "/downpath", "/downpathdir",  "/chat", "/ignorelist", "/banlist", "/transfer", "/transfers", "/private",\
-"/buddylist", "/setup", "/quit",  "/share-mode", "/logging", "/reloadshares", "/rescanshares", "/version", "/extra", \
+"/buddylist", "/setup", "/quit", "/logging", "/logdir", "/reloadshares", "/rescanshares", "/version", "/extra", \
 "/logout", "/login", "/like ", "/donotlike ", "/donothate ", "/hate ", "/similar", "/globalrex", "/recommendations", "/rex", "/itemsimilar ", "/itemrex ", "/uploadto ", "/upload ", "/ctcpversion ", "/defaulttick ", "/settemptick ", "/settick "]
 		
 		for alias in mucous_config["aliases"].keys():
@@ -734,7 +733,7 @@ class mucous(driver.Driver):
 			
 	def retry_display(self):
 		try:
-			if mucous_config["mucous"]["Auto-Retry"] != "True":
+			if mucous_config["mucous"]["auto-retry"] != "yes":
 				self.retry_timer.cancel()
 			else:
 				for user_path, transfer  in self.transfers["downloads"].items():
@@ -758,7 +757,7 @@ class mucous(driver.Driver):
 	
 	def clear_display(self):
 		try:
-			if mucous_config["mucous"]["Auto-Clear"] != "True":
+			if mucous_config["mucous"]["auto-clear"] != "yes":
 				self.clear_timer.cancel()
 			else:
 				for userpath, values in self.transfers["uploads"].items():
@@ -828,7 +827,6 @@ class mucous(driver.Driver):
 									self.Spl["ticker_num"] = 0
 								if names == ttickers[self.Spl["ticker_num"]]:
 									n= len(names)
-#Oo < Chat Rooms >  < [] 
 									try:
 										if self.Spl["show_menu"] == True: raise  Exception,  "Noticker"
 										if self.display["chatshape"] not in ("nostatuslog", "chat-only"):
@@ -921,16 +919,14 @@ class mucous(driver.Driver):
 						self.Hlog("status", lines)
 					q = "42"
 					while q == "42":
+						# Run Commands while offline
 						sleep(0.01)
 						try:
 							c = self.stdscr.getkey(self.h-3, self.edit.x+1)
 							keys.append(c)
 						except:
 							pass
-						if not keys:
-							d = 1000
-						else:
-							d = 0
+	
 						while keys:
 							c, keys = keys[0], keys[1:]
 							
@@ -954,7 +950,6 @@ class mucous(driver.Driver):
 
 	def process(self):
 
-#		c = None
 		keys = []
 		
 		while 1:
@@ -1343,11 +1338,19 @@ class mucous(driver.Driver):
 				elif line == "/redraw":
 					self.line = self.build()
 					
-				elif line[:8] == "/logging":
+				elif line == "/logging":
 					self.logging_toggle()
 					
 					if self.display["mode"]=="setup":
 						self.setup_mode()
+				elif line[:8] == "/logdir ":
+					path = line[8:]
+					if not path.isspace() and path != "":
+						if os.path.exists(os.path.expanduser(path)):
+							mucous_config["mucous"]["log_dir"] = os.path.expanduser(path)
+							self.Hlog("debug", "Logs directory set to: %s" % path)
+						else:
+							self.Hlog("debug", "Path for logs directory, %s, doesn't exist" % path)
 					'''
 					User Information
 					'''
@@ -1567,14 +1570,6 @@ class mucous(driver.Driver):
 					username = line[10:]
 					self.mod_config("distrust", username, '')
 					
-				elif line == "/share-mode":
-					if self.config["transfers"]["only_buddies"] == "true":
-						self.SendMessage(messages.ConfigSet("transfers", "only_buddies", "false"))
-						
-					elif self.config["transfers"]["only_buddies"] == "false":
-						self.SendMessage(messages.ConfigSet("transfers", "only_buddies", "true"))
-			
-					
 				elif line == "/autobuddy":
 					if mucous_config["mucous"]["autobuddy"]  == "yes":
 						mucous_config["mucous"]["autobuddy"] = "no"
@@ -1585,17 +1580,17 @@ class mucous(driver.Driver):
 					if self.display["mode"] == "setup":
 						self.setup_mode()
 				elif line == "/autoclear":
-					if str(mucous_config["mucous"]["Auto-Clear"]) == "True":
-						mucous_config["mucous"]["Auto-Clear"] = "False"
+					if str(mucous_config["mucous"]["auto-clear"]) == "yes":
+						mucous_config["mucous"]["auto-clear"] = "no"
 					else:
-						mucous_config["mucous"]["Auto-Clear"] = "True"
+						mucous_config["mucous"]["auto-clear"] = "yes"
 					if self.display["mode"] == "setup":
 						self.setup_mode()
 				elif line == "/autoretry":
-					if str(mucous_config["mucous"]["Auto-Retry"]) == "True":
-						mucous_config["mucous"]["Auto-Retry"] = "False"
+					if str(mucous_config["mucous"]["auto-retry"]) == "yes":
+						mucous_config["mucous"]["auto-retry"] = "no"
 					else:
-						mucous_config["mucous"]["Auto-Retry"] = "True"
+						mucous_config["mucous"]["auto-retry"] = "yes"
 					if self.display["mode"] == "setup":
 						self.setup_mode()
 					'''
@@ -2341,22 +2336,22 @@ class mucous(driver.Driver):
 	def logging_toggle(self):
 		try:
 			if "logging" in mucous_config["mucous"]:
-				if str(mucous_config["mucous"]["logging"]) not in ("True", "False"):
-					mucous_config["mucous"]["logging"] = "True"
+				if str(mucous_config["mucous"]["logging"]) not in ("yes", "no"):
+					mucous_config["mucous"]["logging"] = "yes"
 				else:
-					if str(mucous_config["mucous"]["logging"]) == "True":
-						mucous_config["mucous"]["logging"] = "False"
-					elif str(mucous_config["mucous"]["logging"]) == "False":
-						mucous_config["mucous"]["logging"] = "True"
+					if str(mucous_config["mucous"]["logging"]) == "yes":
+						mucous_config["mucous"]["logging"] = "no"
+					else:
+						mucous_config["mucous"]["logging"] = "yes"
 			else:
-				if str(mucous_config["mucous"]["logging"]) == "True":
-					mucous_config["mucous"]["logging"] = "False"
-				elif str(mucous_config["mucous"]["logging"]) == "False":
-					mucous_config["mucous"]["logging"] = "True"
+				if str(mucous_config["mucous"]["logging"]) == "yes":
+					mucous_config["mucous"]["logging"] = "no"
+				else:
+					mucous_config["mucous"]["logging"] = "yes"
 					
-			if str(mucous_config["mucous"]["logging"]) == "True":
+			if str(mucous_config["mucous"]["logging"]) == "yes":
 				self.Hlog("status", "Logging Chat is now Enabled.")
-			elif str(mucous_config["mucous"]["logging"]) == "False":
+			else:
 				self.Hlog("status", "Logging Chat is now Disabled.")
 		except Exception,e:
 			self.Hlog("debug", "logging_toggle: " + str(e))
@@ -2502,10 +2497,10 @@ class mucous(driver.Driver):
 		
 	def toggle_beep(self):
 		try:
-			if str(mucous_config["mucous"]["beep"]) == "True":
-				mucous_config["mucous"]["beep"] = "False"
-			elif str(mucous_config["mucous"]["beep"]) == "False":
-				mucous_config["mucous"]["beep"] = "True"
+			if str(mucous_config["mucous"]["beep"]) == "yes":
+				mucous_config["mucous"]["beep"] = "no"
+			else:
+				mucous_config["mucous"]["beep"] = "yes"
 			if self.display["mode"]=="setup":
 				self.setup_mode()
 		except Exception, e:
@@ -2717,7 +2712,7 @@ class mucous(driver.Driver):
 
 	def beep(self):
 		try:
-			if str(mucous_config["mucous"]["beep"]) == "True":
+			if str(mucous_config["mucous"]["beep"]) == "yes":
 				if os.path.expandvars("$SHELL") in  ("/bin/bash", "/bin/sh"):
 					os.system("echo -ne \\\\a " )
 		except Exception,e:
@@ -2777,7 +2772,7 @@ class mucous(driver.Driver):
 							self.alert["CHAT"][room] = "normal"
 			self.hotkeys()
 						
-			if mucous_config["mucous"]["logging"] in (True, "True"):
+			if mucous_config["mucous"]["logging"] in ("yes"):
 				message = "[%s]\t%s" % (user, text)
 				self.log_to_file("rooms", time.strftime("%d %b %Y %H:%M:%S"), room, message )
 		except Exception, e:
@@ -3031,10 +3026,10 @@ class mucous(driver.Driver):
 			
 			if user not in self.logs["private"].keys():
 				self.logs["private"][user] = []
-				if mucous_config["mucous"]["logging"] in (True, "True"):
+				if mucous_config["mucous"]["logging"] in ("yes"):
 					self.add_logs_to_private(user)
 				
-			if mucous_config["mucous"]["logging"] in (True, "True"):
+			if mucous_config["mucous"]["logging"] in ("yes"):
 				if direction == 0:
 					self.log_to_file("private", time.strftime("%d %b %Y %H:%M:%S"), user, "["+user+"]\t"+ message )
 				elif direction == 1:
@@ -3238,7 +3233,11 @@ class mucous(driver.Driver):
 				self.files =  []
 				return
 			length_list = len(str(len(self.data["shares"][user][dirs].keys() ) ) )
-			for file, stats in self.data["shares"][user][dirs].items():
+			list1 = self.data["shares"][user][dirs].keys()
+			list1.sort()
+
+			for file in list1:
+				stats = self.data["shares"][user][dirs][file]
 				count += 1
 				
 				self.data["browse_num"][user] = self.data["browse_num"][user] +1
@@ -3370,11 +3369,11 @@ class mucous(driver.Driver):
 					else:
 						self.download_manager()
 						curses.doupdate()
-			if mucous_config["mucous"]["Auto-Retry"] == "True":
+			if mucous_config["mucous"]["auto-retry"] == "yes":
 				self.retry_timer.cancel()
 				self.retry_timer = threading.Timer(30.0, self.retry_display)
 				self.retry_timer.start()
-			if mucous_config["mucous"]["Auto-Clear"] == "True":
+			if mucous_config["mucous"]["auto-clear"] == "yes":
 				self.clear_timer.cancel()
 				self.clear_timer = threading.Timer(30.0, self.clear_display)
 				self.clear_timer.start()
@@ -3606,7 +3605,7 @@ class mucous(driver.Driver):
 		
 			if message == curses.ascii.ctrl("A")+"VERSION"+curses.ascii.ctrl("A"):
 				message = "CTCP VERSION"
-			if mucous_config["mucous"]["logging"] in (True, "True"):
+			if mucous_config["mucous"]["logging"] in ("yes"):
 				self.log_to_file("private", time.strftime("%d %b %Y %H:%M:%S"), user, "["+self.usernames["username"]+"]\t" +message )
 			pmtype = "outgoing"
 			self.private_log(pmtype, user, self.decode_language(message))
@@ -5807,13 +5806,13 @@ class mucous(driver.Driver):
 							self.toggle_ticker_cycle()
 							
 						elif y == 10 and x >=1 and x <=40:
-							if mucous_config["mucous"]["Auto-Clear"] == "True":
-								mucous_config["mucous"]["Auto-Clear"] = "False"
+							if mucous_config["mucous"]["auto-clear"] == "yes":
+								mucous_config["mucous"]["auto-clear"] = "no"
 								self.clear_timer.cancel()
 								self.clear_timer = threading.Timer(30.0, self.clear_display)
 								
-							elif mucous_config["mucous"]["Auto-Clear"] == "False":
-								mucous_config["mucous"]["Auto-Clear"] ="True"
+							else:
+								mucous_config["mucous"]["auto-clear"] ="yes"
 								self.clear_timer.cancel()
 								self.clear_timer = threading.Timer(30.0, self.clear_display)
 								self.clear_timer.start()
@@ -5830,11 +5829,11 @@ class mucous(driver.Driver):
 							self.setup_mode()
 						
 						elif y == 11 and x >=1 and x <=40:
-							if mucous_config["mucous"]["Auto-Retry"] == "True":
-								mucous_config["mucous"]["Auto-Retry"] = "False"
+							if str(mucous_config["mucous"]["auto-retry"]) == "yes":
+								mucous_config["mucous"]["auto-retry"] = "no"
 								self.retry_timer.cancel()
-							elif mucous_config["mucous"]["Auto-Retry"] == "False":
-								mucous_config["mucous"]["Auto-Retry"] ="True"
+							else:
+								mucous_config["mucous"]["auto-retry"] ="yes"
 								self.retry_timer.cancel()
 								self.retry_timer = threading.Timer(30.0, self.retry_display)
 								self.retry_timer.start()
@@ -6443,6 +6442,7 @@ class mucous(driver.Driver):
 			return line
 		except Exception, e:
 			self.Hlog("debug", "mouse_xy: "+str(e) )
+			
 	def key_mouse_funks(self, key, line):
 		try:
 			if key == "KEY_RESIZE":
@@ -6645,40 +6645,24 @@ class mucous(driver.Driver):
 				elif self.display["mode"] == "search":
 					if key in( "KEY_LEFT", chr(91), chr(34), "KEY_RIGHT", chr(93), chr(35)):
 						if len(self.data["search_tickets"].keys()) >= 1:
-						
-							if self.Spl["current_search"] == "default__":
-								self.Spl["current_search"] = self.data["search_tickets"].keys()[0]
-							s = self.data["search_tickets"].keys().index(self.Spl["current_search"])
-							self.Spl["current_search"] = self.data["search_tickets"].keys()[s-1]
-							self.search_mode()
-							
-					if key == "KEY_IC":
-						sf = self.Spl["search_order"]
-						if sf == "num":
-							self.Spl["search_order"] = "user"
-						elif sf == "user":
-							self.Spl["search_order"] = "free"
-						elif sf == "free":
-							self.Spl["search_order"] = "speed"
-						elif sf == "speed":
-							self.Spl["search_order"] = "que"
-						elif sf == "que":
-							self.Spl["search_order"] = "path"
-						elif sf == "path":
-							self.Spl["search_order"] = "size"
-						elif sf == "size":
-							self.Spl["search_order"] = "file"
-						elif sf == "file":
-							self.Spl["search_order"] = "bitrate"
-						elif sf == "bitrate":
-							self.Spl["search_order"] = "time"
-						elif sf == "time":
-							self.Spl["search_order"] = "num"
+							direction = "right"
+							if key == "KEY_RIGHT":
+								direction = "left"
+								
+							place = self.list_rotate(direction, self.data["search_tickets"].keys(), self.Spl["current_search"], "yes" )
+							if self.Spl["current_search"] != place:
+								self.Spl["current_search"] = place
+								self.search_mode()
 
-						self.search_sortbar()
-						if self.Spl["current_search"]!= "default__":
-							self.Format_Search_Results(self.Spl["current_search"])
-						curses.doupdate()
+							
+					elif key == "KEY_IC":
+						place = self.list_rotate(direction, [ "num", "user", "free", "speed", "que", "path", "size",  "file", "bitrate",  "time"], self.Spl["search_order"], "no" )
+						if self.Spl["search_order"]  != place:
+							self.Spl["search_order"] = place
+							self.search_sortbar()
+							if self.Spl["current_search"]!= "default__":
+								self.Format_Search_Results(self.Spl["current_search"])
+							curses.doupdate()
 					
 				elif self.display["mode"] == "browse":
 					if len(self.activeitems["browse"]) >= 1:
@@ -6744,10 +6728,7 @@ class mucous(driver.Driver):
 						if self.logs["roomstatus"][self.Spl["room"]] != []:
 							if self.scrolling["roomstatus"] == -1:
 								self.scrolling["roomstatus"] = len(self.logs["roomstatus"][self.Spl["room"]])
-# 							elif self.scrolling["roomstatus"] >= len(self.logs["roomstatus"][self.Spl["room"]])-1:
-# 							elif len(self.logs["roomstatus"][self.Spl["room"]]) -1 <= abs(self.scrolling["roomstatus"]):
-# 								self.scrolling["roomstatus"] = len(self.logs["roomstatus"][self.Spl["room"]])
-# 							clipped_list, self.scrolling["roomstatus"], w["start"] = self.wrap_n_clip( self.logs["roomstatus"][self.Spl["room"]], w, "roomstatus" )
+
 							clipped_list, self.scrolling["roomstatus"], self.windows["dimensions"]["roomstatus"]["start"] = self.scrollbox(self.logs["roomstatus"][self.Spl["room"]], self.scrolling["roomstatus"], self.windows["dimensions"]["roomstatus"]["height"])
 							count = 0
 							try:
@@ -6762,15 +6743,10 @@ class mucous(driver.Driver):
 									else:
 										tw.addstr(self.decode_language( line ))
 									count += 1
-# 							for i in range(len(self.logs["roomstatus"][self.Spl["room"]])):
-								
-# 									if i == 0:
-# 										tw.addstr(self.decode_language( self.logs["roomstatus"][self.Spl["room"]][i][1:] ))
-# 									else:
-# 										tw.addstr(self.decode_language( self.logs["roomstatus"][self.Spl["room"]][i] ))
+
 							except Exception, e:
 								pass
-# 								self.Hlog("debug", e)
+
 					
 					tw.noutrefresh()
 		except Exception, e:
@@ -6802,21 +6778,20 @@ class mucous(driver.Driver):
 					else: self.Hlog("status", "WARNING: XMMS or BMP isn't running or the InfoPipe plugin isn't enabled")
 				else:
 					p = mucous_config["mucous"]["now-playing"]
-					nowplaying = commands.getoutput(p)
-					nowplaying = nowplaying.split('\n')
+					nowplaying = commands.getoutput(p).split('\n')
 					nowplaying = nowplaying[0]
 					if mucous_config["mucous"]["now-playing-prefix"] != None and mucous_config["mucous"]["now-playing-prefix"] != 'None':
 						message = "%s %s" % (mucous_config["mucous"]["now-playing-prefix"], nowplaying)
 						if self.display["mode"] == "chat" and self.Spl["room"] != None:
 							self.say_in_chat("chat", self.Spl["room"], message)
-							#self.SendMessage(messages.SayRoom(self.Spl["room"].decode(mucous_config["mucous"]["language"]),  message.decode(mucous_config["mucous"]["language"])) )
+
 						elif self.display["mode"] == "private" and self.usernames["private"] != None:
 							self.send_private_message(self.usernames["private"], message )
 					else:
 						message = nowplaying
 						if self.display["mode"] == "chat" and self.Spl["room"] != None:
 							self.say_in_chat("chat", self.Spl["room"], message)
-							#self.SendMessage(messages.SayRoom(self.Spl["room"].decode(mucous_config["mucous"]["language"]),  message.decode(mucous_config["mucous"]["language"])) )
+
 						elif self.display["mode"] == "private" and self.usernames["private"] != None:
 							self.send_private_message(self.usernames["private"], message )
 		except Exception, e:
@@ -7619,6 +7594,7 @@ class mucous(driver.Driver):
 				
 			else:
 				mw.hline(0, 0, curses.ACS_HLINE, s["width"]-1)
+				mw.hline(s["height"]+1, 0, curses.ACS_HLINE, s["width"]-1)
 				mw.addstr(0, 0, "Oo", curses.A_BOLD)
 				mw.addstr(0, 3, "< Chat Rooms >",   curses.A_BOLD)
 				mw.addstr(0, s["width"]-1, "^",  curses.A_BOLD)
@@ -8845,8 +8821,8 @@ class mucous(driver.Driver):
 
 		self.help_setup = ["Setup",\
 "/autobuddy    (Auto-buddy users you download from)",\
-"/autoclear    (Auto-clear finished uploads)",\
-"/autoretry    (Auto-retry failed/errored transfers)",\
+"/autoclear    (auto-clear finished uploads)",\
+"/autoretry    (auto-retry failed/errored transfers)",\
 "/password     (Mucous' Interface password)",\
 "/privbuddy    (Toggle Privileging buddies)",\
 "/onlybuddy    (Toggle Only sharing to buddies)",\
@@ -9748,8 +9724,10 @@ class mucous(driver.Driver):
 				buttonwin.erase()
 				if mucous_config["mucous"]["logging"] in ("True", "true", "yes"):
 					z = enabled
+					mucous_config["mucous"]["logging"] = "yes"
 				else:
 					z = disabled
+					mucous_config["mucous"]["logging"] = "no"
 				buttonwin.addstr(z, self.colors["cyan"])
 				buttonwin.addstr(" Log Chat messages? ",  curses.A_BOLD)
 				buttonwin.noutrefresh()
@@ -9844,25 +9822,28 @@ class mucous(driver.Driver):
 			
 				buttonwin30.noutrefresh()
 				
-				if mucous_config["mucous"]["Auto-Clear"] in ("True", "true", "yes"):
+				if mucous_config["mucous"]["auto-clear"] in ("True", "true", "yes"):
 					z = enabled
+					mucous_config["mucous"]["auto-clear"] = "yes"
 				else:
 					z = disabled
 				autoclearw = curses.newwin(1,45,10,1)
 				autoclearw.erase()
 				autoclearw.addstr(z, self.colors["cyan"])
-				autoclearw.addstr(" Auto-Clear Transfers: /autoclear",  curses.A_BOLD)
+				autoclearw.addstr(" Auto-clear Transfers: /autoclear",  curses.A_BOLD)
 				autoclearw.noutrefresh()
 				
-				if mucous_config["mucous"]["Auto-Retry"] in ("True", "true", "yes"):
+				if mucous_config["mucous"]["auto-retry"] in ("True", "true", "yes"):
 					z = enabled
+					if mucous_config["mucous"]["auto-retry"] != "yes":
+						mucous_config["mucous"]["auto-retry"] = "yes"
 				else:
 					z = disabled
 				
 				autoretryw = curses.newwin(1,45,11,1)
 				autoretryw.erase()
 				autoretryw.addstr(z, self.colors["cyan"])
-				autoretryw.addstr(" Auto-Retry Transfers: /autoretry",  curses.A_BOLD)
+				autoretryw.addstr(" Auto-retry Transfers: /autoretry",  curses.A_BOLD)
 				autoretryw.noutrefresh()
 				
 				
@@ -9879,6 +9860,8 @@ class mucous(driver.Driver):
 				
 				if str(mucous_config["mucous"]["beep"]) in ("True", "true", "yes"):
 					z = enabled
+					if mucous_config["mucous"]["beep"] != "yes":
+						mucous_config["mucous"]["beep"] = "yes"
 				else:
 					z = disabled
 				beepw = curses.newwin(1,45,13,1)
@@ -10326,7 +10309,7 @@ class mucous(driver.Driver):
 			self.usernames["private"] = user
 			if user not in self.logs["private"].keys():
 				self.logs["private"][user] = []
-				if mucous_config["mucous"]["logging"] in (True, "True"):
+				if mucous_config["mucous"]["logging"] in ("yes"):
 					self.add_logs_to_private(user)
 				
 			if self.display["mode"] == 'private':
