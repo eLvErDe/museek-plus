@@ -110,8 +110,8 @@ public:
 	
 	void cb_iface_transfer_update(IfaceConnection* conn, const std::string& user, const std::string& path);
 	void cb_iface_transfer_delete(IfaceConnection* conn, bool upload, const std::string& user, const std::string& path);
-	void cb_iface_download_file(IfaceConnection* conn, const std::string& user, const std::string& path, off_t size);
-	void cb_iface_download_file_to(IfaceConnection* conn, const std::string& user, const std::string& path, off_t size, const std::string& dpath);
+	void cb_iface_download_file(IfaceConnection* conn, const std::string& user, const std::string& path);
+	void cb_iface_download_file_to(IfaceConnection* conn, const std::string& user, const std::string& path, const std::string& dpath);
 	void cb_iface_download_folder(IfaceConnection* conn, const std::string& user, const std::string& folder);
 	void cb_iface_transfer_abort(IfaceConnection* conn, bool upload, const std::string& user, const std::string& path);
 	void cb_iface_upload_file(IfaceConnection* conn, const std::string& user, const std::string& path);

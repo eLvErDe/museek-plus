@@ -293,14 +293,14 @@ void IfaceConnection::process_message(uint32 code) {
 		PARSE(IDownloadFile)
 		DEBUG("got download file from %s. %s", s.user.c_str(), s.path.c_str());
 		
-		mMuseekd->cb_iface_download_file(this, s.user, s.path, s.size);
+		mMuseekd->cb_iface_download_file(this, s.user, s.path);
 		break;
 	}
 	case 0x0507: {
 		PARSE(IDownloadFileTo)
 		DEBUG("got download file from %s. %s to %s", s.user.c_str(), s.path.c_str(), s.localpath.c_str());
 		
-		mMuseekd->cb_iface_download_file_to(this, s.user, s.path, s.size, s.localpath);
+		mMuseekd->cb_iface_download_file_to(this, s.user, s.path, s.localpath);
 		break;
 	}
 	case 0x0504: {

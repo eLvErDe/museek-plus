@@ -819,13 +819,13 @@ void Museekd::cb_iface_upload_file(IfaceConnection* conn, const string& user, co
 }
 
 
-void Museekd::cb_iface_download_file(IfaceConnection* conn, const string& user, const string& path, off_t size) {
+void Museekd::cb_iface_download_file(IfaceConnection* conn, const string& user, const string& path) {
 	if(! (user.empty() || path.empty()))
-		mTransferManager->new_download(user, mRecoder->decode_utf8(path), wstring(), wstring(), size);
+		mTransferManager->new_download(user, mRecoder->decode_utf8(path), wstring(), wstring(), 0);
 }
-void Museekd::cb_iface_download_file_to(IfaceConnection* conn, const string& user, const string& path, off_t size, const string& dpath) {
+void Museekd::cb_iface_download_file_to(IfaceConnection* conn, const string& user, const string& path, const string& dpath) {
 	if(! (user.empty() || path.empty()))
-		mTransferManager->new_download(user, mRecoder->decode_utf8(path), mRecoder->decode_utf8(dpath), wstring(), size);
+		mTransferManager->new_download(user, mRecoder->decode_utf8(path), mRecoder->decode_utf8(dpath), wstring(), 0);
 }
 
 void Museekd::cb_iface_download_folder(IfaceConnection* conn, const string& user, const string& folder) {
