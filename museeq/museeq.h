@@ -24,7 +24,7 @@
 
 #include <qobject.h>
 #include <qstringlist.h>
-
+#include "trayicon.h"
 #ifdef HAVE_QSA
 #include <qptrstack.h>
 #include <qsproject.h>
@@ -44,7 +44,7 @@ class Museeq : public QObject {
 	
 public:
 	Museeq(QApplication *);
-	bool mShowTickers, mShowStatusLog, mOnlineAlert, mShowTimestamps, mIPLog;
+	bool mShowTickers, mShowStatusLog, mOnlineAlert, mShowTimestamps, mIPLog, usetray;
 	inline MuseekDriver* driver() const { return mDriver; }
 	inline bool isConnected() const { return mConnected; }
 	
@@ -71,10 +71,11 @@ public:
 	const QMap<QString, QString>& protocolHandlers() const { return mProtocolHandlers; }
 	QString mColorBanned, mColorBuddied, mColorTime, mColorMe, mColorNickname, mColorTrusted, mColorRemote, mFontTime, mFontMessage, mIconTheme;
 	bool isAway() const { return mAway; }
-	
+
 
 
 public slots:
+	inline TrayIcon* trayicon() {return mTray;}
 	inline const QStringList& banned() const { return mBanned; }
 	inline const QStringList& trusted() const { return mTrusted; }
 	
@@ -161,7 +162,10 @@ public slots:
 	void connectServer();
 	void reloadShares();
 	void saveSettings();
-	 
+	void trayicon_load();
+	void trayicon_show();
+	void trayicon_hide();
+ 
 signals:
 	// Museekd related signals
 	void connected();
@@ -268,6 +272,7 @@ private:
 	QApplication * mApplication;
 	QString mNickname;
 	MuseekDriver* mDriver;
+	TrayIcon* mTray;
 	bool mConnected, mAway;
 	QStringList mBuddies, mBanned, mIgnored, mTrusted, mAutoJoin, mJoinedRooms, mLovedInterests, mHatedInterests;
 	QMap<QString, OnlineAlert *> mAlerts;

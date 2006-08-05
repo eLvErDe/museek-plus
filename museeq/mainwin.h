@@ -51,7 +51,7 @@ public:
 	
 	const QPoint & lastPos() const { return mLastPos; }
 	const QSize & lastSize() const { return mLastSize; }
-	QPopupMenu*  mMenuSettings, * mMenuModes;
+	QPopupMenu* mMenuFile, *  mMenuSettings, * mMenuModes;
 	QString  mVersion;
 	QTextEdit *mLog;
 public slots:
@@ -72,6 +72,7 @@ public slots:
 	void daemonExited();
 	void readFromStdout();
 	void toggleAway();
+	void toggleTrayicon();
 	void checkPrivileges();
 	void getOwnShares();
 	void toggleTickers();
@@ -139,7 +140,7 @@ private:
 	IconListBox* mIcons;
 	QWidgetStack* mStack;
 	QLabel* mTitle;
-	QPopupMenu* mMenuFile, * mMenuScripts, * mMenuUnloadScripts,  * mMenuHelp;
+	QPopupMenu* mMenuScripts, * mMenuUnloadScripts,  * mMenuHelp;
 	QString museekConfig;
 	QProcess *daemon;
 	ConnectDialog* mConnectDialog;

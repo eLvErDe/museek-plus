@@ -34,7 +34,6 @@
 #include <qpopupmenu.h>
 #include <qtextedit.h>
 #include <qdir.h>
-#include "trayicon.h"
 #include "icon.xpm"
 #include <qcanvas.h>
 #include <qfileinfo.h>
@@ -69,6 +68,8 @@ Museeq::Museeq(QApplication * app)
 	
 	museeq = this;
 	mDriver = new MuseekDriver(this, "driver");
+	usetray = false;
+
 	mShowTickers = true;
 	mShowStatusLog = false;
 	mFontTime = "font-family:fixed-width";
@@ -167,6 +168,8 @@ Museeq::Museeq(QApplication * app)
 		}
 	}
 #endif // HAVE_QSA
+
+
 }
 
 void Museeq::slotConnectionClosed() {
@@ -908,6 +911,30 @@ QString Museeq::handleInput(bool privateMessage, const QString& target, const QS
 #endif // HAVE_QSA
 	return line;
 }
+void Museeq::trayicon_hide() {
+	trayicon()->hide();
+	usetray = false;
+	mMainWin->mMenuFile->setItemChecked(5, usetray);
+}
+void Museeq::trayicon_show() {
+	trayicon()->show();
+	usetray = true;
+	mMainWin->mMenuFile->setItemChecked(5, usetray);
+}
+void Museeq::trayicon_load() {
+
+	QPopupMenu menutray;
+	menutray.insertItem(QT_TR_NOOP("&Restore"), mMainWin , SLOT( showNormal() ) );
+	menutray.insertItem(QT_TR_NOOP("&Hide"),  mMainWin , SLOT( hide()  ) );
+	menutray.insertSeparator();
+	menutray.insertItem( QT_TR_NOOP("&Quit"),  mMainWin , SLOT( close() ) );
+	mTray =  new TrayIcon( QPixmap( (char**)icon_xpm),  QT_TR_NOOP("MuseeqTray"), &menutray );
+	QObject::connect( mTray, SIGNAL(clicked(const QPoint&, int )),  mMainWin, SLOT(toggleVisibility() ) );
+	menutray.show();
+	if (usetray == true)
+		mTray->show();
+	mMainWin->mMenuFile->setItemChecked(5, usetray);
+}
 
 Museeq* museeq = 0;
 
@@ -965,24 +992,12 @@ int main(int argc, char **argv) {
 			
 	}
 	if (usetray == "yes") {
-		QPopupMenu menutray;
-		menutray.insertItem(QT_TR_NOOP("&Restore"),museeq->mainwin() , SLOT( showNormal() ) );
-		menutray.insertItem(QT_TR_NOOP("&Hide"), museeq->mainwin() , SLOT( hide()  ) );
-		menutray.insertSeparator();
-		menutray.insertItem( QT_TR_NOOP("&Quit"), museeq->mainwin() , SLOT( close() ) );
-		TrayIcon mTray ( QPixmap( (char**)icon_xpm),  QT_TR_NOOP("MuseeqTray"), &menutray );
-		QObject::connect( &mTray, SIGNAL(clicked(const QPoint&, int )), museeq->mainwin(), SLOT(toggleVisibility() ) );
-	
-		menutray.show();
-		mTray.show();
-		museeq->mainwin()->show();
-		museeq->mainwin()->connectToMuseek();
-
-		return a.exec();
-	} else {
-		museeq->mainwin()->show();
-		museeq->mainwin()->connectToMuseek();
-		return a.exec();
+		museeq->usetray = true;
 	}
+	museeq->trayicon_load();
+	museeq->mainwin()->show();
+	museeq->mainwin()->connectToMuseek();
+
+	return a.exec();
 	
 }
