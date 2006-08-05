@@ -98,6 +98,7 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 	mMenuFile->insertItem(tr("Check &privileges"), this, SLOT(checkPrivileges()), 0, 3);
 	mMenuFile->insertItem( IMG("browser-small"),tr("&Browse My Shares"), this, SLOT(getOwnShares()), ALT + Key_B, 4); // , 
 	mMenuFile->insertItem( tr("Enable &Trayicon"), this, SLOT(toggleTrayicon()), ALT + Key_T, 5); // , 
+	mMenuFile->insertItem( tr("traytest"), this, SLOT(testTrayicon()), 0, 6); // , 
 	mMenuFile->insertSeparator();
 	mMenuFile->insertItem(IMG("exit"), tr("E&xit"), this, SLOT(close()), ALT + Key_X);
 	mMenuFile->setItemEnabled(1, false);
@@ -564,6 +565,7 @@ void MainWindow::slotDisconnected() {
 	mMenuSettings->setItemEnabled(5, false);
 	mMenuSettings->setItemEnabled(6, false);
 	mMenuSettings->setItemEnabled(7, false);
+	museeq->trayicon_setIcon("disconnect");
 }
 
 void MainWindow::slotError(int e) {
@@ -597,6 +599,7 @@ void MainWindow::slotLoggedIn(bool success, const QString& msg) {
 		mMenuSettings->setItemChecked(6, museeq->mShowStatusLog);
 		mMenuSettings->setItemEnabled(7, true);
 		mMenuSettings->setItemChecked(7, museeq->mShowTimestamps);
+		museeq->trayicon_setIcon("connect");
 	} else {
 		statusBar()->message(tr("Login error: ") + msg);
 		mMenuFile->setItemEnabled(0, true);
@@ -1041,13 +1044,15 @@ void MainWindow::toggleAway() {
 	museeq->setAway((museeq->isAway() + 1) & 1);
 }
 void MainWindow::toggleTrayicon() {
-	if (museeq->usetray == 1) {
+	if (museeq->mUsetray == true) {
 		museeq->trayicon_hide();
-	} else if (museeq->usetray == 0) {
+	} else if (museeq->mUsetray == false) {
 		museeq->trayicon_show();
 	}
 }
-
+void MainWindow::testTrayicon() {
+	museeq->trayicon_setIcon("connect");
+}
 void MainWindow::checkPrivileges() {
 	mWaitingPrivs = true;
 	museeq->driver()->checkPrivileges();

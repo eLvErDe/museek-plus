@@ -44,10 +44,10 @@ class Museeq : public QObject {
 	
 public:
 	Museeq(QApplication *);
-	bool mShowTickers, mShowStatusLog, mOnlineAlert, mShowTimestamps, mIPLog, usetray;
+	bool mShowTickers, mShowStatusLog, mOnlineAlert, mShowTimestamps, mIPLog, mUsetray;
 	inline MuseekDriver* driver() const { return mDriver; }
 	inline bool isConnected() const { return mConnected; }
-	
+	QPopupMenu *menutray;
 	inline MainWindow* mainwin() const { return mMainWin; }
 	
 	inline const QString& nickname() const { return mNickname; }
@@ -71,11 +71,11 @@ public:
 	const QMap<QString, QString>& protocolHandlers() const { return mProtocolHandlers; }
 	QString mColorBanned, mColorBuddied, mColorTime, mColorMe, mColorNickname, mColorTrusted, mColorRemote, mFontTime, mFontMessage, mIconTheme;
 	bool isAway() const { return mAway; }
-
+	inline TrayIcon* trayicon() {return mTray;}
 
 
 public slots:
-	inline TrayIcon* trayicon() {return mTray;}
+	
 	inline const QStringList& banned() const { return mBanned; }
 	inline const QStringList& trusted() const { return mTrusted; }
 	
@@ -163,6 +163,7 @@ public slots:
 	void reloadShares();
 	void saveSettings();
 	void trayicon_load();
+	void trayicon_setIcon(const QString&);
 	void trayicon_show();
 	void trayicon_hide();
  
