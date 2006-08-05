@@ -165,7 +165,7 @@ def read_config():
 		for j in parser.options(i):
 			val = parser.get(i,j, raw = 1)
 
-			if j in ['login','passw','interface', 'roombox', 'tickers_enabled', "ticker_cycle", 'default_room', "autobuddy", "now-playing", "log_dir", "aliases" "now-playing-prefix", "browse_display_mode", "url reader", "url custom prefix", "url custom suffix", "transbox", "autoaway", "rooms_sort"] :
+			if j in ['login','passw','interface', 'roombox', 'tickers_enabled', "ticker_cycle", 'default_room', "autobuddy", "now-playing", "log_dir", "aliases" "now-playing-prefix", "browse_display_mode", "url reader", "url custom prefix", "url custom suffix", "transbox", "autoaway", "rooms_sort", "logging", "beep", "auto-clear", "auto-retry", "extra_requests"] :
 				if val != "None":
 					mucous_config[i][j] = val
 			elif i == 'aliases':
@@ -208,6 +208,7 @@ if log_dir != None and log_dir != "":
 elif "log_dir" in mucous_config["mucous"]:
 	if mucous_config["mucous"]["log_dir"] in ("", None, "None"):
 		mucous_config["mucous"]["log_dir"] = str(os.path.expanduser("~/.mucous/logs/"))
+
 if str(mucous_config["mucous"]["logging"]) == "True":
 	mucous_config["mucous"]["logging"] = "yes"
 
@@ -1099,7 +1100,7 @@ class mucous(driver.Driver):
 						mucous_config["mucous"]["extra_requests"] = "Yes"
 					if mucous_config["mucous"]["extra_requests"] not in ("Yes", "No"):
 						mucous_config["mucous"]["extra_requests"] = "No"
-					self.Hlog("status", "Extra, CTCP-like, requests are responded to? %s"  % mucous_config["mucous"]["extra_requests"] )
+					self.Hlog("status", "Extra CTCP-like version requests are responded to? %s"  % mucous_config["mucous"]["extra_requests"] )
 					
 				elif line[:4] == "/ut ":
 					try:
@@ -2772,7 +2773,7 @@ class mucous(driver.Driver):
 							self.alert["CHAT"][room] = "normal"
 			self.hotkeys()
 						
-			if mucous_config["mucous"]["logging"] in ("yes"):
+			if mucous_config["mucous"]["logging"] == "yes":
 				message = "[%s]\t%s" % (user, text)
 				self.log_to_file("rooms", time.strftime("%d %b %Y %H:%M:%S"), room, message )
 		except Exception, e:
@@ -8832,6 +8833,7 @@ class mucous(driver.Driver):
 "/rescanbuddy  (Rescan Buddy-only Shares)",\
 "/reload       (Reload Shares - make changes take effect)",\
 "/extra        (Auto-Send Version info via PM if requested)",\
+"/logdir /path (Set Logs Directory)",\
 "/logging      (Toggle Logging)"]
 
 		self.help_user = ["----[User Commands]---- ",\
