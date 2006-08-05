@@ -27,19 +27,19 @@
     </message>
     <message>
         <source>&amp;Restore</source>
-        <translation>&amp;Ripristina</translation>
+        <translation type="obsolete">&amp;Ripristina</translation>
     </message>
     <message>
         <source>&amp;Hide</source>
-        <translation>&amp;Nascondi</translation>
+        <translation type="obsolete">&amp;Nascondi</translation>
     </message>
     <message>
         <source>&amp;Quit</source>
-        <translation>&amp;Lascia</translation>
+        <translation type="obsolete">&amp;Lascia</translation>
     </message>
     <message>
         <source>MuseeqTray</source>
-        <translation>MuseeqTray</translation>
+        <translation type="obsolete">MuseeqTray</translation>
     </message>
 </context>
 <context>
@@ -863,6 +863,29 @@
     <message>
         <source>Auto-Connect to Daemon</source>
         <translation>Connetti automaticamente al daemon</translation>
+    </message>
+    <message>
+        <source>Enable &amp;Trayicon</source>
+        <translation>Abilita icona &amp;tray</translation>
+    </message>
+</context>
+<context>
+    <name>Museeq</name>
+    <message>
+        <source>&amp;Restore</source>
+        <translation>&amp;Ripristina</translation>
+    </message>
+    <message>
+        <source>&amp;Hide</source>
+        <translation>&amp;Nascondi</translation>
+    </message>
+    <message>
+        <source>&amp;Quit</source>
+        <translation>&amp;Esci</translation>
+    </message>
+    <message>
+        <source>MuseeqTray</source>
+        <translation>MuseeqTray</translation>
     </message>
 </context>
 <context>
