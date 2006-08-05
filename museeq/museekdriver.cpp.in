@@ -95,9 +95,11 @@ void MuseekDriver::disconnect() {
 		mSocket = 0;
 		emit connectionClosed();
 	}
+	// Disconnecting while connecting causes a crash after 2-3 seconds
 }
 
 void MuseekDriver::dataReady() {
+	if(! mSocket) { return; } // Crashes even with this.
 	if(! mHaveSize) {
 		if(mSocket->bytesAvailable() < 4)
 			return;
