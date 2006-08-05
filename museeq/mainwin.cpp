@@ -98,7 +98,6 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 	mMenuFile->insertItem(tr("Check &privileges"), this, SLOT(checkPrivileges()), 0, 3);
 	mMenuFile->insertItem( IMG("browser-small"),tr("&Browse My Shares"), this, SLOT(getOwnShares()), ALT + Key_B, 4); // , 
 	mMenuFile->insertItem( tr("Enable &Trayicon"), this, SLOT(toggleTrayicon()), ALT + Key_T, 5); // , 
-	mMenuFile->insertItem( tr("traytest"), this, SLOT(testTrayicon()), 0, 6); // , 
 	mMenuFile->insertSeparator();
 	mMenuFile->insertItem(IMG("exit"), tr("E&xit"), this, SLOT(close()), ALT + Key_X);
 	mMenuFile->setItemEnabled(1, false);
