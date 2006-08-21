@@ -327,14 +327,19 @@ void Transfer::set_state(TrState state) {
 					break;
 				}
 				state = TS_Finished;
-				DEBUG("transfer speed for %s was %u", mPeer->user().c_str(), mRate);
-				mManager->museek()->cb_server_send_user_speed(mPeer->user(), mRate);
+// 				mManager->museek()->cb_server_send_user_speed(mPeer->user(), mRate);
 				mManager->museek()->cb_peer_transfer_finished(mLocalPath, mPeer->user());
 			}
 		}
-		
+
+		if(mDirection == Upload  && mPos == mSize) {
+			DEBUG("transfer speed for %s was %u", mPeer->user().c_str(), mRate);
+			mManager->museek()->cb_server_send_upload_speed(mRate);
+		}
+
 		if(mPeer->uploading() == this)
 			mPeer->set_uploading(0);
+
 	default: ;
 	}
 	

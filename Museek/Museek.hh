@@ -212,6 +212,7 @@ public:
 	virtual void cb_server_remove_interest(STR interest);
 
 	virtual void cb_server_send_user_speed(STR user, uint32 speed);
+	virtual void cb_server_send_upload_speed(uint32 speed);
 
 	virtual void cb_server_say_room(STR room, STR user, WSTR message);
 	virtual void cb_server_user_joined_room(STR room, STR user, const UserData& data);

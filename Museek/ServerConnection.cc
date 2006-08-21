@@ -552,9 +552,17 @@ void ServerConnection::shared_folders_files(uint32 _d, uint32 _f) {
 }
 
 void ServerConnection::send_user_speed(const string& _u, uint32 _s) {
+	// Depreciated on SoulSeek
 	CT("send_user_speed %s %u", _u.c_str(), _s);
 	
 	SSendSpeed s(_u, _s);
+	send(s);
+}
+
+void ServerConnection::send_upload_speed(uint32 _s) {
+	CT("send_upload_speed %u", _s);
+	
+	SSendUploadSpeed s(_s);
 	send(s);
 }
 

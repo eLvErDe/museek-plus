@@ -33,6 +33,7 @@ public:
 	void listen_port(uint32 listen_port);
 	void shared_folders_files(uint32 folders, uint32 files);
 	void send_user_speed(const std::string& user, uint32 speed);
+	void send_upload_speed(uint32 speed);
 	void no_parent(bool have_no_parent);
 	void check_privileges();
 	void set_status(uint32 status);

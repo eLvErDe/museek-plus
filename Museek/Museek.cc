@@ -627,6 +627,10 @@ void Museek::cb_server_send_user_speed(const string& user, uint32 speed) {
 	if(mServer)
 		mServer->send_user_speed(user, speed);
 }
+void Museek::cb_server_send_upload_speed(uint32 speed) {
+	if(mServer)
+		mServer->send_upload_speed(speed);
+}
 void Museek::cb_peer_transfer_finished(const wstring& path, const string& user) {
 }
 

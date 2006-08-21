@@ -680,6 +680,15 @@ SERVERMESSAGE(SRoomSearch, 120)
 	uint32 ticket;
 END
 
+SERVERMESSAGE(SSendUploadSpeed, 121)
+	SSendUploadSpeed(uint32 _s) : speed(_s) { };
+	
+	MAKE
+		pack(speed);
+	END_MAKE
+	
+	uint32 speed;
+END
 
 
 SERVERMESSAGE(SUserPrivileges, 122)
