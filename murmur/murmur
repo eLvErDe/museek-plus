@@ -1,0 +1,4786 @@
+#! /usr/bin/python
+#-*- coding: utf-8 -*-
+import pygtk
+pygtk.require("2.0")
+import gtk, gobject
+import threading
+from threading import Thread
+import  select,  pwd
+
+trayicon_load = 1
+try:
+	from pymurmur import trayicon
+except:
+	print "Optional TrayIcon module not found. Please build it if you want the TrayIcon to work."
+	trayicon_load = 0
+import Queue
+
+from museek import messages, driver
+from time import sleep
+
+import select, string, re, ConfigParser, sys, os, getopt, shutil, commands
+import threading, time
+import signal
+import tempfile
+import imghdr
+from pymurmur.settings import Settings
+from pymurmur.utils import * 
+from pymurmur.utils import _
+
+pid = os.getpid()
+
+geoip_fail=0
+try:
+	import GeoIP
+	gi = GeoIP.new(GeoIP.GEOIP_MEMORY_CACHE)
+except ImportError:
+	geoip_fail=1
+
+config_dir = str(os.path.expanduser("~/.murmur/"))
+log_dir = str(os.path.expanduser("~/.murmur/logs/"))
+config_file = config_dir+"config"
+version = "0.2.0"
+debugmode = False
+
+def usage():
+	print ("""Murmur is a PyGTK2 client for Museek, the P2P Soulseek Daemon
+Author: Daelstorm
+Credit: Hyriand
+Version: %s
+	Default options: none
+	-c,	--config <file>	Use a different config file
+	-l,	--log <dir>	Use a different logging directory
+	-v,	--version	Display version and quit
+	-d				Debug mode
+
+	-h,	--help		Display this help and exit
+	""" %version)
+	sys.exit(2)
+	
+try:
+	opts, args = getopt.getopt(sys.argv[1:], "hc:vl:d", ["help", "config=", "version", "log="])
+except getopt.GetoptError:
+	usage()
+	sys.exit(2)
+for opts, args in opts:
+	if opts in ("-h", "--help"):
+		usage()
+		sys.exit()
+	if opts in ("-c", "--config"):
+		config_file=str(os.path.expanduser(args))
+	if opts in ("-l", "--log"):
+		log_dir=str(os.path.expanduser(args))
+	if opts in ("-d"):
+		debugmode = True
+	if opts in ("-v", "--version"):
+		print "Murmur version: %s" % version
+		sys.exit(2)
+if debugmode == True:
+	print pid
+parser = ConfigParser.ConfigParser()
+
+# default config
+murmur_config = {"connection":{"interface":'localhost:2240', "passw":None}, \
+	"museekd": {"configfile": os.path.expanduser("~/.museekd/config.xml")}, \
+	"murmur":{"trayapp": "yes", "tooltips": "no", "autobuddy": "no", "roomlistminsize": 5, \
+	"rooms_sort": "size", "roombox": "big", "now-playing": "default", \
+	"now-playing-prefix": None, "browse_display_mode": "filesystem", \
+	"url reader": "firefox", "url custom prefix": ""}, \
+	"logging": { "logcollapsed": "no", "log_dir": "~/.murmur/logs/"} \
+	}
+		
+
+def create_config():
+
+	parser.read([config_file])
+
+	murmur_config_file = file(config_file, 'w')
+	
+	for i in murmur_config.keys():
+		if not parser.has_section(i):
+			parser.add_section(i)
+		for j in murmur_config[i].keys():
+			if j not in ["nonexisting", "hated", "options"]:
+				parser.set(i,j, murmur_config[i][j])
+			else:
+				parser.remove_option(i,j)
+	parser.write(murmur_config_file)
+	murmur_config_file.close()	
+
+
+def read_config():
+	
+	parser.read([config_file])
+	for i in parser.sections():
+		for j in parser.options(i):
+			val = parser.get(i,j, raw = 1)
+
+			if j in ['login','passw','interface', 'trayapp', 'roombox', 'tickers_enabled', "ticker_cycle", 'default_room', "autobuddy", 'tooltips', "now-playing", "log_dir", "logcollapsed", "configfile", "now-playing-prefix", "browse_display_mode", "url reader", "url custom prefix", "url custom suffix", "transbox"] :
+				murmur_config[i][j] = val
+			elif i == 'aliases':
+				murmur_config[i][j] = val
+			else:
+				try:
+					murmur_config[i][j] = eval(val, {})
+				except:
+					murmur_config[i][j] = None
+
+def update_config():
+	murmur_config_file = file(config_file, 'w')
+	for i in murmur_config.keys():
+		if not parser.has_section(i):
+			parser.add_section(i)
+		for j in murmur_config[i].keys():
+			if j not in ["sharedfiles","sharedfilesstreams","wordindex","fileindex","sharedmtimes"]:
+				parser.set(i,j, murmur_config[i][j])
+			else:
+				parser.remove_option(i,j)
+	parser.write(murmur_config_file)
+	murmur_config_file.close()
+	sleep(0.5)
+
+def check_path():
+	if os.path.exists(config_dir):
+		if os.path.exists(config_file) and os.stat(config_file)[6] > 0:
+			read_config()
+		else:
+			create_config()
+			
+	else:
+		os.mkdir(config_dir, 0700)
+		create_config()
+check_path()
+
+class EntryDialog( gtk.Dialog):
+    def __init__(self, Mapp, message="", default_text='', modal= True, List=[]):
+        gtk.Dialog.__init__(self)
+        self.connect("destroy", self.quit)
+        self.connect("delete_event", self.quit)
+	self.ret = None
+        if modal:
+            self.set_modal(True)
+        box = gtk.VBox(spacing=10)
+        box.set_border_width(10)
+        self.vbox.pack_start(box)
+        box.show()
+        if message:
+            label = gtk.Label(message)
+            box.pack_start(label)
+            label.show()
+	    
+	self.combo = gtk.combo_box_entry_new_text()
+	#if "buddies" in Mapp.ProcessMessages.config.keys():
+	alist = List #Mapp.ProcessMessages.config["buddies"].keys()
+	alist.sort()
+	for i in alist:
+		self.combo.append_text( i)
+	self.combo.child.set_text(default_text)
+	self.combo.grab_focus()
+	self.combo.show()
+
+        box.pack_start(self.combo)
+	
+        button = gtk.Button("OK")
+        button.connect("clicked", self.click)
+        button.set_flags(gtk.CAN_DEFAULT)
+        self.action_area.pack_start(button)
+        button.show()
+	
+        button.grab_default()
+        button = gtk.Button("Cancel")
+        button.connect("clicked", self.quit)
+        button.set_flags(gtk.CAN_DEFAULT)
+	
+        self.action_area.pack_start(button)
+        button.show()
+        
+	
+    def quit(self, w=None, event=None):
+        self.hide()
+        self.destroy()
+        #gtk.main_quit()
+	
+	
+    def click(self, button):
+        self.ret = self.combo.child.get_text()
+        self.quit()
+	
+	
+class ImageDialog( gtk.Dialog):
+    def __init__(self, Mapp, title="Image", message="", picture=None, modal= True):
+        gtk.Dialog.__init__(self)
+        self.connect("destroy", self.quit)
+        self.connect("delete_event", self.quit)
+	if modal:
+            self.set_modal(True)
+	    
+	box = gtk.VBox(spacing=10)
+        box.set_border_width(10)
+        self.vbox.pack_start(box)
+        box.show()
+	if message:
+            label = gtk.Label(message)
+	    label.set_line_wrap(True)
+            box.pack_start(label)
+            label.show()
+	if picture is not None and picture != "":
+		pixbufanim2 = gtk.gdk.PixbufAnimation("%s"% picture)
+		image1 = gtk.Image()
+		image1.set_from_animation(pixbufanim2)
+		image1.show()
+		box.pack_start(image1)
+	button = gtk.Button("OK")
+        button.connect("clicked", self.click)
+        button.set_flags(gtk.CAN_DEFAULT)
+        self.action_area.pack_start(button)
+        button.show()
+        button.grab_default()
+        self.ret = None
+    def quit(self, w=None, event=None):
+        self.hide()
+        self.destroy()
+        #gtk.main_quit()
+    def click(self, button):
+        self.ret = None
+        self.quit()
+
+
+
+class ProcessMessages(driver.Driver, Thread):
+	#, threading.Thread
+	def __init__(self, xapp):
+		
+		
+		driver.Driver.__init__(self)
+		Thread.__init__(self)
+		self.app=xapp
+		self.config = {}
+		self.queue = Queue.Queue(1)
+		self.invalidpass = 0
+		self.socket = None
+		self.states = {0: "Finished", 1: "Transferring", 2: "Negotiating", 3:"Waiting", 4: "Establishing", 5: "Initiating", 6: "Connecting",  7: "Queued", 8:"Address", 9:  "Status", 10: "Offline",11: "Closed",12: "Can't Connect", 13: "Aborted",14: "Not Shared"}
+		
+
+		#
+		#self.timer = threading.Timer(1.0, self.process)
+		#self.timer.start()
+
+	# Ping
+	def cb_ping(self):
+		if debugmode == True: print " **** cb_ping"
+		gtk.threads_enter()
+		gtk.threads_leave()
+
+	def cb_server_privileges(self, time_left):
+		if debugmode == True: print " **** cb_server_privileges: %i" % time_left
+		gtk.threads_enter()
+		gtk.threads_leave()
+
+	def cb_config_set(self, domain, key, value):
+		gtk.threads_enter()
+		try:
+			if key in self.config[domain].keys():
+				if debugmode == True: print "Modified <"+key+"> in <" +domain+"> to <"+value + ">"
+				self.config[domain][key] = value
+				if domain in ("banned", "buddies", "ignored"):
+					self.update_userlist(domain, key, value)
+			else:
+				if value == '':
+					if debugmode == True: print "Added <"+key+"> to <" +domain+">"
+				else:
+					if debugmode == True: print "Added <"+key+"> to <" +domain+"> and set to <"+value+">"
+				
+				self.config[domain][key] = value
+				if domain in ("banned", "buddies", "ignored"):
+					self.update_userlist(domain, key, value)
+			#self.display_config_update(domain)
+		except Exception,e:
+			if debugmode == True: print " **** cb_config_set ERROR", e
+
+		gtk.threads_leave()
+			
+	def update_userlist(self, domain, key, value):
+	
+		if self.app.widgets["lists"] != None:
+			tab = domain
+			user = key
+			for tab in self.app.tabs["lists"]:
+				if user in self.config[tab].keys():
+					if tab not in self.app.widgets["lists"]:
+						return
+					if tab not in self.app.lists_users:
+						self.app.lists_users[tab] = {}
+					if user in self.app.user_stats:
+						if user in self.app.lists_users[tab]:
+							# Modify item
+							if debugmode == True: print "UserList %s: %s is in user_stats & lists_users[%s] MODIFYING" % (tab, user, tab)
+							comments =  self.config[tab][user]
+							self.app.widgets["lists"][tab][0].set(self.app.lists_users[tab][user], 0, self.app.GetStatusImage( self.app.user_stats[user][0] ), 1, user, 2, self.app.user_stats[user][3], 3, abs(self.app.user_stats[user][1]), 4, comments, 5,  self.app.user_stats[user][0])
+							
+						else:
+							# Create item
+							if debugmode == True: print "UserList %s: %s is in user_stats but NOT in lists_users[%s] CREATING" % (tab, user, tab)
+							img = self.app.GetStatusImage( self.app.user_stats[user][0] ) 
+							files = self.app.user_stats[user][3]
+							speed = abs(self.app.user_stats[user][1])
+							comments =  self.config[tab][user]
+							print tab
+							self.app.lists_users[tab][user] = self.app.widgets["lists"][tab][0].append([ img, str(user),  files, speed, comments, self.app.user_stats[user][0] ])
+							#(gtk.gdk.Pixbuf, str, int, int, str, int )
+							#self.app.widgets["lists"][tab][0].set(self.app.lists_users[tab][user], 0, gtk.gdk.pixbuf_new_from_file( self.app.GetStatusImage( self.app.user_stats[user][0] )), 1, user, 2, self.app.user_stats[user][3])
+					else:
+						if user in self.app.lists_users[tab]:
+							if debugmode == True: print "UserList %s: %s is NOT user_stats but  in lists_users[%s] MODIFYING" % (tab, user, tab)
+							# Modify item
+							img = self.app.GetStatusImage( 3)
+							files = 0
+							speed = 0
+							comments =  self.config[tab][user]
+							self.app.widgets["lists"][tab][0].set(self.app.lists_users[tab][user], 0, self.app.GetStatusImage( 3 ), 1, user, 2, files, 3, speed, 4, comments, 5,  3)
+						else:
+							if debugmode == True: print "UserList %s: %s is NOT user_stats OR lists_users[%s] CREATING" % (tab, user, tab)
+							# Create item
+							img = self.app.GetStatusImage( 3 )
+							files = 0
+							speed = 0
+							comments =  self.config[tab][user]
+
+							self.app.lists_users[tab][user] = self.app.widgets["lists"][tab][0].append([ img, str(user),  files, speed, comments,  3 ] )
+
+	#Delete keys from self.config
+	def cb_config_remove(self, domain, key):
+		gtk.threads_enter()
+		
+		if key in self.config[domain].keys():
+			if debugmode == True: print "Removed <"+key+"> from <" +domain+">"
+			if domain in ("banned", "buddies", "ignored"):
+				tab = domain
+				user = key
+				if self.app.widgets["lists"] != None:
+					if tab not in self.app.widgets["lists"]:
+						gtk.threads_leave()
+						return
+					
+					self.app.widgets["lists"][tab][0].remove(self.app.lists_users[tab][user])
+					del self.app.lists_users[tab][user]
+					
+
+			del self.config[domain][key]
+		gtk.threads_leave()
+		#self.display_config_update(domain)
+	
+	#Copy config to self.config at connection
+	def cb_config_state(self, config):
+		gtk.threads_enter()
+		
+		self.config = config.copy()
+		if self.config.keys() != []:
+			if "buddies" in self.config.keys():
+				
+				self.app.userlist_tabs("buddies")
+				
+			
+			if "banned" in self.config.keys():
+				
+				self.app.userlist_tabs("banned")
+				
+			if "ignored" in self.config.keys():
+				
+				self.app.userlist_tabs("ignored")
+		gtk.threads_leave()
+				
+	#Add new/replace old keys to self.config
+	
+	def mod_config(self, changetype, username, value):
+
+		if changetype == "buddy":
+			if username not in self.config["buddies"].keys():
+				self.Send(messages.ConfigSet("buddies", username, "buddied by mucous"))
+				
+		elif changetype == "unbuddy":
+			if username in self.config["buddies"].keys():
+				self.Send(messages.ConfigRemove("buddies", username))
+			else:
+				if debugmode == True: print "User not in buddy list: %s" % username
+		elif changetype == "ban":
+			if username not in self.config["banned"].keys():
+				self.Send(messages.ConfigSet("banned", username, "banned by mucous"))
+		elif changetype == "unban":
+			if username in self.config["banned"].keys():
+				self.Send(messages.ConfigRemove("banned", username))
+			else:
+				if debugmode == True: print "User not in ban list: %s" % username
+		elif changetype == "ignore":
+			if username not in self.config["ignored"].keys():
+				self.Send(messages.ConfigSet("ignored", username, ""))
+				if debugmode == True: print"Ignored: %s" % username
+		elif changetype == "unignore":
+			if username in self.config["ignored"].keys():
+				self.Send(messages.ConfigRemove("ignored", username))
+			else:
+				if debugmode == True: print "User not in ignore list: %s" % username
+		elif changetype == "autojoin":
+			room = username
+			if room not in self.config["autojoin"].keys():
+				self.Send(messages.ConfigSet("autojoin", room, ""))
+			else:
+				if debugmode == True: print "Room already autojoined: %s" % room
+
+		elif changetype == "unautojoin":
+			room = username
+			if room in self.config["autojoin"].keys():
+				self.Send(messages.ConfigRemove("autojoin", room))
+			else:
+				if debugmode == True: print "Room not autojoined: %s" % room
+		elif changetype == "autojoin":
+			room = username
+			if room not in self.config["autojoin"].keys():
+				self.Send(messages.ConfigSet("autojoin", room, ""))
+			else:
+				if debugmode == True: "Room already autojoined: %s" % room
+
+		elif changetype == "unautojoin":
+			room = username
+			if room in self.config["autojoin"].keys():
+				self.Send(messages.ConfigRemove("autojoin", room))
+			else:
+				if debugmode == True:  "Room not autojoined: %s" % room
+				
+	def Send(self, message):
+		if self.app.ProcessMessages.connected == False:
+			return
+		try:
+			self.send( message ) 
+		except Exception, e:
+			if debugmode == True: print "Sending message failed", message, e
+
+		
+	def cb_peer_exists(self, user, exists):
+		gtk.threads_enter()
+		if debugmode == True: print "%s exists? %i" % (user, exists)
+		if exists == 0:
+			self.app.user_stats[user] = 3, 0, 0, 0, 0
+		gtk.threads_leave()
+	
+	def cb_room_list(self, roomlist):
+		gtk.threads_enter()
+
+		if debugmode == True: print " **** cb_room_list"
+		self.app.room_lists = {}
+		
+		for x, y in roomlist.items():
+			self.app.room_lists[x] = y
+			#print x, y
+			
+		self.app.room_list_tab("")
+
+		gtk.threads_leave()
+
+	def cb_room_tickers(self, room, tickers):
+		if debugmode == True: print " **** cb_room_ticker"
+		gtk.threads_enter()
+		gtk.threads_leave()
+
+	def cb_room_ticker_set(self, room, user, message):
+		gtk.threads_enter()
+		if debugmode == True: print " **** cb_room_ticker_set"
+		gtk.threads_leave()
+
+	def cb_search_ticket(self, query, ticket):
+		gtk.threads_enter()
+		
+		if debugmode == True: print " **** cb_search_ticket"
+		self.app.s_query[str(ticket)] = query
+		if str(ticket) not in self.app.widgets["search"]:
+			self.app.DoSearch(str(ticket))
+		gtk.threads_leave()
+
+
+	def cb_search_results(self, ticket, user, free, speed, queue, results):
+		gtk.threads_enter()
+		if debugmode == True: print " **** cb_search_results"
+
+		self.app.DoSearchResults(str(ticket), user, free, speed, queue, results)
+		gtk.threads_leave()
+
+
+	def cb_user_shares(self, user, shares):
+		gtk.threads_enter()
+		if debugmode == True: print " **** cb_user_shares"
+		self.app.get_shares(user, shares)
+		gtk.threads_leave()
+
+	def cb_transfer_state(self, downloads, uploads):
+		gtk.threads_enter()
+		if debugmode == True: print " **** cb_transfer_state"
+		for transfer in uploads:
+			iters =  self.app.widgets["uploads"]["store"].append( [transfer.user, transfer.path.split("\\")[-1], transfer.rate, self.states[transfer.state], transfer.filepos,  transfer.filesize,   transfer.path])
+			
+			self.app.transfers["uploads"][(transfer.user, transfer.path)] =  iters
+			#[transfer.is_upload, transfer.user, transfer.path, int(transfer.state), transfer.error, transfer.filepos, transfer.filesize, transfer.rate]
+			
+		
+		for transfer in downloads:
+			iters = self.app.widgets["downloads"]["store"].append( [transfer.user, transfer.path.split("\\")[-1], transfer.rate, self.states[transfer.state], transfer.filepos,  transfer.filesize,   transfer.path])
+			self.app.transfers["downloads"][(transfer.user, transfer.path)] =  iters
+			#[transfer.is_upload, transfer.user, transfer.path, int(transfer.state), transfer.error, transfer.filepos, transfer.filesize, transfer.rate]
+			print transfer.user
+		gtk.threads_leave()
+
+
+	def cb_transfer_update(self, transfer):
+		gtk.threads_enter()
+		try:
+			if debugmode == True: print " **** cb_transfer_update"
+	
+			if transfer.is_upload:
+				user_path = (transfer.user, transfer.path)
+				if user_path in self.app.transfers["uploads"]:
+					self.app.widgets["uploads"]["store"].set(self.app.transfers["uploads"][user_path], 0, transfer.user, 1, transfer.path.split("\\")[-1], 2, transfer.rate, 3 ,self.states[transfer.state], 4, transfer.filepos,  5, transfer.filesize,  6, transfer.path)
+				else:
+					iters =  self.app.widgets["uploads"]["store"].append( [transfer.user, transfer.path.split("\\")[-1], transfer.rate, self.states[transfer.state], transfer.filepos,  transfer.filesize,   transfer.path])
+					self.app.transfers["uploads"][(transfer.user, transfer.path)] =  iters
+				
+			else:
+				user_path = (transfer.user, transfer.path)
+				if user_path in self.app.transfers["downloads"]:
+					self.app.widgets["downloads"]["store"].set(self.app.transfers["downloads"][user_path], 0, transfer.user, 1, transfer.path.split("\\")[-1], 2, transfer.rate, 3 ,self.states[transfer.state], 4, transfer.filepos,  5, transfer.filesize,  6, transfer.path)
+				else:
+					iters = self.app.widgets["downloads"]["store"].append( [transfer.user, transfer.path.split("\\")[-1], transfer.rate, self.states[transfer.state], transfer.filepos,  transfer.filesize,   transfer.path])
+					self.app.transfers["downloads"][(transfer.user, transfer.path)] =  iters
+		except Exception,e:
+			if debugmode == True: print " **** cb_transfer_update ERROR", e
+		gtk.threads_leave()
+			
+	def cb_transfer_remove(self, transfer):
+		gtk.threads_enter()
+		
+		if debugmode == True: print " **** cb_transfer_remove"
+		user_path = transfer[1], transfer[2]
+		if transfer[0]:
+			self.app.widgets["uploads"]["store"].remove(self.app.transfers["uploads"][user_path])
+			del self.app.transfers["uploads"][user_path]
+					
+		else:
+			self.app.widgets["downloads"]["store"].remove(self.app.transfers["downloads"][user_path])
+			del self.app.transfers["downloads"][user_path]
+		gtk.threads_leave()
+		
+
+			
+	def cb_user_info(self, user, info, picture, uploads, queue, slotsfree):
+		gtk.threads_enter()
+		try:
+			if debugmode == True:
+				print "got %s's userinfo" % user
+
+			self.app.userinfos.GotUserInfo(user, info, picture, uploads, queue, slotsfree)
+	
+		except Exception,e:
+			if debugmode == True: print " **** cb_user_info ERROR", e
+		gtk.threads_leave()
+	def cb_room_said(self, room, user, text):
+		gtk.threads_enter()
+		try:
+			self.app.chatrooms.roomsmaster.SayChatRoom(room, user, text)
+		except Exception,e:
+			if debugmode == True: print " **** cb_room_said ERROR", e		
+		gtk.threads_leave()
+			
+	def cb_room_state(self, roomlist, joined, tickers):
+		gtk.threads_enter()
+		if debugmode == True: print "Logged in, getting Rooms"
+		try:
+			for rooms1, numbers in roomlist.items():
+				self.app.room_lists[str(rooms1)] = numbers
+				
+			self.app.room_list_tab("")
+			
+			for room in joined:
+				room = str(room)
+				if room not in self.app.roomlogs:
+					self.app.roomlogs[room] = []
+					#self.statuslogs[room] = []
+				self.app.rooms[room] = joined[room]
+				roomlist = []
+	
+				#alpha_list  = SortedDict()
+				
+				for users in joined[room]:
+					roomlist.append(users)
+					self.app.user_stats[users] = joined[room][users][0], joined[room][users][1], joined[room][users][2 ], joined[room][users][3], joined[room][users][4]
+			created = []
+			try:
+				if self.app.widgets["lists"] != None:
+					#for rooms in self.app.rooms.keys():
+					for user in self.app.user_stats:
+						for tab in self.app.tabs["lists"]:
+							if user in self.config[tab].keys():
+								if tab not in self.app.widgets["lists"]:
+									gtk.threads_leave()
+									return
+								
+								self.app.widgets["lists"][tab][0].set(self.app.lists_users[tab][user], 0, self.app.GetStatusImage( self.app.user_stats[user][0] ), 1, user, 2, self.app.user_stats[user][3], 3, abs(self.app.user_stats[user][1]), 4, self.config[tab][user], 5, self.app.user_stats[user][0]  )
+			except Exception, e:
+				print "list", tab, "failed", e
+				
+			if self.app.widgets["chat"] != None:
+				for room in self.app.rooms.keys():
+					if room not in self.app.widgets["chat"]:
+						self.app.chatrooms.roomsmaster.JoinRoom(room, joined[room])
+		except Exception, e:
+			if debugmode == True: print "Room State bug", e
+		gtk.threads_leave()
+		
+	def cb_room_joined(self, room, list_of_users):
+		gtk.threads_enter()
+		if debugmode == True:
+			print "Joined room: %s" % room
+		try:
+			if room not in self.app.roomlogs:
+				self.app.roomlogs[room] = []
+				#self.statuslogs[room] = []
+				
+			for users, stats in list_of_users.items():
+				#print stats
+				self.app.user_stats[users] = stats[0], stats[1], stats[2 ], stats[3], stats[4] 
+				# online status, avgspeed, numdownloads, numfiles, numdirs
+			
+			self.app.rooms[room] = list_of_users
+			
+			if self.app.widgets["chat"] != None:
+				
+				self.app.chatrooms.roomsmaster.JoinRoom(room, list_of_users)
+				
+				
+		except Exception, e:
+			if debugmode == True: print "Join room bug", e
+		gtk.threads_leave()
+		
+	def cb_room_left(self, room):
+		gtk.threads_enter()
+		if debugmode == True: print " **** cb_room_left %s"% room
+		try:
+			del self.app.rooms[room]
+			
+			#self.app.del_chatrooms(room)
+			self.app.chatrooms.roomsmaster.LeaveRoom(room)
+			
+
+		except Exception, e:
+			if debugmode == True: print "Leave room bug", e
+		gtk.threads_leave()
+			
+	def cb_room_user_joined(self, room, user, stats):
+		gtk.threads_enter()
+		try:
+			if debugmode == True:
+				print "%s joined room \'%s\' " %( user, room)
+
+			self.app.rooms[room][user] = stats
+			self.app.user_stats[user] = stats[0], stats[1], stats[2 ], stats[3], stats[4] 
+			
+			self.app.chatrooms.roomsmaster.UserJoinedRoom(room, user)
+			
+		except Exception, e:
+			if debugmode == True: print "User Joined room bug", e
+		gtk.threads_leave()
+
+	
+	def cb_room_user_left(self, room, user):
+		gtk.threads_enter()
+		try:
+			if debugmode == True:
+				print "%s left room %s" % (user, room)
+				
+			self.app.chatrooms.roomsmaster.UserLeftRoom(room, user)
+
+
+		except Exception, e:
+			if debugmode == True: print "User Left room bug", e
+		gtk.threads_leave()
+
+	def cb_private_message(self, direction, timestamp, user, message):
+		gtk.threads_enter()
+		if debugmode == True: print " **** cb_private_message"
+		if debugmode == True: print direction, timestamp, user, message
+		try:
+			
+			if debugmode == True:
+				print "%s PM'd to you: %s" % (user, message)
+
+			#if message[:4] == "/me ":
+				#themessage = "\n%s * %s %s" % (time.strftime("%H:%M:%S"), user, message[4:])
+			#else:
+				#themessage = "\n%s [%s] %s" % (time.strftime("%H:%M:%S"), user, message)
+			if user not in self.app.privatelogs:
+				self.app.privatelogs[user] = []
+			self.app.privatelogs[user].append(message)
+			self.app.privatechats.ShowMessage(direction, user, message)
+			#self.app.append_to_privatechat(user, themessage)
+		except Exception,e:
+			if debugmode == True: print " **** cb_private_message ERROR", e
+		gtk.threads_leave()
+			
+	def cb_peer_address(self, user, ip, port):
+		gtk.threads_enter()
+		if debugmode == True: print " **** cb_peer_address"
+		try:
+			if user == self.app.ip_requested:
+				self.app.ip_requested = None
+				if geoip_fail==0:
+					country =  gi.country_name_by_addr( str(ip) )
+					message="%s's IP: %s Port: %s\nCountry: %s"  % (user, str(ip), str(port), country)
+					s= self.app.display_box(title="IP Address", message = message  )
+					if debugmode == True:
+						print message
+				else:
+					if debugmode == True:
+						print "No Geoip"
+					message="%s's IP: %s Port: %s\n"  % (user, str(ip), str(port) )
+					s= self.app.display_box(title="IP Address", message = message  )
+		except Exception,e:
+			if debugmode == True: print " **** cb_peer_address ERROR", e
+		gtk.threads_leave()
+			
+	def cb_login_error(self, reason):
+		gtk.threads_enter()
+		try:
+			if reason == "INVPASS":
+				self.invalidpass = 1
+				if debugmode == True:
+					print "Invalid Password"
+				
+				self.app.settooltip( "Couldn't connect to Museek: %s" % "Invalid Password")
+				self.app.update_statusbar( "Invalid Password")
+				
+				#self.connect()
+				
+			else:
+				self.invalidpass = 0
+				if debugmode == True:
+					print "couldn't log in: " + reason
+				
+				self.app.update_statusbar( "Couldn't Login")
+				
+			self.app.load_image("red")
+		except Exception,e:
+			if debugmode == True: print " **** cb_login_error ERROR", e
+		self.connected = False
+		gtk.threads_leave()
+		
+	def cb_login_ok(self):
+		
+		try:
+			self.invalidpass = 0
+			if debugmode == True:
+				print "Logging in..."
+		except Exception,e:
+			if debugmode == True: print " **** cb_login_ok ERROR", e
+		self.connected = True
+		
+	def disconnect(self, string):
+		
+		try:
+			if self.app.username != None:
+				#self.timer.cancel()
+				driver.Driver.close(self)
+				#self.close()
+				self.connected = False
+				self.config = {}
+				self.invalidpass = 0
+
+		except Exception,e:
+			if debugmode == True: print "disconnect ERROR", e
+		
+	def cb_disconnected(self):
+		gtk.threads_enter()
+		if debugmode == True: print " **** cb_disconnected"
+		try:
+			
+			self.app.load_image("red")
+
+			self.app.settooltip( "Disconnected from Museek")
+			
+			self.app.update_statusbar( "Disconnected from Museek")
+			
+			self.app.username =None
+			self.app.status = 2
+			self.config = {}
+
+			self.app.chatrooms.roomsmaster.ConnClose()
+
+			self.connected = False
+		except Exception, e:
+			if debugmode == True: print " **** cb_disconnected ERROR", e
+		gtk.threads_leave()
+		
+	def cb_server_state(self, state, username):
+		gtk.threads_enter()
+		try:
+			
+			if state != self.app.status:
+				if debugmode == True:
+					print  str(state), username
+			
+				self.app.status = state
+				if self.app.status:
+					message = "Connected to Museek: %s Status: Away" % username
+					
+					self.app.settooltip( message)
+					self.app.update_statusbar( message)
+					self.app.load_image("yellow")
+					
+				elif self.app.status  == 2:
+					message = "Connected to Museek: %s Status: Online" % username
+					
+					self.app.settooltip( message )
+					self.app.update_statusbar( message )
+					self.app.load_image("green")
+					
+				else:
+					self.app.load_image("red")
+
+			
+			self.app.username = username
+			#self.start_MurmurWindow("window")
+	
+			
+		except Exception,e:
+			if debugmode == True: print " **** cb_server_state ERROR", e
+		gtk.threads_leave()
+		
+	def cb_server_status_set(self, status):
+		gtk.threads_enter()
+		if debugmode == True: print " **** cb_server_status_set ", status
+		try:
+			
+			if status != self.app.status:
+				self.app.status = status
+				if self.app.status:
+					message = "Connected to Museek: %s Status: Away" % self.app.username
+					self.app.settooltip( message)
+					self.app.update_statusbar( message)
+					self.app.load_image("yellow")
+				else:
+					message = "Connected to Museek: %s Status: Online" % self.app.username
+					self.app.settooltip( message ) 
+					self.app.update_statusbar( message )
+					self.app.load_image("green")
+			
+		except Exception,e:
+			if debugmode == True: print " **** cb_server_status_set ERROR", e
+		gtk.threads_leave()
+		
+	def cb_peer_stats(self, user, avgspeed, numdownloads, numfiles, numdirs):
+		#if debugmode == True: print " **** cb_peer_stats %s" % user
+		gtk.threads_enter()
+		try:
+			if user in self.app.user_stats:
+				if self.app.user_stats[user][0] == 3:
+					self.app.user_stats[user] = 3, avgspeed, numdownloads, numfiles, numdirs
+				else:
+					self.app.user_stats[user] = self.app.user_stats[user][0], avgspeed, numdownloads, numfiles, numdirs
+			else:
+				self.app.user_stats[user] = 0, avgspeed, numdownloads, numfiles, numdirs
+		except Exception,e:
+			if debugmode == True: print " **** cb_peer_stats ERROR", e
+		try:
+			# Update Chatroom Lists with new status information
+			if self.app.widgets["chat"] != None:
+				for room,  users in self.app.rooms.items():
+					if user in users:
+						if room in self.app.widgets["chat"]:
+							self.app.widgets["chat"][room]["lists"].set( self.app.chatroom_users[room][user], 0, self.app.GetStatusImage( self.app.user_stats[user][0] ), 1, user, 2, self.app.user_stats[user][3],3, self.app.user_stats[user][0])
+		except Exception,e:
+			if debugmode == True: print " **** cb_peer_stats ERROR2", e
+		try:					
+			if self.app.widgets["lists"] != None:
+
+				for tab in self.app.tabs["lists"]:
+					if user in self.config[tab].keys():
+						self.app.widgets["lists"][tab][0].set(self.app.lists_users[tab][user], \
+						0, self.app.GetStatusImage( self.app.user_stats[user][0] ), \
+						1, user, \
+						2, self.app.user_stats[user][3], \
+						3, abs(self.app.user_stats[user][1]), \
+						4, self.config[tab][user],\
+						5, self.app.user_stats[user][0] )
+							
+						
+		except Exception,e:
+			if debugmode == True: print " **** cb_peer_stats ERROR3", e
+		gtk.threads_leave()	
+			
+	def cb_peer_status(self, user, status):
+		gtk.threads_enter()
+		#if debugmode == True: print " **** cb_peer_status %s %i" % (user, status)
+		#if debugmode == True: print "1 %s is %s" %(user, status)
+		if user in self.app.user_stats:
+			if self.app.user_stats[user][0] == status:
+				gtk.threads_leave()
+				return
+		else:
+			self.app.user_stats[user] = status, 0, 0, 0, 0
+		if status == 1:
+			what = "away"
+			
+		elif status == 2:
+			what = "online"
+		elif status == 0:
+			what = "offline"
+			
+		elif status == 3:
+			what = "notexist"
+
+
+		if debugmode == True: print "2 %s is %s" %(user, what)
+		try:
+		
+			if self.app.user_stats[user][0] == 3:
+				self.app.user_stats[user] = 3,  self.app.user_stats[user][1],  self.app.user_stats[user][2],  self.app.user_stats[user][3],  self.app.user_stats[user][4]
+			else:
+				self.app.user_stats[user] = status,  self.app.user_stats[user][1],  self.app.user_stats[user][2],  self.app.user_stats[user][3],  self.app.user_stats[user][4]
+			
+		except Exception,e:
+			if debugmode == True: print " **** cb_peer_status ERROR1", e
+		
+		try:		
+			# Update Chatroom Lists with new status information
+			self.app.chatrooms.roomsmaster.GetUserStatus( user, status)
+
+		except Exception,e:
+			if debugmode == True: print " **** cb_peer_status ERROR2", e
+		
+		try:
+			if self.app.widgets["lists"] != None:
+				for tab in self.app.tabs["lists"]:
+					if user in self.config[tab].keys():
+						self.app.widgets["lists"][tab][0].set( self.app.lists_users[tab][user], \
+						0, self.app.GetStatusImage( self.app.user_stats[user][0] ), \
+						1, user, \
+						2, self.app.user_stats[user][3], \
+						3, abs(self.app.user_stats[user][1]), \
+						4, self.config[tab][user],\
+						5, self.app.user_stats[user][0] )
+		except Exception,e:
+			if debugmode == True: print " **** cb_peer_status ERROR3", e
+		gtk.threads_leave()
+		
+	def callback(self, message):
+		pass
+	def connect_to_museekd(self, string):
+
+		if self.app.username != None:
+			self.disconnect("")
+		#while 1:
+		if 1:
+			try:
+				if self.invalidpass == 0:
+
+					if murmur_config["connection"]["passw"] != None:
+						#self.timer = threading.Timer(10.0, self.nickcheck)
+						#self.timer.start()
+						driver.Driver.connect(self, murmur_config["connection"]["interface"],  murmur_config["connection"]["passw"], messages.EM_CHAT |  messages.EM_USERINFO| messages.EM_PRIVATE | messages.EM_TRANSFERS  | messages.EM_USERSHARES | messages.EM_CONFIG)
+						
+						if debugmode == True:
+							print "connect attempt"
+							#Mapp.Qqueue.put("Connecting")
+						#break
+					else:
+						raise Exception,  "NOPASS"
+						
+				else:
+					raise Exception,  "INVPASS"
+					
+	
+			except Exception, e:
+				if debugmode == True: 
+					if "INVPASS" in e:
+						print "Incorrect Password, try another."
+						#self.settooltip( "Couldn't connect to Museek: %s" % "Invalid Password")
+					elif  "NOPASS" in e:
+						print "Set a Password."
+						#self.settooltip( "Couldn't connect to Museek: %s" % "Set a Password")
+					elif  "Connection refused" in e:
+						print e[1] +", make sure the daemon is running, or change the interface."
+						#self.settooltip( "Make sure Museek is running, or try a different Interface.")
+					print "Connect to museekd Error: ", e
+					self.connected = False
+
+
+	def run(self):
+		if debugmode == True:  print self.app.pid
+		self.connected = True
+		while 1:
+		#if 1:
+			try:
+				d = 0
+				#while murmur_config["connection"]["passw"]  == None or murmur_config["connection"]["passw"] == "None":
+					#sleep(0.1)
+				if self.socket != None:
+
+					r, w, x = select.select([self.socket, sys.stdin], [], [self.socket], d)
+					
+					if self.socket in r:
+						#try:
+							#print r[0]
+						#except:
+							#pass
+						driver.Driver.process(self)
+				else:
+					
+					if self.connected == True:
+						self.connect_to_museekd("")
+					
+				sleep(0.01)
+				
+				#self.app.MurmurWindow.show_all() 
+
+			except Exception, e:
+				if debugmode == True: print "Process Exception", Exception, e
+			except e:
+				if debugmode == True: print e
+		
+
+
+
+class PopupMenu(gtk.Menu):
+	def __init__(self, xapp, type):
+		gtk.Menu.__init__(self)
+		self.app = xapp
+		self.type = type
+		self.user = None
+		self.directory = None
+		self.path = None
+		self.file = None
+		
+	def setup(self, *items):
+		for item in items:
+			if item[0] == "":
+				menuitem = gtk.MenuItem()
+			else:
+				if item[0][0] == "$":
+					menuitem = gtk.CheckMenuItem(item[0][1:])
+				else:
+					menuitem = gtk.MenuItem(item[0])
+				if item[1] is not None:
+					menuitem.connect("activate", item[1])
+			self.append(menuitem)
+			menuitem.show()
+		return self
+
+	def set_user(self, user):
+		self.user = user
+		
+	def set_path(self, path):
+		self.path = path
+		
+	def set_directory(self, directory):
+		self.directory = directory
+		
+	def set_file(self, file):
+		self.file = file
+			
+	def get_user(self):
+		return self.user
+		
+	def OnSendMessage(self, widget):
+		if self.app.ProcessMessages.connected == False:
+			return
+		if debugmode == True: print "OnSendMessage"
+		if self.user != None and self.user != "":
+			
+			self.app.privatechats.SendMessage(self.user) 
+			
+		pass
+		#self.app.privatechats.SendMessage(self.user)
+	
+	def OnShowIPaddress(self, widget):
+		if self.app.ProcessMessages.connected == False:
+			return
+		if debugmode == True: print "OnShowIPaddress"
+		self.app.ip_requested = self.user
+		self.app.ProcessMessages.Send(messages.PeerAddress(self.user) )
+	
+	def OnDownloadFile(self, widget):
+		if self.app.ProcessMessages.connected == False:
+			return
+		if debugmode == True: print "OnDownloadFile"
+		if self.path != None:
+			path = self.path
+		else:
+			
+			if self.directory[-1] != "\\":
+				path = self.directory+"\\"+self.file
+			else:
+				path = self.directory+self.file
+		self.app.ProcessMessages.Send(messages.DownloadFile(self.user, path))
+	def OnDownloadDirectory(self, widget):
+		if self.app.ProcessMessages.connected == False:
+			return
+		if debugmode == True: print "OnDownloadDirectory"
+		if self.path != None:
+			dire = ''	
+			for path in self.path.split("\\")[:-1]:
+				dire += path+"\\"
+			
+			self.app.ProcessMessages.Send(messages.GetFolderContents(self.user, dire))
+		else:
+			self.app.ProcessMessages.Send(messages.GetFolderContents(self.user, self.directory))
+
+	
+	def OnGetUserInfo(self, widget):
+		if debugmode == True: print "OnGetUserInfo"
+		self.app.ProcessMessages.Send(messages.UserInfo(self.user) )
+		#self.app.np.ProcessRequestToPeer(self.user, slskmessages.UserInfoRequest(None), self.app.userinfo)
+		
+		
+	def OnBrowseUser(self, widget):
+		if self.app.ProcessMessages.connected == False:
+			return
+		self.app.ProcessMessages.Send(messages.UserShares(self.user) )
+	
+	def OnAddToList(self, widget):
+		if self.app.ProcessMessages.connected == False:
+			return
+		pass
+		if widget.get_active():
+			self.app.ProcessMessages.mod_config("buddy", self.user, '')
+		else:
+			self.app.ProcessMessages.mod_config("unbuddy", self.user, '')
+	
+	def OnBanUser(self, widget):
+		if self.app.ProcessMessages.connected == False:
+			return
+		if widget.get_active():
+			self.app.ProcessMessages.mod_config("ban", self.user, '')
+		else:
+			self.app.ProcessMessages.mod_config("unban", self.user, '')
+	
+	def OnIgnoreUser(self, widget):
+		if self.app.ProcessMessages.connected == False:
+			return
+		if widget.get_active():
+
+			self.app.ProcessMessages.mod_config("ignore", self.user, '')
+		else:
+			self.app.ProcessMessages.mod_config("unignore", self.user, '')
+	def OnLeaveRoom(self, widget):
+		if self.app.ProcessMessages.connected == False:
+			return
+		room = self.user
+		self.app.leave_a_room(room)
+		pass
+	def OnJoinRoom(self, widget):
+		if self.app.ProcessMessages.connected == False:
+			return
+		room = self.user
+		self.app.join_a_room(room)
+		pass
+	
+	def OnAbortDownTransfer(self, widget):
+		if self.app.ProcessMessages.connected == False:
+			return
+		self.app.ProcessMessages.Send(messages.TransferAbort(0, self.user, self.path))
+		
+	def OnAbortUpTransfer(self, widget):
+		if self.app.ProcessMessages.connected == False:
+			return
+		self.app.ProcessMessages.Send(messages.TransferAbort(1, self.user, self.path))
+		
+	def OnClearDownTransfer(self, widget):
+		if self.app.ProcessMessages.connected == False:
+			return	
+		self.app.ProcessMessages.Send(messages.TransferRemove(0, self.user, self.path))
+		
+	def OnClearUpTransfer(self, widget):
+		if self.app.ProcessMessages.connected == False:
+			return
+		self.app.ProcessMessages.Send(messages.TransferRemove(1, self.user, self.path))
+		
+	def OnRetryTransfer(self, widget):	
+		self.app.ProcessMessages.Send(messages.DownloadFile(self.user, self.path))
+
+class QueueMinder(object):
+	
+	def __init__(self, msgQueue, inCallback=None, interval=1.0, doStart=False):
+		object.__init__(self)
+		self.msgQueue = msgQueue
+		if not inCallback: self.inCallback=self.gotMessage
+		else: self.inCallback=inCallback
+		self.interval = interval
+		self.progressTimer = None
+		if doStart:
+			self.startTimer()
+	
+	def startTimer(self):
+		self.progressTimer = threading.Timer(self.interval, self._progressCheck)
+		self.progressTimer.start()
+	
+	def stopTimer(self):
+		if self.progressTimer: self.progressTimer.cancel()
+		self.progressTimer=None
+	
+	def gotMessage(self,msg):
+		if debugmode == True: print 'gotMessage(): msg=%s'%msg
+	
+	def _progressCheck(self):
+		try:
+			while 1:
+				msg = self.msgQueue.get(False)
+				if msg: self.inCallback(msg)
+		except Queue.Empty:
+			self.startTimer()
+
+class DisplayDialog( gtk.Window):
+	def __init__(self, Mapp, message="",  picture=None, modal= True):
+		gtk.Window.__init__(self)
+
+		self.set_transient_for(Mapp.MurmurWindow)
+		self.connect("destroy", self.quit)
+		self.connect("delete_event", self.quit)
+		
+		#self.set_size_request(600, 400)
+		self.hbox = gtk.HBox(spacing=5)
+		self.vbox2 = gtk.VBox(spacing=5)
+		self.vbox = gtk.VBox(spacing=5)
+		self.app = Mapp
+		self.ret = None
+		self.image_last = None
+		
+		if modal:
+			self.set_modal(True)
+		
+	def reloads(self):
+			
+		if self.app.dialogtitle != None:
+			self.set_title(self.app.dialogtitle)
+			if self.app.dialogtitle == "IP Address": self.set_size_request(300, 100)
+			self.app.dialogtitle = None
+			
+		try:
+			
+			self.vbox.set_border_width(5)
+			
+			if self.app.dialogmessage != None:
+				self.textbuffer = gtk.TextBuffer(table=None)
+				chat = gtk.TextView()
+				#self.textbuffer.create_mark("tail", self.textbuffer.get_end_iter(), False)
+				
+				self.textbuffer.insert(self.textbuffer.get_end_iter(), self.app.dialogmessage)
+					
+				chat.set_editable(False)
+				chat.set_buffer(self.textbuffer)
+				chat.set_wrap_mode( gtk.WRAP_WORD)
+				chat.set_cursor_visible(False)
+				chat.show()
+				
+			scrolled_window = gtk.ScrolledWindow()
+			scrolled_window.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+			scrolled_window.add_with_viewport(chat)
+			scrolled_window.show()
+			self.app1 = gtk.Frame()
+			self.app1.show()
+			self.app1.set_shadow_type(gtk.SHADOW_ETCHED_IN)
+			self.app1.add(scrolled_window)
+			self.vbox2.pack_start(self.app1)
+			
+			
+			
+			#self.vbox.pack_start(self.app1)
+			
+
+		except Exception, e:
+			if debugmode == True: print "DisplayDialog", e
+
+
+		if self.app.dialogmessage != None:
+			self.textbuffer.delete(self.textbuffer.get_start_iter(), self.textbuffer.get_end_iter())
+			self.textbuffer.insert(self.textbuffer.get_end_iter(), self.app.dialogmessage)
+
+		try:
+			
+			if self.app.dialogpicture != None:
+				if self.app.dialogpicture == "":
+					#self.set_size_request(500, 300)
+					button = gtk.Button("OK")
+					button.connect("clicked", self.click)
+					button.set_flags(gtk.CAN_DEFAULT)
+					self.vbox2.pack_start(button, False, False)
+					button.show()
+					self.vbox2.show()
+					self.add(self.vbox2)	
+					return
+				
+				self.vbox2.show()
+				self.hbox.pack_start(self.vbox2)
+				self.hbox.pack_start(self.vbox)
+				
+				self.app3 = gtk.Frame()
+				self.app3.show()
+				self.app3.set_shadow_type(gtk.SHADOW_ETCHED_IN)
+				
+				scrolled_window = gtk.ScrolledWindow()
+				scrolled_window.set_border_width(4)
+				scrolled_window.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+				scrolled_window.show()
+				self.viewport2 = gtk.Viewport()
+				self.viewport2.show()
+				self.viewport2.set_shadow_type(gtk.SHADOW_NONE)
+				
+				scrolled_window.add(self.viewport2)#self.eventbox)
+				self.app3.add(scrolled_window)
+				self.vbox.pack_start(self.app3, True, True, 0)
+				
+				button = gtk.Button("OK")
+				button.connect("clicked", self.click)
+				button.set_flags(gtk.CAN_DEFAULT)
+				self.vbox.pack_start(button, False, False)
+				button.show()
+				
+				self.vbox.show()
+				self.hbox.show()
+				self.add(self.hbox)
+			
+				if debugmode == True:  print "adding image"
+				self.image = gtk.Image()
+				
+				if debugmode == True:  print "Filename:", self.app.dialogpicture
+				self.image.set_from_file(self.app.dialogpicture)
+					
+				self.image.show()
+				self.viewport2.add(self.image)
+				if debugmode == True: print "Done adding image"
+				
+			else:
+				#self.set_size_request(400, 300)
+				button = gtk.Button("OK")
+				button.connect("clicked", self.click)
+				button.set_flags(gtk.CAN_DEFAULT)
+				self.vbox2.pack_start(button, False, False)
+				button.show()
+				self.vbox2.show()
+				self.add(self.vbox2)	
+					
+		except Exception, e:
+			if debugmode == True: print "imageadd ERROR", e
+
+		
+	def quit(self, w=None, event=None):
+		self.ret = None
+		self.hide()
+		self.destroy()
+		if self.app.f != None:
+			self.app.f.close()
+			self.app.f = None
+			if os.path.exists(self.app.dialogpicture):
+				os.remove(self.app.dialogpicture)
+		sleep(0.1)
+	def click(self, button):
+		self.ret = None
+		self.quit()
+
+
+
+class MurmurWindow:
+	def __init__(self, create = True, accel_group = None):
+		if accel_group is None:
+			self.accel_group = gtk.AccelGroup()
+		else:
+			self.accel_group = accel_group
+		if create:
+			self.MurmurWindow = gtk.Window(gtk.WINDOW_TOPLEVEL)
+			self.MurmurWindow.set_default_size(600, 400)
+			#self.MurmurWindow.set_title(("Nicoseek"))
+			self.MurmurWindow.set_position(gtk.WIN_POS_CENTER)
+			self.MurmurWindow.add_accel_group(self.accel_group)
+			self.MurmurWindow.show()
+		
+		self.MurmurWindow.connect("destroy", self.window_quit)
+		self.MurmurWindow.connect("delete_event", self.window_quit)
+		
+		self.dialogmessage = ""
+		self.dialogpicture = None
+		self.dialogtitle = None
+		self.f = None
+		
+		self.imagedirectory = "images"
+		self.images = {}
+	
+		for i in "away",  "online",  "offline", "noexist":
+			#loader = gtk.gdk.PixbufLoader("gif")
+			self.images[i] =  gtk.gdk.pixbuf_new_from_file(os.path.join(self.imagedirectory, i)+".gif")
+
+		
+		self.chatroom_users = {}
+		self.popup_menu = {}
+		self.tabs = {"private": [], "chat": [], "userinfo": [], "searches": [], "browse": [], "transfers": [], "lists": [] }
+		self.widgets = {"private": {}, "chat": {}, "userinfo": {}, "searches": {}, "browse": {}, "downloads": {}, "uploads": {}, "lists": {}, "buddy": {}, "ban": {}, "ignore": {}  }
+	#	self.widgets["private"] = {}
+		self.transfers= {"uploads": {}, "downloads": {} }
+		self.lists_users = {}
+		#self.tabs["lists"] = []
+		self.roomtab = None
+		
+		self.close_image = os.path.join(self.imagedirectory, "x.png")
+		vbox_murmurwindow = gtk.VBox()
+		vbox_murmurwindow.set_spacing(2)
+	
+		########################
+		# Menu bar
+		########################
+		self.menubar1 = self.topmenu()
+		########################
+		vbox_murmurwindow.pack_start(self.menubar1, False, False, 0)
+		self.vpaned1 = gtk.VPaned()
+	
+		self.notebook_outside = gtk.Notebook()
+		self.notebook_outside.set_tab_pos(gtk.POS_TOP)
+		self.notebook_outside.set_scrollable(False)
+		self.notebook_outside.show()
+		
+		self.LogWindow = gtk.TextView()
+		self.LogWindow.set_wrap_mode(gtk.WRAP_WORD)
+		self.LogWindow.set_cursor_visible(False)
+		self.LogWindow.set_editable(False)
+		self.LogWindow.show()
+		
+		self.LogScrolledWindow = gtk.ScrolledWindow()
+		self.LogScrolledWindow.set_border_width(1)
+		self.LogScrolledWindow.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		self.LogScrolledWindow.set_shadow_type(gtk.SHADOW_IN)
+		self.LogScrolledWindow.add_with_viewport(self.LogWindow)
+		self.LogScrolledWindow.show()
+		# Vertically arrange tabs and log window
+		self.vpaned1.pack1(self.notebook_outside, True, True)
+
+		if murmur_config["logging"]["logcollapsed"] == "no":
+			self.vpaned1.pack2(self.LogScrolledWindow)
+		else:
+			self.lw.set_active(1)
+        	self.vpaned1.show()
+		vbox_murmurwindow.pack_start(self.vpaned1, True, True, 0)				
+		self.statusbar = gtk.Statusbar()
+		self.context_id = self.statusbar.get_context_id("")
+		self.statusbar.push(self.context_id, self.statusbarmessage)
+		vbox_murmurwindow.pack_end(self.statusbar, False, False, 0)
+		
+ 		#self.MurmurWindow.action_area.hide()
+
+		vbox_murmurwindow.show()
+		#self.MurmurWindow.set_default(vbox_murmurwindow)
+		if create:
+            		self.MurmurWindow.add(vbox_murmurwindow)
+		self.statusbar.show()
+		
+		# Chat Room Construction
+		self.notebook_chat = chat = gtk.Notebook()
+		chat.set_tab_pos(gtk.POS_TOP)
+		chat.set_scrollable(False)
+		chat.show()
+		chat.connect("switch-page", self.OnSwitchPage)
+		
+		self.chatrooms = ChatRooms(self)
+		# Private Chat Construction
+		self.privatevbox = gtk.VBox(False, 0)
+		self.privatevbox.show()
+		self.privatevbox.set_spacing(0)
+	
+		self.privatechats = PrivateChats(self)
+		self.privatevbox.pack_start(self.privatechats, True, True, 0)
+	
+		self.hbox20 = gtk.HBox(False, 5)
+		self.hbox20.show()
+		self.hbox20.set_spacing(5)
+		self.hbox20.set_border_width(5)
+	
+		self.sPrivateChatButton = gtk.Button()
+		self.sPrivateChatButton.show()
+	
+		self.alignment10 = gtk.Alignment(0.5, 0.5, 0, 0)
+		self.alignment10.show()
+	
+		self.hbox30 = gtk.HBox(False, 2)
+		self.hbox30.show()
+		self.hbox30.set_spacing(2)
+	
+		self.image10 = gtk.Image()
+		self.image10.set_padding(0, 0)
+		self.image10.set_from_stock(gtk.STOCK_JUMP_TO, 4)
+		self.image10.show()
+		self.hbox30.pack_start(self.image10, False, False, 0)
+	
+		self.label39 = gtk.Label(_("Start Message"))
+		self.label39.set_padding(0, 0)
+		self.label39.show()
+		self.hbox30.pack_start(self.label39, False, False, 0)
+	
+		self.alignment10.add(self.hbox30)
+	
+		self.sPrivateChatButton.add(self.alignment10)
+	
+		self.hbox20.pack_end(self.sPrivateChatButton, False, False, 0)
+	
+		self.PrivateChatEntry = gtk.Entry()
+		self.PrivateChatEntry.set_text("")
+		self.PrivateChatEntry.set_editable(True)
+		self.PrivateChatEntry.show()
+		self.PrivateChatEntry.set_visibility(True)
+		self.hbox20.pack_end(self.PrivateChatEntry, False, True, 0)
+	
+		self.label29 = gtk.Label(_("Input a user:"))
+		self.label29.set_padding(0, 0)
+		self.label29.show()
+		self.hbox20.pack_end(self.label29, False, False, 0)
+	
+		self.privatevbox.pack_start(self.hbox20, False, True, 0)
+
+		self.sPrivateChatButton.connect("clicked", self.OnGetPrivateChat)
+		self.PrivateChatEntry.connect("activate", self.OnGetPrivateChat)
+		
+		# Transfers Construction
+		self.notebook_transfers = gtk.Frame()
+		self.notebook_transfers.show()
+		self.transfer_tab()
+		
+		# User Browse Construction
+		self.userbrowsevbox = gtk.VBox(False, 0)
+		self.userbrowsevbox.show()
+		self.userbrowsevbox.set_spacing(0)
+		
+		self.notebook_browsing = gtk.Notebook()
+		self.notebook_browsing.set_tab_pos(gtk.POS_TOP)
+		self.notebook_browsing.set_scrollable(False)
+		self.notebook_browsing.show()
+		
+		self.userbrowsevbox.pack_start(self.notebook_browsing, True, True, 0)
+	
+		self.hbox22 = gtk.HBox(False, 5)
+		self.hbox22.show()
+		self.hbox22.set_spacing(5)
+		self.hbox22.set_border_width(5)
+	
+		self.sSharesButton = gtk.Button()
+		self.sSharesButton.show()
+	
+		self.alignment11 = gtk.Alignment(0.5, 0.5, 0, 0)
+		self.alignment11.show()
+	
+		self.hbox31 = gtk.HBox(False, 2)
+		self.hbox31.show()
+		self.hbox31.set_spacing(2)
+	
+		self.image11 = gtk.Image()
+		self.image11.set_padding(0, 0)
+		self.image11.set_from_stock(gtk.STOCK_JUMP_TO, 4)
+		self.image11.show()
+		self.hbox31.pack_start(self.image11, False, False, 0)
+	
+		self.label40 = gtk.Label(_("Get Shares"))
+		self.label40.set_padding(0, 0)
+		self.label40.show()
+		self.hbox31.pack_start(self.label40, False, False, 0)
+	
+		self.alignment11.add(self.hbox31)
+	
+		self.sSharesButton.add(self.alignment11)
+	
+		self.hbox22.pack_end(self.sSharesButton, False, False, 0)
+	
+		self.SharesEntry = gtk.Entry()
+		self.SharesEntry.set_text("")
+		self.SharesEntry.set_editable(True)
+		self.SharesEntry.show()
+		self.SharesEntry.set_visibility(True)
+		self.hbox22.pack_end(self.SharesEntry, False, True, 0)
+		
+		self.sSharesButton.connect("clicked", self.OnGetShares)
+		self.SharesEntry.connect("activate", self.OnGetShares)
+		
+		self.label31 = gtk.Label(_("Input a user:"))
+		self.label31.set_padding(0, 0)
+		self.label31.show()
+		self.hbox22.pack_end(self.label31, False, False, 0)
+	
+		self.userbrowsevbox.pack_start(self.hbox22, False, True, 0)
+		
+		# Searches Construction
+		self.notebook_searches= gtk.Frame()
+
+		self.notebook_searches.show()
+		self.SearchFrame()
+		
+		# User lists Construction
+		self.notebook_userlists = gtk.Notebook()
+		self.notebook_userlists.set_tab_pos(gtk.POS_TOP)
+		self.notebook_userlists.set_scrollable(False)
+		self.notebook_userlists.show()
+		
+		# Userinfo Construction
+		
+		self.userinfovbox = gtk.VBox(False, 0)
+		self.userinfovbox.show()
+		self.userinfovbox.set_spacing(0)
+
+		self.userinfos = UserInfos(self)
+		
+		self.userinfovbox.pack_start(self.userinfos, True, True, 0)
+	
+		self.hbox21 = gtk.HBox(False, 5)
+		self.hbox21.show()
+		self.hbox21.set_spacing(5)
+		self.hbox21.set_border_width(5)
+	
+		self.sUserinfoButton = gtk.Button()
+		self.sUserinfoButton.show()
+	
+		self.alignment12 = gtk.Alignment(0.5, 0.5, 0, 0)
+		self.alignment12.show()
+	
+		self.hbox32 = gtk.HBox(False, 2)
+		self.hbox32.show()
+		self.hbox32.set_spacing(2)
+	
+		self.image12 = gtk.Image()
+		self.image12.set_padding(0, 0)
+		self.image12.set_from_stock(gtk.STOCK_JUMP_TO, 4)
+		self.image12.show()
+		self.hbox32.pack_start(self.image12, False, False, 0)
+	
+		self.label41 = gtk.Label(_("Get Userinfo"))
+		self.label41.set_padding(0, 0)
+		self.label41.show()
+		self.hbox32.pack_start(self.label41, False, False, 0)
+	
+		self.alignment12.add(self.hbox32)
+	
+		self.sUserinfoButton.add(self.alignment12)
+	
+		self.hbox21.pack_end(self.sUserinfoButton, False, False, 0)
+	
+		self.UserinfoEntry = gtk.Entry()
+		self.UserinfoEntry.set_text("")
+		self.UserinfoEntry.set_editable(True)
+		self.UserinfoEntry.show()
+		self.UserinfoEntry.set_visibility(True)
+		self.hbox21.pack_end(self.UserinfoEntry, False, True, 0)
+	
+		self.label30 = gtk.Label(_("Input a user:"))
+		self.label30.set_padding(0, 0)
+		self.label30.show()
+		self.hbox21.pack_end(self.label30, False, False, 0)
+	
+		self.userinfovbox.pack_start(self.hbox21, False, True, 0)
+		
+		self.sUserinfoButton.connect("clicked", self.OnGetUserInfo)
+		self.UserinfoEntry.connect("activate", self.OnGetUserInfo)
+		
+		# Room List Construction
+		
+		self.notebook_roomlist = gtk.Frame()
+		self.notebook_roomlist.show()	
+
+		# Add tabs to Notebook
+		chatlabel = gtk.Label("Chat Rooms") 
+		chatlabel.show()
+		self.notebook_outside.append_page(self.notebook_chat, chatlabel)
+		
+		label = gtk.Label("Private Chat") 
+		label.show()
+		self.notebook_outside.append_page(self.privatevbox, label)
+		
+		label = gtk.Label("Transfers") 
+		label.show()
+		self.notebook_outside.append_page(self.notebook_transfers, label)
+		
+		label = gtk.Label("Searches") 
+		label.show()
+		self.notebook_outside.append_page(self.notebook_searches, label)
+		
+		label = gtk.Label("User Info") 
+		label.show()
+		self.notebook_outside.append_page(self.userinfovbox, label)
+		
+		label = gtk.Label("Browse") 
+		label.show()
+		self.notebook_outside.append_page(self.userbrowsevbox, label)
+		
+		label = gtk.Label("Users") 
+		label.show()
+		self.notebook_outside.append_page(self.notebook_userlists, label)
+		
+		label = gtk.Label("Room List") 
+		label.show()
+		self.notebook_outside.append_page(self.notebook_roomlist, label)
+		
+		
+		self.notebook_outside.show()
+
+	def OnSwitchPage(self, notebook, page, page_num, force=0):
+
+		if self.notebook_outside.get_current_page() == 0:
+			if self.widgets["chat"] != None:
+				if self.tabs["chat"] != []:
+					self.widgets["chat"][self.tabs["chat"][page_num]]["input_chat"].grab_focus()
+		elif self.notebook_outside.get_current_page() == 1:
+			if self.widgets["private"] != None:
+				if self.tabs["private"] != []:
+					gobject.idle_add(self.widgets["private"][self.tabs["private"][page_num]][2].grab_focus )
+
+	def OnGetShares(self, widget):
+		user =self.SharesEntry.get_text()
+		if user != "" and not user.isspace():
+			self.ProcessMessages.Send(messages.UserShares(user) )
+			
+	def OnGetUserInfo(self, widget):
+		
+		user =self.UserinfoEntry.get_text()
+		if user != "" and not user.isspace():
+			self.ProcessMessages.Send(messages.UserInfo(user) )
+			self.UserinfoEntry.set_text("")
+			
+	def OnGetPrivateChat(self, widget):
+		
+		user =self.PrivateChatEntry.get_text()
+		if user != "" and not user.isspace():
+			self.privatechats.SendMessage(user)
+			#self.ProcessMessages.Send(messages.PrivateChat(user) )
+			self.PrivateChatEntry.set_text("")
+			
+	def topmenu(self):
+		
+		menubar1 = gtk.MenuBar()
+		menubar1.show()
+		
+		menu1 = gtk.Menu()
+		
+		connect_menu = gtk.Menu()
+		
+		file1 = gtk.MenuItem(("_File"))
+		file1.show()
+		
+		connect_item = gtk.MenuItem("_Connect")
+		connect_item.connect_object("activate", self.connect_process, None)
+		connect_item.add_accelerator("activate", self.accel_group, gtk.gdk.keyval_from_name("C"), gtk.gdk.MOD1_MASK, gtk.ACCEL_VISIBLE)
+		connect_item.show()
+		
+		disconnect_item = gtk.MenuItem("_Disconnect")
+		disconnect_item.connect_object("activate", self.disconnect, "disconnect")
+		disconnect_item.add_accelerator("activate", self.accel_group, gtk.gdk.keyval_from_name("D"), gtk.gdk.MOD1_MASK, gtk.ACCEL_VISIBLE)
+		disconnect_item.show()
+		
+		settings_item = gtk.MenuItem("_Settings")
+		settings_item.connect_object("activate", self.popup, "settings")
+		settings_item.add_accelerator("activate", self.accel_group, gtk.gdk.keyval_from_name("S"), gtk.gdk.MOD1_MASK, gtk.ACCEL_VISIBLE)
+		settings_item.show()
+		
+		connect_menu.append(connect_item)
+		#connect_menu.append(connect2_item)
+		connect_menu.append(disconnect_item)
+		connect_menu.append(settings_item)
+				
+		museek_item = gtk.MenuItem("_Museek")
+		#connect_item.connect_object("activate", self.userstatus, "file.user")
+		museek_item.show()
+		museek_item.set_submenu(connect_menu)
+				
+		self.tray_item = tray_item = gtk.CheckMenuItem("Hide _Trayapp")
+		
+		if murmur_config["murmur"]["trayapp"] == "no":
+			tray_item.set_active(True)
+			
+		else:
+			tray_item.set_active(False)
+		tray_item.connect_object("activate", self.trayapp, "tray")
+		tray_item.add_accelerator("activate", self.accel_group, gtk.gdk.keyval_from_name("T"), gtk.gdk.MOD1_MASK, gtk.ACCEL_VISIBLE)
+		tray_item.show()
+		
+		leave1 = gtk.MenuItem("_Leave Room")
+		leave1.connect("activate", self.leave_popup, "")
+		leave1.add_accelerator("activate", self.accel_group, gtk.gdk.keyval_from_name("L"), gtk.gdk.MOD1_MASK, gtk.ACCEL_VISIBLE)
+		leave1.show()
+		
+		away_item = gtk.MenuItem("Toggle _Away")
+		away_item.connect_object("activate", self.away_toggle, "file.away")
+		away_item.add_accelerator("activate", self.accel_group, gtk.gdk.keyval_from_name("A"), gtk.gdk.MOD1_MASK, gtk.ACCEL_VISIBLE)
+		away_item.show()
+		
+		
+		quit1 = gtk.MenuItem("_Quit Murmur Chat")
+		quit1.connect("activate", self.window_quit, "")
+		quit1.add_accelerator("activate", self.accel_group, gtk.gdk.keyval_from_name("Q"), gtk.gdk.MOD1_MASK, gtk.ACCEL_VISIBLE)
+		quit1.show()
+		
+		join1 = gtk.MenuItem("_Join Room")
+		join1.connect("activate", self.join_popup, "")
+		join1.add_accelerator("activate", self.accel_group, gtk.gdk.keyval_from_name("J"), gtk.gdk.MOD1_MASK, gtk.ACCEL_VISIBLE)
+		join1.show()
+		
+		
+		self.lw = lw = gtk.CheckMenuItem(_("_Hide log window"))
+		lw.set_active(False)
+		lw.connect("activate", self.toggle_logwindow, "")
+		lw.add_accelerator("activate", self.accel_group, gtk.gdk.keyval_from_name("H"), gtk.gdk.MOD1_MASK, gtk.ACCEL_VISIBLE)
+		lw.show()
+
+				
+		menu1.append(museek_item)
+		menu1.append(tray_item)
+		menu1.append(away_item)
+		menu1.append(lw)
+		menu1.append(quit1)
+	
+		file1.set_submenu(menu1)
+		
+		menu_rooms = gtk.Menu()
+		
+		menuitem_rooms = gtk.MenuItem(("_Rooms"))
+		menuitem_rooms.show()
+		
+		menu_rooms.append(join1)
+		menu_rooms.append(leave1)
+		menuitem_rooms.set_submenu(menu_rooms)
+		
+		private1 = gtk.MenuItem("Send _Private Message")
+		private1.connect("activate", self.private_popup, "")
+		private1.add_accelerator("activate", self.accel_group, gtk.gdk.keyval_from_name("P"), gtk.gdk.MOD1_MASK, gtk.ACCEL_VISIBLE)
+		private1.show()
+		
+		user_item = gtk.MenuItem("User Stats")
+		user_item.connect_object("activate", self.userstatus, "file.user")
+		user_item.show()
+		
+		ip_item = gtk.MenuItem("Lookup IP")
+		ip_item.connect_object("activate", self.ip_lookup, "file.ip")
+		ip_item.add_accelerator("activate", self.accel_group, gtk.gdk.keyval_from_name("I"), gtk.gdk.MOD1_MASK, gtk.ACCEL_VISIBLE)
+		ip_item.show()
+		
+		userinfo_item = gtk.MenuItem("Lookup Userinfo")
+		userinfo_item.connect_object("activate", self.userinfo_lookup, "file.userinfo")
+		userinfo_item.add_accelerator("activate", self.accel_group, gtk.gdk.keyval_from_name("E"), gtk.gdk.MOD1_MASK, gtk.ACCEL_VISIBLE)
+		userinfo_item.show()
+		
+		browse_item = gtk.MenuItem("Browse User")
+		browse_item.connect_object("activate", self.browse_lookup, "file.browse")
+		browse_item.add_accelerator("activate", self.accel_group, gtk.gdk.keyval_from_name("B"), gtk.gdk.MOD1_MASK, gtk.ACCEL_VISIBLE)
+		browse_item.show()
+		
+		menuitem2 = gtk.MenuItem(("_Users"))
+		menuitem2.show()
+		menu2 = gtk.Menu()
+		
+		menu2.append(private1)
+		menu2.append(user_item)
+		menu2.append(ip_item)
+		menu2.append(userinfo_item)
+		menu2.append(browse_item)
+		
+		menuitem2.set_submenu(menu2)
+		
+		menuitem4 = gtk.MenuItem(("_Help"))
+		menuitem4.show()
+	
+		menu4 = gtk.Menu()
+	
+		about1 = gtk.MenuItem(("_About"))
+		about1.connect("activate", self.about)
+		about1.add_accelerator("activate", self.accel_group, gtk.gdk.keyval_from_name("F1"), gtk.gdk.MOD1_MASK, gtk.ACCEL_VISIBLE)
+		about1.show()
+		
+	
+		menu4.append(about1)
+		
+		menu4.show()
+		menu1.show()
+	
+		menuitem4.set_submenu(menu4)
+		
+		menubar1.append(file1)
+		menubar1.append(menuitem_rooms)
+		menubar1.append(menuitem2)
+		menubar1.append(menuitem4)
+		menubar1.show()
+		return menubar1
+	
+class UserInfo:
+	def __init__(self, infos, user):
+		self.frame = infos.frame
+		self.user = user
+		if user == None:
+			return
+					
+		try:
+			
+			vbox1 = gtk.VBox(False, 0)
+			vbox1.show()
+			vbox1.set_spacing(0)
+
+			scrolledwindow1 = gtk.ScrolledWindow()
+			scrolledwindow1.set_policy(gtk.POLICY_ALWAYS, gtk.POLICY_ALWAYS)
+			scrolledwindow1.show()
+			scrolledwindow1.set_shadow_type(gtk.SHADOW_OUT)
+		
+			self.UserInfoText = UserInfoText = gtk.TextView()
+			UserInfoText.set_wrap_mode(gtk.WRAP_WORD)
+			UserInfoText.set_cursor_visible(True)
+			UserInfoText.set_editable(False)
+			self.textbuffer = textbuffer = UserInfoText.get_buffer()
+			#textbuffer.set_text(info)
+			UserInfoText.show()
+			scrolledwindow1.add(UserInfoText)
+		
+			vbox1.pack_start(scrolledwindow1, True, True, 0)
+		
+			vbox3 = gtk.VBox(False, 0)
+			vbox3.show()
+			vbox3.set_spacing(0)
+		
+			hbox2 = gtk.HBox(False, 0)
+			hbox2.show()
+			hbox2.set_spacing(0)
+		
+			label4 = gtk.Label(("Slots:"))
+			label4.set_padding(0, 0)
+			label4.show()
+			hbox2.pack_start(label4, False, False, 0)
+		
+			self.SlotsNum = SlotsNum = gtk.Label() # str(slotsfree)
+			SlotsNum.set_padding(0, 0)
+			SlotsNum.show()
+			hbox2.pack_start(SlotsNum, False, False, 5)
+		
+			vbox3.pack_start(hbox2, False, False, 0)
+		
+			hbox5 = gtk.HBox(False, 0)
+			hbox5.show()
+			hbox5.set_spacing(0)
+		
+			label7 = gtk.Label(("Queue:"))
+			label7.set_padding(0, 0)
+			label7.show()
+			hbox5.pack_start(label7, False, False, 0)
+		
+			self.QueueNum = QueueNum = gtk.Label() # str(queue)
+			QueueNum.set_padding(0, 0)
+			QueueNum.show()
+			hbox5.pack_start(QueueNum, False, False, 5)
+		
+			label8 = gtk.Label(("Files:"))
+			label8.set_padding(0, 0)
+			label8.show()
+			hbox5.pack_start(label8, False, False, 0)
+
+			self.FilesNum = FilesNum = gtk.Label() # str(files)
+			FilesNum.set_padding(0, 0)
+			FilesNum.show()
+			hbox5.pack_start(FilesNum, False, False, 5)
+			
+			label82 = gtk.Label(("Speed:"))
+			label82.set_padding(0, 0)
+			label82.show()
+			hbox5.pack_start(label82, False, False, 0)
+			
+			self.SpeedNum = SpeedNum = gtk.Label() # str(speed)
+			SpeedNum.set_padding(0, 0)
+			SpeedNum.show()
+			hbox5.pack_start(SpeedNum, False, False, 5)
+		
+			vbox3.pack_start(hbox5, False, False, 0)
+		
+			hbox4 = gtk.HBox(False, 0)
+			hbox4.show()
+			hbox4.set_spacing(0)
+
+			close_button = gtk.Button("Close", stock="gtk-close")
+			close_button.connect_object("clicked", self.close_userinfo, user)
+			close_button.show()
+			
+			hbox4.pack_start(close_button, False, False, 0)
+			
+			refresh_button = gtk.Button("Refresh", stock="gtk-refresh")
+			refresh_button.connect_object("clicked", self.refresh_userinfo, user)
+			refresh_button.show()	
+			hbox4.pack_start(refresh_button, False, False, 0)
+			label6 = gtk.Label(("Uploads allowed:"))
+			label6.set_padding(0, 0)
+			label6.show()
+			
+			hbox4.pack_start(label6, False, False, 5)
+		
+			self.UploadsAllowed = UploadsAllowed = gtk.Label() #str(uploads) 
+			UploadsAllowed.set_padding(0, 0)
+			UploadsAllowed.show()
+			hbox4.pack_start(UploadsAllowed, False, False, 5)
+		
+			
+			vbox3.pack_start(hbox4, False, False, 0)
+			vbox1.pack_start(vbox3, False, False, 0)
+		
+			self.ScrollPicture =  scrolledwindow3 = gtk.ScrolledWindow()
+			scrolledwindow3.set_policy(gtk.POLICY_ALWAYS, gtk.POLICY_ALWAYS)
+			scrolledwindow3.set_shadow_type(gtk.SHADOW_OUT)
+
+			UserImage = gtk.Image()
+			#if picture != None:
+				#if picture != "":
+					#s = gtk.gdk.PixbufLoader()
+					#s.write(picture)
+					#s.close()
+					#UserImage.set_from_pixbuf(s.get_pixbuf())
+			UserImage.set_padding(0, 0)
+			UserImage.show()
+			scrolledwindow3.add_with_viewport(UserImage)
+			scrolledwindow3.show()
+
+			self.Main =  hpane1 = gtk.HPaned()
+			hpane1.pack1(vbox1, False, True)
+			hpane1.pack2(scrolledwindow3, True, True)
+			hpane1.show()
+			
+
+			
+		except Exception, e:
+			if debugmode == True: print "UserInfo", Exception,e
+		
+	def close_userinfo(self, user):
+		del self.Main 
+		self.frame.userinfos.remove_page(self.frame.userinfos.get_current_page())
+
+		
+	def refresh_userinfo(self, user):
+		self.frame.ProcessMessages.Send(messages.UserInfo(user))
+
+	def ShowInfo(self, user, info, picture, uploads, queue, slotsfree):
+		if debugmode == True:
+			print "%s info received"%  user
+		textbuffer  = self.textbuffer
+		UserInfoText = self.UserInfoText
+		textbuffer = UserInfoText.get_buffer()
+		textbuffer.set_text(info)
+
+		self.SlotsNum.set_label( str(slotsfree) )
+		self.QueueNum.set_label( str(queue) )
+		self.UserImage = UserImage = gtk.Image()
+		self.UploadsAllowed.set_label( str(uploads) )
+		
+		if user in self.frame.user_stats:
+			self.files = abs( self.frame.user_stats[user][3] )
+			self.speed =  abs(self.frame.user_stats[user][1])
+		else:
+			self.speed = self.files = 0
+			
+		self.SpeedNum.set_label(str(self.speed))
+		self.FilesNum.set_label(str(self.files))
+		
+		if picture != None:
+			if picture != "":
+				s = gtk.gdk.PixbufLoader()
+				s.write(picture)
+				s.close()
+				if debugmode == True:
+					print "drawing image for", user
+
+				self.ScrollPicture.destroy()
+				self.ScrollPicture = scrolledwindow3 = gtk.ScrolledWindow()
+				scrolledwindow3.set_policy(gtk.POLICY_ALWAYS, gtk.POLICY_ALWAYS)
+				scrolledwindow3.set_shadow_type(gtk.SHADOW_OUT)
+				#self.UserImage"].set_from_pixbuf(None)
+				UserImage =gtk.Image() 
+				UserImage.set_from_pixbuf(s.get_pixbuf())
+				UserImage.show()
+
+				self.ScrollPicture.add_with_viewport(UserImage)
+				self.ScrollPicture.show()
+				self.Main.pack2(self.ScrollPicture, True, True)
+
+class UserInfos(gtk.Notebook):
+	def __init__(self, frame):
+		gtk.Notebook.__init__(self)
+		self.set_scrollable(False)
+		self.show()
+		self.users = {}
+		self.frame = frame
+		self.set_tab_pos(gtk.POS_BOTTOM)
+		self.connect("switch-page", self.OnSwitchPage)
+		
+	def GotUserInfo(self, user, info, picture, uploads, queue, slotsfree):
+		if self.users.has_key(user):
+			self.users[user].ShowInfo(user, info, picture, uploads, queue, slotsfree)
+		else:
+			self.users[user] = UserInfo(self, user)
+		
+			UserName = gtk.Label((user))
+			UserName.set_padding(0, 0)
+			UserName.show()
+
+			self.append_page(self.users[user].Main, UserName)
+
+			self.users[user].ShowInfo(user, info, picture, uploads, queue, slotsfree)
+			
+	def OnSwitchPage(self, notebook, page, page_num, force = 0):
+		
+		if self.frame.notebook_outside.get_current_page() != 4 and not force:
+			return
+		page = notebook.get_nth_page(page_num)	
+		#print page
+	def RemoveTab(self, tab):
+		self.remove_page(tab.Main)
+		del self.users[tab.user]
+		
+class PrivateChat:
+	def __init__(self, chats, user):
+		self.chats  = chats
+		self.frame = chats.frame
+		self.user = user
+	
+		self.Main = gtk.VBox(False, 0)
+		self.Main.show()
+		self.Main.set_spacing(0)
+	
+		self.scrolledwindow16 = gtk.ScrolledWindow()
+		self.scrolledwindow16.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		self.scrolledwindow16.show()
+		self.scrolledwindow16.set_shadow_type(gtk.SHADOW_IN)
+	
+		self.ChatScroll = gtk.TextView()
+		self.ChatScroll.set_wrap_mode(gtk.WRAP_WORD)
+		self.ChatScroll.set_cursor_visible(False)
+		self.ChatScroll.set_editable(False)
+		self.ChatScroll.show()
+		self.scrolledwindow16.add(self.ChatScroll)
+	
+		self.Main.pack_start(self.scrolledwindow16, True, True, 0)
+	
+		self.hbox5 = gtk.HBox(False, 0)
+		self.hbox5.show()
+		self.hbox5.set_spacing(0)
+	
+		self.ChatLine = gtk.Entry()
+		self.ChatLine.set_text("")
+		self.ChatLine.set_editable(True)
+		self.ChatLine.show()
+		self.ChatLine.set_visibility(True)
+		self.ChatLine.connect("activate", self.OnEnter)
+		self.ChatLine.connect("key_press_event", self.OnKeyPress)
+		
+		self.hbox5.pack_start(self.ChatLine, True, True, 0)
+		self.hbox5.set_focus_child(self.ChatLine)
+		
+		self.Encoding_List = gtk.ListStore(gobject.TYPE_STRING)
+		self.Encoding = gtk.ComboBox()
+		self.Encoding.show()
+		#self.Encoding.connect("changed", self.OnEncodingChanged)
+	
+		self.Encoding.set_model(self.Encoding_List)
+		cell = gtk.CellRendererText()
+		self.Encoding.pack_start(cell, True)
+		self.Encoding.add_attribute(cell, 'text', 0)
+		self.hbox5.pack_start(self.Encoding, False, False, 0)
+	
+		self.Log = gtk.CheckButton()
+		self.Log.set_active(False)
+		self.Log.set_label(_("Log"))
+		self.Log.show()
+		#self.Log.connect("toggled", self.OnLogToggled)
+		self.hbox5.pack_start(self.Log, False, False, 0)
+	
+		self.button1 = gtk.Button("Close", "gtk-close")
+		#self.button1.set_label(_("Close"))
+		self.button1.show()
+		self.button1.connect("clicked", self.OnClose)
+	
+		self.hbox5.pack_start(self.button1, False, False, 0)
+	
+		self.Main.pack_start(self.hbox5, False, True, 0)
+		self.Main.set_focus_child(self.hbox5)
+	
+	
+		#if create:
+		#self.PrivateChatTab.add(self.Main)
+	
+
+		#textbuffer = gtk.TextBuffer(table=None)
+		#chat = gtk.TextView()
+		
+		self.popup_menu = popup = PopupMenu(self.frame, "something")
+		popup.setup(
+			(_("Close"), self.OnClose),
+			("", None),
+			(_("Show IP address"), popup.OnShowIPaddress),
+			(_("Get user info"), popup.OnGetUserInfo),
+			(_("Browse files"), popup.OnBrowseUser),
+			#(_("Give privileges"), popup.OnGivePrivileges),
+			("$" + _("Add user to list"), popup.OnAddToList),
+			("$" + _("Ban this user"), popup.OnBanUser),
+			("$" + _("Ignore this user"), popup.OnIgnoreUser),
+			#(_("Client Version"), popup.OnVersion ),
+		)
+		popup.set_user(user)
+		self.ChatScroll.connect("button_press_event", self.OnPopupMenu)
+		self.ChatLine.grab_focus()
+		
+
+	
+	def OnClose(self, widget):
+		#if self.logfile is not None:
+			#self.logfile.close()
+			#self.logfile = None
+		self.chats.RemoveTab(self)
+		self.destroy()
+
+	def ShowMessage(self, direction, text):
+		print direction
+		print self.frame.username
+		if text[:4] == "/me ":
+			line = "* %s %s" % (self.user, text[4:])
+			#tag = self.tag_me
+		else:
+			line = "[%s] %s" % (self.user, text)
+			#tag = self.tag_remote
+		#line = self.frame.np.decode(line, self.encoding)
+		AppendLine(self.ChatScroll, line, None, "%c")
+		#if self.Log.get_active():
+			#self.logfile = WriteLog(self.logfile, self.frame.np.config.sections["logging"]["logsdir"], self.user, line)
+		
+		#autoreply = self.frame.np.config.sections["server"]["autoreply"]
+		#if self.frame.away and not self.autoreplied and autoreply:
+			#self.SendMessage("[Auto-Message] %s" % autoreply)
+			#self.autoreplied = 1
+
+	def SendMessage(self, text):
+
+		if text[:4] == "/me ":
+			line = "* %s %s" % (self.frame.username, text[4:])
+			#tag = self.tag_me
+		else:
+			
+			if text == "\x01VERSION\x01":
+				line = "CTCP VERSION"
+			else:
+				line = "[%s] %s" % (self.frame.username, text)
+			#tag = self.tag_local
+			
+		AppendLine(self.ChatScroll, line, None, "%c")
+		#if self.Log.get_active():
+			#self.logfile = WriteLog(self.logfile, self.frame.np.config.sections["logging"]["logsdir"], self.user, line)
+		#self.frame.np.queue.put(slskmessages.MessageUser(self.user, text))
+		#self.frame.ProcessMessages
+	
+	CMDS = ["/alias ", "/unalias ", "/whois ", "/browse ", "/ip ", "/pm ", "/msg ", "/search ", "/usearch ", "/rsearch ",
+		"/bsearch ", "/add ", "/ban ", "/ignore ", "/unban ", "/unignore ", "/clear", "/quit", "/rescan", "/nsa", "/info", "/ctcpversion"]
+				
+	def destroy(self):
+		#if self.frame.translux:
+			#self.frame.translux.unsubscribe(self.tlux_chat)
+		self.Main.destroy()
+
+	def OnPopupMenu(self, widget, event):
+		if event.button != 3:
+			return
+		items = self.popup_menu.get_children()
+		#items[6].set_active(self.user in [i[0] for i in self.frame.np.config.sections["server"]["userlist"]])
+		#items[7].set_active(self.user in self.frame.np.config.sections["server"]["banlist"])
+		#items[8].set_active(self.user in self.frame.np.config.sections["server"]["ignorelist"])
+		self.popup_menu.popup(None, None, None, event.button, event.time)
+		self.ChatScroll.emit_stop_by_name("button_press_event")
+		return True
+		
+	def OnEnter(self, widget):
+		message = widget.get_text()
+		self.frame.ProcessMessages.Send(messages.PrivateMessage(0, self.user, message))
+		self.SendMessage(message)
+		widget.set_text("")
+		
+		return
+	
+	
+	
+		result = expand_alias(self.frame.np.config.aliases, text)
+		if result is not None:
+			text = result
+		if not text:
+			widget.set_text("")
+			return
+			
+		s = text.split(" ", 1)
+		cmd = s[0]
+		if len(s) == 2 and s[1]:
+			realargs = args = s[1]
+		else:
+			args = self.user
+			realargs = ""
+
+		if cmd in ("/alias", "/al"):
+			AppendLine(self.ChatScroll, self.frame.np.config.AddAlias(realargs), None, "")
+		elif cmd in ("/unalias", "/un"):
+			AppendLine(self.ChatScroll, self.frame.np.config.Unalias(realargs), None, "")
+		elif cmd in ["/w", "/whois", "/info"]:
+			if args:
+				self.frame.LocalUserInfoRequest(args)
+				self.frame.OnUserInfo(None)
+		elif cmd in ["/b", "/browse"]:
+			if args:
+				self.frame.BrowseUser(args)
+				self.frame.OnUserBrowse(None)
+		elif cmd == "/ip":
+			if args:
+				self.frame.np.queue.put(slskmessages.GetPeerAddress(args))
+		elif cmd == "/nsa":
+			if args:
+				self.frame.LocalUserInfoRequest(args)
+				self.frame.BrowseUser(args)
+				self.frame.OnUserInfo(None)
+		elif cmd == "/pm":
+			if realargs:
+				self.frame.privatechats.SendMessage(realargs, None, 1)
+		elif cmd in ["/m", "/msg"]:
+			if realargs:
+				s = realargs.split(" ", 1)
+				user = s[0]
+				if len(s) == 2:
+					msg = s[1]
+				else:
+					msg = None
+				self.frame.privatechats.SendMessage(user, msg)
+		elif cmd in ["/s", "/search"]:
+			if realargs:
+				self.frame.searches.DoSearch(realargs, 0)
+				self.frame.OnSearch(None)
+		elif cmd in ["/us", "/usearch"]:
+			if realargs:
+				self.frame.searches.DoSearch(realargs, 3, [self.user])
+				self.frame.OnSearch(None)
+		elif cmd in ["/rs", "/rsearch"]:
+			if realargs:
+				self.frame.searches.DoSearch(realargs, 1)
+				self.frame.OnSearch(None)
+		elif cmd in ["/bs", "/bsearch"]:
+			if realargs:
+				self.frame.searches.DoSearch(realargs, 2)
+				self.frame.OnSearch(None)
+		elif cmd in ["/ad", "/add"]:
+			if args:
+				self.frame.userlist.AddToList(args)
+		elif cmd == "/ban":
+			if args:
+				self.frame.BanUser(args)
+		elif cmd == "/ignore":
+			if args:
+				self.frame.IgnoreUser(args)
+		elif cmd == "/unban":
+			if args:
+				self.frame.UnbanUser(args)
+		elif cmd == "/unignore":
+			if args:
+				self.frame.UnignoreUser(args)
+		elif cmd == "/ctcpversion":
+			if args:
+				self.frame.privatechats.SendMessage(args, "\x01VERSION\x01", 1)
+		elif cmd in ["/clear", "/cl"]:
+			self.ChatScroll.get_buffer().set_text("")
+		elif cmd in ["/a", "/away"]:
+			self.frame.OnAway(None)
+		elif cmd in ["/q", "/quit"]:
+			self.frame.OnExit(None)
+		elif cmd in ["/c", "/close"]:
+			self.OnClose(None)
+		elif cmd == "/rescan":
+			self.frame.OnRescan()
+		elif cmd and cmd[:1] == "/" and cmd != "/me" and cmd[:2] != "//":
+			self.frame.logMessage(_("Command %s is not recognized") % text)
+			return
+		else:
+			if text[:2] == "//":
+				text = text[1:]
+			self.SendMessage(text)
+		widget.set_text("")
+		
+	def OnKeyPress(self, widget, event):
+		return
+		if event.keyval == gtk.gdk.keyval_from_name("Prior"):
+			scrolled = self.ChatScroll.get_parent()
+			adj = scrolled.get_vadjustment()
+			adj.set_value(adj.value - adj.page_increment)
+		elif event.keyval == gtk.gdk.keyval_from_name("Next"):
+			scrolled = self.ChatScroll.get_parent()
+			adj = scrolled.get_vadjustment()
+			max = adj.upper - adj.page_size
+			new = adj.value + adj.page_increment
+			if new > max:
+				new = max
+			adj.set_value(new)
+		if event.keyval != gtk.gdk.keyval_from_name("Tab"):
+			return False
+		ix = widget.get_position()
+		text = widget.get_text()[:ix].split(" ")[-1]
+		list = [self.user] + [i[0] for i in self.frame.userlist.userlist] + ["nicotine"]
+		if ix == len(text) and text[:1] == "/":
+			list += ["/"+k for k in self.frame.np.config.aliases.keys()] + self.CMDS
+		completion, single = GetCompletion(text, list)
+		if completion:
+			widget.insert_text(completion, ix)
+			widget.set_position(ix + len(completion))
+		widget.emit_stop_by_name("key_press_event")
+		return True
+		
+class PrivateChats(gtk.Notebook):
+	def __init__(self, frame):
+		gtk.Notebook.__init__(self)
+		self.set_scrollable(False)
+		self.show()
+		self.users = {}
+		self.frame = frame
+		self.set_tab_pos(gtk.POS_BOTTOM)
+		self.connect("switch-page", self.OnSwitchPage)
+		
+	def SendMessage(self, user, text = None, direction = None):
+		if not self.users.has_key(user):
+			tab = PrivateChat(self, user)
+			self.users[user] = tab
+			label = gtk.Label(user) 
+			label.show()
+			self.append_page(tab.Main, label) #, tab.OnClose)
+			#self.frame.np.queue.put(slskmessages.GetUserStatus(user))
+		if direction:
+			if self.get_current_page() != self.page_num(self.users[user].Main):
+				self.set_current_page(self.page_num(self.users[user].Main))
+		if text is not None:
+			self.users[user].SendMessage(text)
+	
+	def ShowMessage(self, direction, user, text):
+		#if msg.user in self.frame.np.config.sections["server"]["ignorelist"]:
+			#return
+
+		#ctcpversion = 0
+		#if text == "\x01VERSION\x01":
+			#ctcpversion = 1
+			#text = "CTCP VERSION"
+		self.SendMessage(user, None)
+		tab = self.users[user]
+		tab.ShowMessage(direction, text)
+		#if ctcpversion and self.frame.np.config.sections["server"]["ctcpmsgs"] == 0:
+			#self.SendMessage(msg.user, "Nicotine %s" % version)
+		#self.request_changed(tab.Main)
+		#self.frame.RequestIcon(self.frame.PrivateChatTabLabel)
+		#if self.get_current_page() != self.page_num(self.users[msg.user].Main) or self.frame.notebook1.get_current_page() != 1:
+			#if msg.user not in self.frame.tray_status["hilites"]["private"]:
+				#self.frame.tray_status["hilites"]["private"].append(msg.user)
+				#self.frame.load_image(None)
+				
+	def OnSwitchPage(self, notebook, page, page_num, force = 0):
+		if self.frame.notebook_outside.get_current_page() != 1 and not force:
+			return
+		page = notebook.get_nth_page(page_num)	
+		for name, tab in self.users.items():
+			if tab.Main is page:
+				gobject.idle_add(tab.ChatLine.grab_focus)
+				break
+
+		
+	def RemoveTab(self, tab):
+
+		self.remove_page(self.page_num(tab.Main) )
+		del self.users[tab.user]
+	
+class ChatRoom:
+	
+	def __init__(self, roomsmaster, room, users):
+		#ChatRoomTab.__init__(self, False)
+		self.lines = []
+		self.roomsmaster = roomsmaster
+		self.frame = roomsmaster.frame
+		self.room = room
+		self.roomsmaster.joinedrooms
+		
+		self.textbuffer = gtk.TextBuffer()
+		self.chatview = gtk.TextView(buffer=self.textbuffer)
+		self.chatview.set_editable(False)
+		self.chatview.set_wrap_mode( gtk.WRAP_CHAR)
+		self.chatview.set_cursor_visible(False)
+		self.chatview.show()
+		
+		self.chatScroll = gtk.ScrolledWindow()
+		self.chatScroll.set_border_width(1)
+		self.chatScroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		self.chatScroll.set_shadow_type(gtk.SHADOW_IN)
+		self.chatScroll.add_with_viewport(self.chatview)
+		self.chatScroll.show()
+		
+		self.chatEntry = gtk.Entry()
+		self.chatEntry.set_text("")
+		
+		self.chatEntry.connect("activate", self.enter_pressed, self.chatEntry, "chat")
+		
+		self.chatEntry.show()
+		# Containing box with scrolled window and text input box
+		self.vbox = gtk.VBox(spacing=3)
+		self.vbox.set_border_width(3)
+		self.vbox.pack_start(self.chatScroll, True, True, 0)
+		self.vbox.pack_end(self.chatEntry, False, False, 0)
+		self.vbox.show()
+		
+		self.chatEntry.grab_focus()
+		self.vbox.set_focus_child(self.chatEntry)
+		
+		self.statusbuffer = gtk.TextBuffer()
+		
+		self.RoomLog = gtk.TextView(buffer=self.statusbuffer)
+		
+		self.RoomLog.set_editable(False)
+		self.RoomLog.set_wrap_mode( gtk.WRAP_CHAR)
+		self.RoomLog.set_cursor_visible(False)
+		self.RoomLog.show()
+		
+		self.status_scroll = gtk.ScrolledWindow()
+		self.status_scroll.set_border_width(1)
+		self.status_scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		self.status_scroll.set_shadow_type(gtk.SHADOW_IN)
+		self.status_scroll.add_with_viewport(self.RoomLog)
+		self.status_scroll.show()
+		
+
+		
+		self.usersmodel = gtk.ListStore(gtk.gdk.Pixbuf, str,int, int )
+		self.UserList = gtk.TreeView(self.usersmodel)
+		
+		# Users-in-room Listbox with users and files
+		
+		cols = InitialiseColumns(self.UserList, 
+			["", -1, "pixbuf"],
+			[_("Username"), 100, "text"],
+			[_("Files"), 0, "text"],
+		)
+		
+
+		cols[0].set_sort_column_id(3)
+		cols[1].set_sort_column_id(1)
+		cols[2].set_sort_column_id(2)
+
+		
+		self.usersmodel.set_sort_column_id(1, gtk.SORT_ASCENDING)
+		
+		self.users = {}
+		for user in users.keys():
+			img = self.frame.GetStatusImage(users[user][0]) 
+			#hspeed = users[user][1]
+			hfiles = users[user][3]
+			#iter = self.usersmodel.append([img, user, hspeed, hfiles, users[user][0], users[user][1], users[user][2]])
+			iter = self.usersmodel.append([img, str(user), int(hfiles), int(users[user][0])] ) #, , users[user][1], users[user][2]])
+			self.users[user] = iter
+			
+		self.popup_menu = popup = PopupMenu(self.frame, "chat")
+		popup.setup(
+			(("Send _Message"), popup.OnSendMessage),
+			("", None),
+			(("_User Info"), popup.OnGetUserInfo),
+			(("_IP address"), popup.OnShowIPaddress),
+			(("Browse _Shares"), popup.OnBrowseUser),
+			("$" + ("_Buddy this user"), popup.OnAddToList),
+			("$" + ("Ba_n this user"), popup.OnBanUser),
+			("$" + ("_Ignore this user"), popup.OnIgnoreUser),
+		)
+		self.UserList.connect("button_press_event", self.OnPopupMenu, "chat", "")
+		self.UserList.show()
+		
+		# Scrollwindow containing Users-in-room Listbox
+		self.UserList_scroll = gtk.ScrolledWindow()
+		self.UserList_scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		self.UserList_scroll.add(self.UserList)
+		self.UserList_scroll.set_shadow_type(gtk.SHADOW_ETCHED_IN)
+		self.UserList_scroll.show()
+		
+		autojoin_check = gtk.CheckButton(label="Autojoin")
+		
+		if room in self.frame.ProcessMessages.config["autojoin"].keys():
+			autojoin_check.set_active(True)
+		else:
+			autojoin_check.set_active(False)
+		autojoin_check.connect("toggled", self.autojoin_check, "check button 1")	
+		autojoin_check.show()
+		
+		close_button = gtk.Button("Leave Room")
+		close_button.connect_object("clicked", self.leave_a_room, room)
+		close_button.show()
+		
+		over_button = gtk.HBox(spacing=3)
+		over_button.set_border_width(3)
+		over_button.pack_start(autojoin_check, True, True, 0)
+		over_button.pack_end(close_button, False, False, 1)
+		over_button.show()
+		
+		userlist_over_button = gtk.VBox(spacing=0)
+		userlist_over_button.set_border_width(0)
+		userlist_over_button.pack_start(self.UserList_scroll, True, True, 0)
+		userlist_over_button.pack_end(over_button, False, False, 1)
+		userlist_over_button.show()
+		
+		# Pane that contains the Statusbox and Chatroom
+		self.vpane = gtk.VPaned()
+		self.vpane.pack1(self.status_scroll, False, True)
+		self.vpane.pack2(self.vbox, True, False)
+		self.vpane.show()
+		
+		# Pane that contains the Statusbox+Chatroom and Listbox
+		self.Main = gtk.HPaned()
+		self.Main.pack1(self.vpane, True, True)
+		self.Main.pack2(userlist_over_button, False, True)
+		self.Main.show()
+
+		# Naming the tab
+		chatlabel = gtk.Label(room) 
+		chatlabel.show()
+
+	def autojoin_check(self, widget, string):
+		if self.room in self.frame.ProcessMessages.config["autojoin"].keys():
+			self.frame.ProcessMessages.mod_config("unautojoin", self.room, '')
+		else:
+			self.frame.ProcessMessages.mod_config("autojoin", self.room, '')
+			
+	def Rejoined(self, users):
+		for user in users.keys():
+			if self.users.has_key(user):
+				self.usersmodel.remove(self.users[user])
+			img = self.frame.GetStatusImage(users[user][0])
+			#hfiles = Humanize(users[user][3])
+			hfiles = users[user][3]
+			iter = self.usersmodel.append([img, user, hfiles, users[user][0] ] )
+			self.users[user] = iter
+		AppendLine(self.chatview, _("--- reconnected ---"), None)
+
+
+	def destroy(self):
+		self.Main.destroy()
+			
+	def join_a_room(self, room):
+		if self.ProcessMessages.connected == False:
+			return
+		if room != None and room != "":
+			self.ProcessMessages.Send(messages.JoinRoom(room))
+			
+	def leave_a_room(self, room):
+		if self.frame.ProcessMessages.connected == False:
+			return
+		if room != None and room != "":
+			if room in self.roomsmaster.joinedrooms:
+				self.frame.ProcessMessages.Send(messages.LeaveRoom(room))
+				
+	def enter_pressed(self, something, entry, mtype):
+		if self.frame.ProcessMessages.connected == False:
+			return
+		try:
+			entry_text = entry.get_text()
+			if entry_text == "":
+				return
+
+			self.frame.ProcessMessages.Send(messages.SayRoom(self.room, entry_text))
+			entry.set_text("")
+		except Exception,e:
+			if debugmode == True: print "Enterpressed", Exception,e
+
+	def SayInChatRoom(self, user, line):
+		if len(self.lines) >= 400:
+			buffer = self.chatScroll.get_buffer()
+			start = buffer.get_start_iter()
+			end = buffer.get_iter_at_line(self.lines[200])
+			self.chatScroll.get_buffer().delete(start, end)
+			del self.lines[0:200]
+			
+		if line[:4] == "/me ":
+			message = "* %s %s"  % (user, line[4:])
+		else:
+			message = "[%s] %s" % (user, line)
+		
+		message = "\n-- ".join(message.split("\n"))
+	
+		self.lines.append(AppendLine(self.chatview, message, None))
+		#if self.Log.get_active():
+			#self.logfile = WriteLog(self.logfile, self.frame.np.config.sections["logging"]["logsdir"], self.room, line)
+
+	def UserJoinedRoom(self, username):
+		if self.users.has_key(username):
+			return
+		status = self.frame.user_stats[username][0]
+		files = self.frame.user_stats[username][3]
+		#self.app.user_stats[users] = stats[0], stats[1], stats[2 ], stats[3], stats[4] 
+		# online status, avgspeed, numdownloads, numfiles, numdirs
+		AppendLine(self.RoomLog, _("%s joined the room") % username, None)
+		img = self.frame.GetStatusImage(status)
+		#hspeed = avgspeed
+		hfiles = files
+		iter = self.usersmodel.append([img, username, hfiles, status])
+		self.users[username] = iter
+	
+	def UserLeftRoom(self, username):
+		if not self.users.has_key(username):
+			return
+		AppendLine(self.RoomLog, _("%s left the room") % username, None)
+		self.usersmodel.remove(self.users[username])
+		del self.users[username]
+	
+	def GetUserStatus(self, user, status):
+		if not self.users.has_key(user):
+			return
+		
+		img = self.frame.GetStatusImage(status)
+
+		if img != self.usersmodel.get_value(self.users[user], 0):
+			if status == 1:
+				action = _("%s has gone away")
+			else:
+				action = _("%s has returned")
+			AppendLine(self.RoomLog, action % user, None)
+	
+			self.usersmodel.set(self.users[user], 0, img, 3, status)
+
+
+
+
+	def OnPopupMenu(self, widget, event, string, string2):
+		if event.button != 3:
+			if string == "browse-dirs":
+				self.MouseAction(widget, event, string)
+			return
+		items = self.popup_menu.get_children()
+		if debugmode == True: print string
+		# Chat, Userlists use the normal popup system
+		num = 5
+		if string == "chat":
+			#room = self.tabs["chat"][self.notebook_chat.get_current_page()]
+			room = self.room
+			if debugmode == True:  print "-- Popup -- Room:", string
+		
+			d = self.UserList.get_path_at_pos(int(event.x), int(event.y))
+			if not d:
+				return
+			path, column, x, y = d
+			user =  self.usersmodel.get_value(self.usersmodel.get_iter(path), 1)
+				
+		self.popup_menu.set_user(user)
+		#items[5].set_active(user in self.ProcessMessages.config["buddies"].keys())
+		items[num].set_active(user in self.frame.ProcessMessages.config["buddies"].keys())
+		items[num+1].set_active(user in self.frame.ProcessMessages.config["banned"].keys())
+		items[num+2].set_active(user in self.frame.ProcessMessages.config["ignored"].keys())
+		self.popup_menu.popup(None, None, None, event.button, event.time)
+
+	def OnLeave(self, widget = None):
+		if self.leaving:
+			return
+		#self.frame.np.queue.put(slskmessages.LeaveRoom(self.room))
+		if room in self.roomsmaster.joinedrooms:
+			self.frame.ProcessMessages.Send(messages.LeaveRoom(room))
+		self.Leave.set_sensitive(False)
+		self.leaving = 1
+		
+	def ConnClose(self):
+		self.usersmodel.clear()
+		self.users = {}
+		AppendLine(self.chatview, _("--- disconnected from museek daemon ---"), None)
+		
+
+
+
+class ChatRooms:
+	def __init__(self, frame):
+		frame.notebook_chat.popup_enable()
+		self.frame = frame
+		self.roomsmaster = MasterRoom(frame)
+
+	def ConnClose(self):
+		self.roomsmaster.ConnClose()
+	
+	
+class MasterRoom:
+	def __init__(self, frame):
+		self.frame = frame
+		self.joinedrooms = {}
+		self.autojoin = 1
+		
+		#cols = InitialiseColumns({,
+			#[_("Room"), 150, "text"],
+			#[_("Users"), -1, "text"],
+		#)
+		
+		#for ix in range(len(cols)):
+			#col = cols[ix]
+			#col.connect("clicked", self.OnResort, ix)
+		
+		#cols[1].set_sort_indicator(True)
+		#cols[1].set_sort_order(gtk.SORT_DESCENDING)
+		
+		#self.roomsmodel = RoomsListModel([])
+		#frame.roomlist.RoomsList.set_model(self.roomsmodel)
+		
+		#self.popup_room = None
+		#self.popup_menu = PopupMenu().setup(
+			#( _("Join room"), self.OnPopupJoin ),
+			#( _("Leave room"), self.OnPopupLeave, ),
+			#( "", None ),
+			#( _("Refresh"), self.OnPopupRefresh ),
+		#)
+		#frame.roomlist.RoomsList.connect("button_press_event", self.OnListClicked)
+		#frame.roomlist.RoomsList.set_headers_clickable(True)
+		
+		self.frame.notebook_chat.connect("switch-page", self.OnSwitchPage)
+
+	def OnSwitchPage(self, notebook, page, page_num, force=0):
+		if self.frame.notebook_outside.get_current_page() != 0 and not force:
+			return
+		page = notebook.get_nth_page(page_num)
+		
+		
+		for name, room in self.joinedrooms.items():
+			if room.Main == page:
+				gobject.idle_add(room.chatEntry.grab_focus)
+				# Remove hilite
+				#if name in self.frame.tray_status["hilites"]["rooms"]:
+					#self.frame.tray_status["hilites"]["rooms"].remove(name)
+					#self.frame.load_image(None)
+
+			
+	def OnResort(self, column, column_id):
+		if self.roomsmodel.sort_col == column_id:
+			order = self.roomsmodel.sort_order
+			if order == gtk.SORT_ASCENDING:
+				order = gtk.SORT_DESCENDING
+			else:
+				order = gtk.SORT_ASCENDING
+			column.set_sort_order(order)
+			self.roomsmodel.sort_order = order
+			self.frame.roomlist.RoomsList.set_model(None)
+			self.roomsmodel.sort()
+			self.frame.roomlist.RoomsList.set_model(self.roomsmodel)
+			return
+		cols = self.frame.roomlist.RoomsList.get_columns()
+		cols[column_id].set_sort_indicator(True)
+		cols[self.roomsmodel.sort_col].set_sort_indicator(False)
+		self.roomsmodel.sort_col = column_id
+		self.OnResort(column, column_id)
+		
+	def OnListClicked(self, widget, event):
+		if self.roomsmodel is None:
+			return False
+		if event.button == 1 and event.type == gtk.gdk._2BUTTON_PRESS:
+			d = self.frame.roomlist.RoomsList.get_path_at_pos(int(event.x), int(event.y))
+			if d:
+				path, column, x, y = d
+				room = self.roomsmodel.get_value(self.roomsmodel.get_iter(path), 0)
+				if not room in self.joinedrooms.keys():
+					self.frame.np.queue.put(slskmessages.JoinRoom(room))
+			return True
+		elif event.button == 3:
+			return self.OnPopupMenu(widget, event)
+		return False
+		
+	def OnPopupMenu(self, widget, event):
+		if event.button != 3 or self.roomsmodel is None:
+			return
+		items = self.popup_menu.get_children()
+		d = self.frame.roomlist.RoomsList.get_path_at_pos(int(event.x), int(event.y))
+		if d:
+			path, column, x, y = d
+			room = self.roomsmodel.get_value(self.roomsmodel.get_iter(path), 0)
+			if room in self.joinedrooms.keys():
+				act = (False, True)
+			else:
+				act = (True, False)
+		else:
+			room = None
+			act = (False, False)
+		self.popup_room = room
+		items[0].set_sensitive(act[0])
+		items[1].set_sensitive(act[1])
+		self.popup_menu.popup(None, None, None, event.button, event.time)
+	
+	def OnPopupJoin(self, widget):
+		self.frame.np.queue.put(slskmessages.JoinRoom(self.popup_room))
+	
+	def OnPopupLeave(self, widget):
+		self.frame.np.queue.put(slskmessages.LeaveRoom(self.popup_room))
+		
+	def OnPopupRefresh(self, widget):
+		self.frame.np.queue.put(slskmessages.RoomList())
+		
+	def SayChatRoom(self, room, user, text):
+		if user in self.frame.ProcessMessages.config["ignored"].keys():
+			return
+		self.joinedrooms[room].SayInChatRoom(user, text)
+
+	
+	def JoinRoom(self, room, users):
+		if self.joinedrooms.has_key(room):
+			self.joinedrooms[room].Rejoined(users)
+			return
+		tab = ChatRoom(self, room, users)
+		self.joinedrooms[room] = tab
+		chatlabel = gtk.Label(room) 
+		chatlabel.show()
+		self.frame.notebook_chat.append_page(tab.Main, chatlabel)
+		
+	#def leave_a_room(self, room):
+		
+				
+	def SetRoomList(self, msg):
+		if self.autojoin:
+			self.autojoin = 0
+			if self.joinedrooms.keys():
+				list = self.joinedrooms.keys()
+			else:
+				list = self.frame.np.config.sections["server"]["autojoin"]
+
+			for room in list:
+				self.frame.np.queue.put(slskmessages.JoinRoom(room))
+
+		self.roomsmodel = RoomsListModel(msg.rooms)
+		self.frame.roomlist.RoomsList.set_model(self.roomsmodel)
+
+	def GetUserStats(self, msg):
+		for room in self.joinedrooms.values():
+			room.GetUserStats(msg.user, msg.avgspeed, msg.files)
+	
+	def GetUserStatus(self, user, status):
+		for room in self.joinedrooms.values():
+			room.GetUserStatus(user, status)
+
+			
+	def UserJoinedRoom(self, room, username):
+		if self.joinedrooms.has_key(room):
+			self.joinedrooms[room].UserJoinedRoom(username)
+	
+	def UserLeftRoom(self, room, username):
+		self.joinedrooms[room].UserLeftRoom(username)
+	
+	def TickerSet(self, msg):
+		self.joinedrooms[msg.room].TickerSet(msg)
+
+	def TickerAdd(self, msg):
+		self.joinedrooms[msg.room].TickerAdd(msg)
+
+	def TickerRemove(self, msg):
+		self.joinedrooms[msg.room].TickerRemove(msg)
+
+	def UpdateColours(self):
+		for room in self.joinedrooms.values():
+			room.UpdateColours()
+
+	def LeaveRoom(self, room):
+		roomwidget = self.joinedrooms[room]
+		#if room.logfile is not None:
+			#room.logfile.close()
+			#room.logfile = None
+		page_num = self.frame.notebook_chat.page_num( roomwidget.Main)
+
+		self.frame.notebook_chat.remove_page(page_num)
+		roomwidget.destroy()
+		del self.joinedrooms[room]
+	
+	def ConnClose(self):
+		self.roomsmodel = None
+		#self.frame.roomlist.RoomsList.set_model(None)
+		for room in self.joinedrooms.values():
+			room.ConnClose()
+		self.autojoin = 1
+		
+class murmur(MurmurWindow, ProcessMessages):
+
+	def __init__(self):
+
+		#self.Qqueue = Queue.Queue(0)
+		#self.qm=QueueMinder(self.Qqueue)
+            	#self.qm.startTimer()
+		
+		gtk.threads_init()
+		signal.signal(signal.SIGINT, signal.SIG_DFL)
+		self.debugmode = debugmode
+		self.t = None
+
+		
+		self.username = None
+		#self.murmur_config = murmur_config
+ 		murmur_config["connection"]["passw"]
+		self.pid = pid
+		self.timer = None
+		self.status = None
+		
+		self.roomlogs = {}
+		self.privatelogs = {}
+		self.s_query = {}
+
+		#self.widgets["chat"] = None
+		#self.widgets["private"] = None
+		self.statusbar = None
+		self.eventbox_closed = "yes"
+
+		self.current_image=None
+		
+		self.statusbarmessage = "Offline"
+		
+		
+		self.chatlog = []
+		self.room_lists = {} # the actual rooms
+		self.lists_rooms = None # pygtk ListView index
+		self.rooms = {}
+		self.user_stats = {}
+		self.ip_requested = None
+
+		#self.ProcessMessages.start()
+		MurmurWindow.__init__(self)
+		self.MurmurWindow.set_title(("Murmur") + " " + version)		
+		
+		self.ProcessMessages = ProcessMessages(self)
+		self.murmur_config = murmur_config
+		self.Settings = Settings(self)
+		self.EntryDialog = EntryDialog(self)
+		self.ImageDialog = ImageDialog(self)
+		self.DisplayDialog = DisplayDialog(self)
+		if murmur_config["murmur"]["trayapp"] == "yes":
+			self.trayapp("")
+		self.quit_w = "No"
+		self.ProcessMessages.start()
+		
+		try:
+			self.room_list_tab("")
+			if self.ProcessMessages.config.keys() != []:
+
+				for users in self.ProcessMessages.config["buddies"].keys():
+	
+					self.userlist_tabs("buddies")
+	
+				for users in self.ProcessMessages.config["banned"].keys():
+	
+					self.userlist_tabs("banned") 
+
+				for users in self.ProcessMessages.config["ignored"].keys():
+
+					 self.userlist_tabs("ignored")
+
+			for users in self.privatelogs:
+
+				self.privatechat_tabs(users)
+
+				
+			
+
+		except Exception, e:
+			if debugmode == True: print "Init Chatrooms error:", Exception, e
+		self.MurmurWindow.show_all()
+		
+		
+	def disconnect(self, string):
+		self.ProcessMessages.disconnect("")
+		
+	def connect_process(self, string):
+		
+		
+		self.MurmurWindow.show_all()
+		
+		self.ProcessMessages.connect_to_museekd("") 
+
+		
+	def run(self):
+		
+		#self.MurmurWindow.show_all()
+		if murmur_config["connection"]["passw"] == None or murmur_config["connection"]["passw"] == "None":
+			self.popup( "settings")
+	
+		
+	def trayapp(self, string):
+		if trayicon_load == 0:
+			return
+		if self.t == None:
+			
+			self.t = trayicon.TrayIcon("MyFirstTrayIcon")
+			self.eventbox = gtk.EventBox()
+			self.menu()
+			if debugmode == True: print "Status:", self.status
+			if self.status:
+				message = "Connected to Museek: %s Status: Away" % self.username
+				self.settooltip( message)
+				self.update_statusbar( message)
+				
+				self.load_image("yellow")
+			elif self.status == 0:
+				message = "Connected to Museek: %s Status: Online" % self.username
+				self.settooltip( message )
+				self.update_statusbar( message )
+				self.load_image("green")
+			else:
+				self.load_image("red")
+			self.eventbox_closed = "no"
+			self.t.add(self.eventbox)
+			self.t.show_all()
+			
+		else:
+			self.t.hide()
+			self.eventbox.hide()
+			self.t = None
+			self.eventbox = None
+			self.eventbox_closed = "yes"
+		self.tooltips = gtk.Tooltips()
+		#self.tooltips.set_delay(1500)
+		
+
+		
+	def update_statusbar(self, message):
+		try:
+			self.statusbarmessage = message
+			if self.statusbar != None:
+				if self.context_id != None:
+					self.statusbar.push(self.context_id, self.statusbarmessage)
+		except Exception, e:
+			if debugmode == True: print "update_statusbar", Exception, e
+				
+	#def del_chatrooms(self, room):
+		#if self.ProcessMessages.connected == False:
+			#return
+		#try:
+			#if self.widgets["chat"] == None:
+				#return
+			
+			#if room not in self.tabs["chat"]:
+				#return
+			#else:
+				#textbuffer  = self.widgets["chat"][room]['textbuffer']
+				#chat = self.widgets["chat"][room]['textview']
+				
+				#self.notebook_chat.remove_page(self.tabs["chat"].index(room)) # remove tab
+				#self.tabs["chat"].remove(room) # remove from list of tabs
+				#del self.chatroom_users[room] # clear userlist box
+				##self.notebook_chat.append_page(horbox, chatlabel)
+		#except Exception, e:
+			#if debugmode == True: print "del_chatrooms", Exception, e
+			
+	def GetStatusImage(self, num):
+		
+		if num == 0:
+			image = "offline"
+		elif num == 1:
+			image = "away"
+		elif num == 2:
+			image = "online"
+		elif num == 3:
+			image = "noexist"
+		return  self.images[image]
+	
+	def room_list_tab(self, string):
+		if self.ProcessMessages.connected == False:
+			return
+		try:
+				
+			# add chat history to chat buffer
+			if debugmode ==True:
+				print "Building Room List"
+					
+			# Chat text
+			if self.roomtab != None:
+				if debugmode == True:
+					print "Room tab exists, not creating"
+					for rooms in self.lists_rooms.keys():
+						print rooms
+						self.roomwidgets[0].remove(self.lists_rooms[rooms])
+					self.lists_rooms = {}
+					for rooms, sizes in self.room_lists.items():
+						self.lists_rooms[rooms]= self.roomwidgets[0].append([ sizes, rooms] )
+				pass
+			else:
+				if debugmode == True:
+					print "Room tab doesn't exist, creating one"
+
+				
+				# Text input box
+				input_chat = gtk.Entry()
+				input_chat.set_text("")
+				input_chat.grab_focus()
+				input_chat.show()
+				input_chat.connect("activate", self.enter_pressed, input_chat, "rooms")
+				
+				label = gtk.Label("Join room:") 
+				label.show()
+				
+				refresh_button = gtk.Button("Refresh List")
+				refresh_button.connect_object("clicked", self.refresh_room_list, "")
+				refresh_button.show()
+				
+				addhbox = gtk.HBox(spacing=3)
+				addhbox.set_border_width(3)
+				addhbox.pack_start(label, False, False, 0)
+				addhbox.pack_start(input_chat, True, True,  0)
+				addhbox.pack_end(refresh_button, False, False,  0)
+				addhbox.show()
+				
+				
+				lists = gtk.ListStore( int, str )
+				if self.lists_rooms == None:
+					self.lists_rooms = {}
+				for rooms, sizes in self.room_lists.items():
+					self.lists_rooms[rooms] = lists.append([ sizes, rooms] )
+						
+
+				# Users-in-room Listbox with users and files
+				RoomList = gtk.TreeView(lists)
+	
+				RoomSize = gtk.TreeViewColumn('Size')
+				cell = gtk.CellRendererText()
+				RoomSize.pack_start(cell, True)
+				RoomSize.add_attribute(cell, 'text', 0)
+				RoomSize.set_sort_column_id(0)
+				RoomSize.set_resizable(True)
+
+				RoomName = gtk.TreeViewColumn('Room Name')
+				cell = gtk.CellRendererText()
+				RoomName.pack_start(cell, True)
+				RoomName.add_attribute(cell, 'text', 1)
+				RoomName.set_sort_column_id(1)
+				RoomName.set_resizable(True)
+				
+				RoomList.set_search_column(0)
+				RoomList.set_search_column(1)
+
+				
+				RoomList.append_column(RoomSize)
+				RoomList.append_column(RoomName)
+
+				
+				lists.set_sort_column_id(0, gtk.SORT_DESCENDING)
+				
+				self.popup_menu["rooms"] = popup = PopupMenu(self, "rooms")
+				popup.setup(
+					(("_Join Room"), popup.OnJoinRoom),
+					(("_Leave Room"), popup.OnLeaveRoom),
+							)
+				RoomList.connect("button_press_event", self.OnPopupMenu, "rooms", "")
+				RoomList.show()
+				
+				# Scrollwindow containing Users-in-room Listbox
+				widget = gtk.ScrolledWindow()
+				widget.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+				widget.add(RoomList)
+				widget.set_shadow_type(gtk.SHADOW_ETCHED_IN)
+				
+				widget.show()
+				
+				# Containing box with scrolled window and text input box
+				notevbox1= gtk.VBox(spacing=3)
+				notevbox1.set_border_width(3)
+				notevbox1.pack_start(widget, True, True, 0)
+				notevbox1.pack_end(addhbox, False, False, 0)
+				notevbox1.show()
+
+				self.notebook_roomlist.add(notevbox1)
+
+				self.roomwidgets = lists, input_chat, RoomList
+
+				#self.widgets["chat"][room][2].set(self.user_stats[users][5], 0, self.GetStatusImage( self.user_stats[users][0] ))
+				
+			if self.roomtab != "rooms":
+				self.roomtab = "rooms"
+				
+		except Exception,e:
+			if debugmode == True: print "Rooms Tab bug", Exception,e
+
+	def refresh_room_list(self, string):
+		if self.ProcessMessages.connected == False:
+			return
+		self.ProcessMessages.Send(messages.RoomList())
+
+
+	def OpenImage(self, widget, title, filters):
+		dialog = gtk.FileChooserDialog(title=title, parent=None, action=gtk.FILE_CHOOSER_ACTION_OPEN, buttons=(gtk.STOCK_OK, gtk.RESPONSE_ACCEPT, gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT))
+		dialog.set_select_multiple(False)
+		dialog.set_current_folder_uri("file://"+pwd.getpwuid(os.getuid())[5])
+		ff = gtk.FileFilter()
+		for ffilter in filters:
+			ff.add_pattern(ffilter)
+			
+
+		dialog.set_property("filter", ff)
+		response = dialog.run()
+		
+		if response == gtk.RESPONSE_ACCEPT:
+			
+			res = dialog.get_filenames()
+			for files in res:
+				file = files
+		else:
+			file = res = None
+		
+		dialog.destroy()
+		return file
+		
+		
+
+	def OnOpenImage(self, widget):
+		newimage = self.OpenImage(widget, _("Select an Userinfo Image"), ["*.jpg", "*.jpeg", "*.png","*.bmp", "*.xpm", "*.ico","*.gif"])
+		if newimage != None:
+			try:
+				shutil.copy(newimage, self.ProcessMessages.config["userinfo"]["image"] )
+				pass
+
+			except Exception, e:
+				if self.debugmode == True: print "Creating image", str(e)
+			#self.refreshConfigDisplay()
+			
+	def userlist_tabs(self, tab):
+		if self.ProcessMessages.connected == False:
+			return
+		try:
+			if self.widgets["lists"] == None:
+				return
+
+			if tab == None:
+				return
+				
+			# add chat history to chat buffer
+			if debugmode ==True:
+				print "Building List"
+					
+			# Chat text
+			if tab in self.tabs["lists"]:
+				if debugmode == True:
+					print "tabs[lists] exists, not creating"
+				pass
+			else:
+				if debugmode == True:
+					print "tabs[lists][%s] doesn't exist, creating one for tab." % tab
+
+				
+				self.tabs["lists"].append(tab)
+				# Text input box
+				input_chat = gtk.Entry()
+				input_chat.set_text("")
+				input_chat.grab_focus()
+				input_chat.show()
+				input_chat.connect("activate", self.enter_pressed, input_chat, tab)
+				
+				label = gtk.Label("Add User:") 
+				label.show()
+				
+				
+				addhbox = gtk.HBox(spacing=3)
+				addhbox.set_border_width(3)
+				addhbox.pack_start(label, False, False, 0)
+				addhbox.pack_end(input_chat, True, True,  0)
+				addhbox.show()
+				
+				
+				lists = gtk.ListStore(gtk.gdk.Pixbuf, str, int, int, str, int )
+				
+				if tab in self.ProcessMessages.config.keys():
+					if tab not in self.lists_users:
+						self.lists_users[tab] = {}
+					for users in self.ProcessMessages.config[tab].keys():
+						
+						if users in self.user_stats:
+							print self.user_stats[users][0]
+							img = self.GetStatusImage( self.user_stats[users][0] )
+							files = abs( self.user_stats[users][3] )
+							speed =  abs(self.user_stats[user][1])
+							comments =  self.ProcessMessages.config[tab][users]
+							self.lists_users[tab][users] = lists.append([ img, str(users),  files, speed, comments, self.user_stats[users][0]] )
+						else:
+							img = self.GetStatusImage( 0) 
+							files = abs( 0 )
+							speed =  abs( 0 )
+							comments =  self.ProcessMessages.config[tab][users]
+							self.lists_users[tab][users] = lists.append([ img, str(users),  files, speed, comments, 0 ] )
+						
+						
+				
+
+				# Users-in-room Listbox with users and files
+				UserList = gtk.TreeView(lists)
+	
+				AwayStatus = gtk.TreeViewColumn('')
+				cell = gtk.CellRendererPixbuf()
+				AwayStatus.pack_start(cell, True)
+				AwayStatus.add_attribute(cell, 'pixbuf', 0)
+				cell = gtk.CellRendererText()
+				#AwayStatus.pack_start(cell, True)
+				#AwayStatus.add_attribute(cell, 'text', 5)
+				AwayStatus.set_sort_column_id(5)
+				
+				UserName = gtk.TreeViewColumn('Username')
+				cell = gtk.CellRendererText()
+				UserName.pack_start(cell, True)
+				UserName.add_attribute(cell, 'text', 1)
+				UserName.set_sort_column_id(1)
+				UserName.set_resizable(True)
+
+				UserFiles = gtk.TreeViewColumn('Files')
+				cell = gtk.CellRendererText()
+				UserFiles.pack_start(cell, True)
+				UserFiles.add_attribute(cell, 'text', 2)
+				UserFiles.set_sort_column_id(2)
+				UserFiles.set_resizable(True)
+				
+				UserSpeed = gtk.TreeViewColumn('Speed')
+				cell = gtk.CellRendererText()
+				UserSpeed.pack_start(cell, True)
+				UserSpeed.add_attribute(cell, 'text', 3)
+				UserSpeed.set_sort_column_id(3)
+				UserSpeed.set_resizable(True)
+				
+				UserCom = gtk.TreeViewColumn('Comments')
+				cell = gtk.CellRendererText()
+				UserCom.pack_start(cell, True)
+				UserCom.add_attribute(cell, 'text', 4)
+				UserCom.set_sort_column_id(4)
+				UserCom.set_resizable(True)
+				
+				UserList.set_search_column(1)
+				UserList.set_search_column(2)
+				UserList.set_search_column(3)
+				UserList.set_search_column(4)
+				
+				UserList.append_column(AwayStatus)
+				UserList.append_column(UserName)
+				UserList.append_column(UserFiles)
+				UserList.append_column(UserSpeed)
+				UserList.append_column(UserCom)
+				
+				lists.set_sort_column_id(1, gtk.SORT_ASCENDING)
+				
+				self.popup_menu["userlists"] = popup = PopupMenu(self, "userlists")
+				popup.setup(
+					(("Send _Message"), popup.OnSendMessage),
+					("", None),
+					(("_User Info"), popup.OnGetUserInfo),
+					(("_IP address"), popup.OnShowIPaddress),
+					(("Browse _Shares"), popup.OnBrowseUser),
+					("$" + ("_Buddy this user"), popup.OnAddToList),
+					("$" + ("Ba_n this user"), popup.OnBanUser),
+					("$" + ("_Ignore this user"), popup.OnIgnoreUser),
+				)
+				UserList.connect("button_press_event", self.OnPopupMenu, "userlists", "")
+				UserList.show()
+				
+				# Scrollwindow containing Users-in-room Listbox
+				widget = gtk.ScrolledWindow()
+				widget.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+				widget.add(UserList)
+				widget.set_shadow_type(gtk.SHADOW_ETCHED_IN)
+				
+				widget.show()
+				
+				# Containing box with scrolled window and text input box
+				notevbox1= gtk.VBox(spacing=3)
+				notevbox1.set_border_width(3)
+				notevbox1.pack_start(widget, True, True, 0)
+				notevbox1.pack_end(addhbox, False, False, 0)
+				notevbox1.show()
+				
+				#vseparator = gtk.VSeparator()
+				#vseparator.show()
+				
+				# Naming the tab
+				chatlabel = gtk.Label(tab.capitalize() ) 
+				
+				chatlabel.show()
+				self.notebook_userlists.append_page(notevbox1, chatlabel)
+
+				self.widgets["lists"][tab] = lists, input_chat, UserList
+
+				#self.widgets["chat"][room][2].set(self.user_stats[users][5], 0, self.GetStatusImage( self.user_stats[users][0] ))
+				
+		
+				
+		except Exception,e:
+			if debugmode == True: print "tabs[lists] bug", Exception,e
+				
+		
+	def SearchFrame(self):
+		self.widgets["search"] = {}
+		vbox1 = gtk.VBox(False, 0)
+		vbox1.show()
+		vbox1.set_spacing(0)
+	
+		hbox1 = gtk.HBox(False, 0)
+		hbox1.show()
+		hbox1.set_spacing(0)
+	
+		self.widgets["search"]["entry"] = entry1 = gtk.Entry()
+		entry1.set_text("")
+		entry1.set_editable(True)
+		entry1.connect("activate", self.StartSearch)
+		entry1.show()
+		hbox1.pack_start(entry1, True, True, 0)
+	
+		self.widgets["search"]["gs"] = globalsearch = gtk.RadioButton()
+		globalsearch.set_active(True)
+		globalsearch.set_label(("Global"))
+		globalsearch.show()
+	
+		hbox1.pack_start(globalsearch, False, False, 0)
+	
+		self.widgets["search"]["bs"] = buddiesearch = gtk.RadioButton(globalsearch)
+		buddiesearch.set_active(False)
+		buddiesearch.set_label(("Buddies"))
+		buddiesearch.show()
+	
+		hbox1.pack_start(buddiesearch, False, False, 0)
+	
+		self.widgets["search"]["rs"] = roomsearch = gtk.RadioButton(globalsearch)
+		roomsearch.set_active(False)
+		roomsearch.set_label(("Rooms"))
+		roomsearch.show()
+	
+		hbox1.pack_start(roomsearch, False, False, 0)
+	
+		sbutton = gtk.Button()
+		sbutton.set_label(("Search"))
+		sbutton.connect_object("clicked", self.StartSearch, "")
+		sbutton.show()
+	
+		hbox1.pack_start(sbutton, False, False, 0)
+	
+		vbox1.pack_start(hbox1, False, False, 0)
+		self.widgets["search"]["notebook"] = nb = gtk.Notebook()
+		nb.connect("switch-page", self.OnSwitchPage)
+		nb.set_tab_pos(gtk.POS_TOP)
+		nb.set_scrollable(False)
+		nb.show()
+		vbox1.pack_start(nb, True, True, 0)
+		
+		self.notebook_searches.add(vbox1)
+		
+		
+	def StartSearch(self, d):
+		
+		query = self.widgets["search"]["entry"].get_text()
+		if query == "":
+			return
+		elif query.isspace():
+			return
+		elif len(query) < 3:
+			return
+		if self.widgets["search"]["gs"].get_active():
+			self.ProcessMessages.Send(messages.Search(0, query))
+		elif self.widgets["search"]["bs"].get_active():
+			self.ProcessMessages.Send(messages.Search(1, query))
+		elif self.widgets["search"]["rs"].get_active():
+			self.ProcessMessages.Send(messages.Search(2, query))
+		self.widgets["search"]["entry"].set_text("")
+
+	def DoSearch(self, query):
+		try:
+			query = str(query)
+			self.widgets["search"][query] = {}
+			self.widgets["search"][query]["num"] = 0
+			self.widgets["search"][query]["SW"] = scrolledwindow1 = gtk.ScrolledWindow()
+			scrolledwindow1.set_policy(gtk.POLICY_ALWAYS, gtk.POLICY_ALWAYS)
+			scrolledwindow1.show()
+			scrolledwindow1.set_shadow_type(gtk.SHADOW_NONE)
+			self.widgets["search"][query]["store"] = gtk.ListStore(int, str, str, str, int, int, str, int, str, str, str)
+			self.widgets["search"][str(query)]["treeview"]  = treeview = gtk.TreeView(self.widgets["search"][query]["store"])
+			treeview.show()
+			treeview.set_headers_visible(True)
+			
+			treeview.set_reorderable(True)
+			
+			nColumn = gtk.TreeViewColumn('N')
+			cell = gtk.CellRendererText()
+			nColumn.pack_start(cell, True)
+			nColumn.add_attribute(cell, 'text',0)
+			nColumn.set_sort_column_id(0)
+			# Filename
+			fColumn = gtk.TreeViewColumn('FileName')
+			cell = gtk.CellRendererText()
+			fColumn.pack_start(cell, True)
+			fColumn.add_attribute(cell, 'text',1)
+			fColumn.set_sort_column_id(1)
+			fColumn.set_resizable(True)
+			#Username
+			uColumn = gtk.TreeViewColumn('UserName')
+			cell = gtk.CellRendererText()
+			uColumn.pack_start(cell, True)
+			uColumn.add_attribute(cell, 'text', 2)
+			uColumn.set_sort_column_id(2)
+			uColumn.set_resizable(True)
+			#FileSize
+			sColumn = gtk.TreeViewColumn('Size')
+			cell = gtk.CellRendererText()
+			sColumn.pack_start(cell, True)
+			sColumn.add_attribute(cell, 'text', 3)
+			sColumn.set_sort_column_id(3)
+			sColumn.set_resizable(True)
+			
+			ssColumn = gtk.TreeViewColumn('Speed')
+			cell = gtk.CellRendererText()
+			ssColumn.pack_start(cell, True)
+			ssColumn.add_attribute(cell, 'text', 4)
+			ssColumn.set_sort_column_id(4)
+			ssColumn.set_resizable(True)
+			
+			
+			qColumn = gtk.TreeViewColumn('Queue')
+			cell = gtk.CellRendererText()
+			qColumn.pack_start(cell, True)
+			qColumn.add_attribute(cell, 'text', 5)
+			qColumn.set_sort_column_id(5)
+			qColumn.set_resizable(True)
+			
+			iColumn = gtk.TreeViewColumn('Im')
+			cell = gtk.CellRendererText()
+			iColumn.pack_start(cell, True)
+			iColumn.add_attribute(cell, 'text', 6)
+			iColumn.set_sort_column_id(6)
+			iColumn.set_resizable(True)
+			
+			#FileLength
+			lColumn = gtk.TreeViewColumn('Length')
+			cell = gtk.CellRendererText()
+			lColumn.pack_start(cell, True)
+			lColumn.add_attribute(cell, 'text', 8)
+			lColumn.set_sort_column_id(8)
+			lColumn.set_resizable(True)
+			
+			#FileBitrate
+			bColumn = gtk.TreeViewColumn('Bitrate')
+			cell = gtk.CellRendererText()
+			bColumn.pack_start(cell, True)
+			bColumn.add_attribute(cell, 'text', 7)
+			bColumn.set_sort_column_id(7)
+			bColumn.set_resizable(True)
+			
+			dColumn = gtk.TreeViewColumn('Directory')
+			cell = gtk.CellRendererText()
+			dColumn.pack_start(cell, True)
+			dColumn.add_attribute(cell, 'text', 9)
+			dColumn.set_sort_column_id(9)
+			dColumn.set_resizable(True)
+			
+			# Add Columns
+			treeview.append_column(nColumn)
+			
+			treeview.append_column(uColumn)
+			treeview.append_column(sColumn)
+			treeview.append_column(fColumn)
+			treeview.append_column(ssColumn)
+			treeview.append_column(qColumn)
+			treeview.append_column(iColumn)
+			treeview.append_column(bColumn)
+			treeview.append_column(lColumn)
+			treeview.append_column(dColumn)
+			
+
+			self.popup_menu["search"] = popup = PopupMenu(self, "search")
+			popup.setup(
+				(("Download _File"), popup.OnDownloadFile),
+				(("_Download Directory"), popup.OnDownloadDirectory),
+				(("Send _Message"), popup.OnSendMessage),
+				("", None),
+				(("Show _IP address"), popup.OnShowIPaddress),
+				(("_User Info"), popup.OnGetUserInfo),
+				(("Reload _Shares"), popup.OnBrowseUser),
+				("$" + ("_Buddy this user"), popup.OnAddToList),
+				("$" + ("Ba_n this user"), popup.OnBanUser),
+				("$" + ("_Ignore this user"), popup.OnIgnoreUser),
+			)
+			treeview.connect("button_press_event", self.OnPopupMenu, "search", query)
+						
+			scrolledwindow1.add(treeview)
+			label2 = gtk.Label( ( self.s_query[query] ) )
+			label2.set_padding(0, 0)
+			label2.show()
+			image = gtk.Image()
+			image.set_from_file(self.close_image)
+			image.show()
+			button1 = gtk.Button()
+			button1.add(image)
+			button1.connect_object("clicked", self.CloseSearch, str(query))
+			button1.show()
+			hbox1 = gtk.HBox(False, 0)
+			hbox1.show()
+			hbox1.set_spacing(0)
+			hbox1.pack_start(label2, False, False, 0)
+			hbox1.pack_start(button1, False, False, 0)
+			self.widgets["search"]["notebook"].append_page_menu(scrolledwindow1, hbox1, label2)
+		except Exception, e:
+			print "ERROR: DoSearch: ", e
+			
+	def byte_format(self, filesize):
+		filesize =  int(filesize)
+		if filesize >= 1073741824:
+			filefrmt = str(filesize/1024/1024/1024) +"GB"
+		elif filesize >= 1048576 and filesize <= 1073741824:
+			filefrmt = str(filesize/1024/1024) +"MB"
+		elif filesize < 1048576 and filesize >= 1024:
+			filefrmt = str(filesize/1024) +"KB"
+		elif filesize < 1024 and filesize > 0:
+			filefrmt = str(filesize) +" B"	
+		elif filesize == 0:
+			filefrmt = '0'
+		return filefrmt
+		
+	def DoSearchResults(self, query, user, free, speed, queue, results):
+		try:
+			
+			query = str(query)
+			Store = self.widgets["search"][query]["store"]
+			treeview = self.widgets["search"][str(query)]["treeview"]
+			num = self.widgets["search"][query]["num"]
+			if free == 1:
+				free = "Y"
+			else:
+				free = "N"
+			for files in results:
+				num += 1
+				dire = ''
+				size = self.byte_format( files[1])
+				for path in files[0].split("\\")[:-1]:
+					dire += path+"\\"
+				if files[3] == []:
+					bitrate = 0
+					time = "0:00"
+				else:
+					bitrate = files[3][0]
+					time = self.get_length_time(files[3][1])
+				
+				Store.append([ num, files[0].split("\\")[-1], user, size, speed, queue,free,  bitrate, time, dire , files[0] ])
+
+ 			self.widgets["search"][query]["num"] = num
+
+				
+		except Exception, e:
+			print "ERROR: DoSearchResults: ", e
+			
+	def CloseSearch(self, query):
+		self.widgets["search"]["notebook"].remove_page( self.widgets["search"]["notebook"].page_num( self.widgets["search"][str(query)]["SW"]) )
+
+	
+	def get_shares(self, user, shares):
+		try:
+			if user in self.tabs["browse"]:
+				self.widgets["browse"][user]["shares"] = shares
+				self.widgets["browse"][user]["DirStore"].clear()
+				directory = self.BrowseGetDirs(user)
+				self.BrowseChangeDir(user, directory)
+			else:
+			
+				self.widgets["browse"][user] = {}
+				self.tabs["browse"].append(user)	
+				self.widgets["browse"][user]["shares"] = shares
+				
+				self.widgets["browse"][user]["container"] = vbox1 = gtk.VBox(False, 0)
+				vbox1.show()
+				vbox1.set_spacing(0)
+				
+				hbox1 = gtk.HBox(False, 0)
+				hbox1.show()
+				hbox1.set_spacing(0)
+				
+				label1 = gtk.Label(("Search Shares For:"))
+				label1.set_padding(5, 0)
+				label1.show()
+				hbox1.pack_start(label1, False, False, 0)
+				
+				self.widgets["browse"][user]["searchentry"] =  searchentry = gtk.Entry()
+				searchentry.set_text("")
+				#searchentry.set_activates_default(True)
+				searchentry.set_editable(True)
+				searchentry.connect_object("activate", self.browse_search, user)
+				searchentry.show()
+				hbox1.pack_start(searchentry, True, True, 0)
+				
+				self.widgets["browse"][user]["searchbutton"] = searchbutton = gtk.Button()
+				searchbutton.set_label(("Search"))
+				searchbutton.set_flags(gtk.CAN_DEFAULT)
+				#searchbutton.grab_default()
+				searchbutton.connect_object("clicked", self.browse_search, user)
+				searchbutton.show()
+				searchbutton.set_border_width(3)
+				
+				hbox1.pack_start(searchbutton, False, False, 0)
+				
+				vbox1.pack_start(hbox1, False, True, 0)
+				
+				hbox2 = gtk.HBox(False, 0)
+				hbox2.show()
+				hbox2.set_spacing(0)
+				
+				hpaned1 = gtk.HPaned()
+				hpaned1.show()
+				
+				self.widgets["browse"][user]["DirSW"] = scrolledwindow3 = gtk.ScrolledWindow()
+				scrolledwindow3.set_policy(gtk.POLICY_ALWAYS, gtk.POLICY_ALWAYS)
+				scrolledwindow3.show()
+				scrolledwindow3.set_shadow_type(gtk.SHADOW_NONE)
+				
+				
+				self.widgets["browse"][user]["DirStore"] = DirStore = gtk.TreeStore(  str, str )
+				
+				directory = self.BrowseGetDirs(user)
+				
+				self.widgets["browse"][user]["DirTree"] = directoriestree = gtk.TreeView( DirStore)
+				directoriestree.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
+				directoriestree.set_headers_visible(True)
+				DirColumn = gtk.TreeViewColumn('Dir')
+				cell = gtk.CellRendererText()
+				DirColumn.pack_start(cell, True)
+				DirColumn.add_attribute(cell, 'text', 0)
+				DirColumn.set_sort_column_id(0)
+				DirColumn.set_resizable(True)
+	
+				directoriestree.set_search_column(0)
+				directoriestree.append_column(DirColumn)
+				directoriestree.show()
+				
+				DirStore.set_sort_column_id(0, gtk.SORT_ASCENDING)
+				
+				self.popup_menu["browse-dirs"] = popup = PopupMenu(self, "browse-dirs")
+				popup.setup(
+					(("_Download Directory"), popup.OnDownloadDirectory),
+					(("Send _Message"), popup.OnSendMessage),
+					("", None),
+					(("_User Info"), popup.OnGetUserInfo),
+					(("_IP address"), popup.OnShowIPaddress),
+					(("Reload _Shares"), popup.OnBrowseUser),
+					("$" + ("_Buddy this user"), popup.OnAddToList),
+					("$" + ("Ba_n this user"), popup.OnBanUser),
+					("$" + ("_Ignore this user"), popup.OnIgnoreUser),
+				)
+				self.widgets["browse"][user]["DirTree"].connect("button_press_event", self.OnPopupMenu, "browse-dirs", "")
+				self.widgets["browse"][user]["DirTree"].expand_all()	
+				scrolledwindow3.add(directoriestree)
+	
+				
+				hpaned1.pack1(scrolledwindow3, False, True)
+	
+				self.BrowseChangeDir(user, directory)
+				
+				hpaned1.pack2(self.widgets["browse"][user]["FilesSW"], True, True)
+				
+				hbox2.pack_start(hpaned1, True, True, 0)
+				
+				vbox1.pack_start(hbox2, True, True, 0)
+				
+				label2 = gtk.Label((user))
+				label2.set_padding(0, 0)
+				label2.show()
+				
+				image = gtk.Image()
+				image.set_from_file(self.close_image)
+				image.show()
+				button1 = gtk.Button()
+				button1.add(image)
+				button1.connect_object("clicked", self.CloseBrowse, user)
+				button1.show()
+				hbox = gtk.HBox(False, 0)
+				hbox.show()
+				hbox.set_spacing(0)
+				hbox.pack_start(label2, False, False, 0)
+				hbox.pack_start(button1, False, False, 0)
+				
+				self.widgets["browse"]["notebook"] = self.notebook_browsing
+				self.notebook_browsing.append_page_menu(vbox1, hbox, label2)
+				#self.notebook_browsing.append_page(vbox1, UserName)
+				self.notebook_browsing.show()
+			
+		except Exception,e:
+			if debugmode == True: print "get_shares", Exception,e
+			
+	def CloseBrowse(self, user):
+		self.widgets["browse"]["notebook"].remove_page( self.widgets["browse"]["notebook"].page_num( self.widgets["browse"][user]["container"] ) )
+		del self.widgets["browse"][user] 
+		self.tabs["browse"].remove(user)
+				
+	def browse_search(self, user):
+		query = self.widgets["browse"][user]["searchentry"].get_text()
+		if debugmode == True: print "Query:", query
+		dir = self.widgets["browse"][user]["directory"]
+		searchfilter = re.compile('.*' +str(query) + '.*', re.DOTALL | re.I)
+		for directory in self.widgets["browse"][user]["shares"].keys():
+			if directory == dir:
+				continue
+			if re.match(searchfilter, directory):
+				self.BrowseChangeDir(user, directory)
+				break
+		for directory, files in self.widgets["browse"][user]["shares"].items():
+			if directory == dir:
+				continue
+			for file in files.keys():
+				if re.match(searchfilter, file):
+					self.BrowseChangeDir(user, directory)
+					break
+
+		
+	def BrowseGetDirs( self, user):
+		try:
+			DirStore = self.widgets["browse"][user]["DirStore"]
+			z = []
+			for dirs in self.widgets["browse"][user]["shares"].keys():
+				z.append(dirs)
+			z.sort()
+			zz= []
+			self.widgets["browse"][user]["dirs"] = {}
+			if z != []:
+				for item in z:
+					s = item.split("\\")
+					path = ''
+
+					parent = s[0]
+					if parent == '':
+						parent += "\\"
+						if parent not in self.widgets["browse"][user]["dirs"].keys():
+							self.widgets["browse"][user]["dirs"][parent] =  DirStore.append(None, [parent, parent])
+					parent = s[0]
+					for seq in s[1:]:
+						if parent == "":
+							parent += "\\"
+							path = parent+seq
+						else:
+							path = parent+"\\"+seq
+						
+
+						if parent not in self.widgets["browse"][user]["dirs"].keys():
+							self.widgets["browse"][user]["dirs"][parent] =  DirStore.append(None, [parent, parent])
+						
+
+						if path not in zz:
+							zz.append(path)
+							self.widgets["browse"][user]["dirs"][path] = DirStore.append(self.widgets["browse"][user]["dirs"][parent], [path.split("\\")[-1], path ] )
+						parent = path
+
+			directory = zz[0]
+			return directory
+		except Exception,e:
+			if debugmode == True: print "BrowseGetDirs", Exception,e
+			
+	def BrowseChangeDir(self, user, directory):
+		self.widgets["browse"][user]["directory"] = directory
+		if "FileStore" in self.widgets["browse"][user]:
+			self.widgets["browse"][user]["FileStore"].clear()
+			flists = self.widgets["browse"][user]["FileStore"]
+			self.widgets["browse"][user]["FilesTree"].destroy()
+			#self.widgets["browse"][user]["FilesSW"].destroy()
+		else:
+			self.widgets["browse"][user]["FileStore"] = flists = gtk.ListStore(  str, int, str, int, str )
+		#print z[0]
+		#file, stats[ size, ftype, [bitrate, length ] ]
+		if directory in self.widgets["browse"][user]["shares"]:
+			for files,stats in self.widgets["browse"][user]["shares"][directory].items():
+				#print files, stats
+				size, ftype, attr  = stats
+				#[bitrate, length, something ]
+				if ftype == "" or attr == []:
+					length = 0
+					bitrate = 0
+				else:
+					bitrate = attr[0]
+					length = self.get_length_time(attr[1])
+				flists.append([files, size, length, bitrate, directory])
+			
+		self.widgets["browse"][user]["FilesTree"] = filestree = gtk.TreeView(flists)
+		filestree.set_reorderable(True)
+		filestree.set_headers_visible(True)
+		
+		# Filename
+		fColumn = gtk.TreeViewColumn('FileName')
+		cell = gtk.CellRendererText()
+		fColumn.pack_start(cell, True)
+		fColumn.add_attribute(cell, 'text', 0)
+		fColumn.set_sort_column_id(0)
+		fColumn.set_resizable(True)
+		#FileSize
+		sColumn = gtk.TreeViewColumn('Size')
+		cell = gtk.CellRendererText()
+		sColumn.pack_start(cell, True)
+		sColumn.add_attribute(cell, 'text', 1)
+		sColumn.set_sort_column_id(1)
+		sColumn.set_resizable(True)
+		
+		#FileLength
+		lColumn = gtk.TreeViewColumn('Length')
+		cell = gtk.CellRendererText()
+		lColumn.pack_start(cell, True)
+		lColumn.add_attribute(cell, 'text', 2)
+		lColumn.set_sort_column_id(2)
+		lColumn.set_resizable(True)
+		
+		#FileBitrate
+		bColumn = gtk.TreeViewColumn('Bitrate')
+		cell = gtk.CellRendererText()
+		bColumn.pack_start(cell, True)
+		bColumn.add_attribute(cell, 'text', 3)
+		bColumn.set_sort_column_id(3)
+		bColumn.set_resizable(True)
+		
+		# Add Columns
+		filestree.append_column(fColumn)
+		filestree.append_column(sColumn)
+		filestree.append_column(lColumn)
+		filestree.append_column(bColumn)
+		
+		self.popup_menu["browse-files"] = popup = PopupMenu(self, "browse-files")
+		popup.setup(
+			(("Download _File"), popup.OnDownloadFile),
+			(("_Download Directory"), popup.OnDownloadDirectory),
+			(("Send _Message"), popup.OnSendMessage),
+			("", None),
+			(("Show _IP address"), popup.OnShowIPaddress),
+			(("_User Info"), popup.OnGetUserInfo),
+			(("Reload _Shares"), popup.OnBrowseUser),
+			("$" + ("_Buddy this user"), popup.OnAddToList),
+			("$" + ("Ba_n this user"), popup.OnBanUser),
+			("$" + ("_Ignore this user"), popup.OnIgnoreUser),
+		)
+		self.widgets["browse"][user]["FilesTree"].connect("button_press_event", self.OnPopupMenu, "browse-files", "")
+			
+		# Finish
+		flists.set_sort_column_id(0, gtk.SORT_ASCENDING)
+		filestree.show()
+		if "FilesSW" in self.widgets["browse"][user]:
+			FilesSW = self.widgets["browse"][user]["FilesSW"]
+		else:
+ 			self.widgets["browse"][user]["FilesSW"] = FilesSW = gtk.ScrolledWindow()
+ 			FilesSW.set_policy(gtk.POLICY_ALWAYS, gtk.POLICY_ALWAYS)
+ 			FilesSW.set_shadow_type(gtk.SHADOW_IN)
+ 		FilesSW.add(filestree)
+ 		FilesSW.show()
+			
+	def get_length_time(self, length):
+		if length != '' and length != None:
+			minutes = int(length)/60
+			seconds = str( int(length) - (60 * minutes))
+			if len(seconds) < 2:
+				seconds = '0' + seconds
+			length = str(minutes)+":"+str(seconds)
+		else:
+			length = "0:00"
+		return length
+		
+	def transfer_tab(self):
+		try:
+			vbox1 = gtk.VBox(False, 0)
+			vbox1.show()
+			vbox1.set_spacing(0)
+		
+			vpaned1 = gtk.VPaned()
+			vpaned1.show()
+		
+			vbox2 = gtk.VBox(False, 0)
+			vbox2.show()
+			vbox2.set_spacing(0)
+		
+			label1 = gtk.Label(("Downloads"))
+			label1.set_padding(0, 0)
+			label1.show()
+			vbox2.pack_start(label1, False, False, 0)
+		
+			scrolledwindow1 = gtk.ScrolledWindow()
+			scrolledwindow1.set_policy(gtk.POLICY_ALWAYS, gtk.POLICY_ALWAYS)
+			scrolledwindow1.show()
+			scrolledwindow1.set_shadow_type(gtk.SHADOW_NONE)
+			#self.app.widgets["downloads"]["store"].append( 
+			#[transfer.user, transfer.path.split("\\")[-1], transfer.rate, transfer.state, transfer,filepos,  transfer.filesize,  transfer.error, transfer.path])
+			self.widgets["downloads"]["store"] = downstore = gtk.ListStore(str, str, str, str, str, str, str )
+			
+			self.widgets["downloads"]["treeview"] = downloadtree = gtk.TreeView(downstore)
+			self.create_transfer_columns("downloads")
+			downloadtree.set_headers_visible(True)
+			
+			self.popup_menu["downloads"] = popup = PopupMenu(self, "downloads")
+			popup.setup(
+				(("_Retry Transfer"), popup.OnRetryTransfer),
+				(("_Abort Transfer"), popup.OnAbortDownTransfer),
+				(("_Clear Transfer"), popup.OnClearDownTransfer),
+				("", None),
+				(("_Private Message"), popup.OnSendMessage),
+				(("_User Info"), popup.OnGetUserInfo),
+				(("_IP Address"), popup.OnShowIPaddress),
+				(("Browse _Shares"), popup.OnBrowseUser),
+				("$" + ("_Buddy this user"), popup.OnAddToList),
+				("$" + ("Ba_n this user"), popup.OnBanUser),
+				("$" + ("_Ignore this user"), popup.OnIgnoreUser),
+						)
+			downloadtree.connect("button_press_event", self.OnPopupMenu, "downloads", "")
+			downloadtree.show()
+			
+			scrolledwindow1.add(downloadtree)
+		
+			vbox2.pack_start(scrolledwindow1, True, True, 0)
+		
+			vpaned1.pack1(vbox2, False, True)
+		
+			vbox3 = gtk.VBox(False, 0)
+			vbox3.show()
+			vbox3.set_spacing(0)
+		
+			label2 = gtk.Label(("Uploads"))
+			label2.set_padding(0, 0)
+			label2.show()
+			vbox3.pack_start(label2, False, False, 0)
+		
+			scrolledwindow2 = gtk.ScrolledWindow()
+			scrolledwindow2.set_policy(gtk.POLICY_ALWAYS, gtk.POLICY_ALWAYS)
+			scrolledwindow2.show()
+			scrolledwindow2.set_shadow_type(gtk.SHADOW_NONE)
+			
+			self.widgets["uploads"]["store"] = upstore = gtk.ListStore(str, str, str, str, str, str, str )
+			self.widgets["uploads"]["treeview"] = uploadtree = gtk.TreeView(upstore)
+			self.create_transfer_columns("uploads")
+			
+			uploadtree.set_headers_visible(True)
+			self.popup_menu["uploads"] = popup = PopupMenu(self, "uploads")
+			popup.setup(
+				(("_Abort Transfer"), popup.OnAbortUpTransfer),
+				(("_Clear Transfer"), popup.OnClearUpTransfer),
+				("", None),
+				(("_Private Message"), popup.OnSendMessage),
+				(("_User Info"), popup.OnGetUserInfo),
+				(("_IP Address"), popup.OnShowIPaddress),
+				(("Browse _Shares"), popup.OnBrowseUser),
+				("$" + ("_Buddy this user"), popup.OnAddToList),
+				("$" + ("Ba_n this user"), popup.OnBanUser),
+				("$" + ("_Ignore this user"), popup.OnIgnoreUser),
+						)
+			uploadtree.connect("button_press_event", self.OnPopupMenu, "uploads", "")
+			uploadtree.show()
+			scrolledwindow2.add(uploadtree)
+		
+			vbox3.pack_start(scrolledwindow2, True, True, 0)
+		
+			vpaned1.pack2(vbox3, False, True)
+		
+			vbox1.pack_start(vpaned1, True, True, 0)
+			
+			self.notebook_transfers.add(vbox1)
+			
+		except Exception,e:
+			if debugmode == True: print "transfertab", Exception,e
+			
+	def create_transfer_columns(self, direction):
+		try:
+			UserName = gtk.TreeViewColumn('Username')
+			cell = gtk.CellRendererText()
+			UserName.pack_start(cell, True)
+			UserName.add_attribute(cell, 'text', 0)
+			UserName.set_sort_column_id(0)
+			UserName.set_resizable(True)
+
+			UserFiles = gtk.TreeViewColumn('Filename')
+			cell = gtk.CellRendererText()
+			UserFiles.pack_start(cell, True)
+			UserFiles.add_attribute(cell, 'text', 1)
+			UserFiles.set_sort_column_id(1)
+			UserFiles.set_resizable(True)
+			
+			UserSpeed = gtk.TreeViewColumn('Speed')
+			cell = gtk.CellRendererText()
+			UserSpeed.pack_start(cell, True)
+			UserSpeed.add_attribute(cell, 'text', 2)
+			UserSpeed.set_sort_column_id(2)
+			UserSpeed.set_resizable(True)
+			
+			Status= gtk.TreeViewColumn('Status')
+			cell = gtk.CellRendererText()
+			Status.pack_start(cell, True)
+			Status.add_attribute(cell, 'text', 3)
+			Status.set_sort_column_id(3)
+			Status.set_resizable(True)
+			
+			Pos = gtk.TreeViewColumn('Pos')
+			cell = gtk.CellRendererText()
+			Pos.pack_start(cell, True)
+			Pos.add_attribute(cell, 'text', 4)
+			Pos.set_sort_column_id(4)
+			Pos.set_resizable(True)
+			
+			Size = gtk.TreeViewColumn('Size')
+			cell = gtk.CellRendererText()
+			Size.pack_start(cell, True)
+			Size.add_attribute(cell, 'text', 5)
+			Size.set_sort_column_id(5)
+			Size.set_resizable(True)
+
+			
+			Path = gtk.TreeViewColumn('Path')
+			cell = gtk.CellRendererText()
+			Path.pack_end(cell, True)
+			Path.add_attribute(cell, 'text', 6)
+			Path.set_sort_column_id(6)
+			Path.set_resizable(True)
+			
+			self.widgets[direction]["treeview"].set_search_column(0)
+			self.widgets[direction]["treeview"].set_search_column(1)
+			self.widgets[direction]["treeview"].set_search_column(2)
+			self.widgets[direction]["treeview"].set_search_column(3)
+			self.widgets[direction]["treeview"].set_search_column(4)
+			self.widgets[direction]["treeview"].set_search_column(5)
+			self.widgets[direction]["treeview"].set_search_column(6)
+			#self.widgets[direction]["treeview"].set_search_column(7)
+			
+			self.widgets[direction]["treeview"].append_column(UserName)
+			self.widgets[direction]["treeview"].append_column(UserFiles)
+			self.widgets[direction]["treeview"].append_column(UserSpeed)
+			self.widgets[direction]["treeview"].append_column(Status)
+			self.widgets[direction]["treeview"].append_column(Size)
+			self.widgets[direction]["treeview"].append_column(Pos)
+			self.widgets[direction]["treeview"].append_column(Path)
+			self.widgets[direction]["store"].set_sort_column_id(0, gtk.SORT_ASCENDING)
+		except Exception, e:
+			print e
+		
+
+	
+	def MouseAction(self, widget, event, string):
+		if string == "browse-dirs":
+			if debugmode == True:  print "-- Click -- :", string
+			user = self.tabs["browse"][self.notebook_browsing.get_current_page()]
+			d = self.widgets["browse"][user]["DirTree"].get_path_at_pos(int(event.x), int(event.y))
+			if not d:
+				return
+			path, column, x, y = d
+			directory = self.widgets["browse"][user]["DirStore"].get_value(self.widgets["browse"][user]["DirStore"].get_iter(path), 1)
+			if debugmode == True:  print "-- dir :", directory
+			self.BrowseChangeDir(user, directory)
+	
+	def OnPopupMenu(self, widget, event, string, string2):
+		if event.button != 3:
+			if string == "browse-dirs":
+				self.MouseAction(widget, event, string)
+			return
+		items = self.popup_menu[string].get_children()
+		if debugmode == True: print string
+		# Chat, Userlists use the normal popup system
+		num = 5
+		if string == "chat":
+			room = self.tabs["chat"][self.notebook_chat.get_current_page()]
+			if debugmode == True:  print "-- Popup -- Room:", string
+			if debugmode == True:  
+				print self.widgets["chat"][room]
+			d = self.widgets["chat"][room]['UserList'].get_path_at_pos(int(event.x), int(event.y))
+			if not d:
+				return
+			path, column, x, y = d
+			user =  self.widgets["chat"][room]['lists'].get_value(self.widgets["chat"][room]['lists'].get_iter(path), 1)
+			
+		elif string in ( "userlists" ):
+			if debugmode == True:  print "-- Popup -- :", string, self.notebook_userlists.get_current_page()
+			location = self.tabs["lists"][self.notebook_userlists.get_current_page()]
+			
+			d = self.widgets["lists"][location][2].get_path_at_pos(int(event.x), int(event.y))
+			if not d:
+				return
+			path, column, x, y = d
+			user =  self.widgets["lists"][location][0].get_value(self.widgets["lists"][location][0].get_iter(path), 1)
+			if debugmode == True:  print "User:", user
+		elif string in ( "downloads" ):
+			if debugmode == True:  print "-- Popup -- :", string, self.notebook_userlists.get_current_page()
+			d = self.widgets["downloads"]["treeview"].get_path_at_pos(int(event.x), int(event.y))
+			if not d:
+				return
+			path, column, x, y = d
+			user =  self.widgets["downloads"]["store"].get_value(self.widgets["downloads"]["store"].get_iter(path), 0)
+			file = self.widgets["downloads"]["store"].get_value(self.widgets["downloads"]["store"].get_iter(path), 6)
+			self.popup_menu[string].set_user(user)
+			self.popup_menu[string].set_path(file)
+			if debugmode == True:  print "User:", user, file
+			num = 8
+		elif string in ( "uploads" ):
+			if debugmode == True:  print "-- Popup -- :", string, self.notebook_userlists.get_current_page()
+			d = self.widgets["uploads"]["treeview"].get_path_at_pos(int(event.x), int(event.y))
+			if not d:
+				return
+			path, column, x, y = d
+			user =  self.widgets["uploads"]["store"].get_value(self.widgets["uploads"]["store"].get_iter(path), 0)
+			file = self.widgets["uploads"]["store"].get_value(self.widgets["uploads"]["store"].get_iter(path), 6)
+			self.popup_menu[string].set_path(file)
+			num = 7
+		elif string in ( "search" ):
+			if debugmode == True:  print "-- Popup -- :", string, self.notebook_userlists.get_current_page()
+			mode = string
+			query = string2
+			#self.widgets["search"]["notebook"].remove_page( self.widgets["search"]["notebook"].page_num( self.widgets["search"][str(query)]["SW"]) )
+			d = self.widgets[mode][query]["treeview"].get_path_at_pos(int(event.x), int(event.y))
+			
+			if not d:
+				return
+			path, column, x, y = d
+			user =  self.widgets[mode][query]["store"].get_value(self.widgets[mode][query]["store"].get_iter(path), 2)
+			file = self.widgets[mode][query]["store"].get_value(self.widgets[mode][query]["store"].get_iter(path), 10)
+			self.popup_menu[string].set_user(user)
+			self.popup_menu[string].set_path(file)
+			num = 7
+		elif string in ( "rooms" ):
+			# Rooms use a different Popup System
+			if debugmode == True:  print "-- Popup -- :", string
+			d = self.roomwidgets[2].get_path_at_pos(int(event.x), int(event.y))
+			if not d:
+				return
+			path, column, x, y = d
+			room = self.roomwidgets[0].get_value(self.roomwidgets[0].get_iter(path), 1)
+			self.popup_menu[string].set_user(room)
+			self.popup_menu[string].popup(None, None, None, event.button, event.time)
+			return
+		elif string in ( "browse-dirs" ):
+			# Rooms use a different Popup System
+			if debugmode == True:  print "-- Popup -- :", string
+			user = self.tabs["browse"][self.notebook_browsing.get_current_page()]
+			d = self.widgets["browse"][user]["DirTree"].get_path_at_pos(int(event.x), int(event.y))
+			if not d:
+				return
+			path, column, x, y = d
+			directory = self.widgets["browse"][user]["DirStore"].get_value(self.widgets["browse"][user]["DirStore"].get_iter(path), 1)
+			self.popup_menu[string].set_directory(directory)
+			num = 6
+
+		elif string in ( "browse-files" ):
+			# Rooms use a different Popup System
+			if debugmode == True:  print "-- Popup -- :", string
+			user = self.tabs["browse"][self.notebook_browsing.get_current_page()]
+			d = self.widgets["browse"][user]["FilesTree"].get_path_at_pos(int(event.x), int(event.y))
+			if not d:
+				return
+			path, column, x, y = d
+			
+			file = self.widgets["browse"][user]["FileStore"].get_value(self.widgets["browse"][user]["FileStore"].get_iter(path), 0)
+			directory = self.widgets["browse"][user]["FileStore"].get_value(self.widgets["browse"][user]["FileStore"].get_iter(path), 4)
+			self.popup_menu[string].set_file(file)
+			self.popup_menu[string].set_directory(directory)
+			num = 7
+
+				
+		self.popup_menu[string].set_user(user)
+		#items[5].set_active(user in self.ProcessMessages.config["buddies"].keys())
+		if self.ProcessMessages.config != {}:
+			items[num].set_active(user in self.ProcessMessages.config["buddies"].keys())
+			items[num+1].set_active(user in self.ProcessMessages.config["banned"].keys())
+			items[num+2].set_active(user in self.ProcessMessages.config["ignored"].keys())
+		self.popup_menu[string].popup(None, None, None, event.button, event.time)
+
+	def enter_pressed(self, something, entry, mtype):
+		if self.ProcessMessages.connected == False:
+			return
+		try:
+			entry_text = entry.get_text()
+			if entry_text == "":
+				return
+			#print self.MurmurWindow.tabs["chat"][room], entry_text
+			if mtype == "rooms":
+				room = entry_text
+				self.join_a_room(room)
+			elif mtype == "buddies":
+
+				self.ProcessMessages.mod_config("buddy", entry_text, '')
+			elif mtype == "banned":
+	
+				self.ProcessMessages.mod_config("ban", entry_text, '')
+			elif mtype == "ignored":
+
+				self.ProcessMessages.mod_config("ignore", entry_text, '')
+			entry.set_text("")
+		except Exception,e:
+			if debugmode == True: print "Enterpressed", Exception,e
+		
+	def append_to_chatroom(self, room, themessage):
+		if self.ProcessMessages.connected == False:
+			return
+		try:
+			if room not in self.rooms:
+				#if room not in self.MurmurWindow.chatbufferinput_chat.keys():
+				if debugmode == True:
+					print "whoops, don't have that room", room
+				pass
+			else:
+				if self.MurmurWindow != None:
+					if room not in self.widgets["chat"]:
+						return
+					textbuffer  = self.widgets["chat"][room]["textbuffer"]
+					
+					#themessage = "\n%s [%s] %s" % (time.strftime("%H:%M:%S"), str(user), str(message))
+					textbuffer.insert(textbuffer.get_end_iter(), themessage)
+					#self.widgets["chat"][room]["textview"].scroll_mark_onscreen(textbuffer.get_insert())
+		except Exception,e:
+			if debugmode == True: print "append_to_chatroom bug", Exception,e
+
+
+
+ 	def window_quit(self, w=None, event=None):
+		update_config()
+ 		self.MurmurWindow.hide()
+ 		self.MurmurWindow.destroy()
+		self.MurmurWindow = None
+ 		#gtk.main_quit()
+		
+		quit_on_close = True
+		if quit_on_close == True:
+			
+			os._exit(1)
+		
+	def click(self, button):
+		self.MurmurWindow.ret = None
+		self.MurmurWindow.quit()
+
+
+		
+		
+	def menu(self):
+		try:
+			file_menu = gtk.Menu()
+			connect_menu = gtk.Menu()
+			
+			quit_item = gtk.MenuItem("Quit")
+			quit_item.connect_object("activate", self.quit, "file.quit")
+			quit_item.show()
+			
+			user_item = gtk.MenuItem("User Stats")
+			user_item.connect_object("activate", self.userstatus, "file.user")
+			user_item.show()
+			
+			ip_item = gtk.MenuItem("Lookup IP")
+			ip_item.connect_object("activate", self.ip_lookup, "file.ip")
+			ip_item.show()
+			
+			userinfo_item = gtk.MenuItem("Lookup Userinfo")
+			userinfo_item.connect_object("activate", self.userinfo_lookup, "file.userinfo")
+			userinfo_item.show()
+			
+			away_item = gtk.MenuItem("Toggle Away")
+			away_item.connect_object("activate", self.away_toggle, "file.away")
+			away_item.add_accelerator("activate", self.accel_group, gtk.gdk.keyval_from_name("A"), gtk.gdk.MOD1_MASK, gtk.ACCEL_VISIBLE)
+			away_item.show()
+			
+# 			window_item = gtk.MenuItem("Chat Window")
+# 			window_item.connect_object("activate", self.start_MurmurWindow, "window")
+# 			window_item.show()
+			
+			settings_item = gtk.MenuItem("Settings")
+			settings_item.connect_object("activate", self.popup, "settings")
+			settings_item.show()
+			
+			connect_item = gtk.MenuItem("Connect")
+			connect_item.connect_object("activate", self.connect_process, None)
+			connect_item.show()
+			
+			disconnect_item = gtk.MenuItem("Disconnect")
+			disconnect_item.connect_object("activate", self.ProcessMessages.disconnect, "disconnect")
+			disconnect_item.show()
+			
+			connect_menu.append(connect_item)
+			connect_menu.append(disconnect_item)
+					
+			museek_item = gtk.MenuItem("Museek")
+			#connect_item.connect_object("activate", self.userstatus, "file.user")
+			museek_item.show()
+			museek_item.set_submenu(connect_menu)
+			
+			file_menu.append(museek_item)
+			file_menu.append(settings_item)
+			#file_menu.append(window_item)
+			file_menu.append(ip_item)
+			file_menu.append(userinfo_item)
+			file_menu.append(away_item)
+			file_menu.append(user_item)
+			file_menu.append(quit_item)
+			
+
+			self.eventbox.connect_object("button_press_event", self.button_press, file_menu)
+
+			
+		except Exception, e:
+			if debugmode == True: print "menu error", e
+		
+
+		
+	def button_press(self, widget, event):
+		try:
+			if event.type == gtk.gdk.BUTTON_PRESS:
+				widget.popup(None, None, None, event.button, event.time)
+				# Tell calling code that we have handled this event the buck
+				# stops here.
+				return True
+				# Tell calling code that we have not handled this event pass it on.
+			return False
+		except Exception,e:
+			if debugmode == True: print "button_press error", e
+	
+	def load_image(self, image):
+		try:
+			if self.t == None:
+				return
+
+			self.eventbox.hide()
+			
+			if self.current_image != None and self.eventbox_closed == "no":
+				self.eventbox.remove(self.current_image)
+				
+			pixbufanim2 = gtk.gdk.PixbufAnimation(os.path.join(self.imagedirectory, "%s.png"% image) )
+			image1 = gtk.Image()
+			image1.set_from_animation(pixbufanim2)
+			image1.show()
+			self.current_image = image1
+
+			self.eventbox.add(self.current_image)
+			self.eventbox.show()
+		
+		except Exception,e:
+			if debugmode == True: print "load_image", e
+			
+	def settooltip(self, message):
+		try:
+			#gtk.threads_enter()
+			if murmur_config["murmur"]["tooltips"] == "yes":
+				#gtk.gdk.threads_leave()
+				#gtk.gdk.threads_enter()
+				self.tooltips.set_tip(self.eventbox, message) 
+				#gtk.gdk.threads_leave()	
+			#gtk.threads_leave()
+		except Exception,e:
+			if debugmode == True: print "settooltip ERROR", e
+			
+	def quit(self, string):
+		os._exit(1)
+		
+	def userstatus(self, string):
+		try:
+			if self.status:
+				stat = "Away"
+			else:
+				stat = "Online"
+			if self.username != None:
+				message="%s is %s" % (self.username, stat)
+			else:
+				message="You are Offline"
+				
+			self.display_box(title='Online Status', message=message)
+		except Exception,e:
+			if debugmode == True: print "userstatus ERROR", e
+
+	def about(self, string):
+		try:
+			title='About Murmur'
+			win = ImageDialog(self, title='About Murmur',
+			message="Murmur is a PyGTK Museek client that was initially designed to run from the system tray. There was a change of plans, and now the trayapp is optional.\nAuthor: Daelstorm\nWebsite: http://thegraveyard.org/daelstorm/murmur.php", picture="logo.png")
+			win.set_title(title)
+			win.show()
+			win.run()
+			win.destroy()
+
+			return win.ret
+		except Exception,e:
+			if debugmode == True: print "about ERROR", e
+			
+	def input_box(self, title="Input Box", message="", default_text='', modal= True, List=[]):
+		try:
+			win = EntryDialog(self, message, default_text, modal=modal, List=List)
+			win.set_title(title)
+			win.show()
+			win.run()
+			win.destroy()
+			return win.ret
+		
+		except Exception,e:
+			if debugmode == True: print "input_box ERROR", e
+	
+	def display_box(self, title="Display Box", message="",  picture=None, modal=True):
+		try:
+			self.dialogmessage=message
+
+			if picture != None:
+				if picture != "":
+					self.dialogpicture= tempfile.mktemp()
+					self.f = open(self.dialogpicture,"w")
+					self.f.write(picture)
+					
+				else: self.dialogpicture = None
+				
+			else: self.dialogpicture = None
+                                  
+			self.dialogtitle=title
+
+			self.DisplayDialog.reloads()
+			
+			self.DisplayDialog.show()
+
+			return 1
+		except Exception,e:
+			if debugmode == True: print "display_box ERROR", e
+	
+	
+	def settings(self, modal=True):
+		try:
+			#win = Settings(self,  modal=modal)
+			win = self.Settings
+			win.set_title("MuTray Setttings")
+
+			win.read_config()
+			win.show()
+
+			return 1
+		
+		except Exception,e:
+			if debugmode == True: print "settings ERROR", e
+	
+	def popup(self, string):
+		try:
+			result = self.settings()
+			if result is None:
+				pass
+			else:
+				if debugmode == True:
+					print "popup: "+str(result)
+		except Exception,e:
+			if debugmode == True: print "popup ERROR", e
+
+		
+	def browse_lookup(self, string):
+		if self.ProcessMessages.connected == False:
+			return
+		try:
+			result = self.input_box(title='Browse User',
+			message='Enter the username of the user who\'s UserInfo you wish to Browse:',
+			default_text='', List=self.ProcessMessages.config["buddies"].keys())
+			if result is None:
+				pass
+			else:
+				self.user = result
+				self.ProcessMessages.Send(messages.UserShares(self.user) )
+		except Exception,e:
+			if debugmode == True: print "browse_lookup ERROR", e
+	
+	def userinfo_lookup(self, string):
+		if self.ProcessMessages.connected == False:
+			return
+		try:
+			result = self.input_box(title='Lookup Userinfo',
+			message='Enter the username of the user who\'s UserInfo you wish to see:',
+			default_text='', List=self.ProcessMessages.config["buddies"].keys())
+			if result is None:
+				pass
+			else:
+				self.info_requested = result
+				
+				self.ProcessMessages.Send(messages.UserInfo(self.info_requested))
+		except Exception,e:
+			if debugmode == True: print "userinfo_lookup ERROR", e
+			
+	def ip_lookup(self, string):
+		if self.ProcessMessages.connected == False:
+			return
+		try:
+			result = self.input_box(title='Lookup IP',
+			message='Enter the username of the user who\'s IP you wish to know:',
+			default_text='', List=self.ProcessMessages.config["buddies"].keys())
+			if result is None:
+				pass
+			else:
+				self.ip_requested = result
+				if self.ip_requested != None:
+					self.ProcessMessages.Send(messages.PeerAddress(self.ip_requested))
+		except Exception,e:
+			if debugmode == True: print "ip_lookup ERROR", e
+				
+	def away_toggle(self, string):
+		if self.ProcessMessages.connected == False:
+			return
+		try:
+			if self.username != None:
+				if self.status == 0:
+					self.ProcessMessages.Send(messages.SetStatus(1))
+				elif self.status == 1:
+					self.ProcessMessages.Send(messages.SetStatus(0))
+			else:
+				self.display_box(title="I cannot do that.", message='You are disconnected from Museek')
+
+		except Exception,e:
+			if debugmode == True: print "away_toggle ERROR", e
+			
+			
+	def say_in_privatechat(self, user, message):
+		if self.ProcessMessages.connected == False:
+			return
+		try:
+			if debugmode == True:
+				print "You PM'd: %s to user: %s" % (message, user)
+
+			if user not in self.privatelogs:
+				self.privatelogs[user] = []
+				
+			self.ProcessMessages.Send(messages.PrivateMessage(0, user, message))
+				
+			if message[:4] == "/me ":
+				themessage = "\n%s * %s %s" % (time.strftime("%H:%M:%S"), self.username, message[4:])
+			else:
+				themessage = "\n%s [%s] %s" % (time.strftime("%H:%M:%S"), self.username, message)
+				
+			self.append_to_privatechat(user, themessage)
+		except Exception,e:
+			if debugmode == True: print "say_in_privatechat ERROR", e
+			
+	def nickcheck(self):
+		try:
+
+			if self.username == None:
+				if debugmode == True:
+					#print "Joined room: %s" % room
+					print "Connection is taking a while to start, maybe you are trying to connect to a FTP daemon?"
+					print "Killing connection.."
+					print "Try using /interface to connect to a different port."
+				driver.Driver.close(self)
+		except Exception,e:
+			if debugmode == True: print "nickcheck ERROR", e	
+			
+	def join_a_room(self, room):
+		if self.ProcessMessages.connected == False:
+			return
+		if room != None and room != "":
+			self.ProcessMessages.Send(messages.JoinRoom(room))
+			
+	def leave_a_room(self, room):
+		if self.ProcessMessages.connected == False:
+			return
+		if room != None and room != "":
+			if room in self.rooms:
+				self.ProcessMessages.Send(messages.LeaveRoom(room))
+				
+	def private_popup(self, string, buf):
+		if self.ProcessMessages.connected == False:
+			return
+		user = self.input_box(title='Open Private Message',
+		message='Enter the user you wish to Send Private Messages to:',
+		default_text='', List=self.ProcessMessages.config["buddies"].keys())
+		if user != None and user != "":
+			self.privatechat_tabs(user)
+		
+	def join_popup(self, string, buf):
+		if self.ProcessMessages.connected == False:
+			return
+		room = self.input_box(title='Join a room',
+		message='Enter the room you wish to Join:',
+		default_text='', List=self.room_lists.keys())
+		if room != None and room != "":
+			self.join_a_room(room)
+			
+	def toggle_logwindow(self, widget, buf):
+		active = widget.get_active()
+
+		if active:
+			if self.LogScrolledWindow in self.vpaned1.get_children():
+				self.vpaned1.remove(self.LogScrolledWindow)
+				murmur_config["logging"]["logcollapsed"] = "yes"
+
+		else:
+			if not self.LogScrolledWindow in self.vpaned1.get_children():
+				self.vpaned1.pack2(self.LogScrolledWindow, False, True)
+				ScrollBottom(self.LogScrolledWindow)
+				murmur_config["logging"]["logcollapsed"] = "no"	
+
+
+				
+	def leave_popup(self, string, buf):
+		if self.ProcessMessages.connected == False:
+			return
+		room = self.input_box(title='Leave a room',
+		message='Enter the room you wish to Leave:',
+		default_text='', List=self.room_lists.keys())
+		if room != None and room != "":
+			self.leave_a_room(room)
+			
+
+
+murmur()
+
+mainloop = gobject.MainLoop()
+mainloop.run()
+
