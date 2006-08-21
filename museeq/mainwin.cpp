@@ -598,7 +598,6 @@ void MainWindow::slotLoggedIn(bool success, const QString& msg) {
 		mMenuSettings->setItemChecked(6, museeq->mShowStatusLog);
 		mMenuSettings->setItemEnabled(7, true);
 		mMenuSettings->setItemChecked(7, museeq->mShowTimestamps);
-		museeq->trayicon_setIcon("connect");
 	} else {
 		statusBar()->message(tr("Login error: ") + msg);
 		mMenuFile->setItemEnabled(0, true);
@@ -606,7 +605,7 @@ void MainWindow::slotLoggedIn(bool success, const QString& msg) {
 		mMenuFile->setItemEnabled(2, false);
 		mMenuFile->setItemEnabled(3, false);
 		doNotAutoConnect();
-		
+		museeq->trayicon_setIcon("disconnect");
 	}
 }
 void MainWindow::doNotAutoConnect() {
@@ -642,9 +641,11 @@ void MainWindow::slotStatusSet(uint status) {
 	if (status) {
 		statusBar()->message(tr("Connected to soulseek, your nickname: ") + museeq->nickname() + tr(" Status: Away") );
 		mMenuFile->setItemChecked(2, true);
+		museeq->trayicon_setIcon("away");
 	} else {
 		statusBar()->message(tr("Connected to soulseek, your nickname: ") + museeq->nickname() + tr(" Status: Online") );
 		mMenuFile->setItemChecked(2, false);
+		museeq->trayicon_setIcon("online");
 	}
 }
 void MainWindow::slotConnectedToServer(bool connected) {
@@ -653,6 +654,7 @@ void MainWindow::slotConnectedToServer(bool connected) {
 		mMenuFile->setItemEnabled(2, true);
 		mMenuFile->setItemEnabled(3, true);
 		mMenuFile->setItemEnabled(4, true);
+		museeq->trayicon_setIcon("connect");
 	} else {
 		statusBar()->message(tr("Disconnected from soulseek"));
 		mMenuFile->setItemEnabled(2, false);
@@ -1049,9 +1051,7 @@ void MainWindow::toggleTrayicon() {
 		museeq->trayicon_show();
 	}
 }
-void MainWindow::testTrayicon() {
-	museeq->trayicon_setIcon("connect");
-}
+
 void MainWindow::checkPrivileges() {
 	mWaitingPrivs = true;
 	museeq->driver()->checkPrivileges();

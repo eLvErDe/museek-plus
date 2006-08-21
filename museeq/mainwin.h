@@ -73,7 +73,6 @@ public slots:
 	void readFromStdout();
 	void toggleAway();
 	void toggleTrayicon();
-	void testTrayicon();
 	void checkPrivileges();
 	void getOwnShares();
 	void toggleTickers();

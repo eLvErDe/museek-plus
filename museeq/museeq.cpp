@@ -169,7 +169,15 @@ Museeq::Museeq(QApplication * app)
 	}
 #endif // HAVE_QSA
 
-
+	menutray = new QPopupMenu();
+	menutray->insertItem(QT_TR_NOOP("&Restore"), mMainWin , SLOT( showNormal() ) );
+	menutray->insertItem(QT_TR_NOOP("&Hide"),  mMainWin , SLOT( hide()  ) );
+	menutray->insertSeparator();
+	menutray->insertItem( QT_TR_NOOP("&Quit"),  mMainWin , SLOT( close() ) );
+	
+	mTray =  new TrayIcon( QPixmap( (char**)icon_xpm),  QT_TR_NOOP("MuseeqTray"), menutray );
+	QObject::connect( mTray, SIGNAL(clicked(const QPoint&, int )),  mMainWin, SLOT(toggleVisibility() ) );
+	
 }
 
 void Museeq::slotConnectionClosed() {
@@ -934,15 +942,7 @@ void Museeq::trayicon_setIcon(const QString& icon) {
 void Museeq::trayicon_load() {
 
 // 	QPopupMenu menutray;
-	menutray = new QPopupMenu();
-	menutray->insertItem(QT_TR_NOOP("&Restore"), mMainWin , SLOT( showNormal() ) );
-	menutray->insertItem(QT_TR_NOOP("&Hide"),  mMainWin , SLOT( hide()  ) );
-	menutray->insertSeparator();
-	menutray->insertItem( QT_TR_NOOP("&Quit"),  mMainWin , SLOT( close() ) );
-	
-	mTray =  new TrayIcon( QPixmap( (char**)icon_xpm),  QT_TR_NOOP("MuseeqTray"), menutray );
-	QObject::connect( mTray, SIGNAL(clicked(const QPoint&, int )),  mMainWin, SLOT(toggleVisibility() ) );
-	
+
 	if (mUsetray == true)
 		mTray->show();
 	menutray->show();
