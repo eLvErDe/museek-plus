@@ -1387,6 +1387,10 @@ class mucous(driver.Driver):
 					user = self.decode_language( str(line[6:]) )
 					self.requests["statistics"].append(user)
 					self.SendMessage(messages.PeerStats(user))
+				elif line[:8] == "/status " and line[8:] != '':
+					user = self.decode_language( str(line[8:]) )
+					self.requests["statistics"].append(user)
+					self.SendMessage(messages.PeerStatus(user))
 					'''
 					MODE SELECTIONS
 					'''
@@ -3000,7 +3004,7 @@ class mucous(driver.Driver):
 			if user in self.requests["statistics"]:
 	
 				self.info_log("Peer Stats for: %s" % user)
-				self.info_log("Speed: %sKB/s" % str(avgspeed/1024))
+				self.info_log("Speed: %s Bits/s" % str(avgspeed))
 				self.info_log("Downloads: %s" % numdownloads)
 				self.info_log("Files: %s" % numfiles)
 				self.info_log("Directories: %s" % numdirs)
@@ -4059,13 +4063,18 @@ class mucous(driver.Driver):
 					self.Hlog("status", "Try to Download file: %s from %s" % (path, user))
 				elif dtype == "dir":
 					path = path.replace("/", "\\")
-					#r = path.split('\\')
-					#directory = ''
-					#for s in r:
-						#if s != r[-1]:
-							#directory += s
-					self.SendMessage(messages.GetFolderContents(user, path))
-					self.Hlog("status", "Try to Download directory: %s from %s" % (path, user))
+					r = path.split('\\')
+					directory = ''
+					r.remove(r[-1])
+
+					for s in r:
+						if s is not r[-1]:
+							directory += s + "\\"
+						else:
+							directory += s
+
+					self.SendMessage(messages.GetFolderContents(user, directory))
+					self.Hlog("status", "Try to Download directory: %s from %s" % (directory, user))
 				
 				if mucous_config["mucous"]["autobuddy"]  == "yes":
 					if user not in self.config["buddies"].keys():
