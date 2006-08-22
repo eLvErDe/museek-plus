@@ -249,13 +249,10 @@ class ImageDialog( gtk.Dialog):
 
 
 class ProcessMessages(driver.Driver, Thread):
-	#, threading.Thread
 	def __init__(self, xapp):
-		
-		
 		driver.Driver.__init__(self)
 		Thread.__init__(self)
-		self.app=xapp
+		self.frame = self.app=xapp
 		self.config = {}
 		self.queue = Queue.Queue(1)
 		self.invalidpass = 0
@@ -282,8 +279,7 @@ class ProcessMessages(driver.Driver, Thread):
 			if key in self.config[domain].keys():
 				if debugmode == True: print "Modified <"+key+"> in <" +domain+"> to <"+value + ">"
 				self.config[domain][key] = value
-				if domain in ("banned", "buddies", "ignored"):
-					self.update_userlist(domain, key, value)
+
 			else:
 				if value == '':
 					if debugmode == True: print "Added <"+key+"> to <" +domain+">"
@@ -291,60 +287,19 @@ class ProcessMessages(driver.Driver, Thread):
 					if debugmode == True: print "Added <"+key+"> to <" +domain+"> and set to <"+value+">"
 				
 				self.config[domain][key] = value
-				if domain in ("banned", "buddies", "ignored"):
-					self.update_userlist(domain, key, value)
-			#self.display_config_update(domain)
+				if domain == "banned":
+					self.frame.userlists.banned.append(key, value)
+				elif domain in "buddies":
+					self.frame.userlists.buddies.append(key, value)
+				elif domain in "ignored":
+					self.frame.userlists.ignored.append(key, value)
+				elif domain in "trusted":
+					self.frame.userlists.trusted.append(key, value)
+
 		except Exception,e:
 			if debugmode == True: print " **** cb_config_set ERROR", e
 
 		gtk.threads_leave()
-			
-	def update_userlist(self, domain, key, value):
-	
-		if self.app.widgets["lists"] != None:
-			tab = domain
-			user = key
-			for tab in self.app.tabs["lists"]:
-				if user in self.config[tab].keys():
-					if tab not in self.app.widgets["lists"]:
-						return
-					if tab not in self.app.lists_users:
-						self.app.lists_users[tab] = {}
-					if user in self.app.user_stats:
-						if user in self.app.lists_users[tab]:
-							# Modify item
-							if debugmode == True: print "UserList %s: %s is in user_stats & lists_users[%s] MODIFYING" % (tab, user, tab)
-							comments =  self.config[tab][user]
-							self.app.widgets["lists"][tab][0].set(self.app.lists_users[tab][user], 0, self.app.GetStatusImage( self.app.user_stats[user][0] ), 1, user, 2, self.app.user_stats[user][3], 3, abs(self.app.user_stats[user][1]), 4, comments, 5,  self.app.user_stats[user][0])
-							
-						else:
-							# Create item
-							if debugmode == True: print "UserList %s: %s is in user_stats but NOT in lists_users[%s] CREATING" % (tab, user, tab)
-							img = self.app.GetStatusImage( self.app.user_stats[user][0] ) 
-							files = self.app.user_stats[user][3]
-							speed = abs(self.app.user_stats[user][1])
-							comments =  self.config[tab][user]
-							self.app.lists_users[tab][user] = self.app.widgets["lists"][tab][0].append([ img, str(user),  files, speed, comments, self.app.user_stats[user][0] ])
-							#(gtk.gdk.Pixbuf, str, int, int, str, int )
-							#self.app.widgets["lists"][tab][0].set(self.app.lists_users[tab][user], 0, gtk.gdk.pixbuf_new_from_file( self.app.GetStatusImage( self.app.user_stats[user][0] )), 1, user, 2, self.app.user_stats[user][3])
-					else:
-						if user in self.app.lists_users[tab]:
-							if debugmode == True: print "UserList %s: %s is NOT user_stats but  in lists_users[%s] MODIFYING" % (tab, user, tab)
-							# Modify item
-							img = self.app.GetStatusImage( 3)
-							files = 0
-							speed = 0
-							comments =  self.config[tab][user]
-							self.app.widgets["lists"][tab][0].set(self.app.lists_users[tab][user], 0, self.app.GetStatusImage( 3 ), 1, user, 2, files, 3, speed, 4, comments, 5,  3)
-						else:
-							if debugmode == True: print "UserList %s: %s is NOT user_stats OR lists_users[%s] CREATING" % (tab, user, tab)
-							# Create item
-							img = self.app.GetStatusImage( 3 )
-							files = 0
-							speed = 0
-							comments =  self.config[tab][user]
-
-							self.app.lists_users[tab][user] = self.app.widgets["lists"][tab][0].append([ img, str(user),  files, speed, comments,  3 ] )
 
 	#Delete keys from self.config
 	def cb_config_remove(self, domain, key):
@@ -352,18 +307,14 @@ class ProcessMessages(driver.Driver, Thread):
 		
 		if key in self.config[domain].keys():
 			if debugmode == True: print "Removed <"+key+"> from <" +domain+">"
-			if domain in ("banned", "buddies", "ignored"):
-				tab = domain
-				user = key
-				if self.app.widgets["lists"] != None:
-					if tab not in self.app.widgets["lists"]:
-						gtk.threads_leave()
-						return
-					
-					self.app.widgets["lists"][tab][0].remove(self.app.lists_users[tab][user])
-					del self.app.lists_users[tab][user]
-					
-
+			if domain == "banned":
+				self.frame.userlists.banned.remove(key)
+			elif domain in "buddies":
+				self.frame.userlists.buddies.remove(key)
+			elif domain in "ignored":
+				self.frame.userlists.ignored.remove(key)
+			elif domain in "trusted":
+				self.frame.userlists.trusted.remove(key)
 			del self.config[domain][key]
 		gtk.threads_leave()
 		#self.display_config_update(domain)
@@ -375,17 +326,22 @@ class ProcessMessages(driver.Driver, Thread):
 		self.config = config.copy()
 		if self.config.keys() != []:
 			if "buddies" in self.config.keys():
-				
-				self.app.userlist_tabs("buddies")
-				
+				for user, comment in self.config["buddies"].items():
+					self.frame.userlists.buddies.append(user, comment)
+				#self.app.userlist_tabs("buddies")
 			
 			if "banned" in self.config.keys():
-				
-				self.app.userlist_tabs("banned")
+				for user, comment in self.config["banned"].items():
+					self.frame.userlists.banned.append(user, comment)
+				#self.app.userlist_tabs("banned")
 				
 			if "ignored" in self.config.keys():
-				
-				self.app.userlist_tabs("ignored")
+				for user, comment in self.config["ignored"].items():
+					self.frame.userlists.ignored.append(user, comment)
+			if "trusted" in self.config.keys():
+				for user, comment in self.config["trusted"].items():
+					self.frame.userlists.trusted.append(user, comment)
+				#self.app.userlist_tabs("ignored")
 		gtk.threads_leave()
 				
 	#Add new/replace old keys to self.config
@@ -394,16 +350,25 @@ class ProcessMessages(driver.Driver, Thread):
 
 		if changetype == "buddy":
 			if username not in self.config["buddies"].keys():
-				self.Send(messages.ConfigSet("buddies", username, "buddied by mucous"))
+				self.Send(messages.ConfigSet("buddies", username, value))
 				
 		elif changetype == "unbuddy":
 			if username in self.config["buddies"].keys():
 				self.Send(messages.ConfigRemove("buddies", username))
 			else:
 				if debugmode == True: print "User not in buddy list: %s" % username
+		elif changetype == "trust":
+			if username not in self.config["trusted"].keys():
+				self.Send(messages.ConfigSet("trusted", username, value))
+				
+		elif changetype == "distrust":
+			if username in self.config["trusted"].keys():
+				self.Send(messages.ConfigRemove("trusted", username))
+			else:
+				if debugmode == True: print "User not in trusted list: %s" % username
 		elif changetype == "ban":
 			if username not in self.config["banned"].keys():
-				self.Send(messages.ConfigSet("banned", username, "banned by mucous"))
+				self.Send(messages.ConfigSet("banned", username, value))
 		elif changetype == "unban":
 			if username in self.config["banned"].keys():
 				self.Send(messages.ConfigRemove("banned", username))
@@ -411,7 +376,7 @@ class ProcessMessages(driver.Driver, Thread):
 				if debugmode == True: print "User not in ban list: %s" % username
 		elif changetype == "ignore":
 			if username not in self.config["ignored"].keys():
-				self.Send(messages.ConfigSet("ignored", username, ""))
+				self.Send(messages.ConfigSet("ignored", username, value))
 				if debugmode == True: print"Ignored: %s" % username
 		elif changetype == "unignore":
 			if username in self.config["ignored"].keys():
@@ -587,19 +552,19 @@ class ProcessMessages(driver.Driver, Thread):
 					roomlist.append(users)
 					self.app.user_stats[users] = joined[room][users][0], joined[room][users][1], joined[room][users][2 ], joined[room][users][3], joined[room][users][4]
 			created = []
-			try:
-				if self.app.widgets["lists"] != None:
-					#for rooms in self.app.rooms.keys():
-					for user in self.app.user_stats:
-						for tab in self.app.tabs["lists"]:
-							if user in self.config[tab].keys():
-								if tab not in self.app.widgets["lists"]:
-									gtk.threads_leave()
-									return
+			#try:
+				#if self.app.widgets["lists"] != None:
+					##for rooms in self.app.rooms.keys():
+					#for user in self.app.user_stats:
+						#for tab in self.app.tabs["lists"]:
+							#if user in self.config[tab].keys():
+								#if tab not in self.app.widgets["lists"]:
+									#gtk.threads_leave()
+									#return
 								
-								self.app.widgets["lists"][tab][0].set(self.app.lists_users[tab][user], 0, self.app.GetStatusImage( self.app.user_stats[user][0] ), 1, user, 2, self.app.user_stats[user][3], 3, abs(self.app.user_stats[user][1]), 4, self.config[tab][user], 5, self.app.user_stats[user][0]  )
-			except Exception, e:
-				print "list", tab, "failed", e
+								#self.app.widgets["lists"][tab][0].set(self.app.lists_users[tab][user], 0, self.app.GetStatusImage( self.app.user_stats[user][0] ), 1, user, 2, self.app.user_stats[user][3], 3, abs(self.app.user_stats[user][1]), 4, self.config[tab][user], 5, self.app.user_stats[user][0]  )
+			#except Exception, e:
+				#print "list", tab, "failed", e
 				
 			if self.app.widgets["chat"] != None:
 				for room in self.app.rooms.keys():
@@ -852,7 +817,7 @@ class ProcessMessages(driver.Driver, Thread):
 		gtk.threads_leave()
 		
 	def cb_peer_stats(self, user, avgspeed, numdownloads, numfiles, numdirs):
-		#if debugmode == True: print " **** cb_peer_stats %s" % user
+		if debugmode == True: print " **** cb_peer_stats %s" % user
 		gtk.threads_enter()
 		try:
 			if user in self.app.user_stats:
@@ -864,42 +829,29 @@ class ProcessMessages(driver.Driver, Thread):
 				self.app.user_stats[user] = 0, avgspeed, numdownloads, numfiles, numdirs
 		except Exception,e:
 			if debugmode == True: print " **** cb_peer_stats ERROR", e
-		try:
-			# Update Chatroom Lists with new status information
-			if self.app.widgets["chat"] != None:
-				for room,  users in self.app.rooms.items():
-					if user in users:
-						if room in self.app.widgets["chat"]:
-							self.app.widgets["chat"][room]["lists"].set( self.app.chatroom_users[room][user], 0, self.app.GetStatusImage( self.app.user_stats[user][0] ), 1, user, 2, self.app.user_stats[user][3],3, self.app.user_stats[user][0])
-		except Exception,e:
-			if debugmode == True: print " **** cb_peer_stats ERROR2", e
-		try:					
-			if self.app.widgets["lists"] != None:
+		#try:
+			## Update Chatroom Lists with new status information
+			#if self.app.widgets["chat"] != None:
+				#for room,  users in self.app.rooms.items():
+					#if user in users:
+						#if room in self.app.widgets["chat"]:
+							#self.app.widgets["chat"][room]["lists"].set( self.app.chatroom_users[room][user], 0, self.app.GetStatusImage( self.app.user_stats[user][0] ), 1, user, 2, self.app.user_stats[user][3],3, self.app.user_stats[user][0])
+		#except Exception,e:
+			#if debugmode == True: print " **** cb_peer_stats ERROR2", e
+		self.frame.userlists.update(user)
 
-				for tab in self.app.tabs["lists"]:
-					if user in self.config[tab].keys():
-						self.app.widgets["lists"][tab][0].set(self.app.lists_users[tab][user], \
-						0, self.app.GetStatusImage( self.app.user_stats[user][0] ), \
-						1, user, \
-						2, self.app.user_stats[user][3], \
-						3, abs(self.app.user_stats[user][1]), \
-						4, self.config[tab][user],\
-						5, self.app.user_stats[user][0] )
-							
-						
-		except Exception,e:
-			if debugmode == True: print " **** cb_peer_stats ERROR3", e
 		gtk.threads_leave()	
 			
 	def cb_peer_status(self, user, status):
-		gtk.threads_enter()
+		
 
 		if user in self.app.user_stats:
 			if self.app.user_stats[user][0] == status:
-				gtk.threads_leave()
+				
 				return
 		else:
 			self.app.user_stats[user] = status, 0, 0, 0, 0
+		gtk.threads_enter()	
 		if status == 1:
 			what = "away"
 			
@@ -920,29 +872,14 @@ class ProcessMessages(driver.Driver, Thread):
 			else:
 				self.app.user_stats[user] = status,  self.app.user_stats[user][1],  self.app.user_stats[user][2],  self.app.user_stats[user][3],  self.app.user_stats[user][4]
 			
-		except Exception,e:
-			if debugmode == True: print " **** cb_peer_status ERROR1", e
-		
-		try:		
+	
 			# Update Chatroom Lists with new status information
 			self.app.chatrooms.roomsmaster.GetUserStatus( user, status)
-
+			self.frame.userlists.update(user)
 		except Exception,e:
 			if debugmode == True: print " **** cb_peer_status ERROR2", e
 		
-		try:
-			if self.app.widgets["lists"] != None:
-				for tab in self.app.tabs["lists"]:
-					if user in self.config[tab].keys():
-						self.app.widgets["lists"][tab][0].set( self.app.lists_users[tab][user], \
-						0, self.app.GetStatusImage( self.app.user_stats[user][0] ), \
-						1, user, \
-						2, self.app.user_stats[user][3], \
-						3, abs(self.app.user_stats[user][1]), \
-						4, self.config[tab][user],\
-						5, self.app.user_stats[user][0] )
-		except Exception,e:
-			if debugmode == True: print " **** cb_peer_status ERROR3", e
+
 		gtk.threads_leave()
 		
 	def callback(self, message):
@@ -1107,7 +1044,7 @@ class PopupMenu(gtk.Menu):
 
 	
 	def OnGetUserInfo(self, widget):
-		if debugmode == True: print "OnGetUserInfo"
+		if debugmode == True: print "OnGetUserInfo", self.user
 		self.app.ProcessMessages.Send(messages.UserInfo(self.user) )
 		#self.app.np.ProcessRequestToPeer(self.user, slskmessages.UserInfoRequest(None), self.app.userinfo)
 		
@@ -1133,7 +1070,15 @@ class PopupMenu(gtk.Menu):
 			self.app.ProcessMessages.mod_config("ban", self.user, '')
 		else:
 			self.app.ProcessMessages.mod_config("unban", self.user, '')
-	
+			
+	def OnTrustUser(self, widget):
+		if self.app.ProcessMessages.connected == False:
+			return
+		if widget.get_active():
+			self.app.ProcessMessages.mod_config("trust", self.user, '')
+		else:
+			self.app.ProcessMessages.mod_config("distrust", self.user, '')
+			
 	def OnIgnoreUser(self, widget):
 		if self.app.ProcessMessages.connected == False:
 			return
@@ -1597,10 +1542,7 @@ class MurmurWindow:
 		self.SearchFrame()
 		
 		# User lists Construction
-		self.notebook_userlists = gtk.Notebook()
-		self.notebook_userlists.set_tab_pos(gtk.POS_TOP)
-		self.notebook_userlists.set_scrollable(False)
-		self.notebook_userlists.show()
+		self.userlists = UserLists(self)
 		
 		# Userinfo Construction
 		
@@ -1693,7 +1635,7 @@ class MurmurWindow:
 		
 		label = gtk.Label("Users") 
 		label.show()
-		self.notebook_outside.append_page(self.notebook_userlists, label)
+		self.notebook_outside.append_page(self.userlists, label)
 		
 		label = gtk.Label("Room List") 
 		label.show()
@@ -2731,11 +2673,7 @@ class ChatRoom:
 	def UserJoinedRoom(self, username):
 		if self.users.has_key(username):
 			return
-		status = self.frame.user_stats[username][0]
-		files = self.frame.user_stats[username][3]
-		speed = self.frame.user_stats[username][1]
-		#self.app.user_stats[users] = stats[0], stats[1], stats[2 ], stats[3], stats[4] 
-		# online status, avgspeed, numdownloads, numfiles, numdirs
+		status, speed, downloads, files, dirs = self.frame.user_stats[username]
 		AppendLine(self.RoomLog, _("%s joined the room") % username, None)
 		img = self.frame.GetStatusImage(status)
 		hspeed = Humanize(speed)
@@ -3120,9 +3058,6 @@ class Downloads:
 		except Exception, e:
 			print e
 
-class Download:
-	def __init__(self):
-		pass
 	
 class Uploads:
 	def __init__(self, frame):
@@ -3150,16 +3085,17 @@ class Uploads:
 		self.treeview.set_headers_visible(True)
 		self.popup_menu = popup = PopupMenu(self.frame, "uploads")
 		popup.setup(
-			(("_Abort Transfer"), popup.OnAbortUpTransfer),
-			(("_Clear Transfer"), popup.OnClearUpTransfer),
+			(_("_Abort Transfer"), popup.OnAbortUpTransfer),
+			(_("_Clear Transfer"), popup.OnClearUpTransfer),
 			("", None),
-			(("_Private Message"), popup.OnSendMessage),
-			(("_User Info"), popup.OnGetUserInfo),
-			(("_IP Address"), popup.OnShowIPaddress),
-			(("Browse _Shares"), popup.OnBrowseUser),
+			(_("_Private Message"), popup.OnSendMessage),
+			(_("_User Info"), popup.OnGetUserInfo),
+			(_("_IP Address"), popup.OnShowIPaddress),
+			(_("Browse _Shares"), popup.OnBrowseUser),
 			("$" + ("_Buddy this user"), popup.OnAddToList),
 			("$" + ("Ba_n this user"), popup.OnBanUser),
 			("$" + ("_Ignore this user"), popup.OnIgnoreUser),
+			("$" + _("_Trust this user"), popup.OnTrustUser),
 					)
 		self.treeview.connect("button_press_event", self.OnPopupMenu)
 		self.treeview.show()
@@ -3227,11 +3163,485 @@ class Uploads:
 		except Exception, e:
 			print e
 
+class UserLists(gtk.Notebook):
+	def __init__(self, frame):
+		self.frame = frame
+		gtk.Notebook.__init__(self)
+		
+		self.set_tab_pos(gtk.POS_TOP)
+		self.set_scrollable(False)
+		self.show()
 
-class Upload:
-	def __init__(self):
+		self.buddies = BuddyList(self.frame)
+		self.append_page(self.buddies.Main, self.buddies.label)
+		self.banned = BanList(self.frame)
+		self.append_page(self.banned.Main, self.banned.label)
+		self.ignored = IgnoreList(self.frame)
+		self.append_page(self.ignored.Main, self.ignored.label)
+		self.trusted = TrustList(self.frame)
+		self.append_page(self.trusted.Main, self.trusted.label)
+		
+	def update(self, user):
+		for w in [ self.banned, self.buddies, self.ignored, self.trusted ]:
+			if user in w.users.keys():
+				w.append(user, "")
+class BanList:
+	def __init__(self, frame):
+		# Text input box
+		self.frame = frame
+		self.entry = entry = gtk.Entry()
+		self.users = {}
+		entry.set_text("")
+		entry.grab_focus()
+		entry.show()
+		entry.connect("activate", self.enter_pressed, entry)
+		
+		label = gtk.Label(_("Add User:"))
+		label.show()
+		
+		
+		addhbox = gtk.HBox(spacing=3)
+		addhbox.set_border_width(3)
+		addhbox.pack_start(label, False, False, 0)
+		addhbox.pack_end(entry, True, True,  0)
+		addhbox.show()
+		
+		
+		self.store = gtk.ListStore(gtk.gdk.Pixbuf, str, str, str, str, int )
+		
+		self.treeview = UserList = gtk.TreeView(self.store)
+		
+		cols = InitialiseColumns(self.treeview,
+				[_("Status"), -1, "pixbuf"],
+				[_("Username"), 100, "text"],
+				[_("Files"), 50, "text"],
+				[_("Speed"), 50, "text"],
+				[_("Comments"), 100, "text"],
+			)
+		cols[0].set_sort_column_id(5)
+
+		
+		self.store.set_sort_column_id(1, gtk.SORT_ASCENDING)
+		
+		self.popup_menu = popup = PopupMenu(self.frame, "userlists")
+		popup.setup(
+			(_("Send _Message"), popup.OnSendMessage),
+			("", None),
+			(_("_User Info"), popup.OnGetUserInfo),
+			(_("_IP address"), popup.OnShowIPaddress),
+			(_("Browse _Shares"), popup.OnBrowseUser),
+			("$" + _("_Buddy this user"), popup.OnAddToList),
+			("$" + _("Ba_n this user"), popup.OnBanUser),
+			("$" + _("_Ignore this user"), popup.OnIgnoreUser),
+			("$" + _("_Trust this user"), popup.OnTrustUser),
+		)
+		UserList.connect("button_press_event", self.OnPopupMenu)
+		UserList.show()
+		
+		# Scrollwindow containing Users-in-room Listbox
+		widget = gtk.ScrolledWindow()
+		widget.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+		widget.add(UserList)
+		widget.set_shadow_type(gtk.SHADOW_ETCHED_IN)
+		
+		widget.show()
+		
+		# Containing box with scrolled window and text input box
+		self.Main= gtk.VBox(spacing=3)
+		self.Main.set_border_width(3)
+		self.Main.pack_start(widget, True, True, 0)
+		self.Main.pack_end(addhbox, False, False, 0)
+		self.Main.show()
+		
+		#vseparator = gtk.VSeparator()
+		#vseparator.show()
+		
+		# Naming the tab
+		self.label = gtk.Label(_("Banned") )
+		self.label.show()
+		
+	def OnPopupMenu(self, widget, event):
+		if event.button != 3:
+			return
+		d = self.treeview.get_path_at_pos(int(event.x), int(event.y))
+		if not d:
+			return
+		path, column, x, y = d
+		user =  self.store.get_value(self.store.get_iter(path), 1)
+		self.popup_menu.set_user(user)
+		items = self.popup_menu.get_children()
+		items[5].set_active(user in self.frame.ProcessMessages.config["buddies"].keys())
+		items[6].set_active(user in self.frame.ProcessMessages.config["banned"].keys())
+		items[7].set_active(user in self.frame.ProcessMessages.config["ignored"].keys())
+		items[8].set_active(user in self.frame.ProcessMessages.config["trusted"].keys())
+		self.popup_menu.popup(None, None, None, event.button, event.time)
+		self.treeview.emit_stop_by_name("button_press_event")
+		return True
+	
+	def enter_pressed(self, widget):
+		pass
+	def append(self, user, comments):
+		try:
+			if user in self.frame.user_stats:
+				status, speed, downloads, files, dirs = self.frame.user_stats[user]
+			else:
+				status = 3
+				speed = downloads = files = dirs = 0
+			if user in self.users:
+				self.store.set(self.users[user], 0, self.frame.GetStatusImage( status ), 1, user, 2, Humanize(files), 3, Humanize(speed), 4, comments, 5,  status)
+			else:
+				self.users[user] = self.store.append([ self.frame.GetStatusImage(status), user,  Humanize(files), Humanize(speed), comments, status ])
+		except Exception,e:
+			print Exception, e
+	def remove(self, user):
+		self.store.remove(self.users[user])
+		del self.users[user]
+	def clear(self, user):
+		self.store.clear()
+	
+class BuddyList:
+	def __init__(self, frame):
+		# Text input box
+		self.frame = frame
+		self.entry = entry = gtk.Entry()
+		self.users = {}
+		entry.set_text("")
+		entry.grab_focus()
+		entry.show()
+		entry.connect("activate", self.enter_pressed, entry)
+		
+		label = gtk.Label(_("Add User:"))
+		label.show()
+		
+		
+		addhbox = gtk.HBox(spacing=3)
+		addhbox.set_border_width(3)
+		addhbox.pack_start(label, False, False, 0)
+		addhbox.pack_end(entry, True, True,  0)
+		addhbox.show()
+		
+		
+		self.store = gtk.ListStore(gtk.gdk.Pixbuf, str,str,str, str, int )
+		
+		self.treeview = UserList = gtk.TreeView(self.store)
+		
+		cols = InitialiseColumns(self.treeview,
+				[_("Status"), -1, "pixbuf"],
+				[_("Username"), 100, "text"],
+				[_("Files"), 50, "text"],
+				[_("Speed"), 50, "text"],
+				[_("Comments"), 100, "text"],
+			)
+		cols[0].set_sort_column_id(5)
+
+		
+		self.store.set_sort_column_id(1, gtk.SORT_ASCENDING)
+		
+		self.popup_menu = popup = PopupMenu(self.frame, "userlists")
+		popup.setup(
+			(_("Send _Message"), popup.OnSendMessage),
+			("", None),
+			(_("_User Info"), popup.OnGetUserInfo),
+			(_("_IP address"), popup.OnShowIPaddress),
+			(_("Browse _Shares"), popup.OnBrowseUser),
+			("$" + _("_Buddy this user"), popup.OnAddToList),
+			("$" + _("Ba_n this user"), popup.OnBanUser),
+			("$" + _("_Ignore this user"), popup.OnIgnoreUser),
+			("$" + _("_Trust this user"), popup.OnTrustUser),
+		)
+		UserList.connect("button_press_event", self.OnPopupMenu)
+		UserList.show()
+		
+		# Scrollwindow containing Users-in-room Listbox
+		widget = gtk.ScrolledWindow()
+		widget.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+		widget.add(UserList)
+		widget.set_shadow_type(gtk.SHADOW_ETCHED_IN)
+		
+		widget.show()
+		
+		# Containing box with scrolled window and text input box
+		self.Main= gtk.VBox(spacing=3)
+		self.Main.set_border_width(3)
+		self.Main.pack_start(widget, True, True, 0)
+		self.Main.pack_end(addhbox, False, False, 0)
+		self.Main.show()
+		
+		#vseparator = gtk.VSeparator()
+		#vseparator.show()
+		
+		# Naming the tab
+		self.label = gtk.Label("Buddies" ) 
+		self.label.show()
+		
+	def OnPopupMenu(self, widget, event):
+		if event.button != 3:
+			return
+		d = self.treeview.get_path_at_pos(int(event.x), int(event.y))
+		if not d:
+			return
+		path, column, x, y = d
+		user =  self.store.get_value(self.store.get_iter(path), 1)
+		self.popup_menu.set_user(user)
+		items = self.popup_menu.get_children()
+		items[5].set_active(user in self.frame.ProcessMessages.config["buddies"].keys())
+		items[6].set_active(user in self.frame.ProcessMessages.config["banned"].keys())
+		items[7].set_active(user in self.frame.ProcessMessages.config["ignored"].keys())
+		items[8].set_active(user in self.frame.ProcessMessages.config["trusted"].keys())
+		self.popup_menu.popup(None, None, None, event.button, event.time)
+		self.treeview.emit_stop_by_name("button_press_event")
+		return True
+	
+	
+	def enter_pressed(self, widget):
 		pass
 	
+	def append(self, user, comments):
+
+		try:
+			if user in self.frame.user_stats:
+				status, speed, downloads, files, dirs = self.frame.user_stats[user]
+			else:
+				status = 3
+				speed = downloads = files = dirs = 0
+			img = self.frame.GetStatusImage( status )
+			if user in self.users:
+				self.store.set(self.users[user], 0, self.frame.GetStatusImage( status ), 1, user, 2, Humanize(files), 3, Humanize(speed), 4, comments, 5,  status)
+			else:
+				self.users[user] = self.store.append([ self.frame.GetStatusImage(status), user,  Humanize(files), Humanize(speed), comments, status ])
+		except Exception,e:
+			print Exception, e
+	def remove(self, user):
+		self.store.remove(self.users[user])
+		del self.users[user]
+	def clear(self, user):
+		self.store.clear()
+		
+class TrustList:
+	def __init__(self, frame):
+		# Text input box
+		self.users = {}
+		self.frame = frame
+		self.entry = entry = gtk.Entry()
+		entry.set_text("")
+		entry.grab_focus()
+		entry.show()
+		entry.connect("activate", self.enter_pressed, entry)
+		
+		label = gtk.Label(_("Add User:"))
+		label.show()
+		
+		
+		addhbox = gtk.HBox(spacing=3)
+		addhbox.set_border_width(3)
+		addhbox.pack_start(label, False, False, 0)
+		addhbox.pack_end(entry, True, True,  0)
+		addhbox.show()
+		
+		
+		self.store = gtk.ListStore(gtk.gdk.Pixbuf, str, str, str, str, int )
+		
+		self.treeview = UserList = gtk.TreeView(self.store)
+		
+		cols = InitialiseColumns(self.treeview,
+				[_("Status"), -1, "pixbuf"],
+				[_("Username"), 100, "text"],
+				[_("Files"), 50, "text"],
+				[_("Speed"), 50, "text"],
+				[_("Comments"), 100, "text"],
+			)
+		cols[0].set_sort_column_id(5)
+
+		
+		self.store.set_sort_column_id(1, gtk.SORT_ASCENDING)
+		
+		self.popup_menu = popup = PopupMenu(self.frame, "userlists")
+		popup.setup(
+			(_("Send _Message"), popup.OnSendMessage),
+			("", None),
+			(_("_User Info"), popup.OnGetUserInfo),
+			(_("_IP address"), popup.OnShowIPaddress),
+			(_("Browse _Shares"), popup.OnBrowseUser),
+			("$" + _("_Buddy this user"), popup.OnAddToList),
+			("$" + _("Ba_n this user"), popup.OnBanUser),
+			("$" + _("_Ignore this user"), popup.OnIgnoreUser),
+			("$" + _("_Trust this user"), popup.OnTrustUser),
+		)
+		UserList.connect("button_press_event", self.OnPopupMenu)
+		UserList.show()
+		
+		# Scrollwindow containing Users-in-room Listbox
+		widget = gtk.ScrolledWindow()
+		widget.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+		widget.add(UserList)
+		widget.set_shadow_type(gtk.SHADOW_ETCHED_IN)
+		
+		widget.show()
+		
+		# Containing box with scrolled window and text input box
+		self.Main= gtk.VBox(spacing=3)
+		self.Main.set_border_width(3)
+		self.Main.pack_start(widget, True, True, 0)
+		self.Main.pack_end(addhbox, False, False, 0)
+		self.Main.show()
+		
+		#vseparator = gtk.VSeparator()
+		#vseparator.show()
+		
+		# Naming the tab
+		self.label = gtk.Label(_("Trusted") )
+		self.label.show()
+		
+	def OnPopupMenu(self, widget, event):
+		if event.button != 3:
+			return
+		d = self.treeview.get_path_at_pos(int(event.x), int(event.y))
+		if not d:
+			return
+		path, column, x, y = d
+		user =  self.store.get_value(self.store.get_iter(path), 1)
+		self.popup_menu.set_user(user)
+		items = self.popup_menu.get_children()
+		items[5].set_active(user in self.frame.ProcessMessages.config["buddies"].keys())
+		items[6].set_active(user in self.frame.ProcessMessages.config["banned"].keys())
+		items[7].set_active(user in self.frame.ProcessMessages.config["ignored"].keys())
+		items[8].set_active(user in self.frame.ProcessMessages.config["trusted"].keys())
+		self.popup_menu.popup(None, None, None, event.button, event.time)
+		self.treeview.emit_stop_by_name("button_press_event")
+		return True
+	
+	def enter_pressed(self, widget):
+		pass
+	def append(self, user, comments):
+		try:
+			if user in self.frame.user_stats:
+				status, speed, downloads, files, dirs = self.frame.user_stats[user]
+			else:
+				status = 3
+				speed = downloads = files = dirs = 0
+			if user in self.users:
+				self.store.set(self.users[user], 0, self.frame.GetStatusImage( status ), 1, user, 2, Humanize(files), 3, Humanize(speed), 4, comments, 5,  status)
+			else:
+				self.users[user] = self.store.append([ self.frame.GetStatusImage(status), user,  Humanize(files), Humanize(speed), comments, status ])
+		except Exception,e:
+			print Exception, e
+	def remove(self, user):
+		self.store.remove(self.users[user])
+		del self.users[user]
+	def clear(self, user):
+		self.store.clear()
+		
+class IgnoreList:
+	def __init__(self, frame):
+		self.users = {}		
+		self.frame = frame
+		self.entry = entry = gtk.Entry()
+		entry.set_text("")
+		entry.grab_focus()
+		entry.show()
+		entry.connect("activate", self.enter_pressed, entry)
+		
+		label = gtk.Label(_("Add User:"))
+		label.show()
+		
+		
+		addhbox = gtk.HBox(spacing=3)
+		addhbox.set_border_width(3)
+		addhbox.pack_start(label, False, False, 0)
+		addhbox.pack_end(entry, True, True,  0)
+		addhbox.show()
+		
+		
+		self.store = gtk.ListStore(gtk.gdk.Pixbuf, str, str, str, str, int )
+		
+		self.treeview = UserList = gtk.TreeView(self.store)
+		
+		cols = InitialiseColumns(self.treeview,
+				[_("Status"), -1, "pixbuf"],
+				[_("Username"), 100, "text"],
+				[_("Files"), 50, "text"],
+				[_("Speed"), 50, "text"],
+				[_("Comments"), 100, "text"],
+			)
+		cols[0].set_sort_column_id(5)
+
+		
+		self.store.set_sort_column_id(1, gtk.SORT_ASCENDING)
+		
+		self.popup_menu = popup = PopupMenu(self.frame, "userlists")
+		popup.setup(
+			(_("Send _Message"), popup.OnSendMessage),
+			("", None),
+			(_("_User Info"), popup.OnGetUserInfo),
+			(_("_IP address"), popup.OnShowIPaddress),
+			(_("Browse _Shares"), popup.OnBrowseUser),
+			("$" + _("_Buddy this user"), popup.OnAddToList),
+			("$" + _("Ba_n this user"), popup.OnBanUser),
+			("$" + _("_Ignore this user"), popup.OnIgnoreUser),
+			("$" + _("_Trust this user"), popup.OnTrustUser),
+		)
+		UserList.connect("button_press_event", self.OnPopupMenu)
+		UserList.show()
+		
+		# Scrollwindow containing Users-in-room Listbox
+		widget = gtk.ScrolledWindow()
+		widget.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+		widget.add(UserList)
+		widget.set_shadow_type(gtk.SHADOW_ETCHED_IN)
+		
+		widget.show()
+		
+		# Containing box with scrolled window and text input box
+		self.Main= gtk.VBox(spacing=3)
+		self.Main.set_border_width(3)
+		self.Main.pack_start(widget, True, True, 0)
+		self.Main.pack_end(addhbox, False, False, 0)
+		self.Main.show()
+		
+		#vseparator = gtk.VSeparator()
+		#vseparator.show()
+		
+		# Naming the tab
+		self.label = gtk.Label(_("Ignored") )
+		self.label.show()
+
+	def OnPopupMenu(self, widget, event):
+		if event.button != 3:
+			return
+		d = self.treeview.get_path_at_pos(int(event.x), int(event.y))
+		if not d:
+			return
+		path, column, x, y = d
+		user =  self.store.get_value(self.store.get_iter(path), 1)
+		self.popup_menu.set_user(user)
+		items = self.popup_menu.get_children()
+		items[5].set_active(user in self.frame.ProcessMessages.config["buddies"].keys())
+		items[6].set_active(user in self.frame.ProcessMessages.config["banned"].keys())
+		items[7].set_active(user in self.frame.ProcessMessages.config["ignored"].keys())
+		items[8].set_active(user in self.frame.ProcessMessages.config["trusted"].keys())
+		self.popup_menu.popup(None, None, None, event.button, event.time)
+		self.treeview.emit_stop_by_name("button_press_event")
+		return True
+	
+	def enter_pressed(self, widget):
+		pass
+	def append(self, user, comments):
+		if user in self.frame.user_stats:
+			status, speed, downloads, files, dirs = self.frame.user_stats[user]
+		else:
+			status = 3
+			speed = downloads = files = dirs = 0
+
+		if user in self.users:
+			self.store.set(self.users[user], 0, self.frame.GetStatusImage( status ), 1, user, 2, Humanize(files), 3, Humanize(speed), 4, comments, 5,  status)
+		else:
+			self.users[user] = self.store.append([ self.frame.GetStatusImage(status), user,  Humanize(files), Humanize(speed), comments, status ])
+	def remove(self, user):
+		self.store.remove(self.users[user])
+		del self.users[user]
+	def clear(self, user):
+		self.store.clear()
+		
 class murmur(MurmurWindow, ProcessMessages):
 
 	def __init__(self):
@@ -3291,19 +3701,6 @@ class murmur(MurmurWindow, ProcessMessages):
 		
 		try:
 			self.room_list_tab("")
-			if self.ProcessMessages.config.keys() != []:
-
-				for users in self.ProcessMessages.config["buddies"].keys():
-	
-					self.userlist_tabs("buddies")
-	
-				for users in self.ProcessMessages.config["banned"].keys():
-	
-					self.userlist_tabs("banned") 
-
-				for users in self.ProcessMessages.config["ignored"].keys():
-
-					 self.userlist_tabs("ignored")
 
 			for users in self.privatelogs:
 
@@ -3380,27 +3777,7 @@ class murmur(MurmurWindow, ProcessMessages):
 					self.statusbar.push(self.context_id, self.statusbarmessage)
 		except Exception, e:
 			if debugmode == True: print "update_statusbar", Exception, e
-				
-	#def del_chatrooms(self, room):
-		#if self.ProcessMessages.connected == False:
-			#return
-		#try:
-			#if self.widgets["chat"] == None:
-				#return
-			
-			#if room not in self.tabs["chat"]:
-				#return
-			#else:
-				#textbuffer  = self.widgets["chat"][room]['textbuffer']
-				#chat = self.widgets["chat"][room]['textview']
-				
-				#self.notebook_chat.remove_page(self.tabs["chat"].index(room)) # remove tab
-				#self.tabs["chat"].remove(room) # remove from list of tabs
-				#del self.chatroom_users[room] # clear userlist box
-				##self.notebook_chat.append_page(horbox, chatlabel)
-		#except Exception, e:
-			#if debugmode == True: print "del_chatrooms", Exception, e
-			
+
 	def GetStatusImage(self, num):
 		
 		if num == 0:
