@@ -2570,7 +2570,7 @@ class ChatRoom:
 		
 
 		
-		self.usersmodel = gtk.ListStore(gtk.gdk.Pixbuf, str,int, int )
+		self.usersmodel = gtk.ListStore(gtk.gdk.Pixbuf, str, str, str, int )
 		self.UserList = gtk.TreeView(self.usersmodel)
 		
 		# Users-in-room Listbox with users and files
@@ -2579,12 +2579,14 @@ class ChatRoom:
 			["", -1, "pixbuf"],
 			[_("Username"), 100, "text"],
 			[_("Files"), 0, "text"],
+			[_("Speed"), 0, "text"],
 		)
 		
 
-		cols[0].set_sort_column_id(3)
+		cols[0].set_sort_column_id(4)
 		cols[1].set_sort_column_id(1)
 		cols[2].set_sort_column_id(2)
+		cols[3].set_sort_column_id(3)
 
 		
 		self.usersmodel.set_sort_column_id(1, gtk.SORT_ASCENDING)
@@ -2592,10 +2594,10 @@ class ChatRoom:
 		self.users = {}
 		for user in users.keys():
 			img = self.frame.GetStatusImage(users[user][0]) 
-			#hspeed = users[user][1]
-			hfiles = users[user][3]
+			hspeed = Humanize(users[user][1])
+			hfiles = Humanize(users[user][3])
 			#iter = self.usersmodel.append([img, user, hspeed, hfiles, users[user][0], users[user][1], users[user][2]])
-			iter = self.usersmodel.append([img, str(user), int(hfiles), int(users[user][0])] ) #, , users[user][1], users[user][2]])
+			iter = self.usersmodel.append([img, str(user), hfiles, hspeed, users[user][0] ] ) #, , users[user][1], users[user][2]])
 			self.users[user] = iter
 			
 		self.popup_menu = popup = PopupMenu(self.frame, "chat")
@@ -2731,13 +2733,14 @@ class ChatRoom:
 			return
 		status = self.frame.user_stats[username][0]
 		files = self.frame.user_stats[username][3]
+		speed = self.frame.user_stats[username][1]
 		#self.app.user_stats[users] = stats[0], stats[1], stats[2 ], stats[3], stats[4] 
 		# online status, avgspeed, numdownloads, numfiles, numdirs
 		AppendLine(self.RoomLog, _("%s joined the room") % username, None)
 		img = self.frame.GetStatusImage(status)
-		#hspeed = avgspeed
-		hfiles = files
-		iter = self.usersmodel.append([img, username, hfiles, status])
+		hspeed = Humanize(speed)
+		hfiles = Humanize(files)
+		iter = self.usersmodel.append([img, username, hfiles, hspeed, status])
 		self.users[username] = iter
 	
 	def UserLeftRoom(self, username):
