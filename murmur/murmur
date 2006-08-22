@@ -420,11 +420,11 @@ class ProcessMessages(driver.Driver, Thread):
 
 		
 	def cb_peer_exists(self, user, exists):
-		gtk.threads_enter()
+		#gtk.threads_enter()
 		if debugmode == True: print "%s exists? %i" % (user, exists)
 		if exists == 0:
 			self.app.user_stats[user] = 3, 0, 0, 0, 0
-		gtk.threads_leave()
+		#gtk.threads_leave()
 	
 	def cb_room_list(self, roomlist):
 		gtk.threads_enter()
@@ -552,19 +552,7 @@ class ProcessMessages(driver.Driver, Thread):
 					roomlist.append(users)
 					self.app.user_stats[users] = joined[room][users][0], joined[room][users][1], joined[room][users][2 ], joined[room][users][3], joined[room][users][4]
 			created = []
-			#try:
-				#if self.app.widgets["lists"] != None:
-					##for rooms in self.app.rooms.keys():
-					#for user in self.app.user_stats:
-						#for tab in self.app.tabs["lists"]:
-							#if user in self.config[tab].keys():
-								#if tab not in self.app.widgets["lists"]:
-									#gtk.threads_leave()
-									#return
-								
-								#self.app.widgets["lists"][tab][0].set(self.app.lists_users[tab][user], 0, self.app.GetStatusImage( self.app.user_stats[user][0] ), 1, user, 2, self.app.user_stats[user][3], 3, abs(self.app.user_stats[user][1]), 4, self.config[tab][user], 5, self.app.user_stats[user][0]  )
-			#except Exception, e:
-				#print "list", tab, "failed", e
+
 				
 			if self.app.widgets["chat"] != None:
 				for room in self.app.rooms.keys():
@@ -830,17 +818,17 @@ class ProcessMessages(driver.Driver, Thread):
 		except Exception,e:
 			if debugmode == True: print " **** cb_peer_stats ERROR", e
 		
-		self.frame.userlists.update(user)
+		self.frame.userlists.updateStats(user, self.app.user_stats[user])
 
 		gtk.threads_leave()	
 			
 	def cb_peer_status(self, user, status):
 		
-
 		if user in self.app.user_stats:
-			if self.app.user_stats[user][0] == status:
+			
 				
-				return
+			stats = self.app.user_stats[user]
+			self.app.user_stats[user] = status,  stats[1],  stats[2],  stats[3],  stats[4]
 		else:
 			self.app.user_stats[user] = status, 0, 0, 0, 0
 		gtk.threads_enter()	
@@ -856,18 +844,11 @@ class ProcessMessages(driver.Driver, Thread):
 			what = "notexist"
 
 
-		if debugmode == True: print "2 %s is %s" %(user, what)
+		#if debugmode == True: print "2 %s is %s" %(user, what)
 		try:
-		
-			if self.app.user_stats[user][0] == 3:
-				self.app.user_stats[user] = 3,  self.app.user_stats[user][1],  self.app.user_stats[user][2],  self.app.user_stats[user][3],  self.app.user_stats[user][4]
-			else:
-				self.app.user_stats[user] = status,  self.app.user_stats[user][1],  self.app.user_stats[user][2],  self.app.user_stats[user][3],  self.app.user_stats[user][4]
-			
-	
 			# Update Chatroom Lists with new status information
 			self.app.chatrooms.roomsmaster.GetUserStatus( user, status)
-			self.frame.userlists.update(user)
+			self.frame.userlists.updateStatus(user, status)
 		except Exception,e:
 			if debugmode == True: print " **** cb_peer_status ERROR2", e
 		
@@ -940,7 +921,7 @@ class ProcessMessages(driver.Driver, Thread):
 					if self.connected == True:
 						self.connect_to_museekd("")
 					
-				sleep(0.001)
+				sleep(0.01)
 				
 				#self.app.MurmurWindow.show_all() 
 
@@ -3174,10 +3155,16 @@ class ListsOfUsers(gtk.Notebook):
 		self.append_page(self.ignored.Main, self.ignored.label)
 
 		
-	def update(self, user):
+	def updateStats(self, user, stats):
 		for w in [ self.buddies, self.trusted, self.banned, self.ignored ]:
 			if user in w.users.keys():
-				w.update(user)
+				w.updateStats(user, stats)
+				
+	def updateStatus(self, user, status):
+		for w in [ self.buddies, self.trusted, self.banned, self.ignored ]:
+			if user in w.users.keys():
+				w.updateStatus(user, status)
+				
 class ListBanned:
 	def __init__(self, frame):
 		# Text input box
@@ -3273,14 +3260,21 @@ class ListBanned:
 	
 	def enter_pressed(self, widget):
 		pass
-
-	def update(self, user):
-		if user in self.frame.user_stats:
-			status, speed, downloads, files, dirs = self.frame.user_stats[user]
-		else:
-			status = 3
-			speed = downloads = files = dirs = 0
-		self.store.set(self.users[user], 0, self.frame.GetStatusImage( status ), 1, user, 2, Humanize(files), 3, Humanize(speed),  5,  status)
+		#if user in self.frame.user_stats:
+			#self.frame.user_stats[user]
+		#else:
+			#status = 3
+			#speed = downloads = files = dirs = 0
+				
+	def updateStatus(self, user, status):
+		img = self.frame.GetStatusImage(status)
+		if img == self.store.get_value(self.users[user], 0):
+			return
+		self.store.set(self.users[user], 0, img, 5, status)
+		
+	def updateStats(self, user, stats):
+		status, speed, downloads, files, dirs = stats 
+		self.store.set(self.users[user], 1, user, 2, Humanize(files), 3, Humanize(speed))
 		
 		
 	def append(self, user, comments):
@@ -3400,13 +3394,16 @@ class ListBuddies:
 	
 	def enter_pressed(self, widget):
 		pass
-	def update(self, user):
-		if user in self.frame.user_stats:
-			status, speed, downloads, files, dirs = self.frame.user_stats[user]
-		else:
-			status = 3
-			speed = downloads = files = dirs = 0
-		self.store.set(self.users[user], 0, self.frame.GetStatusImage( status ), 1, user, 2, Humanize(files), 3, Humanize(speed),  5,  status)
+	
+	def updateStatus(self, user, status):
+		img = self.frame.GetStatusImage(status)
+		if img == self.store.get_value(self.users[user], 0):
+			return
+		self.store.set(self.users[user], 0, img, 5, status)
+		
+	def updateStats(self, user, stats):
+		status, speed, downloads, files, dirs = stats 
+		self.store.set(self.users[user], 1, user, 2, Humanize(files), 3, Humanize(speed))
 		
 	def append(self, user, comments):
 
@@ -3416,6 +3413,7 @@ class ListBuddies:
 			else:
 				status = 3
 				speed = downloads = files = dirs = 0
+				self.frame.user_stats[user] = status, speed, downloads, files, dirs
 			img = self.frame.GetStatusImage( status )
 			if user in self.users:
 				self.store.set(self.users[user], 0, self.frame.GetStatusImage( status ), 1, user, 2, Humanize(files), 3, Humanize(speed), 4, comments, 5,  status)
@@ -3525,13 +3523,15 @@ class ListTrusted:
 	def enter_pressed(self, widget):
 		pass
 	
-	def update(self, user):
-		if user in self.frame.user_stats:
-			status, speed, downloads, files, dirs = self.frame.user_stats[user]
-		else:
-			status = 3
-			speed = downloads = files = dirs = 0
-		self.store.set(self.users[user], 0, self.frame.GetStatusImage( status ), 1, user, 2, Humanize(files), 3, Humanize(speed),  5,  status)
+	def updateStatus(self, user, status):
+		img = self.frame.GetStatusImage(status)
+		if img == self.store.get_value(self.users[user], 0):
+			return
+		self.store.set(self.users[user], 0, img, 5, status)
+		
+	def updateStats(self, user, stats):
+		status, speed, downloads, files, dirs = stats 
+		self.store.set(self.users[user], 1, user, 2, Humanize(files), 3, Humanize(speed))
 		
 	def append(self, user, comments):
 		try:
@@ -3646,13 +3646,16 @@ class ListIgnored:
 	
 	def enter_pressed(self, widget):
 		pass
-	def update(self, user):
-		if user in self.frame.user_stats:
-			status, speed, downloads, files, dirs = self.frame.user_stats[user]
-		else:
-			status = 3
-			speed = downloads = files = dirs = 0
-		self.store.set(self.users[user], 0, self.frame.GetStatusImage( status ), 1, user, 2, Humanize(files), 3, Humanize(speed),  5,  status)
+	
+	def updateStatus(self, user, status):
+		img = self.frame.GetStatusImage(status)
+		if img == self.store.get_value(self.users[user], 0):
+			return
+		self.store.set(self.users[user], 0, img, 5, status)
+		
+	def updateStats(self, user, stats):
+		status, speed, downloads, files, dirs = stats 
+		self.store.set(self.users[user], 1, user, 2, Humanize(files), 3, Humanize(speed))
 		
 	def append(self, user, comments):
 		if user in self.frame.user_stats:
