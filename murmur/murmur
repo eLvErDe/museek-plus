@@ -86,6 +86,8 @@ murmur_config = {"connection":{"interface":'localhost:2240', "passw":None}, \
 	"rooms_sort": "size", "roombox": "big", "now-playing": "default", \
 	"now-playing-prefix": None, "browse_display_mode": "filesystem", \
 	"url reader": "firefox", "url custom prefix": ""}, \
+	"colors": { "chatme":"FOREST GREEN", "chatremote":"","chatlocal":"BLUE", \
+ 	"chathilite":"red", "search":"","searchq":"GREY", "chatfont": "" },\
 	"logging": { "logcollapsed": "no", "log_dir": "~/.murmur/logs/"} \
 	}
 		
@@ -115,7 +117,7 @@ def read_config():
 		for j in parser.options(i):
 			val = parser.get(i,j, raw = 1)
 
-			if j in ['login','passw','interface', 'trayapp', 'roombox', 'tickers_enabled', "ticker_cycle", 'default_room', "autobuddy", 'tooltips', "now-playing", "log_dir", "logcollapsed", "configfile", "now-playing-prefix", "browse_display_mode", "url reader", "url custom prefix", "url custom suffix", "transbox"] :
+			if j in ['login','passw','interface', 'trayapp', 'roombox', 'tickers_enabled', "ticker_cycle", 'default_room', "autobuddy", 'tooltips', "now-playing", "log_dir", "logcollapsed", "configfile", "now-playing-prefix", "browse_display_mode", "url reader", "url custom prefix", "url custom suffix", "transbox"] or i == "colors":
 				murmur_config[i][j] = val
 			elif i == 'aliases':
 				murmur_config[i][j] = val
@@ -258,8 +260,6 @@ class ProcessMessages(driver.Driver, Thread):
 		self.queue = Queue.Queue(1)
 		self.invalidpass = 0
 		self.socket = None
-		self.states = {0: "Finished", 1: "Transferring", 2: "Negotiating", 3:"Waiting", 4: "Establishing", 5: "Initiating", 6: "Connecting",  7: "Queued", 8:"Address", 9:  "Status", 10: "Offline",11: "Closed",12: "Can't Connect", 13: "Aborted",14: "Not Shared"}
-		
 
 		#
 		#self.timer = threading.Timer(1.0, self.process)
@@ -324,7 +324,6 @@ class ProcessMessages(driver.Driver, Thread):
 							files = self.app.user_stats[user][3]
 							speed = abs(self.app.user_stats[user][1])
 							comments =  self.config[tab][user]
-							print tab
 							self.app.lists_users[tab][user] = self.app.widgets["lists"][tab][0].append([ img, str(user),  files, speed, comments, self.app.user_stats[user][0] ])
 							#(gtk.gdk.Pixbuf, str, int, int, str, int )
 							#self.app.widgets["lists"][tab][0].set(self.app.lists_users[tab][user], 0, gtk.gdk.pixbuf_new_from_file( self.app.GetStatusImage( self.app.user_stats[user][0] )), 1, user, 2, self.app.user_stats[user][3])
@@ -514,17 +513,10 @@ class ProcessMessages(driver.Driver, Thread):
 		gtk.threads_enter()
 		if debugmode == True: print " **** cb_transfer_state"
 		for transfer in uploads:
-			iters =  self.app.widgets["uploads"]["store"].append( [transfer.user, transfer.path.split("\\")[-1], transfer.rate, self.states[transfer.state], transfer.filepos,  transfer.filesize,   transfer.path])
-			
-			self.app.transfers["uploads"][(transfer.user, transfer.path)] =  iters
-			#[transfer.is_upload, transfer.user, transfer.path, int(transfer.state), transfer.error, transfer.filepos, transfer.filesize, transfer.rate]
-			
-		
+			self.app.uploads.append(transfer)
 		for transfer in downloads:
-			iters = self.app.widgets["downloads"]["store"].append( [transfer.user, transfer.path.split("\\")[-1], transfer.rate, self.states[transfer.state], transfer.filepos,  transfer.filesize,   transfer.path])
-			self.app.transfers["downloads"][(transfer.user, transfer.path)] =  iters
-			#[transfer.is_upload, transfer.user, transfer.path, int(transfer.state), transfer.error, transfer.filepos, transfer.filesize, transfer.rate]
-			print transfer.user
+			self.app.downloads.append(transfer)
+
 		gtk.threads_leave()
 
 
@@ -532,22 +524,10 @@ class ProcessMessages(driver.Driver, Thread):
 		gtk.threads_enter()
 		try:
 			if debugmode == True: print " **** cb_transfer_update"
-	
 			if transfer.is_upload:
-				user_path = (transfer.user, transfer.path)
-				if user_path in self.app.transfers["uploads"]:
-					self.app.widgets["uploads"]["store"].set(self.app.transfers["uploads"][user_path], 0, transfer.user, 1, transfer.path.split("\\")[-1], 2, transfer.rate, 3 ,self.states[transfer.state], 4, transfer.filepos,  5, transfer.filesize,  6, transfer.path)
-				else:
-					iters =  self.app.widgets["uploads"]["store"].append( [transfer.user, transfer.path.split("\\")[-1], transfer.rate, self.states[transfer.state], transfer.filepos,  transfer.filesize,   transfer.path])
-					self.app.transfers["uploads"][(transfer.user, transfer.path)] =  iters
-				
+				self.app.uploads.update(transfer)
 			else:
-				user_path = (transfer.user, transfer.path)
-				if user_path in self.app.transfers["downloads"]:
-					self.app.widgets["downloads"]["store"].set(self.app.transfers["downloads"][user_path], 0, transfer.user, 1, transfer.path.split("\\")[-1], 2, transfer.rate, 3 ,self.states[transfer.state], 4, transfer.filepos,  5, transfer.filesize,  6, transfer.path)
-				else:
-					iters = self.app.widgets["downloads"]["store"].append( [transfer.user, transfer.path.split("\\")[-1], transfer.rate, self.states[transfer.state], transfer.filepos,  transfer.filesize,   transfer.path])
-					self.app.transfers["downloads"][(transfer.user, transfer.path)] =  iters
+				self.app.downloads.update(transfer)
 		except Exception,e:
 			if debugmode == True: print " **** cb_transfer_update ERROR", e
 		gtk.threads_leave()
@@ -558,12 +538,9 @@ class ProcessMessages(driver.Driver, Thread):
 		if debugmode == True: print " **** cb_transfer_remove"
 		user_path = transfer[1], transfer[2]
 		if transfer[0]:
-			self.app.widgets["uploads"]["store"].remove(self.app.transfers["uploads"][user_path])
-			del self.app.transfers["uploads"][user_path]
-					
+			self.app.uploads.remove(transfer)
 		else:
-			self.app.widgets["downloads"]["store"].remove(self.app.transfers["downloads"][user_path])
-			del self.app.transfers["downloads"][user_path]
+			self.app.downloads.remove(transfer)
 		gtk.threads_leave()
 		
 
@@ -789,6 +766,8 @@ class ProcessMessages(driver.Driver, Thread):
 				self.connected = False
 				self.config = {}
 				self.invalidpass = 0
+				self.app.downloads.store.clear()
+				self.app.uploads.store.clear()
 
 		except Exception,e:
 			if debugmode == True: print "disconnect ERROR", e
@@ -914,8 +893,7 @@ class ProcessMessages(driver.Driver, Thread):
 			
 	def cb_peer_status(self, user, status):
 		gtk.threads_enter()
-		#if debugmode == True: print " **** cb_peer_status %s %i" % (user, status)
-		#if debugmode == True: print "1 %s is %s" %(user, status)
+
 		if user in self.app.user_stats:
 			if self.app.user_stats[user][0] == status:
 				gtk.threads_leave()
@@ -1006,7 +984,7 @@ class ProcessMessages(driver.Driver, Thread):
 						print e[1] +", make sure the daemon is running, or change the interface."
 						#self.settooltip( "Make sure Museek is running, or try a different Interface.")
 					print "Connect to museekd Error: ", e
-					self.connected = False
+				self.connected = False
 
 
 	def run(self):
@@ -1033,7 +1011,7 @@ class ProcessMessages(driver.Driver, Thread):
 					if self.connected == True:
 						self.connect_to_museekd("")
 					
-				sleep(0.01)
+				sleep(0.001)
 				
 				#self.app.MurmurWindow.show_all() 
 
@@ -1090,10 +1068,8 @@ class PopupMenu(gtk.Menu):
 			return
 		if debugmode == True: print "OnSendMessage"
 		if self.user != None and self.user != "":
-			
 			self.app.privatechats.SendMessage(self.user) 
 			
-		pass
 		#self.app.privatechats.SendMessage(self.user)
 	
 	def OnShowIPaddress(self, widget):
@@ -1542,8 +1518,17 @@ class MurmurWindow:
 		# Transfers Construction
 		self.notebook_transfers = gtk.Frame()
 		self.notebook_transfers.show()
-		self.transfer_tab()
-		
+
+		vpaned1 = gtk.VPaned()
+		self.downloads = Downloads(self)
+		vpaned1.pack1(self.downloads.Main, False, True)
+		self.uploads = Uploads(self)
+		vpaned1.pack2(self.uploads.Main, False, True)
+		vpaned1.show()
+		#vpaned1.pack2(self.Main, False, True)
+
+		self.notebook_transfers.add(vpaned1)
+
 		# User Browse Construction
 		self.userbrowsevbox = gtk.VBox(False, 0)
 		self.userbrowsevbox.show()
@@ -1727,6 +1712,24 @@ class MurmurWindow:
 			if self.widgets["private"] != None:
 				if self.tabs["private"] != []:
 					gobject.idle_add(self.widgets["private"][self.tabs["private"][page_num]][2].grab_focus )
+					
+	def Humanize(self, size):
+		if size is None:
+			return None
+
+		try:
+			s = int(size)
+			if s >= 1000*1024*1024:
+				r = _("%.2f GB") % ((float(s) / (1024.0*1024.0*1024.0)))
+			elif s >= 1000*1024:
+				r = _("%.2f MB") % ((float(s) / (1024.0*1024.0)))
+			elif s >= 1000:
+				r = _("%.2f KB") % ((float(s) / 1024.0))
+			else:
+				r = str(size)
+			return r
+		except:
+			return size 
 
 	def OnGetShares(self, widget):
 		user =self.SharesEntry.get_text()
@@ -2219,9 +2222,24 @@ class PrivateChat:
 		popup.set_user(user)
 		self.ChatScroll.connect("button_press_event", self.OnPopupMenu)
 		self.ChatLine.grab_focus()
+		self.UpdateColours()
 		
+	def UpdateColours(self):
+		def makecolour(buffer, colour):
+			colour = murmur_config["colors"][colour]
+			font = murmur_config["colors"]["chatfont"]
+			if colour:
+				return buffer.create_tag(foreground = colour, font=font)
+			else:
+				return buffer.create_tag( font=font)
 
-	
+				
+		buffer = self.ChatScroll.get_buffer()
+		self.tag_remote = makecolour(buffer, "chatremote")
+		self.tag_local = makecolour(buffer, "chatlocal")
+		self.tag_me = makecolour(buffer, "chatme")
+		self.tag_hilite = makecolour(buffer, "chathilite")
+
 	def OnClose(self, widget):
 		#if self.logfile is not None:
 			#self.logfile.close()
@@ -2230,16 +2248,25 @@ class PrivateChat:
 		self.destroy()
 
 	def ShowMessage(self, direction, text):
-		print direction
-		print self.frame.username
-		if text[:4] == "/me ":
-			line = "* %s %s" % (self.user, text[4:])
-			#tag = self.tag_me
+		if self.user == self.frame.username:
+			tag = self.tag_local
+		elif text.upper().find(self.frame.username.upper()) > -1:
+			tag = self.tag_hilite
 		else:
-			line = "[%s] %s" % (self.user, text)
-			#tag = self.tag_remote
-		#line = self.frame.np.decode(line, self.encoding)
-		AppendLine(self.ChatScroll, line, None, "%c")
+			tag = self.tag_remote
+		
+		if direction == 0:
+			username = self.user
+		else:
+			username = self.frame.username
+				
+		if text[:4] == "/me ":
+			line = "* %s %s" % (username, text[4:])
+			tag = self.tag_me
+		else:
+			line = "[%s] %s" % (username, text)
+
+		AppendLine(self.ChatScroll, line, tag, "%c")
 		#if self.Log.get_active():
 			#self.logfile = WriteLog(self.logfile, self.frame.np.config.sections["logging"]["logsdir"], self.user, line)
 		
@@ -2252,21 +2279,23 @@ class PrivateChat:
 
 		if text[:4] == "/me ":
 			line = "* %s %s" % (self.frame.username, text[4:])
-			#tag = self.tag_me
+			tag = self.tag_me
 		else:
 			
 			if text == "\x01VERSION\x01":
 				line = "CTCP VERSION"
 			else:
 				line = "[%s] %s" % (self.frame.username, text)
-			#tag = self.tag_local
+			tag = self.tag_local
 			
-		AppendLine(self.ChatScroll, line, None, "%c")
+		AppendLine(self.ChatScroll, line, tag, "%c")
 		#if self.Log.get_active():
 			#self.logfile = WriteLog(self.logfile, self.frame.np.config.sections["logging"]["logsdir"], self.user, line)
 		#self.frame.np.queue.put(slskmessages.MessageUser(self.user, text))
 		#self.frame.ProcessMessages
-	
+		
+
+		
 	CMDS = ["/alias ", "/unalias ", "/whois ", "/browse ", "/ip ", "/pm ", "/msg ", "/search ", "/usearch ", "/rsearch ",
 		"/bsearch ", "/add ", "/ban ", "/ignore ", "/unban ", "/unignore ", "/clear", "/quit", "/rescan", "/nsa", "/info", "/ctcpversion"]
 				
@@ -2980,7 +3009,226 @@ class MasterRoom:
 		for room in self.joinedrooms.values():
 			room.ConnClose()
 		self.autojoin = 1
+
 		
+class Downloads:
+	def __init__(self, frame):
+		self.frame = frame
+		self.downloads = {}
+		self.states = {0: "Finished", 1: "Transferring", 2: "Negotiating", 3:"Waiting", 4: "Establishing", 5: "Initiating", 6: "Connecting",  7: "Queued", 8:"Address", 9:  "Status", 10: "Offline",11: "Closed",12: "Can't Connect", 13: "Aborted",14: "Not Shared"}
+		self.Main = gtk.VBox(False, 0)
+		self.Main.show()
+		self.Main.set_spacing(0)
+	
+		label1 = gtk.Label(("Downloads"))
+		label1.set_padding(0, 0)
+		label1.show()
+		
+		self.Main.pack_start(label1, False, False, 0)
+	
+		scrolledwindow1 = gtk.ScrolledWindow()
+		scrolledwindow1.set_policy(gtk.POLICY_ALWAYS, gtk.POLICY_ALWAYS)
+		scrolledwindow1.show()
+		scrolledwindow1.set_shadow_type(gtk.SHADOW_NONE)
+		#self.app.widgets["downloads"]["store"].append( 
+		#[transfer.user, transfer.path.split("\\")[-1], transfer.rate, transfer.state, transfer,filepos,  transfer.filesize,  transfer.error, transfer.path])
+		self.store = gtk.ListStore(str, str, str, str, str, str, str )
+		
+		self.treeview = gtk.TreeView(self.store)
+		self.create_transfer_columns("downloads")
+		self.treeview.set_headers_visible(True)
+		
+		self.popup_menu = popup = PopupMenu(self.frame, "downloads")
+		popup.setup(
+			(("_Retry Transfer"), popup.OnRetryTransfer),
+			(("_Abort Transfer"), popup.OnAbortDownTransfer),
+			(("_Clear Transfer"), popup.OnClearDownTransfer),
+			("", None),
+			(("_Private Message"), popup.OnSendMessage),
+			(("_User Info"), popup.OnGetUserInfo),
+			(("_IP Address"), popup.OnShowIPaddress),
+			(("Browse _Shares"), popup.OnBrowseUser),
+			("$" + ("_Buddy this user"), popup.OnAddToList),
+			("$" + ("Ba_n this user"), popup.OnBanUser),
+			("$" + ("_Ignore this user"), popup.OnIgnoreUser),
+					)
+		self.treeview.connect("button_press_event", self.OnPopupMenu)
+		self.treeview.show()
+		
+		scrolledwindow1.add(self.treeview)
+	
+		self.Main.pack_start(scrolledwindow1, True, True, 0)
+		
+	def append(self, transfer):
+		iters =  self.store.append( [transfer.user, transfer.path.split("\\")[-1], self.frame.Humanize(transfer.rate), self.states[transfer.state], self.frame.Humanize(transfer.filepos), self.frame.Humanize( transfer.filesize),   transfer.path])
+		self.downloads[(transfer.user, transfer.path)] =  iters
+		#[transfer.is_upload, transfer.user, transfer.path, int(transfer.state), transfer.error, transfer.filepos, transfer.filesize, transfer.rate]
+		
+	def update(self, transfer):
+		user_path = (transfer.user, transfer.path)
+		if user_path in self.downloads:
+			self.store.set(self.downloads[user_path], 0, transfer.user, 1, transfer.path.split("\\")[-1], 2,  self.frame.Humanize(transfer.rate), 3 ,self.states[transfer.state], 4, self.frame.Humanize(transfer.filepos),  5, self.frame.Humanize(transfer.filesize),  6, transfer.path)
+		else:
+			self.append(transfer)
+			
+	def remove(self, transfer):
+		user_path =  transfer[1], transfer[2]
+		if user_path in self.downloads:
+			self.store.remove(self.downloads[ user_path ])
+			del self.downloads[ user_path ]
+
+			
+	
+	def OnPopupMenu(self, widget, event):
+		if event.button != 3:
+			return
+		items = self.popup_menu.get_children()
+		
+		d = self.treeview.get_path_at_pos(int(event.x), int(event.y))
+		if not d:
+			return
+		path, column, x, y = d
+		user =  self.store.get_value(self.store.get_iter(path), 0)
+		file = self.store.get_value(self.store.get_iter(path), 6)
+		items[8].set_active(user in  self.frame.ProcessMessages.config["buddies"])
+		items[9].set_active(user in  self.frame.ProcessMessages.config["banned"] )
+		items[10].set_active(user in  self.frame.ProcessMessages.config["ignored"] )
+		self.popup_menu.set_user(user)
+		self.popup_menu.set_path(file)
+		self.popup_menu.popup(None, None, None, event.button, event.time)
+		self.treeview.emit_stop_by_name("button_press_event")
+		return True
+
+	def create_transfer_columns(self, direction):
+		try:
+			cols = InitialiseColumns(self.treeview,
+				[_("Username"), 100, "text"],
+				[_("Filename"), 250, "text"],
+				[_("Speed"), 50, "text"],
+				[_("Status"), 80, "text"],
+				[_("Pos"), 50, "text"],
+				[_("Size"), 80, "text"],
+				[_("Path"), 350, "text"],
+			)
+
+			self.treeview.set_search_column(1)
+
+			#self.store.set_sort_column_id(0, gtk.SORT_ASCENDING)
+		except Exception, e:
+			print e
+
+class Download:
+	def __init__(self):
+		pass
+	
+class Uploads:
+	def __init__(self, frame):
+		self.frame = frame
+		self.uploads = {}
+		self.states = {0: "Finished", 1: "Transferring", 2: "Negotiating", 3:"Waiting", 4: "Establishing", 5: "Initiating", 6: "Connecting",  7: "Queued", 8:"Address", 9:  "Status", 10: "Offline",11: "Closed",12: "Can't Connect", 13: "Aborted",14: "Not Shared"}
+		self.Main = gtk.VBox(False, 0)
+		self.Main.show()
+		self.Main.set_spacing(0)
+	
+		label2 = gtk.Label(("Uploads"))
+		label2.set_padding(0, 0)
+		label2.show()
+		self.Main.pack_start(label2, False, False, 0)
+	
+		scrolledwindow2 = gtk.ScrolledWindow()
+		scrolledwindow2.set_policy(gtk.POLICY_ALWAYS, gtk.POLICY_ALWAYS)
+		scrolledwindow2.show()
+		scrolledwindow2.set_shadow_type(gtk.SHADOW_NONE)
+		
+		self.store = gtk.ListStore(str, str, str, str, str, str, str )
+		self.treeview = gtk.TreeView(self.store)
+		self.create_transfer_columns("uploads")
+		
+		self.treeview.set_headers_visible(True)
+		self.popup_menu = popup = PopupMenu(self.frame, "uploads")
+		popup.setup(
+			(("_Abort Transfer"), popup.OnAbortUpTransfer),
+			(("_Clear Transfer"), popup.OnClearUpTransfer),
+			("", None),
+			(("_Private Message"), popup.OnSendMessage),
+			(("_User Info"), popup.OnGetUserInfo),
+			(("_IP Address"), popup.OnShowIPaddress),
+			(("Browse _Shares"), popup.OnBrowseUser),
+			("$" + ("_Buddy this user"), popup.OnAddToList),
+			("$" + ("Ba_n this user"), popup.OnBanUser),
+			("$" + ("_Ignore this user"), popup.OnIgnoreUser),
+					)
+		self.treeview.connect("button_press_event", self.OnPopupMenu)
+		self.treeview.show()
+		scrolledwindow2.add(self.treeview)
+	
+		self.Main.pack_start(scrolledwindow2, True, True, 0)
+		#self.Main.pack_start(vpaned1, True, True, 0)
+			
+	def append(self, transfer):
+		user_path = (transfer.user, transfer.path)
+		iters =  self.store.append( [transfer.user, transfer.path.split("\\")[-1], self.frame.Humanize(transfer.rate), self.states[transfer.state], self.frame.Humanize(transfer.filepos), self.frame.Humanize( transfer.filesize),   transfer.path])
+		self.uploads[(transfer.user, transfer.path)] =  iters
+		#[transfer.is_upload, transfer.user, transfer.path, int(transfer.state), transfer.error, transfer.filepos, transfer.filesize, transfer.rate]
+		
+	def update(self, transfer):
+		user_path = (transfer.user, transfer.path)
+		if user_path in self.uploads:
+			self.store.set(self.uploads[user_path], 0, transfer.user, 1, transfer.path.split("\\")[-1], 2, self.frame.Humanize(transfer.rate), 3 ,self.states[transfer.state], 4, self.frame.Humanize(transfer.filepos),  5, self.frame.Humanize(transfer.filesize),  6, transfer.path)
+		else:
+			self.append(transfer)
+			
+	def remove(self, transfer):
+		user_path =  transfer[1], transfer[2]
+		if user_path in self.uploads:
+			self.store.remove( self.uploads[ user_path ] )
+			del self.uploads[ user_path ]
+
+			
+			
+	def OnPopupMenu(self, widget, event):
+		if event.button != 3:
+			return
+		items = self.popup_menu.get_children()
+		
+		d = self.treeview.get_path_at_pos(int(event.x), int(event.y))
+		if not d:
+			return
+		path, column, x, y = d
+		user =  self.store.get_value(self.store.get_iter(path), 0)
+		file = self.store.get_value(self.store.get_iter(path), 6)
+		items[7].set_active(user in  self.frame.ProcessMessages.config["buddies"])
+		items[8].set_active(user in  self.frame.ProcessMessages.config["banned"] )
+		items[9].set_active(user in  self.frame.ProcessMessages.config["ignored"] )
+		self.popup_menu.set_user(user)
+		self.popup_menu.set_path(file)
+		self.popup_menu.popup(None, None, None, event.button, event.time)
+		self.treeview.emit_stop_by_name("button_press_event")
+		return True
+	
+	def create_transfer_columns(self, direction):
+		try:
+			cols = InitialiseColumns(self.treeview,
+				[_("Username"), 100, "text"],
+				[_("Filename"), 250, "text"],
+				[_("Speed"), 50, "text"],
+				[_("Status"), 80, "text"],
+				[_("Pos"), 50, "text"],
+				[_("Size"), 80, "text"],
+				[_("Path"), 350, "text"],
+			)
+			
+			self.treeview.set_search_column(1)
+
+			#self.store.set_sort_column_id(0, gtk.SORT_ASCENDING)
+		except Exception, e:
+			print e
+
+
+class Upload:
+	def __init__(self):
+		pass
+	
 class murmur(MurmurWindow, ProcessMessages):
 
 	def __init__(self):
@@ -3371,7 +3619,6 @@ class murmur(MurmurWindow, ProcessMessages):
 					for users in self.ProcessMessages.config[tab].keys():
 						
 						if users in self.user_stats:
-							print self.user_stats[users][0]
 							img = self.GetStatusImage( self.user_stats[users][0] )
 							files = abs( self.user_stats[users][3] )
 							speed =  abs(self.user_stats[user][1])
@@ -4049,179 +4296,6 @@ class murmur(MurmurWindow, ProcessMessages):
 			length = "0:00"
 		return length
 		
-	def transfer_tab(self):
-		try:
-			vbox1 = gtk.VBox(False, 0)
-			vbox1.show()
-			vbox1.set_spacing(0)
-		
-			vpaned1 = gtk.VPaned()
-			vpaned1.show()
-		
-			vbox2 = gtk.VBox(False, 0)
-			vbox2.show()
-			vbox2.set_spacing(0)
-		
-			label1 = gtk.Label(("Downloads"))
-			label1.set_padding(0, 0)
-			label1.show()
-			vbox2.pack_start(label1, False, False, 0)
-		
-			scrolledwindow1 = gtk.ScrolledWindow()
-			scrolledwindow1.set_policy(gtk.POLICY_ALWAYS, gtk.POLICY_ALWAYS)
-			scrolledwindow1.show()
-			scrolledwindow1.set_shadow_type(gtk.SHADOW_NONE)
-			#self.app.widgets["downloads"]["store"].append( 
-			#[transfer.user, transfer.path.split("\\")[-1], transfer.rate, transfer.state, transfer,filepos,  transfer.filesize,  transfer.error, transfer.path])
-			self.widgets["downloads"]["store"] = downstore = gtk.ListStore(str, str, str, str, str, str, str )
-			
-			self.widgets["downloads"]["treeview"] = downloadtree = gtk.TreeView(downstore)
-			self.create_transfer_columns("downloads")
-			downloadtree.set_headers_visible(True)
-			
-			self.popup_menu["downloads"] = popup = PopupMenu(self, "downloads")
-			popup.setup(
-				(("_Retry Transfer"), popup.OnRetryTransfer),
-				(("_Abort Transfer"), popup.OnAbortDownTransfer),
-				(("_Clear Transfer"), popup.OnClearDownTransfer),
-				("", None),
-				(("_Private Message"), popup.OnSendMessage),
-				(("_User Info"), popup.OnGetUserInfo),
-				(("_IP Address"), popup.OnShowIPaddress),
-				(("Browse _Shares"), popup.OnBrowseUser),
-				("$" + ("_Buddy this user"), popup.OnAddToList),
-				("$" + ("Ba_n this user"), popup.OnBanUser),
-				("$" + ("_Ignore this user"), popup.OnIgnoreUser),
-						)
-			downloadtree.connect("button_press_event", self.OnPopupMenu, "downloads", "")
-			downloadtree.show()
-			
-			scrolledwindow1.add(downloadtree)
-		
-			vbox2.pack_start(scrolledwindow1, True, True, 0)
-		
-			vpaned1.pack1(vbox2, False, True)
-		
-			vbox3 = gtk.VBox(False, 0)
-			vbox3.show()
-			vbox3.set_spacing(0)
-		
-			label2 = gtk.Label(("Uploads"))
-			label2.set_padding(0, 0)
-			label2.show()
-			vbox3.pack_start(label2, False, False, 0)
-		
-			scrolledwindow2 = gtk.ScrolledWindow()
-			scrolledwindow2.set_policy(gtk.POLICY_ALWAYS, gtk.POLICY_ALWAYS)
-			scrolledwindow2.show()
-			scrolledwindow2.set_shadow_type(gtk.SHADOW_NONE)
-			
-			self.widgets["uploads"]["store"] = upstore = gtk.ListStore(str, str, str, str, str, str, str )
-			self.widgets["uploads"]["treeview"] = uploadtree = gtk.TreeView(upstore)
-			self.create_transfer_columns("uploads")
-			
-			uploadtree.set_headers_visible(True)
-			self.popup_menu["uploads"] = popup = PopupMenu(self, "uploads")
-			popup.setup(
-				(("_Abort Transfer"), popup.OnAbortUpTransfer),
-				(("_Clear Transfer"), popup.OnClearUpTransfer),
-				("", None),
-				(("_Private Message"), popup.OnSendMessage),
-				(("_User Info"), popup.OnGetUserInfo),
-				(("_IP Address"), popup.OnShowIPaddress),
-				(("Browse _Shares"), popup.OnBrowseUser),
-				("$" + ("_Buddy this user"), popup.OnAddToList),
-				("$" + ("Ba_n this user"), popup.OnBanUser),
-				("$" + ("_Ignore this user"), popup.OnIgnoreUser),
-						)
-			uploadtree.connect("button_press_event", self.OnPopupMenu, "uploads", "")
-			uploadtree.show()
-			scrolledwindow2.add(uploadtree)
-		
-			vbox3.pack_start(scrolledwindow2, True, True, 0)
-		
-			vpaned1.pack2(vbox3, False, True)
-		
-			vbox1.pack_start(vpaned1, True, True, 0)
-			
-			self.notebook_transfers.add(vbox1)
-			
-		except Exception,e:
-			if debugmode == True: print "transfertab", Exception,e
-			
-	def create_transfer_columns(self, direction):
-		try:
-			UserName = gtk.TreeViewColumn('Username')
-			cell = gtk.CellRendererText()
-			UserName.pack_start(cell, True)
-			UserName.add_attribute(cell, 'text', 0)
-			UserName.set_sort_column_id(0)
-			UserName.set_resizable(True)
-
-			UserFiles = gtk.TreeViewColumn('Filename')
-			cell = gtk.CellRendererText()
-			UserFiles.pack_start(cell, True)
-			UserFiles.add_attribute(cell, 'text', 1)
-			UserFiles.set_sort_column_id(1)
-			UserFiles.set_resizable(True)
-			
-			UserSpeed = gtk.TreeViewColumn('Speed')
-			cell = gtk.CellRendererText()
-			UserSpeed.pack_start(cell, True)
-			UserSpeed.add_attribute(cell, 'text', 2)
-			UserSpeed.set_sort_column_id(2)
-			UserSpeed.set_resizable(True)
-			
-			Status= gtk.TreeViewColumn('Status')
-			cell = gtk.CellRendererText()
-			Status.pack_start(cell, True)
-			Status.add_attribute(cell, 'text', 3)
-			Status.set_sort_column_id(3)
-			Status.set_resizable(True)
-			
-			Pos = gtk.TreeViewColumn('Pos')
-			cell = gtk.CellRendererText()
-			Pos.pack_start(cell, True)
-			Pos.add_attribute(cell, 'text', 4)
-			Pos.set_sort_column_id(4)
-			Pos.set_resizable(True)
-			
-			Size = gtk.TreeViewColumn('Size')
-			cell = gtk.CellRendererText()
-			Size.pack_start(cell, True)
-			Size.add_attribute(cell, 'text', 5)
-			Size.set_sort_column_id(5)
-			Size.set_resizable(True)
-
-			
-			Path = gtk.TreeViewColumn('Path')
-			cell = gtk.CellRendererText()
-			Path.pack_end(cell, True)
-			Path.add_attribute(cell, 'text', 6)
-			Path.set_sort_column_id(6)
-			Path.set_resizable(True)
-			
-			self.widgets[direction]["treeview"].set_search_column(0)
-			self.widgets[direction]["treeview"].set_search_column(1)
-			self.widgets[direction]["treeview"].set_search_column(2)
-			self.widgets[direction]["treeview"].set_search_column(3)
-			self.widgets[direction]["treeview"].set_search_column(4)
-			self.widgets[direction]["treeview"].set_search_column(5)
-			self.widgets[direction]["treeview"].set_search_column(6)
-			#self.widgets[direction]["treeview"].set_search_column(7)
-			
-			self.widgets[direction]["treeview"].append_column(UserName)
-			self.widgets[direction]["treeview"].append_column(UserFiles)
-			self.widgets[direction]["treeview"].append_column(UserSpeed)
-			self.widgets[direction]["treeview"].append_column(Status)
-			self.widgets[direction]["treeview"].append_column(Size)
-			self.widgets[direction]["treeview"].append_column(Pos)
-			self.widgets[direction]["treeview"].append_column(Path)
-			self.widgets[direction]["store"].set_sort_column_id(0, gtk.SORT_ASCENDING)
-		except Exception, e:
-			print e
-		
-
 	
 	def MouseAction(self, widget, event, string):
 		if string == "browse-dirs":

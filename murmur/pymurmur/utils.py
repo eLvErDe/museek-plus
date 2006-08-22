@@ -12,7 +12,7 @@ import types
 
 from pynicotine import slskmessages
 
-DECIMALSEP = ""
+DECIMALSEP = ","
 
 URL_RE = re.compile("(\\w+\\://[\\w\\.].+?)[\\s\\(\\)]|(www\\.\\w+\\.\\w+.*?)[\\s\\(\\)]|(mailto\\:\\w.+?)[\\s\\(\\)]")
 PROTOCOL_HANDLERS = {}
@@ -111,7 +111,7 @@ def AppendLine(textview, line, tag = None, timestamp = "%H:%M:%S"):
 			buffer.insert_with_tags(iter, text, tag)
 		else:
 			buffer.insert(iter, text)
-
+	print tag
 	scrolledwindow = textview.get_parent()
 	va = scrolledwindow.get_vadjustment()
 	bottom = va.value >= (va.upper - int(va.page_size*1.5))
