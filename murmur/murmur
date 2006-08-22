@@ -816,28 +816,20 @@ class ProcessMessages(driver.Driver, Thread):
 			if debugmode == True: print " **** cb_server_status_set ERROR", e
 		gtk.threads_leave()
 		
-	def cb_peer_stats(self, user, avgspeed, numdownloads, numfiles, numdirs):
-		if debugmode == True: print " **** cb_peer_stats %s" % user
+	def cb_peer_stats(self, user, speed, downloads, files, dirs):
+		#if debugmode == True: print " **** cb_peer_stats %s" % user
 		gtk.threads_enter()
 		try:
 			if user in self.app.user_stats:
 				if self.app.user_stats[user][0] == 3:
-					self.app.user_stats[user] = 3, avgspeed, numdownloads, numfiles, numdirs
+					self.app.user_stats[user] = 3, speed, downloads, files, dirs
 				else:
-					self.app.user_stats[user] = self.app.user_stats[user][0], avgspeed, numdownloads, numfiles, numdirs
+					self.app.user_stats[user] = self.app.user_stats[user][0], speed, downloads, files, dirs
 			else:
-				self.app.user_stats[user] = 0, avgspeed, numdownloads, numfiles, numdirs
+				self.app.user_stats[user] = 0, speed, downloads, files, dirs
 		except Exception,e:
 			if debugmode == True: print " **** cb_peer_stats ERROR", e
-		#try:
-			## Update Chatroom Lists with new status information
-			#if self.app.widgets["chat"] != None:
-				#for room,  users in self.app.rooms.items():
-					#if user in users:
-						#if room in self.app.widgets["chat"]:
-							#self.app.widgets["chat"][room]["lists"].set( self.app.chatroom_users[room][user], 0, self.app.GetStatusImage( self.app.user_stats[user][0] ), 1, user, 2, self.app.user_stats[user][3],3, self.app.user_stats[user][0])
-		#except Exception,e:
-			#if debugmode == True: print " **** cb_peer_stats ERROR2", e
+		
 		self.frame.userlists.update(user)
 
 		gtk.threads_leave()	
@@ -1542,7 +1534,7 @@ class MurmurWindow:
 		self.SearchFrame()
 		
 		# User lists Construction
-		self.userlists = UserLists(self)
+		self.userlists = ListsOfUsers(self)
 		
 		# Userinfo Construction
 		
@@ -3163,7 +3155,7 @@ class Uploads:
 		except Exception, e:
 			print e
 
-class UserLists(gtk.Notebook):
+class ListsOfUsers(gtk.Notebook):
 	def __init__(self, frame):
 		self.frame = frame
 		gtk.Notebook.__init__(self)
@@ -3172,20 +3164,21 @@ class UserLists(gtk.Notebook):
 		self.set_scrollable(False)
 		self.show()
 
-		self.buddies = BuddyList(self.frame)
+		self.buddies= ListBuddies(self.frame)
 		self.append_page(self.buddies.Main, self.buddies.label)
-		self.banned = BanList(self.frame)
-		self.append_page(self.banned.Main, self.banned.label)
-		self.ignored = IgnoreList(self.frame)
-		self.append_page(self.ignored.Main, self.ignored.label)
-		self.trusted = TrustList(self.frame)
+		self.trusted = ListTrusted(self.frame)
 		self.append_page(self.trusted.Main, self.trusted.label)
+		self.banned = ListBanned(self.frame)
+		self.append_page(self.banned.Main, self.banned.label)
+		self.ignored = ListIgnored(self.frame)
+		self.append_page(self.ignored.Main, self.ignored.label)
+
 		
 	def update(self, user):
-		for w in [ self.banned, self.buddies, self.ignored, self.trusted ]:
+		for w in [ self.buddies, self.trusted, self.banned, self.ignored ]:
 			if user in w.users.keys():
-				w.append(user, "")
-class BanList:
+				w.update(user)
+class ListBanned:
 	def __init__(self, frame):
 		# Text input box
 		self.frame = frame
@@ -3280,17 +3273,29 @@ class BanList:
 	
 	def enter_pressed(self, widget):
 		pass
+
+	def update(self, user):
+		if user in self.frame.user_stats:
+			status, speed, downloads, files, dirs = self.frame.user_stats[user]
+		else:
+			status = 3
+			speed = downloads = files = dirs = 0
+		self.store.set(self.users[user], 0, self.frame.GetStatusImage( status ), 1, user, 2, Humanize(files), 3, Humanize(speed),  5,  status)
+		
+		
 	def append(self, user, comments):
 		try:
+			if user in self.users:
+				return
 			if user in self.frame.user_stats:
 				status, speed, downloads, files, dirs = self.frame.user_stats[user]
 			else:
 				status = 3
 				speed = downloads = files = dirs = 0
-			if user in self.users:
-				self.store.set(self.users[user], 0, self.frame.GetStatusImage( status ), 1, user, 2, Humanize(files), 3, Humanize(speed), 4, comments, 5,  status)
-			else:
-				self.users[user] = self.store.append([ self.frame.GetStatusImage(status), user,  Humanize(files), Humanize(speed), comments, status ])
+			#if user in self.users:
+				#self.store.set(self.users[user], 0, self.frame.GetStatusImage( status ), 1, user, 2, Humanize(files), 3, Humanize(speed), 4, comments, 5,  status)
+			#else:
+			self.users[user] = self.store.append([ self.frame.GetStatusImage(status), user,  Humanize(files), Humanize(speed), comments, status ])
 		except Exception,e:
 			print Exception, e
 	def remove(self, user):
@@ -3299,7 +3304,7 @@ class BanList:
 	def clear(self, user):
 		self.store.clear()
 	
-class BuddyList:
+class ListBuddies:
 	def __init__(self, frame):
 		# Text input box
 		self.frame = frame
@@ -3395,7 +3400,14 @@ class BuddyList:
 	
 	def enter_pressed(self, widget):
 		pass
-	
+	def update(self, user):
+		if user in self.frame.user_stats:
+			status, speed, downloads, files, dirs = self.frame.user_stats[user]
+		else:
+			status = 3
+			speed = downloads = files = dirs = 0
+		self.store.set(self.users[user], 0, self.frame.GetStatusImage( status ), 1, user, 2, Humanize(files), 3, Humanize(speed),  5,  status)
+		
 	def append(self, user, comments):
 
 		try:
@@ -3417,7 +3429,7 @@ class BuddyList:
 	def clear(self, user):
 		self.store.clear()
 		
-class TrustList:
+class ListTrusted:
 	def __init__(self, frame):
 		# Text input box
 		self.users = {}
@@ -3512,6 +3524,15 @@ class TrustList:
 	
 	def enter_pressed(self, widget):
 		pass
+	
+	def update(self, user):
+		if user in self.frame.user_stats:
+			status, speed, downloads, files, dirs = self.frame.user_stats[user]
+		else:
+			status = 3
+			speed = downloads = files = dirs = 0
+		self.store.set(self.users[user], 0, self.frame.GetStatusImage( status ), 1, user, 2, Humanize(files), 3, Humanize(speed),  5,  status)
+		
 	def append(self, user, comments):
 		try:
 			if user in self.frame.user_stats:
@@ -3531,7 +3552,7 @@ class TrustList:
 	def clear(self, user):
 		self.store.clear()
 		
-class IgnoreList:
+class ListIgnored:
 	def __init__(self, frame):
 		self.users = {}		
 		self.frame = frame
@@ -3625,6 +3646,14 @@ class IgnoreList:
 	
 	def enter_pressed(self, widget):
 		pass
+	def update(self, user):
+		if user in self.frame.user_stats:
+			status, speed, downloads, files, dirs = self.frame.user_stats[user]
+		else:
+			status = 3
+			speed = downloads = files = dirs = 0
+		self.store.set(self.users[user], 0, self.frame.GetStatusImage( status ), 1, user, 2, Humanize(files), 3, Humanize(speed),  5,  status)
+		
 	def append(self, user, comments):
 		if user in self.frame.user_stats:
 			status, speed, downloads, files, dirs = self.frame.user_stats[user]
