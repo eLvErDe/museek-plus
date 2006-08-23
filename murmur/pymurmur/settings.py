@@ -1,6 +1,6 @@
 import commands, os, sys, getopt #, subprocess
 import locale, gettext
-from xml.dom import minidom
+
 import signal
 import gtk, gobject
 import time, stat, string, pwd, shutil

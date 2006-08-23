@@ -436,7 +436,6 @@ class ProcessMessages(driver.Driver, Thread):
 			self.app.room_lists[x] = y
 			#print x, y
 			
-		#self.app.room_list_tab("")
 		self.frame.chatrooms.roomsmaster.UpdateRoomList(roomlist)
 		gtk.threads_leave()
 
@@ -536,14 +535,13 @@ class ProcessMessages(driver.Driver, Thread):
 			for rooms1, numbers in roomlist.items():
 				self.app.room_lists[str(rooms1)] = numbers
 			self.frame.chatrooms.roomsmaster.UpdateRoomList(roomlist)
-			#self.app.room_list_tab("")
 			
 			for room in joined:
 				room = str(room)
 				if room not in self.app.roomlogs:
 					self.app.roomlogs[room] = []
 					#self.statuslogs[room] = []
-				self.app.rooms[room] = joined[room]
+				#self.app.rooms[room] = joined[room]
 				roomlist = []
 	
 				#alpha_list  = SortedDict()
@@ -551,13 +549,14 @@ class ProcessMessages(driver.Driver, Thread):
 				for users in joined[room]:
 					roomlist.append(users)
 					self.app.user_stats[users] = joined[room][users][0], joined[room][users][1], joined[room][users][2 ], joined[room][users][3], joined[room][users][4]
+				self.app.chatrooms.roomsmaster.JoinRoom(room, joined[room])
 			created = []
 
 				
-			if self.app.widgets["chat"] != None:
-				for room in self.app.rooms.keys():
-					if room not in self.app.widgets["chat"]:
-						self.app.chatrooms.roomsmaster.JoinRoom(room, joined[room])
+			#for room in self.app.rooms.keys():
+				#for room in joined.keys():
+				#if room not in self.app.widgets["chat"]:
+					
 		except Exception, e:
 			if debugmode == True: print "Room State bug", e
 		gtk.threads_leave()
@@ -576,11 +575,10 @@ class ProcessMessages(driver.Driver, Thread):
 				self.app.user_stats[users] = stats[0], stats[1], stats[2 ], stats[3], stats[4] 
 				# online status, avgspeed, numdownloads, numfiles, numdirs
 			
-			self.app.rooms[room] = list_of_users
+			#self.app.rooms[room] = list_of_users
 			
-			if self.app.widgets["chat"] != None:
-				
-				self.app.chatrooms.roomsmaster.JoinRoom(room, list_of_users)
+			#if self.app.widgets["chat"] != None:
+			self.app.chatrooms.roomsmaster.JoinRoom(room, list_of_users)
 				
 				
 		except Exception, e:
@@ -591,7 +589,7 @@ class ProcessMessages(driver.Driver, Thread):
 		gtk.threads_enter()
 		if debugmode == True: print " **** cb_room_left %s"% room
 		try:
-			del self.app.rooms[room]
+			#del self.app.rooms[room]
 			
 			#self.app.del_chatrooms(room)
 			self.app.chatrooms.roomsmaster.LeaveRoom(room)
@@ -607,7 +605,7 @@ class ProcessMessages(driver.Driver, Thread):
 			if debugmode == True:
 				print "%s joined room \'%s\' " %( user, room)
 
-			self.app.rooms[room][user] = stats
+			#self.app.rooms[room][user] = stats
 			self.app.user_stats[user] = stats[0], stats[1], stats[2 ], stats[3], stats[4] 
 			
 			self.app.chatrooms.roomsmaster.UserJoinedRoom(room, user)
@@ -2445,7 +2443,7 @@ class ChatRoom:
 		self.roomsmaster = roomsmaster
 		self.frame = roomsmaster.frame
 		self.room = room
-		self.roomsmaster.joinedrooms
+		#self.roomsmaster.joinedrooms
 		
 		self.textbuffer = gtk.TextBuffer()
 		self.chatview = gtk.TextView(buffer=self.textbuffer)
@@ -2599,10 +2597,11 @@ class ChatRoom:
 			if self.users.has_key(user):
 				self.usersmodel.remove(self.users[user])
 			img = self.frame.GetStatusImage(users[user][0])
-			#hfiles = Humanize(users[user][3])
-			hfiles = users[user][3]
-			iter = self.usersmodel.append([img, user, hfiles, users[user][0] ] )
+			hspeed = Humanize(users[user][1])
+			hfiles = Humanize(users[user][3])
+			iter = self.usersmodel.append([img, str(user), hfiles, hspeed, users[user][0] ] ) 
 			self.users[user] = iter
+
 		AppendLine(self.chatview, _("--- reconnected ---"), None)
 
 
@@ -2750,44 +2749,17 @@ class MasterRoom:
 		self.joinedrooms = {}
 		self.rooms = {}
 		self.autojoin = 1
-		
-		#cols = InitialiseColumns({,
-			#[_("Room"), 150, "text"],
-			#[_("Users"), -1, "text"],
-		#)
-		
-		#for ix in range(len(cols)):
-			#col = cols[ix]
-			#col.connect("clicked", self.OnResort, ix)
-		
-		#cols[1].set_sort_indicator(True)
-		#cols[1].set_sort_order(gtk.SORT_DESCENDING)
-		
-		#self.roomsmodel = RoomsListModel([])
-		#frame.roomlist.RoomsList.set_model(self.roomsmodel)
-		
-		#self.popup_room = None
-		#self.popup_menu = PopupMenu().setup(
-			#( _("Join room"), self.OnPopupJoin ),
-			#( _("Leave room"), self.OnPopupLeave, ),
-			#( "", None ),
-			#( _("Refresh"), self.OnPopupRefresh ),
-		#)
-		#frame.roomlist.RoomsList.connect("button_press_event", self.OnListClicked)
-		#frame.roomlist.RoomsList.set_headers_clickable(True)
-				
 
-		# Text input box
 		self.entry = gtk.Entry()
 		self.entry.set_text("")
 		self.entry.grab_focus()
 		self.entry.show()
 		self.entry.connect("activate", self.enter_pressed, self.entry)
 		
-		label = gtk.Label("Join room:") 
+		label = gtk.Label(_("Join room:") )
 		label.show()
 		
-		refresh_button = gtk.Button("Refresh List")
+		refresh_button = gtk.Button(_("Refresh List") )
 		refresh_button.connect_object("clicked", self.OnPopupRefresh, "")
 		refresh_button.show()
 		
@@ -2813,7 +2785,7 @@ class MasterRoom:
 		RoomSize.set_sort_column_id(0)
 		RoomSize.set_resizable(True)
 
-		RoomName = gtk.TreeViewColumn('Room Name')
+		RoomName = gtk.TreeViewColumn(_('Room Name'))
 		cell = gtk.CellRendererText()
 		RoomName.pack_start(cell, True)
 		RoomName.add_attribute(cell, 'text', 1)
@@ -2832,8 +2804,8 @@ class MasterRoom:
 		
 		self.popup_menu = popup = PopupMenu(self.frame, "rooms")
 		popup.setup(
-			(("_Join Room"), popup.OnJoinRoom),
-			(("_Leave Room"), popup.OnLeaveRoom),
+			(_("_Join Room"), popup.OnJoinRoom),
+			(_("_Leave Room"), popup.OnLeaveRoom),
 					)
 		self.treeview.connect("button_press_event", self.OnPopupMenu)
 		self.treeview.show()
@@ -3062,17 +3034,17 @@ class Downloads:
 		
 		self.popup_menu = popup = PopupMenu(self.frame, "downloads")
 		popup.setup(
-			(("_Retry Transfer"), popup.OnRetryTransfer),
-			(("_Abort Transfer"), popup.OnAbortDownTransfer),
-			(("_Clear Transfer"), popup.OnClearDownTransfer),
+			(_("_Retry Transfer"), popup.OnRetryTransfer),
+			(_("_Abort Transfer"), popup.OnAbortDownTransfer),
+			(_("_Clear Transfer"), popup.OnClearDownTransfer),
 			("", None),
-			(("_Private Message"), popup.OnSendMessage),
-			(("_User Info"), popup.OnGetUserInfo),
-			(("_IP Address"), popup.OnShowIPaddress),
-			(("Browse _Shares"), popup.OnBrowseUser),
-			("$" + ("_Buddy this user"), popup.OnAddToList),
-			("$" + ("Ba_n this user"), popup.OnBanUser),
-			("$" + ("_Ignore this user"), popup.OnIgnoreUser),
+			(_("_Private Message"), popup.OnSendMessage),
+			(_("_User Info"), popup.OnGetUserInfo),
+			(_("_IP Address"), popup.OnShowIPaddress),
+			(_("Browse _Shares"), popup.OnBrowseUser),
+			("$" + _("_Buddy this user"), popup.OnAddToList),
+			("$" + _("Ba_n this user"), popup.OnBanUser),
+			("$" + _("_Ignore this user"), popup.OnIgnoreUser),
 					)
 		self.treeview.connect("button_press_event", self.OnPopupMenu)
 		self.treeview.show()
@@ -3173,9 +3145,9 @@ class Uploads:
 			(_("_User Info"), popup.OnGetUserInfo),
 			(_("_IP Address"), popup.OnShowIPaddress),
 			(_("Browse _Shares"), popup.OnBrowseUser),
-			("$" + ("_Buddy this user"), popup.OnAddToList),
-			("$" + ("Ba_n this user"), popup.OnBanUser),
-			("$" + ("_Ignore this user"), popup.OnIgnoreUser),
+			("$" + _("_Buddy this user"), popup.OnAddToList),
+			("$" + _("Ba_n this user"), popup.OnBanUser),
+			("$" + _("_Ignore this user"), popup.OnIgnoreUser),
 			("$" + _("_Trust this user"), popup.OnTrustUser),
 					)
 		self.treeview.connect("button_press_event", self.OnPopupMenu)
@@ -3832,13 +3804,12 @@ class murmur(MurmurWindow, ProcessMessages):
 		self.chatlog = []
 		self.room_lists = {} # the actual rooms
 		self.lists_rooms = None # pygtk ListView index
-		self.rooms = {}
 		self.user_stats = {}
 		self.ip_requested = None
 
 		#self.ProcessMessages.start()
 		MurmurWindow.__init__(self)
-		self.MurmurWindow.set_title(("Murmur") + " " + version)		
+		self.MurmurWindow.set_title(_("Murmur") + " " + version)		
 		
 		self.ProcessMessages = ProcessMessages(self)
 		self.murmur_config = murmur_config
@@ -3852,7 +3823,6 @@ class murmur(MurmurWindow, ProcessMessages):
 		self.ProcessMessages.start()
 		
 		try:
-			#self.room_list_tab("")
 
 			for users in self.privatelogs:
 
@@ -3894,13 +3864,13 @@ class murmur(MurmurWindow, ProcessMessages):
 			self.menu()
 			if debugmode == True: print "Status:", self.status
 			if self.status:
-				message = "Connected to Museek: %s Status: Away" % self.username
+				message = _("Connected to Museek: %s Status: Away" % self.username)
 				self.settooltip( message)
 				self.update_statusbar( message)
 				
 				self.load_image("yellow")
 			elif self.status == 0:
-				message = "Connected to Museek: %s Status: Online" % self.username
+				message = _("Connected to Museek: %s Status: Online" % self.username)
 				self.settooltip( message )
 				self.update_statusbar( message )
 				self.load_image("green")
@@ -3942,122 +3912,6 @@ class murmur(MurmurWindow, ProcessMessages):
 			image = "noexist"
 		return  self.images[image]
 	
-	def room_list_tab(self, string):
-		if self.ProcessMessages.connected == False:
-			return
-		try:
-				
-			# add chat history to chat buffer
-			if debugmode ==True:
-				print "Building Room List"
-					
-			# Chat text
-			if self.roomtab != None:
-				if debugmode == True:
-					print "Room tab exists, not creating"
-					for rooms in self.lists_rooms.keys():
-						print rooms
-						self.roomwidgets[0].remove(self.lists_rooms[rooms])
-					self.lists_rooms = {}
-					for rooms, sizes in self.room_lists.items():
-						self.lists_rooms[rooms]= self.roomwidgets[0].append([ sizes, rooms] )
-				pass
-			else:
-				if debugmode == True:
-					print "Room tab doesn't exist, creating one"
-
-				
-				# Text input box
-				input_chat = gtk.Entry()
-				input_chat.set_text("")
-				input_chat.grab_focus()
-				input_chat.show()
-				input_chat.connect("activate", self.enter_pressed, input_chat, "rooms")
-				
-				label = gtk.Label("Join room:") 
-				label.show()
-				
-				refresh_button = gtk.Button("Refresh List")
-				refresh_button.connect_object("clicked", self.refresh_room_list, "")
-				refresh_button.show()
-				
-				addhbox = gtk.HBox(spacing=3)
-				addhbox.set_border_width(3)
-				addhbox.pack_start(label, False, False, 0)
-				addhbox.pack_start(input_chat, True, True,  0)
-				addhbox.pack_end(refresh_button, False, False,  0)
-				addhbox.show()
-				
-				
-				lists = gtk.ListStore( int, str )
-				if self.lists_rooms == None:
-					self.lists_rooms = {}
-				for rooms, sizes in self.room_lists.items():
-					self.lists_rooms[rooms] = lists.append([ sizes, rooms] )
-						
-
-				# Users-in-room Listbox with users and files
-				RoomList = gtk.TreeView(lists)
-				RoomList.set_property("rules-hint", True)
-				RoomSize = gtk.TreeViewColumn('Size')
-				cell = gtk.CellRendererText()
-				RoomSize.pack_start(cell, True)
-				RoomSize.add_attribute(cell, 'text', 0)
-				RoomSize.set_sort_column_id(0)
-				RoomSize.set_resizable(True)
-
-				RoomName = gtk.TreeViewColumn('Room Name')
-				cell = gtk.CellRendererText()
-				RoomName.pack_start(cell, True)
-				RoomName.add_attribute(cell, 'text', 1)
-				RoomName.set_sort_column_id(1)
-				RoomName.set_resizable(True)
-				
-				RoomList.set_search_column(0)
-				RoomList.set_search_column(1)
-
-				
-				RoomList.append_column(RoomSize)
-				RoomList.append_column(RoomName)
-
-				
-				#lists.set_sort_column_id(0, gtk.SORT_DESCENDING)
-				
-				self.popup_menu["rooms"] = popup = PopupMenu(self, "rooms")
-				popup.setup(
-					(("_Join Room"), popup.OnJoinRoom),
-					(("_Leave Room"), popup.OnLeaveRoom),
-							)
-				RoomList.connect("button_press_event", self.OnPopupMenu, "rooms", "")
-				RoomList.show()
-				
-				# Scrollwindow containing Users-in-room Listbox
-				widget = gtk.ScrolledWindow()
-				widget.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
-				widget.add(RoomList)
-				widget.set_shadow_type(gtk.SHADOW_ETCHED_IN)
-				
-				widget.show()
-				
-				# Containing box with scrolled window and text input box
-				notevbox1= gtk.VBox(spacing=3)
-				notevbox1.set_border_width(3)
-				notevbox1.pack_start(widget, True, True, 0)
-				notevbox1.pack_end(addhbox, False, False, 0)
-				notevbox1.show()
-
-				self.notebook_roomlist.add(notevbox1)
-
-				self.roomwidgets = lists, input_chat, RoomList
-
-				#self.widgets["chat"][room][2].set(self.user_stats[users][5], 0, self.GetStatusImage( self.user_stats[users][0] ))
-				
-			if self.roomtab != "rooms":
-				self.roomtab = "rooms"
-				
-		except Exception,e:
-			if debugmode == True: print "Rooms Tab bug", Exception,e
-
 	def refresh_room_list(self, string):
 		if self.ProcessMessages.connected == False:
 			return
@@ -4279,16 +4133,16 @@ class murmur(MurmurWindow, ProcessMessages):
 
 			self.popup_menu["search"] = popup = PopupMenu(self, "search")
 			popup.setup(
-				(("Download _File"), popup.OnDownloadFile),
-				(("_Download Directory"), popup.OnDownloadDirectory),
-				(("Send _Message"), popup.OnSendMessage),
+				(_("Download _File"), popup.OnDownloadFile),
+				(_("_Download Directory"), popup.OnDownloadDirectory),
+				(_("Send _Message"), popup.OnSendMessage),
 				("", None),
-				(("Show _IP address"), popup.OnShowIPaddress),
-				(("_User Info"), popup.OnGetUserInfo),
-				(("Reload _Shares"), popup.OnBrowseUser),
-				("$" + ("_Buddy this user"), popup.OnAddToList),
-				("$" + ("Ba_n this user"), popup.OnBanUser),
-				("$" + ("_Ignore this user"), popup.OnIgnoreUser),
+				(_("Show _IP address"), popup.OnShowIPaddress),
+				(_("_User Info"), popup.OnGetUserInfo),
+				(_("Reload _Shares"), popup.OnBrowseUser),
+				("$" + _("_Buddy this user"), popup.OnAddToList),
+				("$" + _("Ba_n this user"), popup.OnBanUser),
+				("$" + _("_Ignore this user"), popup.OnIgnoreUser),
 			)
 			treeview.connect("button_press_event", self.OnPopupMenu, "search", query)
 						
@@ -4444,15 +4298,15 @@ class murmur(MurmurWindow, ProcessMessages):
 				
 				self.popup_menu["browse-dirs"] = popup = PopupMenu(self, "browse-dirs")
 				popup.setup(
-					(("_Download Directory"), popup.OnDownloadDirectory),
-					(("Send _Message"), popup.OnSendMessage),
+					(_("_Download Directory"), popup.OnDownloadDirectory),
+					(_("Send _Message"), popup.OnSendMessage),
 					("", None),
-					(("_User Info"), popup.OnGetUserInfo),
-					(("_IP address"), popup.OnShowIPaddress),
-					(("Reload _Shares"), popup.OnBrowseUser),
-					("$" + ("_Buddy this user"), popup.OnAddToList),
-					("$" + ("Ba_n this user"), popup.OnBanUser),
-					("$" + ("_Ignore this user"), popup.OnIgnoreUser),
+					(_("_User Info"), popup.OnGetUserInfo),
+					(_("_IP address"), popup.OnShowIPaddress),
+					(_("Reload _Shares"), popup.OnBrowseUser),
+					("$" + _("_Buddy this user"), popup.OnAddToList),
+					("$" + _("Ba_n this user"), popup.OnBanUser),
+					("$" + _("_Ignore this user"), popup.OnIgnoreUser),
 				)
 				self.widgets["browse"][user]["DirTree"].connect("button_press_event", self.OnPopupMenu, "browse-dirs", "")
 				self.widgets["browse"][user]["DirTree"].expand_all()	
@@ -4629,16 +4483,16 @@ class murmur(MurmurWindow, ProcessMessages):
 		
 		self.popup_menu["browse-files"] = popup = PopupMenu(self, "browse-files")
 		popup.setup(
-			(("Download _File"), popup.OnDownloadFile),
-			(("_Download Directory"), popup.OnDownloadDirectory),
-			(("Send _Message"), popup.OnSendMessage),
+			(_("Download _File"), popup.OnDownloadFile),
+			(_("_Download Directory"), popup.OnDownloadDirectory),
+			(_("Send _Message"), popup.OnSendMessage),
 			("", None),
-			(("Show _IP address"), popup.OnShowIPaddress),
-			(("_User Info"), popup.OnGetUserInfo),
-			(("Reload _Shares"), popup.OnBrowseUser),
-			("$" + ("_Buddy this user"), popup.OnAddToList),
-			("$" + ("Ba_n this user"), popup.OnBanUser),
-			("$" + ("_Ignore this user"), popup.OnIgnoreUser),
+			(_("Show _IP address"), popup.OnShowIPaddress),
+			(_("_User Info"), popup.OnGetUserInfo),
+			(_("Reload _Shares"), popup.OnBrowseUser),
+			("$" + _("_Buddy this user"), popup.OnAddToList),
+			("$" + _("Ba_n this user"), popup.OnBanUser),
+			("$" + _("_Ignore this user"), popup.OnIgnoreUser),
 		)
 		self.widgets["browse"][user]["FilesTree"].connect("button_press_event", self.OnPopupMenu, "browse-files", "")
 			
