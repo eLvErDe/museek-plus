@@ -436,8 +436,8 @@ class ProcessMessages(driver.Driver, Thread):
 			self.app.room_lists[x] = y
 			#print x, y
 			
-		self.app.room_list_tab("")
-
+		#self.app.room_list_tab("")
+		self.frame.chatrooms.roomsmaster.UpdateRoomList(roomlist)
 		gtk.threads_leave()
 
 	def cb_room_tickers(self, room, tickers):
@@ -535,8 +535,8 @@ class ProcessMessages(driver.Driver, Thread):
 		try:
 			for rooms1, numbers in roomlist.items():
 				self.app.room_lists[str(rooms1)] = numbers
-				
-			self.app.room_list_tab("")
+			self.frame.chatrooms.roomsmaster.UpdateRoomList(roomlist)
+			#self.app.room_list_tab("")
 			
 			for room in joined:
 				room = str(room)
@@ -698,7 +698,7 @@ class ProcessMessages(driver.Driver, Thread):
 			if debugmode == True: print " **** cb_login_error ERROR", e
 		self.connected = False
 		gtk.threads_leave()
-		
+
 	def cb_login_ok(self):
 		
 		try:
@@ -805,6 +805,7 @@ class ProcessMessages(driver.Driver, Thread):
 		gtk.threads_leave()
 		
 	def cb_peer_stats(self, user, speed, downloads, files, dirs):
+		print " **** cb_peer_stats", user, speed, downloads, files, dirs
 		#if debugmode == True: print " **** cb_peer_stats %s" % user
 		gtk.threads_enter()
 		try:
@@ -921,7 +922,7 @@ class ProcessMessages(driver.Driver, Thread):
 					if self.connected == True:
 						self.connect_to_museekd("")
 					
-				sleep(0.01)
+				sleep(0.001)
 				
 				#self.app.MurmurWindow.show_all() 
 
@@ -1328,7 +1329,7 @@ class MurmurWindow:
 		########################
 		vbox_murmurwindow.pack_start(self.menubar1, False, False, 0)
 		self.vpaned1 = gtk.VPaned()
-	
+		self.vpaned1.set_border_width(4)
 		self.notebook_outside = gtk.Notebook()
 		self.notebook_outside.set_tab_pos(gtk.POS_TOP)
 		self.notebook_outside.set_scrollable(False)
@@ -1358,6 +1359,7 @@ class MurmurWindow:
 		self.statusbar = gtk.Statusbar()
 		self.context_id = self.statusbar.get_context_id("")
 		self.statusbar.push(self.context_id, self.statusbarmessage)
+		self.statusbar.show()
 		vbox_murmurwindow.pack_end(self.statusbar, False, False, 0)
 		
  		#self.MurmurWindow.action_area.hide()
@@ -1366,8 +1368,11 @@ class MurmurWindow:
 		#self.MurmurWindow.set_default(vbox_murmurwindow)
 		if create:
             		self.MurmurWindow.add(vbox_murmurwindow)
-		self.statusbar.show()
 		
+				
+		self.notebook_roomlist = gtk.Frame()
+		self.notebook_roomlist.show()	
+
 		# Chat Room Construction
 		self.notebook_chat = chat = gtk.Notebook()
 		chat.set_tab_pos(gtk.POS_TOP)
@@ -1376,6 +1381,13 @@ class MurmurWindow:
 		chat.connect("switch-page", self.OnSwitchPage)
 		
 		self.chatrooms = ChatRooms(self)
+		chatlabel = gtk.Label("Chat Rooms") 
+		chatlabel.show()
+		self.ChatRooms = gtk.VBox()
+		self.ChatRooms.set_border_width(5)
+		self.ChatRooms.pack_start(self.notebook_chat)
+		self.ChatRooms.show()
+		
 		# Private Chat Construction
 		self.privatevbox = gtk.VBox(False, 0)
 		self.privatevbox.show()
@@ -1577,14 +1589,10 @@ class MurmurWindow:
 		self.UserinfoEntry.connect("activate", self.OnGetUserInfo)
 		
 		# Room List Construction
-		
-		self.notebook_roomlist = gtk.Frame()
-		self.notebook_roomlist.show()	
 
 		# Add tabs to Notebook
-		chatlabel = gtk.Label("Chat Rooms") 
-		chatlabel.show()
-		self.notebook_outside.append_page(self.notebook_chat, chatlabel)
+
+		self.notebook_outside.append_page(self.ChatRooms, chatlabel)
 		
 		label = gtk.Label("Private Chat") 
 		label.show()
@@ -1835,7 +1843,7 @@ class UserInfo:
 			vbox1.set_spacing(0)
 
 			scrolledwindow1 = gtk.ScrolledWindow()
-			scrolledwindow1.set_policy(gtk.POLICY_ALWAYS, gtk.POLICY_ALWAYS)
+			scrolledwindow1.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 			scrolledwindow1.show()
 			scrolledwindow1.set_shadow_type(gtk.SHADOW_OUT)
 		
@@ -1936,7 +1944,7 @@ class UserInfo:
 			vbox1.pack_start(vbox3, False, False, 0)
 		
 			self.ScrollPicture =  scrolledwindow3 = gtk.ScrolledWindow()
-			scrolledwindow3.set_policy(gtk.POLICY_ALWAYS, gtk.POLICY_ALWAYS)
+			scrolledwindow3.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 			scrolledwindow3.set_shadow_type(gtk.SHADOW_OUT)
 
 			UserImage = gtk.Image()
@@ -1952,8 +1960,9 @@ class UserInfo:
 			scrolledwindow3.show()
 
 			self.Main =  hpane1 = gtk.HPaned()
+			self.Main.set_border_width(4)
 			hpane1.pack1(vbox1, False, True)
-			hpane1.pack2(scrolledwindow3, True, True)
+			hpane1.pack2(scrolledwindow3, False, True)
 			hpane1.show()
 			
 
@@ -2001,7 +2010,7 @@ class UserInfo:
 
 				self.ScrollPicture.destroy()
 				self.ScrollPicture = scrolledwindow3 = gtk.ScrolledWindow()
-				scrolledwindow3.set_policy(gtk.POLICY_ALWAYS, gtk.POLICY_ALWAYS)
+				scrolledwindow3.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 				scrolledwindow3.set_shadow_type(gtk.SHADOW_OUT)
 				#self.UserImage"].set_from_pixbuf(None)
 				UserImage =gtk.Image() 
@@ -2019,7 +2028,8 @@ class UserInfos(gtk.Notebook):
 		self.show()
 		self.users = {}
 		self.frame = frame
-		self.set_tab_pos(gtk.POS_BOTTOM)
+		self.set_border_width(4)
+		self.set_tab_pos(gtk.POS_TOP)
 		self.connect("switch-page", self.OnSwitchPage)
 		
 	def GotUserInfo(self, user, info, picture, uploads, queue, slotsfree):
@@ -2487,7 +2497,7 @@ class ChatRoom:
 		
 		self.usersmodel = gtk.ListStore(gtk.gdk.Pixbuf, str, str, str, int )
 		self.UserList = gtk.TreeView(self.usersmodel)
-		
+		self.UserList.set_property("rules-hint", True)
 		# Users-in-room Listbox with users and files
 		
 		cols = InitialiseColumns(self.UserList, 
@@ -2504,7 +2514,7 @@ class ChatRoom:
 		cols[3].set_sort_column_id(3)
 
 		
-		self.usersmodel.set_sort_column_id(1, gtk.SORT_ASCENDING)
+		
 		
 		self.users = {}
 		for user in users.keys():
@@ -2514,7 +2524,8 @@ class ChatRoom:
 			#iter = self.usersmodel.append([img, user, hspeed, hfiles, users[user][0], users[user][1], users[user][2]])
 			iter = self.usersmodel.append([img, str(user), hfiles, hspeed, users[user][0] ] ) #, , users[user][1], users[user][2]])
 			self.users[user] = iter
-			
+		self.usersmodel.set_sort_column_id(1, gtk.SORT_ASCENDING)
+		
 		self.popup_menu = popup = PopupMenu(self.frame, "chat")
 		popup.setup(
 			(("Send _Message"), popup.OnSendMessage),
@@ -2737,6 +2748,7 @@ class MasterRoom:
 	def __init__(self, frame):
 		self.frame = frame
 		self.joinedrooms = {}
+		self.rooms = {}
 		self.autojoin = 1
 		
 		#cols = InitialiseColumns({,
@@ -2763,9 +2775,110 @@ class MasterRoom:
 		#)
 		#frame.roomlist.RoomsList.connect("button_press_event", self.OnListClicked)
 		#frame.roomlist.RoomsList.set_headers_clickable(True)
-		
-		self.frame.notebook_chat.connect("switch-page", self.OnSwitchPage)
+				
 
+		# Text input box
+		self.entry = gtk.Entry()
+		self.entry.set_text("")
+		self.entry.grab_focus()
+		self.entry.show()
+		self.entry.connect("activate", self.enter_pressed, self.entry)
+		
+		label = gtk.Label("Join room:") 
+		label.show()
+		
+		refresh_button = gtk.Button("Refresh List")
+		refresh_button.connect_object("clicked", self.OnPopupRefresh, "")
+		refresh_button.show()
+		
+		addhbox = gtk.HBox(spacing=3)
+		addhbox.set_border_width(3)
+		addhbox.pack_start(label, False, False, 0)
+		addhbox.pack_start(self.entry, True, True,  0)
+		addhbox.pack_end(refresh_button, False, False,  0)
+		addhbox.show()
+		
+		
+		self.store = gtk.ListStore( int, str )
+		
+				
+
+		# Users-in-room Listbox with users and files
+		self.treeview  = gtk.TreeView(self.store)
+		self.treeview.set_property("rules-hint", True)
+		RoomSize = gtk.TreeViewColumn('Size')
+		cell = gtk.CellRendererText()
+		RoomSize.pack_start(cell, True)
+		RoomSize.add_attribute(cell, 'text', 0)
+		RoomSize.set_sort_column_id(0)
+		RoomSize.set_resizable(True)
+
+		RoomName = gtk.TreeViewColumn('Room Name')
+		cell = gtk.CellRendererText()
+		RoomName.pack_start(cell, True)
+		RoomName.add_attribute(cell, 'text', 1)
+		RoomName.set_sort_column_id(1)
+		RoomName.set_resizable(True)
+		
+		self.treeview.set_search_column(0)
+		self.treeview.set_search_column(1)
+
+		
+		self.treeview.append_column(RoomSize)
+		self.treeview.append_column(RoomName)
+
+		
+		#self.store.set_sort_column_id(0, gtk.SORT_DESCENDING)
+		
+		self.popup_menu = popup = PopupMenu(self.frame, "rooms")
+		popup.setup(
+			(("_Join Room"), popup.OnJoinRoom),
+			(("_Leave Room"), popup.OnLeaveRoom),
+					)
+		self.treeview.connect("button_press_event", self.OnPopupMenu)
+		self.treeview.show()
+		
+		# Scrollwindow containing Users-in-room Listbox
+		widget = gtk.ScrolledWindow()
+		widget.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+		widget.add(self.treeview)
+		widget.set_shadow_type(gtk.SHADOW_ETCHED_IN)
+		
+		widget.show()
+		
+		# Containing box with scrolled window and text input box
+		self.Main = gtk.VBox(spacing=3)
+		self.Main.set_border_width(3)
+		self.Main.pack_start(widget, True, True, 0)
+		self.Main.pack_end(addhbox, False, False, 0)
+		self.Main.show()
+
+		self.frame.notebook_roomlist.add(self.Main)
+
+		#self.roomwidgets = self.store, self.entry, RoomList
+
+		#self.frame.notebook_chat.connect("switch-page", self.OnSwitchPage)
+		
+	def enter_pressed(self, widget, event):
+		room = self.entry.get_text()
+		if room == "":
+			return
+		self.join_a_room(room)
+
+	def refresh_room_list(self, widget, event):
+		pass
+	def join_a_room(self, room):
+		if room != None and room != "":
+			self.ProcessMessages.Send(messages.JoinRoom(room))
+		
+	def UpdateRoomList(self, rooms):
+		if debugmode == True: print "UpdateRoomList"
+		self.store.clear()
+		self.rooms.clear()
+		
+		for room, sizes in rooms.items():
+			self.rooms[room] = self.store.append([ sizes, room] )
+			
 	def OnSwitchPage(self, notebook, page, page_num, force=0):
 		if self.frame.notebook_outside.get_current_page() != 0 and not force:
 			return
@@ -2816,13 +2929,14 @@ class MasterRoom:
 		return False
 		
 	def OnPopupMenu(self, widget, event):
-		if event.button != 3 or self.roomsmodel is None:
+		if event.button != 3 or self.store is None:
 			return
 		items = self.popup_menu.get_children()
-		d = self.frame.roomlist.RoomsList.get_path_at_pos(int(event.x), int(event.y))
+		d = self.treeview.get_path_at_pos(int(event.x), int(event.y))
 		if d:
 			path, column, x, y = d
-			room = self.roomsmodel.get_value(self.roomsmodel.get_iter(path), 0)
+			room = self.store.get_value(self.store.get_iter(path), 1)
+
 			if room in self.joinedrooms.keys():
 				act = (False, True)
 			else:
@@ -2830,19 +2944,13 @@ class MasterRoom:
 		else:
 			room = None
 			act = (False, False)
-		self.popup_room = room
+		self.popup_menu.set_user(room)
 		items[0].set_sensitive(act[0])
 		items[1].set_sensitive(act[1])
 		self.popup_menu.popup(None, None, None, event.button, event.time)
-	
-	def OnPopupJoin(self, widget):
-		self.frame.np.queue.put(slskmessages.JoinRoom(self.popup_room))
-	
-	def OnPopupLeave(self, widget):
-		self.frame.np.queue.put(slskmessages.LeaveRoom(self.popup_room))
-		
+
 	def OnPopupRefresh(self, widget):
-		self.frame.np.queue.put(slskmessages.RoomList())
+		self.frame.ProcessMessages.Send(messages.RoomList())
 		
 	def SayChatRoom(self, room, user, text):
 		if user in self.frame.ProcessMessages.config["ignored"].keys():
@@ -2859,23 +2967,22 @@ class MasterRoom:
 		chatlabel = gtk.Label(room) 
 		chatlabel.show()
 		self.frame.notebook_chat.append_page(tab.Main, chatlabel)
-		
-	#def leave_a_room(self, room):
-		
+
 				
 	def SetRoomList(self, msg):
-		if self.autojoin:
-			self.autojoin = 0
-			if self.joinedrooms.keys():
-				list = self.joinedrooms.keys()
-			else:
-				list = self.frame.np.config.sections["server"]["autojoin"]
+		pass
+		#if self.autojoin:
+			#self.autojoin = 0
+			#if self.joinedrooms.keys():
+				#list = self.joinedrooms.keys()
+			#else:
+				#list = self.frame.np.config.sections["server"]["autojoin"]
 
-			for room in list:
-				self.frame.np.queue.put(slskmessages.JoinRoom(room))
+			#for room in list:
+				#self.frame.np.queue.put(slskmessages.JoinRoom(room))
 
-		self.roomsmodel = RoomsListModel(msg.rooms)
-		self.frame.roomlist.RoomsList.set_model(self.roomsmodel)
+		#self.roomsmodel = RoomsListModel(msg.rooms)
+		#self.frame.roomlist.RoomsList.set_model(self.roomsmodel)
 
 	def GetUserStats(self, msg):
 		for room in self.joinedrooms.values():
@@ -2949,6 +3056,7 @@ class Downloads:
 		self.store = gtk.ListStore(str, str, str, str, str, str, str )
 		
 		self.treeview = gtk.TreeView(self.store)
+		self.treeview.set_property("rules-hint", True)
 		self.create_transfer_columns("downloads")
 		self.treeview.set_headers_visible(True)
 		
@@ -3054,7 +3162,7 @@ class Uploads:
 		self.store = gtk.ListStore(str, str, str, str, str, str, str )
 		self.treeview = gtk.TreeView(self.store)
 		self.create_transfer_columns("uploads")
-		
+		self.treeview.set_property("rules-hint", True)
 		self.treeview.set_headers_visible(True)
 		self.popup_menu = popup = PopupMenu(self.frame, "uploads")
 		popup.setup(
@@ -3141,6 +3249,7 @@ class ListsOfUsers(gtk.Notebook):
 		self.frame = frame
 		gtk.Notebook.__init__(self)
 		
+		self.set_border_width(4)
 		self.set_tab_pos(gtk.POS_TOP)
 		self.set_scrollable(False)
 		self.show()
@@ -3190,7 +3299,7 @@ class ListBanned:
 		self.store = gtk.ListStore(gtk.gdk.Pixbuf, str, str, str, str, int )
 		
 		self.treeview = UserList = gtk.TreeView(self.store)
-		
+		self.treeview.set_property("rules-hint", True)
 		cols = InitialiseColumns(self.treeview,
 				[_("Status"), -1, "pixbuf"],
 				[_("Username"), 100, "text"],
@@ -3199,9 +3308,11 @@ class ListBanned:
 				[_("Comments"), 100, "text"],
 			)
 		cols[0].set_sort_column_id(5)
-
-		
-		self.store.set_sort_column_id(1, gtk.SORT_ASCENDING)
+		cols[1].set_sort_column_id(1)
+		cols[2].set_sort_column_id(2)
+		cols[3].set_sort_column_id(3)
+		cols[4].set_sort_column_id(4)
+		#self.store.set_sort_column_id(1, gtk.SORT_ASCENDING)
 		
 		self.popup_menu = popup = PopupMenu(self.frame, "userlists")
 		popup.setup(
@@ -3258,13 +3369,10 @@ class ListBanned:
 		self.treeview.emit_stop_by_name("button_press_event")
 		return True
 	
-	def enter_pressed(self, widget):
-		pass
-		#if user in self.frame.user_stats:
-			#self.frame.user_stats[user]
-		#else:
-			#status = 3
-			#speed = downloads = files = dirs = 0
+	def enter_pressed(self, widget, whatever):
+		user = self.entry.get_text()
+		self.frame.ProcessMessages.mod_config("ban", user, '')
+		self.entry.set_text("")
 				
 	def updateStatus(self, user, status):
 		img = self.frame.GetStatusImage(status)
@@ -3278,20 +3386,16 @@ class ListBanned:
 		
 		
 	def append(self, user, comments):
-		try:
-			if user in self.users:
-				return
-			if user in self.frame.user_stats:
-				status, speed, downloads, files, dirs = self.frame.user_stats[user]
-			else:
-				status = 3
-				speed = downloads = files = dirs = 0
-			#if user in self.users:
-				#self.store.set(self.users[user], 0, self.frame.GetStatusImage( status ), 1, user, 2, Humanize(files), 3, Humanize(speed), 4, comments, 5,  status)
-			#else:
-			self.users[user] = self.store.append([ self.frame.GetStatusImage(status), user,  Humanize(files), Humanize(speed), comments, status ])
-		except Exception,e:
-			print Exception, e
+		if user in self.users:
+			return
+		if user in self.frame.user_stats:
+			status, speed, downloads, files, dirs = self.frame.user_stats[user]
+		else:
+			status = 3
+			speed = downloads = files = dirs = 0
+
+		self.users[user] = self.store.append([ self.frame.GetStatusImage(status), user,  Humanize(files), Humanize(speed), comments, status ])
+
 	def remove(self, user):
 		self.store.remove(self.users[user])
 		del self.users[user]
@@ -3323,7 +3427,7 @@ class ListBuddies:
 		self.store = gtk.ListStore(gtk.gdk.Pixbuf, str,str,str, str, int )
 		
 		self.treeview = UserList = gtk.TreeView(self.store)
-		
+		self.treeview.set_property("rules-hint", True)
 		cols = InitialiseColumns(self.treeview,
 				[_("Status"), -1, "pixbuf"],
 				[_("Username"), 100, "text"],
@@ -3332,9 +3436,13 @@ class ListBuddies:
 				[_("Comments"), 100, "text"],
 			)
 		cols[0].set_sort_column_id(5)
+		cols[1].set_sort_column_id(1)
+		cols[2].set_sort_column_id(2)
+		cols[3].set_sort_column_id(3)
+		cols[4].set_sort_column_id(4)
 
 		
-		self.store.set_sort_column_id(1, gtk.SORT_ASCENDING)
+		#self.store.set_sort_column_id(1, gtk.SORT_ASCENDING)
 		
 		self.popup_menu = popup = PopupMenu(self.frame, "userlists")
 		popup.setup(
@@ -3392,8 +3500,10 @@ class ListBuddies:
 		return True
 	
 	
-	def enter_pressed(self, widget):
-		pass
+	def enter_pressed(self, widget, whatever):
+		user = self.entry.get_text()
+		self.frame.ProcessMessages.mod_config("buddy", user, '')
+		self.entry.set_text("")
 	
 	def updateStatus(self, user, status):
 		img = self.frame.GetStatusImage(status)
@@ -3406,24 +3516,20 @@ class ListBuddies:
 		self.store.set(self.users[user], 1, user, 2, Humanize(files), 3, Humanize(speed))
 		
 	def append(self, user, comments):
+		if user in self.users:
+			return
+		if user in self.frame.user_stats:
+			status, speed, downloads, files, dirs = self.frame.user_stats[user]
+		else:
+			status = 3
+			speed = downloads = files = dirs = 0
 
-		try:
-			if user in self.frame.user_stats:
-				status, speed, downloads, files, dirs = self.frame.user_stats[user]
-			else:
-				status = 3
-				speed = downloads = files = dirs = 0
-				self.frame.user_stats[user] = status, speed, downloads, files, dirs
-			img = self.frame.GetStatusImage( status )
-			if user in self.users:
-				self.store.set(self.users[user], 0, self.frame.GetStatusImage( status ), 1, user, 2, Humanize(files), 3, Humanize(speed), 4, comments, 5,  status)
-			else:
-				self.users[user] = self.store.append([ self.frame.GetStatusImage(status), user,  Humanize(files), Humanize(speed), comments, status ])
-		except Exception,e:
-			print Exception, e
+		self.users[user] = self.store.append([ self.frame.GetStatusImage(status), user,  Humanize(files), Humanize(speed), comments, status ])
+		
 	def remove(self, user):
 		self.store.remove(self.users[user])
 		del self.users[user]
+		
 	def clear(self, user):
 		self.store.clear()
 		
@@ -3452,7 +3558,7 @@ class ListTrusted:
 		self.store = gtk.ListStore(gtk.gdk.Pixbuf, str, str, str, str, int )
 		
 		self.treeview = UserList = gtk.TreeView(self.store)
-		
+		self.treeview.set_property("rules-hint", True)
 		cols = InitialiseColumns(self.treeview,
 				[_("Status"), -1, "pixbuf"],
 				[_("Username"), 100, "text"],
@@ -3461,9 +3567,13 @@ class ListTrusted:
 				[_("Comments"), 100, "text"],
 			)
 		cols[0].set_sort_column_id(5)
+		cols[1].set_sort_column_id(1)
+		cols[2].set_sort_column_id(2)
+		cols[3].set_sort_column_id(3)
+		cols[4].set_sort_column_id(4)
 
 		
-		self.store.set_sort_column_id(1, gtk.SORT_ASCENDING)
+		#self.store.set_sort_column_id(1, gtk.SORT_ASCENDING)
 		
 		self.popup_menu = popup = PopupMenu(self.frame, "userlists")
 		popup.setup(
@@ -3520,8 +3630,11 @@ class ListTrusted:
 		self.treeview.emit_stop_by_name("button_press_event")
 		return True
 	
-	def enter_pressed(self, widget):
-		pass
+	
+	def enter_pressed(self, widget, whatever):
+		user = self.entry.get_text()
+		self.frame.ProcessMessages.mod_config("trust", user, '')
+		self.entry.set_text("")
 	
 	def updateStatus(self, user, status):
 		img = self.frame.GetStatusImage(status)
@@ -3534,21 +3647,20 @@ class ListTrusted:
 		self.store.set(self.users[user], 1, user, 2, Humanize(files), 3, Humanize(speed))
 		
 	def append(self, user, comments):
-		try:
-			if user in self.frame.user_stats:
-				status, speed, downloads, files, dirs = self.frame.user_stats[user]
-			else:
-				status = 3
-				speed = downloads = files = dirs = 0
-			if user in self.users:
-				self.store.set(self.users[user], 0, self.frame.GetStatusImage( status ), 1, user, 2, Humanize(files), 3, Humanize(speed), 4, comments, 5,  status)
-			else:
-				self.users[user] = self.store.append([ self.frame.GetStatusImage(status), user,  Humanize(files), Humanize(speed), comments, status ])
-		except Exception,e:
-			print Exception, e
+		if user in self.users:
+			return
+		if user in self.frame.user_stats:
+			status, speed, downloads, files, dirs = self.frame.user_stats[user]
+		else:
+			status = 3
+			speed = downloads = files = dirs = 0
+
+		self.users[user] = self.store.append([ self.frame.GetStatusImage(status), user,  Humanize(files), Humanize(speed), comments, status ])
+		
 	def remove(self, user):
 		self.store.remove(self.users[user])
 		del self.users[user]
+		
 	def clear(self, user):
 		self.store.clear()
 		
@@ -3576,7 +3688,7 @@ class ListIgnored:
 		self.store = gtk.ListStore(gtk.gdk.Pixbuf, str, str, str, str, int )
 		
 		self.treeview = UserList = gtk.TreeView(self.store)
-		
+		self.treeview.set_property("rules-hint", True)
 		cols = InitialiseColumns(self.treeview,
 				[_("Status"), -1, "pixbuf"],
 				[_("Username"), 100, "text"],
@@ -3585,9 +3697,13 @@ class ListIgnored:
 				[_("Comments"), 100, "text"],
 			)
 		cols[0].set_sort_column_id(5)
+		cols[1].set_sort_column_id(1)
+		cols[2].set_sort_column_id(2)
+		cols[3].set_sort_column_id(3)
+		cols[4].set_sort_column_id(4)
 
 		
-		self.store.set_sort_column_id(1, gtk.SORT_ASCENDING)
+		#self.store.set_sort_column_id(1, gtk.SORT_ASCENDING)
 		
 		self.popup_menu = popup = PopupMenu(self.frame, "userlists")
 		popup.setup(
@@ -3644,8 +3760,11 @@ class ListIgnored:
 		self.treeview.emit_stop_by_name("button_press_event")
 		return True
 	
-	def enter_pressed(self, widget):
-		pass
+	
+	def enter_pressed(self, widget, whatever):
+		user = self.entry.get_text()
+		self.frame.ProcessMessages.mod_config("ignore", user, '')
+		self.entry.set_text("")
 	
 	def updateStatus(self, user, status):
 		img = self.frame.GetStatusImage(status)
@@ -3658,19 +3777,20 @@ class ListIgnored:
 		self.store.set(self.users[user], 1, user, 2, Humanize(files), 3, Humanize(speed))
 		
 	def append(self, user, comments):
+		if user in self.users:
+			return
 		if user in self.frame.user_stats:
 			status, speed, downloads, files, dirs = self.frame.user_stats[user]
 		else:
 			status = 3
 			speed = downloads = files = dirs = 0
 
-		if user in self.users:
-			self.store.set(self.users[user], 0, self.frame.GetStatusImage( status ), 1, user, 2, Humanize(files), 3, Humanize(speed), 4, comments, 5,  status)
-		else:
-			self.users[user] = self.store.append([ self.frame.GetStatusImage(status), user,  Humanize(files), Humanize(speed), comments, status ])
+		self.users[user] = self.store.append([ self.frame.GetStatusImage(status), user,  Humanize(files), Humanize(speed), comments, status ])
+			
 	def remove(self, user):
 		self.store.remove(self.users[user])
 		del self.users[user]
+		
 	def clear(self, user):
 		self.store.clear()
 		
@@ -3732,7 +3852,7 @@ class murmur(MurmurWindow, ProcessMessages):
 		self.ProcessMessages.start()
 		
 		try:
-			self.room_list_tab("")
+			#self.room_list_tab("")
 
 			for users in self.privatelogs:
 
@@ -3878,7 +3998,7 @@ class murmur(MurmurWindow, ProcessMessages):
 
 				# Users-in-room Listbox with users and files
 				RoomList = gtk.TreeView(lists)
-	
+				RoomList.set_property("rules-hint", True)
 				RoomSize = gtk.TreeViewColumn('Size')
 				cell = gtk.CellRendererText()
 				RoomSize.pack_start(cell, True)
@@ -3901,7 +4021,7 @@ class murmur(MurmurWindow, ProcessMessages):
 				RoomList.append_column(RoomName)
 
 				
-				lists.set_sort_column_id(0, gtk.SORT_DESCENDING)
+				#lists.set_sort_column_id(0, gtk.SORT_DESCENDING)
 				
 				self.popup_menu["rooms"] = popup = PopupMenu(self, "rooms")
 				popup.setup(
@@ -3980,172 +4100,6 @@ class murmur(MurmurWindow, ProcessMessages):
 				if self.debugmode == True: print "Creating image", str(e)
 			#self.refreshConfigDisplay()
 			
-	def userlist_tabs(self, tab):
-		if self.ProcessMessages.connected == False:
-			return
-		try:
-			if self.widgets["lists"] == None:
-				return
-
-			if tab == None:
-				return
-				
-			# add chat history to chat buffer
-			if debugmode ==True:
-				print "Building List"
-					
-			# Chat text
-			if tab in self.tabs["lists"]:
-				if debugmode == True:
-					print "tabs[lists] exists, not creating"
-				pass
-			else:
-				if debugmode == True:
-					print "tabs[lists][%s] doesn't exist, creating one for tab." % tab
-
-				
-				self.tabs["lists"].append(tab)
-				# Text input box
-				input_chat = gtk.Entry()
-				input_chat.set_text("")
-				input_chat.grab_focus()
-				input_chat.show()
-				input_chat.connect("activate", self.enter_pressed, input_chat, tab)
-				
-				label = gtk.Label("Add User:") 
-				label.show()
-				
-				
-				addhbox = gtk.HBox(spacing=3)
-				addhbox.set_border_width(3)
-				addhbox.pack_start(label, False, False, 0)
-				addhbox.pack_end(input_chat, True, True,  0)
-				addhbox.show()
-				
-				
-				lists = gtk.ListStore(gtk.gdk.Pixbuf, str, int, int, str, int )
-				
-				if tab in self.ProcessMessages.config.keys():
-					if tab not in self.lists_users:
-						self.lists_users[tab] = {}
-					for users in self.ProcessMessages.config[tab].keys():
-						
-						if users in self.user_stats:
-							img = self.GetStatusImage( self.user_stats[users][0] )
-							files = abs( self.user_stats[users][3] )
-							speed =  abs(self.user_stats[user][1])
-							comments =  self.ProcessMessages.config[tab][users]
-							self.lists_users[tab][users] = lists.append([ img, str(users),  files, speed, comments, self.user_stats[users][0]] )
-						else:
-							img = self.GetStatusImage( 0) 
-							files = abs( 0 )
-							speed =  abs( 0 )
-							comments =  self.ProcessMessages.config[tab][users]
-							self.lists_users[tab][users] = lists.append([ img, str(users),  files, speed, comments, 0 ] )
-						
-						
-				
-
-				# Users-in-room Listbox with users and files
-				UserList = gtk.TreeView(lists)
-	
-				AwayStatus = gtk.TreeViewColumn('')
-				cell = gtk.CellRendererPixbuf()
-				AwayStatus.pack_start(cell, True)
-				AwayStatus.add_attribute(cell, 'pixbuf', 0)
-				cell = gtk.CellRendererText()
-				#AwayStatus.pack_start(cell, True)
-				#AwayStatus.add_attribute(cell, 'text', 5)
-				AwayStatus.set_sort_column_id(5)
-				
-				UserName = gtk.TreeViewColumn('Username')
-				cell = gtk.CellRendererText()
-				UserName.pack_start(cell, True)
-				UserName.add_attribute(cell, 'text', 1)
-				UserName.set_sort_column_id(1)
-				UserName.set_resizable(True)
-
-				UserFiles = gtk.TreeViewColumn('Files')
-				cell = gtk.CellRendererText()
-				UserFiles.pack_start(cell, True)
-				UserFiles.add_attribute(cell, 'text', 2)
-				UserFiles.set_sort_column_id(2)
-				UserFiles.set_resizable(True)
-				
-				UserSpeed = gtk.TreeViewColumn('Speed')
-				cell = gtk.CellRendererText()
-				UserSpeed.pack_start(cell, True)
-				UserSpeed.add_attribute(cell, 'text', 3)
-				UserSpeed.set_sort_column_id(3)
-				UserSpeed.set_resizable(True)
-				
-				UserCom = gtk.TreeViewColumn('Comments')
-				cell = gtk.CellRendererText()
-				UserCom.pack_start(cell, True)
-				UserCom.add_attribute(cell, 'text', 4)
-				UserCom.set_sort_column_id(4)
-				UserCom.set_resizable(True)
-				
-				UserList.set_search_column(1)
-				UserList.set_search_column(2)
-				UserList.set_search_column(3)
-				UserList.set_search_column(4)
-				
-				UserList.append_column(AwayStatus)
-				UserList.append_column(UserName)
-				UserList.append_column(UserFiles)
-				UserList.append_column(UserSpeed)
-				UserList.append_column(UserCom)
-				
-				lists.set_sort_column_id(1, gtk.SORT_ASCENDING)
-				
-				self.popup_menu["userlists"] = popup = PopupMenu(self, "userlists")
-				popup.setup(
-					(("Send _Message"), popup.OnSendMessage),
-					("", None),
-					(("_User Info"), popup.OnGetUserInfo),
-					(("_IP address"), popup.OnShowIPaddress),
-					(("Browse _Shares"), popup.OnBrowseUser),
-					("$" + ("_Buddy this user"), popup.OnAddToList),
-					("$" + ("Ba_n this user"), popup.OnBanUser),
-					("$" + ("_Ignore this user"), popup.OnIgnoreUser),
-				)
-				UserList.connect("button_press_event", self.OnPopupMenu, "userlists", "")
-				UserList.show()
-				
-				# Scrollwindow containing Users-in-room Listbox
-				widget = gtk.ScrolledWindow()
-				widget.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
-				widget.add(UserList)
-				widget.set_shadow_type(gtk.SHADOW_ETCHED_IN)
-				
-				widget.show()
-				
-				# Containing box with scrolled window and text input box
-				notevbox1= gtk.VBox(spacing=3)
-				notevbox1.set_border_width(3)
-				notevbox1.pack_start(widget, True, True, 0)
-				notevbox1.pack_end(addhbox, False, False, 0)
-				notevbox1.show()
-				
-				#vseparator = gtk.VSeparator()
-				#vseparator.show()
-				
-				# Naming the tab
-				chatlabel = gtk.Label(tab.capitalize() ) 
-				
-				chatlabel.show()
-				self.notebook_userlists.append_page(notevbox1, chatlabel)
-
-				self.widgets["lists"][tab] = lists, input_chat, UserList
-
-				#self.widgets["chat"][room][2].set(self.user_stats[users][5], 0, self.GetStatusImage( self.user_stats[users][0] ))
-				
-		
-				
-		except Exception,e:
-			if debugmode == True: print "tabs[lists] bug", Exception,e
-				
 		
 	def SearchFrame(self):
 		self.widgets["search"] = {}
@@ -4231,6 +4185,7 @@ class murmur(MurmurWindow, ProcessMessages):
 			scrolledwindow1.set_shadow_type(gtk.SHADOW_NONE)
 			self.widgets["search"][query]["store"] = gtk.ListStore(int, str, str, str, int, int, str, int, str, str, str)
 			self.widgets["search"][str(query)]["treeview"]  = treeview = gtk.TreeView(self.widgets["search"][query]["store"])
+			self.widgets["search"][str(query)]["treeview"].set_property("rules-hint", True)
 			treeview.show()
 			treeview.set_headers_visible(True)
 			
@@ -4471,6 +4426,7 @@ class murmur(MurmurWindow, ProcessMessages):
 				directory = self.BrowseGetDirs(user)
 				
 				self.widgets["browse"][user]["DirTree"] = directoriestree = gtk.TreeView( DirStore)
+				self.widgets["browse"][user]["DirTree"].set_property("rules-hint", True)
 				directoriestree.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
 				directoriestree.set_headers_visible(True)
 				DirColumn = gtk.TreeViewColumn('Dir')
@@ -4484,7 +4440,7 @@ class murmur(MurmurWindow, ProcessMessages):
 				directoriestree.append_column(DirColumn)
 				directoriestree.show()
 				
-				DirStore.set_sort_column_id(0, gtk.SORT_ASCENDING)
+				#DirStore.set_sort_column_id(0, gtk.SORT_ASCENDING)
 				
 				self.popup_menu["browse-dirs"] = popup = PopupMenu(self, "browse-dirs")
 				popup.setup(
@@ -4630,6 +4586,7 @@ class murmur(MurmurWindow, ProcessMessages):
 				flists.append([files, size, length, bitrate, directory])
 			
 		self.widgets["browse"][user]["FilesTree"] = filestree = gtk.TreeView(flists)
+		self.widgets["browse"][user]["FilesTree"].set_property("rules-hint", True)
 		filestree.set_reorderable(True)
 		filestree.set_headers_visible(True)
 		
@@ -4686,7 +4643,7 @@ class murmur(MurmurWindow, ProcessMessages):
 		self.widgets["browse"][user]["FilesTree"].connect("button_press_event", self.OnPopupMenu, "browse-files", "")
 			
 		# Finish
-		flists.set_sort_column_id(0, gtk.SORT_ASCENDING)
+		#flists.set_sort_column_id(0, gtk.SORT_ASCENDING)
 		filestree.show()
 		if "FilesSW" in self.widgets["browse"][user]:
 			FilesSW = self.widgets["browse"][user]["FilesSW"]
@@ -5037,7 +4994,7 @@ class murmur(MurmurWindow, ProcessMessages):
 		try:
 			title='About Murmur'
 			win = ImageDialog(self, title='About Murmur',
-			message="Murmur is a PyGTK Museek client that was initially designed to run from the system tray. There was a change of plans, and now the trayapp is optional.\nAuthor: Daelstorm\nWebsite: http://thegraveyard.org/daelstorm/murmur.php", picture="logo.png")
+			message="Murmur is a PyGTK Museek client that was initially designed to run from the system tray. There was a change of plans, and now the trayapp is optional.\nAuthor: Daelstorm\nWebsite: http://thegraveyard.org/daelstorm/murmur.php", picture=os.path.join(self.imagedirectory, "logo.png"))
 			win.set_title(title)
 			win.show()
 			win.run()
