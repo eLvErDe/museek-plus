@@ -1716,9 +1716,9 @@ class mucous(driver.Driver):
 					self.usernames["download"] = line[10:]
 					self.set_edit_title("% % User: "+line[10:] + " (input download path) % %")
 					
-				elif line[:9] == "/downdir " and  line[9:] != '':
+				elif line[:12] == "/setdowndir " and  line[12:] != '':
 					self.transfer_mode()
-					self.Spl["downloaddir"] = line[9:]
+					self.Spl["downloaddir"] = line[12:]
 					self.set_edit_title("Download directory set to: "+self.Spl["downloaddir"] )
 							
 				elif line[:10] == "/downpath " and line[10:] != '':
