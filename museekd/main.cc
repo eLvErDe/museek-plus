@@ -24,6 +24,7 @@
 
 #define MULOG_DOMAIN "museekd.MA"
 #include <Muhelp/Mulog.hh>
+#include <fstream>
 
 using std::string;
 
@@ -102,10 +103,23 @@ int main(int argc, char **argv) {
 	signal(SIGINT, terminate);
 	signal(SIGTERM, terminate);
 	
+	std::fstream configfile;
+	configfile.open(config.c_str(), std::ios::in | std::ios::out);
+	if ( configfile ) {
+		configfile.close();
+	} else {
+
+		std::cout << "* Error opening config file: " << config.c_str() << std::endl;
+		std::cout << "* Check if the file exists, and if you have permissions to access it." << std::endl;
+		std::cout << "* Use musetup to create a new config file." << std::endl;
+		configfile.close();
+		return -1;
+	}
+		
 	museekd = new Museekd(config, version);
 	if(! museekd->load_config()) {
 		delete museekd;
-		std::cerr << "Error loading configuration! Please run musetup and configure any unset options." << std::endl;
+		std::cerr << "* Error loading configuration! Please run musetup and configure any unset options." << std::endl;
 		return -1;
 	}
 	
