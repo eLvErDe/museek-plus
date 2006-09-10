@@ -34,7 +34,6 @@
 #include <Muhelp/Mulog.hh>
 
 #include <set>
-#include <fstream>
 
 using std::vector;
 using std::set;
