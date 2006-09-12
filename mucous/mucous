@@ -3117,7 +3117,7 @@ class mucous(driver.Driver):
 	def cb_search_ticket(self, query, ticket):
 		try:
 			self.data["search_tickets"][str(ticket)] = query
-			self.Spl["current_search"]=str(ticket)
+			self.Spl["current_search"] = str(ticket)
 			self.begin_search(self.Spl["current_search"], query)
 		except Exception, e:
 			self.Hlog( "debug", "cb_search_ticket: " + str(e))
@@ -3125,7 +3125,8 @@ class mucous(driver.Driver):
 	def cb_search_results(self, ticket, user, free, speed, queue, results):
 		# search results
 		try:
-	
+			if str(ticket) not in self.data["search_tickets"]:
+				return 
 			for result in results:
 				result_list = []
 				# Create Result List for future use 
@@ -3148,7 +3149,7 @@ class mucous(driver.Driver):
 					self.alert["SEARCH"].append( str(ticket) )
 					self.check_alert_state()
 				
-			if self.Spl["current_search"]!= "default__" and  self.Spl["show_menu"] != True:
+			if self.Spl["current_search"] == str(ticket) and  self.Spl["show_menu"] != True:
 					self.Format_Search_Results(str(ticket))
 		except Exception, e:
 			pass
