@@ -112,11 +112,12 @@ std::string NetworkMessage::unpack_ip() {
 	CT("unpack_ip");
 	
 	uchar _ip[16];
-	snprintf((char *)_ip, 16, "%u.%u.%u.%u",
-		unpack_char(),
-		unpack_char(),
-		unpack_char(),
-		unpack_char());
+	unsigned char part_1, part_2, part_3, part_4;
+	part_4 = unpack_char();
+	part_3 = unpack_char();
+	part_2 = unpack_char();
+	part_1 = unpack_char();
+	snprintf((char *)_ip, 16, "%u.%u.%u.%u", part_1, part_2, part_3, part_4);
 	return std::string((const char *)_ip);
 }
 
