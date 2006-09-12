@@ -119,7 +119,7 @@ void shaBlock(unsigned char *dataIn, int len, unsigned char hashout[20]) {
 }
 
 
-#define SHA_ROTL(X,n) (((X) << (n)) | ((X) >> (32-(n))))
+#define SHA_ROTL(X,n) ((((X) << (n)) | ((X) >> (32-(n)))) & 0xffffffffL)
 
 static void shaHashBlock(SHA_CTX *ctx) {
   int t;
@@ -136,19 +136,19 @@ static void shaHashBlock(SHA_CTX *ctx) {
   E = ctx->H[4];
 
   for (t = 0; t <= 19; t++) {
-    TEMP = SHA_ROTL(A,5) + (((C^D)&B)^D)     + E + ctx->W[t] + 0x5a827999L;
+    TEMP = (SHA_ROTL(A,5) + (((C^D)&B)^D)     + E + ctx->W[t] + 0x5a827999L) & 0xffffffffL;
     E = D; D = C; C = SHA_ROTL(B, 30); B = A; A = TEMP;
   }
   for (t = 20; t <= 39; t++) {
-    TEMP = SHA_ROTL(A,5) + (B^C^D)           + E + ctx->W[t] + 0x6ed9eba1L;
+    TEMP = (SHA_ROTL(A,5) + (B^C^D)           + E + ctx->W[t] + 0x6ed9eba1L) & 0xffffffffL;
     E = D; D = C; C = SHA_ROTL(B, 30); B = A; A = TEMP;
   }
   for (t = 40; t <= 59; t++) {
-    TEMP = SHA_ROTL(A,5) + ((B&C)|(D&(B|C))) + E + ctx->W[t] + 0x8f1bbcdcL;
+    TEMP = (SHA_ROTL(A,5) + ((B&C)|(D&(B|C))) + E + ctx->W[t] + 0x8f1bbcdcL) & 0xffffffffL;
     E = D; D = C; C = SHA_ROTL(B, 30); B = A; A = TEMP;
   }
   for (t = 60; t <= 79; t++) {
-    TEMP = SHA_ROTL(A,5) + (B^C^D)           + E + ctx->W[t] + 0xca62c1d6L;
+    TEMP = (SHA_ROTL(A,5) + (B^C^D)           + E + ctx->W[t] + 0xca62c1d6L) & 0xffffffffL;
     E = D; D = C; C = SHA_ROTL(B, 30); B = A; A = TEMP;
   }
 
