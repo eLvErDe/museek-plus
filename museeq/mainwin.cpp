@@ -97,7 +97,9 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 	mMenuFile->insertItem( tr("Toggled &away"), this, SLOT(toggleAway()), ALT + Key_A, 2);
 	mMenuFile->insertItem(tr("Check &privileges"), this, SLOT(checkPrivileges()), 0, 3);
 	mMenuFile->insertItem( IMG("browser-small"),tr("&Browse My Shares"), this, SLOT(getOwnShares()), ALT + Key_B, 4); // , 
-	mMenuFile->insertItem( tr("Enable &Trayicon"), this, SLOT(toggleTrayicon()), ALT + Key_T, 5); // , 
+#ifdef HAVE_TRAYICON
+	mMenuFile->insertItem( tr("Enable &Trayicon"), this, SLOT(toggleTrayicon()), ALT + Key_T, 5); // ,
+#endif // HAVE_TRAYICON
 	mMenuFile->insertSeparator();
 	mMenuFile->insertItem(IMG("exit"), tr("E&xit"), this, SLOT(close()), ALT + Key_X);
 	mMenuFile->setItemEnabled(1, false);
@@ -564,7 +566,9 @@ void MainWindow::slotDisconnected() {
 	mMenuSettings->setItemEnabled(5, false);
 	mMenuSettings->setItemEnabled(6, false);
 	mMenuSettings->setItemEnabled(7, false);
+#ifdef HAVE_TRAYICON
 	museeq->trayicon_setIcon("disconnect");
+#endif // HAVE_TRAYICON
 }
 
 void MainWindow::slotError(int e) {
@@ -605,7 +609,9 @@ void MainWindow::slotLoggedIn(bool success, const QString& msg) {
 		mMenuFile->setItemEnabled(2, false);
 		mMenuFile->setItemEnabled(3, false);
 		doNotAutoConnect();
+#ifdef HAVE_TRAYICON
 		museeq->trayicon_setIcon("disconnect");
+#endif // HAVE_TRAYICON
 	}
 }
 void MainWindow::doNotAutoConnect() {
@@ -641,11 +647,15 @@ void MainWindow::slotStatusSet(uint status) {
 	if (status) {
 		statusBar()->message(tr("Connected to soulseek, your nickname: ") + museeq->nickname() + tr(" Status: Away") );
 		mMenuFile->setItemChecked(2, true);
+#ifdef HAVE_TRAYICON
 		museeq->trayicon_setIcon("away");
+#endif // HAVE_TRAYICON
 	} else {
 		statusBar()->message(tr("Connected to soulseek, your nickname: ") + museeq->nickname() + tr(" Status: Online") );
 		mMenuFile->setItemChecked(2, false);
+#ifdef HAVE_TRAYICON
 		museeq->trayicon_setIcon("online");
+#endif // HAVE_TRAYICON
 	}
 }
 void MainWindow::slotConnectedToServer(bool connected) {
@@ -654,7 +664,9 @@ void MainWindow::slotConnectedToServer(bool connected) {
 		mMenuFile->setItemEnabled(2, true);
 		mMenuFile->setItemEnabled(3, true);
 		mMenuFile->setItemEnabled(4, true);
+#ifdef HAVE_TRAYICON
 		museeq->trayicon_setIcon("connect");
+#endif // HAVE_TRAYICON
 	} else {
 		statusBar()->message(tr("Disconnected from soulseek"));
 		mMenuFile->setItemEnabled(2, false);
@@ -1045,11 +1057,13 @@ void MainWindow::toggleAway() {
 	museeq->setAway((museeq->isAway() + 1) & 1);
 }
 void MainWindow::toggleTrayicon() {
+#ifdef HAVE_TRAYICON
 	if (museeq->mUsetray == true) {
 		museeq->trayicon_hide();
 	} else if (museeq->mUsetray == false) {
 		museeq->trayicon_show();
 	}
+#endif // HAVE_TRAYICON
 }
 
 void MainWindow::checkPrivileges() {

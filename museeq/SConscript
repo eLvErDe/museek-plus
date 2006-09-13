@@ -230,7 +230,12 @@ if not conf.TryLink('#include <qapplication.h>\nint main() {};\n', ".cpp"):
       noQt()
 
 sys.stdout.write(" found (%s)\n" % env_qt["QT_LIB"])
-
+if env['MUSEEQTRAYICON']:
+	sys.stdout.write("Museeq's Trayicon enabled...\n")
+	env_qt.Append(CPPDEFINES={'HAVE_TRAYICON' : 1})
+else:
+	sys.stdout.write("Museeq's Trayicon disabled...\n")
+	
 if env['QSA']:
     sys.stdout.write("Checking for QSA (scripting engine) 1.1 or newer...")
     sys.stdout.flush()

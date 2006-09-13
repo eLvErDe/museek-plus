@@ -1,11 +1,26 @@
 Unreleased
 
 MUSEEK DAEMON
+ * Replaced depreciated call to Send Speed (34) on download completion
+   with Send Upload Speed (121) on upload completion.
  * Added Global message (66) handler, and pass it to the clients
  * Removed disconnect-on-hangup-signal (caused a loop)
-MUSEEQ
- * Added /commands to private chat
+ * Client message 'Download file to a directory' added
+ * Sends a Museek Daemon version message to clients on connection
+ * Sends the number of privileged users to clients on Server Login
  
+MUSEEQ
+ * Added nick's transfer list color patch transfers are now different colors,
+   depending upon their state.
+ * Added MUSEEQTRAYICON scons option to enable/disable trayicon at buildtime.
+ * Moved Trayicon into Museeq class, made it change with away status and added
+   menu option to toggle it.
+ * Added /commands to private chat
+ * Autoconnect to daemon option added
+ * IP addresses can now be viewed in the log window
+ * 
+MUSETUP-GTK
+ * Tries more than one method to detect PyGTK
 0.1.11:  July 7th 2006
 
 MUSEEK DAEMON

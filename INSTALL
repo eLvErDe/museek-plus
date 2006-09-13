@@ -103,6 +103,8 @@ runs):
 
   MUSEEQTRANSLATIONS=fr,de,it,es,pl  [*] Build translations for Museeq
 
+  MUSEEQTRAYICON=yes/no [*] Build Museeq with a Trayicon
+  
   QSA=yes/no            [*] Test for QSA, and if available, build museeq with it
                             default: yes
 

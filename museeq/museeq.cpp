@@ -168,7 +168,7 @@ Museeq::Museeq(QApplication * app)
 		}
 	}
 #endif // HAVE_QSA
-
+#ifdef HAVE_TRAYICON
 	menutray = new QPopupMenu();
 	menutray->insertItem(QT_TR_NOOP("&Restore"), mMainWin , SLOT( showNormal() ) );
 	menutray->insertItem(QT_TR_NOOP("&Hide"),  mMainWin , SLOT( hide()  ) );
@@ -177,7 +177,7 @@ Museeq::Museeq(QApplication * app)
 	
 	mTray =  new TrayIcon( QPixmap( (char**)icon_xpm),  QT_TR_NOOP("MuseeqTray"), menutray );
 	QObject::connect( mTray, SIGNAL(clicked(const QPoint&, int )),  mMainWin, SLOT(toggleVisibility() ) );
-	
+#endif // HAVE_TRAYICON
 }
 
 void Museeq::slotConnectionClosed() {
@@ -920,33 +920,40 @@ QString Museeq::handleInput(bool privateMessage, const QString& target, const QS
 	return line;
 }
 void Museeq::trayicon_hide() {
+#ifdef HAVE_TRAYICON
 	if (mTray) {
 		trayicon()->hide();
 		mUsetray = false;
 		mMainWin->mMenuFile->setItemChecked(5, mUsetray);
 	}
+#endif // HAVE_TRAYICON
 }
 void Museeq::trayicon_show() {
+#ifdef HAVE_TRAYICON
 	if (mTray) {
 		trayicon()->show();
 		mUsetray = true;
 		mMainWin->mMenuFile->setItemChecked(5, mUsetray);
 	}
+#endif // HAVE_TRAYICON
 }
 
 void Museeq::trayicon_setIcon(const QString& icon) {
+#ifdef HAVE_TRAYICON
 	if (mTray) {
 		trayicon()->setIcon(IMG(icon));
 	}
+#endif // HAVE_TRAYICON
 }
 void Museeq::trayicon_load() {
-
+#ifdef HAVE_TRAYICON
 // 	QPopupMenu menutray;
 
 	if (mUsetray == true)
 		mTray->show();
 	menutray->show();
 	mMainWin->mMenuFile->setItemChecked(5, mUsetray);
+#endif // HAVE_TRAYICON
 }
 
 Museeq* museeq = 0;
@@ -998,7 +1005,9 @@ int main(int argc, char **argv) {
 			std::cout << QT_TR_NOOP("Options:") << std::endl;
 			std::cout << QT_TR_NOOP("-V --version\t\tDisplay museeq version and quit") << std::endl << std::endl; 
 			std::cout << QT_TR_NOOP("-h --help\t\tDisplay this message and quit") << std::endl;
+#ifdef HAVE_TRAYICON
 			std::cout << QT_TR_NOOP("--no-tray\t\tDon't load TrayIcon") << std::endl;
+#endif // HAVE_TRAYICON	
 			std::cout << std::endl;
 			return 0;
 		}
@@ -1007,7 +1016,9 @@ int main(int argc, char **argv) {
 	if (usetray == "yes") {
 		museeq->mUsetray = true;
 	}
+#ifdef HAVE_TRAYICON
 	museeq->trayicon_load();
+#endif // HAVE_TRAYICON
 	museeq->mainwin()->show();
 	museeq->mainwin()->connectToMuseek();
 

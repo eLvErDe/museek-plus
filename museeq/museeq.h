@@ -24,7 +24,9 @@
 
 #include <qobject.h>
 #include <qstringlist.h>
+#ifdef HAVE_TRAYICON
 #include "trayicon.h"
+#endif // HAVE_TRAYICON
 #ifdef HAVE_QSA
 #include <qptrstack.h>
 #include <qsproject.h>
@@ -71,8 +73,9 @@ public:
 	const QMap<QString, QString>& protocolHandlers() const { return mProtocolHandlers; }
 	QString mColorBanned, mColorBuddied, mColorTime, mColorMe, mColorNickname, mColorTrusted, mColorRemote, mFontTime, mFontMessage, mIconTheme;
 	bool isAway() const { return mAway; }
+#ifdef HAVE_TRAYICON
 	inline TrayIcon* trayicon() {return mTray;}
-
+#endif // HAVE_TRAYICON
 
 public slots:
 	
@@ -273,7 +276,9 @@ private:
 	QApplication * mApplication;
 	QString mNickname;
 	MuseekDriver* mDriver;
+#ifdef HAVE_TRAYICON
 	TrayIcon* mTray;
+#endif // HAVE_TRAYICON
 	bool mConnected, mAway;
 	QStringList mBuddies, mBanned, mIgnored, mTrusted, mAutoJoin, mJoinedRooms, mLovedInterests, mHatedInterests;
 	QMap<QString, OnlineAlert *> mAlerts;

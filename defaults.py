@@ -55,6 +55,9 @@ ONLYMUSEEQ=0
 # Build translations for Museeq
 MUSEEQTRANSLATIONS='fr,de,it,es,pl,pt_BR'
 
+# Build Museeq's Trayicon
+MUSEEQTRAYICON=1
+
 # Use QSA if available
 QSA=1
 
