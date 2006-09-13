@@ -1008,6 +1008,9 @@ int main(int argc, char **argv) {
 #ifdef HAVE_TRAYICON
 			std::cout << QT_TR_NOOP("--no-tray\t\tDon't load TrayIcon") << std::endl;
 #endif // HAVE_TRAYICON	
+#ifndef HAVE_TRAYICON
+			std::cout << QT_TR_NOOP("\t\t\tTrayicon support was disabled at compile-time") << std::endl;
+#endif // HAVE_TRAYICON
 			std::cout << std::endl;
 			return 0;
 		}
