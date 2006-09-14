@@ -7,6 +7,89 @@ import time, stat, string, pwd, shutil
 from time import sleep
 from utils import _
 from museek import messages
+class EntryDialog( gtk.Dialog):
+    def __init__(self, Mapp, message="", message2=None, key='', value=None, modal= True, List=[], v_list=[], second=True):
+        gtk.Dialog.__init__(self)
+        self.connect("destroy", self.quit)
+        self.connect("delete_event", self.quit)
+	self.ret = key
+	self.ret2 = value
+        if modal:
+            self.set_modal(True)
+        box = gtk.VBox(spacing=10)
+        box.set_border_width(10)
+        self.vbox.pack_start(box)
+        box.show()
+        if message:
+            label = gtk.Label(message)
+            box.pack_start(label)
+            label.show()
+	    
+	self.combo = gtk.combo_box_entry_new_text()
+
+	alist = List
+	alist.sort()
+	for i in alist:
+		self.combo.append_text( i)
+	if key != None:
+		self.combo.child.set_text(key)
+	self.combo.grab_focus()
+	
+	self.combo.show()
+	
+	box.pack_start(self.combo)
+	if message2 != None and message2 != "":
+		label2 = gtk.Label(message2)
+		box.pack_start(label2)
+		if second == True:
+	  		label2.show()
+	self.combov = gtk.combo_box_entry_new_text()
+	
+	vlist = v_list
+	vlist.sort()
+	for i in vlist:
+		self.combo.append_text( i)
+	if value is not None:
+		self.combov.child.set_text(value)
+	self.combov.grab_focus()
+	if message2 == _("Encoding"):
+		for encoding in Mapp.encodings:
+			self.combov.append_text(encoding)
+	if second == True and message2 != None and message2 != "":
+		self.combov.show()
+	
+	box.pack_start(self.combov)
+	
+        button = gtk.Button(_("OK"))
+        button.connect("clicked", self.click)
+        button.set_flags(gtk.CAN_DEFAULT)
+        self.action_area.pack_start(button)
+        button.show()
+	
+        button.grab_default()
+        button = gtk.Button(_("Cancel"))
+        button.connect("clicked", self.close)
+        button.set_flags(gtk.CAN_DEFAULT)
+	
+        self.action_area.pack_start(button)
+        button.show()
+        
+    def close(self, w=None, event=None):
+	self.ret = self.ret2 = None
+        self.quit()
+	
+    def quit(self, w=None, event=None):
+
+        self.hide()
+        self.destroy()
+
+	
+	
+    def click(self, button):
+        self.ret = self.combo.child.get_text()
+	self.ret2 = self.combov.child.get_text()
+	
+        self.quit()
 class Settings( gtk.Dialog):
 	def __init__(self, xapp, message="", modal= True):
 		gtk.Dialog.__init__(self)
@@ -68,8 +151,8 @@ class Settings( gtk.Dialog):
 		
 		
 		self.vbox1 = gtk.VBox()
-		self.vbox1.pack_start(sbox3) #entry3  (interface)
-		self.vbox1.pack_start(sbox2) #entry2  (password)
+		self.vbox1.pack_start(sbox3, False, False) #entry3  (interface)
+		self.vbox1.pack_start(sbox2, False, False) #entry2  (password)
 		self.vbox1.show()
 		self.frame1.add(self.vbox1)
 		
@@ -138,7 +221,7 @@ class Settings( gtk.Dialog):
 		self.vbox2.pack_start(sbox5, False, False)	#checkbox (trayapp)
 		self.vbox2.pack_start(sbox6, True, True)
 		hbox.pack_start(self.vbox2, True, True)
-		self.vbox.pack_start(hbox)
+		self.vbox.pack_start(hbox, False, False)
 		
 		# DIALOGS
 		self.dialogs()
@@ -156,7 +239,19 @@ class Settings( gtk.Dialog):
 		self.action_area.pack_start(button)
 		button.show()
 		self.ret = None
+	
+	def input_box(self, title=_("Input Box"), message="", message2= "", key='', value=None, modal= True, List=[], vlist=[], second=True):
+		try:
+			win = EntryDialog(self, message,  message2, key, value, modal, List, vlist, second)
+			win.set_title(title)
+			win.show()
+			win.run()
+			win.destroy()
+			return win.ret, win.ret2
 		
+		except Exception,e:
+			print e
+			
 	def ServerHostChanged(self, widget):
 		if self.config == {}: return
 		if "server" in self.config:

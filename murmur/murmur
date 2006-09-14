@@ -279,6 +279,14 @@ class ProcessMessages(driver.Driver, Thread):
 			if key in self.config[domain].keys():
 				if debugmode == True: print "Modified <"+key+"> in <" +domain+"> to <"+value + ">"
 				self.config[domain][key] = value
+				if domain == "banned":
+					self.frame.userlists.banned.update(key, value)
+				elif domain in "buddies":
+					self.frame.userlists.buddies.update(key, value)
+				elif domain in "ignored":
+					self.frame.userlists.ignored.update(key, value)
+				elif domain in "trusted":
+					self.frame.userlists.trusted.update(key, value)
 
 			else:
 				if value == '':
@@ -2450,7 +2458,7 @@ class ChatRoom:
 		self.textbuffer = gtk.TextBuffer()
 		self.chatview = gtk.TextView(buffer=self.textbuffer)
 		self.chatview.set_editable(False)
-		self.chatview.set_wrap_mode( gtk.WRAP_CHAR)
+		self.chatview.set_wrap_mode( gtk.WRAP_WORD)
 		self.chatview.set_cursor_visible(False)
 		self.chatview.show()
 		
@@ -2482,7 +2490,7 @@ class ChatRoom:
 		self.RoomLog = gtk.TextView(buffer=self.statusbuffer)
 		
 		self.RoomLog.set_editable(False)
-		self.RoomLog.set_wrap_mode( gtk.WRAP_CHAR)
+		self.RoomLog.set_wrap_mode( gtk.WRAP_WORD)
 		self.RoomLog.set_cursor_visible(False)
 		self.RoomLog.show()
 		
@@ -2676,7 +2684,8 @@ class ChatRoom:
 	def GetUserStatus(self, user, status):
 		if not self.users.has_key(user):
 			return
-                if status != self.usersmodel.get_value(self.users[user], 3):
+
+                if status != self.usersmodel.get_value(self.users[user], 4):
                         img = self.frame.GetStatusImage(status)
 			if status == 1:
 				action = _("%s has gone away")
@@ -2684,7 +2693,7 @@ class ChatRoom:
 				action = _("%s has returned")
 			AppendLine(self.RoomLog, action % user, None)
 	
-			self.usersmodel.set(self.users[user], 0, img, 3, status)
+			self.usersmodel.set(self.users[user], 0, img, 4, status)
 
 
 
@@ -2750,30 +2759,27 @@ class MasterRoom:
 		self.rooms = {}
 		self.autojoin = 1
 
+		label = gtk.Label(_("Join room:") )
+		label.show()
+		
 		self.entry = gtk.Entry()
 		self.entry.set_text("")
 		self.entry.grab_focus()
 		self.entry.show()
 		self.entry.connect("activate", self.enter_pressed, self.entry)
 		
-		label = gtk.Label(_("Join room:") )
-		label.show()
-		
-		refresh_button = gtk.Button(_("Refresh List") )
-		refresh_button.connect_object("clicked", self.OnPopupRefresh, "")
-		refresh_button.show()
+		self.refresh_button = gtk.Button(_("Refresh List") )
+		self.refresh_button.connect_object("clicked", self.OnPopupRefresh, "")
+		self.refresh_button.show()
 		
 		addhbox = gtk.HBox(spacing=3)
 		addhbox.set_border_width(3)
 		addhbox.pack_start(label, False, False, 0)
 		addhbox.pack_start(self.entry, True, True,  0)
-		addhbox.pack_end(refresh_button, False, False,  0)
+		addhbox.pack_end(self.refresh_button, False, False,  0)
 		addhbox.show()
 		
-		
 		self.store = gtk.ListStore( int, str )
-		
-				
 
 		# Users-in-room Listbox with users and files
 		self.treeview  = gtk.TreeView(self.store)
@@ -2836,12 +2842,14 @@ class MasterRoom:
 		if room == "":
 			return
 		self.join_a_room(room)
+		self.entry.set_text("")
 
 	def refresh_room_list(self, widget, event):
 		pass
+	
 	def join_a_room(self, room):
 		if room != None and room != "":
-			self.ProcessMessages.Send(messages.JoinRoom(room))
+			self.frame.ProcessMessages.Send(messages.JoinRoom(room))
 		
 	def UpdateRoomList(self, rooms):
 		if debugmode == True: print "UpdateRoomList"
@@ -3360,6 +3368,10 @@ class ListBanned:
 		status, speed, downloads, files, dirs = stats 
 		self.store.set(self.users[user], 1, user, 2, Humanize(files), 3, Humanize(speed))
 		
+	def update(self, user, comments):
+		if user not in self.users:
+			return
+		self.store.set(self.users[user], 1, user,  4, comments )
 		
 	def append(self, user, comments):
 		if user in self.users:
@@ -3494,6 +3506,11 @@ class ListBuddies:
                     return
 		status, speed, downloads, files, dirs = stats 
 		self.store.set(self.users[user], 1, user, 2, Humanize(files), 3, Humanize(speed))
+		
+	def update(self, user, comments):
+		if user not in self.users:
+			return
+		self.store.set(self.users[user], 1, user,  4, comments )
 		
 	def append(self, user, comments):
 		if user in self.users:
@@ -3630,6 +3647,11 @@ class ListTrusted:
 		status, speed, downloads, files, dirs = stats 
 		self.store.set(self.users[user], 1, user, 2, Humanize(files), 3, Humanize(speed))
 		
+	def update(self, user, comments):
+		if user not in self.users:
+			return
+		self.store.set(self.users[user], 1, user,  4, comments )
+		
 	def append(self, user, comments):
 		if user in self.users:
 			return
@@ -3763,6 +3785,11 @@ class ListIgnored:
                     return
 		status, speed, downloads, files, dirs = stats 
 		self.store.set(self.users[user], 1, user, 2, Humanize(files), 3, Humanize(speed))
+		
+	def update(self, user, comments):
+		if user not in self.users:
+			return
+		self.store.set(self.users[user], 1, user,  4, comments )
 		
 	def append(self, user, comments):
 		if user in self.users:
@@ -4719,7 +4746,7 @@ class murmur(MurmurWindow, ProcessMessages):
 		quit_on_close = True
 		if quit_on_close == True:
 			
-			os._exit(1)
+			os._exit(0)
 		
 	def click(self, button):
 		self.MurmurWindow.ret = None
@@ -4843,7 +4870,7 @@ class murmur(MurmurWindow, ProcessMessages):
 			if debugmode == True: print "settooltip ERROR", e
 			
 	def quit(self, string):
-		os._exit(1)
+		os._exit(0)
 		
 	def userstatus(self, string):
 		try:
