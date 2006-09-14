@@ -6766,20 +6766,21 @@ class mucous(driver.Driver):
 									
 	def now_playing(self):
 		try:
-			if "now-playing" in mucous_config["mucous"].keys():
-				if mucous_config["mucous"]["now-playing"] == "default":
+			m = mucous_config["mucous"]
+			if "now-playing" in m.keys():
+				if m["now-playing"] == "default":
 					p = "/tmp/xmms-info"
 					if os.path.exists(p):
 						fsock = open(p)
 						for i in range(3):  s = fsock.readline()[8:-1]
-						for i in range(10):  m = fsock.readline()[7:-1]
-						if "now-playing-prefix" in mucous_config["mucous"].keys():
-							if mucous_config["mucous"]["now-playing-prefix"] != 'None':
-								message = ("%s %s") %(mucous_config["mucous"]["now-playing-prefix"], m)
+						for i in range(10):  e = fsock.readline()[7:-1]
+						if "now-playing-prefix" in m.keys():
+							if m["now-playing-prefix"] != 'None' and m["now-playing-prefix"] != None:
+								message = ("%s %s") %(m["now-playing-prefix"], e)
 							else:
-								message ="Now %s: %s " % (s, m)
+								message ="Now %s: %s " % (s, e)
 						else:
-							message ="Now %s: %s " % (s, m)
+							message ="Now %s: %s " % (s, e)
 						fsock.close()
 						if self.display["mode"] == "chat":
 							self.say_in_chat("chat", self.Spl["room"], message)
@@ -6788,11 +6789,11 @@ class mucous(driver.Driver):
 							self.send_private_message(self.usernames["private"], message)
 					else: self.Hlog("status", "WARNING: XMMS or BMP isn't running or the InfoPipe plugin isn't enabled")
 				else:
-					p = mucous_config["mucous"]["now-playing"]
+					p = m["now-playing"]
 					nowplaying = commands.getoutput(p).split('\n')
 					nowplaying = nowplaying[0]
-					if mucous_config["mucous"]["now-playing-prefix"] != None and mucous_config["mucous"]["now-playing-prefix"] != 'None':
-						message = "%s %s" % (mucous_config["mucous"]["now-playing-prefix"], nowplaying)
+					if m["now-playing-prefix"] != None and m["now-playing-prefix"] != 'None':
+						message = "%s %s" % (m["now-playing-prefix"], nowplaying)
 						if self.display["mode"] == "chat" and self.Spl["room"] != None:
 							self.say_in_chat("chat", self.Spl["room"], message)
 
