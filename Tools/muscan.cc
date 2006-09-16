@@ -89,96 +89,64 @@ int main(int argc, char **argv) {
 	}
 	
 	DirScanner root;
-	DirScanner broot;
-
-	string bstate = config["buddy.shares"]["database"];
-	bstate += ".state";
-	broot.load(bstate);
-
-	string state = config["shares"]["database"];
-	state += ".state";
+	string state;
+	
+	if (doBuddy) {
+		string s = config["buddy.shares"]["database"];
+		state += s + ".state";
+	} else {
+		string s = config["shares"]["database"];
+		state += s + ".state";
+	}
+		
 	root.load(state);
 
 
 	
 	if(doList) {
-		if (doBuddy) {
-			map<string, DirEntry*>::iterator bfit = broot.folders.begin();
-			for(; bfit != broot.folders.end(); ++bfit)
-				cout << (*bfit).second->path << endl;
-		} else {
-			map<string, DirEntry*>::iterator fit = root.folders.begin();
-			for(; fit != root.folders.end(); ++fit)
-				cout << (*fit).second->path << endl;
-		}
+		map<string, DirEntry*>::iterator fit = root.folders.begin();
+		for(; fit != root.folders.end(); ++fit)
+			cout << (*fit).second->path << endl;
+		
 		return 0;
 	}
-	if (doBuddy) {
-		vector<string>::iterator bit = add.begin();
-		for(; bit != add.end(); ++bit)
-			broot.add(*bit);
+	
+	vector<string>::iterator it = add.begin();
+	for(; it != add.end(); ++it)
+		root.add(*it);
 
-		bit = remove.begin();
-		for(; bit != remove.end(); ++bit) {
-			map<string, DirEntry*>::iterator bfit = broot.folders.find(*bit);
-			if(bfit != broot.folders.end()) {
-				delete (*bfit).second;
-				broot.folders.erase(bfit);
-			}
-		}	
-		if(rescan) {
-			add.clear();
-	
-			map<string, DirEntry*>::iterator bfit = broot.folders.begin();
-			for(; bfit != broot.folders.end(); ++bfit)
-				add.push_back((*bfit).first);
-			bit = add.begin();
-			broot = DirScanner();
-			
-			for(; bit != add.end(); ++bit)
-				broot.add(*bit);
-	
-			add.clear();
+	it = remove.begin();
+	for(; it != remove.end(); ++it) {
+		map<string, DirEntry*>::iterator fit = root.folders.find(*it);
+		if(fit != root.folders.end()) {
+			delete (*fit).second;
+			root.folders.erase(fit);
 		}
-		if(! noscan)
-			broot.scan();
-		broot.save(bstate);
-		DirScanner bfolded;
-		broot.fold(&bfolded);
-		bfolded.save(config["buddy.shares"]["database"]);
-	} else {
-		vector<string>::iterator it = add.begin();
+	}
+
+	if(rescan) {
+
+		add.clear();
+
+		map<string, DirEntry*>::iterator fit = root.folders.begin();
+		for(; fit != root.folders.end(); ++fit)
+			add.push_back((*fit).first);
+		it = add.begin();
+		
+		root = DirScanner();
+		
 		for(; it != add.end(); ++it)
 			root.add(*it);
-
-		it = remove.begin();
-		for(; it != remove.end(); ++it) {
-			map<string, DirEntry*>::iterator fit = root.folders.find(*it);
-			if(fit != root.folders.end()) {
-				delete (*fit).second;
-				root.folders.erase(fit);
-			}
-		}
-	
-		if(rescan) {
-	
-			add.clear();
-	
-			map<string, DirEntry*>::iterator fit = root.folders.begin();
-			for(; fit != root.folders.end(); ++fit)
-				add.push_back((*fit).first);
-			it = add.begin();
-			
-			root = DirScanner();
-			
-			for(; it != add.end(); ++it)
-				root.add(*it);
-		}
-		if(! noscan)
-			root.scan();
-		root.save(state);
-		DirScanner folded;
-		root.fold(&folded);
+	}
+	if(! noscan)
+		root.scan();
+	root.save(state);
+	DirScanner folded;
+	root.fold(&folded);
+		
+	if (doBuddy) { 
+		folded.save(config["buddy.shares"]["database"]);
+	} else {
 		folded.save(config["shares"]["database"]);
 	}
 
