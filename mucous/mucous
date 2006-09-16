@@ -1259,7 +1259,7 @@ class mucous(driver.Driver):
 							if os.path.expandvars("$TERM") != "linux" and os.path.exists("/usr/bin/lynx"):
 								os.system("xterm -e 'TERM=xterm-color lynx "+self.url +"' &")	
 						elif urlr == "firefox":
-							os.system("mozilla -a firefox -remote 'openURL("+self.url +",new-tab)' &")
+							os.system("firefox -a firefox -remote 'openURL("+self.url +",new-tab)' &")
 						elif urlr == "custom":
 							os.system(mucous_config["mucous"]["url custom prefix"]+self.url+mucous_config["mucous"]["url custom suffix"]+" &")
 							
