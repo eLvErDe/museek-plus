@@ -75,8 +75,7 @@ for opts, args in opts:
 	if opts in ("-v", "--version"):
 		print "Murmur version: %s" % version
 		sys.exit(2)
-if debugmode == True:
-	print pid
+
 parser = ConfigParser.ConfigParser()
 
 # default config
@@ -265,14 +264,10 @@ class ProcessMessages(driver.Driver, Thread):
 	# Ping
 	def cb_ping(self):
 		if debugmode == True: print " **** cb_ping"
-		gtk.threads_enter()
-		gtk.threads_leave()
-
+		
 	def cb_server_privileges(self, time_left):
 		if debugmode == True: print " **** cb_server_privileges: %i" % time_left
-		gtk.threads_enter()
-		gtk.threads_leave()
-
+		
 	def cb_config_set(self, domain, key, value):
 		gtk.threads_enter()
 		try:
@@ -336,12 +331,12 @@ class ProcessMessages(driver.Driver, Thread):
 			if "buddies" in self.config.keys():
 				for user, comment in self.config["buddies"].items():
 					self.frame.userlists.buddies.append(user, comment)
-				#self.app.userlist_tabs("buddies")
+				#self.frame.userlist_tabs("buddies")
 			
 			if "banned" in self.config.keys():
 				for user, comment in self.config["banned"].items():
 					self.frame.userlists.banned.append(user, comment)
-				#self.app.userlist_tabs("banned")
+				#self.frame.userlist_tabs("banned")
 				
 			if "ignored" in self.config.keys():
 				for user, comment in self.config["ignored"].items():
@@ -349,7 +344,7 @@ class ProcessMessages(driver.Driver, Thread):
 			if "trusted" in self.config.keys():
 				for user, comment in self.config["trusted"].items():
 					self.frame.userlists.trusted.append(user, comment)
-				#self.app.userlist_tabs("ignored")
+				#self.frame.userlist_tabs("ignored")
 		gtk.threads_leave()
 				
 	#Add new/replace old keys to self.config
@@ -419,7 +414,7 @@ class ProcessMessages(driver.Driver, Thread):
 				if debugmode == True:  "Room not autojoined: %s" % room
 				
 	def Send(self, message):
-		if self.app.ProcessMessages.connected == False:
+		if self.frame.ProcessMessages.connected == False:
 			return
 		try:
 			self.send( message ) 
@@ -429,11 +424,10 @@ class ProcessMessages(driver.Driver, Thread):
         def cb_room_list(self, roomlist):
 		gtk.threads_enter()
 
-		if debugmode == True: print " **** cb_room_list"
-		self.app.room_lists = {}
-		print len(roomlist)
+		if debugmode == True: print " **** cb_room_list", len(roomlist)
+		self.frame.room_lists = {}
 		for x, y in roomlist.items():
-			self.app.room_lists[x] = y
+			self.frame.room_lists[x] = y
 			#print x, y
 			
 		self.frame.chatrooms.roomsmaster.UpdateRoomList(roomlist)
@@ -453,9 +447,9 @@ class ProcessMessages(driver.Driver, Thread):
 		gtk.threads_enter()
 		
 		if debugmode == True: print " **** cb_search_ticket"
-		self.app.s_query[str(ticket)] = query
-		if str(ticket) not in self.app.widgets["search"]:
-			self.app.DoSearch(str(ticket))
+		self.frame.s_query[str(ticket)] = query
+		if str(ticket) not in self.frame.widgets["search"]:
+			self.frame.DoSearch(str(ticket))
 		gtk.threads_leave()
 
 
@@ -463,23 +457,18 @@ class ProcessMessages(driver.Driver, Thread):
 		gtk.threads_enter()
 		if debugmode == True: print " **** cb_search_results"
 
-		self.app.DoSearchResults(str(ticket), user, free, speed, queue, results)
+		self.frame.DoSearchResults(str(ticket), user, free, speed, queue, results)
 		gtk.threads_leave()
 
 
-	def cb_user_shares(self, user, shares):
-		gtk.threads_enter()
-		if debugmode == True: print " **** cb_user_shares"
-		self.app.get_shares(user, shares)
-		gtk.threads_leave()
 
 	def cb_transfer_state(self, downloads, uploads):
 		gtk.threads_enter()
 		if debugmode == True: print " **** cb_transfer_state"
 		for transfer in uploads:
-			self.app.uploads.append(transfer)
+			self.frame.uploads.append(transfer)
 		for transfer in downloads:
-			self.app.downloads.append(transfer)
+			self.frame.downloads.append(transfer)
 
 		gtk.threads_leave()
 
@@ -489,9 +478,9 @@ class ProcessMessages(driver.Driver, Thread):
 		try:
 			if debugmode == True: print " **** cb_transfer_update"
 			if transfer.is_upload:
-				self.app.uploads.update(transfer)
+				self.frame.uploads.update(transfer)
 			else:
-				self.app.downloads.update(transfer)
+				self.frame.downloads.update(transfer)
 		except Exception,e:
 			if debugmode == True: print " **** cb_transfer_update ERROR", e
 		gtk.threads_leave()
@@ -502,12 +491,20 @@ class ProcessMessages(driver.Driver, Thread):
 		if debugmode == True: print " **** cb_transfer_remove"
 		user_path = transfer[1], transfer[2]
 		if transfer[0]:
-			self.app.uploads.remove(transfer)
+			self.frame.uploads.remove(transfer)
 		else:
-			self.app.downloads.remove(transfer)
+			self.frame.downloads.remove(transfer)
 		gtk.threads_leave()
 		
-
+	def cb_user_shares(self, user, shares):
+		gtk.threads_enter()
+		if debugmode == True: print " **** cb_user_shares"
+		#self.frame.get_shares(user, shares)
+		try:
+			self.frame.userbrowses.GotUserBrowse(user, shares)
+		except Exception,e:
+			if debugmode == True: print " **** cb_user_shares ERROR", e
+		gtk.threads_leave()
 			
 	def cb_user_info(self, user, info, picture, uploads, queue, slotsfree):
 		gtk.threads_enter()
@@ -515,15 +512,16 @@ class ProcessMessages(driver.Driver, Thread):
 			if debugmode == True:
 				print "got %s's userinfo" % user
 
-			self.app.userinfos.GotUserInfo(user, info, picture, uploads, queue, slotsfree)
+			self.frame.userinfos.GotUserInfo(user, info, picture, uploads, queue, slotsfree)
 	
 		except Exception,e:
 			if debugmode == True: print " **** cb_user_info ERROR", e
 		gtk.threads_leave()
+		
 	def cb_room_said(self, room, user, text):
 		gtk.threads_enter()
 		try:
-			self.app.chatrooms.roomsmaster.SayChatRoom(room, user, text)
+			self.frame.chatrooms.roomsmaster.SayChatRoom(room, user, text)
 		except Exception,e:
 			if debugmode == True: print " **** cb_room_said ERROR", e		
 		gtk.threads_leave()
@@ -533,29 +531,29 @@ class ProcessMessages(driver.Driver, Thread):
 		if debugmode == True: print "Logged in, getting Rooms"
 		try:
 			for rooms1, numbers in roomlist.items():
-				self.app.room_lists[str(rooms1)] = numbers
+				self.frame.room_lists[str(rooms1)] = numbers
 			self.frame.chatrooms.roomsmaster.UpdateRoomList(roomlist)
 			
 			for room in joined:
 				room = str(room)
-				if room not in self.app.roomlogs:
-					self.app.roomlogs[room] = []
+				if room not in self.frame.roomlogs:
+					self.frame.roomlogs[room] = []
 					#self.statuslogs[room] = []
-				#self.app.rooms[room] = joined[room]
+				#self.frame.rooms[room] = joined[room]
 				roomlist = []
 	
 				#alpha_list  = SortedDict()
 				
 				for users in joined[room]:
 					roomlist.append(users)
-					self.app.user_stats[users] = joined[room][users][0], joined[room][users][1], joined[room][users][2 ], joined[room][users][3], joined[room][users][4]
-				self.app.chatrooms.roomsmaster.JoinRoom(room, joined[room])
+					self.frame.user_stats[users] = [joined[room][users][0], joined[room][users][1], joined[room][users][2 ], joined[room][users][3], joined[room][users][4], 1]
+				self.frame.chatrooms.roomsmaster.JoinRoom(room, joined[room])
 			created = []
 
 				
-			#for room in self.app.rooms.keys():
+			#for room in self.frame.rooms.keys():
 				#for room in joined.keys():
-				#if room not in self.app.widgets["chat"]:
+				#if room not in self.frame.widgets["chat"]:
 					
 		except Exception, e:
 			if debugmode == True: print "Room State bug", e
@@ -566,19 +564,19 @@ class ProcessMessages(driver.Driver, Thread):
 		if debugmode == True:
 			print "Joined room: %s" % room
 		try:
-			if room not in self.app.roomlogs:
-				self.app.roomlogs[room] = []
+			if room not in self.frame.roomlogs:
+				self.frame.roomlogs[room] = []
 				#self.statuslogs[room] = []
 				
 			for users, stats in list_of_users.items():
 				#print stats
-				self.app.user_stats[users] = stats[0], stats[1], stats[2 ], stats[3], stats[4] 
+				self.frame.user_stats[users] = [stats[0], stats[1], stats[2 ], stats[3], stats[4], 1] 
 				# online status, avgspeed, numdownloads, numfiles, numdirs
 			
-			#self.app.rooms[room] = list_of_users
+			#self.frame.rooms[room] = list_of_users
 			
-			#if self.app.widgets["chat"] != None:
-			self.app.chatrooms.roomsmaster.JoinRoom(room, list_of_users)
+			#if self.frame.widgets["chat"] != None:
+			self.frame.chatrooms.roomsmaster.JoinRoom(room, list_of_users)
 				
 				
 		except Exception, e:
@@ -589,10 +587,10 @@ class ProcessMessages(driver.Driver, Thread):
 		gtk.threads_enter()
 		if debugmode == True: print " **** cb_room_left %s"% room
 		try:
-			#del self.app.rooms[room]
+			#del self.frame.rooms[room]
 			
-			#self.app.del_chatrooms(room)
-			self.app.chatrooms.roomsmaster.LeaveRoom(room)
+			#self.frame.del_chatrooms(room)
+			self.frame.chatrooms.roomsmaster.LeaveRoom(room)
 			
 
 		except Exception, e:
@@ -605,10 +603,10 @@ class ProcessMessages(driver.Driver, Thread):
 			if debugmode == True:
 				print "%s joined room \'%s\' " %( user, room)
 
-			#self.app.rooms[room][user] = stats
-			self.app.user_stats[user] = stats[0], stats[1], stats[2 ], stats[3], stats[4] 
+			#self.frame.rooms[room][user] = stats
+			self.frame.user_stats[user] = [stats[0], stats[1], stats[2 ], stats[3], stats[4], 1] 
 			
-			self.app.chatrooms.roomsmaster.UserJoinedRoom(room, user)
+			self.frame.chatrooms.roomsmaster.UserJoinedRoom(room, user)
 			
 		except Exception, e:
 			if debugmode == True: print "User Joined room bug", e
@@ -621,7 +619,7 @@ class ProcessMessages(driver.Driver, Thread):
 			if debugmode == True:
 				print "%s left room %s" % (user, room)
 				
-			self.app.chatrooms.roomsmaster.UserLeftRoom(room, user)
+			self.frame.chatrooms.roomsmaster.UserLeftRoom(room, user)
 
 
 		except Exception, e:
@@ -637,15 +635,11 @@ class ProcessMessages(driver.Driver, Thread):
 			if debugmode == True:
 				print "%s PM'd to you: %s" % (user, message)
 
-			#if message[:4] == "/me ":
-				#themessage = "\n%s * %s %s" % (time.strftime("%H:%M:%S"), user, message[4:])
-			#else:
-				#themessage = "\n%s [%s] %s" % (time.strftime("%H:%M:%S"), user, message)
-			if user not in self.app.privatelogs:
-				self.app.privatelogs[user] = []
-			self.app.privatelogs[user].append(message)
-			self.app.privatechats.ShowMessage(direction, user, message)
-			#self.app.append_to_privatechat(user, themessage)
+			if user not in self.frame.privatelogs:
+				self.frame.privatelogs[user] = []
+			self.frame.privatelogs[user].append(message)
+			self.frame.privatechats.ShowMessage(direction, user, message)
+			#self.frame.append_to_privatechat(user, themessage)
 		except Exception,e:
 			if debugmode == True: print " **** cb_private_message ERROR", e
 		gtk.threads_leave()
@@ -654,19 +648,18 @@ class ProcessMessages(driver.Driver, Thread):
 		gtk.threads_enter()
 		if debugmode == True: print " **** cb_peer_address"
 		try:
-			if user == self.app.ip_requested:
-				self.app.ip_requested = None
+			if user in self.frame.ip_requested:
+				self.frame.ip_requested.remove(user)
 				if geoip_fail==0:
 					country =  gi.country_name_by_addr( str(ip) )
-					message="%s's IP: %s Port: %s\nCountry: %s"  % (user, str(ip), str(port), country)
-					s= self.app.display_box(title="IP Address", message = message  )
-					if debugmode == True:
-						print message
+					message="%s's IP: %s Port: %s Country: %s"  % (user, str(ip), str(port), country)
+					#s= self.frame.display_box(title="IP Address", message = message  )
+					self.frame.AppendToLogWindow(message)
+					if debugmode == True: print message
 				else:
-					if debugmode == True:
-						print "No Geoip"
-					message="%s's IP: %s Port: %s\n"  % (user, str(ip), str(port) )
-					s= self.app.display_box(title="IP Address", message = message  )
+					if debugmode == True: print "No Geoip"
+					message="%s's IP: %s Port: %s" % (user, str(ip), str(port) )
+					self.frame.AppendToLogWindow(message)
 		except Exception,e:
 			if debugmode == True: print " **** cb_peer_address ERROR", e
 		gtk.threads_leave()
@@ -679,8 +672,8 @@ class ProcessMessages(driver.Driver, Thread):
 				if debugmode == True:
 					print "Invalid Password"
 				
-				self.app.settooltip( "Couldn't connect to Museek: %s" % "Invalid Password")
-				self.app.update_statusbar( "Invalid Password")
+				self.frame.settooltip( "Couldn't connect to Museek: %s" % "Invalid Password")
+				self.frame.update_statusbar( "Invalid Password")
 				
 				#self.connect()
 				
@@ -689,9 +682,9 @@ class ProcessMessages(driver.Driver, Thread):
 				if debugmode == True:
 					print "couldn't log in: " + reason
 				
-				self.app.update_statusbar( "Couldn't Login")
+				self.frame.update_statusbar( "Couldn't Login")
 				
-			self.app.load_image("red")
+			self.frame.load_image("red")
 		except Exception,e:
 			if debugmode == True: print " **** cb_login_error ERROR", e
 		self.connected = False
@@ -710,15 +703,15 @@ class ProcessMessages(driver.Driver, Thread):
 	def disconnect(self, string):
 		
 		try:
-			if self.app.username != None:
+			if self.frame.username != None:
 				#self.timer.cancel()
 				driver.Driver.close(self)
 				#self.close()
 				self.connected = False
 				self.config = {}
 				self.invalidpass = 0
-				self.app.downloads.store.clear()
-				self.app.uploads.store.clear()
+				self.frame.downloads.store.clear()
+				self.frame.uploads.store.clear()
 
 		except Exception,e:
 			if debugmode == True: print "disconnect ERROR", e
@@ -728,17 +721,17 @@ class ProcessMessages(driver.Driver, Thread):
 		if debugmode == True: print " **** cb_disconnected"
 		try:
 			
-			self.app.load_image("red")
+			self.frame.load_image("red")
 
-			self.app.settooltip( "Disconnected from Museek")
+			self.frame.settooltip( "Disconnected from Museek")
 			
-			self.app.update_statusbar( "Disconnected from Museek")
+			self.frame.update_statusbar( "Disconnected from Museek")
 			
-			self.app.username =None
-			self.app.status = 2
+			self.frame.username =None
+			self.frame.status = 2
 			self.config = {}
 
-			self.app.chatrooms.roomsmaster.ConnClose()
+			self.frame.chatrooms.roomsmaster.ConnClose()
 
 			self.connected = False
 		except Exception, e:
@@ -749,30 +742,30 @@ class ProcessMessages(driver.Driver, Thread):
 		gtk.threads_enter()
 		try:
 			
-			if state != self.app.status:
+			if state != self.frame.status:
 				if debugmode == True:
 					print  str(state), username
 			
-				self.app.status = state
-				if self.app.status:
+				self.frame.status = state
+				if self.frame.status:
 					message = "Connected to Museek: %s Status: Away" % username
 					
-					self.app.settooltip( message)
-					self.app.update_statusbar( message)
-					self.app.load_image("yellow")
+					self.frame.settooltip( message)
+					self.frame.update_statusbar( message)
+					self.frame.load_image("yellow")
 					
-				elif self.app.status  == 2:
+				elif self.frame.status  == 2:
 					message = "Connected to Museek: %s Status: Online" % username
 					
-					self.app.settooltip( message )
-					self.app.update_statusbar( message )
-					self.app.load_image("green")
+					self.frame.settooltip( message )
+					self.frame.update_statusbar( message )
+					self.frame.load_image("green")
 					
 				else:
-					self.app.load_image("red")
+					self.frame.load_image("red")
 
 			
-			self.app.username = username
+			self.frame.username = username
 			#self.start_MurmurWindow("window")
 	
 			
@@ -785,90 +778,75 @@ class ProcessMessages(driver.Driver, Thread):
 		if debugmode == True: print " **** cb_server_status_set ", status
 		try:
 			
-			if status != self.app.status:
-				self.app.status = status
-				if self.app.status:
-					message = "Connected to Museek: %s Status: Away" % self.app.username
-					self.app.settooltip( message)
-					self.app.update_statusbar( message)
-					self.app.load_image("yellow")
+			if status != self.frame.status:
+				self.frame.status = status
+				if self.frame.status:
+					message = "Connected to Museek: %s Status: Away" % self.frame.username
+					self.frame.settooltip( message)
+					self.frame.update_statusbar( message)
+					self.frame.load_image("yellow")
 				else:
-					message = "Connected to Museek: %s Status: Online" % self.app.username
-					self.app.settooltip( message ) 
-					self.app.update_statusbar( message )
-					self.app.load_image("green")
+					message = "Connected to Museek: %s Status: Online" % self.frame.username
+					self.frame.settooltip( message ) 
+					self.frame.update_statusbar( message )
+					self.frame.load_image("green")
 			
 		except Exception,e:
 			if debugmode == True: print " **** cb_server_status_set ERROR", e
 		gtk.threads_leave()
                 
 	def cb_peer_exists(self, user, exists):
-		#gtk.threads_enter()
+		
 		if debugmode == True: print "%s exists? %i" % (user, exists)
-		if exists == 0:
-			self.app.user_stats[user] = 0, 0, 0, 0, 0
-		#gtk.threads_leave()
+		try:
+			if user in self.frame.user_stats: 
+				self.frame.user_stats[user][5] = exists
+			else:
+				self.frame.user_stats[user] = [0, 0, 0, 0, 0, exists]
+		except Exception,e:
+			if debugmode == True: print " **** cb_peer_exists ERROR", e
+		
                 
 	def cb_peer_stats(self, user, speed, downloads, files, dirs):
-		print " **** cb_peer_stats", user, speed, downloads, files, dirs
-		#if debugmode == True: print " **** cb_peer_stats %s" % user
-		
+		if debugmode == True: print " **** cb_peer_stats", user, speed, downloads, files, dirs
+
 		try:
-			if user in self.app.user_stats:
-				if self.app.user_stats[user][0] == 0:
-					self.app.user_stats[user] = 0, speed, downloads, files, dirs
-				else:
-					self.app.user_stats[user] = self.app.user_stats[user][0], speed, downloads, files, dirs
+			if user in self.frame.user_stats:
+				stats = self.frame.user_stats[user]
+				if stats[1] == speed and stats[2] == downloads and stats[3] == files and stats[4] == dirs:
+					return
+				self.frame.user_stats[user] = [stats[0], speed, downloads, files, dirs, stats[5]]
+				
 			else:
-				self.app.user_stats[user] = 0, speed, downloads, files, dirs
+				self.frame.user_stats[user] = [0, speed, downloads, files, dirs, 1]
 		except Exception,e:
 			if debugmode == True: print " **** cb_peer_stats ERROR", e
 		#gtk.threads_enter()
-		self.frame.userlists.updateStats(user, self.app.user_stats[user])
+		self.frame.userlists.updateStats(user, self.frame.user_stats[user])
 
 		#gtk.threads_leave()	
 			
 	def cb_peer_status(self, user, status):
 		if debugmode == True: print " **** cb_peer_status", user, status
-		if user in self.app.user_stats:
-			
+		try:
+			if user in self.frame.user_stats:
+
+				self.frame.user_stats[user][0] = status
 				
-			stats = self.app.user_stats[user]
-			self.app.user_stats[user] = status,  stats[1],  stats[2],  stats[3],  stats[4]
-		else:
-			self.app.user_stats[user] = status, 0, 0, 0, 0
-		
-		if status == 1:
-			what = "away"
+	
+			else:
+				self.frame.user_stats[user] = [status, 0, 0, 0, 0, 1]
 			
-		elif status == 2:
-			what = "online"
-		elif status == 0:
-			what = "offline"
+			## Update Lists with new status information
+			self.frame.chatrooms.roomsmaster.GetUserStatus( user, status)
+			self.frame.userlists.updateStatus(user, status)
 			
-		elif status == 3:
-			what = "notexist"
+		except Exception,e:
+			if debugmode == True: print " **** cb_peer_status ERROR1", e
 
-
-                #gtk.threads_enter()
-		#if debugmode == True: print "2 %s is %s" %(user, what)
-                self.app.chatrooms.roomsmaster.GetUserStatus( user, status)
-                self.frame.userlists.updateStatus(user, status)
-		#try:
-			## Update Chatroom Lists with new status information
-			#self.app.chatrooms.roomsmaster.GetUserStatus( user, status)
-			##self.frame.userlists.updateStatus(user, status)
-		#except Exception,e:
-			#if debugmode == True: print " **** cb_peer_status ERROR2", e
-		
-
-		#gtk.threads_leave()
-		
-	def callback(self, message):
-		pass
 	def connect_to_museekd(self, string):
 
-		if self.app.username != None:
+		if self.frame.username != None:
 			self.disconnect("")
 		#while 1:
 		if 1:
@@ -907,7 +885,7 @@ class ProcessMessages(driver.Driver, Thread):
 
 
 	def run(self):
-		if debugmode == True:  print self.app.pid
+		if debugmode == True:  print self.frame.pid
 		self.connected = True
 		while 1:
 		#if 1:
@@ -932,7 +910,7 @@ class ProcessMessages(driver.Driver, Thread):
 					
 				sleep(0.001)
 				
-				#self.app.MurmurWindow.show_all() 
+				#self.frame.MurmurWindow.show_all() 
 
 			except Exception, e:
 				if debugmode == True: print "Process Exception", Exception, e
@@ -943,9 +921,9 @@ class ProcessMessages(driver.Driver, Thread):
 
 
 class PopupMenu(gtk.Menu):
-	def __init__(self, xapp, type):
+	def __init__(self, frame, type):
 		gtk.Menu.__init__(self)
-		self.app = xapp
+		self.frame = frame
 		self.type = type
 		self.user = None
 		self.directory = None
@@ -956,9 +934,24 @@ class PopupMenu(gtk.Menu):
 		for item in items:
 			if item[0] == "":
 				menuitem = gtk.MenuItem()
+			elif item[0] == 1:
+				menuitem = gtk.MenuItem()
+				menuitem = gtk.MenuItem(item[1])
+				menuitem.set_submenu(item[2])
+				if item[3] is not None:
+					menuitem.connect("activate", item[3])
 			else:
 				if item[0][0] == "$":
 					menuitem = gtk.CheckMenuItem(item[0][1:])
+				elif item[0][0] == "#":
+					menuitem = gtk.ImageMenuItem(item[0][1:])
+					img = gtk.image_new_from_stock(item[2], gtk.ICON_SIZE_MENU)
+        				menuitem.set_image(img)
+				elif item[0][0] == "%":
+					menuitem = gtk.ImageMenuItem(item[0][1:])	
+					img = gtk.Image()
+					img.set_from_pixbuf(item[2])
+					menuitem.set_image(img)
 				else:
 					menuitem = gtk.MenuItem(item[0])
 				if item[1] is not None:
@@ -983,23 +976,17 @@ class PopupMenu(gtk.Menu):
 		return self.user
 		
 	def OnSendMessage(self, widget):
-		if self.app.ProcessMessages.connected == False:
-			return
 		if debugmode == True: print "OnSendMessage"
-		if self.user != None and self.user != "":
-			self.app.privatechats.SendMessage(self.user) 
-			
-		#self.app.privatechats.SendMessage(self.user)
+		self.frame.GetPrivateChat(self.user) 
 	
 	def OnShowIPaddress(self, widget):
-		if self.app.ProcessMessages.connected == False:
+		if self.frame.ProcessMessages.connected == False:
 			return
 		if debugmode == True: print "OnShowIPaddress"
-		self.app.ip_requested = self.user
-		self.app.ProcessMessages.Send(messages.PeerAddress(self.user) )
+		self.frame.GetIPAddress(self.user)
 	
 	def OnDownloadFile(self, widget):
-		if self.app.ProcessMessages.connected == False:
+		if self.frame.ProcessMessages.connected == False:
 			return
 		if debugmode == True: print "OnDownloadFile"
 		if self.path != None:
@@ -1010,9 +997,10 @@ class PopupMenu(gtk.Menu):
 				path = self.directory+"\\"+self.file
 			else:
 				path = self.directory+self.file
-		self.app.ProcessMessages.Send(messages.DownloadFile(self.user, path))
+		self.frame.ProcessMessages.Send(messages.DownloadFile(self.user, path))
+		
 	def OnDownloadDirectory(self, widget):
-		if self.app.ProcessMessages.connected == False:
+		if self.frame.ProcessMessages.connected == False:
 			return
 		if debugmode == True: print "OnDownloadDirectory"
 		if self.path != None:
@@ -1020,121 +1008,75 @@ class PopupMenu(gtk.Menu):
 			for path in self.path.split("\\")[:-1]:
 				dire += path+"\\"
 			
-			self.app.ProcessMessages.Send(messages.GetFolderContents(self.user, dire))
+			self.frame.ProcessMessages.Send(messages.GetFolderContents(self.user, dire))
 		else:
-			self.app.ProcessMessages.Send(messages.GetFolderContents(self.user, self.directory))
+			self.frame.ProcessMessages.Send(messages.GetFolderContents(self.user, self.directory))
 
 	
 	def OnGetUserInfo(self, widget):
 		if debugmode == True: print "OnGetUserInfo", self.user
-		self.app.ProcessMessages.Send(messages.UserInfo(self.user) )
-		#self.app.np.ProcessRequestToPeer(self.user, slskmessages.UserInfoRequest(None), self.app.userinfo)
-		
+		self.frame.GetUserInfo(self.user)
 		
 	def OnBrowseUser(self, widget):
-		if self.app.ProcessMessages.connected == False:
-			return
-		self.app.ProcessMessages.Send(messages.UserShares(self.user) )
+		self.frame.GetShares(self.user)
 	
 	def OnAddToList(self, widget):
-		if self.app.ProcessMessages.connected == False:
-			return
-		pass
 		if widget.get_active():
-			self.app.ProcessMessages.mod_config("buddy", self.user, '')
+			self.frame.ProcessMessages.mod_config("buddy", self.user, '')
 		else:
-			self.app.ProcessMessages.mod_config("unbuddy", self.user, '')
+			self.frame.ProcessMessages.mod_config("unbuddy", self.user, '')
 	
 	def OnBanUser(self, widget):
-		if self.app.ProcessMessages.connected == False:
-			return
 		if widget.get_active():
-			self.app.ProcessMessages.mod_config("ban", self.user, '')
+			self.frame.ProcessMessages.mod_config("ban", self.user, '')
 		else:
-			self.app.ProcessMessages.mod_config("unban", self.user, '')
+			self.frame.ProcessMessages.mod_config("unban", self.user, '')
 			
 	def OnTrustUser(self, widget):
-		if self.app.ProcessMessages.connected == False:
-			return
 		if widget.get_active():
-			self.app.ProcessMessages.mod_config("trust", self.user, '')
+			self.frame.ProcessMessages.mod_config("trust", self.user, '')
 		else:
-			self.app.ProcessMessages.mod_config("distrust", self.user, '')
+			self.frame.ProcessMessages.mod_config("distrust", self.user, '')
 			
 	def OnIgnoreUser(self, widget):
-		if self.app.ProcessMessages.connected == False:
-			return
 		if widget.get_active():
 
-			self.app.ProcessMessages.mod_config("ignore", self.user, '')
+			self.frame.ProcessMessages.mod_config("ignore", self.user, '')
 		else:
-			self.app.ProcessMessages.mod_config("unignore", self.user, '')
+			self.frame.ProcessMessages.mod_config("unignore", self.user, '')
+			
 	def OnLeaveRoom(self, widget):
-		if self.app.ProcessMessages.connected == False:
-			return
 		room = self.user
-		self.app.leave_a_room(room)
-		pass
+		self.frame.RoomLeave(room)
+		
 	def OnJoinRoom(self, widget):
-		if self.app.ProcessMessages.connected == False:
-			return
 		room = self.user
-		self.app.join_a_room(room)
-		pass
+		self.frame.RoomJoin(room)
+
 	
 	def OnAbortDownTransfer(self, widget):
-		if self.app.ProcessMessages.connected == False:
+		if self.frame.ProcessMessages.connected == False:
 			return
-		self.app.ProcessMessages.Send(messages.TransferAbort(0, self.user, self.path))
+		self.frame.ProcessMessages.Send(messages.TransferAbort(0, self.user, self.path))
 		
 	def OnAbortUpTransfer(self, widget):
-		if self.app.ProcessMessages.connected == False:
+		if self.frame.ProcessMessages.connected == False:
 			return
-		self.app.ProcessMessages.Send(messages.TransferAbort(1, self.user, self.path))
+		self.frame.ProcessMessages.Send(messages.TransferAbort(1, self.user, self.path))
 		
 	def OnClearDownTransfer(self, widget):
-		if self.app.ProcessMessages.connected == False:
+		if self.frame.ProcessMessages.connected == False:
 			return	
-		self.app.ProcessMessages.Send(messages.TransferRemove(0, self.user, self.path))
+		self.frame.ProcessMessages.Send(messages.TransferRemove(0, self.user, self.path))
 		
 	def OnClearUpTransfer(self, widget):
-		if self.app.ProcessMessages.connected == False:
+		if self.frame.ProcessMessages.connected == False:
 			return
-		self.app.ProcessMessages.Send(messages.TransferRemove(1, self.user, self.path))
+		self.frame.ProcessMessages.Send(messages.TransferRemove(1, self.user, self.path))
 		
 	def OnRetryTransfer(self, widget):	
-		self.app.ProcessMessages.Send(messages.DownloadFile(self.user, self.path))
+		self.frame.ProcessMessages.Send(messages.DownloadFile(self.user, self.path))
 
-class QueueMinder(object):
-	
-	def __init__(self, msgQueue, inCallback=None, interval=1.0, doStart=False):
-		object.__init__(self)
-		self.msgQueue = msgQueue
-		if not inCallback: self.inCallback=self.gotMessage
-		else: self.inCallback=inCallback
-		self.interval = interval
-		self.progressTimer = None
-		if doStart:
-			self.startTimer()
-	
-	def startTimer(self):
-		self.progressTimer = threading.Timer(self.interval, self._progressCheck)
-		self.progressTimer.start()
-	
-	def stopTimer(self):
-		if self.progressTimer: self.progressTimer.cancel()
-		self.progressTimer=None
-	
-	def gotMessage(self,msg):
-		if debugmode == True: print 'gotMessage(): msg=%s'%msg
-	
-	def _progressCheck(self):
-		try:
-			while 1:
-				msg = self.msgQueue.get(False)
-				if msg: self.inCallback(msg)
-		except Queue.Empty:
-			self.startTimer()
 
 class DisplayDialog( gtk.Window):
 	def __init__(self, Mapp, message="",  picture=None, modal= True):
@@ -1148,7 +1090,7 @@ class DisplayDialog( gtk.Window):
 		self.hbox = gtk.HBox(spacing=5)
 		self.vbox2 = gtk.VBox(spacing=5)
 		self.vbox = gtk.VBox(spacing=5)
-		self.app = Mapp
+		self.myparent = Mapp
 		self.ret = None
 		self.image_last = None
 		
@@ -1157,25 +1099,25 @@ class DisplayDialog( gtk.Window):
 		
 	def reloads(self):
 			
-		if self.app.dialogtitle != None:
-			self.set_title(self.app.dialogtitle)
-			if self.app.dialogtitle == "IP Address": self.set_size_request(300, 100)
-			self.app.dialogtitle = None
+		if self.myparent.dialogtitle != None:
+			self.set_title(self.myparent.dialogtitle)
+			if self.myparent.dialogtitle == "IP Address": self.set_size_request(300, 100)
+			self.myparent.dialogtitle = None
 			
 		try:
 			
 			self.vbox.set_border_width(5)
 			
-			if self.app.dialogmessage != None:
+			if self.myparent.dialogmessage != None:
 				self.textbuffer = gtk.TextBuffer(table=None)
 				chat = gtk.TextView()
 				#self.textbuffer.create_mark("tail", self.textbuffer.get_end_iter(), False)
 				
-				self.textbuffer.insert(self.textbuffer.get_end_iter(), self.app.dialogmessage)
+				self.textbuffer.insert(self.textbuffer.get_end_iter(), self.myparent.dialogmessage)
 					
 				chat.set_editable(False)
 				chat.set_buffer(self.textbuffer)
-				chat.set_wrap_mode( gtk.WRAP_WORD)
+				chat.set_wrap_mode(gtk.WRAP_WORD)
 				chat.set_cursor_visible(False)
 				chat.show()
 				
@@ -1198,14 +1140,14 @@ class DisplayDialog( gtk.Window):
 			if debugmode == True: print "DisplayDialog", e
 
 
-		if self.app.dialogmessage != None:
+		if self.myparent.dialogmessage != None:
 			self.textbuffer.delete(self.textbuffer.get_start_iter(), self.textbuffer.get_end_iter())
-			self.textbuffer.insert(self.textbuffer.get_end_iter(), self.app.dialogmessage)
+			self.textbuffer.insert(self.textbuffer.get_end_iter(), self.myparent.dialogmessage)
 
 		try:
 			
-			if self.app.dialogpicture != None:
-				if self.app.dialogpicture == "":
+			if self.myparent.dialogpicture != None:
+				if self.myparent.dialogpicture == "":
 					#self.set_size_request(500, 300)
 					button = gtk.Button("OK")
 					button.connect("clicked", self.click)
@@ -1230,7 +1172,7 @@ class DisplayDialog( gtk.Window):
 				scrolled_window.show()
 				self.viewport2 = gtk.Viewport()
 				self.viewport2.show()
-				self.viewport2.set_shadow_type(gtk.SHADOW_NONE)
+				self.viewport2.set_shadow_type(gtk.SHADOW_IN)
 				
 				scrolled_window.add(self.viewport2)#self.eventbox)
 				self.app3.add(scrolled_window)
@@ -1249,8 +1191,8 @@ class DisplayDialog( gtk.Window):
 				if debugmode == True:  print "adding image"
 				self.image = gtk.Image()
 				
-				if debugmode == True:  print "Filename:", self.app.dialogpicture
-				self.image.set_from_file(self.app.dialogpicture)
+				if debugmode == True:  print "Filename:", self.myparent.dialogpicture
+				self.image.set_from_file(self.myparent.dialogpicture)
 					
 				self.image.show()
 				self.viewport2.add(self.image)
@@ -1274,11 +1216,11 @@ class DisplayDialog( gtk.Window):
 		self.ret = None
 		self.hide()
 		self.destroy()
-		if self.app.f != None:
-			self.app.f.close()
-			self.app.f = None
-			if os.path.exists(self.app.dialogpicture):
-				os.remove(self.app.dialogpicture)
+		if self.myparent.f != None:
+			self.myparent.f.close()
+			self.myparent.f = None
+			if os.path.exists(self.myparent.dialogpicture):
+				os.remove(self.myparent.dialogpicture)
 		sleep(0.1)
 	def click(self, button):
 		self.ret = None
@@ -1294,8 +1236,7 @@ class MurmurWindow:
 			self.accel_group = accel_group
 		if create:
 			self.MurmurWindow = gtk.Window(gtk.WINDOW_TOPLEVEL)
-			self.MurmurWindow.set_default_size(600, 400)
-			#self.MurmurWindow.set_title(("Nicoseek"))
+			self.MurmurWindow.set_default_size(700, 500)
 			self.MurmurWindow.set_position(gtk.WIN_POS_CENTER)
 			self.MurmurWindow.add_accel_group(self.accel_group)
 			self.MurmurWindow.show()
@@ -1408,7 +1349,17 @@ class MurmurWindow:
 		self.hbox20.show()
 		self.hbox20.set_spacing(5)
 		self.hbox20.set_border_width(5)
-	
+		
+		# Entry
+		self.PrivateChatEntry = gtk.Entry()
+		self.PrivateChatEntry.set_text("")
+		self.PrivateChatEntry.set_editable(True)
+		self.PrivateChatEntry.show()
+		self.PrivateChatEntry.set_visibility(True)
+		self.hbox20.pack_start(self.PrivateChatEntry, False, True, 0)
+		self.PrivateChatEntry.connect("activate", self.OnGetPrivateChat)
+		
+		# Button
 		self.sPrivateChatButton = gtk.Button()
 		self.sPrivateChatButton.show()
 	
@@ -1431,28 +1382,13 @@ class MurmurWindow:
 		self.hbox30.pack_start(self.label39, False, False, 0)
 	
 		self.alignment10.add(self.hbox30)
-	
+		self.sPrivateChatButton.connect("clicked", self.OnGetPrivateChat)
+		
 		self.sPrivateChatButton.add(self.alignment10)
-	
+		
 		self.hbox20.pack_end(self.sPrivateChatButton, False, False, 0)
-	
-		self.PrivateChatEntry = gtk.Entry()
-		self.PrivateChatEntry.set_text("")
-		self.PrivateChatEntry.set_editable(True)
-		self.PrivateChatEntry.show()
-		self.PrivateChatEntry.set_visibility(True)
-		self.hbox20.pack_end(self.PrivateChatEntry, False, True, 0)
-	
-		self.label29 = gtk.Label(_("Input a user:"))
-		self.label29.set_padding(0, 0)
-		self.label29.show()
-		self.hbox20.pack_end(self.label29, False, False, 0)
-	
 		self.privatevbox.pack_start(self.hbox20, False, True, 0)
 
-		self.sPrivateChatButton.connect("clicked", self.OnGetPrivateChat)
-		self.PrivateChatEntry.connect("activate", self.OnGetPrivateChat)
-		
 		# Transfers Construction
 		self.notebook_transfers = gtk.Frame()
 		self.notebook_transfers.show()
@@ -1467,66 +1403,7 @@ class MurmurWindow:
 
 		self.notebook_transfers.add(vpaned1)
 
-		# User Browse Construction
-		self.userbrowsevbox = gtk.VBox(False, 0)
-		self.userbrowsevbox.show()
-		self.userbrowsevbox.set_spacing(0)
 		
-		self.notebook_browsing = gtk.Notebook()
-		self.notebook_browsing.set_tab_pos(gtk.POS_TOP)
-		self.notebook_browsing.set_scrollable(False)
-		self.notebook_browsing.show()
-		
-		self.userbrowsevbox.pack_start(self.notebook_browsing, True, True, 0)
-	
-		self.hbox22 = gtk.HBox(False, 5)
-		self.hbox22.show()
-		self.hbox22.set_spacing(5)
-		self.hbox22.set_border_width(5)
-	
-		self.sSharesButton = gtk.Button()
-		self.sSharesButton.show()
-	
-		self.alignment11 = gtk.Alignment(0.5, 0.5, 0, 0)
-		self.alignment11.show()
-	
-		self.hbox31 = gtk.HBox(False, 2)
-		self.hbox31.show()
-		self.hbox31.set_spacing(2)
-	
-		self.image11 = gtk.Image()
-		self.image11.set_padding(0, 0)
-		self.image11.set_from_stock(gtk.STOCK_JUMP_TO, 4)
-		self.image11.show()
-		self.hbox31.pack_start(self.image11, False, False, 0)
-	
-		self.label40 = gtk.Label(_("Get Shares"))
-		self.label40.set_padding(0, 0)
-		self.label40.show()
-		self.hbox31.pack_start(self.label40, False, False, 0)
-	
-		self.alignment11.add(self.hbox31)
-	
-		self.sSharesButton.add(self.alignment11)
-	
-		self.hbox22.pack_end(self.sSharesButton, False, False, 0)
-	
-		self.SharesEntry = gtk.Entry()
-		self.SharesEntry.set_text("")
-		self.SharesEntry.set_editable(True)
-		self.SharesEntry.show()
-		self.SharesEntry.set_visibility(True)
-		self.hbox22.pack_end(self.SharesEntry, False, True, 0)
-		
-		self.sSharesButton.connect("clicked", self.OnGetShares)
-		self.SharesEntry.connect("activate", self.OnGetShares)
-		
-		self.label31 = gtk.Label(_("Input a user:"))
-		self.label31.set_padding(0, 0)
-		self.label31.show()
-		self.hbox22.pack_end(self.label31, False, False, 0)
-	
-		self.userbrowsevbox.pack_start(self.hbox22, False, True, 0)
 		
 		# Searches Construction
 		self.notebook_searches= gtk.Frame()
@@ -1596,29 +1473,82 @@ class MurmurWindow:
 		self.sUserinfoButton.connect("clicked", self.OnGetUserInfo)
 		self.UserinfoEntry.connect("activate", self.OnGetUserInfo)
 		
+		# User Browse Construction
+		self.userbrowsevbox = gtk.VBox(False, 0)
+		self.userbrowsevbox.show()
+		self.userbrowsevbox.set_spacing(0)
+		
+		self.userbrowses = UserBrowses(self)
+		
+		
+	
+		self.hbox22 = gtk.HBox(False, 5)
+		self.hbox22.show()
+		self.hbox22.set_spacing(5)
+		self.hbox22.set_border_width(5)
+	
+		
+	
+		self.SharesEntry = gtk.Entry()
+		self.SharesEntry.set_text("")
+		self.SharesEntry.set_editable(True)
+		self.SharesEntry.show()
+		self.SharesEntry.set_visibility(True)
+		self.hbox22.pack_start(self.SharesEntry, False, True, 0)
+		
+		self.sSharesButton = gtk.Button()
+		self.sSharesButton.show()
+	
+		self.alignment11 = gtk.Alignment(0.5, 0.5, 0, 0)
+		self.alignment11.show()
+	
+		self.hbox31 = gtk.HBox(False, 2)
+		self.hbox31.show()
+		self.hbox31.set_spacing(2)
+	
+		self.image11 = gtk.Image()
+		self.image11.set_padding(0, 0)
+		self.image11.set_from_stock(gtk.STOCK_JUMP_TO, 4)
+		self.image11.show()
+		self.hbox31.pack_start(self.image11, False, False, 0)
+		self.alignment11.add(self.hbox31)
+	
+		self.sSharesButton.add(self.alignment11)
+		self.hbox22.pack_start(self.sSharesButton, False, False, 0)
+		
+		self.label40 = gtk.Label(_("Browse Shares"))
+		self.label40.set_padding(0, 0)
+		self.label40.show()
+		self.hbox31.pack_start(self.label40, False, False, 0)
+
+		self.sSharesButton.connect("clicked", self.OnGetShares)
+		self.SharesEntry.connect("activate", self.OnGetShares)
+
+		self.userbrowsevbox.pack_start(self.hbox22, False, True, 0)
+		self.userbrowsevbox.pack_start(self.userbrowses, True, True, 0)
 		# Room List Construction
 
 		# Add tabs to Notebook
 
 		self.notebook_outside.append_page(self.ChatRooms, chatlabel)
 		
-		label = gtk.Label("Private Chat") 
+		label = gtk.Label(_("Private Chat")) 
 		label.show()
 		self.notebook_outside.append_page(self.privatevbox, label)
 		
-		label = gtk.Label("Transfers") 
+		label = gtk.Label(_("Transfers")) 
 		label.show()
 		self.notebook_outside.append_page(self.notebook_transfers, label)
 		
-		label = gtk.Label("Searches") 
+		label = gtk.Label(_("Searches"))
 		label.show()
 		self.notebook_outside.append_page(self.notebook_searches, label)
 		
-		label = gtk.Label("User Info") 
+		label = gtk.Label(_("User Info")) 
 		label.show()
 		self.notebook_outside.append_page(self.userinfovbox, label)
 		
-		label = gtk.Label("Browse") 
+		label = gtk.Label(_("User Browse")) 
 		label.show()
 		self.notebook_outside.append_page(self.userbrowsevbox, label)
 		
@@ -1663,25 +1593,45 @@ class MurmurWindow:
 			return size 
 
 	def OnGetShares(self, widget):
-		user =self.SharesEntry.get_text()
+		self.GetShares(self.SharesEntry.get_text())
+		self.SharesEntry.set_text("")
+		
+	def OnGetUserInfo(self, widget):
+		self.GetUserInfo(self.UserinfoEntry.get_text())
+		self.UserinfoEntry.set_text("")
+			
+	def OnGetPrivateChat(self, widget):
+		self.GetPrivateChat(self.PrivateChatEntry.get_text())
+		self.PrivateChatEntry.set_text("")
+			
+	def GetUserInfo(self, user):
+		if user != "" and not user.isspace():
+			self.ProcessMessages.Send(messages.UserInfo(user))
+			
+	def GetIPAddress(self, user):
+		if user not in self.ip_requested and user != "" and not user.isspace():
+			self.ip_requested.append(user)
+			self.ProcessMessages.Send(messages.PeerAddress(user))
+			
+	def GetPrivateChat(self, user):
+		if user != "" and not user.isspace():
+			self.privatechats.SendMessage(user)
+			
+	def GetShares(self, user):
 		if user != "" and not user.isspace():
 			self.ProcessMessages.Send(messages.UserShares(user) )
 			
-	def OnGetUserInfo(self, widget):
-		
-		user =self.UserinfoEntry.get_text()
-		if user != "" and not user.isspace():
-			self.ProcessMessages.Send(messages.UserInfo(user) )
-			self.UserinfoEntry.set_text("")
+	def RoomJoin(self, room):
+
+		if room != None and room != "":
+			self.ProcessMessages.Send(messages.JoinRoom(room))
 			
-	def OnGetPrivateChat(self, widget):
-		
-		user =self.PrivateChatEntry.get_text()
-		if user != "" and not user.isspace():
-			self.privatechats.SendMessage(user)
-			#self.ProcessMessages.Send(messages.PrivateChat(user) )
-			self.PrivateChatEntry.set_text("")
-			
+	def RoomLeave(self, room):
+
+		if room != None and room != "":
+			if room in self.chatrooms.roomsmaster.joinedrooms:
+				self.ProcessMessages.Send(messages.LeaveRoom(room))
+				
 	def topmenu(self):
 		
 		menubar1 = gtk.MenuBar()
@@ -1836,7 +1786,400 @@ class MurmurWindow:
 		menubar1.append(menuitem4)
 		menubar1.show()
 		return menubar1
+
+
+class UserBrowse:
+	def __init__(self, browses, user):
+		try:
+			self.frame = browses.frame
+			self.user = user 
+			self.shares = {}
+			self.selected_files = []
+			
+			self.Main = gtk.VBox(False, 0)
+			self.Main.show()
+			self.Main.set_spacing(0)
+			
+			hbox1 = gtk.HBox(False, 0)
+			hbox1.show()
+			hbox1.set_spacing(0)
+			
+			label1 = gtk.Label(("Search Shares For:"))
+			label1.set_padding(5, 0)
+			label1.show()
+			hbox1.pack_start(label1, False, False, 0)
+			
+			self.entry = entry= gtk.Entry()
+			entry.set_text("")
+			#entry.set_activates_default(True)
+			entry.set_editable(True)
+			entry.connect_object("activate", self.SearchShares, user)
+			entry.show()
+			hbox1.pack_start(entry, True, True, 0)
+			
+			self.searchbutton = searchbutton = gtk.Button()
+			searchbutton.set_label(("Search"))
+			searchbutton.set_flags(gtk.CAN_DEFAULT)
+			#searchbutton.grab_default()
+			searchbutton.connect_object("clicked", self.SearchShares, user)
+			searchbutton.show()
+			searchbutton.set_border_width(3)
+			
+			hbox1.pack_start(searchbutton, False, False, 0)
+			
+			self.Main.pack_start(hbox1, False, True, 0)
+			
+			hbox2 = gtk.HBox(False, 0)
+			hbox2.show()
+			hbox2.set_spacing(0)
+			
+			hpaned1 = gtk.HPaned()
+			hpaned1.show()
+			
+			self.DirSW = DirSW = gtk.ScrolledWindow()
+			self.DirSW.set_policy(gtk.POLICY_ALWAYS, gtk.POLICY_ALWAYS)
+			self.DirSW.set_size_request(250, -1)
+			self.DirSW.show()
+			self.DirSW.set_shadow_type(gtk.SHADOW_IN)
+			
+			
+			self.DirStore = gtk.TreeStore(  str, str )
+			
+			self.DirTreeView = DirTreeView = gtk.TreeView(self.DirStore)
+			self.DirTreeView.set_property("rules-hint", True)
+			#DirTreeView.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
+			DirTreeView.set_headers_visible(True)
+			cols = InitialiseColumns(self.DirTreeView,
+				[_("Directories"), -1, "text"], #0
+			)
+			cols[0].set_sort_column_id(0)
+			#self.DirTreeView.set_search_column(0)
+			DirTreeView.show()
+			
+			#self.DirStore.set_sort_column_id(0, gtk.SORT_ASCENDING)
+			
+			self.dir_popup_menu = popup = PopupMenu(self.frame, "browse-dirs")
+			popup.setup(
+				("#" + _("_Download Directory"), popup.OnDownloadDirectory, gtk.STOCK_GO_DOWN),
+				("", None),
+				("#" + _("_Private Message"), popup.OnSendMessage, gtk.STOCK_EDIT),
+				("#" + _("_User Info"), popup.OnGetUserInfo, gtk.STOCK_INFO),
+				("#" + _("IP A_ddress"), popup.OnShowIPaddress, gtk.STOCK_NETWORK),
+				("#" + _("Reload _Shares"), popup.OnBrowseUser, gtk.STOCK_HARDDISK),
+				("$" + _("_Buddy this user"), popup.OnAddToList),
+				("$" + _("Ba_n this user"), popup.OnBanUser),
+				("$" + _("_Ignore this user"), popup.OnIgnoreUser),
+				("$" + _("_Trust this user"), popup.OnTrustUser),
+			)
+			DirTreeView.connect("button_press_event", self.OnDirClicked)
+			
+			DirSW.add(DirTreeView)
+
+			
+			hpaned1.pack1(DirSW, False, False)
+			self.FilesStore = self.FileStore = gtk.ListStore(  str, str, str, int, str, int )
+			
+			self.FilesTreeView = gtk.TreeView(self.FileStore)
+			self.FilesTreeView.set_property("rules-hint", True)
+			self.FilesTreeView.set_reorderable(True)
+			self.FilesTreeView.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
+			self.FilesTreeView.set_headers_visible(True)
+			
+			cols = InitialiseColumns(self.FilesTreeView,
+			[_("Filename"), 250, "text"], #0
+			[_("Size"), 100, "text"], #1
+			[_("Length"), 70, "text"], #2
+			[_("Bitrate"), 70, "text"], #3
+			)
+			#for ix in range(len(cols)):
+			cols[0].set_sort_column_id(0)
+			cols[1].set_sort_column_id(5)
+			cols[2].set_sort_column_id(2)
+			cols[3].set_sort_column_id(3)
+			
+			self.files_popup_menu = popup = PopupMenu(self.frame, "browse-files")
+			popup.setup(
+				("#" + _("Download _File"), popup.OnDownloadFile, gtk.STOCK_GO_DOWN),
+				("#" + _("_Download Directory"), popup.OnDownloadDirectory, gtk.STOCK_GO_DOWN),
+				("", None),
+				("#" + _("_Private Message"), popup.OnSendMessage, gtk.STOCK_EDIT),
+				("#" + _("_User Info"), popup.OnGetUserInfo, gtk.STOCK_INFO),
+				("#" + _("_IP Address"), popup.OnShowIPaddress, gtk.STOCK_NETWORK),
+				("#" + _("Reload _Shares"), popup.OnBrowseUser, gtk.STOCK_HARDDISK),
+				("$" + _("_Buddy this user"), popup.OnAddToList),
+				("$" + _("Ba_n this user"), popup.OnBanUser),
+				("$" + _("_Ignore this user"), popup.OnIgnoreUser),
+				("$" + _("_Trust this user"), popup.OnTrustUser),
 	
+			)
+			self.FilesTreeView.connect("button_press_event", self.OnFileClicked)
+			self.FilesTreeView.show()
+			
+			self.FilesSW = gtk.ScrolledWindow()
+			self.FilesSW.set_policy(gtk.POLICY_ALWAYS, gtk.POLICY_ALWAYS)
+			self.FilesSW.set_shadow_type(gtk.SHADOW_IN)
+ 			self.FilesSW.add(self.FilesTreeView)
+ 			self.FilesSW.show()
+			directory = self.BrowseGetDirs(user)
+			self.BrowseChangeDir(user, directory)
+			
+			hpaned1.pack2(self.FilesSW, True, True)
+			
+			hbox2.pack_start(hpaned1, True, True, 0)
+			
+			self.Main.pack_start(hbox2, True, True, 0)
+			
+			label2 = gtk.Label((user))
+			label2.set_padding(0, 0)
+			label2.show()
+			
+			image = gtk.image_new_from_stock(gtk.STOCK_CANCEL, gtk.ICON_SIZE_MENU)
+			image.show()
+			button1 = gtk.Button()
+			button1.add(image)
+			button1.connect_object("clicked", self.CloseBrowse, user)
+			button1.show()
+			hbox = gtk.HBox(False, 0)
+			hbox.show()
+			hbox.set_spacing(0)
+			hbox.pack_start(label2, False, False, 0)
+			hbox.pack_start(button1, False, False, 0)
+			
+			#self.widgets["browse"]["notebook"] = self.notebook_browsing
+			#self.notebook_browsing.append_page_menu(self.Main, hbox, label2)
+			#self.notebook_browsing.append_page(vbox1, UserName)
+			#self.notebook_browsing.show()
+		except Exception, e:
+			print "UserBrowse", e
+			
+	def OnDirClicked(self, widget, event):
+		if event.button != 3:
+			self.MouseAction(widget, event)
+			return
+		self.OnDirPopupMenu(widget, event)
+			
+	def OnDirPopupMenu(self, widget, event):
+		user = self.user
+		menu = self.dir_popup_menu
+		items = menu.get_children()
+		
+		d = self.DirTreeView.get_path_at_pos(int(event.x), int(event.y))
+		if not d:
+			return
+		path, column, x, y = d
+		directory = self.DirStore.get_value(self.DirStore.get_iter(path), 1)
+		menu.set_directory(directory)
+		num = 6
+		menu.set_user(user)
+		
+		if self.frame.ProcessMessages.config != {}:
+			items[num].set_active(user in self.frame.ProcessMessages.config["buddies"].keys())
+			items[num+1].set_active(user in self.frame.ProcessMessages.config["banned"].keys())
+			items[num+2].set_active(user in self.frame.ProcessMessages.config["ignored"].keys())
+			items[num+3].set_active(user in self.frame.ProcessMessages.config["trusted"].keys())
+		menu.popup(None, None, None, event.button, event.time)
+			
+	def SelectedFilesCallback(self, model, path, iter):
+		self.selected_files.append(model.data[path[0]][6])
+		
+	def OnFileClicked(self, widget, event):
+	
+		if event.button != 3:
+		
+			return
+		
+		self.OnFilePopupMenu(widget, event)
+		
+	def OnFilePopupMenu(self, widget, event):
+
+		user = self.user
+		menu = self.files_popup_menu
+		items = menu.get_children()
+		self.FilesTreeView.get_selection().selected_foreach(self.SelectedFilesCallback)
+		if debugmode == True:  print "-- Popup -- :"
+		
+		d = self.FilesTreeView.get_path_at_pos(int(event.x), int(event.y))
+		if not d:
+			return
+		path, column, x, y = d
+		
+		file = self.FileStore.get_value(self.FileStore.get_iter(path), 0)
+		directory = self.FileStore.get_value(self.FileStore.get_iter(path), 4)
+		menu.set_file(file)
+		menu.set_directory(directory)
+		num = 7
+
+		menu.set_user(user)
+		
+		if self.frame.ProcessMessages.config != {}:
+			items[num].set_active(user in self.frame.ProcessMessages.config["buddies"].keys())
+			items[num+1].set_active(user in self.frame.ProcessMessages.config["banned"].keys())
+			items[num+2].set_active(user in self.frame.ProcessMessages.config["ignored"].keys())
+			items[num+3].set_active(user in self.frame.ProcessMessages.config["trusted"].keys())
+		menu.popup(None, None, None, event.button, event.time)
+		
+	def MouseAction(self, widget, event):
+		if debugmode == True:  print "-- Click -- :"
+		#user = self.tabs["browse"][self.notebook_browsing.get_current_page()]
+		d = self.DirTreeView.get_path_at_pos(int(event.x), int(event.y))
+		if not d:
+			return
+		path, column, x, y = d
+		directory = self.DirStore.get_value(self.DirStore.get_iter(path), 1)
+		if debugmode == True:  print "-- dir :", directory
+		self.BrowseChangeDir(self.user, directory)
+			
+	def ShowShares(self, user, shares):
+		try:
+			if user != self.user:
+				return
+			self.DirStore.clear()
+			self.shares = shares
+			directory = self.BrowseGetDirs(user)
+			self.BrowseChangeDir(user, directory)
+			self.DirTreeView.expand_all()
+			
+		except Exception,e:
+			if debugmode == True: print "get_shares", Exception,e
+			
+	def CloseBrowse(self, user):
+		self.widgets["browse"]["notebook"].remove_page( self.widgets["browse"]["notebook"].page_num( self.widgets["browse"][user]["container"] ) )
+		del self.widgets["browse"][user] 
+		self.tabs["browse"].remove(user)
+				
+	def SearchShares(self, user):
+		query = self.entry.get_text()
+		if debugmode == True: print "Query:", query
+		dir = self.directory
+		searchfilter = re.compile('.*' +str(query) + '.*', re.DOTALL | re.I)
+		for directory in self.shares.keys():
+			if directory == dir:
+				continue
+			if re.match(searchfilter, directory):
+				self.BrowseChangeDir(user, directory)
+				break
+		for directory, files in self.shares.items():
+			if directory == dir:
+				continue
+			for file in files.keys():
+				if re.match(searchfilter, file):
+					self.BrowseChangeDir(user, directory)
+					break
+
+		
+	def BrowseGetDirs( self, user):
+		try:
+			z = []
+			for dirs in self.shares.keys():
+				z.append(dirs)
+			z.sort()
+			zz = []
+			directory = ""
+			self.directories = {}
+			if z != []:
+				for item in z:
+					s = item.split("\\")
+					path = ''
+
+					parent = s[0]
+					if parent == '':
+						parent += "\\"
+						if parent not in self.directories.keys():
+							self.directories[parent] =  self.DirStore.append(None, [parent, parent])
+					parent = s[0]
+					for seq in s[1:]:
+						if parent == "":
+							parent += "\\"
+							path = parent+seq
+						else:
+							path = parent+"\\"+seq
+						
+
+						if parent not in self.directories.keys():
+							self.directories[parent] =  self.DirStore.append(None, [parent, parent])
+						
+
+						if path not in zz:
+							zz.append(path)
+							self.directories[path] = self.DirStore.append(self.directories[parent], [path.split("\\")[-1], path ] )
+						parent = path
+
+				directory = zz[0]
+			return directory
+		except Exception,e:
+			if debugmode == True: print "BrowseGetDirs", Exception,e
+			
+	def BrowseChangeDir(self, user, directory):
+		self.directory = directory
+		self.FileStore.clear()
+		
+		#file, stats[ size, ftype, [bitrate, length ] ]
+		if directory in self.shares:
+			for files,stats in self.shares[directory].items():
+				#print files, stats
+				size, ftype, attr  = stats
+				#[bitrate, length, something ]
+				if ftype == "" or attr == []:
+					length = 0
+					bitrate = 0
+				else:
+					bitrate = attr[0]
+					length = self.frame.get_length_time(attr[1])
+
+				self.FileStore.append([files, self.frame.Humanize(size), length, bitrate, directory, int(size)])
+			
+		# Finish
+		self.FileStore.set_sort_column_id(0, gtk.SORT_ASCENDING)
+		
+			
+class UserBrowses(gtk.Notebook):
+	def __init__(self, frame):
+		gtk.Notebook.__init__(self)
+		self.set_scrollable(False)
+		self.show()
+		self.users = {}
+		self.frame = frame
+		self.set_border_width(4)
+		self.set_tab_pos(gtk.POS_TOP)
+		self.connect("switch-page", self.OnSwitchPage)
+		
+	def GotUserBrowse(self, user, shares):
+		if self.users.has_key(user):
+			self.users[user].ShowShares(user, shares)
+		else:
+			self.users[user] = UserBrowse(self, user)
+		
+			UserName = gtk.Label((user))
+			UserName.set_padding(0, 0)
+			UserName.show()
+			image = gtk.image_new_from_stock(gtk.STOCK_CANCEL, gtk.ICON_SIZE_MENU)
+			image.show()
+			button1 = gtk.Button()
+			button1.add(image)
+			button1.connect_object("clicked", self.RemoveTab, self.users[user])
+			button1.show()
+			hbox1 = gtk.HBox(False, 0)
+			hbox1.show()
+			hbox1.set_spacing(0)
+			hbox1.pack_start(UserName, True, False, 3)
+			hbox1.pack_start(button1, False, False, 3)
+			
+			self.append_page_menu(self.users[user].Main, hbox1, UserName)
+			
+			#self.append_page(self.users[user].Main, UserName)
+
+			self.users[user].ShowShares(user, shares)
+			
+	def OnSwitchPage(self, notebook, page, page_num, force = 0):
+		
+		if self.frame.notebook_outside.get_current_page() != 4 and not force:
+			return
+		page = notebook.get_nth_page(page_num)	
+		#print page
+		
+	def RemoveTab(self, tab):
+		self.remove_page(self.page_num(tab.Main))
+		del self.users[tab.user]
 class UserInfo:
 	def __init__(self, infos, user):
 		self.frame = infos.frame
@@ -2141,15 +2484,16 @@ class PrivateChat:
 		
 		self.popup_menu = popup = PopupMenu(self.frame, "something")
 		popup.setup(
-			(_("Close"), self.OnClose),
+			("#" + _("Close"), self.OnClose, gtk.STOCK_CANCEL),
 			("", None),
-			(_("Show IP address"), popup.OnShowIPaddress),
-			(_("Get user info"), popup.OnGetUserInfo),
-			(_("Browse files"), popup.OnBrowseUser),
+			("#" + _("Show IP address"), popup.OnShowIPaddress, gtk.STOCK_NETWORK),
+			("#" + _("Get user info"), popup.OnGetUserInfo, gtk.STOCK_INFO),
+			("#" + _("Browse files"), popup.OnBrowseUser, gtk.STOCK_HARDDISK),
 			#(_("Give privileges"), popup.OnGivePrivileges),
 			("$" + _("Add user to list"), popup.OnAddToList),
 			("$" + _("Ban this user"), popup.OnBanUser),
 			("$" + _("Ignore this user"), popup.OnIgnoreUser),
+			("$" + _("_Trust this user"), popup.OnTrustUser),
 			#(_("Client Version"), popup.OnVersion ),
 		)
 		popup.set_user(user)
@@ -2224,8 +2568,6 @@ class PrivateChat:
 		AppendLine(self.ChatScroll, line, tag, "%c")
 		#if self.Log.get_active():
 			#self.logfile = WriteLog(self.logfile, self.frame.np.config.sections["logging"]["logsdir"], self.user, line)
-		#self.frame.np.queue.put(slskmessages.MessageUser(self.user, text))
-		#self.frame.ProcessMessages
 		
 
 		
@@ -2249,16 +2591,10 @@ class PrivateChat:
 		return True
 		
 	def OnEnter(self, widget):
-		message = widget.get_text()
-		self.frame.ProcessMessages.Send(messages.PrivateMessage(0, self.user, message))
-		self.SendMessage(message)
-		widget.set_text("")
+		text = widget.get_text()
 		
-		return
-	
-	
-	
-		result = expand_alias(self.frame.np.config.aliases, text)
+		result = None
+		#result = expand_alias(self.frame.np.config.aliases, text)
 		if result is not None:
 			text = result
 		if not text:
@@ -2287,7 +2623,13 @@ class PrivateChat:
 				self.frame.OnUserBrowse(None)
 		elif cmd == "/ip":
 			if args:
-				self.frame.np.queue.put(slskmessages.GetPeerAddress(args))
+				if args not in self.frame.ip_requested:
+					self.frame.ip_requested.append(args)
+					self.frame.ProcessMessages.Send(messages.PeerAddress(args) )
+			else:
+				if self.user not in self.frame.ip_requested:
+					self.frame.ip_requested.append(self.user)
+					self.frame.ProcessMessages.Send(messages.PeerAddress(self.user) )
 		elif cmd == "/nsa":
 			if args:
 				self.frame.LocalUserInfoRequest(args)
@@ -2338,7 +2680,9 @@ class PrivateChat:
 				self.frame.UnignoreUser(args)
 		elif cmd == "/ctcpversion":
 			if args:
-				self.frame.privatechats.SendMessage(args, "\x01VERSION\x01", 1)
+				self.frame.ProcessMessages.Send(messages.PrivateMessage(0, args, "\x01VERSION\x01"))
+			else:
+				self.frame.ProcessMessages.Send(messages.PrivateMessage(0, self.user, "\x01VERSION\x01") )
 		elif cmd in ["/clear", "/cl"]:
 			self.ChatScroll.get_buffer().set_text("")
 		elif cmd in ["/a", "/away"]:
@@ -2355,7 +2699,7 @@ class PrivateChat:
 		else:
 			if text[:2] == "//":
 				text = text[1:]
-			self.SendMessage(text)
+			self.frame.ProcessMessages.Send(messages.PrivateMessage(0, self.user, text))
 		widget.set_text("")
 		
 	def OnKeyPress(self, widget, event):
@@ -2393,7 +2737,7 @@ class PrivateChats(gtk.Notebook):
 		self.show()
 		self.users = {}
 		self.frame = frame
-		self.set_tab_pos(gtk.POS_BOTTOM)
+		self.set_tab_pos(gtk.POS_TOP)
 		self.connect("switch-page", self.OnSwitchPage)
 		
 	def SendMessage(self, user, text = None, direction = None):
@@ -2453,6 +2797,7 @@ class ChatRoom:
 		self.roomsmaster = roomsmaster
 		self.frame = roomsmaster.frame
 		self.room = room
+		self.leaving = 0
 		#self.roomsmaster.joinedrooms
 		
 		self.textbuffer = gtk.TextBuffer()
@@ -2509,10 +2854,10 @@ class ChatRoom:
 		# Users-in-room Listbox with users and files
 		
 		cols = InitialiseColumns(self.UserList, 
-			["", -1, "pixbuf"],
-			[_("Username"), 100, "text"],
-			[_("Files"), 0, "text"],
-			[_("Speed"), 0, "text"],
+			["", -1, "pixbuf"], #0
+			[_("Username"), 100, "text"], #1
+			[_("Files"), 0, "text"], #2
+			[_("Speed"), 0, "text"], #3
 		)
 		
 
@@ -2536,14 +2881,15 @@ class ChatRoom:
 		
 		self.popup_menu = popup = PopupMenu(self.frame, "chat")
 		popup.setup(
-			(("Send _Message"), popup.OnSendMessage),
+			("#" + _("Private _Message"), popup.OnSendMessage, gtk.STOCK_EDIT),
 			("", None),
-			(("_User Info"), popup.OnGetUserInfo),
-			(("_IP address"), popup.OnShowIPaddress),
-			(("Browse _Shares"), popup.OnBrowseUser),
-			("$" + ("_Buddy this user"), popup.OnAddToList),
-			("$" + ("Ba_n this user"), popup.OnBanUser),
-			("$" + ("_Ignore this user"), popup.OnIgnoreUser),
+			("#" + _("Show IP address"), popup.OnShowIPaddress, gtk.STOCK_NETWORK),
+			("#" + _("Get user info"), popup.OnGetUserInfo, gtk.STOCK_INFO),
+			("#" + _("Browse files"), popup.OnBrowseUser, gtk.STOCK_HARDDISK),
+			("$" + _("_Buddy this user"), popup.OnAddToList),
+			("$" + _("Ba_n this user"), popup.OnBanUser),
+			("$" + _("_Ignore this user"), popup.OnIgnoreUser),
+			("$" + _("_Trust this user"), popup.OnTrustUser),
 		)
 		self.UserList.connect("button_press_event", self.OnPopupMenu, "chat", "")
 		self.UserList.show()
@@ -2564,14 +2910,14 @@ class ChatRoom:
 		autojoin_check.connect("toggled", self.autojoin_check, "check button 1")	
 		autojoin_check.show()
 		
-		close_button = gtk.Button("Leave Room")
-		close_button.connect_object("clicked", self.leave_a_room, room)
-		close_button.show()
+		self.Leave = gtk.Button("Leave Room")
+		self.Leave.connect_object("clicked", self.OnLeave, room)
+		self.Leave.show()
 		
 		over_button = gtk.HBox(spacing=3)
 		over_button.set_border_width(3)
 		over_button.pack_start(autojoin_check, True, True, 0)
-		over_button.pack_end(close_button, False, False, 1)
+		over_button.pack_end(self.Leave, False, False, 1)
 		over_button.show()
 		
 		userlist_over_button = gtk.VBox(spacing=0)
@@ -2618,18 +2964,7 @@ class ChatRoom:
 	def destroy(self):
 		self.Main.destroy()
 			
-	def join_a_room(self, room):
-		if self.ProcessMessages.connected == False:
-			return
-		if room != None and room != "":
-			self.ProcessMessages.Send(messages.JoinRoom(room))
-			
-	def leave_a_room(self, room):
-		if self.frame.ProcessMessages.connected == False:
-			return
-		if room != None and room != "":
-			if room in self.roomsmaster.joinedrooms:
-				self.frame.ProcessMessages.Send(messages.LeaveRoom(room))
+	
 				
 	def enter_pressed(self, something, entry, mtype):
 		if self.frame.ProcessMessages.connected == False:
@@ -2646,10 +2981,10 @@ class ChatRoom:
 
 	def SayInChatRoom(self, user, line):
 		if len(self.lines) >= 400:
-			buffer = self.chatScroll.get_buffer()
+			buffer = self.chatview.get_buffer()
 			start = buffer.get_start_iter()
 			end = buffer.get_iter_at_line(self.lines[200])
-			self.chatScroll.get_buffer().delete(start, end)
+			self.chatview.get_buffer().delete(start, end)
 			del self.lines[0:200]
 			
 		if line[:4] == "/me ":
@@ -2666,7 +3001,7 @@ class ChatRoom:
 	def UserJoinedRoom(self, username):
 		if self.users.has_key(username):
 			return
-		status, speed, downloads, files, dirs = self.frame.user_stats[username]
+		status, speed, downloads, files, dirs, exists = self.frame.user_stats[username]
 		AppendLine(self.RoomLog, _("%s joined the room") % username, None)
 		img = self.frame.GetStatusImage(status)
 		hspeed = Humanize(speed)
@@ -2700,8 +3035,6 @@ class ChatRoom:
 
 	def OnPopupMenu(self, widget, event, string, string2):
 		if event.button != 3:
-			if string == "browse-dirs":
-				self.MouseAction(widget, event, string)
 			return
 		items = self.popup_menu.get_children()
 		if debugmode == True: print string
@@ -2729,8 +3062,8 @@ class ChatRoom:
 		if self.leaving:
 			return
 		#self.frame.np.queue.put(slskmessages.LeaveRoom(self.room))
-		if room in self.roomsmaster.joinedrooms:
-			self.frame.ProcessMessages.Send(messages.LeaveRoom(room))
+		if self.room in self.roomsmaster.joinedrooms:
+			self.frame.ProcessMessages.Send(messages.LeaveRoom(self.room))
 		self.Leave.set_sensitive(False)
 		self.leaving = 1
 		
@@ -2810,8 +3143,8 @@ class MasterRoom:
 		
 		self.popup_menu = popup = PopupMenu(self.frame, "rooms")
 		popup.setup(
-			(_("_Join Room"), popup.OnJoinRoom),
-			(_("_Leave Room"), popup.OnLeaveRoom),
+			("#" + _("_Join Room"), popup.OnJoinRoom, gtk.STOCK_JUMP_TO),
+			("#" + _("_Leave Room"), popup.OnLeaveRoom, gtk.STOCK_CANCEL),
 					)
 		self.treeview.connect("button_press_event", self.OnPopupMenu)
 		self.treeview.show()
@@ -2841,13 +3174,10 @@ class MasterRoom:
 		room = self.entry.get_text()
 		if room == "":
 			return
-		self.join_a_room(room)
+		self.RoomJoin(room)
 		self.entry.set_text("")
-
-	def refresh_room_list(self, widget, event):
-		pass
 	
-	def join_a_room(self, room):
+	def RoomJoin(self, room):
 		if room != None and room != "":
 			self.frame.ProcessMessages.Send(messages.JoinRoom(room))
 		
@@ -2901,8 +3231,8 @@ class MasterRoom:
 			if d:
 				path, column, x, y = d
 				room = self.roomsmodel.get_value(self.roomsmodel.get_iter(path), 0)
-				if not room in self.joinedrooms.keys():
-					self.frame.np.queue.put(slskmessages.JoinRoom(room))
+				#if not room in self.joinedrooms.keys():
+					#self.frame.np.queue.put(slskmessages.JoinRoom(room))
 			return True
 		elif event.button == 3:
 			return self.OnPopupMenu(widget, event)
@@ -2972,7 +3302,7 @@ class MasterRoom:
 	def GetUserStatus(self, user, status):
 		for room in self.joinedrooms.values():
                         if user in room.users.keys():
-			     room.GetUserStatus(user, status)
+			     gobject.idle_add(room.GetUserStatus, user, status)
 
 			
 	def UserJoinedRoom(self, room, username):
@@ -3032,30 +3362,32 @@ class Downloads:
 		scrolledwindow1 = gtk.ScrolledWindow()
 		scrolledwindow1.set_policy(gtk.POLICY_ALWAYS, gtk.POLICY_ALWAYS)
 		scrolledwindow1.show()
-		scrolledwindow1.set_shadow_type(gtk.SHADOW_NONE)
-		#self.app.widgets["downloads"]["store"].append( 
+		scrolledwindow1.set_shadow_type(gtk.SHADOW_IN)
+		#self.frame.widgets["downloads"]["store"].append( 
 		#[transfer.user, transfer.path.split("\\")[-1], transfer.rate, transfer.state, transfer,filepos,  transfer.filesize,  transfer.error, transfer.path])
 		self.store = gtk.ListStore(str, str, str, str, str, str, str )
 		
 		self.treeview = gtk.TreeView(self.store)
 		self.treeview.set_property("rules-hint", True)
+		self.treeview.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
 		self.create_transfer_columns("downloads")
 		self.treeview.set_headers_visible(True)
 		
 		self.popup_menu = popup = PopupMenu(self.frame, "downloads")
 		popup.setup(
-			(_("_Retry Transfer"), popup.OnRetryTransfer),
-			(_("_Abort Transfer"), popup.OnAbortDownTransfer),
-			(_("_Clear Transfer"), popup.OnClearDownTransfer),
+			("#" + _("_Retry Transfer"), popup.OnRetryTransfer, gtk.STOCK_REDO),
+			("#" + _("_Abort Transfer"), popup.OnAbortDownTransfer, gtk.STOCK_CANCEL),
+			("#" + _("_Clear Transfer"), popup.OnClearDownTransfer, gtk.STOCK_CLEAR),
 			("", None),
-			(_("_Private Message"), popup.OnSendMessage),
-			(_("_User Info"), popup.OnGetUserInfo),
-			(_("_IP Address"), popup.OnShowIPaddress),
-			(_("Browse _Shares"), popup.OnBrowseUser),
+			("#" + _("_Private Message"), popup.OnSendMessage, gtk.STOCK_EDIT),
+			("#" + _("_User Info"), popup.OnGetUserInfo, gtk.STOCK_INFO),
+			("#" + _("IP A_ddress"), popup.OnShowIPaddress, gtk.STOCK_NETWORK),
+			("#" + _("Browse _Shares"), popup.OnBrowseUser, gtk.STOCK_HARDDISK),
 			("$" + _("_Buddy this user"), popup.OnAddToList),
 			("$" + _("Ba_n this user"), popup.OnBanUser),
 			("$" + _("_Ignore this user"), popup.OnIgnoreUser),
-					)
+			("$" + _("_Trust this user"), popup.OnTrustUser),
+		)
 		self.treeview.connect("button_press_event", self.OnPopupMenu)
 		self.treeview.show()
 		
@@ -3106,13 +3438,13 @@ class Downloads:
 	def create_transfer_columns(self, direction):
 		try:
 			cols = InitialiseColumns(self.treeview,
-				[_("Username"), 100, "text"],
-				[_("Filename"), 250, "text"],
-				[_("Speed"), 50, "text"],
-				[_("Status"), 80, "text"],
-				[_("Pos"), 50, "text"],
-				[_("Size"), 80, "text"],
-				[_("Path"), 350, "text"],
+				[_("Username"), 100, "text"], #0
+				[_("Filename"), 250, "text"], #1
+				[_("Speed"), 50, "text"], #2
+				[_("Status"), 80, "text"], #3
+				[_("Pos"), 50, "text"], #4
+				[_("Size"), 80, "text"], #5
+				[_("Path"), 350, "text"], #6
 			)
 
 			self.treeview.set_search_column(1)
@@ -3139,22 +3471,23 @@ class Uploads:
 		scrolledwindow2 = gtk.ScrolledWindow()
 		scrolledwindow2.set_policy(gtk.POLICY_ALWAYS, gtk.POLICY_ALWAYS)
 		scrolledwindow2.show()
-		scrolledwindow2.set_shadow_type(gtk.SHADOW_NONE)
+		scrolledwindow2.set_shadow_type(gtk.SHADOW_IN)
 		
 		self.store = gtk.ListStore(str, str, str, str, str, str, str )
 		self.treeview = gtk.TreeView(self.store)
+		self.treeview.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
 		self.create_transfer_columns("uploads")
 		self.treeview.set_property("rules-hint", True)
 		self.treeview.set_headers_visible(True)
 		self.popup_menu = popup = PopupMenu(self.frame, "uploads")
 		popup.setup(
-			(_("_Abort Transfer"), popup.OnAbortUpTransfer),
-			(_("_Clear Transfer"), popup.OnClearUpTransfer),
+			("#" + _("_Abort Transfer"), popup.OnAbortUpTransfer, gtk.STOCK_CANCEL),
+			("#" + _("_Clear Transfer"), popup.OnClearUpTransfer, gtk.STOCK_CLEAR),
 			("", None),
-			(_("_Private Message"), popup.OnSendMessage),
-			(_("_User Info"), popup.OnGetUserInfo),
-			(_("_IP Address"), popup.OnShowIPaddress),
-			(_("Browse _Shares"), popup.OnBrowseUser),
+			("#" + _("_Private Message"), popup.OnSendMessage, gtk.STOCK_EDIT),
+			("#" + _("_User Info"), popup.OnGetUserInfo, gtk.STOCK_INFO),
+			("#" + _("IP A_ddress"), popup.OnShowIPaddress, gtk.STOCK_NETWORK),
+			("#" + _("Browse _Shares"), popup.OnBrowseUser, gtk.STOCK_HARDDISK),
 			("$" + _("_Buddy this user"), popup.OnAddToList),
 			("$" + _("Ba_n this user"), popup.OnBanUser),
 			("$" + _("_Ignore this user"), popup.OnIgnoreUser),
@@ -3211,13 +3544,13 @@ class Uploads:
 	def create_transfer_columns(self, direction):
 		try:
 			cols = InitialiseColumns(self.treeview,
-				[_("Username"), 100, "text"],
-				[_("Filename"), 250, "text"],
-				[_("Speed"), 50, "text"],
-				[_("Status"), 80, "text"],
-				[_("Pos"), 50, "text"],
-				[_("Size"), 80, "text"],
-				[_("Path"), 350, "text"],
+				[_("Username"), 100, "text"], #0
+				[_("Filename"), 250, "text"], #1
+				[_("Speed"), 50, "text"], #2
+				[_("Status"), 80, "text"], #3
+				[_("Pos"), 50, "text"], #4
+				[_("Size"), 80, "text"], #5
+				[_("Path"), 350, "text"], #6
 			)
 			
 			self.treeview.set_search_column(1)
@@ -3248,11 +3581,11 @@ class ListsOfUsers(gtk.Notebook):
 		
 	def updateStats(self, user, stats):
 		for w in [ self.buddies, self.trusted, self.banned, self.ignored ]:
-			w.updateStats(user, stats)
+			gobject.idle_add(w.updateStats, user, stats)
 				
 	def updateStatus(self, user, status):
 		for w in [ self.buddies, self.trusted, self.banned, self.ignored ]:
-			w.updateStatus(user, status)
+			gobject.idle_add(w.updateStatus, user, status)
 				
 class ListBanned:
 	def __init__(self, frame):
@@ -3281,11 +3614,11 @@ class ListBanned:
 		self.treeview = UserList = gtk.TreeView(self.store)
 		self.treeview.set_property("rules-hint", True)
 		cols = InitialiseColumns(self.treeview,
-				[_("Status"), -1, "pixbuf"],
-				[_("Username"), 100, "text"],
-				[_("Files"), 50, "text"],
-				[_("Speed"), 50, "text"],
-				[_("Comments"), 100, "text"],
+				[_("Status"), -1, "pixbuf"], #0
+				[_("Username"), 100, "text"], #1
+				[_("Files"), 50, "text"], #2
+				[_("Speed"), 50, "text"], #3
+				[_("Comments"), 100, "text"], #4
 			)
 		cols[0].set_sort_column_id(5)
 		cols[1].set_sort_column_id(1)
@@ -3296,11 +3629,11 @@ class ListBanned:
 		
 		self.popup_menu = popup = PopupMenu(self.frame, "userlists")
 		popup.setup(
-			(_("Send _Message"), popup.OnSendMessage),
+			("#" + _("_Private Message"), popup.OnSendMessage, gtk.STOCK_EDIT),
 			("", None),
-			(_("_User Info"), popup.OnGetUserInfo),
-			(_("_IP address"), popup.OnShowIPaddress),
-			(_("Browse _Shares"), popup.OnBrowseUser),
+			("#" + _("_User Info"), popup.OnGetUserInfo, gtk.STOCK_INFO),
+			("#" + _("IP A_ddress"), popup.OnShowIPaddress, gtk.STOCK_NETWORK),
+			("#" + _("Browse _Shares"), popup.OnBrowseUser, gtk.STOCK_HARDDISK),
 			("$" + _("_Buddy this user"), popup.OnAddToList),
 			("$" + _("Ba_n this user"), popup.OnBanUser),
 			("$" + _("_Ignore this user"), popup.OnIgnoreUser),
@@ -3357,6 +3690,8 @@ class ListBanned:
 	def updateStatus(self, user, status):
                 if user not in self.users.keys():
                     return
+		if not self.frame.user_stats[user][5]:
+			status = 3
                 if status == self.store.get_value(self.users[user], 5):
                   return
                 img = self.frame.GetStatusImage(status)
@@ -3365,7 +3700,7 @@ class ListBanned:
 	def updateStats(self, user, stats):
                 if user not in self.users.keys():
                     return
-		status, speed, downloads, files, dirs = stats 
+		status, speed, downloads, files, dirs, exists = stats 
 		self.store.set(self.users[user], 1, user, 2, Humanize(files), 3, Humanize(speed))
 		
 	def update(self, user, comments):
@@ -3377,7 +3712,7 @@ class ListBanned:
 		if user in self.users:
 			return
 		if user in self.frame.user_stats:
-			status, speed, downloads, files, dirs = self.frame.user_stats[user]
+			status, speed, downloads, files, dirs, exists = self.frame.user_stats[user]
 		else:
 			status = 3
 			speed = downloads = files = dirs = 0
@@ -3417,11 +3752,11 @@ class ListBuddies:
 		self.treeview = UserList = gtk.TreeView(self.store)
 		self.treeview.set_property("rules-hint", True)
 		cols = InitialiseColumns(self.treeview,
-				[_("Status"), -1, "pixbuf"],
-				[_("Username"), 100, "text"],
-				[_("Files"), 50, "text"],
-				[_("Speed"), 50, "text"],
-				[_("Comments"), 100, "text"],
+				[_("Status"), -1, "pixbuf"], #0
+				[_("Username"), 100, "text"], #1
+				[_("Files"), 50, "text"], #2
+				[_("Speed"), 50, "text"], #3
+				[_("Comments"), 100, "text"], #4
 			)
 		cols[0].set_sort_column_id(5)
 		cols[1].set_sort_column_id(1)
@@ -3434,11 +3769,11 @@ class ListBuddies:
 		
 		self.popup_menu = popup = PopupMenu(self.frame, "userlists")
 		popup.setup(
-			(_("Send _Message"), popup.OnSendMessage),
+			("#" + _("_Private Message"), popup.OnSendMessage, gtk.STOCK_EDIT),
 			("", None),
-			(_("_User Info"), popup.OnGetUserInfo),
-			(_("_IP address"), popup.OnShowIPaddress),
-			(_("Browse _Shares"), popup.OnBrowseUser),
+			("#" + _("_User Info"), popup.OnGetUserInfo, gtk.STOCK_INFO),
+			("#" + _("IP A_ddress"), popup.OnShowIPaddress, gtk.STOCK_NETWORK),
+			("#" + _("Browse _Shares"), popup.OnBrowseUser, gtk.STOCK_HARDDISK),
 			("$" + _("_Buddy this user"), popup.OnAddToList),
 			("$" + _("Ba_n this user"), popup.OnBanUser),
 			("$" + _("_Ignore this user"), popup.OnIgnoreUser),
@@ -3496,6 +3831,8 @@ class ListBuddies:
 	def updateStatus(self, user, status):
                 if user not in self.users.keys():
                     return
+		if not self.frame.user_stats[user][5]:
+			status = 3
 		if status == self.store.get_value(self.users[user], 5):
                   return
                 img = self.frame.GetStatusImage(status)
@@ -3504,7 +3841,7 @@ class ListBuddies:
 	def updateStats(self, user, stats):
                 if user not in self.users.keys():
                     return
-		status, speed, downloads, files, dirs = stats 
+		status, speed, downloads, files, dirs, exists = stats 
 		self.store.set(self.users[user], 1, user, 2, Humanize(files), 3, Humanize(speed))
 		
 	def update(self, user, comments):
@@ -3516,7 +3853,7 @@ class ListBuddies:
 		if user in self.users:
 			return
 		if user in self.frame.user_stats:
-			status, speed, downloads, files, dirs = self.frame.user_stats[user]
+			status, speed, downloads, files, dirs, exists = self.frame.user_stats[user]
 		else:
 			status = 3
 			speed = downloads = files = dirs = 0
@@ -3557,11 +3894,11 @@ class ListTrusted:
 		self.treeview = UserList = gtk.TreeView(self.store)
 		self.treeview.set_property("rules-hint", True)
 		cols = InitialiseColumns(self.treeview,
-				[_("Status"), -1, "pixbuf"],
-				[_("Username"), 100, "text"],
-				[_("Files"), 50, "text"],
-				[_("Speed"), 50, "text"],
-				[_("Comments"), 100, "text"],
+				[_("Status"), -1, "pixbuf"], #0
+				[_("Username"), 100, "text"], #1
+				[_("Files"), 50, "text"], #2
+				[_("Speed"), 50, "text"], #3
+				[_("Comments"), 100, "text"], #4
 			)
 		cols[0].set_sort_column_id(5)
 		cols[1].set_sort_column_id(1)
@@ -3574,11 +3911,11 @@ class ListTrusted:
 		
 		self.popup_menu = popup = PopupMenu(self.frame, "userlists")
 		popup.setup(
-			(_("Send _Message"), popup.OnSendMessage),
+			("#" + _("_Private Message"), popup.OnSendMessage, gtk.STOCK_EDIT),
 			("", None),
-			(_("_User Info"), popup.OnGetUserInfo),
-			(_("_IP address"), popup.OnShowIPaddress),
-			(_("Browse _Shares"), popup.OnBrowseUser),
+			("#" + _("_User Info"), popup.OnGetUserInfo, gtk.STOCK_INFO),
+			("#" + _("IP A_ddress"), popup.OnShowIPaddress, gtk.STOCK_NETWORK),
+			("#" + _("Browse _Shares"), popup.OnBrowseUser, gtk.STOCK_HARDDISK),
 			("$" + _("_Buddy this user"), popup.OnAddToList),
 			("$" + _("Ba_n this user"), popup.OnBanUser),
 			("$" + _("_Ignore this user"), popup.OnIgnoreUser),
@@ -3636,6 +3973,8 @@ class ListTrusted:
 	def updateStatus(self, user, status):
                 if user not in self.users.keys():
                     return
+		if not self.frame.user_stats[user][5]:
+			status = 3
 		if status == self.store.get_value(self.users[user], 5):
                   return
                 img = self.frame.GetStatusImage(status)
@@ -3644,7 +3983,7 @@ class ListTrusted:
 	def updateStats(self, user, stats):
                 if user not in self.users.keys():
                     return
-		status, speed, downloads, files, dirs = stats 
+		status, speed, downloads, files, dirs, exists = stats 
 		self.store.set(self.users[user], 1, user, 2, Humanize(files), 3, Humanize(speed))
 		
 	def update(self, user, comments):
@@ -3656,7 +3995,7 @@ class ListTrusted:
 		if user in self.users:
 			return
 		if user in self.frame.user_stats:
-			status, speed, downloads, files, dirs = self.frame.user_stats[user]
+			status, speed, downloads, files, dirs, exists = self.frame.user_stats[user]
 		else:
 			status = 3
 			speed = downloads = files = dirs = 0
@@ -3696,11 +4035,11 @@ class ListIgnored:
 		self.treeview = UserList = gtk.TreeView(self.store)
 		self.treeview.set_property("rules-hint", True)
 		cols = InitialiseColumns(self.treeview,
-				[_("Status"), -1, "pixbuf"],
-				[_("Username"), 100, "text"],
-				[_("Files"), 50, "text"],
-				[_("Speed"), 50, "text"],
-				[_("Comments"), 100, "text"],
+				[_("Status"), -1, "pixbuf"], #0
+				[_("Username"), 100, "text"], #1
+				[_("Files"), 50, "text"], #2
+				[_("Speed"), 50, "text"], #3
+				[_("Comments"), 100, "text"], #4
 			)
 		cols[0].set_sort_column_id(5)
 		cols[1].set_sort_column_id(1)
@@ -3713,11 +4052,11 @@ class ListIgnored:
 		
 		self.popup_menu = popup = PopupMenu(self.frame, "userlists")
 		popup.setup(
-			(_("Send _Message"), popup.OnSendMessage),
+			("#" + _("_Private Message"), popup.OnSendMessage, gtk.STOCK_EDIT),
 			("", None),
-			(_("_User Info"), popup.OnGetUserInfo),
-			(_("_IP address"), popup.OnShowIPaddress),
-			(_("Browse _Shares"), popup.OnBrowseUser),
+			("#" + _("_User Info"), popup.OnGetUserInfo, gtk.STOCK_INFO),
+			("#" + _("IP A_ddress"), popup.OnShowIPaddress, gtk.STOCK_NETWORK),
+			("#" + _("Browse _Shares"), popup.OnBrowseUser, gtk.STOCK_HARDDISK),
 			("$" + _("_Buddy this user"), popup.OnAddToList),
 			("$" + _("Ba_n this user"), popup.OnBanUser),
 			("$" + _("_Ignore this user"), popup.OnIgnoreUser),
@@ -3775,6 +4114,8 @@ class ListIgnored:
 	def updateStatus(self, user, status):
                 if user not in self.users.keys():
                     return
+		if not self.frame.user_stats[user][5]:
+			status = 3
 		if status == self.store.get_value(self.users[user], 5):
                   return
                 img = self.frame.GetStatusImage(status)
@@ -3783,7 +4124,7 @@ class ListIgnored:
 	def updateStats(self, user, stats):
                 if user not in self.users.keys():
                     return
-		status, speed, downloads, files, dirs = stats 
+		status, speed, downloads, files, dirs, exists = stats 
 		self.store.set(self.users[user], 1, user, 2, Humanize(files), 3, Humanize(speed))
 		
 	def update(self, user, comments):
@@ -3795,7 +4136,7 @@ class ListIgnored:
 		if user in self.users:
 			return
 		if user in self.frame.user_stats:
-			status, speed, downloads, files, dirs = self.frame.user_stats[user]
+			status, speed, downloads, files, dirs, exists = self.frame.user_stats[user]
 		else:
 			status = 3
 			speed = downloads = files = dirs = 0
@@ -3813,10 +4154,6 @@ class murmur(MurmurWindow, ProcessMessages):
 
 	def __init__(self):
 
-		#self.Qqueue = Queue.Queue(0)
-		#self.qm=QueueMinder(self.Qqueue)
-            	#self.qm.startTimer()
-		
 		gtk.threads_init()
 		signal.signal(signal.SIGINT, signal.SIG_DFL)
 		self.debugmode = debugmode
@@ -3848,9 +4185,8 @@ class murmur(MurmurWindow, ProcessMessages):
 		self.room_lists = {} # the actual rooms
 		self.lists_rooms = None # pygtk ListView index
 		self.user_stats = {}
-		self.ip_requested = None
+		self.ip_requested = []
 
-		#self.ProcessMessages.start()
 		MurmurWindow.__init__(self)
 		self.MurmurWindow.set_title(_("Murmur") + " " + version)		
 		
@@ -3933,7 +4269,9 @@ class murmur(MurmurWindow, ProcessMessages):
 		#self.tooltips.set_delay(1500)
 		
 
-		
+	def AppendToLogWindow(self, message):
+		AppendLine(self.LogWindow, message, None)
+			
 	def update_statusbar(self, message):
 		try:
 			self.statusbarmessage = message
@@ -3955,12 +4293,6 @@ class murmur(MurmurWindow, ProcessMessages):
 			image = "noexist"
 		return  self.images[image]
 	
-	def refresh_room_list(self, string):
-		if self.ProcessMessages.connected == False:
-			return
-		self.ProcessMessages.Send(messages.RoomList())
-
-
 	def OpenImage(self, widget, title, filters):
 		dialog = gtk.FileChooserDialog(title=title, parent=None, action=gtk.FILE_CHOOSER_ACTION_OPEN, buttons=(gtk.STOCK_OK, gtk.RESPONSE_ACCEPT, gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT))
 		dialog.set_select_multiple(False)
@@ -3984,8 +4316,6 @@ class murmur(MurmurWindow, ProcessMessages):
 		dialog.destroy()
 		return file
 		
-		
-
 	def OnOpenImage(self, widget):
 		newimage = self.OpenImage(widget, _("Select an Userinfo Image"), ["*.jpg", "*.jpeg", "*.png","*.bmp", "*.xpm", "*.ico","*.gif"])
 		if newimage != None:
@@ -3995,8 +4325,6 @@ class murmur(MurmurWindow, ProcessMessages):
 
 			except Exception, e:
 				if self.debugmode == True: print "Creating image", str(e)
-			#self.refreshConfigDisplay()
-			
 		
 	def SearchFrame(self):
 		self.widgets["search"] = {}
@@ -4079,8 +4407,8 @@ class murmur(MurmurWindow, ProcessMessages):
 			self.widgets["search"][query]["SW"] = scrolledwindow1 = gtk.ScrolledWindow()
 			scrolledwindow1.set_policy(gtk.POLICY_ALWAYS, gtk.POLICY_ALWAYS)
 			scrolledwindow1.show()
-			scrolledwindow1.set_shadow_type(gtk.SHADOW_NONE)
-			self.widgets["search"][query]["store"] = gtk.ListStore(int, str, str, str, int, int, str, int, str, str, str)
+			scrolledwindow1.set_shadow_type(gtk.SHADOW_IN)
+			self.widgets["search"][query]["store"] = gtk.ListStore(int, str, str, str, int, int, str, int, str, str, str, int, int)
 			self.widgets["search"][str(query)]["treeview"]  = treeview = gtk.TreeView(self.widgets["search"][query]["store"])
 			self.widgets["search"][str(query)]["treeview"].set_property("rules-hint", True)
 			treeview.show()
@@ -4088,104 +4416,46 @@ class murmur(MurmurWindow, ProcessMessages):
 			
 			treeview.set_reorderable(True)
 			
-			nColumn = gtk.TreeViewColumn('N')
-			cell = gtk.CellRendererText()
-			nColumn.pack_start(cell, True)
-			nColumn.add_attribute(cell, 'text',0)
-			nColumn.set_sort_column_id(0)
-			# Filename
-			fColumn = gtk.TreeViewColumn('FileName')
-			cell = gtk.CellRendererText()
-			fColumn.pack_start(cell, True)
-			fColumn.add_attribute(cell, 'text',1)
-			fColumn.set_sort_column_id(1)
-			fColumn.set_resizable(True)
-			#Username
-			uColumn = gtk.TreeViewColumn('UserName')
-			cell = gtk.CellRendererText()
-			uColumn.pack_start(cell, True)
-			uColumn.add_attribute(cell, 'text', 2)
-			uColumn.set_sort_column_id(2)
-			uColumn.set_resizable(True)
-			#FileSize
-			sColumn = gtk.TreeViewColumn('Size')
-			cell = gtk.CellRendererText()
-			sColumn.pack_start(cell, True)
-			sColumn.add_attribute(cell, 'text', 3)
-			sColumn.set_sort_column_id(3)
-			sColumn.set_resizable(True)
+			cols = InitialiseColumns(treeview,
+			["", 30, "text"], # 0
+			[_("Filename"), 250, "text"], #1
+			[_("User"), 100, "text"], #2
+			[_("Size"), 100, "text"], #3
+			[_("Speed"), 50, "text"], #4
+			[_("Queue"), 50, "text"], #5
+			[_("Instant Download"), 20, "text"], #6
+			[_("Bitrate"), 50, "text"], #7
+			[_("Length"), 50, "text"], #8
+			[_("Directory"), 500, "text"], #9
+			)
 			
-			ssColumn = gtk.TreeViewColumn('Speed')
-			cell = gtk.CellRendererText()
-			ssColumn.pack_start(cell, True)
-			ssColumn.add_attribute(cell, 'text', 4)
-			ssColumn.set_sort_column_id(4)
-			ssColumn.set_resizable(True)
-			
-			
-			qColumn = gtk.TreeViewColumn('Queue')
-			cell = gtk.CellRendererText()
-			qColumn.pack_start(cell, True)
-			qColumn.add_attribute(cell, 'text', 5)
-			qColumn.set_sort_column_id(5)
-			qColumn.set_resizable(True)
-			
-			iColumn = gtk.TreeViewColumn('Im')
-			cell = gtk.CellRendererText()
-			iColumn.pack_start(cell, True)
-			iColumn.add_attribute(cell, 'text', 6)
-			iColumn.set_sort_column_id(6)
-			iColumn.set_resizable(True)
-			
-			#FileLength
-			lColumn = gtk.TreeViewColumn('Length')
-			cell = gtk.CellRendererText()
-			lColumn.pack_start(cell, True)
-			lColumn.add_attribute(cell, 'text', 8)
-			lColumn.set_sort_column_id(8)
-			lColumn.set_resizable(True)
-			
-			#FileBitrate
-			bColumn = gtk.TreeViewColumn('Bitrate')
-			cell = gtk.CellRendererText()
-			bColumn.pack_start(cell, True)
-			bColumn.add_attribute(cell, 'text', 7)
-			bColumn.set_sort_column_id(7)
-			bColumn.set_resizable(True)
-			
-			dColumn = gtk.TreeViewColumn('Directory')
-			cell = gtk.CellRendererText()
-			dColumn.pack_start(cell, True)
-			dColumn.add_attribute(cell, 'text', 9)
-			dColumn.set_sort_column_id(9)
-			dColumn.set_resizable(True)
-			
-			# Add Columns
-			treeview.append_column(nColumn)
-			
-			treeview.append_column(uColumn)
-			treeview.append_column(sColumn)
-			treeview.append_column(fColumn)
-			treeview.append_column(ssColumn)
-			treeview.append_column(qColumn)
-			treeview.append_column(iColumn)
-			treeview.append_column(bColumn)
-			treeview.append_column(lColumn)
-			treeview.append_column(dColumn)
+			cols[0].set_sort_column_id(0)
+			cols[1].set_sort_column_id(1)
+			cols[2].set_sort_column_id(2)
+			cols[3].set_sort_column_id(11)
+			cols[4].set_sort_column_id(4)
+			cols[5].set_sort_column_id(5)
+			cols[6].set_sort_column_id(6)
+			cols[7].set_sort_column_id(7)
+			cols[8].set_sort_column_id(12)
+			cols[9].set_sort_column_id(9)
+
 			
 
 			self.popup_menu["search"] = popup = PopupMenu(self, "search")
 			popup.setup(
-				(_("Download _File"), popup.OnDownloadFile),
-				(_("_Download Directory"), popup.OnDownloadDirectory),
-				(_("Send _Message"), popup.OnSendMessage),
+				("#" + _("Download _File"), popup.OnDownloadFile, gtk.STOCK_GO_DOWN),
+				("#" + _("_Download Directory"), popup.OnDownloadDirectory, gtk.STOCK_GO_DOWN),
 				("", None),
-				(_("Show _IP address"), popup.OnShowIPaddress),
-				(_("_User Info"), popup.OnGetUserInfo),
-				(_("Reload _Shares"), popup.OnBrowseUser),
+				("#" + _("_Private Message"), popup.OnSendMessage, gtk.STOCK_EDIT),
+				("", None),
+				("#" + _("_User Info"), popup.OnGetUserInfo, gtk.STOCK_INFO),
+				("#" + _("IP A_ddress"), popup.OnShowIPaddress, gtk.STOCK_NETWORK),
+				("#" + _("Reload _Shares"), popup.OnBrowseUser, gtk.STOCK_HARDDISK),
 				("$" + _("_Buddy this user"), popup.OnAddToList),
 				("$" + _("Ba_n this user"), popup.OnBanUser),
 				("$" + _("_Ignore this user"), popup.OnIgnoreUser),
+				("$" + _("_Trust this user"), popup.OnTrustUser),
 			)
 			treeview.connect("button_press_event", self.OnPopupMenu, "search", query)
 						
@@ -4193,8 +4463,7 @@ class murmur(MurmurWindow, ProcessMessages):
 			label2 = gtk.Label( ( self.s_query[query] ) )
 			label2.set_padding(0, 0)
 			label2.show()
-			image = gtk.Image()
-			image.set_from_file(self.close_image)
+			image = gtk.image_new_from_stock(gtk.STOCK_CANCEL, gtk.ICON_SIZE_MENU)
 			image.show()
 			button1 = gtk.Button()
 			button1.add(image)
@@ -4237,17 +4506,19 @@ class murmur(MurmurWindow, ProcessMessages):
 			for files in results:
 				num += 1
 				dire = ''
-				size = self.byte_format( files[1])
+				size = self.Humanize( files[1])
 				for path in files[0].split("\\")[:-1]:
 					dire += path+"\\"
 				if files[3] == []:
 					bitrate = 0
 					time = "0:00"
+					length = 0
 				else:
 					bitrate = files[3][0]
 					time = self.get_length_time(files[3][1])
+					length = files[3][1]
 				
-				Store.append([ num, files[0].split("\\")[-1], user, size, speed, queue,free,  bitrate, time, dire , files[0] ])
+				Store.append([ num, files[0].split("\\")[-1], user, size, speed, queue,free,  bitrate, time, dire , files[0], files[1], length ])
 
  			self.widgets["search"][query]["num"] = num
 
@@ -4258,298 +4529,7 @@ class murmur(MurmurWindow, ProcessMessages):
 	def CloseSearch(self, query):
 		self.widgets["search"]["notebook"].remove_page( self.widgets["search"]["notebook"].page_num( self.widgets["search"][str(query)]["SW"]) )
 
-	
-	def get_shares(self, user, shares):
-		try:
-			if user in self.tabs["browse"]:
-				self.widgets["browse"][user]["shares"] = shares
-				self.widgets["browse"][user]["DirStore"].clear()
-				directory = self.BrowseGetDirs(user)
-				self.BrowseChangeDir(user, directory)
-			else:
-			
-				self.widgets["browse"][user] = {}
-				self.tabs["browse"].append(user)	
-				self.widgets["browse"][user]["shares"] = shares
-				
-				self.widgets["browse"][user]["container"] = vbox1 = gtk.VBox(False, 0)
-				vbox1.show()
-				vbox1.set_spacing(0)
-				
-				hbox1 = gtk.HBox(False, 0)
-				hbox1.show()
-				hbox1.set_spacing(0)
-				
-				label1 = gtk.Label(("Search Shares For:"))
-				label1.set_padding(5, 0)
-				label1.show()
-				hbox1.pack_start(label1, False, False, 0)
-				
-				self.widgets["browse"][user]["searchentry"] =  searchentry = gtk.Entry()
-				searchentry.set_text("")
-				#searchentry.set_activates_default(True)
-				searchentry.set_editable(True)
-				searchentry.connect_object("activate", self.browse_search, user)
-				searchentry.show()
-				hbox1.pack_start(searchentry, True, True, 0)
-				
-				self.widgets["browse"][user]["searchbutton"] = searchbutton = gtk.Button()
-				searchbutton.set_label(("Search"))
-				searchbutton.set_flags(gtk.CAN_DEFAULT)
-				#searchbutton.grab_default()
-				searchbutton.connect_object("clicked", self.browse_search, user)
-				searchbutton.show()
-				searchbutton.set_border_width(3)
-				
-				hbox1.pack_start(searchbutton, False, False, 0)
-				
-				vbox1.pack_start(hbox1, False, True, 0)
-				
-				hbox2 = gtk.HBox(False, 0)
-				hbox2.show()
-				hbox2.set_spacing(0)
-				
-				hpaned1 = gtk.HPaned()
-				hpaned1.show()
-				
-				self.widgets["browse"][user]["DirSW"] = scrolledwindow3 = gtk.ScrolledWindow()
-				scrolledwindow3.set_policy(gtk.POLICY_ALWAYS, gtk.POLICY_ALWAYS)
-				scrolledwindow3.show()
-				scrolledwindow3.set_shadow_type(gtk.SHADOW_NONE)
-				
-				
-				self.widgets["browse"][user]["DirStore"] = DirStore = gtk.TreeStore(  str, str )
-				
-				directory = self.BrowseGetDirs(user)
-				
-				self.widgets["browse"][user]["DirTree"] = directoriestree = gtk.TreeView( DirStore)
-				self.widgets["browse"][user]["DirTree"].set_property("rules-hint", True)
-				directoriestree.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
-				directoriestree.set_headers_visible(True)
-				DirColumn = gtk.TreeViewColumn('Dir')
-				cell = gtk.CellRendererText()
-				DirColumn.pack_start(cell, True)
-				DirColumn.add_attribute(cell, 'text', 0)
-				DirColumn.set_sort_column_id(0)
-				DirColumn.set_resizable(True)
-	
-				directoriestree.set_search_column(0)
-				directoriestree.append_column(DirColumn)
-				directoriestree.show()
-				
-				#DirStore.set_sort_column_id(0, gtk.SORT_ASCENDING)
-				
-				self.popup_menu["browse-dirs"] = popup = PopupMenu(self, "browse-dirs")
-				popup.setup(
-					(_("_Download Directory"), popup.OnDownloadDirectory),
-					(_("Send _Message"), popup.OnSendMessage),
-					("", None),
-					(_("_User Info"), popup.OnGetUserInfo),
-					(_("_IP address"), popup.OnShowIPaddress),
-					(_("Reload _Shares"), popup.OnBrowseUser),
-					("$" + _("_Buddy this user"), popup.OnAddToList),
-					("$" + _("Ba_n this user"), popup.OnBanUser),
-					("$" + _("_Ignore this user"), popup.OnIgnoreUser),
-				)
-				self.widgets["browse"][user]["DirTree"].connect("button_press_event", self.OnPopupMenu, "browse-dirs", "")
-				self.widgets["browse"][user]["DirTree"].expand_all()	
-				scrolledwindow3.add(directoriestree)
-	
-				
-				hpaned1.pack1(scrolledwindow3, False, True)
-	
-				self.BrowseChangeDir(user, directory)
-				
-				hpaned1.pack2(self.widgets["browse"][user]["FilesSW"], True, True)
-				
-				hbox2.pack_start(hpaned1, True, True, 0)
-				
-				vbox1.pack_start(hbox2, True, True, 0)
-				
-				label2 = gtk.Label((user))
-				label2.set_padding(0, 0)
-				label2.show()
-				
-				image = gtk.Image()
-				image.set_from_file(self.close_image)
-				image.show()
-				button1 = gtk.Button()
-				button1.add(image)
-				button1.connect_object("clicked", self.CloseBrowse, user)
-				button1.show()
-				hbox = gtk.HBox(False, 0)
-				hbox.show()
-				hbox.set_spacing(0)
-				hbox.pack_start(label2, False, False, 0)
-				hbox.pack_start(button1, False, False, 0)
-				
-				self.widgets["browse"]["notebook"] = self.notebook_browsing
-				self.notebook_browsing.append_page_menu(vbox1, hbox, label2)
-				#self.notebook_browsing.append_page(vbox1, UserName)
-				self.notebook_browsing.show()
-			
-		except Exception,e:
-			if debugmode == True: print "get_shares", Exception,e
-			
-	def CloseBrowse(self, user):
-		self.widgets["browse"]["notebook"].remove_page( self.widgets["browse"]["notebook"].page_num( self.widgets["browse"][user]["container"] ) )
-		del self.widgets["browse"][user] 
-		self.tabs["browse"].remove(user)
-				
-	def browse_search(self, user):
-		query = self.widgets["browse"][user]["searchentry"].get_text()
-		if debugmode == True: print "Query:", query
-		dir = self.widgets["browse"][user]["directory"]
-		searchfilter = re.compile('.*' +str(query) + '.*', re.DOTALL | re.I)
-		for directory in self.widgets["browse"][user]["shares"].keys():
-			if directory == dir:
-				continue
-			if re.match(searchfilter, directory):
-				self.BrowseChangeDir(user, directory)
-				break
-		for directory, files in self.widgets["browse"][user]["shares"].items():
-			if directory == dir:
-				continue
-			for file in files.keys():
-				if re.match(searchfilter, file):
-					self.BrowseChangeDir(user, directory)
-					break
 
-		
-	def BrowseGetDirs( self, user):
-		try:
-			DirStore = self.widgets["browse"][user]["DirStore"]
-			z = []
-			for dirs in self.widgets["browse"][user]["shares"].keys():
-				z.append(dirs)
-			z.sort()
-			zz= []
-			self.widgets["browse"][user]["dirs"] = {}
-			if z != []:
-				for item in z:
-					s = item.split("\\")
-					path = ''
-
-					parent = s[0]
-					if parent == '':
-						parent += "\\"
-						if parent not in self.widgets["browse"][user]["dirs"].keys():
-							self.widgets["browse"][user]["dirs"][parent] =  DirStore.append(None, [parent, parent])
-					parent = s[0]
-					for seq in s[1:]:
-						if parent == "":
-							parent += "\\"
-							path = parent+seq
-						else:
-							path = parent+"\\"+seq
-						
-
-						if parent not in self.widgets["browse"][user]["dirs"].keys():
-							self.widgets["browse"][user]["dirs"][parent] =  DirStore.append(None, [parent, parent])
-						
-
-						if path not in zz:
-							zz.append(path)
-							self.widgets["browse"][user]["dirs"][path] = DirStore.append(self.widgets["browse"][user]["dirs"][parent], [path.split("\\")[-1], path ] )
-						parent = path
-
-			directory = zz[0]
-			return directory
-		except Exception,e:
-			if debugmode == True: print "BrowseGetDirs", Exception,e
-			
-	def BrowseChangeDir(self, user, directory):
-		self.widgets["browse"][user]["directory"] = directory
-		if "FileStore" in self.widgets["browse"][user]:
-			self.widgets["browse"][user]["FileStore"].clear()
-			flists = self.widgets["browse"][user]["FileStore"]
-			self.widgets["browse"][user]["FilesTree"].destroy()
-			#self.widgets["browse"][user]["FilesSW"].destroy()
-		else:
-			self.widgets["browse"][user]["FileStore"] = flists = gtk.ListStore(  str, int, str, int, str )
-		#print z[0]
-		#file, stats[ size, ftype, [bitrate, length ] ]
-		if directory in self.widgets["browse"][user]["shares"]:
-			for files,stats in self.widgets["browse"][user]["shares"][directory].items():
-				#print files, stats
-				size, ftype, attr  = stats
-				#[bitrate, length, something ]
-				if ftype == "" or attr == []:
-					length = 0
-					bitrate = 0
-				else:
-					bitrate = attr[0]
-					length = self.get_length_time(attr[1])
-				flists.append([files, size, length, bitrate, directory])
-			
-		self.widgets["browse"][user]["FilesTree"] = filestree = gtk.TreeView(flists)
-		self.widgets["browse"][user]["FilesTree"].set_property("rules-hint", True)
-		filestree.set_reorderable(True)
-		filestree.set_headers_visible(True)
-		
-		# Filename
-		fColumn = gtk.TreeViewColumn('FileName')
-		cell = gtk.CellRendererText()
-		fColumn.pack_start(cell, True)
-		fColumn.add_attribute(cell, 'text', 0)
-		fColumn.set_sort_column_id(0)
-		fColumn.set_resizable(True)
-		#FileSize
-		sColumn = gtk.TreeViewColumn('Size')
-		cell = gtk.CellRendererText()
-		sColumn.pack_start(cell, True)
-		sColumn.add_attribute(cell, 'text', 1)
-		sColumn.set_sort_column_id(1)
-		sColumn.set_resizable(True)
-		
-		#FileLength
-		lColumn = gtk.TreeViewColumn('Length')
-		cell = gtk.CellRendererText()
-		lColumn.pack_start(cell, True)
-		lColumn.add_attribute(cell, 'text', 2)
-		lColumn.set_sort_column_id(2)
-		lColumn.set_resizable(True)
-		
-		#FileBitrate
-		bColumn = gtk.TreeViewColumn('Bitrate')
-		cell = gtk.CellRendererText()
-		bColumn.pack_start(cell, True)
-		bColumn.add_attribute(cell, 'text', 3)
-		bColumn.set_sort_column_id(3)
-		bColumn.set_resizable(True)
-		
-		# Add Columns
-		filestree.append_column(fColumn)
-		filestree.append_column(sColumn)
-		filestree.append_column(lColumn)
-		filestree.append_column(bColumn)
-		
-		self.popup_menu["browse-files"] = popup = PopupMenu(self, "browse-files")
-		popup.setup(
-			(_("Download _File"), popup.OnDownloadFile),
-			(_("_Download Directory"), popup.OnDownloadDirectory),
-			(_("Send _Message"), popup.OnSendMessage),
-			("", None),
-			(_("Show _IP address"), popup.OnShowIPaddress),
-			(_("_User Info"), popup.OnGetUserInfo),
-			(_("Reload _Shares"), popup.OnBrowseUser),
-			("$" + _("_Buddy this user"), popup.OnAddToList),
-			("$" + _("Ba_n this user"), popup.OnBanUser),
-			("$" + _("_Ignore this user"), popup.OnIgnoreUser),
-		)
-		self.widgets["browse"][user]["FilesTree"].connect("button_press_event", self.OnPopupMenu, "browse-files", "")
-			
-		# Finish
-		#flists.set_sort_column_id(0, gtk.SORT_ASCENDING)
-		filestree.show()
-		if "FilesSW" in self.widgets["browse"][user]:
-			FilesSW = self.widgets["browse"][user]["FilesSW"]
-		else:
- 			self.widgets["browse"][user]["FilesSW"] = FilesSW = gtk.ScrolledWindow()
- 			FilesSW.set_policy(gtk.POLICY_ALWAYS, gtk.POLICY_ALWAYS)
- 			FilesSW.set_shadow_type(gtk.SHADOW_IN)
- 		FilesSW.add(filestree)
- 		FilesSW.show()
 			
 	def get_length_time(self, length):
 		if length != '' and length != None:
@@ -4563,17 +4543,7 @@ class murmur(MurmurWindow, ProcessMessages):
 		return length
 		
 	
-	def MouseAction(self, widget, event, string):
-		if string == "browse-dirs":
-			if debugmode == True:  print "-- Click -- :", string
-			user = self.tabs["browse"][self.notebook_browsing.get_current_page()]
-			d = self.widgets["browse"][user]["DirTree"].get_path_at_pos(int(event.x), int(event.y))
-			if not d:
-				return
-			path, column, x, y = d
-			directory = self.widgets["browse"][user]["DirStore"].get_value(self.widgets["browse"][user]["DirStore"].get_iter(path), 1)
-			if debugmode == True:  print "-- dir :", directory
-			self.BrowseChangeDir(user, directory)
+	
 	
 	def OnPopupMenu(self, widget, event, string, string2):
 		if event.button != 3:
@@ -4653,33 +4623,6 @@ class murmur(MurmurWindow, ProcessMessages):
 			self.popup_menu[string].set_user(room)
 			self.popup_menu[string].popup(None, None, None, event.button, event.time)
 			return
-		elif string in ( "browse-dirs" ):
-			# Rooms use a different Popup System
-			if debugmode == True:  print "-- Popup -- :", string
-			user = self.tabs["browse"][self.notebook_browsing.get_current_page()]
-			d = self.widgets["browse"][user]["DirTree"].get_path_at_pos(int(event.x), int(event.y))
-			if not d:
-				return
-			path, column, x, y = d
-			directory = self.widgets["browse"][user]["DirStore"].get_value(self.widgets["browse"][user]["DirStore"].get_iter(path), 1)
-			self.popup_menu[string].set_directory(directory)
-			num = 6
-
-		elif string in ( "browse-files" ):
-			# Rooms use a different Popup System
-			if debugmode == True:  print "-- Popup -- :", string
-			user = self.tabs["browse"][self.notebook_browsing.get_current_page()]
-			d = self.widgets["browse"][user]["FilesTree"].get_path_at_pos(int(event.x), int(event.y))
-			if not d:
-				return
-			path, column, x, y = d
-			
-			file = self.widgets["browse"][user]["FileStore"].get_value(self.widgets["browse"][user]["FileStore"].get_iter(path), 0)
-			directory = self.widgets["browse"][user]["FileStore"].get_value(self.widgets["browse"][user]["FileStore"].get_iter(path), 4)
-			self.popup_menu[string].set_file(file)
-			self.popup_menu[string].set_directory(directory)
-			num = 7
-
 				
 		self.popup_menu[string].set_user(user)
 		#items[5].set_active(user in self.ProcessMessages.config["buddies"].keys())
@@ -4699,7 +4642,7 @@ class murmur(MurmurWindow, ProcessMessages):
 			#print self.MurmurWindow.tabs["chat"][room], entry_text
 			if mtype == "rooms":
 				room = entry_text
-				self.join_a_room(room)
+				self.RoomJoin(room)
 			elif mtype == "buddies":
 
 				self.ProcessMessages.mod_config("buddy", entry_text, '')
@@ -4713,28 +4656,6 @@ class murmur(MurmurWindow, ProcessMessages):
 		except Exception,e:
 			if debugmode == True: print "Enterpressed", Exception,e
 		
-	def append_to_chatroom(self, room, themessage):
-		if self.ProcessMessages.connected == False:
-			return
-		try:
-			if room not in self.rooms:
-				#if room not in self.MurmurWindow.chatbufferinput_chat.keys():
-				if debugmode == True:
-					print "whoops, don't have that room", room
-				pass
-			else:
-				if self.MurmurWindow != None:
-					if room not in self.widgets["chat"]:
-						return
-					textbuffer  = self.widgets["chat"][room]["textbuffer"]
-					
-					#themessage = "\n%s [%s] %s" % (time.strftime("%H:%M:%S"), str(user), str(message))
-					textbuffer.insert(textbuffer.get_end_iter(), themessage)
-					#self.widgets["chat"][room]["textview"].scroll_mark_onscreen(textbuffer.get_insert())
-		except Exception,e:
-			if debugmode == True: print "append_to_chatroom bug", Exception,e
-
-
 
  	def window_quit(self, w=None, event=None):
 		update_config()
@@ -4965,55 +4886,42 @@ class murmur(MurmurWindow, ProcessMessages):
 
 		
 	def browse_lookup(self, string):
-		if self.ProcessMessages.connected == False:
-			return
+		if self.ProcessMessages.connected == False: return
 		try:
-			result = self.input_box(title='Browse User',
+			user = self.input_box(title='Browse User',
 			message='Enter the username of the user who\'s UserInfo you wish to Browse:',
 			default_text='', List=self.ProcessMessages.config["buddies"].keys())
-			if result is None:
-				pass
-			else:
-				self.user = result
-				self.ProcessMessages.Send(messages.UserShares(self.user) )
+			if user is not None:
+				self.GetShares(user)
 		except Exception,e:
 			if debugmode == True: print "browse_lookup ERROR", e
 	
 	def userinfo_lookup(self, string):
-		if self.ProcessMessages.connected == False:
-			return
+		if self.ProcessMessages.connected == False: return
 		try:
-			result = self.input_box(title='Lookup Userinfo',
+			user = self.input_box(title='Lookup Userinfo',
 			message='Enter the username of the user who\'s UserInfo you wish to see:',
 			default_text='', List=self.ProcessMessages.config["buddies"].keys())
-			if result is None:
-				pass
-			else:
-				self.info_requested = result
-				
-				self.ProcessMessages.Send(messages.UserInfo(self.info_requested))
+			if user is not None:
+				self.GetUserInfo(user)
+
 		except Exception,e:
 			if debugmode == True: print "userinfo_lookup ERROR", e
 			
 	def ip_lookup(self, string):
-		if self.ProcessMessages.connected == False:
-			return
+		if self.ProcessMessages.connected == False: return
 		try:
-			result = self.input_box(title='Lookup IP',
+			user = self.input_box(title='Lookup IP',
 			message='Enter the username of the user who\'s IP you wish to know:',
 			default_text='', List=self.ProcessMessages.config["buddies"].keys())
-			if result is None:
-				pass
-			else:
-				self.ip_requested = result
-				if self.ip_requested != None:
-					self.ProcessMessages.Send(messages.PeerAddress(self.ip_requested))
+			if user is not None:
+				self.GetIPAddress(user)
+
 		except Exception,e:
 			if debugmode == True: print "ip_lookup ERROR", e
 				
 	def away_toggle(self, string):
-		if self.ProcessMessages.connected == False:
-			return
+		if self.ProcessMessages.connected == False: return
 		try:
 			if self.username != None:
 				if self.status == 0:
@@ -5027,27 +4935,6 @@ class murmur(MurmurWindow, ProcessMessages):
 			if debugmode == True: print "away_toggle ERROR", e
 			
 			
-	def say_in_privatechat(self, user, message):
-		if self.ProcessMessages.connected == False:
-			return
-		try:
-			if debugmode == True:
-				print "You PM'd: %s to user: %s" % (message, user)
-
-			if user not in self.privatelogs:
-				self.privatelogs[user] = []
-				
-			self.ProcessMessages.Send(messages.PrivateMessage(0, user, message))
-				
-			if message[:4] == "/me ":
-				themessage = "\n%s * %s %s" % (time.strftime("%H:%M:%S"), self.username, message[4:])
-			else:
-				themessage = "\n%s [%s] %s" % (time.strftime("%H:%M:%S"), self.username, message)
-				
-			self.append_to_privatechat(user, themessage)
-		except Exception,e:
-			if debugmode == True: print "say_in_privatechat ERROR", e
-			
 	def nickcheck(self):
 		try:
 
@@ -5060,20 +4947,7 @@ class murmur(MurmurWindow, ProcessMessages):
 				driver.Driver.close(self)
 		except Exception,e:
 			if debugmode == True: print "nickcheck ERROR", e	
-			
-	def join_a_room(self, room):
-		if self.ProcessMessages.connected == False:
-			return
-		if room != None and room != "":
-			self.ProcessMessages.Send(messages.JoinRoom(room))
-			
-	def leave_a_room(self, room):
-		if self.ProcessMessages.connected == False:
-			return
-		if room != None and room != "":
-			if room in self.rooms:
-				self.ProcessMessages.Send(messages.LeaveRoom(room))
-				
+
 	def private_popup(self, string, buf):
 		if self.ProcessMessages.connected == False:
 			return
@@ -5090,7 +4964,7 @@ class murmur(MurmurWindow, ProcessMessages):
 		message='Enter the room you wish to Join:',
 		default_text='', List=self.room_lists.keys())
 		if room != None and room != "":
-			self.join_a_room(room)
+			self.RoomJoin(room)
 			
 	def toggle_logwindow(self, widget, buf):
 		active = widget.get_active()
@@ -5115,7 +4989,7 @@ class murmur(MurmurWindow, ProcessMessages):
 		message='Enter the room you wish to Leave:',
 		default_text='', List=self.room_lists.keys())
 		if room != None and room != "":
-			self.leave_a_room(room)
+			self.RoomLeave(room)
 			
 
 

@@ -10,7 +10,7 @@ import string
 import re
 import types
 
-from pynicotine import slskmessages
+#from pynicotine import slskmessages
 
 DECIMALSEP = ","
 
@@ -47,6 +47,9 @@ def InitialiseColumns(treeview, *args):
 		if c[2] == "text":
 			renderer = gtk.CellRendererText()
 			column = gtk.TreeViewColumn(c[0], renderer, text = i)
+		elif c[2] == "progress":
+			renderer = gtk.CellRendererProgress()
+			column = gtk.TreeViewColumn(c[0], renderer, value = i)
 		else:
 			renderer = gtk.CellRendererPixbuf()
 			column = gtk.TreeViewColumn(c[0], renderer, pixbuf = 0)
@@ -63,11 +66,12 @@ def InitialiseColumns(treeview, *args):
 			column.set_min_width(0)
 		if len(c) > 3:
 			column.set_cell_data_func(renderer, c[3])
+		column.set_reorderable(True)
 		treeview.append_column(column)
 		cols.append(column)
 		i += 1
 	return cols
-
+		
 def ScrollBottom(widget):
 	widget.need_scroll = 1
 	va = widget.get_vadjustment()
@@ -278,6 +282,15 @@ class PopupMenu(gtk.Menu):
 			else:
 				if item[0][0] == "$":
 					menuitem = gtk.CheckMenuItem(item[0][1:])
+				elif item[0][0] == "#":
+					menuitem = gtk.ImageMenuItem(item[0][1:])
+					img = gtk.image_new_from_stock(item[2], gtk.ICON_SIZE_MENU)
+        				menuitem.set_image(img)
+				elif item[0][0] == "%":
+					menuitem = gtk.ImageMenuItem(item[0][1:])	
+					img = gtk.Image()
+					img.set_from_pixbuf(item[2])
+					menuitem.set_image(img)
 				else:
 					menuitem = gtk.MenuItem(item[0])
 				if item[1] is not None:
@@ -297,7 +310,7 @@ class PopupMenu(gtk.Menu):
 		self.frame.notebook1.set_current_page(1)
 	
 	def OnShowIPaddress(self, widget):
-		self.frame.np.queue.put(slskmessages.GetPeerAddress(self.user))
+		self.frame.ProccessMessages.Send(messages.GetPeerAddress(self.user))
 	
 	def OnGetUserInfo(self, widget):
 		self.frame.LocalUserInfoRequest(self.user)
