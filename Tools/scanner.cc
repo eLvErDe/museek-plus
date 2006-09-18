@@ -179,6 +179,14 @@ void DirScanner::real_scan() {
 	struct SCANDIR_ENTRY **temp;
 	struct stat s;
 	int n;
+        if(path[path.size() - 1] == '/')
+		path = path.substr(0, path.size() - 1);
+        
+        if (path.substr(path.rfind('/')+1).rfind(".") == 0 ) {
+            cout << "Warning: " << path.c_str() << " is a hidden directory, not sharing." << endl;
+            return;
+        }
+
 #if SCANDIR_ENTRY != dirent
 	char *x = strdup(path.c_str());
 	if((n = scandir(x, &temp, NULL, NULL)) < 0) {
@@ -203,7 +211,9 @@ void DirScanner::real_scan() {
 
 		if ((fn == ".") || (fn == "..") || (stat(full.c_str(), &s) != 0))
 			continue;
-
+		if ( fn.rfind(".") == 0 )
+		        // Ignore dot-files
+		        continue;
 		if(S_ISREG(s.st_mode)) {
 			FileEntry fe = scan_file(full);
 			fe.size = s.st_size;
