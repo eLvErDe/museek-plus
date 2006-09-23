@@ -720,15 +720,16 @@ class mucous(driver.Driver):
 	
 	def nickcheck(self):
 		try:
-			if self.usernames["username"] == None:
-				self.display["mode"] = "status"
-				self.help_mode()
-				self.Hlog("status", "Connection is taking a while to start, maybe you are trying to connect to a FTP daemon?")
-				self.Hlog("status", "Killing connection..")
-				self.Hlog("status", "Try using /interface to connect to a different port.")
-				for line in self.help_connect:
-					self.Hlog("status", line)
-				driver.Driver.close(self)
+			if self.usernames["username"] != None:
+				return
+			self.display["mode"] = "status"
+			self.help_mode()
+			self.Hlog("status", "Connection is taking a while to start, maybe you are trying to connect to a FTP daemon?")
+			self.Hlog("status", "Killing connection..")
+			self.Hlog("status", "Try using /interface to connect to a different port.")
+			for line in self.help_connect:
+				self.Hlog("status", line)
+			driver.Driver.close(self)
 		except Exception,e:
 			self.Hlog("debug", "nickcheck: " + str(e))
 			
@@ -738,7 +739,7 @@ class mucous(driver.Driver):
 				self.retry_timer.cancel()
 			else:
 				for user_path, transfer  in self.transfers["downloads"].items():
-					if int(transfer[3]) in (10, 11, 12, 13, 14):
+					if int(transfer[3]) in (11, 12, 13, 14):
 						self.SendMessage(messages.DownloadFile(transfer[1], transfer[2]))
 				self.retry_timer.cancel()
 				self.retry_timer = threading.Timer(30.0, self.retry_display)
@@ -812,66 +813,70 @@ class mucous(driver.Driver):
 			
 	def ticker_display(self):
 		try:
-			if self.display["mode"] == "chat":
-				mw = self.windows["border"]["chat"]
-				if "roomstatus" in self.windows["border"]:
-					bw = self.windows["border"]["roomstatus"]
-				s = self.windows["dimensions"]["chat"]
-				for rooms8, ticks in self.data["tickers"].items():
-					if rooms8 == self.Spl["room"]:
-						ttickers =[]
-						ttickers = ticks.keys()
-						if ttickers != []:
-							ttickers.sort()
-							for names in ttickers:
-								if self.Spl["ticker_num"] >= len(ttickers):
-									self.Spl["ticker_num"] = 0
-								if names == ttickers[self.Spl["ticker_num"]]:
-									n= len(names)
-									try:
-										if self.Spl["show_menu"] == True: raise  Exception,  "Noticker"
-										if self.display["chatshape"] not in ("nostatuslog", "chat-only"):
-											if self.display["chatshape"] == "noroombox":
-												ticker = "< ["+names+"] "+str(ticks[names][:self.w-9-n])
-											else:
-												ticker = "< ["+names+"] "+str(ticks[names][:self.w-15-9-n])
-											bw.addstr(5, 1, self.decode_language( ticker ))
-											t = len(ticker)
-											fill = ""
-											while len(fill) < s["width"]-4-t:
-												fill += " "
-											fill += ">"
-											bw.addstr(fill)
-											bw.refresh()
-										elif self.display["chatshape"] in ("nostatuslog", "chat-only"):
-											ticker = "< ["+names+"] "+str(ticks[names][:s["width"]-25-n])
-											mw.addstr(0, 18, self.decode_language( ticker ))
-											t = len(ticker)
-											fill = ""
-											while len(fill) < s["width"]-t-20:
-												fill += " "
-											fill += ">"
-											mw.addstr(fill)
-											mw.refresh()
-									except:
-										pass
-									
-	
-									self.Spl["ticker_num"] += 1
-									if self.Spl["ticker_num"] >= len(ttickers):
-										self.Spl["ticker_num"] = 0
-									self.ticker_timer.cancel()
-									self.ticker_timer = threading.Timer(3.0, self.ticker_display)
-									self.ticker_timer.start()
-									break
-						else:
-							self.ticker_timer.cancel()
-							try:
-								self.display_status_log_border()
-								self.display_status_log()
-								curses.doupdate()
-							except:
-								pass
+			if self.display["mode"] != "chat":
+				return
+			mw = self.windows["border"]["chat"]
+			if "roomstatus" in self.windows["border"]:
+				bw = self.windows["border"]["roomstatus"]
+			s = self.windows["dimensions"]["chat"]
+			for rooms8, ticks in self.data["tickers"].items():
+				if rooms8 != self.Spl["room"]:
+					return
+				ttickers =[]
+				ttickers = ticks.keys()
+				if ttickers == []:
+					self.ticker_timer.cancel()
+					try:
+						self.display_status_log_border()
+						self.display_status_log()
+						curses.doupdate()
+					except:
+						pass
+				else:
+					ttickers.sort()
+					for names in ttickers:
+						if self.Spl["ticker_num"] >= len(ttickers):
+							self.Spl["ticker_num"] = 0
+						if names != ttickers[self.Spl["ticker_num"]]:
+							return
+						n = len(names)
+						try:
+							if self.Spl["show_menu"] == True: raise  Exception,  "Noticker"
+							if self.display["chatshape"] not in ("nostatuslog", "chat-only"):
+								if self.display["chatshape"] == "noroombox":
+									ticker = "< ["+names+"] "+str(ticks[names][:self.w-9-n])
+								else:
+									ticker = "< ["+names+"] "+str(ticks[names][:self.w-15-9-n])
+								bw.addstr(5, 1, self.decode_language( ticker ))
+								t = len(ticker)
+								fill = ""
+								while len(fill) < s["width"]-4-t:
+									fill += " "
+								fill += ">"
+								bw.addstr(fill)
+								bw.refresh()
+							elif self.display["chatshape"] in ("nostatuslog", "chat-only"):
+								ticker = "< ["+names+"] "+str(ticks[names][:s["width"]-25-n])
+								mw.addstr(0, 18, self.decode_language( ticker ))
+								t = len(ticker)
+								fill = ""
+								while len(fill) < s["width"]-t-20:
+									fill += " "
+								fill += ">"
+								mw.addstr(fill)
+								mw.refresh()
+						except:
+							pass
+						
+
+						self.Spl["ticker_num"] += 1
+						if self.Spl["ticker_num"] >= len(ttickers):
+							self.Spl["ticker_num"] = 0
+						self.ticker_timer.cancel()
+						self.ticker_timer = threading.Timer(3.0, self.ticker_display)
+						self.ticker_timer.start()
+						break
+				
 		except Exception,e:
 			self.Hlog("debug", "ticker_display: " + str(e))
 		# THREADS THREADING THRU TIME ^^
@@ -3198,7 +3203,8 @@ class mucous(driver.Driver):
 					self.data["browse_results"][user]["dirs"].sort()
 				else:
 					self.data["browse_results"][user]["dirs"].append("Empty Shares")
-				self.Spl["dir_browse"]=self.data["browse_results"][user]["dirs"][0]
+                                        
+				self.Spl["dir_browse"] = self.data["browse_results"][user]["dirs"][0]
 				
 				self.data["shares"][user] = shares
 				
@@ -3247,12 +3253,12 @@ class mucous(driver.Driver):
 				count += 1
 				
 				self.data["browse_num"][user] = self.data["browse_num"][user] +1
-				size  = self.byte_format(stats[0])
+				size = str(self.Humanize(stats[0]))
 				if len(size) < 6:
 					size = ' '* (6-len(size)) + size
 				ftype =stats[1]
 				
-				if ftype in ('OGG', 'MP3', 'ogg', 'mp3') and stats[2] != []:
+				if ftype.upper() in ('OGG', 'MP3') and stats[2] != []:
 					bitrate =str(stats[2][0])
 					if bitrate == '':
 						bitrate = '0'	
@@ -3281,7 +3287,7 @@ class mucous(driver.Driver):
 				line = "%s%s|%s| %s" % ( s, str(count), size, file )
 				browse_list.append(line)
 				
-			self.files = self.data["shares"][user][dirs].keys()
+			self.files = list1
 				
 			if self.bfilter != None:
 				a = []
@@ -3308,21 +3314,25 @@ class mucous(driver.Driver):
 			
 	
 	
-	def browse_file_bar(self):
+	def browse_file_bar(self, user, dirs):
 		try:
 			self.browse_bar.erase()
 			num = self.scrolling["browsefile"]
-			if self.Spl["dir_browse"] not in self.data["shares"][self.usernames["browse"]]:
+                        #self.usernames["browse"], self.Spl["dir_browse"]
+			if dirs not in self.data["shares"][user]:
 				self.browse_bar.refresh()
 				return
-			if self.data["shares"][self.usernames["browse"]][self.Spl["dir_browse"]].keys() != []:
-				file, stats = self.data["shares"][self.usernames["browse"]][self.Spl["dir_browse"]].items()[num]
+			if self.data["shares"][user][dirs].keys() != []:
+                                list1 = self.data["shares"][user][dirs].keys()
+			        list1.sort()
+                                file = list1[num]
+                                stats = self.data["shares"][user][dirs][file] 
 			else: 
 				self.browse_bar.refresh()
 				return
 	
 
-			size  = self.byte_format(stats[0])
+			size  = self.Humanize(stats[0])
 			
 			ftype =stats[1]
 			if ftype == '':
@@ -3343,9 +3353,17 @@ class mucous(driver.Driver):
 				else:
 					length = "0:00"
 			
-			#self.browse_file_bar('['+str(self.data["browse_num"][user])+'] '+" Size: " + str(size)+" Length: " + length + " Bitrate: " + bitrate)
-			line ='['+str(num+1)+'] '+" Size: " + str(size)+" Length: " + length + " Bitrate: " + bitrate
-			self.browse_bar.addstr(line)
+                        #l=len('['+str(num+1)+'] '+" Size: " + str(size)+" Length: " + length + " Bitrate: " + bitrate)
+                        atr = self.colors["cyan"] | curses.A_BOLD
+
+			self.browse_bar.addstr("[")
+                        self.browse_bar.addstr(str(num+1), atr )
+                        self.browse_bar.addstr("] | Size: ")
+                        self.browse_bar.addstr(str(size), atr)
+                        self.browse_bar.addstr(" | ")
+                        self.browse_bar.addstr(bitrate, atr)
+                        self.browse_bar.addstr("Kbps | Length: ")
+                        self.browse_bar.addstr(length, atr)
 			self.browse_bar.refresh()
 		except Exception, e:
 			self.Hlog("debug", "browse_file_bar: " + str(e))
@@ -3729,7 +3747,25 @@ class mucous(driver.Driver):
 			return filefrmt
 		except Exception, e:
 			self.Hlog("debug", "byte_format: " + str(e))
-			
+                        
+	def Humanize(self, size):
+		if size is None:
+			return None
+		try:
+			s = int(size)
+			if s >= 1000*1024*1024:
+				r = "%.1fGB" % ((float(s) / (1024.0*1024.0*1024.0)))
+			elif s >= 1000*1024:
+				r = "%.1fMB" % ((float(s) / (1024.0*1024.0)))
+			elif s >= 1000:
+				r = "%.1fKB" % ((float(s) / 1024.0))
+			else:
+				r = str(size)
+			return r
+		except Exception, e:
+                        
+			return size
+                        
 	def path_split(self, path):
 		try:
 			r = path.split('\\')
@@ -3807,7 +3843,7 @@ class mucous(driver.Driver):
 							if bitrate != '0' and length != 0:
 								self.statswin.addstr(" | ")
 								self.statswin.addstr(str(bitrate), atr )
-								self.statswin.addstr("KHz | Len: ")
+								self.statswin.addstr("Kbps| Len: ")
 								self.statswin.addstr(str(minutes), atr )
 								self.statswin.addstr(":")
 								self.statswin.addstr(str(seconds), atr )
@@ -8197,6 +8233,7 @@ class mucous(driver.Driver):
 			w = self.windows["dimensions"]["browse"] 
 			tw = self.windows["text"]["browse"]
 			#self.display["browse"] = "directories"
+                        # If the default help isn't displayed
 			if self.usernames["browse"] != "default__":
 				
 				directories = []
@@ -8207,6 +8244,7 @@ class mucous(driver.Driver):
 						pass
 				directories.sort()
 				self.directories = directories
+                                # List, Directory, Scroll position 
 				if self.display["browse"] == "directories":
 					clipped_list, self.scrolling["browsedir"], self.windows["dimensions"]["directories"]["start"] = self.scrollbox(directories, self.scrolling["browsedir"], d["height"])
 # 					self.scrolling["browsedir"] = self.Sup
@@ -8215,11 +8253,13 @@ class mucous(driver.Driver):
 				
 				count = 0
 				self.dirwin.erase()
+                                # Display directory tree
 				for s in clipped_list:
 					try:
-						z = s.split("\\")
-						string = (" " * (len(z)-2)) + "\\"
-						string += self.decode_language(z[-1][:self.w-w["width"]-4-len(string)])
+						dir = s.split("\\")
+                                                # Spaces before directory, to make it look like a tree
+						string = (" " * (len(dir)-2)) + "\\"
+						string += self.decode_language(dir[-1][:self.w-w["width"]-4-len(string)])
 						string += " " * ( (self.w-w["width"]-4) -len(string) )
 						if count +d["start"] == self.scrolling["browsedir"]:
 							self.dirwin.addstr(string, self.colors["green"])
@@ -8232,14 +8272,17 @@ class mucous(driver.Driver):
 				
 				self.Spl["dir_browse"] = self.directories[self.scrolling["browsedir"]]
 				self.set_edit_title(self.Spl["dir_browse"] )
+                                
 				self.browse_file_stats( self.usernames["browse"], self.Spl["dir_browse"])
-				self.browse_file_bar()
+                                
+				self.browse_file_bar( self.usernames["browse"], self.Spl["dir_browse"])
 				
 				self.dirwin.noutrefresh()
 			
 			
 			
 			elif self.usernames["browse"] == "default__":
+                                # Clear windows, display browse help
 				self.dirwin.erase()
 				self.dirwin.noutrefresh()
 				tw.erase()
