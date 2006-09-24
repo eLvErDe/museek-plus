@@ -476,7 +476,7 @@ class mucous(driver.Driver):
 		self.display = {"mode": "chat", "list": "buddied", "interests": "recommendations", "chatshape": mucous_config["mucous"]["roombox"], "chat": "chatroom", "browse": "directories", "setup": "mucous", "password": "no", "transfers": "downloads", "transfer_sort": "all", "t_speed": True}
 		self.modes = {"setup":  ["mucous", "museek", "shares", "userinfo", "logs"], "transfers": ["all","active",  "queued", "finished", "failed"] }
 		self.user = { "status": {}, "statistics": {}  }
-		self.windows = {"text": {}, "border": {}, "dimensions": {}, "browse": {} }
+		self.windows = {"text": {}, "border": {}, "dimensions": {}, "browse": {}, "tab": {} }
 		self.scrolling = {"chatroom": -1, "roombox": 0, "roomstatus": -1, "info": 0, "private": 0, "browsefile": 0, "browsedir": 0, "likes": 0, "hates": 0, "recommendations": 0, "similar_users": 0, "help":0, "debug": 0, "search": 0, "uploads": 0, "downloads": 0, "buddied": 0, "banned": 0, "ignored": 0, "trusted": 0, "roomlist":0 }
 		self.menus = {}
 
@@ -495,7 +495,6 @@ class mucous(driver.Driver):
 		self.sfilter= None
 		self.search_number = 0
 
-		self.tabwin = self.tabclearwin = None
 		
 		self.sorted_search = []
 
@@ -663,15 +662,19 @@ class mucous(driver.Driver):
 			self.stdscr.erase()
 			self.stdscr.refresh()
 			self.h, self.w = self.stdscr.getmaxyx()
-		
-			w = self.windows["dimensions"]["input"] = {"height":1, "width":self.w-2, "top":self.h-3, "left":1}
-			self.windows["border"]["input"] = curses.newwin(w["height"]+2, w["width"]+2, w["top"]-1, w["left"]-1)
-			self.windows["border"]["input"].attron(self.colors["blue"])
-			self.windows["border"]["input"].border()
+			# Clean stale windows
+			if "input" in self.windows["text"]:
+				del self.windows["text"]["input"]
+			if "input" in self.windows["border"]:
+				del self.windows["border"]["input"]
+				
+			w = self.windows["dimensions"]["input"] = {"height":1, "width":self.w-2, "top":self.h-3, "left":1}	
+			bi = self.windows["border"]["input"] = curses.newwin(w["height"]+2, w["width"]+2, w["top"]-1, w["left"]-1)
+			bi.attron(self.colors["blue"])
+			bi.border()
+			bi.refresh()
 			
-			self.windows["border"]["input"].refresh()
-			
-			self.windows["text"]["input"] = self.windows["border"]["input"].subwin(w["height"], w["width"], w["top"], w["left"])
+			self.windows["text"]["input"] = bi.subwin(w["height"], w["width"], w["top"], w["left"])
 			self.windows["text"]["input"].attroff(self.colors["blue"])
 			self.ModeTopbar()
 
@@ -1944,11 +1947,11 @@ class mucous(driver.Driver):
 	
 	def BrowseFileBar(self, user, dirs):
 		try:
-			self.browse_bar.erase()
+			self.windows["browse"]["browsebar"].erase()
 			num = self.scrolling["browsefile"]
                         #self.usernames["browse"], self.Spl["dir_browse"]
 			if dirs not in self.data["shares"][user]:
-				self.browse_bar.refresh()
+				self.windows["browse"]["browsebar"].refresh()
 				return
 			if self.data["shares"][user][dirs].keys() != []:
                                 list1 = self.data["shares"][user][dirs].keys()
@@ -1956,7 +1959,7 @@ class mucous(driver.Driver):
                                 file = list1[num]
                                 stats = self.data["shares"][user][dirs][file] 
 			else: 
-				self.browse_bar.refresh()
+				self.windows["browse"]["browsebar"].refresh()
 				return
 	
 
@@ -1984,15 +1987,15 @@ class mucous(driver.Driver):
                         #l=len('['+str(num+1)+'] '+" Size: " + str(size)+" Length: " + length + " Bitrate: " + bitrate)
                         atr = self.colors["cyan"] | curses.A_BOLD
 
-			self.browse_bar.addstr("[")
-                        self.browse_bar.addstr(str(num+1), atr )
-                        self.browse_bar.addstr("] | Size: ")
-                        self.browse_bar.addstr(str(size), atr)
-                        self.browse_bar.addstr(" | ")
-                        self.browse_bar.addstr(bitrate, atr)
-                        self.browse_bar.addstr("Kbps | Length: ")
-                        self.browse_bar.addstr(length, atr)
-			self.browse_bar.refresh()
+			self.windows["browse"]["browsebar"].addstr("[")
+                        self.windows["browse"]["browsebar"].addstr(str(num+1), atr )
+                        self.windows["browse"]["browsebar"].addstr("] | Size: ")
+                        self.windows["browse"]["browsebar"].addstr(str(size), atr)
+                        self.windows["browse"]["browsebar"].addstr(" | ")
+                        self.windows["browse"]["browsebar"].addstr(bitrate, atr)
+                        self.windows["browse"]["browsebar"].addstr("Kbps | Length: ")
+                        self.windows["browse"]["browsebar"].addstr(length, atr)
+			self.windows["browse"]["browsebar"].refresh()
 		except Exception, e:
 			self.Hlog("debug", "BrowseFileBar: " + str(e))
 			
@@ -6765,85 +6768,95 @@ class mucous(driver.Driver):
 	def DrawChatRoomBox(self):
 		# RoomBox Shape Display
 		try:
-			if self.display["mode"]=='chat' and self.display["chatshape"] != "noroombox":
-				if self.display["chatshape"] in ("big", "nostatuslog", "widelist", "rightlist"):
-					w = self.windows["dimensions"]["chat"]
-					if self.display["chatshape"] == "rightlist":
-						s = self.windows["dimensions"]["roombox"] = {"height": self.h-7, "top": 2, "left": (w["width"]), "width": self.w-w["width"], "start": -1 }
-					else:
-						s = self.windows["dimensions"]["roombox"] = {"height": self.h-7, "top": 2, "left": 0, "width": self.w-w["width"], "start": -1 }
-					mw = self.windows["border"]["roombox"]  = curses.newwin(s["height"]+2, s["width"], s["top"]-1, s["left"])
-					if self.display["chat"] == "roombox":
-						mw.attron(self.colors["green"])
+			
+			if self.display["mode"] != 'chat' or self.display["chatshape"] == "noroombox":
+				return
+			if "roombox" in self.windows["text"]:
+				del self.windows["text"]["roombox"]
+			if "roombox" in self.windows["border"]:
+				del self.windows["border"]["roombox"]
+			
+			if self.display["chatshape"] in ("big", "nostatuslog", "widelist", "rightlist"):
+				w = self.windows["dimensions"]["chat"]
+				if self.display["chatshape"] == "rightlist":
+					s = self.windows["dimensions"]["roombox"] = {"height": self.h-7, "top": 2, "left": (w["width"]), "width": self.w-w["width"], "start": -1 }
+				else:
+					s = self.windows["dimensions"]["roombox"] = {"height": self.h-7, "top": 2, "left": 0, "width": self.w-w["width"], "start": -1 }
+				# Create wi
+				mw = self.windows["border"]["roombox"]  = curses.newwin(s["height"]+2, s["width"], s["top"]-1, s["left"])
+				if self.display["chat"] == "roombox":
+					mw.attron(self.colors["green"])
 
-					mw.attroff(self.colors["green"])
-					if self.display["chatshape"] == "rightlist":
-						self.windows["dimensions"]["roombox"]["twidth"] = s["width"]-1
-						self.windows["dimensions"]["roombox"]["tleft"] = s["left"]+1
-					else:
-						self.windows["dimensions"]["roombox"]["twidth"] = s["width"]-1
-						self.windows["dimensions"]["roombox"]["tleft"] = s["left"]
-					tw = self.windows["text"]["roombox"] = mw.subwin(s["height"], s["twidth"], s["top"], s["tleft"])
-				elif self.display["chatshape"] == "small":
-					s = self.windows["dimensions"]["roombox"] = {"height": 4, "top": 2, "left": 0,  "width": 15}
-					mw = self.windows["border"]["roombox"] = curses.newwin(s["height"]+2, s["width"], s["top"]-1, s["left"])
-					if self.display["chat"] == "roombox":
-						mw.attron(self.colors["green"])
-
-					mw.attroff(self.colors["green"])
-					self.windows["dimensions"]["roombox"]["twidth"] = s["width"] -1
-					tw = self.windows["text"]["roombox"] = mw.subwin(s["height"], s["twidth"], s["top"], s["left"])
-					
-				if self.display["chatshape"] in ("big", "small", "nostatuslog", "widelist", "rightlist"):
-					tw.scrollok(0)
-					tw.idlok(1)
+				mw.attroff(self.colors["green"])
+				if self.display["chatshape"] == "rightlist":
+					self.windows["dimensions"]["roombox"]["twidth"] = s["width"]-1
+					self.windows["dimensions"]["roombox"]["tleft"] = s["left"]+1
+				else:
+					self.windows["dimensions"]["roombox"]["twidth"] = s["width"]-1
+					self.windows["dimensions"]["roombox"]["tleft"] = s["left"]
+				tw = self.windows["text"]["roombox"] = mw.subwin(s["height"], s["twidth"], s["top"], s["tleft"])
 				
-	
-					if self.Spl["room"] != None:
+			elif self.display["chatshape"] == "small":
+				s = self.windows["dimensions"]["roombox"] = {"height": 4, "top": 2, "left": 0,  "width": 15}
+				
+				mw = self.windows["border"]["roombox"] = curses.newwin(s["height"]+2, s["width"], s["top"]-1, s["left"])
+				if self.display["chat"] == "roombox":
+					mw.attron(self.colors["green"])
+
+				mw.attroff(self.colors["green"])
+				self.windows["dimensions"]["roombox"]["twidth"] = s["width"] -1
+				tw = self.windows["text"]["roombox"] = mw.subwin(s["height"], s["twidth"], s["top"], s["left"])
+				
+			if self.display["chatshape"] in ("big", "small", "nostatuslog", "widelist", "rightlist"):
+				tw.scrollok(0)
+				tw.idlok(1)
+			
+
+				if self.Spl["room"] != None:
+					try:
+						if self.display["chat"] == "roombox":
+							mw.addstr(0, 0, "Users: "+str(len(self.data["rooms"][self.Spl["room"]])), self.colors["green"]|curses.A_BOLD)
+						else:
+
+							mw.addstr(0, 0, "Users: "+str(len(self.data["rooms"][self.Spl["room"]])),  curses.A_BOLD)
+						
+					except:
+						pass
+					if "autojoin" in self.config:
 						try:
 							if self.display["chat"] == "roombox":
-								mw.addstr(0, 0, "Users: "+str(len(self.data["rooms"][self.Spl["room"]])), self.colors["green"]|curses.A_BOLD)
+								cs  = self.colors["green"] |curses.A_BOLD
 							else:
-
-								mw.addstr(0, 0, "Users: "+str(len(self.data["rooms"][self.Spl["room"]])),  curses.A_BOLD)
-							
-						except:
-							pass
-						if "autojoin" in self.config:
-							try:
-								if self.display["chat"] == "roombox":
-									cs  = self.colors["green"] |curses.A_BOLD
-								else:
-									cs  = curses.A_BOLD
-								if self.Spl["room"] in self.config["autojoin"].keys():
-									
-									mw.addstr(self.windows["dimensions"]["roombox"]["height"]+1, 0, "[x] AutoJoined",  cs)
-								else:
-									mw.addstr(self.windows["dimensions"]["roombox"]["height"]+1, 0, "[ ] AutoJoined",  cs)
-							except Exception, e:
-								self.Hlog("debug", "AutoJoined: " + str(e))
+								cs  = curses.A_BOLD
+							if self.Spl["room"] in self.config["autojoin"].keys():
 								
-					mw.noutrefresh()
-				
-					if self.Spl["room"] != None:
-						self.logs["roombox"][self.Spl["room"]] = []
-						if len( self.data["rooms"][self.Spl["room"]] ) > 0:
-							self.logs["roombox"][self.Spl["room"]] = self.data["rooms"][self.Spl["room"]]
-							self.logs["roombox"][self.Spl["room"]].sort()
-					
-						try:
-							if self.logs["roombox"][self.Spl["room"]] != []:
-								clipped_list, self.scrolling["roombox"], self.windows["dimensions"]["roombox"]["start"] = self.scrollbox(self.logs["roombox"][self.Spl["room"]], self.scrolling["roombox"], self.windows["dimensions"]["roombox"]["height"])
-									
-								self.FormatChatRoomBox()
-								#for lines in clipped_list:
-								#	self.DrawRoomBox(lines, self.windows["dimensions"]["roombox"]["start"])
+								mw.addstr(self.windows["dimensions"]["roombox"]["height"]+1, 0, "[x] AutoJoined",  cs)
 							else:
-								tw.addstr("* Empty")
-								tw.noutrefresh()
+								mw.addstr(self.windows["dimensions"]["roombox"]["height"]+1, 0, "[ ] AutoJoined",  cs)
 						except Exception, e:
-							self.Hlog("debug", "RSB: " + str(e))
-				#curses.doupdate()
+							self.Hlog("debug", "AutoJoined: " + str(e))
+							
+				mw.noutrefresh()
+			
+				if self.Spl["room"] != None:
+					self.logs["roombox"][self.Spl["room"]] = []
+					if len( self.data["rooms"][self.Spl["room"]] ) > 0:
+						self.logs["roombox"][self.Spl["room"]] = self.data["rooms"][self.Spl["room"]]
+						self.logs["roombox"][self.Spl["room"]].sort()
+				
+					try:
+						if self.logs["roombox"][self.Spl["room"]] != []:
+							clipped_list, self.scrolling["roombox"], self.windows["dimensions"]["roombox"]["start"] = self.scrollbox(self.logs["roombox"][self.Spl["room"]], self.scrolling["roombox"], self.windows["dimensions"]["roombox"]["height"])
+								
+							self.FormatChatRoomBox()
+							#for lines in clipped_list:
+							#	self.DrawRoomBox(lines, self.windows["dimensions"]["roombox"]["start"])
+						else:
+							tw.addstr("* Empty")
+							tw.noutrefresh()
+					except Exception, e:
+						self.Hlog("debug", "RSB: " + str(e))
+			#curses.doupdate()
 		except Exception, e:
 			self.Hlog("debug", "DrawChatRoomBox " +str(e))
 			
@@ -6854,6 +6867,16 @@ class mucous(driver.Driver):
 			
 			# Arrangements: 
 			cs = None
+			if "roomstatus" in self.windows["text"]:
+				del self.windows["text"]["roomstatus"]
+			if "roomstatus" in self.windows["border"]:
+				del self.windows["border"]["roomstatus"]
+			
+			if "chat" in self.windows["text"]:
+				del self.windows["text"]["chat"]
+			if "chat" in self.windows["border"]:
+				del self.windows["border"]["chat"]
+				
 			if self.display["chatshape"] == "big":
 				w = self.windows["dimensions"]["chat"] = {"height": self.h-13, "width": self.w-15, "top": 8, "left": 16}
 				cs = self.windows["dimensions"]["roomstatus"] = {"height": 4, "width": w["width"]-2, "top": 2, "left": w["left"]}
@@ -7628,28 +7651,13 @@ class mucous(driver.Driver):
 		self.Spl["show_menu"] = False
 		try:
 			#w = self.windows["dimensions"]["private"] = {"height": self.h-10, "width": self.w-2, "top": 5, "left": 1}
+			if "private" in self.windows["text"]:
+				del self.windows["text"]["private"]
+				
 			w = self.windows["dimensions"]["private"] = {"height": self.h-8, "width": self.w, "top": 4, "left": 0}
-			#mw = self.windows["border"]["private"] = curses.newwin(w["height"]+2,w["width"]+2, w["top"]-1, w["left"]-1)
-			
-			#if self.usernames["private"] != None:
-				#mw.attron(self.colors["green"])
-				#attr = self.colors["green"]
-			#else:
-				#attr = curses.A_NORMAL
-			#mw.border()
-			#try:
-				#mw.addstr(0, 3, "< ", attr)
-				#if self.usernames["private"] == None:
-					#mw.addstr(0, 5, "Private Chat",  self.colors["green"] | curses.A_BOLD)
-					#mw.addstr(0, 17, " >", attr)
-				#else:
-					#mw.addstr(0, 5, "Private Chat with %s" % self.usernames["private"],  self.colors["green"] | curses.A_BOLD)
-					#mw.addstr(0, 23+len(self.usernames["private"]), " >", attr)
-				#mw.refresh()
-			#except:
-				#pass
+
 			tw =  self.windows["text"]["private"] = curses.newwin(w["height"], w["width"], w["top"], w["left"])				
-			#tw =  self.windows["text"]["private"] = mw.subwin(w["height"], w["width"], w["top"], w["left"])
+
 			
 			tw.scrollok(0)
 			tw.idlok(1)
@@ -7760,86 +7768,18 @@ class mucous(driver.Driver):
 			
 			
 			if self.display["mode"] ==  "roomlist":
+				# Cleanup stale windows
+				if "roomlist" in self.windows["text"]:
+					del self.windows["text"]["roomlist"]
+				if "roomlist" in self.windows["border"]:
+					del self.windows["border"]["roomlist"]
+					
 				s = self.windows["dimensions"][window]
 				mw = self.windows["border"]["roomlist"] = curses.newwin(s["height"]+2, s["width"]+2, s["top"]-1, s["left"]-1)
 				mw.attron(self.colors["green"])
 				mw.border()
 				mw.attroff(self.colors["green"])
-			elif self.display["mode"] == "lists":
-				s = self.windows["dimensions"][self.display["list"]]
-				mw = self.windows["border"][self.display["list"]] = curses.newwin(s["height"]+2, s["width"]+2, s["top"]-1, s["left"]-1)
-				mw.attron(self.colors["green"])
-				mw.border()
-				mw.attroff(self.colors["green"])
 				
-			elif self.display["mode"] == "transfer":
-				s = self.windows["dimensions"][window]
-				win = self.windows["border"][window] = curses.newwin(s["height"]+2, s["width"]+2, s["top"]-1, s["left"]-1)
-				
-				if mucous_config["mucous"]["transbox"] == "tabbed":
-					win.attron(self.colors["green"])
-					win.border()
-					if window == "uploads":
-						win.addstr(0, 3, "< Uploading Transfers >",  self.colors["green"] | curses.A_BOLD)
-						win.addstr(0, 27, "< Downloading Transfers >")
-					elif window == "downloads":
-						win.addstr(0, 3, "< Uploading Transfers >")
-						win.addstr(0, 27, "< Downloading Transfers >",   curses.A_BOLD|self.colors["green"])	
-					
-				else:
-					if self.display["transfers"] == "uploads" and window == "uploads":
-						win.attron(self.colors["green"])
-						win.border()
-						win.addstr(0, 3, "< Uploading Transfers >", curses.A_BOLD|self.colors["green"])
-					elif self.display["transfers"] == "uploads" and window == "downloads":
-						win.border()
-						win.addstr(0, 3, "< Downloading Transfers >", curses.A_BOLD)
-					elif self.display["transfers"] == "downloads" and window == "downloads":
-						win.attron(self.colors["green"])
-						win.border()
-						win.addstr(0, 3, "< Downloading Transfers >", curses.A_BOLD|self.colors["green"])
-					elif self.display["transfers"] == "downloads" and window == "uploads":
-						win.border()
-						win.addstr(0, 3, "< Uploading Transfers >", curses.A_BOLD)
-						
-	
-			if self.display["mode"] == "lists":
-				if self.display["list"] =="buddied":
-					mw.addstr(0, 3, "< Buddied >",  self.colors["green"] | curses.A_BOLD)
-					mw.addstr(0, 16, "< Banned >", self.colors["green"])
-					mw.addstr(0, 28, "< Ignored >", self.colors["green"])
-					mw.addstr(0, 40, "< Trusted >", self.colors["green"])
-					mw.addstr(0, 52, "< Interests >", self.colors["green"])
-					
-					self.set_edit_title("Add Buddy:")
-				elif self.display["list"] =="banned":
-					mw.addstr(0, 3, "< Buddied >",  self.colors["green"] )
-					mw.addstr(0, 16, "< Banned >", self.colors["green"]| curses.A_BOLD)
-					mw.addstr(0, 28, "< Ignored >", self.colors["green"])
-					mw.addstr(0, 40, "< Trusted >", self.colors["green"])
-					mw.addstr(0, 52, "< Interests >", self.colors["green"])
-					self.set_edit_title("Ban User:")
-				elif self.display["list"] =="ignored":
-					mw.addstr(0, 3, "< Buddied >",  self.colors["green"] )
-					mw.addstr(0, 16, "< Banned >", self.colors["green"])
-					mw.addstr(0, 28, "< Ignored >", self.colors["green"]| curses.A_BOLD)
-					mw.addstr(0, 40, "< Trusted >", self.colors["green"])
-					mw.addstr(0, 52, "< Interests >", self.colors["green"])
-					self.set_edit_title("Ignore User:")
-				elif self.display["list"] =="trusted":
-					mw.addstr(0, 3, "< Buddied >",  self.colors["green"] )
-					mw.addstr(0, 16, "< Banned >", self.colors["green"])
-					mw.addstr(0, 28, "< Ignored >", self.colors["green"])
-					mw.addstr(0, 40, "< Trusted >", self.colors["green"] | curses.A_BOLD)
-					mw.addstr(0, 52, "< Interests >", self.colors["green"])
-					self.set_edit_title("Add Trusted:")
-			
-				mw.noutrefresh()
-				tw = self.windows["text"][self.display["list"]] = mw.subwin(s["height"], s["width"], s["top"], s["left"])
-				tw.scrollok(0)
-				tw.idlok(1)
-					
-			elif self.display["mode"] == "roomlist":
 				mw.addstr(0, 3, "< Room List >",  self.colors["green"] | curses.A_BOLD)
 				pos = 3
 				sorta = "< "
@@ -7886,6 +7826,89 @@ class mucous(driver.Driver):
 				tw.border()
 				tw.attroff(self.colors["green"])
 				
+
+			elif self.display["mode"] == "lists":
+				# Cleanup stale windows
+				if self.display["list"] in self.windows["text"]: 
+					del self.windows["text"][self.display["list"]]
+				if self.display["list"] in self.windows["border"]:
+					del self.windows["border"][self.display["list"]]
+					
+				s = self.windows["dimensions"][self.display["list"]]
+				mw = self.windows["border"][self.display["list"]] = curses.newwin(s["height"]+2, s["width"]+2, s["top"]-1, s["left"]-1)
+				mw.attron(self.colors["green"])
+				mw.border()
+				mw.attroff(self.colors["green"])
+
+				if self.display["list"] =="buddied":
+					mw.addstr(0, 3, "< Buddied >",  self.colors["green"] | curses.A_BOLD)
+					mw.addstr(0, 16, "< Banned >", self.colors["green"])
+					mw.addstr(0, 28, "< Ignored >", self.colors["green"])
+					mw.addstr(0, 40, "< Trusted >", self.colors["green"])
+					mw.addstr(0, 52, "< Interests >", self.colors["green"])
+					
+					self.set_edit_title("Add Buddy:")
+				elif self.display["list"] =="banned":
+					mw.addstr(0, 3, "< Buddied >",  self.colors["green"] )
+					mw.addstr(0, 16, "< Banned >", self.colors["green"]| curses.A_BOLD)
+					mw.addstr(0, 28, "< Ignored >", self.colors["green"])
+					mw.addstr(0, 40, "< Trusted >", self.colors["green"])
+					mw.addstr(0, 52, "< Interests >", self.colors["green"])
+					self.set_edit_title("Ban User:")
+				elif self.display["list"] =="ignored":
+					mw.addstr(0, 3, "< Buddied >",  self.colors["green"] )
+					mw.addstr(0, 16, "< Banned >", self.colors["green"])
+					mw.addstr(0, 28, "< Ignored >", self.colors["green"]| curses.A_BOLD)
+					mw.addstr(0, 40, "< Trusted >", self.colors["green"])
+					mw.addstr(0, 52, "< Interests >", self.colors["green"])
+					self.set_edit_title("Ignore User:")
+				elif self.display["list"] =="trusted":
+					mw.addstr(0, 3, "< Buddied >",  self.colors["green"] )
+					mw.addstr(0, 16, "< Banned >", self.colors["green"])
+					mw.addstr(0, 28, "< Ignored >", self.colors["green"])
+					mw.addstr(0, 40, "< Trusted >", self.colors["green"] | curses.A_BOLD)
+					mw.addstr(0, 52, "< Interests >", self.colors["green"])
+					self.set_edit_title("Add Trusted:")
+			
+				mw.noutrefresh()
+				tw = self.windows["text"][self.display["list"]] = mw.subwin(s["height"], s["width"], s["top"], s["left"])
+				tw.scrollok(0)
+				tw.idlok(1)
+				
+				
+			elif self.display["mode"] == "transfer":
+				if window in self.windows["border"]:
+					del self.windows["border"][window]
+				s = self.windows["dimensions"][window]
+				win = self.windows["border"][window] = curses.newwin(s["height"]+2, s["width"]+2, s["top"]-1, s["left"]-1)
+				
+				if mucous_config["mucous"]["transbox"] == "tabbed":
+					win.attron(self.colors["green"])
+					win.border()
+					if window == "uploads":
+						win.addstr(0, 3, "< Uploading Transfers >",  self.colors["green"] | curses.A_BOLD)
+						win.addstr(0, 27, "< Downloading Transfers >")
+					elif window == "downloads":
+						win.addstr(0, 3, "< Uploading Transfers >")
+						win.addstr(0, 27, "< Downloading Transfers >",   curses.A_BOLD|self.colors["green"])	
+					
+				else:
+					if self.display["transfers"] == "uploads" and window == "uploads":
+						win.attron(self.colors["green"])
+						win.border()
+						win.addstr(0, 3, "< Uploading Transfers >", curses.A_BOLD|self.colors["green"])
+					elif self.display["transfers"] == "uploads" and window == "downloads":
+						win.border()
+						win.addstr(0, 3, "< Downloading Transfers >", curses.A_BOLD)
+					elif self.display["transfers"] == "downloads" and window == "downloads":
+						win.attron(self.colors["green"])
+						win.border()
+						win.addstr(0, 3, "< Downloading Transfers >", curses.A_BOLD|self.colors["green"])
+					elif self.display["transfers"] == "downloads" and window == "uploads":
+						win.border()
+						win.addstr(0, 3, "< Uploading Transfers >", curses.A_BOLD)
+						
+	
 	
 			self.scrolling[self.display["list"]] = 0
 		except Exception, e:
@@ -7897,7 +7920,19 @@ class mucous(driver.Driver):
 		self.Spl["show_menu"] = False
 
 		try:
+			# Cleanup stale windows
+			if "uploads" in self.windows["text"]:
+				del self.windows["text"]["uploads"]
+			if "uploads" in self.windows["border"]:
+				del self.windows["border"]["uploads"]
+			if "downloads" in self.windows["text"]:
+				del self.windows["text"]["downloads"]
+			if "downloads" in self.windows["border"]:
+				del self.windows["border"]["downloads"]
+				
 			if mucous_config["mucous"]["transbox"] == "split":
+				
+					
 				u = self.windows["dimensions"]["uploads"] = {"height": self.h/2-4, "width": self.w-2, "top": 2, "left": 1}
 				d = self.windows["dimensions"]["downloads"] = {"height": self.h-5-u["height"]-4, "width": self.w-2, "top": self.h/2, "left": 1}
 				self.DrawListsWindows("uploads")
@@ -8025,28 +8060,25 @@ class mucous(driver.Driver):
 			self.display["mode"] = "browse"
 			self.Spl["show_menu"] = False
 
-					
-			#self.Mwin = curses.newwin(self.h -8, self.w, 4, 0)
-			w = self.windows["dimensions"]["browse"] = {"height": self.h-11, "width": self.w-25, "top": 5, "left": 24, "start": 0}
+			# Cleanup stale windows
+			if "browse" in self.windows["text"]:
+				del self.windows["text"]["browse"]
 			if "browse" in self.windows["border"]: 
-				#if self.windows["border"]["browse"] != None:
-
-
 				del self.windows["border"]["browse"]
-				self.windows["border"]["browse"] = curses.newwin(w["height"]+2, w["width"]+2, w["top"]-1, w["left"]-1)
-				pass
-			else:
-				self.windows["border"]["browse"] = curses.newwin(w["height"]+2, w["width"]+2, w["top"]-1, w["left"]-1)
+			if "dirwin" in self.windows["browse"]:
+				del self.windows["browse"]["dirwin"]
 			if "dirborder" in self.windows["browse"]:
-				self.windows["browse"]["dirborder"].erase()
 				del self.windows["browse"]["dirborder"]
-				self.windows["browse"]["dirborder"] = curses.newwin(w["height"]+2, self.w-w["width"]-2, w["top"]-1, 0)
-			else: 
-				self.windows["browse"]["dirborder"] = curses.newwin(w["height"]+2, self.w-w["width"]-2, w["top"]-1, 0)
+			if "browsebar" in self.windows["browse"]:
+				del self.windows["browse"]["browsebar"]
+				
+			w = self.windows["dimensions"]["browse"] = {"height": self.h-11, "width": self.w-25, "top": 5, "left": 24, "start": 0}	
+			self.windows["border"]["browse"] = curses.newwin(w["height"]+2, w["width"]+2, w["top"]-1, w["left"]-1)
+				
+			self.windows["browse"]["dirborder"] = curses.newwin(w["height"]+2, self.w-w["width"]-2, w["top"]-1, 0)
 			
 			self.DrawBrowseWin()
 			if "browse" in self.windows["text"]:
-				del self.windows["text"]["browse"]  
 				self.windows["text"]["browse"] = self.windows["border"]["browse"].subwin(w["height"], w["width"], w["top"], w["left"])
 			else: 
 				self.windows["text"]["browse"] = self.windows["border"]["browse"].subwin(w["height"], w["width"], w["top"], w["left"])
@@ -8055,9 +8087,9 @@ class mucous(driver.Driver):
 			self.windows["text"]["browse"].noutrefresh()
 
 			d =self.windows["dimensions"]["directories"]= {"height": w["height"], "width": self.w-w["width"]-4, "top": w["top"], "left":1}
-			self.dirwin = self.windows["browse"]["dirborder"].subwin(d["height"], d["width"], d["top"], d["left"])
-			self.dirwin.erase()
-			self.dirwin.noutrefresh()
+			self.windows["browse"]["dirwin"] = self.windows["browse"]["dirborder"].subwin(d["height"], d["width"], d["top"], d["left"])
+			self.windows["browse"]["dirwin"].erase()
+			self.windows["browse"]["dirwin"].noutrefresh()
 	
 # 			self.scrolling["browsefile"] = self.scrolling["browsedir"] = 0
 			# Vars
@@ -8069,9 +8101,9 @@ class mucous(driver.Driver):
 			self.directories = []
 	
 			
-			self.browse_bar = curses.newwin(1, self.w, w["top"]+w["height"]+1, 0)
-			self.browse_bar.erase()
-			self.browse_bar.noutrefresh()
+			self.windows["browse"]["browsebar"] = curses.newwin(1, self.w, w["top"]+w["height"]+1, 0)
+			self.windows["browse"]["browsebar"].erase()
+			self.windows["browse"]["browsebar"].noutrefresh()
 			
 			#if self.logs["alert"][:6] == "Browse":
 			#	self.AlertStatus("")
@@ -8152,7 +8184,7 @@ class mucous(driver.Driver):
 					clipped_list, self.scrolling["browsedir"], self.windows["dimensions"]["directories"]["start"] = self.scrollbox(directories, self.scrolling["browsedir"], d["height"])
 				
 				count = 0
-				self.dirwin.erase()
+				self.windows["browse"]["dirwin"].erase()
                                 # Display directory tree
 				for s in clipped_list:
 					try:
@@ -8162,9 +8194,9 @@ class mucous(driver.Driver):
 						string += self.dlang(dir[-1][:self.w-w["width"]-4-len(string)])
 						string += " " * ( (self.w-w["width"]-4) -len(string) )
 						if count +d["start"] == self.scrolling["browsedir"]:
-							self.dirwin.addstr(string, self.colors["green"])
+							self.windows["browse"]["dirwin"].addstr(string, self.colors["green"])
 						else:
-							self.dirwin.addstr(string)
+							self.windows["browse"]["dirwin"].addstr(string)
 						count += 1
 					except Exception, e:
 						pass
@@ -8177,15 +8209,15 @@ class mucous(driver.Driver):
                                 
 				self.BrowseFileBar( self.usernames["browse"], self.Spl["dir_browse"])
 				
-				self.dirwin.noutrefresh()
+				self.windows["browse"]["dirwin"].noutrefresh()
 			
 				del clipped_list
 				del directories
 			
 			elif self.usernames["browse"] == "default__":
                                 # Clear windows, display browse help
-				self.dirwin.erase()
-				self.dirwin.noutrefresh()
+				self.windows["browse"]["dirwin"].erase()
+				self.windows["browse"]["dirwin"].noutrefresh()
 				tw.erase()
 				count = 0
 				
@@ -8198,10 +8230,7 @@ class mucous(driver.Driver):
 						self.Hlog("debug", "Browse mode" + str(e))
 			tw.noutrefresh()
 			self.DrawTabs(self.activeitems["browse"], self.usernames["browse"])
-			del w
-			del tw
-			del d
-			del count
+
 			
 		except Exception, e:
 			self.Hlog("debug", "FormatBrowse: " + str(e))
@@ -8245,6 +8274,10 @@ class mucous(driver.Driver):
 			self.Spl["show_menu"] = False
 			
 			w = self.windows["dimensions"]["search"] = {"height": self.h-11, "width": self.w-2, "top": 5, "left": 1, "start": 0}
+			if "search" in self.windows["text"]:
+				del self.windows["text"]["search"]
+			if "search" in self.windows["border"]:
+				del self.windows["border"]["search"]
 			mw = self.windows["border"]["search"] = curses.newwin(w["height"]+2, w["width"]+2, w["top"]-1, w["left"]-1)
 			mw.attron(self.colors["green"])
 			mw.border()
@@ -8402,17 +8435,16 @@ class mucous(driver.Driver):
 			if tab_box_list == [None]:
 				return
 			lang = mucous_config["mucous"]["language"]
-			if self.tabclearwin != None:
-				del self.tabclearwin
-				del self.tabwin
-				self.tabwin = self.tabclearwin = None
-			self.tabclearwin = curses.newwin(3, self.w, 1, 0)
-			self.tabclearwin.hline(1, 1, curses.ACS_HLINE, self.w-2)
+
+			if "bar" in self.windows["tab"]:
+				del self.windows["tab"]["bar"]
+			tbar = self.windows["tab"]["bar"] = curses.newwin(3, self.w, 1, 0)
+			tbar.hline(1, 1, curses.ACS_HLINE, self.w-2)
 			self.activeitems["positions"]= {}
-			self.tabclearwin.addstr(1,0, "<")
-			self.tabclearwin.addstr(1,self.w-1, ">")
+			tbar.addstr(1,0, "<")
+			tbar.addstr(1,self.w-1, ">")
 		
-			self.tabclearwin.noutrefresh()
+			tbar.noutrefresh()
 			if tab_box_list == []:
 				return
 			pos = 1
@@ -8432,18 +8464,18 @@ class mucous(driver.Driver):
 				if pos + move >= self.w -2:
 					return
 				
-				self.tabwin = curses.newwin(3, len(sting)+2, 1, pos)
-				self.tabwin.border()
-				self.tabwin.noutrefresh()
-				self.tab1win = self.tabwin.subwin(1,len(sting),2,pos+1)
+				tb = curses.newwin(3, len(sting)+2, 1, pos)
+				tb.border()
+				tb.noutrefresh()
+				tl = tb.subwin(1,len(sting),2,pos+1)
 				
 				try:
 					
 					if self.display["mode"] == "search":
 						if string == self.Spl["current_search"]:
-							self.tab1win.addstr(sting, self.colors["green"] | curses.A_BOLD)
+							tl.addstr(sting, self.colors["green"] | curses.A_BOLD)
 						else:
-							self.tab1win.addstr(sting, curses.A_BOLD)
+							tl.addstr(sting, curses.A_BOLD)
 
 						continue
 					
@@ -8458,9 +8490,9 @@ class mucous(driver.Driver):
 								attr = self.colors["green"] | curses.A_BOLD
 							elif self.user["status"][username] == 0:
 								attr = self.colors["red"] | curses.A_BOLD
-							self.tab1win.addstr(sting, attr)
+							tl.addstr(sting, attr)
 						else:
-							self.tab1win.addstr(sting, self.colors["red"] | curses.A_BOLD)
+							tl.addstr(sting, self.colors["red"] | curses.A_BOLD)
 					else:
 						if string in self.user["status"]:
 							attr = curses.A_NORMAL
@@ -8470,15 +8502,17 @@ class mucous(driver.Driver):
 								attr = self.colors["green"]
 							elif self.user["status"][username] == 0:
 								attr = self.colors["red"]
-							self.tab1win.addstr(sting, attr)
+							tl.addstr(sting, attr)
 						else:
-							self.tab1win.addstr(sting, self.colors["red"])  
+							tl.addstr(sting, self.colors["red"])  
 					
 				except:
 					# Always get errors, because text is the same size as window
 					pass
 				pos += len(sting)+2
-				self.tab1win.noutrefresh()
+				tl.noutrefresh()
+				del tl
+				del tb
 				
 		except Exception, e:
 			self.Hlog("debug", "DrawTabs: " + str(e))
@@ -8487,6 +8521,15 @@ class mucous(driver.Driver):
 		try:
 			self.display["mode"] = "info"
 			self.Spl["show_menu"] = False
+			# Cleanup stale windows
+			if "info" in self.windows["text"]:
+				del self.windows["text"]["info"]
+			if "info" in self.windows["border"]: 
+				del self.windows["border"]["info"]
+			if "infostats" in self.windows["text"]:	
+				del self.windows["text"]["infostats"]
+			if "infostats" in self.windows["border"]:
+				del self.windows["border"]["infostats"]
 			
 			w = self.windows["dimensions"]["info"] = {"height": self.h-10, "width": self.w-20, "top": 5, "left": 1}
 			mw = self.windows["border"]["info"] = curses.newwin(w["height"]+2, w["width"]+2, w["top"]-1, w["left"]-1)
@@ -8565,6 +8608,12 @@ class mucous(driver.Driver):
 		
 	def ModeHelp(self):
 		try:
+			# Cleanup stale windows
+			if "help" in self.windows["text"]:
+				del self.windows["text"]["help"]
+			if "help" in self.windows["border"]:
+				del self.windows["border"]["help"]
+				
 			if self.display["mode"] not in ("help", "debug"):
 				self.display["mode"] = "debug"
 			if self.display["mode"] == "help":
@@ -9164,7 +9213,11 @@ class mucous(driver.Driver):
 
 	def InterestsWindows(self, w, mode):
 		try:
-			win = curses.newwin(w["height"]+2, w["width"]+2, w["top"]-1, w["left"]-1)
+			if mode in self.windows["text"]:
+				del self.windows["text"][mode]
+			if mode in self.windows["border"]:
+				del self.windows["border"][mode] 
+			self.windows["border"][mode] = win = curses.newwin(w["height"]+2, w["width"]+2, w["top"]-1, w["left"]-1)
 			if self.display["interests"] == mode:
 				win.attron(self.colors["green"])
 			win.border()
@@ -9220,13 +9273,12 @@ class mucous(driver.Driver):
 			if self.display["interests"] == mode:
 				win.attroff(self.colors["green"])
 			win.refresh()
-			twin =win.subwin(w["height"], w["width"], w["top"], w["left"])
+			self.windows["text"][mode] = twin = win.subwin(w["height"], w["width"], w["top"], w["left"])
 			
 			twin.scrollok(0)
 			twin.idlok(1)
 	
-			self.windows["text"][mode] = twin
-			self.windows["border"][mode] = win
+			
 
 		except Exception, e:
 			self.Hlog( "debug", "InterestsWindows: " + str(e))
@@ -9443,6 +9495,9 @@ class mucous(driver.Driver):
 		self.Spl["show_menu"] = False
 		try:
 			w = self.windows["dimensions"]["setup"] = {"height": self.h-5, "width": self.w, "top": 1, "left": 0}
+			if "setup" in self.windows["border"]:
+				del self.windows["border"]["setup"]
+				
 			mw = self.windows["border"]["setup"] = curses.newwin(w["height"], w["width"], w["top"], w["left"])
 			mw.erase()
 			mw.border()
@@ -9549,7 +9604,8 @@ class mucous(driver.Driver):
 				inrescanw.scrollok(1)
 				inrescanw.addstr("Rescan Shares", self.colors["cyan"])
 				inrescanw.noutrefresh()
-				
+				del inrescanw
+				del rescanw
 				rescaw = curses.newwin(3,16,3,17)
 				rescaw.border()
 				rescaw.addstr(0,1, "< Normal >")
@@ -9558,7 +9614,8 @@ class mucous(driver.Driver):
 				inrescaw.scrollok(1)
 				inrescaw.addstr("Update Shares", self.colors["cyan"])
 				inrescaw.noutrefresh()
-				
+				del inrescaw
+				del rescaw
 				rescah = curses.newwin(3,16,3,33)
 				rescah.border()
 				#rescah.addstr(0,1, "<-HUP museekd>")
@@ -9567,7 +9624,8 @@ class mucous(driver.Driver):
 				inrescah.scrollok(1)
 				inrescah.addstr("Reload Shares", self.colors["cyan"])
 				inrescah.noutrefresh()				
-				
+				del inrescah
+				del rescah
 				# Second Row
 				
 				lrescaw = curses.newwin(3,16,6,1)
@@ -9578,7 +9636,8 @@ class mucous(driver.Driver):
 				inlrescaw.scrollok(1)
 				inlrescaw.addstr("List Shared", self.colors["cyan"])
 				inlrescaw.noutrefresh()
-				
+				del inlrescaw
+				del lrescaw
 				xshare = curses.newwin(3,16,6,17)
 				xshare.border()
 				xshare.addstr(0,1, "< Normal >")
@@ -9587,7 +9646,8 @@ class mucous(driver.Driver):
 				inxshare.scrollok(1)
 				inxshare.addstr("Add Directory", self.colors["cyan"])
 				inxshare.noutrefresh()
-				
+				del inxshare
+				del xshare
 				xshare = curses.newwin(3,16,6,33)
 				xshare.border()
 				xshare.addstr(0,1, "< Normal >")
@@ -9596,7 +9656,8 @@ class mucous(driver.Driver):
 				inxshare.scrollok(1)
 				inxshare.addstr("Remove Dir", self.colors["cyan"])
 				inxshare.noutrefresh()
-				
+				del inxshare
+				del xshare
 				lrescaw = curses.newwin(3,16,9,1)
 				lrescaw.border()
 				lrescaw.addstr(0,1, "< Buddy-only >")
@@ -9605,7 +9666,8 @@ class mucous(driver.Driver):
 				inlrescaw.scrollok(1)
 				inlrescaw.addstr("List Shared", self.colors["cyan"])
 				inlrescaw.noutrefresh()
-				
+				del inlrescaw
+				del lrescaw
 				xshare = curses.newwin(3,16,9,17)
 				xshare.border()
 				xshare.addstr(0,1, "< Buddy-only >")
@@ -9614,13 +9676,18 @@ class mucous(driver.Driver):
 				inxshare.scrollok(1)
 				inxshare.addstr("Add Directory", self.colors["cyan"])
 				inxshare.noutrefresh()
-				
+				del inxshare
+				del xshare
 				xshare = curses.newwin(3,16,9,33)
 				xshare.border()
-				xshare.addstr(0,1, "< Buddy-only >")
+				xshare.addstr(0,1, "< Bufdy-only >")
 				xshare.noutrefresh()
-				
-				
+				inxshare = xshare.subwin(1,14,10,34)
+				inxshare.scrollok(1)
+				inxshare.addstr("Remove Dir", self.colors["cyan"])
+				inxshare.noutrefresh()
+				del inxshare
+				del xshare
 				rescanw = curses.newwin(3,16,12,1)
 				rescanw.border()
 				rescanw.addstr(0,1, "< Buddy-only >")
@@ -9629,7 +9696,8 @@ class mucous(driver.Driver):
 				inrescanw.scrollok(1)
 				inrescanw.addstr("Rescan Shares", self.colors["cyan"])
 				inrescanw.noutrefresh()
-				
+				del inrescanw
+				del rescanw
 				rescaw = curses.newwin(3,16,12,17)
 				rescaw.border()
 				rescaw.addstr(0,1, "< Buddy-only >")
@@ -9638,20 +9706,17 @@ class mucous(driver.Driver):
 				inrescaw.scrollok(1)
 				inrescaw.addstr("Update Shares", self.colors["cyan"])
 				inrescaw.noutrefresh()
-				
-				
-				inxshare = xshare.subwin(1,14,10,34)
-				inxshare.scrollok(1)
-				inxshare.addstr("Remove Dir", self.colors["cyan"])
-				inxshare.noutrefresh()
-#│┌<muscan -r -v>┐┌< muscan -v >─┐┌<-HUP museekd>┐
+				del inrescaw
+				del rescaw
+
 				textshare = curses.newwin(self.h-8,self.w-50,2,49)
 				textshare.border()
 				textshare.noutrefresh()
 				ts = textshare.subwin(self.h-10,self.w-50-2,3,50)
 				ts.addstr("Click on the buttons to run the local muscan.\n\nWhen you click on Add/Remove Directory, type in the directory below, and start with '//' instead of just a '/'")
 				ts.noutrefresh()
-				
+				del ts
+				del textshare
 			elif self.display["setup"] in ("userinfo"):	
 				
 				inputui_w = curses.newwin(self.h-8,self.w-2,2,1)
@@ -9668,7 +9733,8 @@ class mucous(driver.Driver):
 				except:
 					pass
 				ininputui_w.noutrefresh()
-				
+				del ininputui_w
+				del inputui_w
 				inputimage = curses.newwin(1,13,self.h-6,1)
 				inputimage.erase()
 				inputimage.addstr( "Your Image: ")
@@ -9681,7 +9747,8 @@ class mucous(driver.Driver):
 						inputimage2.scrollok(1)
 						inputimage2.addstr( str(self.config["userinfo"]["image"][:self.w-3-14]))
 						inputimage2.noutrefresh()
-					
+				del inputimage2
+				del inputimage
 			elif self.display["setup"] in ("logs"):
 				bw = curses.newwin(1,30,2,1)
 				bw.erase()
@@ -9694,7 +9761,7 @@ class mucous(driver.Driver):
 				bw.addstr(z, self.colors["cyan"])
 				bw.addstr(" Log Chat messages? ",  curses.A_BOLD)
 				bw.noutrefresh()
-				
+				del bw
 				bnwin = curses.newwin(3,self.w-2,5,1)
 				bnwin.border()
 				bnwin.addstr(0, 1, "< Log Directory >",  curses.A_BOLD)
@@ -9703,7 +9770,8 @@ class mucous(driver.Driver):
 				inbnwin.scrollok(1)
 				inbnwin.addstr(os.path.expanduser(mucous_config["mucous"]["log_dir"])[:37], self.colors["cyan"] )
 				inbnwin.noutrefresh()
-				
+				del inbnwin
+				del bnwin
 			elif self.display["setup"] == "mucous":
 				# Interface
 				bw = curses.newwin(3,32,2,1)
@@ -9715,6 +9783,8 @@ class mucous(driver.Driver):
 				if "connection" in mucous_config:
 					inbw.addstr(self.dlang( mucous_config["connection"]["interface"][:28] ), self.colors["cyan"] )
 				inbw.noutrefresh()
+				del inbw
+				del bw
 				bw2 = curses.newwin(3,32,5,1)
 				bw2.border()
 				bw2.addstr(0, 1, "< Interface Password >",  curses.A_BOLD)
@@ -9729,7 +9799,8 @@ class mucous(driver.Driver):
 				else:
 					inbw2.addstr("NOT set")
 				inbw2.noutrefresh()
-				
+				del inbw2
+				del bw2
 				
 				bwin = curses.newwin(6,22,2,33)
 				bwin.border()
@@ -9762,8 +9833,11 @@ class mucous(driver.Driver):
 				inbwin1_2.noutrefresh()
 				inbwin1_3.noutrefresh()
 				inbwin1_4.noutrefresh()
-				
-				
+				del inbwin1_1
+				del inbwin1_2
+				del inbwin1_3
+				del inbwin1_4 
+				del bwin
 				if mucous_config["tickers"]["tickers_enabled"] in ("True", "true", "yes"):
 					z = enabled
 				else:
@@ -9773,7 +9847,7 @@ class mucous(driver.Driver):
 				bw3.addstr(z, self.colors["cyan"])
 				bw3.addstr(" Show Tickers:         /tickers",  curses.A_BOLD)
 				bw3.noutrefresh()
-				
+				del bw3
 				bw30 = curses.newwin(1,45,9,1)
 				bw30.erase()
 				if mucous_config["tickers"]["ticker_cycle"] in ("True", "true", "yes"):
@@ -9784,7 +9858,7 @@ class mucous(driver.Driver):
 				bw30.addstr(" Cycle Tickers:        /tickcycle",  curses.A_BOLD)
 			
 				bw30.noutrefresh()
-				
+				del bw30
 				if mucous_config["mucous"]["auto-clear"] in ("True", "true", "yes"):
 					z = enabled
 					mucous_config["mucous"]["auto-clear"] = "yes"
@@ -9795,7 +9869,7 @@ class mucous(driver.Driver):
 				autoclearw.addstr(z, self.colors["cyan"])
 				autoclearw.addstr(" Auto-clear Transfers: /autoclear",  curses.A_BOLD)
 				autoclearw.noutrefresh()
-				
+				del autoclearw
 				if mucous_config["mucous"]["auto-retry"] in ("True", "true", "yes"):
 					z = enabled
 					if mucous_config["mucous"]["auto-retry"] != "yes":
@@ -9808,7 +9882,7 @@ class mucous(driver.Driver):
 				autoretryw.addstr(z, self.colors["cyan"])
 				autoretryw.addstr(" Auto-retry Transfers: /autoretry",  curses.A_BOLD)
 				autoretryw.noutrefresh()
-				
+				del autoretryw
 				
 				if mucous_config["mucous"]["autobuddy"] in ("True", "true", "yes"):
 					z = enabled
@@ -9820,7 +9894,7 @@ class mucous(driver.Driver):
 				bw5.addstr(z, self.colors["cyan"])
 				bw5.addstr( " Auto-Buddy downloads: /autobuddy",  curses.A_BOLD)
 				bw5.noutrefresh()
-				
+				del bw5
 				if str(mucous_config["mucous"]["beep"]) in ("True", "true", "yes"):
 					z = enabled
 					if mucous_config["mucous"]["beep"] != "yes":
@@ -9832,7 +9906,7 @@ class mucous(driver.Driver):
 				beepw.addstr(z, self.colors["cyan"])
 				beepw.addstr(" Beep:                 /beep",  curses.A_BOLD)
 				beepw.noutrefresh()
-			
+				del beepw
 				# Minimum Room size for Roomlist
 				bw4 = curses.newwin(3,16,8,49)
 				bw4.border()
@@ -9843,7 +9917,8 @@ class mucous(driver.Driver):
 				inbw4.addstr(" -  "+str(mucous_config["mucous"]["roomlistminsize"]), self.colors["cyan"])
 				inbw4.addstr(0, 11, " + ", self.colors["cyan"])
 				inbw4.noutrefresh()
-				
+				del inbw4
+				del bw4
 				# Encoding button
 				buttonlanguage = curses.newwin(3,16,11,49)
 				buttonlanguage.border()
@@ -9853,7 +9928,8 @@ class mucous(driver.Driver):
 				inbuttonlanguage.scrollok(1)
 				inbuttonlanguage.addstr(mucous_config["mucous"]["language"], self.colors["cyan"])
 				inbuttonlanguage.noutrefresh()
-				
+				del inbuttonlanguage
+				del buttonlanguage
 
 				
 				# Custom URL 
@@ -9866,6 +9942,8 @@ class mucous(driver.Driver):
 				if "url custom prefix" in mucous_config["mucous"] and "url custom suffix" in mucous_config["mucous"]:
 					inbwinurl_c.addstr(self.dlang(mucous_config["mucous"]["url custom prefix"])+"$"+self.dlang(mucous_config["mucous"]["url custom suffix"]), self.colors["cyan"])
 					inbwinurl_c.noutrefresh()
+				del inbwinurl_c
+				del bw_url_c
 				bw_url = curses.newwin(3,16,14,33)
 				bw_url.border()
 				bw_url.addstr(0, 1, "< URL Reader >",  curses.A_BOLD)
@@ -9874,7 +9952,8 @@ class mucous(driver.Driver):
 				inbwurl.scrollok(1)
 				inbwurl.addstr(self.dlang(mucous_config["mucous"]["url reader"]), self.colors["cyan"])
 				inbwurl.noutrefresh()
-				
+				del inbwurl
+				del bw_url
 
 				# Save button
 				savew = curses.newwin(3,16,14,49)
@@ -9884,7 +9963,8 @@ class mucous(driver.Driver):
 				insavew.scrollok(1)
 				insavew.addstr(" Save Config", self.colors["cyan"] | curses.A_BOLD)
 				insavew.noutrefresh()
-								
+				del insavew
+				del savew
 
 
 
@@ -9904,6 +9984,8 @@ class mucous(driver.Driver):
 					except:
 						pass
 				inbw.noutrefresh()
+				del inbw
+				
 	
 				
 				inusernamewin2 = bw.subwin(1,36,4,2)
@@ -9917,6 +9999,7 @@ class mucous(driver.Driver):
 						pass
 
 				inusernamewin2.noutrefresh()
+				del inusernamewin2
 
 				inifacepasswin = bw.subwin(1,36,5,2)
 				inifacepasswin.addstr("Pass: ")
@@ -9928,7 +10011,8 @@ class mucous(driver.Driver):
 					if "server" in self.config:
 						inifacepasswin.addstr("*********", self.colors["cyan"])
 				inifacepasswin.noutrefresh()
-				
+				del inifacepasswin
+				del bw
 	
 				ifacepasswin = curses.newwin(3,26,2,39)
 				ifacepasswin.border()
@@ -9946,6 +10030,7 @@ class mucous(driver.Driver):
 					else:
 						inifacepasswin.addstr("*********", self.colors["cyan"])
 				inifacepasswin.noutrefresh()
+				del inifacepasswin
 
 				#------------------------
 
@@ -9967,6 +10052,7 @@ class mucous(driver.Driver):
 				bw3.addstr(" Share to Buddies-Only",  curses.A_BOLD)
 				
 				bw3.noutrefresh()
+				del bw3
 				if t == 1:
 					if self.config["transfers"]["privilege_buddies"] == "true": #, 
 						z = enabled
@@ -9979,6 +10065,7 @@ class mucous(driver.Driver):
 				bw4.addstr(z, self.colors["cyan"])
 				bw4.addstr(" Buddies get Privileges", curses.A_BOLD)
 				bw4.noutrefresh()
+				del bw4
 				if t == 1:
 					if self.config["transfers"]["have_buddy_shares"] == "true":
 						z = enabled
@@ -9991,6 +10078,7 @@ class mucous(driver.Driver):
 				bw7.addstr(z, self.colors["cyan"])
 				bw7.addstr(" Enable Buddy-Only shares", curses.A_BOLD)
 				bw7.noutrefresh()
+				del bw7
 				if t == 1:
 					if self.config["transfers"]["trusting_uploads"] == "true":
 						z = enabled
@@ -10003,6 +10091,7 @@ class mucous(driver.Driver):
 				bw7.addstr(z, self.colors["cyan"])
 				bw7.addstr(" Allow Trusted users to send you files", curses.A_BOLD)
 				bw7.noutrefresh()
+				del bw7
 				if t == 1:
 					if self.config["transfers"]["user_warnings"] == "true": 
 						z = enabled
@@ -10015,7 +10104,7 @@ class mucous(driver.Driver):
 				bw7.addstr(z, self.colors["cyan"])
 				bw7.addstr(" Send automatic warnings via Private Chat", curses.A_BOLD)
 				bw7.noutrefresh()
-				
+				del bw7
 				bw5 = curses.newwin(3,16,5,49)
 				bw5.border()
 				bw5.addstr(0, 1, "<Connections >",  curses.A_BOLD)
@@ -10025,7 +10114,8 @@ class mucous(driver.Driver):
 				if "clients" in self.config:
 					inbw5.addstr(self.config["clients"]["connectmode"], self.colors["cyan"])
 				inbw5.noutrefresh()
-				
+				del inbw5
+				del bw5
 				bw6 = curses.newwin(3,16,8,49)
 				bw6.border()
 				bw6.addstr(0, 1, "<Upload Slots>",  curses.A_BOLD)
@@ -10038,7 +10128,8 @@ class mucous(driver.Driver):
 					 inbw6.addstr(self.config["transfers"]["upload_slots"], self.colors["cyan"] |  curses.A_BOLD)
 				inbw6.addstr(0, 11, " + ", self.colors["cyan"])
 				inbw6.refresh()
-				
+				del inbw6
+				del bw6
 				dirwin = curses.newwin(4,self.w-2,13,1)
 				dirwin.border()
 				dirwin.addstr(0, 1, "< Download/Incomplete Directories >",  curses.A_BOLD)
@@ -10053,6 +10144,9 @@ class mucous(driver.Driver):
 					dirincompletewin.addstr(self.dlang(self.config["transfers"]["incomplete-dir"]), self.colors["cyan"])
 				
 				dirincompletewin.noutrefresh()
+				del dirincompletewin
+				del dircompletewin
+				del dirwin
 				
 
 		except Exception, e:
@@ -10065,6 +10159,20 @@ class mucous(driver.Driver):
 	
 	def ModeTopbar(self):
 		try:
+			if "top" in self.windows["border"]:
+				del self.windows["border"]["top"]
+			if "onlinestatus" in self.windows["border"]:
+				del self.windows["border"]["onlinestatus"]
+			if "uploadstatus" in self.windows["border"]:
+				del self.windows["border"]["uploadstatus"]
+			if "downloadstatus" in self.windows["border"]:
+				del self.windows["border"]["downloadstatus"]
+			if "searchstatus" in self.windows["border"]:
+				del self.windows["border"]["searchstatus"]
+			if "alert" in self.windows["border"]:
+				del self.windows["border"]["alert"]
+			if "username" in self.windows["border"]:
+				del self.windows["border"]["username"]
 			tb = self.windows["border"]["top"] =   curses.newwin(1, self.w, 0, 0)
 			tb.bkgdset(" ", self.colors["blafgcyabg"]  | curses.A_REVERSE | curses.A_BOLD)
 			tb.idlok(1)
