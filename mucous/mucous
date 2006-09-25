@@ -368,9 +368,10 @@ class editor(threading.Thread):
 				if self.firsttab == None:
 					self.firsttab = 0
 				# if a space is in currentword, it won't be in the listline, so match it with a multi-space word
+				#self.mucous.Hlog("debug", self.word)
 				if currentword not in self.listline:
 					for word in self.listline:
-						if word.endswith(currentword):
+						if word.upper().endswith(currentword.upper()):
 							currentword = word
 							cpos = self.listline.index(currentword)
 							
@@ -3332,26 +3333,26 @@ class mucous(driver.Driver):
 				self.keepit=[]
 				if self.display["mode"] == "roomlist":
 					for words in self.data["roomlist"].keys():
-						if words.startswith(part[0:1]):
+						if words.upper().startswith(part[0:1].upper()):
 							self.keepit.append(words)
 				else:
 					for words in self.logs["tab_completion"]:
 						if part[0:1] == '/':
 							# Be more picky with /commands
 							if len(words) > len(part):
-								if words.startswith(part):
+								if words.upper().startswith(part.upper()):
 									self.keepit.append(words)
 							
 						else:
-							if words.startswith(part):
+							if words.upper().startswith(part.upper()):
 								self.keepit.append(words)
-				self.keepit.sort()
+				self.keepit.sort(key=str.lower)
 			self.firsttab +=1
 
 			currentword = self.listline[pos]	
 			lw = len(currentword)
 
-			if currentword.startswith(part):
+			if currentword.upper().startswith(part.upper()):
 				
 				for words in self.keepit:
 					self.listline[pos] = self.keepit[0]
@@ -3359,8 +3360,6 @@ class mucous(driver.Driver):
 					self.keepit.remove(self.keepit[0])
 					self.keepit.append(z)
 
-					if " " in z:
-						self.firsttab = 0
 
 					break
 				else:
