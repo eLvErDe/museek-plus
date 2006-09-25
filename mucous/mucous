@@ -354,23 +354,48 @@ class editor(threading.Thread):
 					self.x += 1
 			elif c == chr(9): # Tab
 				if self.word == None:
-					w = self.line.split(' ')
+					#self.x
+					#w = self.line.split(' ')
+					#self.word = w[-1]
+					w = self.line[:self.x].split(' ')
+					
 					self.word = w[-1]
-				#print "word is"+self.word
+					self.listline = self.line.split(" ")
+				w = self.line[:self.x].split(' ')
+				lw = len(w)
+				currentword = w[lw-1]
 				if self.firsttab == None:
 					self.firsttab = 0
+				# if a space is in currentword, it won't be in the listline, so match it with a multi-space word
+				if currentword not in self.listline:
+					for word in self.listline:
+						if currentword in word:
+							currentword = word
+							
+				self.listline, self.firsttab, self.word, xpos = self.InputTabCompletion(self.line, self.word, self.firsttab, self.listline, lw-1)
+				if self.listline == []:
+					return False
+				self.line = ''
+				# position in listline
+				posx = 0
+				# segments in listline
+				ll = len(self.listline) -1
+				# put line back together
+				for r in self.listline:
+					
+					if posx != ll:
+						self.line += r +' '
+						# place cursor at end of current word
+						if posx == xpos:
+							self.x = len(self.line)-1
+					elif posx == ll:
+						self.line +=r
+						# Place cursor at end of line
+						if posx == xpos:
+							self.x = len(self.line)
+					posx += 1
 				
-				self.listline, self.firsttab= self.InputTabCompletion(self.line, self.word, self.firsttab, self.listline)
-				
-				if self.listline != []:
-					self.line = ''
-					for r in self.listline:
-						if r is not self.listline[-1]:
-							self.line +=r +' '
-						elif r is self.listline[-1]:
-							self.line +=r
-				
-				self.x = len(self.line)
+				#self.x = len(self.line)
 				#return False
 			elif c == chr(11):
 				self.line = self.line[:pos]
@@ -536,19 +561,19 @@ class mucous(driver.Driver):
 			mucous_config["tickers"]["ticker_cycle"] = "yes"
 		# Help lists
 		self.commandlist =  ["/me", "/j", "/join", "/p", "/part", "/l", "/leave", "/talk", "/say", "/alias", "/list", "/users", \
-"/cd",  "/get", "/getdir", "/nick", "/privs", "/privileges", "/giveprivs ",\
+"/cd",  "/get", "/getdir", "/nick", "/privs", "/privileges", "/giveprivs",\
 "/help", "/info",  "/autojoin", "/roombox", "/autoaway", "/transbox", "/roomlist", "/roomlistrefresh", \
 "/inrooms", "/pm",  "/msg", "/np", "/npset", "/npcheck",\
 "/npprefix", "/tickroom", "/tickcycle",  "/listtick", "/tickers", "/interface", "/password",\
 "/save", "/connect", "/disconnect", "/autobuddy", "/autoclear", "/autoretry", "/privbuddy", "/onlybuddy",\
-"/slots","/buddy", "/unbuddy",  "/ban ", "/banlist", "/beep", "/trust ", "/distrust ", "/unban ", "/nuke ", "/unnuke ",\
-"/ignore", "/unignore",  "/unhide",  "/userinfo", "/ip ", "/stat ", "/away", "/abortup", "/percent", \
+"/slots","/buddy", "/unbuddy",  "/ban", "/banlist", "/beep", "/trust", "/distrust", "/unban", "/nuke", "/unnuke",\
+"/ignore", "/unignore",  "/unhide",  "/userinfo", "/ip", "/stat", "/away", "/abortup", "/percent", \
 "/abortdown",  "/removeup", "/removedown", "/retry", "/retryall", "/clearup", "/cleardown", "/clearroom", "/clearsearchs", "/url", "/urlreader", "/urlcustom",\
 "/search", "/searchfor", "/searchbuddy", "/searchroom", "/download", "/downdir", "/browse",\
 "/browseuser", "/browsesearch", "/browsedown",  "/downuser",\
 "/downpath", "/downpathdir",  "/chat", "/ignorelist", "/banlist", "/transfer", "/transfers", "/private",\
 "/buddylist", "/setup", "/quit", "/logging", "/logdir", "/reloadshares", "/rescanshares", "/version", "/extra", \
-"/logout", "/login", "/like ", "/donotlike ", "/donothate ", "/hate ", "/similar", "/globalrex", "/recommendations", "/rex", "/itemsimilar ", "/itemrex ", "/uploadto ", "/upload ", "/ctcpversion ", "/defaulttick ", "/settemptick ", "/settick "]
+"/logout", "/login", "/like", "/donotlike", "/donothate", "/hate", "/similar", "/globalrex", "/recommendations", "/rex", "/itemsimilar", "/itemrex", "/uploadto", "/upload", "/ctcpversion", "/defaulttick", "/settemptick", "/settick "]
 		
 		for alias in mucous_config["aliases"].keys():
 			self.commandlist.append("/"+alias)
@@ -3273,7 +3298,9 @@ class mucous(driver.Driver):
 	# ---v  KEYS v
 	
 	# Tab completion
-	def InputTabCompletion(self, line, word, firsttab, listline):
+
+				
+	def InputTabCompletion(self, line, part, firsttab, listline, pos):
 		try:
 			self.firsttab = firsttab
 			self.listline = listline
@@ -3281,86 +3308,55 @@ class mucous(driver.Driver):
 			if self.firsttab ==0:
 				self.InputCompletionList()
 				
-			if self.logs["tab_completion"] ==[]:
-				return self.listline, self.firsttab
+			if self.logs["tab_completion"] == []:
+				return self.listline, self.firsttab, part, pos
 				
 			if self.display["mode"] not in ("roomlist", "chat", "lists", "info", "private", "browse", "transfer", "setup", "search", "help", "debug", "status"):
-				return
-			
+				return self.listline, self.firsttab, part, pos
+			if len(part) <= 0:
+				return self.listline, 0, part, pos
 			if self.firsttab ==0:
 				self.keepit=[]
 				if self.display["mode"] == "roomlist":
 					for words in self.data["roomlist"].keys():
-						if words.startswith(word[0:1]):
+						if words.startswith(part[0:1]):
 							self.keepit.append(words)
 				else:
 					for words in self.logs["tab_completion"]:
-						if word[0:1] == '/':
-							if len(word) > 2:
-								if words.startswith(word[0:3]):
-									self.keepit.append(words)
-							else:
-								if words.startswith(word[0:2]):
-									self.keepit.append(words)
+						if part[0:1] == '/':
 							# Be more picky with /commands
+							if len(words) > len(part):
+								if words.startswith(part):
+									self.keepit.append(words)
+							
 						else:
-							if words.startswith(word[0:1]):
+							if words.startswith(part):
 								self.keepit.append(words)
 				self.keepit.sort()
-
 			self.firsttab +=1
-			if self.listline == []:
-				self.listline = line.split(" ")
-			split_line = self.listline
-			
-			for words in self.keepit:
-				if len(split_line[-1]) > 1:
-					x = len(split_line[-1])
+
+			currentword = self.listline[pos]	
+			lw = len(currentword)
+
+			if currentword.startswith(part):
+				
+				for words in self.keepit:
+					self.listline[pos] = self.keepit[0]
+					z = self.keepit[0]
+					self.keepit.remove(self.keepit[0])
+					self.keepit.append(z)
+					newpos = pos - lw + len(z)
+					if " " in z:
+						self.firsttab = 0
+
+					break
 				else:
-					x = 1
-				# WOO HOO
-				# The above x fixes the previously broken InputTabCompletion
-				if words.startswith(split_line[-1][0:x]) and split_line[-1] != ' ' and split_line[-1] != '':
-					self.listline = []
-					r = len(split_line)
-					if r >1:
-						
-						for s in split_line:
-							if s is not split_line[-1]:
-								self.listline.append(s)
-							elif s is split_line[-1]:
-								if s != words:
-									self.listline.append(words)
-									break
-								elif s == words:
-									if self.firsttab ==0:
-										if words.startswith(split_line[-1]):
-											self.listline.append(self.keepit[0])
-											break
-									else:
-										self.keepit.append(self.keepit[0])
-										del self.keepit[0]
-										self.listline.append(self.keepit[0])
-										break
-						break
-					else:
-						s =  split_line[0]
-						if s != words:
-							if words.startswith(s):
-								self.listline.append(words)
-								break
-						elif s == words:
-							if self.firsttab ==0:
-								if words.startswith(split_line[-1]):
-									self.listline.append(self.keepit[0])
-									break
-							else:
-								
-								self.keepit.append(self.keepit[0])
-								del self.keepit[0]
-								self.listline.append(self.keepit[0])
-								break
-			return self.listline, self.firsttab
+					
+					self.firsttab = 0
+			else:
+				self.firsttab = 0
+
+			return self.listline, self.firsttab, part, pos
 
 		except Exception, e:
 			self.Hlog("debug", "InputTabCompletion: " + str(e))
