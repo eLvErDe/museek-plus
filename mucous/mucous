@@ -10775,63 +10775,63 @@ class mucous(driver.Driver):
 			if "roomstatus" in self.windows["border"]:
 				bw = self.windows["border"]["roomstatus"]
 			s = self.windows["dimensions"]["chat"]
-			for rooms8, ticks in self.data["tickers"].items():
-				if rooms8 != self.Spl["room"]:
-					return
-				ttickers =[]
-				ttickers = ticks.keys()
-				if ttickers == []:
-					self.ticker_timer.cancel()
-					try:
-						self.DrawChatRoomStatusWin()
-						self.DrawChatRoomStatusText()
-						curses.doupdate()
-					except:
-						pass
-				else:
-					ttickers.sort(key=str.lower)
-					for names in ttickers:
-						if self.Spl["ticker_num"] >= len(ttickers):
-							self.Spl["ticker_num"] = 0
-						if names != ttickers[self.Spl["ticker_num"]]:
-							return
-						n = len(names)
-						try:
-							if self.Spl["show_menu"] == True: raise  Exception,  "Noticker"
-							if self.display["chatshape"] not in ("nostatuslog", "chat-only"):
-								if self.display["chatshape"] == "noroombox":
-									ticker = "< ["+names+"] "+str(ticks[names][:self.w-9-n])
-								else:
-									ticker = "< ["+names+"] "+str(ticks[names][:self.w-15-9-n])
-								bw.addstr(5, 1, self.dlang( ticker ))
-								t = len(ticker)
-								fill = ""
-								while len(fill) < s["width"]-4-t:
-									fill += " "
-								fill += ">"
-								bw.addstr(fill)
-								bw.refresh()
-							elif self.display["chatshape"] in ("nostatuslog", "chat-only"):
-								ticker = "< ["+names+"] "+str(ticks[names][:s["width"]-25-n])
-								mw.addstr(0, 18, self.dlang( ticker ))
-								t = len(ticker)
-								fill = ""
-								while len(fill) < s["width"]-t-20:
-									fill += " "
-								fill += ">"
-								mw.addstr(fill)
-								mw.refresh()
-						except:
-							pass
-						
+			if self.Spl["room"] not in self.data["tickers"]:
+				return
+			
+			ticks = self.data["tickers"][self.Spl["room"]]
+			ttickers =[]
+			ttickers = ticks.keys()
+			if ttickers == []:
+				self.ticker_timer.cancel()
+				try:
+					self.DrawChatRoomStatusWin()
+					self.DrawChatRoomStatusText()
+					curses.doupdate()
+				except:
+					pass
+			else:
 
-						self.Spl["ticker_num"] += 1
-						if self.Spl["ticker_num"] >= len(ttickers):
-							self.Spl["ticker_num"] = 0
-						self.ticker_timer.cancel()
-						self.ticker_timer = threading.Timer(3.0, self.DrawTicker)
-						self.ticker_timer.start()
-						break
+				ttickers.sort(key=str.lower)
+				if self.Spl["ticker_num"] >= len(ttickers):
+					self.Spl["ticker_num"] = 0
+				names = ttickers[self.Spl["ticker_num"]]
+				n = len(names)
+				try:
+					if self.Spl["show_menu"] == True: raise  Exception,  "Noticker"
+					if self.display["chatshape"] not in ("nostatuslog", "chat-only"):
+						if self.display["chatshape"] == "noroombox":
+							ticker = "< ["+names+"] "+str(ticks[names][:self.w-9-n])
+						else:
+							ticker = "< ["+names+"] "+str(ticks[names][:self.w-15-9-n])
+						bw.addstr(5, 1, self.dlang( ticker ))
+						t = len(ticker)
+						fill = ""
+						while len(fill) < s["width"]-4-t:
+							fill += " "
+						fill += ">"
+						bw.addstr(fill)
+						bw.refresh()
+					elif self.display["chatshape"] in ("nostatuslog", "chat-only"):
+						ticker = "< ["+names+"] "+str(ticks[names][:s["width"]-25-n])
+						mw.addstr(0, 18, self.dlang( ticker ))
+						t = len(ticker)
+						fill = ""
+						while len(fill) < s["width"]-t-20:
+							fill += " "
+						fill += ">"
+						mw.addstr(fill)
+						mw.refresh()
+				except:
+					pass
+				
+
+				self.Spl["ticker_num"] += 1
+				if self.Spl["ticker_num"] >= len(ttickers):
+					self.Spl["ticker_num"] = 0
+				self.ticker_timer.cancel()
+				self.ticker_timer = threading.Timer(3.0, self.DrawTicker)
+				self.ticker_timer.start()
+				
 				
 		except Exception,e:
 			self.Hlog("debug", "DrawTicker: " + str(e))
