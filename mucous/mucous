@@ -2708,17 +2708,22 @@ class mucous(driver.Driver):
 						continue
 					
 					if transfers[1] == 1:
-						attr = self.colors["green"]
+						sattr = self.colors["green"]
 					elif transfers[1] == 0:
-						attr = self.colors["magenta"]
+						sattr = self.colors["magenta"]
 					elif transfers[1] in (10, 11, 12, 13, 14):
-						attr = self.colors["red"]
+						sattr = self.colors["red"]
 					else:
-						attr = curses.color_pair(0)
+						sattr = curses.color_pair(0)
+					attr = curses.color_pair(0)
 					if count + start == s:
 						attr = curses.A_REVERSE | curses.A_BOLD
+						sattr = curses.A_REVERSE | curses.A_BOLD | sattr
+
 					try:
-						dtw.addstr(self.encode_language(transfers[0])[:w["width"]], attr)
+						dtw.addstr(self.encode_language(transfers[0])[:29], attr)
+						dtw.addstr(self.encode_language(transfers[0])[29:39], sattr)
+						dtw.addstr(self.encode_language(transfers[0])[39:w["width"]], attr)
 						
 					except:
 						pass
@@ -2794,19 +2799,25 @@ class mucous(driver.Driver):
 					return
 				count = 0
 				for transfers in clipped_list:
+					if transfers == None:
+						continue
 					
 					if transfers[1] == 1:
-						attr = self.colors["green"]
+						sattr = self.colors["green"]
 					elif transfers[1] == 0:
-						attr = self.colors["magenta"]
+						sattr = self.colors["magenta"]
 					elif transfers[1] in (10, 11, 12, 13, 14):
-						attr = self.colors["red"]
+						sattr = self.colors["red"]
 					else:
-						attr = curses.color_pair(0)
+						sattr = curses.color_pair(0)
+					attr = curses.color_pair(0)
 					if count + start == s:
 						attr = curses.A_REVERSE | curses.A_BOLD
+						sattr = curses.A_REVERSE | curses.A_BOLD | sattr
 					try:
-						utw.addstr(self.dlang(transfers[0]), attr)
+						utw.addstr(self.encode_language(transfers[0])[:29], attr)
+						utw.addstr(self.encode_language(transfers[0])[29:39], sattr)
+						utw.addstr(self.encode_language(transfers[0])[39:], attr)
 					except:
 						pass
 					count += 1
@@ -3345,7 +3356,7 @@ class mucous(driver.Driver):
 					z = self.keepit[0]
 					self.keepit.remove(self.keepit[0])
 					self.keepit.append(z)
-					newpos = pos - lw + len(z)
+
 					if " " in z:
 						self.firsttab = 0
 
