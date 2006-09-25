@@ -1094,13 +1094,13 @@ class mucous(driver.Driver):
 							if ttickers == []:
 								continue
 							self.LogInfo("Tickers in room: "+str(rooms3))
-							ttickers.sort()
+							ttickers.sort(key=str.lower)
 							for names in ttickers:
 								self.LogInfo(" ["+str(names)+'] '+str(ticks[names]))
 							self.LogInfo("")
 	
 			joined = self.data["rooms"].keys()
-			joined.sort()
+			joined.sort(key=str.lower)
 			if joined == []:
 				return
 			if mucous_config["rooms"]["default_room"] != None:
@@ -1269,7 +1269,7 @@ class mucous(driver.Driver):
 	def cb_room_left(self, room):
 		try:
 			joined = self.data["rooms"].keys()
-			joined.sort()
+			joined.sort(key=str.lower)
 			del self.data["rooms"][room]
 			
 			if room == self.Spl["room"]:
@@ -1292,7 +1292,7 @@ class mucous(driver.Driver):
 				self.DrawChatRoomWin()
 				self.windows["text"]["chat"].noutrefresh()
 			else:
-				joined.sort()
+				joined.sort(key=str.lower)
 			if room in self.alert["CHAT"]:
 				del self.alert["CHAT"][room]
 			curses.doupdate()	
@@ -1320,7 +1320,7 @@ class mucous(driver.Driver):
 			
 			if self.display["mode"] == "chat" and self.Spl["room"] == room:
 				if self.display["chat"]  == "roombox":
-					self.data["rooms"][room].sort()
+					self.data["rooms"][room].sort(key=str.lower)
 					if self.data["rooms"][room].index(user) < self.scrolling["roombox"]:
 						self.scrolling["roombox"] += 1
 
@@ -1345,7 +1345,7 @@ class mucous(driver.Driver):
 						self.LogChatRoomStatus(user, room, did, what)
 			# correct placement in roombox
 			if  self.display["mode"] == "chat" and self.display["chat"]  == "roombox":
-				self.data["rooms"][room].sort()
+				self.data["rooms"][room].sort(key=str.lower)
 				if self.data["rooms"][room].index(user) < self.scrolling["roombox"]:
 					self.scrolling["roombox"] -= 1
 			if user in self.data["rooms"][room]:
@@ -1610,7 +1610,7 @@ class mucous(driver.Driver):
 				#########
 				if shares != {}:
 					sdirs = shares.keys()
-					sdirs.sort()
+					sdirs.sort(key=str.lower)
 				
 					if sdirs != []:
 						for item in sdirs:
@@ -1629,7 +1629,7 @@ class mucous(driver.Driver):
 									self.data["browse_results"][user]["dirs"].append(path)
 								parent =  path
 									
-					self.data["browse_results"][user]["dirs"].sort()
+					self.data["browse_results"][user]["dirs"].sort(key=str.lower)
 				else:
 					self.data["browse_results"][user]["dirs"].append("Empty Shares")
                                         
@@ -1905,7 +1905,7 @@ class mucous(driver.Driver):
 				return
 			length_list = len(str(len(self.data["shares"][user][dirs].keys() ) ) )
 			list1 = self.data["shares"][user][dirs].keys()
-			list1.sort()
+			list1.sort(key=str.lower)
 
 			for file in list1:
 				stats = self.data["shares"][user][dirs][file]
@@ -1983,7 +1983,7 @@ class mucous(driver.Driver):
 				return
 			if self.data["shares"][user][dirs].keys() != []:
                                 list1 = self.data["shares"][user][dirs].keys()
-			        list1.sort()
+			        list1.sort(key=str.lower)
                                 file = list1[num]
                                 stats = self.data["shares"][user][dirs][file] 
 			else: 
@@ -2954,7 +2954,7 @@ class mucous(driver.Driver):
 			self.colorednicks[room] = []
 			alphanicks=[]
 			alphanicks = self.data["rooms"][room]
-			alphanicks.sort()
+			alphanicks.sort(key=str.lower)
 			self.Hlog("status", "Users in " + room)
 			for username in alphanicks:
 				if username == self.usernames["username"]:
@@ -3187,7 +3187,7 @@ class mucous(driver.Driver):
 				
 			if usercompletionlist.keys() != []:
 				self.logs["tab_completion"] = usercompletionlist.keys()
-				self.logs["tab_completion"].sort()
+				self.logs["tab_completion"].sort(key=str.lower)
 			else:
 				self.logs["tab_completion"] = []
 		except Exception, e:
@@ -3661,7 +3661,7 @@ class mucous(driver.Driver):
 					upload, username, path, status, error, filepos, filesize, rate = vals[0], vals[1], vals[2], vals[3], vals[4], vals[5], vals[6], vals[7]
 					if status in status_list:
 						this_list.append(vals)
-			#this_list.sort()
+			#this_list.sort(key=str.lower)
 			return this_list
 		except Exception, e:
 			self.Hlog("debug", "get_transfers_list: " + str(e))
@@ -4057,7 +4057,7 @@ class mucous(driver.Driver):
 			if not _list:
 				return place
 			if sort == "yes":
-				_list.sort()
+				_list.sort(key=str.lower)
 			if not place in _list:
 				if direction == "left":
 					ix = -1
@@ -4097,7 +4097,7 @@ class mucous(driver.Driver):
 							s = self.activeitems["browse"].index(self.usernames["browse"])
 							self.usernames["browse"] = self.activeitems["browse"][s-1]
 						sdirs =  self.data["browse_results"][self.usernames["browse"]].keys()
-						sdirs.sort()
+						sdirs.sort(key=str.lower)
 						self.Spl["dir_browse"]=sdirs[0]
 					
 					self.ModeBrowse()
@@ -4195,7 +4195,7 @@ class mucous(driver.Driver):
 				
 				elif x >= self.w-17 and x < self.w-1:
 					joined = self.data["rooms"].keys()
-					joined.sort()
+					joined.sort(key=str.lower)
 					if not self.Spl["room"] in joined:
 						ix = 0
 					else:
@@ -4368,7 +4368,7 @@ class mucous(driver.Driver):
 			if y in (2, 3, 4):
 				if len(self.logs["private"].keys()) > 1:
 					pmusers =  self.logs["private"].keys()
-					pmusers.sort()
+					pmusers.sort(key=str.lower)
 					self.usernames["private"], match = self.MouseClickTab(x, self.usernames["private"])
 					if match == None:
 						s = pmusers.index(self.usernames["private"])
@@ -5549,7 +5549,7 @@ class mucous(driver.Driver):
 							ttickers = ticks.keys()
 							if ttickers != []:
 								self.LogInfo("Tickers in room: "+str(rooms13))
-							ttickers.sort()
+							ttickers.sort(key=str.lower)
 							for names in ttickers:
 								self.LogInfo(" ["+str(names)+'] '+str(ticks[names]))
 		
@@ -6599,7 +6599,7 @@ class mucous(driver.Driver):
 							self.usernames["browse"] = place 
 
 							sdirs =  self.data["browse_results"][self.usernames["browse"]].keys()
-							sdirs.sort()
+							sdirs.sort(key=str.lower)
 							self.Spl["dir_browse"]=sdirs[0]
 							self.scrolling["browsefile"] = self.scrolling["browsedir"] = 0
 							self.ModeBrowse()
@@ -6862,7 +6862,7 @@ class mucous(driver.Driver):
 					self.logs["roombox"][self.Spl["room"]] = []
 					if len( self.data["rooms"][self.Spl["room"]] ) > 0:
 						self.logs["roombox"][self.Spl["room"]] = self.data["rooms"][self.Spl["room"]]
-						self.logs["roombox"][self.Spl["room"]].sort()
+						self.logs["roombox"][self.Spl["room"]].sort(key=str.lower)
 				
 					try:
 						if self.logs["roombox"][self.Spl["room"]] != []:
@@ -7712,7 +7712,7 @@ class mucous(driver.Driver):
 			if self.logs["alert"] == "New PM" or self.logs["alert"][:5] =="PM: ":
 				self.AlertStatus("")
 			pmusers = self.logs["private"].keys()
-			pmusers.sort()
+			pmusers.sort(key=str.lower)
 			self.DrawTabs(pmusers, self.usernames["private"])
 			
 			
@@ -8192,7 +8192,7 @@ class mucous(driver.Driver):
 						directories.append(s)
 					except:
 						pass
-				directories.sort()
+				directories.sort(key=str.lower)
 				self.directories = directories
                                 # List, Directory, Scroll position 
 				if self.display["browse"] == "directories":
@@ -9114,7 +9114,7 @@ class mucous(driver.Driver):
 					self.logs[mode].append( [item, num])
 					
 				if self.Spl["recommend_sort"] == "alpha":
-					self.logs[mode].sort()
+					self.logs[mode].sort(key=str.lower)
 			else:
 				self.logs[mode] = [["EMPTY RECOMMENDATIONS", 0]]
 			count = 0
@@ -9147,7 +9147,7 @@ class mucous(driver.Driver):
 					self.logs[mode].append( [user, status])
 				sup = self.scrolling[ mode ]
 				count = 0 
-				self.logs[mode].sort()
+				self.logs[mode].sort(key=str.lower)
 				clipped_list, sup, start = self.scrollbox(self.logs[mode], sup, w["height"])
 				self.windows["dimensions"][mode]["start"] = start
 				self.scrolling[mode] = sup
@@ -9434,7 +9434,7 @@ class mucous(driver.Driver):
 			if mucous_config["mucous"]["rooms_sort"]  in ("alpha", "alpha-reversed"):
 				for rooms in self.data["roomlist"].keys():
 					alpharooms.append(rooms)
-				alpharooms.sort()
+				alpharooms.sort(key=str.lower)
 				if mucous_config["mucous"]["rooms_sort"] =="alpha-reversed":
 					alpharooms.reverse()
 					
@@ -10789,7 +10789,7 @@ class mucous(driver.Driver):
 					except:
 						pass
 				else:
-					ttickers.sort()
+					ttickers.sort(key=str.lower)
 					for names in ttickers:
 						if self.Spl["ticker_num"] >= len(ttickers):
 							self.Spl["ticker_num"] = 0
