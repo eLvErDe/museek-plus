@@ -363,16 +363,18 @@ class editor(threading.Thread):
 					self.listline = self.line.split(" ")
 				w = self.line[:self.x].split(' ')
 				lw = len(w)
-				currentword = w[lw-1]
+				cpos = lw - 1
+				currentword = w[cpos]
 				if self.firsttab == None:
 					self.firsttab = 0
 				# if a space is in currentword, it won't be in the listline, so match it with a multi-space word
 				if currentword not in self.listline:
 					for word in self.listline:
-						if currentword in word:
+						if word.endswith(currentword):
 							currentword = word
+							cpos = self.listline.index(currentword)
 							
-				self.listline, self.firsttab, self.word, xpos = self.InputTabCompletion(self.line, self.word, self.firsttab, self.listline, lw-1)
+				self.listline, self.firsttab, self.word, xpos = self.InputTabCompletion(self.line, self.word, self.firsttab, self.listline, cpos)
 				if self.listline == []:
 					return False
 				self.line = ''
@@ -9370,7 +9372,7 @@ class mucous(driver.Driver):
 		try:
 			if self.logs[mode] != None and self.logs[mode] != []:
 				clipped_list, self.scrolling[mode], self.windows["dimensions"][self.display["list"]]["start"] = self.scrollbox(self.logs[mode], self.scrolling[mode], window["height"])
-				count =0 
+				count = 0 
 				try:
 					self.windows["border"][self.display["list"]].addstr(self.h-6, self.w-18, "< "+str(len(self.logs[mode]))+" >", self.colors["green"] | curses.A_BOLD)
 					self.windows["border"][self.display["list"]].noutrefresh()	
@@ -9396,7 +9398,7 @@ class mucous(driver.Driver):
 			elif self.display["list"]=="trusted":
 				this_list = self.logs["trusted"]
 			clipped_list, self.scrolling[self.display["list"]], self.windows["dimensions"][self.display["list"]]["start"] = self.scrollbox(this_list, self.scrolling[self.display["list"]], self.h-7)
-			count =0
+			count = 0
 			self.windows["text"][self.display["list"]].erase()
 			for lines in clipped_list:
 				self.DrawLists(lines, count, self.display["list"])
@@ -9410,10 +9412,8 @@ class mucous(driver.Driver):
 		self.Spl["show_menu"] = False
 		if self.display["list"] == "buddied":
 			self.ModeBuddy()
-			
 		elif self.display["list"] == "banned":
 			self.ModeBan()
-			
 		elif self.display["list"] == "ignored":
 			self.ModeIgnore()
 		elif self.display["list"] == "trusted":
@@ -9478,7 +9478,7 @@ class mucous(driver.Driver):
 			self.windows["text"]["roomlist"].addstr(string+spaces, attrib)
 			
 		except Exception, e:
-			self.Hlog("debug", e)
+	
 			pass
 			
 	def sortbyvalue(self, dict):
