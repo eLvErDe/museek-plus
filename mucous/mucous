@@ -404,6 +404,9 @@ class editor(threading.Thread):
 				self.line = self.line[:pos]
 				self.x = len(self.line)
 				self.scroll = 0
+			elif c == chr(21): # Ctrl-U
+				self.line = ''
+				self.x = 0
 			elif c == chr(23): # Ctrl-W
 				z = self.line.split(' ')
 	
@@ -9516,6 +9519,26 @@ class mucous(driver.Driver):
 		except Exception, e:
 			self.Hlog("debug", "ModeSetupDefault: "+ str(e))
 			
+	def SetupButton(self, title, option, x, y, height, width, optionbold=False):
+		try:
+			winborder = curses.newwin(height,width,x,y) #(3,16,3,17)
+			winborder.border()
+			if title != None:
+				winborder.addstr(0,1, "< %s >" % title, curses.A_BOLD)
+			winborder.noutrefresh()
+			win = winborder.subwin(height-2,width-2,x+1,y+1)
+			win.scrollok(1)
+			if option != None:
+				if optionbold:
+					win.addstr(option, self.colors["cyan"] | curses.A_BOLD)
+				else:
+					win.addstr(option, self.colors["cyan"])
+			win.noutrefresh()
+			del win
+			del winborder
+		except Exception,e:
+			self.Hlog("debug", "SetupButton: "+title+" "+ str(e))
+			
 	def ModeSetup(self):
 		
 		self.display["mode"] = "setup"
@@ -9623,118 +9646,30 @@ class mucous(driver.Driver):
 			# Create buttons, settings and immediately Delete them to aviod leaks
 			if self.display["setup"] in ("shares"):
 				# First Row
-				rescanw = curses.newwin(3,16,3,1)
-				rescanw.border()
-				rescanw.addstr(0,1, "< Normal>")
-				rescanw.noutrefresh()
-				inrescanw = rescanw.subwin(1,14,4,2)
-				inrescanw.scrollok(1)
-				inrescanw.addstr("Rescan Shares", self.colors["cyan"])
-				inrescanw.noutrefresh()
-				del inrescanw
-				del rescanw
-				rescaw = curses.newwin(3,16,3,17)
-				rescaw.border()
-				rescaw.addstr(0,1, "< Normal >")
-				rescaw.noutrefresh()
-				inrescaw = rescaw.subwin(1,14,4,18)
-				inrescaw.scrollok(1)
-				inrescaw.addstr("Update Shares", self.colors["cyan"])
-				inrescaw.noutrefresh()
-				del inrescaw
-				del rescaw
-				rescah = curses.newwin(3,16,3,33)
-				rescah.border()
-				#rescah.addstr(0,1, "<-HUP museekd>")
-				rescah.noutrefresh()
-				inrescah = rescah.subwin(1,14,4,34)
-				inrescah.scrollok(1)
-				inrescah.addstr("Reload Shares", self.colors["cyan"])
-				inrescah.noutrefresh()				
-				del inrescah
-				del rescah
+				self.SetupButton("Normal", "Rescan Shares",3,1,3,16)
+				
+				self.SetupButton("Normal", "Upload Shares", 3,17,3,16) 
+				
+				self.SetupButton(None, "Reload Shares", 3,33,3,16)
+				
 				# Second Row
 				
-				lrescaw = curses.newwin(3,16,6,1)
-				lrescaw.border()
-				lrescaw.addstr(0,1, "< Normal >")
-				lrescaw.noutrefresh()
-				inlrescaw = lrescaw.subwin(1,14,7,2)
-				inlrescaw.scrollok(1)
-				inlrescaw.addstr("List Shared", self.colors["cyan"])
-				inlrescaw.noutrefresh()
-				del inlrescaw
-				del lrescaw
-				xshare = curses.newwin(3,16,6,17)
-				xshare.border()
-				xshare.addstr(0,1, "< Normal >")
-				xshare.noutrefresh()
-				inxshare = xshare.subwin(1,14,7,18)
-				inxshare.scrollok(1)
-				inxshare.addstr("Add Directory", self.colors["cyan"])
-				inxshare.noutrefresh()
-				del inxshare
-				del xshare
-				xshare = curses.newwin(3,16,6,33)
-				xshare.border()
-				xshare.addstr(0,1, "< Normal >")
-				xshare.noutrefresh()
-				inxshare = xshare.subwin(1,14,7,34)
-				inxshare.scrollok(1)
-				inxshare.addstr("Remove Dir", self.colors["cyan"])
-				inxshare.noutrefresh()
-				del inxshare
-				del xshare
-				lrescaw = curses.newwin(3,16,9,1)
-				lrescaw.border()
-				lrescaw.addstr(0,1, "< Buddy-only >")
-				lrescaw.noutrefresh()
-				inlrescaw = lrescaw.subwin(1,14,10,2)
-				inlrescaw.scrollok(1)
-				inlrescaw.addstr("List Shared", self.colors["cyan"])
-				inlrescaw.noutrefresh()
-				del inlrescaw
-				del lrescaw
-				xshare = curses.newwin(3,16,9,17)
-				xshare.border()
-				xshare.addstr(0,1, "< Buddy-only >")
-				xshare.noutrefresh()
-				inxshare = xshare.subwin(1,14,10,18)
-				inxshare.scrollok(1)
-				inxshare.addstr("Add Directory", self.colors["cyan"])
-				inxshare.noutrefresh()
-				del inxshare
-				del xshare
-				xshare = curses.newwin(3,16,9,33)
-				xshare.border()
-				xshare.addstr(0,1, "< Buddy-only >")
-				xshare.noutrefresh()
-				inxshare = xshare.subwin(1,14,10,34)
-				inxshare.scrollok(1)
-				inxshare.addstr("Remove Dir", self.colors["cyan"])
-				inxshare.noutrefresh()
-				del inxshare
-				del xshare
-				rescanw = curses.newwin(3,16,12,1)
-				rescanw.border()
-				rescanw.addstr(0,1, "< Buddy-only >")
-				rescanw.noutrefresh()
-				inrescanw = rescanw.subwin(1,14,13,2)
-				inrescanw.scrollok(1)
-				inrescanw.addstr("Rescan Shares", self.colors["cyan"])
-				inrescanw.noutrefresh()
-				del inrescanw
-				del rescanw
-				rescaw = curses.newwin(3,16,12,17)
-				rescaw.border()
-				rescaw.addstr(0,1, "< Buddy-only >")
-				rescaw.noutrefresh()
-				inrescaw = rescaw.subwin(1,14,13,18)
-				inrescaw.scrollok(1)
-				inrescaw.addstr("Update Shares", self.colors["cyan"])
-				inrescaw.noutrefresh()
-				del inrescaw
-				del rescaw
+				self.SetupButton("Normal", "List Shared", 6,1,3,16)
+				
+				self.SetupButton("Normal", "Add Directory", 6,17,3,16)
+				
+				self.SetupButton("Normal", "Remove Dir", 6,33,3,16)
+
+				self.SetupButton("Buddy-only", "List Shared", 9,1,3,16)
+				
+				self.SetupButton("Buddy-only", "Add Directory", 9,17,3,16)
+				
+				self.SetupButton("Buddy-only", "Remove Dir", 9,33,3,16)
+				
+				self.SetupButton("Buddy-only", "Rescan Shares", 12,1,3,16)
+				
+				self.SetupButton("Buddy-only", "Update Shares", 12,17,3,16)
+
 
 				textshare = curses.newwin(self.h-8,self.w-50,2,49)
 				textshare.border()
@@ -9789,45 +9724,28 @@ class mucous(driver.Driver):
 				bw.addstr(" Log Chat messages? ",  curses.A_BOLD)
 				bw.noutrefresh()
 				del bw
-				bnwin = curses.newwin(3,self.w-2,5,1)
-				bnwin.border()
-				bnwin.addstr(0, 1, "< Log Directory >",  curses.A_BOLD)
-				bnwin.noutrefresh()
-				inbnwin = bnwin.subwin(1,self.w-3,6,2)
-				inbnwin.scrollok(1)
-				inbnwin.addstr(os.path.expanduser(mucous_config["mucous"]["log_dir"])[:37], self.colors["cyan"] )
-				inbnwin.noutrefresh()
-				del inbnwin
-				del bnwin
+				
+				self.SetupButton("Log Directory", os.path.expanduser(mucous_config["mucous"]["log_dir"])[:37], 5,1,3,self.w-2)
+				
+
 			elif self.display["setup"] == "mucous":
 				# Interface
-				bw = curses.newwin(3,32,2,1)
-				bw.border()
-				bw.addstr(0, 1, "< Museek Interface >",  curses.A_BOLD)
-				bw.noutrefresh()
-				inbw = bw.subwin(1,30,3,2)
-				inbw.scrollok(1)
+				interface =""
 				if "connection" in mucous_config:
-					inbw.addstr(self.dlang( mucous_config["connection"]["interface"][:28] ), self.colors["cyan"] )
-				inbw.noutrefresh()
-				del inbw
-				del bw
-				bw2 = curses.newwin(3,32,5,1)
-				bw2.border()
-				bw2.addstr(0, 1, "< Interface Password >",  curses.A_BOLD)
-				bw2.noutrefresh()
-				inbw2 = bw2.subwin(1,30,6,2)
-				inbw2.scrollok(1)
+					interface = self.dlang( mucous_config["connection"]["interface"][:28] )
+				
+				self.SetupButton("Museek Interface", interface ,2,1, 3,32)
+				
+				
 				if "connection" in mucous_config:
 					if self.display["password"]=="yes":
-						inbw2.addstr(self.dlang( str(mucous_config["connection"]["passw"]) ), self.colors["cyan"])
+						password = self.dlang( str(mucous_config["connection"]["passw"]) )
 					else:
-						inbw2.addstr("*********", self.colors["cyan"])
+						password = '*********'
 				else:
-					inbw2.addstr("NOT set")
-				inbw2.noutrefresh()
-				del inbw2
-				del bw2
+					password = "NOT set"
+					
+				self.SetupButton("Interface Password", password, 5,1,3,32)
 				
 				bwin = curses.newwin(6,22,2,33)
 				bwin.border()
@@ -9947,51 +9865,19 @@ class mucous(driver.Driver):
 				del inbw4
 				del bw4
 				# Encoding button
-				buttonlanguage = curses.newwin(3,16,11,49)
-				buttonlanguage.border()
-				buttonlanguage.addstr(0, 1, "< Encoding >",  curses.A_BOLD)
-				buttonlanguage.noutrefresh()
-				inbuttonlanguage = buttonlanguage.subwin(1,14,12,50)
-				inbuttonlanguage.scrollok(1)
-				inbuttonlanguage.addstr(mucous_config["mucous"]["language"], self.colors["cyan"])
-				inbuttonlanguage.noutrefresh()
-				del inbuttonlanguage
-				del buttonlanguage
-
+				self.SetupButton("Encoding", mucous_config["mucous"]["language"], 11,49,3,16)
 				
-				# Custom URL 
-				bw_url_c = curses.newwin(3,32,14,1)
-				bw_url_c.border()
-				bw_url_c.addstr(0, 1, "< Custom URL Reader >",  curses.A_BOLD)
-				bw_url_c.noutrefresh()
-				inbwinurl_c = bw_url_c.subwin(1,30,15,2)
-				inbwinurl_c.scrollok(1)
+				# Custom URL
+				prefix =""
 				if "url custom prefix" in mucous_config["mucous"] and "url custom suffix" in mucous_config["mucous"]:
-					inbwinurl_c.addstr(self.dlang(mucous_config["mucous"]["url custom prefix"])+"$"+self.dlang(mucous_config["mucous"]["url custom suffix"]), self.colors["cyan"])
-					inbwinurl_c.noutrefresh()
-				del inbwinurl_c
-				del bw_url_c
-				bw_url = curses.newwin(3,16,14,33)
-				bw_url.border()
-				bw_url.addstr(0, 1, "< URL Reader >",  curses.A_BOLD)
-				bw_url.noutrefresh()
-				inbwurl = bw_url.subwin(1,14,15,34)
-				inbwurl.scrollok(1)
-				inbwurl.addstr(self.dlang(mucous_config["mucous"]["url reader"]), self.colors["cyan"])
-				inbwurl.noutrefresh()
-				del inbwurl
-				del bw_url
+					prefix = self.dlang(mucous_config["mucous"]["url custom prefix"])+"$"+self.dlang(mucous_config["mucous"]["url custom suffix"])
+				self.SetupButton("Custom URL Reader", prefix,14,1,3,32, optionbold=True)
+				self.SetupButton("URL Reader", self.dlang(mucous_config["mucous"]["url reader"]), 14,33,3,16)
+
 
 				# Save button
-				savew = curses.newwin(3,16,14,49)
-				savew.border()
-				savew.noutrefresh()
-				insavew = savew.subwin(1,14,15,50)
-				insavew.scrollok(1)
-				insavew.addstr(" Save Config", self.colors["cyan"] | curses.A_BOLD)
-				insavew.noutrefresh()
-				del insavew
-				del savew
+				self.SetupButton(None, " Save Config", 14,49,3,16, True)
+				
 
 
 
