@@ -813,8 +813,9 @@ class ProcessMessages(driver.Driver, Thread):
 		try:
 			if user in self.frame.user_stats:
 				stats = self.frame.user_stats[user]
-				if stats[1] == speed and stats[2] == downloads and stats[3] == files and stats[4] == dirs:
-					return
+				#if stats[1] == speed and stats[2] == downloads and stats[3] == files and stats[4] == dirs:
+					#print "same"
+					#return
 				self.frame.user_stats[user] = [stats[0], speed, downloads, files, dirs, stats[5]]
 				
 			else:
@@ -1343,7 +1344,7 @@ class MurmurWindow:
 		self.privatevbox.set_spacing(0)
 	
 		self.privatechats = PrivateChats(self)
-		self.privatevbox.pack_start(self.privatechats, True, True, 0)
+		
 	
 		self.hbox20 = gtk.HBox(False, 5)
 		self.hbox20.show()
@@ -1386,9 +1387,10 @@ class MurmurWindow:
 		
 		self.sPrivateChatButton.add(self.alignment10)
 		
-		self.hbox20.pack_end(self.sPrivateChatButton, False, False, 0)
+		self.hbox20.pack_start(self.sPrivateChatButton, False, False, 0)
+		# Private Alignment
 		self.privatevbox.pack_start(self.hbox20, False, True, 0)
-
+		self.privatevbox.pack_start(self.privatechats, True, True, 0)
 		# Transfers Construction
 		self.notebook_transfers = gtk.Frame()
 		self.notebook_transfers.show()
@@ -1910,7 +1912,6 @@ class UserBrowse:
 				("$" + _("Ba_n this user"), popup.OnBanUser),
 				("$" + _("_Ignore this user"), popup.OnIgnoreUser),
 				("$" + _("_Trust this user"), popup.OnTrustUser),
-	
 			)
 			self.FilesTreeView.connect("button_press_event", self.OnFileClicked)
 			self.FilesTreeView.show()
@@ -1929,26 +1930,7 @@ class UserBrowse:
 			
 			self.Main.pack_start(hbox2, True, True, 0)
 			
-			label2 = gtk.Label((user))
-			label2.set_padding(0, 0)
-			label2.show()
 			
-			image = gtk.image_new_from_stock(gtk.STOCK_CANCEL, gtk.ICON_SIZE_MENU)
-			image.show()
-			button1 = gtk.Button()
-			button1.add(image)
-			button1.connect_object("clicked", self.CloseBrowse, user)
-			button1.show()
-			hbox = gtk.HBox(False, 0)
-			hbox.show()
-			hbox.set_spacing(0)
-			hbox.pack_start(label2, False, False, 0)
-			hbox.pack_start(button1, False, False, 0)
-			
-			#self.widgets["browse"]["notebook"] = self.notebook_browsing
-			#self.notebook_browsing.append_page_menu(self.Main, hbox, label2)
-			#self.notebook_browsing.append_page(vbox1, UserName)
-			#self.notebook_browsing.show()
 		except Exception, e:
 			print "UserBrowse", e
 			
