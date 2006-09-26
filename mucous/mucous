@@ -38,7 +38,7 @@ except:
 		print "WARNING: The Museek Message-Parsing modules, messages.py and/or driver.py  were not found. Please install them into your '/usr/lib/python2.X/site-packages/museek' directory, or place them in a 'museek' subdirectory of the directory that contains the mucous python scipt."
 		sys.exit()
 	
-import signal, time, pwd, os, commands,  getopt,  threading, codecs, locale, select, string, re, ConfigParser
+import signal, time, os, commands, getopt, threading, select, string, re, ConfigParser
 import curses.wrapper, curses.ascii
 
 from time import sleep
@@ -57,6 +57,7 @@ try:
 	gi = GeoIP.new(GeoIP.GEOIP_MEMORY_CACHE)
 except ImportError:
 	geoip_fail=1
+	print "Optional Python Module GeoIP not found, you can safely disregard this message."
 
 config_dir = str(os.path.expanduser("~/.mucous/"))
 log_dir = None #str(os.path.expanduser("~/.mucous/logs/"))
@@ -112,7 +113,7 @@ mucous_config = {"connection":{"interface":'localhost:2240', "passw":None}, \
 	"transbox" : "split", "language": "iso-8859-1", "beep": "yes", "autoaway": "yes", \
 	"auto-retry": "yes", "auto-clear": "no", "logging": "yes", "extra_requests": "Yes"}, \
 	"tickers":{'tickers_enabled': 'yes', "ticker_cycle": "yes", "rooms":{} }, \
-	"aliases": {"mucous":"Mucous is a Curses client for the Museek Soulseek Daemon. Website: http://thegraveyard.org/daelstorm/mucous.php", "museek":"Museek is a Soulseek Daemon/Client. The website is http://museek.thegraveyard.org/"},\
+	"aliases": {"mucous":"Mucous is a Curses client for the Museek Soulseek Daemon. Website: http://thegraveyard.org/daelstorm/mucous.php", "museek":"Museek+ is a Soulseek Daemon/Client. The website is http://museek-plus.org/"},\
 	"rooms": {"default_room":"museek"}\
 	}
 		
@@ -677,7 +678,7 @@ class mucous(driver.Driver):
 				pass
 			except Exception, e:
 				self.ModeHelp()
-				self.Hlog("debug", str(e) )
+				self.Hlog("status", "Shutting Down Mucous.. " +str(e) )
 				sleep(1)
 				self.shutdown()
 
@@ -757,6 +758,7 @@ class mucous(driver.Driver):
 		
 	def shutdown(self):
 		try:
+			self.disconnect()
 			# Quit		
 			self.timer.cancel()
 			self.ticker_timer.cancel()
@@ -8763,15 +8765,18 @@ class mucous(driver.Driver):
 					self.helplog.append("%s" %s )
 			elif htype in ("status", "debug"):
 				timestamp = time.strftime("%H:%M:%S")
+				if htype == "status":
+					ex = ''
+				else: ex = "BUG " 
 				if "\n" in s:
 					lis = s.split("\n")
 					for line in lis:
 						if line is lis[0]:
-							self.helpdebuglog.append("%s %s" % (timestamp,line))
+							self.helpdebuglog.append("%s %s%s" % (timestamp,ex,line))
 						else:
-							self.helpdebuglog.append("%s" % line)
+							self.helpdebuglog.append("%s%s" % (ex,line))
 				else:
-					self.helpdebuglog.append("%s %s" %(timestamp, s))
+					self.helpdebuglog.append("%s %s%s" %(timestamp, ex,s))
 				
 			if self.display["mode"] in ( "help", "debug", "status"):
 				#self.DrawHelp( htype, s, 0)
