@@ -9519,12 +9519,15 @@ class mucous(driver.Driver):
 		except Exception, e:
 			self.Hlog("debug", "ModeSetupDefault: "+ str(e))
 			
-	def SetupButton(self, title, option, x, y, height, width, optionbold=False):
+	def SetupButton(self, title, option, x, y, height, width, optionbold=False, titlepad=True):
 		try:
-			winborder = curses.newwin(height,width,x,y) #(3,16,3,17)
+			winborder = curses.newwin(height,width,x,y)
 			winborder.border()
 			if title != None:
-				winborder.addstr(0,1, "< %s >" % title, curses.A_BOLD)
+				if titlepad:
+					winborder.addstr(0,1, "< %s >" % title, curses.A_BOLD)
+				else:
+					winborder.addstr(0,1, title, curses.A_BOLD)
 			winborder.noutrefresh()
 			win = winborder.subwin(height-2,width-2,x+1,y+1)
 			win.scrollok(1)
@@ -9536,6 +9539,32 @@ class mucous(driver.Driver):
 			win.noutrefresh()
 			del win
 			del winborder
+		except Exception,e:
+			self.Hlog("debug", "SetupButton: "+title+" "+ str(e))
+			
+	def SetupCheck(self, title, option, x, y, height, width, titlebold=False):
+		try:
+			enabled = "[x]"
+			disabled = "[ ]"
+			selected = "(*)"
+			notselected = "( )"
+			
+			win = curses.newwin(height,width,x,y)
+			win.erase()
+			if option in ("True", "true", "yes"):
+				z = enabled
+			else:
+				z = disabled
+			win.addstr(z+" ", self.colors["cyan"])
+			if title != None:
+				if titlebold:
+					win.addstr(title,  curses.A_BOLD)
+				else:
+					win.addstr(title)
+			win.noutrefresh()
+			
+			del win
+
 		except Exception,e:
 			self.Hlog("debug", "SetupButton: "+title+" "+ str(e))
 			
@@ -9553,10 +9582,7 @@ class mucous(driver.Driver):
 			mw.erase()
 			mw.border()
 			mw.addstr(w["height"]-1, 2, "< Use the mouse, if possible. Otherwise: /help setup >")
-			enabled = "[x]"
-			disabled = "[ ]"
-			selected = "(*)"
-			notselected = "( )"
+
 			if self.display["setup"] == "mucous":
 				self.set_edit_title("Mucous Setup")
 				try:
@@ -9669,34 +9695,20 @@ class mucous(driver.Driver):
 				self.SetupButton("Buddy-only", "Rescan Shares", 12,1,3,16)
 				
 				self.SetupButton("Buddy-only", "Update Shares", 12,17,3,16)
-
-
-				textshare = curses.newwin(self.h-8,self.w-50,2,49)
-				textshare.border()
-				textshare.noutrefresh()
-				ts = textshare.subwin(self.h-10,self.w-50-2,3,50)
-				ts.addstr("Click on the buttons to run the local muscan.\n\nWhen you click on Add/Remove Directory, type in the directory below, and start with '//' instead of just a '/'")
-				ts.noutrefresh()
-				del ts
-				del textshare
-			elif self.display["setup"] in ("userinfo"):	
 				
-				inputui_w = curses.newwin(self.h-8,self.w-2,2,1)
-				inputui_w.border()
-				inputui_w.addstr(0,1, "<Your Userinfo>")
-				inputui_w.noutrefresh()
-				ininputui_w = inputui_w.subwin(self.h-10,self.w-4,3,2)
-				ininputui_w.scrollok(1)
-				try:
-					if "userinfo" in self.config.keys():
-						if "text" in self.config["userinfo"]:
-							for line in self.config["userinfo"]["text"]:
-								ininputui_w.addstr(line.decode(mucous_config["mucous"]["language"], "replace"), self.colors["cyan"])
-				except:
-					pass
-				ininputui_w.noutrefresh()
-				del ininputui_w
-				del inputui_w
+				self.SetupButton(None, "Click on the buttons to run the local muscan.\n\nWhen you click on Add/Remove Directory, type in the directory below, and start with '//' instead of just a '/'", 2,49,self.h-8,self.w-50)
+
+
+			elif self.display["setup"] in ("userinfo"):
+				info = ""
+				if "userinfo" in self.config.keys():
+					if "text" in self.config["userinfo"]:
+						info = self.config["userinfo"]["text"]
+						#for line in self.config["userinfo"]["text"]:
+							#info += line.decode(mucous_config["mucous"]["language"], "replace") +"\n"
+				
+				self.SetupButton("Your Userinfo", info, 2,1,self.h-8,self.w-2)
+				
 				inputimage = curses.newwin(1,13,self.h-6,1)
 				inputimage.erase()
 				inputimage.addstr( "Your Image: ")
@@ -9712,18 +9724,7 @@ class mucous(driver.Driver):
 				del inputimage2
 				del inputimage
 			elif self.display["setup"] in ("logs"):
-				bw = curses.newwin(1,30,2,1)
-				bw.erase()
-				if mucous_config["mucous"]["logging"] in ("True", "true", "yes"):
-					z = enabled
-					mucous_config["mucous"]["logging"] = "yes"
-				else:
-					z = disabled
-					mucous_config["mucous"]["logging"] = "no"
-				bw.addstr(z, self.colors["cyan"])
-				bw.addstr(" Log Chat messages? ",  curses.A_BOLD)
-				bw.noutrefresh()
-				del bw
+				self.SetupCheck("Log Chat messages? ", mucous_config["mucous"]["logging"],2,1,1,30, True)
 				
 				self.SetupButton("Log Directory", os.path.expanduser(mucous_config["mucous"]["log_dir"])[:37], 5,1,3,self.w-2)
 				
@@ -9783,88 +9784,22 @@ class mucous(driver.Driver):
 				del inbwin1_3
 				del inbwin1_4 
 				del bwin
-				if mucous_config["tickers"]["tickers_enabled"] in ("True", "true", "yes"):
-					z = enabled
-				else:
-					z = disabled
-				bw3 = curses.newwin(1,45,8,1)
-				bw3.erase()
-				bw3.addstr(z, self.colors["cyan"])
-				bw3.addstr(" Show Tickers:         /tickers",  curses.A_BOLD)
-				bw3.noutrefresh()
-				del bw3
-				bw30 = curses.newwin(1,45,9,1)
-				bw30.erase()
-				if mucous_config["tickers"]["ticker_cycle"] in ("True", "true", "yes"):
-					z = enabled
-				else:
-					z = disabled
-				bw30.addstr(z, self.colors["cyan"])
-				bw30.addstr(" Cycle Tickers:        /tickcycle",  curses.A_BOLD)
-			
-				bw30.noutrefresh()
-				del bw30
-				if mucous_config["mucous"]["auto-clear"] in ("True", "true", "yes"):
-					z = enabled
-					mucous_config["mucous"]["auto-clear"] = "yes"
-				else:
-					z = disabled
-				autoclearw = curses.newwin(1,45,10,1)
-				autoclearw.erase()
-				autoclearw.addstr(z, self.colors["cyan"])
-				autoclearw.addstr(" Auto-clear Transfers: /autoclear",  curses.A_BOLD)
-				autoclearw.noutrefresh()
-				del autoclearw
-				if mucous_config["mucous"]["auto-retry"] in ("True", "true", "yes"):
-					z = enabled
-					if mucous_config["mucous"]["auto-retry"] != "yes":
-						mucous_config["mucous"]["auto-retry"] = "yes"
-				else:
-					z = disabled
 				
-				autoretryw = curses.newwin(1,45,11,1)
-				autoretryw.erase()
-				autoretryw.addstr(z, self.colors["cyan"])
-				autoretryw.addstr(" Auto-retry Transfers: /autoretry",  curses.A_BOLD)
-				autoretryw.noutrefresh()
-				del autoretryw
+				self.SetupCheck("Show Tickers:         /tickers", mucous_config["tickers"]["tickers_enabled"] ,8,1,1,45, True)
+
+				self.SetupCheck("Cycle Tickers:        /tickcycle", mucous_config["tickers"]["ticker_cycle"] ,9,1,1,45, True)
 				
-				if mucous_config["mucous"]["autobuddy"] in ("True", "true", "yes"):
-					z = enabled
-				else:
-					z = disabled
- 
-				bw5 = curses.newwin(1,45,12,1)
-				bw5.erase()
-				bw5.addstr(z, self.colors["cyan"])
-				bw5.addstr( " Auto-Buddy downloads: /autobuddy",  curses.A_BOLD)
-				bw5.noutrefresh()
-				del bw5
-				if str(mucous_config["mucous"]["beep"]) in ("True", "true", "yes"):
-					z = enabled
-					if mucous_config["mucous"]["beep"] != "yes":
-						mucous_config["mucous"]["beep"] = "yes"
-				else:
-					z = disabled
-				beepw = curses.newwin(1,45,13,1)
-				beepw.erase()
-				beepw.addstr(z, self.colors["cyan"])
-				beepw.addstr(" Beep:                 /beep",  curses.A_BOLD)
-				beepw.noutrefresh()
-				del beepw
+				self.SetupCheck("Auto-clear Transfers: /autoclear", mucous_config["mucous"]["auto-clear"],10,1,1,45, True)
+
+				self.SetupCheck("Auto-retry Transfers: /autoretry", mucous_config["mucous"]["auto-retry"],11,1, 1,45, True)
+
+				self.SetupCheck("Auto-Buddy downloads: /autobuddy", mucous_config["mucous"]["autobuddy"],12,1,1,45, True)
+				
+				self.SetupCheck("Beep:                 /beep", mucous_config["mucous"]["beep"],13,1,1,45, True)
+
 				# Minimum Room size for Roomlist
-				bw4 = curses.newwin(3,16,8,49)
-				bw4.border()
-				bw4.addstr(0, 1, "<Min Roomlist>", curses.A_BOLD)
-				bw4.noutrefresh()
-				inbw4 = bw4.subwin(1,15,9,50)
-				inbw4.scrollok(1)
-				inbw4.addstr(" -  "+str(mucous_config["mucous"]["roomlistminsize"]), self.colors["cyan"])
-				inbw4.addstr(0, 11, " + ", self.colors["cyan"])
-				inbw4.noutrefresh()
-				del inbw4
-				del bw4
-				# Encoding button
+				self.SetupButton("<Min Roomlist>", " -  "+str(mucous_config["mucous"]["roomlistminsize"])+" +", 8,49, 3,16, False, False)
+
 				self.SetupButton("Encoding", mucous_config["mucous"]["language"], 11,49,3,16)
 				
 				# Custom URL
@@ -9947,115 +9882,33 @@ class mucous(driver.Driver):
 
 				#------------------------
 
-				
-				bw3 = curses.newwin(1,30,8,1)
-				t = 1
-				if not "transfers" in self.config:
-					t = 0
-				if t == 1:
-					if self.config["transfers"]["only_buddies"] == "true": #, 
-						z = enabled
-					else:
-						z = disabled
-				else:
-					z = disabled
-				
-				bw3.erase()
-				bw3.addstr(z, self.colors["cyan"])
-				bw3.addstr(" Share to Buddies-Only",  curses.A_BOLD)
-				
-				bw3.noutrefresh()
-				del bw3
-				if t == 1:
-					if self.config["transfers"]["privilege_buddies"] == "true": #, 
-						z = enabled
-					else:
-						z = disabled
-				else:
-					z = disabled
-				bw4 = curses.newwin(1,30,9,1)
+				self.SetupCheck("Share to Buddies-Only", self.config["transfers"]["only_buddies"],8,1,1,30, True)
 
-				bw4.addstr(z, self.colors["cyan"])
-				bw4.addstr(" Buddies get Privileges", curses.A_BOLD)
-				bw4.noutrefresh()
-				del bw4
-				if t == 1:
-					if self.config["transfers"]["have_buddy_shares"] == "true":
-						z = enabled
-					else:
-						z = disabled
-				else:
-					z = disabled
-				bw7 = curses.newwin(1,30,10,1)
+				self.SetupCheck("Buddies get Privileges", self.config["transfers"]["privilege_buddies"],9,1,1,30, True)
 
-				bw7.addstr(z, self.colors["cyan"])
-				bw7.addstr(" Enable Buddy-Only shares", curses.A_BOLD)
-				bw7.noutrefresh()
-				del bw7
-				if t == 1:
-					if self.config["transfers"]["trusting_uploads"] == "true":
-						z = enabled
-					else:
-						z = disabled
-				else:
-					z = disabled
-				bw7 = curses.newwin(1,self.w-3,11,1)
+				self.SetupCheck("Enable Buddy-Only shares",self.config["transfers"]["have_buddy_shares"],10,1,1,30, True)
 
-				bw7.addstr(z, self.colors["cyan"])
-				bw7.addstr(" Allow Trusted users to send you files", curses.A_BOLD)
-				bw7.noutrefresh()
-				del bw7
-				if t == 1:
-					if self.config["transfers"]["user_warnings"] == "true": 
-						z = enabled
-					else:
-						z = disabled
-				else:
-					z = disabled
-				bw7 = curses.newwin(1,self.w-3,12,1)
+				self.SetupCheck("Allow Trusted users to send you files",self.config["transfers"]["trusting_uploads"],11,1,1,self.w-3, True)
 
-				bw7.addstr(z, self.colors["cyan"])
-				bw7.addstr(" Send automatic warnings via Private Chat", curses.A_BOLD)
-				bw7.noutrefresh()
-				del bw7
-				bw5 = curses.newwin(3,16,5,49)
-				bw5.border()
-				bw5.addstr(0, 1, "<Connections >",  curses.A_BOLD)
-				bw5.noutrefresh()
-				inbw5 = bw5.subwin(1,15,6,50)
-				inbw5.scrollok(1)
-				if "clients" in self.config:
-					inbw5.addstr(self.config["clients"]["connectmode"], self.colors["cyan"])
-				inbw5.noutrefresh()
-				del inbw5
-				del bw5
-				bw6 = curses.newwin(3,16,8,49)
-				bw6.border()
-				bw6.addstr(0, 1, "<Upload Slots>",  curses.A_BOLD)
-				bw6.noutrefresh()
-				
-				inbw6 = bw6.subwin(1,15,9,50)
-				inbw6.scrollok(1)
-				inbw6.addstr(" -  ",  self.colors["cyan"])
-				if t == 1:
-					 inbw6.addstr(self.config["transfers"]["upload_slots"], self.colors["cyan"] |  curses.A_BOLD)
-				inbw6.addstr(0, 11, " + ", self.colors["cyan"])
-				inbw6.refresh()
-				del inbw6
-				del bw6
+				self.SetupCheck("Send automatic warnings via Private Chat",self.config["transfers"]["user_warnings"],12,1,1,self.w-3, True)
+
+				self.SetupButton("<Connections >", self.config["clients"]["connectmode"],5,49,3,16, True, False)
+
+				self.SetupButton("<Upload Slots>", " - " + self.config["transfers"]["upload_slots"]+ " +", 8,49,3,16, True, False)
+
 				dirwin = curses.newwin(4,self.w-2,13,1)
 				dirwin.border()
 				dirwin.addstr(0, 1, "< Download/Incomplete Directories >",  curses.A_BOLD)
 				dirwin.noutrefresh()
 				dircompletewin = dirwin.subwin(1,self.w-4,14,2)
-				if t == 1:
+				try:
 					dircompletewin.addstr(self.dlang(self.config["transfers"]["download-dir"]), self.colors["cyan"])
-
+				except: pass
 				dircompletewin.noutrefresh()
 				dirincompletewin = dirwin.subwin(1,self.w-4,15,2)
-				if t == 1:
+				try:
 					dirincompletewin.addstr(self.dlang(self.config["transfers"]["incomplete-dir"]), self.colors["cyan"])
-				
+				except: pass
 				dirincompletewin.noutrefresh()
 				del dirincompletewin
 				del dircompletewin
