@@ -1,6 +1,10 @@
 Unreleased
 
 MUSEEK DAEMON
+ * IMPORTANT NOTE: the CFLAGS variable is now a String instead of List, your 
+ mulocal.py will need to be modified or erased to allow SCons to run 
+ correctly. Not doing so will result in SCons failing at the first compile-test.
+ * New SCons variable LOCKFLAGS disables SCons' automatic flag adding
  * Replaced depreciated call to Send Speed (34) on download completion
    with Send Upload Speed (121) on upload completion.
  * Added Global message (66) handler, and pass it to the clients
@@ -21,6 +25,10 @@ MUSEEQ
  * 
 MUSETUP-GTK
  * Tries more than one method to detect PyGTK
+ 
+MUCOUS
+ * Many changes
+  
 0.1.11:  July 7th 2006
 
 MUSEEK DAEMON

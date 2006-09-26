@@ -34,8 +34,9 @@ opts.Add(BoolOption('RELEASE', 'Build for release', ''))
 opts.Add(ListOption('MULOG', 'Set debug output', '', ['debug', 'cycle', 'calltrace', 'traffictime']))
 opts.Add(ListOption('MUSEEQTRANSLATIONS', 'Build translations for', '', ['fr','de','es','it','pl','ru','pt_BR','ja','zh','sk','he', 'ar', 'cs' ]))
 print "Reading CFLAGS from defaults.py and Command Line arguments"
-opts.Add(ListOption('CFLAGS', 'Set your CCFLAGS here', '', ['fPIC', 'Wall', 'pipe', "g", "O0", "O1", "O2", "O3", "funrollloop", "Os", "fomit-frame-pointer"]))
-# New CCFLAGS must be added to the above option, or you'll just get error messages
+opts.Add(BoolOption('LOCKFLAGS', 'Don\'t modify CFLAGS, use only those selected', ''))
+opts.Add('CFLAGS', 'Set your CCFLAGS here', '')
+# CFLAGS are now a string, if you have a mulocal.py from 0.1.11, please remove it.
 opts.Add(BoolOption('EPOLL', 'Use epoll when available', ''))
 opts.Add(BoolOption('MUCOUS', 'Install Mucous (when SWIG can be found', ''))
 opts.Add(BoolOption('MUSETUPGTK', 'Install Musetup-GTK', ''))
@@ -103,21 +104,24 @@ env.Append(LIBPATH = env['LIBPATH_MUCIPHER'])
 if os.path.basename(env['CC']) in ['gcc', 'apgcc']:
 # env['CFLAGS'] = ['-fPIC', '-Wall', '-pipe'] # allows x86_64 to compile
 # ['-Wall', '-pipe']) # original
-	flags = []
-	for flag in str(env['CFLAGS']).split(','):
-		flags.append("-"+flag)
-	env.Append(CCFLAGS = flags)
-	
-	if env['RELEASE'] and "-fomit-frame-pointer" not in env["CCFLAGS"]:
-		env.Append(CCFLAGS = ['-fomit-frame-pointer'])
-	if env['PROFILE'] and "-pg" not in env["CCFLAGS"]:
-		env.Append(CCFLAGS = ['-pg'])
-	if not env['RELEASE'] and not env['PROFILE'] and "-g" not in env["CCFLAGS"]:
-		env.Append(CCFLAGS = ['-g'])
+	#flags = []
+	#for flag in str(env['CFLAGS']).split(','):
+		#flags.append("-"+flag)
+	#env.Append(CCFLAGS = flags)
+	env.Append(CCFLAGS = env['CFLAGS'].split(' '))
+	if not env['LOCKFLAGS']:
+		if env['RELEASE'] and "-fomit-frame-pointer" not in env["CCFLAGS"]:
+			env.Append(CCFLAGS = ['-fomit-frame-pointer'])
+		if env['PROFILE'] and "-pg" not in env["CCFLAGS"]:
+			env.Append(CCFLAGS = ['-pg'])
+		if not env['RELEASE'] and not env['PROFILE'] and "-g" not in env["CCFLAGS"]:
+			env.Append(CCFLAGS = ['-g'])
 	flagstring =""
 	for i in env["CCFLAGS"]:
 		flagstring += i + " "
 	print "BUILDING with CCFLAGS: "+ flagstring
+		
+	#print "BUILDING with CFLAGS: "+ env['CFLAGS'] 
 
 
 # Set up additional include and library paths
@@ -186,7 +190,7 @@ if env['RELAY'] or env['RELAY_QSA']:
 		print "Couldn't figure out how to use the dynamic run-time linker"
 		Exit(1)
 	env.Replace(LIBS = libs)
-	env.Append(CCFLAGS = ['-fPIC'])
+	env.Append(CCFLAGS =  ' -fPIC' )
 
 
 if check_deps == 1:
@@ -392,7 +396,8 @@ f.write('MANDIR = %s\n' % (`env['MANDIR']`))
 f.write('BUILDDIR = %s\n' % (`env['BUILDDIR']`))
 f.write('RELEASE = %s\n' % (`env['RELEASE']`))
 f.write('MULOG = %s\n' % (`string.join(env['MULOG'], ',')`))
-f.write('CFLAGS = %s\n' % (`string.join(env['CFLAGS'], ',')`))
+f.write('LOCKFLAGS = %s\n' % (`env['LOCKFLAGS']`))
+f.write('CFLAGS = %s\n' % (`env['CFLAGS']`))
 f.write('EPOLL = %s\n' % (`env['EPOLL']`))
 f.write('RELAY = %s\n' % (`env['RELAY']`))
 f.write('BINRELOC = %s\n' % (`env['BINRELOC']`))
