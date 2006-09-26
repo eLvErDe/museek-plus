@@ -3165,19 +3165,24 @@ class mucous(driver.Driver):
 			if "ignored" in self.config:
 				for users in self.config["ignored"].keys():
 					usercompletionlist[self.dlang(users)] = 0
+			
 			if self.display["mode"] == "chat":
 				# Autocomplete users in the current room only
 				if self.data["rooms"].keys() != []:
-					for users in self.data["rooms"][self.Spl["room"]]:
-						usercompletionlist[self.dlang(users)] = 0
-			if self.display["mode"] == "transfers":
+					for user in self.data["rooms"][self.Spl["room"]]:
+						usercompletionlist[self.dlang(user)] = 0
+			elif self.display["mode"] == "private":
+				pmusers = self.logs["private"].keys()
+				for user in pmusers:
+					usercompletionlist[self.dlang(user)] = 0
+			elif self.display["mode"] == "transfers":
 				if self.transfers["uploads"].keys() != []:
 					for userpath, values in self.transfers["uploads"].items():
 						usercompletionlist[self.dlang(values[1])] = 0
 				if self.transfers["downloads"].keys() != []:
 					for userpath, values in self.transfers["downloads"].items():
 						usercompletionlist[self.dlang(values[1])] = 0
-			if self.display["mode"] == "browse":
+			elif self.display["mode"] == "browse":
 				if self.usernames["browse"] != None:
 					if self.usernames["browse"] in self.data["browse_results"]:
 						for dirs in self.data["browse_results"][self.usernames["browse"]].keys():
@@ -9702,7 +9707,7 @@ class mucous(driver.Driver):
 				del xshare
 				xshare = curses.newwin(3,16,9,33)
 				xshare.border()
-				xshare.addstr(0,1, "< Bufdy-only >")
+				xshare.addstr(0,1, "< Buddy-only >")
 				xshare.noutrefresh()
 				inxshare = xshare.subwin(1,14,10,34)
 				inxshare.scrollok(1)
