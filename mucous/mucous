@@ -2716,13 +2716,13 @@ class mucous(driver.Driver):
 						continue
 					
 					if transfers[1] == 1:
-						sattr = self.colors["green"]| curses.A_BOLD
+						sattr = self.colors["green"] | curses.A_BOLD
 					elif transfers[1] == 0:
-						sattr = self.colors["magenta"]| curses.A_BOLD
+						sattr = self.colors["magenta"] | curses.A_BOLD
 					elif transfers[1] in (2, 3, 4, 5, 6, 8, 9):
 						sattr = self.colors["yellow"]| curses.A_BOLD
 					elif transfers[1] in (10, 11, 12, 13, 14):
-						sattr = self.colors["red"]| curses.A_BOLD
+						sattr = self.colors["red"] | curses.A_BOLD
 					else:
 						sattr = curses.color_pair(0) | curses.A_BOLD
 					attr = curses.color_pair(0)
@@ -2813,13 +2813,13 @@ class mucous(driver.Driver):
 						continue
 					
 					if transfers[1] == 1:
-						sattr = self.colors["green"]
+						sattr = self.colors["green"] | curses.A_BOLD
 					elif transfers[1] == 0:
-						sattr = self.colors["magenta"]
+						sattr = self.colors["magenta"] | curses.A_BOLD
 					elif transfers[1] in (10, 11, 12, 13, 14):
-						sattr = self.colors["red"]
+						sattr = self.colors["red"] | curses.A_BOLD
 					else:
-						sattr = curses.color_pair(0)
+						sattr = curses.color_pair(0) | curses.A_BOLD
 					attr = curses.color_pair(0)
 					if count + start == s:
 						attr = curses.A_REVERSE | curses.A_BOLD
