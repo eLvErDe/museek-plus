@@ -743,14 +743,14 @@ class mucous(driver.Driver):
 			elif self.display["mode"] in ("debug", "help"):
 				self.ModeHelp()
 				
-
-
 		except Exception, e:
 			self.Hlog("debug", "Build part 2: " + str(e))
+			curses.doupdate()
 		try:
 			self.edit = editor(self.windows["text"]["input"], self)
 
-			self.stdscr.nodelay(1)	
+			self.stdscr.nodelay(1)
+				
 		except Exception, e:
 			self.Hlog("debug", "Build: " + str(e))
 		return self.line
@@ -2714,13 +2714,15 @@ class mucous(driver.Driver):
 						continue
 					
 					if transfers[1] == 1:
-						sattr = self.colors["green"]
+						sattr = self.colors["green"]| curses.A_BOLD
 					elif transfers[1] == 0:
-						sattr = self.colors["magenta"]
+						sattr = self.colors["magenta"]| curses.A_BOLD
+					elif transfers[1] in (2, 3, 4, 5, 6, 8, 9):
+						sattr = self.colors["yellow"]| curses.A_BOLD
 					elif transfers[1] in (10, 11, 12, 13, 14):
-						sattr = self.colors["red"]
+						sattr = self.colors["red"]| curses.A_BOLD
 					else:
-						sattr = curses.color_pair(0)
+						sattr = curses.color_pair(0) | curses.A_BOLD
 					attr = curses.color_pair(0)
 					if count + start == s:
 						attr = curses.A_REVERSE | curses.A_BOLD
@@ -7009,11 +7011,12 @@ class mucous(driver.Driver):
 			cut_list = []
 			for mtype, timestamp, username, message in the_list:
 				length = 0
+				message = self.dlang(message)
 				#mtype, timestamp, username, message = line[0], line[1], line[2], line[3]
 				if mtype == "Me":
 					#username = self.dlang(username)
 					pre = " * %s " % username
-					s = "%s" % self.dlang(message)
+					s = "%s" % message
 					length += len(timestamp) + len(pre)
 # 				elif mtype == "List":
 # 					room = self.Spl["room"]
@@ -7098,7 +7101,7 @@ class mucous(driver.Driver):
 	def DrawChatRoomText(self, roomlinenumber):
 		try:
 			room = self.Spl["room"]
-			mtype, timestamp, username, message = roomlinenumber[0],   roomlinenumber[1], roomlinenumber[2], roomlinenumber[3]
+			mtype, timestamp, username, message = roomlinenumber
 			lang = mucous_config["mucous"]["language"]
 			w = self.windows["dimensions"]["chat"]
 			room = self.dlang(room)
@@ -7197,6 +7200,7 @@ class mucous(driver.Driver):
 									tw.addstr(" ")
 									length +=  1
 					elif mtype == "Normal":
+						
 						s = self.dlang(message) 
 						tw.addstr(s)
 						length += len(s)
@@ -7204,23 +7208,38 @@ class mucous(driver.Driver):
 						s = self.dlang(message) 
 						tw.addstr(s)
 						length += len(s)
-				if length < w["width"]:
-					tw.addstr(" " * (w["width"] - length))
+				
 	
 			except Exception, e:
 				pass
 				# Exceptions are Inevitable
-				#self.Hlog("debug", "display room text: " + str(e))
+			try:
+				if length < w["width"]:
+					tw.addstr(" " * (w["width"] - length))
+			except Exception, e:
+				pass
 		except Exception, e:
 			self.Hlog("debug", "DrawChatRoomText: " + str(e))
 		
 	def dlang(self, string):
 		try:
-			string = string.decode(mucous_config["mucous"]["language"], "replace" ).encode(mucous_config["mucous"]["language"], "replace").encode(mucous_config["mucous"]["language"], "replace")
+			string1 = string.decode(mucous_config["mucous"]["language"], "replace")
+			string1 = string1.encode(mucous_config["mucous"]["language"], "replace")
+			string1 = string1.encode(mucous_config["mucous"]["language"], "replace")
 			
-		except:
+		except Exception, e:
 			pass
-		return string
+		try:
+			z = ""
+			
+			for s in string1:
+				if curses.ascii.isctrl(s):
+					z += curses.ascii.unctrl(s)
+				else:
+					z += s
+			return z
+		except:
+			return string
 
 			
 	def PrivateChatOldLogs(self, username):
@@ -9945,7 +9964,7 @@ class mucous(driver.Driver):
 			tb.bkgdset(" ", self.colors["blafgcyabg"]  | curses.A_REVERSE | curses.A_BOLD)
 			tb.idlok(1)
 			tb.erase()
-			tb.refresh()
+			tb.noutrefresh()
 							
 			osw = self.windows["border"]["onlinestatus"]  =  curses.newwin(1, 8, 0, 0)
 			osw.bkgdset(" ", self.colors["blafgcyabg"]  |curses.A_REVERSE | curses.A_BOLD)
@@ -9955,7 +9974,7 @@ class mucous(driver.Driver):
 				osw.addstr(self.logs["onlinestatus"],  self.colors["blafgcyabg"] )
 			except:
 				pass
-			osw.refresh()
+			osw.noutrefresh()
 			
 			usw = self.windows["border"]["uploadstatus"]  = curses.newwin(1, 10, 0, 25)
 			usw.bkgdset(" ", self.colors["blafgcyabg"]  | curses.A_REVERSE | curses.A_BOLD)
@@ -9965,7 +9984,7 @@ class mucous(driver.Driver):
 				usw.addstr(self.logs["uploads"],  self.colors["blafgcyabg"] )
 			except:
 				pass
-			usw.refresh()
+			usw.noutrefresh()
 			
 			dsw = self.windows["border"]["downloadstatus"] = curses.newwin(1, 12, 0, 35)
 			dsw.bkgdset(" ", self.colors["blafgcyabg"]  | curses.A_REVERSE | curses.A_BOLD)
@@ -9975,7 +9994,7 @@ class mucous(driver.Driver):
 				dsw.addstr(self.logs["downloads"],  self.colors["blafgcyabg"] )
 			except:
 				pass
-			dsw.refresh()
+			dsw.noutrefresh()
 			
 		
 			ssw = self.windows["border"]["searchstatus"] = curses.newwin(1, 15, 0, 47)
@@ -9987,7 +10006,7 @@ class mucous(driver.Driver):
 				ssw.addstr(str(self.logs["search_count"][1]),  self.colors["blafgcyabg"] )
 			except:
 				pass
-			ssw.refresh()
+			ssw.noutrefresh()
 		
 		
 			aw = self.windows["border"]["alert"] = curses.newwin(1, 15, 0, self.w-15)
@@ -10005,7 +10024,7 @@ class mucous(driver.Driver):
 					un.addstr(self.dlang(self.usernames["username"][:15]),  self.colors["blafgcyabg"] )
 				except:
 					pass
-			un.refresh()
+			un.noutrefresh()
 		
 		except Exception,e :
 			self.Hlog("debug", "topbar mode" + str(e))
