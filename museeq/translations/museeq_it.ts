@@ -41,6 +41,10 @@
         <source>MuseeqTray</source>
         <translation type="obsolete">MuseeqTray</translation>
     </message>
+    <message>
+        <source><byte value="x9"/><byte value="x9"/><byte value="x9"/>Trayicon support was disabled at compile-time</source>
+        <translation><byte value="x9"/><byte value="x9"/><byte value="x9"/>Il supporto dell&apos;icona tray è stato disabilitato in fase di compilazione</translation>
+    </message>
 </context>
 <context>
     <name>BanList</name>
