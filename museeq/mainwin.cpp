@@ -623,6 +623,8 @@ void MainWindow::doNotAutoConnect() {
 	}
 }
 
+#define escape QStyleSheet::escape
+
 #define _TIME QString("<span style='"+museeq->mFontTime+"'><font color='"+museeq->mColorTime+"'>") + QDateTime::currentDateTime().toString("hh:mm:ss") + "</font></span> "
 void MainWindow::slotStatusMessage(bool type, const QString& msg) {
 
@@ -631,15 +633,15 @@ void MainWindow::slotStatusMessage(bool type, const QString& msg) {
 	QStringList::iterator it = wm.begin();
 	for(; it != wm.end(); ++it) {
 		if (museeq->mShowTimestamps)
-			mLog->append(QString(_TIME+"<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+*it+"</font></span>"));
+			mLog->append(QString(_TIME+"<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+escape(*it)+"</font></span>"));
 		else
-			mLog->append(QString("<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+*it+"</font></span>"));
+			mLog->append(QString("<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+escape(*it)+"</font></span>"));
 	}
 }
 void MainWindow::slotUserStatus( const QString & user, uint status ) {
  	if (museeq->mOnlineAlert  && museeq->hasAlert(user)) {
 		QString s = (status == 0) ? "offline" : ((status == 1) ? "away" : "online");
-		mLog->append(QString(_TIME)+QString("<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>user %2 is now %3</font></span>").arg(user).arg(s)) ;
+		mLog->append(QString(_TIME)+QString("<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>user %2 is now %3</font></span>").arg(escape(user)).arg(s)) ;
 		
 	}
 }
@@ -805,6 +807,8 @@ void MainWindow::slotConfigChanged(const QString& domain, const QString& key, co
 	}
 }
 
+
+
 void MainWindow::startSearch(const QString& query) {
 	mSearches->doSearch(query);
 	mIcons->setCurrentItem(3);
@@ -843,12 +847,13 @@ void MainWindow::slotUserAddress(const QString& user, const QString& ip, uint po
 			}
 #endif // HAVE_NETDB_H
 		}
-	
+
 		if (museeq->mIPLog) {
-			if (museeq->mShowTimestamps)
-					mLog->append(QString(_TIME+"<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+tr("IP of ")+user+": "+ ip +" "+ tr("Port:")+" "+QString::number(port)+"</font></span>"));
-				else
-					mLog->append(QString("<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+tr("IP of ")+user+": "+ ip +" "+ tr("Port:")+" "+QString::number(port)+"</font></span>"));
+			if (museeq->mShowTimestamps) {
+					mLog->append(QString(_TIME+"<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+tr("IP of ")+escape(user)+": "+ ip +" "+ tr("Port:")+" "+QString::number(port)+"</font></span>"));
+				} else {
+					mLog->append(QString("<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+tr("IP of ")+escape(user)+": "+ ip +" "+ tr("Port:")+" "+QString::number(port)+"</font></span>"));
+				}
 			}
 	}
 }
