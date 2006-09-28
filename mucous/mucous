@@ -2106,7 +2106,7 @@ class mucous(driver.Driver):
 					if self.display["mode"] == "chat":
 						self.SendMessage(messages.SayRoom(place, message))
 					elif self.display["mode"] == "private":
-						self.SendMessage(messages.PrivateMessage(1, place, message))
+						self.SendMessage(messages.PrivateMessage(1, place, self.dencode_language(message)))
 		except Exception, e:
 			self.Hlog("debug", "SayInChat: " + str(e))
 			
@@ -2149,7 +2149,12 @@ class mucous(driver.Driver):
 		except Exception, e:
 			self.Hlog("debug", "LogUserInfo: " + str(e))
 	
-				
+	def PrivateMessageEncoded(self, user, message):
+		try:
+			self.SendMessage(messages.PrivateMessage(1, user, self.dencode_language(message)))
+		except:
+			pass
+		
 	def PrivateChatSend(self, user, message):
 		try:
 			#Username is already utf-8ified
@@ -2160,10 +2165,10 @@ class mucous(driver.Driver):
 				splited =  message.split('\\n')
 				if len(splited) > 7:
 					for i in range(8):
-						self.SendMessage(messages.PrivateMessage(1, user, splited[i]))
+						self.PrivateMessageEncoded(user, splited[i])
 				else:
 					for i in range(len(splited)):
-						self.SendMessage(messages.PrivateMessage(1, user, splited[i]))
+						self.PrivateMessageEncoded(user,  splited[i])
 				
 
 			elif '\n' in message:
@@ -2171,20 +2176,19 @@ class mucous(driver.Driver):
 				
 				if len(splited) > 5:
 					for i in range(5):
-						self.SendMessage(messages.PrivateMessage(1, user, splited[i]))
+						self.PrivateMessageEncoded(user,  splited[i])
 				else:
 					for i in range(len(splited)):
-						self.SendMessage(messages.PrivateMessage(1, user, splited[i]))
+						self.PrivateMessageEncoded(user,  splited[i])
 			else:
-				self.SendMessage(messages.PrivateMessage(1, user, self.dlang(message) ) )
+				self.PrivateMessageEncoded(user, message)
 		
 			if message == curses.ascii.ctrl("A")+"VERSION"+curses.ascii.ctrl("A"):
 				message = "CTCP VERSION"
 			if mucous_config["mucous"]["logging"] in ("yes"):
 				self.FileLog("private", time.strftime("%d %b %Y %H:%M:%S"), user, "["+self.usernames["username"]+"]\t" +message )
 			#pmtype = "outgoing"
-			direction = 1
-			self.LogPrivateChat(direction, user, self.dlang(message))
+			self.LogPrivateChat(1, user, message)
 			
 			if self.logs["alert"] == "New PM":
 				self.AlertStatus("")
@@ -6088,22 +6092,17 @@ class mucous(driver.Driver):
 						self.commandlist.remove("/"+alias)
 						
 			elif line[:1] == "/":
-				good = 0
-				for alias in mucous_config["aliases"].keys():
-					if line == '/'+alias:
-						if self.display["mode"] == "chat":
-							if self.Spl["room"] != None:
-								self.SayInChat("chat", self.Spl["room"], mucous_config["aliases"][alias])
-								good = 1
-								break
-							
-						elif self.display["mode"] == "private":
-							if self.usernames["private"] != None:
-								self.SayInChat("private", self.usernames["private"], mucous_config["aliases"][alias])
-								good = 1
-								break
+				is_alias = 0
+				if  line[1:] in mucous_config["aliases"].keys():
+					alias = line[1:]
+					is_alias = 1
+					if self.display["mode"] == "chat" and self.Spl["room"] != None:
+						self.SayInChat("chat", self.Spl["room"], mucous_config["aliases"][alias])
 						
-				if good != 1:
+					elif self.display["mode"] == "private" and self.usernames["private"] != None:
+						self.PrivateChatSend( self.usernames["private"], mucous_config["aliases"][alias])
+						
+				if not is_alias:
 					return 0
 				
 			else:
@@ -7254,22 +7253,21 @@ class mucous(driver.Driver):
 				f = open(path, "r")
 				a = f.read()
 				f.close()
-				z = a.split("\n" )
-				for x in z[-10:]:
-					if x == "":
+				lines = a.split("\n" )
+				for line in lines[-20:]:
+					if line == "":
 						continue
-					timex = x[12:20]
-					user = x[22:]
-					if x.find("\t") == -1:
+					timex = line[12:20]
+					user = line[22:]
+					if line.find("\t") == -1:
 						# old format
 						user = user[:user.find("]")]
-						message = x[21+len(user)+3:]
+						message = line[21+len(user)+3:]
 					else:
 						# new format with Tab
 						user = user[:user.find("\t")-1]
-						message = x[x.find("\t")+1:]
+						message = line[x.find("\t")+1:]
 						
-					#full_message = "%s * %s %s" % ( timex, user, message)
 					self.logs["private"][username].append([timex, user, message])
 				
 				self.logs["private"][username].append([time.strftime("%H:%M:%S"), "", "------ Old Chat Above ------"])
@@ -7285,25 +7283,25 @@ class mucous(driver.Driver):
 				f = open(path, "r")
 				a = f.read()
 				f.close()
-				z = a.split("\n" )
-				for x in z[-30:]:
-					if x == "":
+				lines = a.split("\n" )
+				for line in lines[-30:]:
+					if line == "":
 						continue
-					timex = x[12:20]
-					if x[21] == "[":
-						user = x[22:]
-						if x.find("\t") == -1:
+					timex = line[12:20]
+					if line[21] == "[":
+						user = line[22:]
+						if line.find("\t") == -1:
 						# old format
 							user = user[:user.find("]")]
-							message = x[21+len(user)+3:]
+							message = line[21+len(user)+3:]
 						else:
 							# new format with Tab
 							user = user[:user.find("\t")-1]
-							message = x[x.find("\t")+1:]
+							message = line[x.find("\t")+1:]
 					else:
-						user = x[21:]
+						user = line[21:]
 						user = user[:user.find(" ")]
-						message = x[21+len(user)+1:]
+						message = line[21+len(user)+1:]
 						
 					
 					if message[:4] == "/me ": 
@@ -7773,7 +7771,28 @@ class mucous(driver.Driver):
 		except Exception, e:
 			self.Hlog("debug", "wrap_n_clip " +str(e))
 	
-	
+	def PrivateWrap(self, the_list, w, scrolltext):
+		try:
+			wrapped_lines = []
+			for timestamp, user, message in the_list:
+				
+				lines1 = ""
+				for a in lines:
+					if curses.ascii.isctrl(a):
+						a = curses.ascii.unctrl(a)
+					lines1 += a
+					#lines = lines.replace("^A", "\^A")
+					#self.Hlog("debug", lines +" "+ str(len(lines))+curses.ascii.ctrl("a"))
+				list_of_strings = self.StringCutWidth(lines1, w)
+				for string in list_of_strings:
+					wrapped_lines.append(string)
+			if self.scrolling[scrolltext] == -1:
+				self.scrolling[scrolltext] = len(wrapped_lines)
+			clipped_list, self.scrolling[scrolltext], w["start"] = self.scrollbox(wrapped_lines, self.scrolling[scrolltext], w["height"])
+			return clipped_list, self.scrolling[scrolltext], w["start"]
+		except Exception, e:
+			self.Hlog("debug", "wrap_n_clip " +str(e))
+			
 	def DrawPrivateChat(self):
 		try:
 			scrolltext = "private"
@@ -7794,19 +7813,44 @@ class mucous(driver.Driver):
 			# Private chat log
 			if self.usernames["private"] not in self.logs["private"]:
 				return
-			clipped_list, self.scrolling["private"], w["start"] = self.wrap_n_clip( self.logs["private"][self.usernames["private"]], w, scrolltext )
+
+			listcolors = {}
+			wrapped_lines = []
+			merged_lines = []
+			for timestamp, user, message in self.logs["private"][self.usernames["private"]]:
+				message_clean = ""
+				for a in message:
+					if curses.ascii.isctrl(a):
+						a = curses.ascii.unctrl(a)
+					message_clean += a
+				message = self.dlang(message_clean)
+				if message[:4] == "/me ":
+					color = self.colors['green']
+					merged_lines = "%s * %s %s"% (timestamp, user, message[4:]) 
+				elif user == '':
+					color = self.colors['cyan']
+					merged_lines = "%s %s"% (timestamp, message)
+				else:
+					color = curses.A_NORMAL
+					merged_lines = "%s [%s] %s"% (timestamp, user, message) 
+				list_of_strings = self.StringCutWidth(merged_lines, w)
+				for line in list_of_strings:
+					wrapped_lines.append(line)
+					listcolors[line] = color
+			del merged_lines
+			del list_of_strings
+			
+			if self.scrolling[scrolltext] == -1:
+				self.scrolling[scrolltext] = len(wrapped_lines)	
+			
+			clipped_list, self.scrolling[scrolltext], w["start"] = self.scrollbox(wrapped_lines, self.scrolling[scrolltext], w["height"])
+			
 			
 			attrs = curses.A_BOLD #| curses.A_UNDERLINE
 			attr = curses.A_NORMAL
 			count = 0
 			for lines in clipped_list:
-				lines = lines[0]
-				if lines[1] == "S":
-					color = self.colors["cyan"]
-				elif lines[1] == "M":
-					color = self.colors["green"]
-				else:
-					color = curses.A_NORMAL
+				color = listcolors[lines]
 				try:
 					lines, ls = self.StringAddBlanks(lines, w)
 					if count + w["start"] == self.scrolling["private"]:
