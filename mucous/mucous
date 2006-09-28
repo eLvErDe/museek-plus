@@ -7297,7 +7297,7 @@ class mucous(driver.Driver):
 						else:
 							# new format with Tab
 							user = user[:user.find("\t")-1]
-							message = line[x.find("\t")+1:]
+							message = line[line.find("\t")+1:]
 					else:
 						user = line[21:]
 						user = user[:user.find(" ")]
