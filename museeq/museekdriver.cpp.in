@@ -69,7 +69,7 @@ void MuseekDriver::connectToUnix(const QString& path, const QString& password) {
 	
 	qstrncpy(addr.sun_path, (const char*)path.local8Bit(), sizeof(addr.sun_path));
 
-	if(::connect(sock, (struct sockaddr*)&addr, sizeof(struct sockaddr_un);) == -1) {
+	if(::connect(sock, (struct sockaddr*)&addr, sizeof(struct sockaddr_un)) == -1) {
 		perror("connect: ");
 		emit error(QSocket::ErrConnectionRefused);
 		return;
