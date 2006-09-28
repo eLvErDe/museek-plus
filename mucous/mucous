@@ -7266,7 +7266,7 @@ class mucous(driver.Driver):
 					else:
 						# new format with Tab
 						user = user[:user.find("\t")-1]
-						message = line[x.find("\t")+1:]
+						message = line[line.find("\t")+1:]
 						
 					self.logs["private"][username].append([timex, user, message])
 				
@@ -10251,7 +10251,7 @@ class mucous(driver.Driver):
 			else:
 				
 				if direction:
-					self.logs["private"][user].append([timestamp, user, message])
+					self.logs["private"][user].append([timestamp, self.usernames["username"], message])
 				else:
 					self.logs["private"][user].append([timestamp, user, message])
 					
@@ -10611,14 +10611,14 @@ class mucous(driver.Driver):
 				except:
 					pass
 			else:
-
+				
 				ttickers.sort(key=str.lower)
 				if self.Spl["ticker_num"] >= len(ttickers):
 					self.Spl["ticker_num"] = 0
 				names = ttickers[self.Spl["ticker_num"]]
 				n = len(names)
 				try:
-					if self.Spl["show_menu"] == True: raise  Exception,  "Noticker"
+					if self.Spl["show_menu"] == True: raise Exception,  "Noticker"
 					if self.display["chatshape"] not in ("nostatuslog", "chat-only"):
 						if self.display["chatshape"] == "noroombox":
 							ticker = "< ["+names+"] "+str(ticks[names][:self.w-9-n])
