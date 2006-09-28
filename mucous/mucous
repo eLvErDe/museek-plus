@@ -1463,7 +1463,8 @@ class mucous(driver.Driver):
 
 	def cb_private_message(self, direction, timestamp, user, message):
 		try:
-			
+			# direction 0 == incoming
+			# direction 1 == outgoing (sent from this client)
 			ctcpversion = 0
 			if message == curses.ascii.ctrl("A")+"VERSION"+curses.ascii.ctrl("A"):
 				message = "CTCP VERSION"
@@ -1482,13 +1483,8 @@ class mucous(driver.Driver):
 			
 			if self.usernames["private"] == None:
 				self.usernames["private"] = user
-
-			if direction == 0:	
-				pmtype = "incoming"
-			elif direction == 1:
-				pmtype = "outgoing"
 			
-			self.LogPrivateChat(pmtype, user, message)
+			self.LogPrivateChat(direction, user, message)
 			
 			if self.display["mode"] != "private":
 				self.AlertStatus("New PM")
@@ -2186,8 +2182,9 @@ class mucous(driver.Driver):
 				message = "CTCP VERSION"
 			if mucous_config["mucous"]["logging"] in ("yes"):
 				self.FileLog("private", time.strftime("%d %b %Y %H:%M:%S"), user, "["+self.usernames["username"]+"]\t" +message )
-			pmtype = "outgoing"
-			self.LogPrivateChat(pmtype, user, self.dlang(message))
+			#pmtype = "outgoing"
+			direction = 1
+			self.LogPrivateChat(direction, user, self.dlang(message))
 			
 			if self.logs["alert"] == "New PM":
 				self.AlertStatus("")
@@ -5278,12 +5275,16 @@ class mucous(driver.Driver):
 					if x != 0:
 						if self.display["mode"] == "chat":
 							for line in logfile:
+								if self.display["mode"] == "private":
+									line = line[0]
 								if "://" in line[3]:
 									urline = line[3].split(" ")
 									for x in urline:
 										if "://" in x: self.url = x
 						elif self.display["mode"] == "private":
 							for line in logfile:
+								if self.display["mode"] == "private":
+									line = line[0]
 								if "://" in line:
 									urline = line.split(" ")
 									for x in urline:
@@ -7268,9 +7269,10 @@ class mucous(driver.Driver):
 						user = user[:user.find("\t")-1]
 						message = x[x.find("\t")+1:]
 						
-					full_message = "%s * %s %s" % ( timex, user, message)
-					self.logs["private"][username].append(full_message)
-				self.logs["private"][username].append("------ Old Chat Above ------")
+					#full_message = "%s * %s %s" % ( timex, user, message)
+					self.logs["private"][username].append([timex, user, message])
+				
+				self.logs["private"][username].append([time.strftime("%H:%M:%S"), "", "------ Old Chat Above ------"])
 		except Exception,e:
 			self.Hlog("debug", "PrivateChatOldLogs: " +str( e) )
 			
@@ -7798,12 +7800,19 @@ class mucous(driver.Driver):
 			attr = curses.A_NORMAL
 			count = 0
 			for lines in clipped_list:
+				lines = lines[0]
+				if lines[1] == "S":
+					color = self.colors["cyan"]
+				elif lines[1] == "M":
+					color = self.colors["green"]
+				else:
+					color = curses.A_NORMAL
 				try:
 					lines, ls = self.StringAddBlanks(lines, w)
 					if count + w["start"] == self.scrolling["private"]:
-						tw.addstr(self.dlang(lines), attrs)
+						tw.addstr(self.dlang(lines), attrs | color )
 					else:
-						tw.addstr(self.dlang(lines), attr)
+						tw.addstr(self.dlang(lines), attr | color )
 					count += 1
 				except Exception, e:
 					#self.Hlog("debug", "private display: " + str(e))
@@ -10184,23 +10193,23 @@ class mucous(driver.Driver):
 		except Exception, e:
 			self.Hlog("debug", "PrivateChatStart: " + str(e))
 			
-	def LogPrivateChat(self, pmtype, user, message):
+	def LogPrivateChat(self, direction, user, message):
 		try:
 			timestamp = time.strftime("%H:%M:%S")
 			if user not in self.logs["private"].keys():
 				self.logs["private"][user]=['']
 	
 			if message[:4] == "/me ":
-				if pmtype == "outgoing":
-					self.logs["private"][user].append(["%s * %s %s" % (timestamp, self.usernames["username"],  message[4:])], "M")
-				elif pmtype == "incoming":
-					self.logs["private"][user].append(["%s * %s %s" % (timestamp, user,  message[4:])], "M")
+				if direction:
+					self.logs["private"][user].append([timestamp, self.usernames["username"],  message])
+				else:
+					self.logs["private"][user].append([timestamp, user, message])
 			else:
 				
-				if pmtype == "outgoing":
-					self.logs["private"][user].append(["%s You told %s: %s" % (timestamp, user, message)], "M")
-				elif pmtype == "incoming":
-					self.logs["private"][user].append(["%s %s said: %s" % (timestamp, user, message)], "N")
+				if direction:
+					self.logs["private"][user].append([timestamp, user, message])
+				else:
+					self.logs["private"][user].append([timestamp, user, message])
 					
 			if self.usernames["private"] == None:
 				self.usernames["private"] = user
