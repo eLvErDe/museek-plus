@@ -10192,15 +10192,15 @@ class mucous(driver.Driver):
 	
 			if message[:4] == "/me ":
 				if pmtype == "outgoing":
-					self.logs["private"][user].append("%s * %s %s" % (timestamp, self.usernames["username"],  message[4:]))
+					self.logs["private"][user].append(["%s * %s %s" % (timestamp, self.usernames["username"],  message[4:])], "M")
 				elif pmtype == "incoming":
-					self.logs["private"][user].append("%s * %s %s" % (timestamp, user,  message[4:]))
+					self.logs["private"][user].append(["%s * %s %s" % (timestamp, user,  message[4:])], "M")
 			else:
 				
 				if pmtype == "outgoing":
-					self.logs["private"][user].append("%s You told %s: %s" % (timestamp, user, message))
+					self.logs["private"][user].append(["%s You told %s: %s" % (timestamp, user, message)], "M")
 				elif pmtype == "incoming":
-					self.logs["private"][user].append("%s %s said: %s" % (timestamp, user, message))
+					self.logs["private"][user].append(["%s %s said: %s" % (timestamp, user, message)], "N")
 					
 			if self.usernames["private"] == None:
 				self.usernames["private"] = user

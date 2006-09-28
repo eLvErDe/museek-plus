@@ -1,7 +1,0 @@
-To build trayicon
-run:
-    ./autogen.py
-    make
-    
-And/or run:
-    ./murmur
