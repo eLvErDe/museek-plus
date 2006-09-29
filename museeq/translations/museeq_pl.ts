@@ -27,31 +27,31 @@
     </message>
     <message>
         <source>&amp;Restore</source>
-        <translation>P&amp;rzywróć</translation>
+        <translation type="obsolete">P&amp;rzywróć</translation>
     </message>
     <message>
         <source>&amp;Hide</source>
-        <translation>&amp;Ukryj</translation>
+        <translation type="obsolete">&amp;Ukryj</translation>
     </message>
     <message>
         <source>&amp;Quit</source>
-        <translation>Za&amp;kończ</translation>
-    </message>
-    <message>
-        <source>MuseeqTray</source>
-        <translation></translation>
+        <translation type="obsolete">Za&amp;kończ</translation>
     </message>
     <message>
         <source>-V --version<byte value="x9"/><byte value="x9"/>Display museeq version and quit</source>
-        <translation type="unfinished"></translation>
+        <translation>-V --version<byte value="x9"/><byte value="x9"/>Pokaż wersję museeq-a i wyjdź</translation>
     </message>
     <message>
         <source>-h --help<byte value="x9"/><byte value="x9"/>Display this message and quit</source>
-        <translation type="unfinished"></translation>
+        <translation>-h --help<byte value="x9"/><byte value="x9"/>Pokaż tę wiadomość i wyjdź</translation>
     </message>
     <message>
         <source>--no-tray<byte value="x9"/><byte value="x9"/>Don&apos;t load TrayIcon</source>
-        <translation type="unfinished"></translation>
+        <translation>--no-tray<byte value="x9"/><byte value="x9"/>Nie ładuj ikony zasobnika</translation>
+    </message>
+    <message>
+        <source><byte value="x9"/><byte value="x9"/><byte value="x9"/>Trayicon support was disabled at compile-time</source>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -247,6 +247,14 @@
         <source>Alt+H</source>
         <translation></translation>
     </message>
+    <message>
+        <source>Auto-Conn&amp;ect to Daemon</source>
+        <translation>Połącz z demon&amp;em automatycznie</translation>
+    </message>
+    <message>
+        <source>Alt+E</source>
+        <translation></translation>
+    </message>
 </context>
 <context>
     <name>FileListView</name>
@@ -293,6 +301,14 @@
     <message>
         <source>Which user do you wish to upload these to?</source>
         <translation>Do któredo użytkownika chcesz je wysłać?</translation>
+    </message>
+    <message>
+        <source>Download files to..</source>
+        <translation>Pobierz pliki do..</translation>
+    </message>
+    <message>
+        <source>Select a Directory for current download(s)</source>
+        <translation>Wybierz katalog dla bierzącego pobierania</translation>
     </message>
 </context>
 <context>
@@ -508,7 +524,7 @@
     </message>
     <message>
         <source>Toggled &amp;away</source>
-        <translation>Przełączono odejście</translation>
+        <translation>Przełączono odd&amp;alenie</translation>
     </message>
     <message>
         <source>Check &amp;privileges</source>
@@ -648,7 +664,7 @@
     </message>
     <message>
         <source>User info</source>
-        <translation>Informacje o uzytkowniku</translation>
+        <translation>Informacje o użytkowniku</translation>
     </message>
     <message>
         <source>Browse</source>
@@ -764,11 +780,11 @@
     </message>
     <message>
         <source>&lt;p align=&quot;center&quot;&gt;Museeq </source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source> is a GUI for the Museek Daemon&lt;/p&gt;The programs, museeq and museekd and muscan, were created by Hyriand 2003-2005&lt;br&gt;&lt;br&gt;Additions by Daelstorm and SeeSchloss in 2006&lt;br&gt;This project is released under the GPL license.&lt;br&gt;Code and ideas taken from other opensource projects and people are mentioned in the CREDITS file included in the source tarball.</source>
-        <translation> jest graficznym interfejsem dla demona Museeka&lt;/p&gt;Programy, museeq i museekd i muscan, zostały stworzone przez Hyrianda w latach 2003-2005&lt;br&gt;&lt;br&gt;Dodatki przez Daelstorma I SeeSchlossa w 2006&lt;br&gt;Ten projekt jest wypuszczony pod licencją GPL.&lt;br&gt;Kod i pomysły wzięto z innych opensource&apos;owych projektów oraz od ludzi wspomnianych w pliku CREDITS załączonym w archiwum źródłowym.</translation>
+        <translation> jest graficznym interfejsem dla demona Museeka&lt;/p&gt;Programy, museeq i museekd i muscan, zostały stworzone przez Hyrianda w latach 2003-2005&lt;br&gt;&lt;br&gt;Dodatki przez Daelstorma i SeeSchlossa w 2006&lt;br&gt;Ten projekt jest wypuszczony pod licencją GPL.&lt;br&gt;Kod i pomysły wzięto z innych opensource&apos;owych projektów oraz od ludzi wspomnianych w pliku CREDITS załączonym w archiwum źródłowym.</translation>
     </message>
     <message>
         <source>Museeq Commands</source>
@@ -776,7 +792,7 @@
     </message>
     <message>
         <source>&lt;h3&gt;While in a chat window, such as a Chat Room, or a Private Chat, there are a number of commands available for use.&lt;/h3&gt;&lt;b&gt;/c /chat&lt;/b&gt;   &lt;i&gt;(Switch to Chat Rooms)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/pm /private&lt;/b&gt; &amp;lt;nothing | username&amp;gt;  &lt;i&gt;(Switch to Private Chat and start chatting with a user, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/transfers&lt;/b&gt;   &lt;i&gt;(Switch to Transfers)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/s /search&lt;/b&gt; &amp;lt;nothing | query&gt;   &lt;i&gt;(Switch to Searchs and start a Search with &amp;lt;query&amp;gt; if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/u /userinfo&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Switch to userinfo, and attempt to get a user&apos;s info, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/b /browse&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Switch to Browse and initate browsing a user, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ip&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Get the IP of a user)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/log&lt;/b&gt;    &lt;i&gt;(Toggle displaying the Special Message Log)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/t /ticker /tickers&lt;/b&gt;   &lt;i&gt;(Toggle the showing of Tickers)&lt;/i&gt; &lt;br&gt;&lt;b&gt;/f /fonts /c /colors&lt;/b&gt;   &lt;i&gt;(Open the Fonts and Colors settings dialog)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ban /unban&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Disallow/Allow a user to recieve your shares and download from you)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ignore /unignore&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Block/Unblock chat messages from a user)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/buddy /unbuddy&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Add/Remove a user to keep track of it and add comments about it)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/trust /distrust&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Add/Remove a user to the optional list of users who can send files to you)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/me&lt;/b&gt; &lt;does something&gt;    &lt;i&gt;(Say something in the Third-Person)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/slap&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Typical Trout-slapping)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/j /join&lt;/b&gt; &amp;lt;room&amp;gt;    &lt;i&gt;(Join a Chat Room)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/l /p /leave /part&lt;/b&gt; &amp;lt;nothing | room&amp;gt;    &lt;i&gt;(Leave the current room or inputed room)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/about /help /commands&lt;/b&gt;    &lt;i&gt;(Display information)&lt;/i&gt;&lt;br&gt;&lt;br&gt;Do not type the brackets, they are there only to make clear that something (or nothing) can be typed after the /command.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Museeq Help</source>
@@ -784,7 +800,7 @@
     </message>
     <message>
         <source>&lt;h3&gt;What&apos;s going on? I can&apos;t connect to a Soulseek Server with museeq!&lt;/h3&gt; You connect to museekd with museeq, so you need to have &lt;b&gt;museekd&lt;/b&gt; configured, running &lt;u&gt;and&lt;/u&gt; connected to a &lt;b&gt;Soulseek&lt;/b&gt; or Soulfind server. &lt;br&gt; &lt;h3&gt;Running for the first time?&lt;/h3&gt; Before you start museekd for the first time, you need to configure &lt;b&gt;museekd&lt;/b&gt; with &lt;b&gt;musetup&lt;/b&gt;,  a command-line configuration script.&lt;br&gt;&lt;br&gt; In musetup you &lt;b&gt;MUST&lt;/b&gt; configure the following items: Server, Username, Password, Interface Password, Download Dir&lt;br&gt; Also, take note of your interfaces, if you change them from the default localhost:2240 and /tmp/museek.&lt;tt&gt;USERNAME&lt;/tt&gt;, you&apos;ll need to know them for logging in with museeq. &lt;br&gt;&lt;br&gt; When you start museeq or choose File-&gt;Connect from the menu, you are asked to input the host and port, or Unix Socket of museekd, &lt;b&gt;not&lt;/b&gt; the Server.&lt;br&gt; &lt;h3&gt;Want to send someone a file?&lt;/h3&gt; Browse yourself, select file(s), and right-click-&gt;Upload. Input their name in the dialog box, and the upload should start, but it depends on if the user has place you on their &quot;trusted&quot; or &quot;uploads&quot; users list .&lt;br&gt;Once you&apos;re connected to museekd, change museekd options via Settings-&gt;Museek</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Delete handler</source>
@@ -850,11 +866,38 @@
     </message>
     <message>
         <source>IP of </source>
-        <translation type="unfinished"></translation>
+        <translation>IP </translation>
     </message>
     <message>
         <source>Port:</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable &amp;Trayicon</source>
+        <translation>Włącz &amp;ikonę zasobnika</translation>
+    </message>
+    <message>
+        <source>Auto-Connect to Daemon</source>
+        <translation>Podłącz do demona automatycznie</translation>
+    </message>
+</context>
+<context>
+    <name>Museeq</name>
+    <message>
+        <source>&amp;Restore</source>
+        <translation>P&amp;rzywróć</translation>
+    </message>
+    <message>
+        <source>&amp;Hide</source>
+        <translation>&amp;Ukryj</translation>
+    </message>
+    <message>
+        <source>&amp;Quit</source>
+        <translation>Za&amp;kończ</translation>
+    </message>
+    <message>
+        <source>MuseeqTray</source>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -900,15 +943,15 @@
     <name>PrivateChat</name>
     <message>
         <source>%1 is offline</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 jest poza siecią</translation>
     </message>
     <message>
         <source>%1 is away</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 jest daleko</translation>
     </message>
     <message>
         <source>%1 is online</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 jest w sieci</translation>
     </message>
 </context>
 <context>
@@ -1106,6 +1149,14 @@
         <source>%1 search results (%2 users)</source>
         <translation>%1 wyniki/-ów wyszukiwania (%2 użytkowników)</translation>
     </message>
+    <message>
+        <source>Download file(s) to..</source>
+        <translation>Pobierz plik(i) do..</translation>
+    </message>
+    <message>
+        <source>Select a Directory for current download(s)</source>
+        <translation>Wybierz katalog dla bieżącego pobierania</translation>
+    </message>
 </context>
 <context>
     <name>Searches</name>
@@ -1282,7 +1333,7 @@
     </message>
     <message>
         <source>IP addresses in Log Window instead of popup</source>
-        <translation type="unfinished"></translation>
+        <translation>Adresy IP w oknie dziennika zamiast wyskakiwania</translation>
     </message>
 </context>
 <context>
