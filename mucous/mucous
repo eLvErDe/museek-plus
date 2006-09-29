@@ -2649,41 +2649,35 @@ class mucous(driver.Driver):
 		except Exception, e:
 			self.Hlog("debug", "DPF: " + str(e))
 			
-	def TransfersManagerDownload(self):
+	def TransfersListCompact(self, list):
 		try:
-			if self.display["mode"] != "transfer":
-				return
-			if self.display["transfers"] != "downloads" and mucous_config["mucous"]["transbox"] != "split":
-				return
-			w = self.windows["dimensions"]["downloads"]
 			if self.display["transfer_sort"] == 'active':
 				status_list = (1, 2, 3, 4, 5, 6, 8, 9,)
 			elif self.display["transfer_sort"] == 'all':
-				status_list = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,  14)
+				status_list = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
 			elif self.display["transfer_sort"] == 'finished':
 				status_list = (0, 99999)
 			elif self.display["transfer_sort"] == 'queued':
 				status_list = (7, 99999)
 			elif self.display["transfer_sort"] == 'failed':
-				status_list = (  10, 11, 12, 13)
-			dtw = self.windows["text"]["downloads"]
-
+				status_list = ( 10, 11, 12, 13)
+				
 			self.data["downloads"] = {}
 			#
 			statuslist = []
-			statuslist = self.transfers["downloads"].keys()
+			statuslist = self.transfers[list].keys()
 			statuslist.sort()
 			
-			self.sorted_transfer_list["downloads"] = statuslist
+			self.sorted_transfer_list[list] = statuslist
 			num = 0
 			filterlist = []
 			for user_path in statuslist:
 				valid = 1
 				num += 1
-				transfer, user, path, status, error, filepos, filesize, rate, place = self.transfers["downloads"][user_path]
+				transfer, user, path, status, error, filepos, filesize, rate, place = self.transfers[list][user_path]
 				username = {}
 				username[user] = path
-				self.data["downloads"][num] = username
+				self.data[list][num] = username
 				if status not in status_list:
 					valid = 0
 				if valid:
@@ -2695,29 +2689,38 @@ class mucous(driver.Driver):
 				self.Win_Height =self.h/2-5
 			else:
 				self.Win_Height =self.h -8
-			clipped_list, self.scrolling["downloads"], start = self.scrollbox(filterlist, self.scrolling["downloads"], self.Win_Height)
+			clipped_list, self.scrolling[list], self.windows["dimensions"][list]["start"] = self.scrollbox(filterlist, self.scrolling[list], self.Win_Height)
 			del filterlist
 			finallist = []
 			for user_path, number in clipped_list:
-				item = self.TransferItem("downloads", user_path, number)
+				item = self.TransferItem(list, user_path, number)
 				finallist.append(item)
 			del clipped_list
+			return finallist
+		except Exception, e:
+			self.Hlog("debug", "TransfersListCompact: " + str(e))
 			
-			s = self.scrolling["downloads"]
+	def TransfersManagerDownload(self):
+		try:
+			if self.display["mode"] != "transfer":
+				return
+			if self.display["transfers"] != "downloads" and mucous_config["mucous"]["transbox"] != "split":
+				return
+			w = self.windows["dimensions"]["downloads"]
+			dtw = self.windows["text"]["downloads"]
 
-			self.windows["dimensions"]["downloads"]["start"] = start
-		
-			
+			finallist = self.TransfersListCompact("downloads")
+			s = self.scrolling["downloads"]
+			start = self.windows["dimensions"]["downloads"]["start"]
+
 			try:
 				if self.display["t_speed"] == True:
 					swting = "Numb|Speed| Size | Username |  Status  | Que|  Path"
 				else:
 					swting = "Numb|Perc | Size | Username |  Status  | Que|  Path"
-					#4294967295
-				spaces = self.w-2-len(swting)
-				while spaces > 0:
-					spaces -= 1
-					swting += " "
+
+				swting += ((self.w-2-len(swting)) * " ")
+
 				dtw.erase()
 				if self.display["transfers"] == "downloads":
 					dtw.addstr(swting, self.colors["green"] | curses.A_REVERSE)
@@ -2773,63 +2776,17 @@ class mucous(driver.Driver):
 			if self.display["transfers"] != "uploads" and mucous_config["mucous"]["transbox"] != "split":
 				return
 
-			if self.display["transfer_sort"] == 'active':
-				status_list = (1, 2, 3, 4, 5, 6, 8, 9,)
-			elif self.display["transfer_sort"] == 'all':
-				status_list = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
-			elif self.display["transfer_sort"] == 'finished':
-				status_list = (0, 99999)
-			elif self.display["transfer_sort"] == 'queued':
-				status_list = (7, 99999)
-			elif self.display["transfer_sort"] == 'failed':
-				status_list = (  10, 11, 12, 13)
-			utw =self.windows["text"]["uploads"]
+			utw = self.windows["text"]["uploads"]
 			
-			self.data["uploads"] = {}
-			statuslist = []
-			statuslist = self.transfers["uploads"].keys()
-			statuslist.sort()
-			
-			self.sorted_transfer_list["uploads"] = statuslist
-			num = 0
-			filterlist = []
-			for user_path in statuslist:
-				valid = 1
-				num += 1
-				transfer, user, path, status, error, filepos, filesize, rate, place = self.transfers["uploads"][user_path]
-				username = {}
-				username[user] = path
-				self.data["uploads"][num] = username
-				if status not in status_list:
-					valid = 0
-				if valid:
-					filterlist.append([user_path, num])
-				
-			del statuslist
-			
-			if mucous_config["mucous"]["transbox"] == "split":
-				self.Win_Height =self.h/2-5
-			else:
-				self.Win_Height =self.h -8
-			clipped_list, self.scrolling["uploads"], start = self.scrollbox(filterlist, self.scrolling["uploads"], self.Win_Height)
-			del filterlist
-			finallist = []
-			for user_path, number in clipped_list:
-				item = self.TransferItem("uploads", user_path, number)
-				finallist.append(item)
-			del clipped_list
+			finallist = self.TransfersListCompact("uploads")
 			s = self.scrolling["uploads"]
-			self.windows["dimensions"]["uploads"]["start"] = start
-			
+			start = self.windows["dimensions"]["uploads"]["start"]
 			try:
 				if self.display["t_speed"] == True:
 					swting = "Numb|Speed| Size | Username |  Status  |  Path"
 				else:
 					swting = "Numb|Perc | Size | Username |  Status  |  Path"
-				spaces = self.w-2-len(swting)
-				while spaces > 0:
-					spaces -= 1
-					swting += " "
+				swting += ((self.w-2-len(swting)) * " ")
 				utw.erase()
 				if self.display["transfers"] == "uploads":
 					utw.addstr(swting, self.colors["green"] | curses.A_REVERSE)
@@ -2867,7 +2824,6 @@ class mucous(driver.Driver):
 					except:
 						pass
 					count += 1
-			
 					
 			except:
 				pass
