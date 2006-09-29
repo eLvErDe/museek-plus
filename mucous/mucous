@@ -2666,23 +2666,43 @@ class mucous(driver.Driver):
 				status_list = (7, 99999)
 			elif self.display["transfer_sort"] == 'failed':
 				status_list = (  10, 11, 12, 13)
-			downloadlist = []
 			dtw = self.windows["text"]["downloads"]
-			num = 0
+
 			self.data["downloads"] = {}
-			userlist = self.transfers["downloads"].keys()
-			userlist.sort()
-			self.sorted_transfer_list["downloads"] = userlist
-			for user_path in userlist:
+			#
+			statuslist = []
+			statuslist = self.transfers["downloads"].keys()
+			statuslist.sort()
+			
+			self.sorted_transfer_list["downloads"] = statuslist
+			num = 0
+			filterlist = []
+			for user_path in statuslist:
+				valid = 1
 				num += 1
-				item = self.TransferItem("downloads", user_path, num, status_list)
-				if item != None:
-					downloadlist.append(item)
-			#self.Hlog("debug", downloadlist)
-			if self.display["transfers"] == "downloads":
-				self.Win_Height =self.windows["dimensions"]["downloads"]["height"]-1
+				transfer, user, path, status, error, filepos, filesize, rate, place = self.transfers["downloads"][user_path]
+				username = {}
+				username[user] = path
+				self.data["downloads"][num] = username
+				if status not in status_list:
+					valid = 0
+				if valid:
+					filterlist.append([user_path, num])
 				
-			clipped_list, self.scrolling["downloads"], start = self.scrollbox(downloadlist, self.scrolling["downloads"], self.Win_Height)
+			del statuslist
+			
+			if mucous_config["mucous"]["transbox"] == "split":
+				self.Win_Height =self.h/2-5
+			else:
+				self.Win_Height =self.h -8
+			clipped_list, self.scrolling["downloads"], start = self.scrollbox(filterlist, self.scrolling["downloads"], self.Win_Height)
+			del filterlist
+			finallist = []
+			for user_path, number in clipped_list:
+				item = self.TransferItem("downloads", user_path, number)
+				finallist.append(item)
+			del clipped_list
+			
 			s = self.scrolling["downloads"]
 
 			self.windows["dimensions"]["downloads"]["start"] = start
@@ -2707,12 +2727,12 @@ class mucous(driver.Driver):
 				pass
 			try:
 				
-				if clipped_list == []:
+				if finallist == []:
 					dtw.addstr("\nNo transfers in this category, hit INSERT to switch to another.")
 					dtw.noutrefresh()
 					return
 				count = 0
-				for transfers in clipped_list:
+				for transfers in finallist:
 					if transfers == None:
 						continue
 					
@@ -2764,25 +2784,40 @@ class mucous(driver.Driver):
 			elif self.display["transfer_sort"] == 'failed':
 				status_list = (  10, 11, 12, 13)
 			utw =self.windows["text"]["uploads"]
-			uploadlist = []
-			num = 0
-			self.data["uploads"] = {}
-			userlist = self.transfers["uploads"].keys()
-			userlist.sort()
 			
-			self.sorted_transfer_list["uploads"] = userlist
-			for user_path in userlist:
+			self.data["uploads"] = {}
+			statuslist = []
+			statuslist = self.transfers["uploads"].keys()
+			statuslist.sort()
+			
+			self.sorted_transfer_list["uploads"] = statuslist
+			num = 0
+			filterlist = []
+			for user_path in statuslist:
+				valid = 1
 				num += 1
-				item = self.TransferItem("uploads", user_path, num, status_list)
-				if item != None:
-					uploadlist.append(item)
+				transfer, user, path, status, error, filepos, filesize, rate, place = self.transfers["uploads"][user_path]
+				username = {}
+				username[user] = path
+				self.data["uploads"][num] = username
+				if status not in status_list:
+					valid = 0
+				if valid:
+					filterlist.append([user_path, num])
 				
+			del statuslist
 			
 			if mucous_config["mucous"]["transbox"] == "split":
 				self.Win_Height =self.h/2-5
 			else:
 				self.Win_Height =self.h -8
-			clipped_list, self.scrolling["uploads"], start = self.scrollbox(uploadlist, self.scrolling["uploads"], self.Win_Height)
+			clipped_list, self.scrolling["uploads"], start = self.scrollbox(filterlist, self.scrolling["uploads"], self.Win_Height)
+			del filterlist
+			finallist = []
+			for user_path, number in clipped_list:
+				item = self.TransferItem("uploads", user_path, number)
+				finallist.append(item)
+			del clipped_list
 			s = self.scrolling["uploads"]
 			self.windows["dimensions"]["uploads"]["start"] = start
 			
@@ -2804,12 +2839,12 @@ class mucous(driver.Driver):
 				self.Hlog("debug", "Upload Item: " + str(e))
 				
 			try:
-				if clipped_list == []:
+				if finallist == []:
 					utw.addstr("\nNo transfers in this category, hit INSERT to switch to another.")
 					utw.noutrefresh()
 					return
 				count = 0
-				for transfers in clipped_list:
+				for transfers in finallist:
 					if transfers == None:
 						continue
 					
@@ -2840,80 +2875,60 @@ class mucous(driver.Driver):
 		except Exception, e:
 			self.Hlog("debug", "Upload Manager: " + str(e))
 			
-	def TransferItem(self, tran, user_path, num, status_list):
+	def TransferItem(self, tran, user_path, num):
 		try:
-			if tran == 'downloads':
-				vals = self.transfers["downloads"][user_path]
-			else:
-				vals = self.transfers["uploads"][user_path]
-				
-			transfer, user, path, status, error, filepos, filesize, rate, place = vals[0], vals[1], vals[2], vals[3], vals[4], vals[5], vals[6], vals[7], vals[8]
-			
-			username = {}
-			username[user] = path
-			if tran == 'downloads':
-				self.data["downloads"][num] = username
-			elif tran == "uploads":
-				self.data["uploads"][num] = username
-	
-			if status in status_list:
-	
-				if filesize != 0:
-					percent = str(100 * filepos / filesize)
-					if len(percent) < 2:
-						percent = '  ' + percent
-					if len(percent) < 3:
-						percent = ' ' + percent
-					filefrmt  = self.byte_format(filesize)
-					if len(filefrmt) < 6:
-						filefrmt = ' ' * (6-len(filefrmt)) + filefrmt
+			vals = self.transfers[tran][user_path]
+			transfer, user, path, status, error, filepos, filesize, rate, place = vals
+			path = self.dlang(path)
 
-				else: 
-					percent = '  0'
-					filefrmt = '0 Bits'
-	
-				ae = str(num)
-				while len(ae) < 4:
-					ae = ' '+ae
-				mo = {}
-				while len(user[:10]) < 10:
-					user += " "
-				cut_status = self.states[status][:10]
-				if len(cut_status) < 10:
-					cut_status += (10-len(cut_status)) *" "
+			if filesize:
+				filefrmt  = self.byte_format(filesize)
+				if len(filefrmt) < 6:
+					filefrmt = ' ' * (6-len(filefrmt)) + filefrmt
+
+			else:
+				percent = '  0'
+				filefrmt = '0 Bits'
+			n =  ((4 - len(str(num))) * " ") + str(num)
+			u =  user[:10] + ((10 - len(user[:10])) * " ")
+
+			cut_status = self.states[status][:10]
+			if len(cut_status) < 10:
+				cut_status += (10-len(cut_status)) *" "
+			
+			if tran == "downloads":
+				if place == 4294967295:
+					place = ""
+				else:
+					place = str(place)
+				if len(place) < 4:
+					cut_place = (" " * (4 -(len(place) )) )+ place
+				else:
+					cut_place = place[:3] + "~"
+
+			if self.display["t_speed"] == True:
+				#Speed
+				ratefrmt  = self.byte_format(rate)
+				if len(ratefrmt) < 5:
+					ratefrmt += ' '* (5-len(ratefrmt))
 				
 				if tran == "downloads":
-					if place == 4294967295:
-						place = ""
-					else:
-						place = str(place)
-					if len(place) < 4:
-						cut_place = (" " * (4 -(len(place) )) )+ place
-					else:
-						cut_place = place[:3] + "~"
-
-				if self.display["t_speed"] == True:
-					ratefrmt  = self.byte_format(rate)
-					if len(ratefrmt) < 5:
-						ratefrmt += ' '* (5-len(ratefrmt))
-					
-					
-					#Speed
-					if tran == "downloads":
-						ea = "%s|%s|%s|%s|%s|%s|%s" % (str(ae), ratefrmt[:5], filefrmt , user[:10], cut_status, cut_place, path[-self.w+45+2:])
-					else:
-						ea = "%s|%s|%s|%s|%s|%s" % (str(ae), ratefrmt[:5], filefrmt , user[:10], cut_status,  path[-self.w+40+2:])
+					line = "%s|%s|%s|%s|%s|%s|%s" % (str(n), ratefrmt[:5], filefrmt , u, cut_status, cut_place, path[-self.w+45+2:])
 				else:
-					# Percent
-					if tran == "downloads":
-						ea = "%s| %s%%|%s|%s|%s|%s|%s" % (str(ae), percent[:5] , filefrmt , user[:10], cut_status, cut_place, path[-self.w+45+2:])
-					else:
-						ea = "%s| %s%%|%s|%s|%s|%s" % (str(ae), percent[:5] , filefrmt , user[:10], cut_status,  path[-self.w+40+2:])
-	
-				if len(ea) < self.w-2:
-					ea += " " * (self.w -2- len(ea))
-				mo = ea, status
-				return mo
+					line = "%s|%s|%s|%s|%s|%s" % (str(n), ratefrmt[:5], filefrmt , u, cut_status,  path[-self.w+40+2:])
+			else:
+				# Percent
+				if filesize != 0:
+					percent = str(100 * filepos / filesize)
+					percent =  ((3 - len(percent)) * " ") + percent
+				else: percent = '  0'
+				
+				if tran == "downloads":
+					line = "%s| %s%%|%s|%s|%s|%s|%s" % (str(n), percent[:5] , filefrmt , u, cut_status, cut_place, path[-self.w+45+2:])
+				else:
+					line = "%s| %s%%|%s|%s|%s|%s" % (str(n), percent[:5] , filefrmt , u, cut_status,  path[-self.w+40+2:])
+			line += ((self.w-2 - len(line)) * " ")
+			return line, status
 		except Exception, e:
 			self.Hlog("debug", "Transfer Item: "+tran +": " + str(e))
 
@@ -5272,27 +5287,25 @@ class mucous(driver.Driver):
 					logfile = self.logs["private"][self.usernames["private"]]
 				if logfile != None:
 					lene = len(logfile)
-					if lene > self.h-7:
-						x = 3
-					else:
-						x = lene
-					if x != 0:
-						if self.display["mode"] == "chat":
-							for line in logfile:
-								if self.display["mode"] == "private":
-									line = line[0]
-								if "://" in line[3]:
-									urline = line[3].split(" ")
-									for x in urline:
-										if "://" in x: self.url = x
-						elif self.display["mode"] == "private":
-							for line in logfile:
-								if self.display["mode"] == "private":
-									line = line[0]
-								if "://" in line:
-									urline = line.split(" ")
-									for x in urline:
-										if "://" in x: self.url = x
+					if self.display["mode"] == "chat":
+						logfile.reverse()
+						for line in logfile:
+
+							if "://" in line[3]:
+								urline = line[3].split(" ")
+								for x in urline:
+									if "://" in x: self.url = x
+									break
+					elif self.display["mode"] == "private":
+						logfile.reverse()
+						for timestamp, user, message in logfile:
+							if "://" not in message:
+								continue
+							urline = message.split(" ")
+							for x in urline:
+								if "://" in x:
+									 self.url = x
+									 break
 						
 		
 				if self.url != None:
@@ -7254,7 +7267,7 @@ class mucous(driver.Driver):
 				a = f.read()
 				f.close()
 				lines = a.split("\n" )
-				for line in lines[-20:]:
+				for line in lines[-30:]:
 					if line == "":
 						continue
 					timex = line[12:20]
