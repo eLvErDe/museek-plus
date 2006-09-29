@@ -2706,8 +2706,9 @@ class mucous(driver.Driver):
 				return
 			if self.display["transfers"] != "downloads" and mucous_config["mucous"]["transbox"] != "split":
 				return
-			w = self.windows["dimensions"]["downloads"]
+			
 			dtw = self.windows["text"]["downloads"]
+			w = self.windows["dimensions"]["downloads"]
 
 			finallist = self.TransfersListCompact("downloads")
 			s = self.scrolling["downloads"]
@@ -2715,17 +2716,26 @@ class mucous(driver.Driver):
 
 			try:
 				if self.display["t_speed"] == True:
-					swting = "Numb|Speed| Size | Username |  Status  | Que|  Path"
+					swting = "Numb","Speed"," Size "," Username ","  Status  "," Que","  Path"
 				else:
-					swting = "Numb|Perc | Size | Username |  Status  | Que|  Path"
-
-				swting += ((self.w-2-len(swting)) * " ")
-
+					swting = "Numb","Perc "," Size "," Username ","  Status  "," Que","  Path"
+				
 				dtw.erase()
+				length = 0
 				if self.display["transfers"] == "downloads":
-					dtw.addstr(swting, self.colors["green"] | curses.A_REVERSE)
+					hattr = self.colors["green"] | curses.A_REVERSE
 				else:
-					dtw.addstr(swting, self.colors["blafgcyabg"] )
+					hattr = self.colors["blafgcyabg"] 
+				for i in swting:
+					length += len(i)
+					dtw.addstr(i, hattr)
+					if i is not swting[-1]:
+						dtw.addch(curses.ACS_VLINE, hattr)
+						length += 1
+				filler = ((self.w-2 - length) * " ")
+				dtw.addstr(filler, hattr)
+
+				
 			except:
 				pass
 			try:
@@ -2755,11 +2765,21 @@ class mucous(driver.Driver):
 						sattr = curses.A_REVERSE | curses.A_BOLD | sattr
 
 					try:
-						dtw.addstr(self.encode_language(transfers[0])[:29], attr)
+						dtw.addstr(self.encode_language(transfers[0])[:4], attr)
+						dtw.addch(curses.ACS_VLINE, attr)
+						dtw.addstr(self.encode_language(transfers[0])[5:10], attr)
+						dtw.addch(curses.ACS_VLINE, attr)
+						dtw.addstr(self.encode_language(transfers[0])[11:17], attr)
+						dtw.addch(curses.ACS_VLINE, attr)
+						dtw.addstr(self.encode_language(transfers[0])[18:28], attr)
+						dtw.addch(curses.ACS_VLINE, attr)
 						dtw.addstr(self.encode_language(transfers[0])[29:39], sattr)
-						dtw.addstr(self.encode_language(transfers[0])[39:w["width"]], attr)
+						dtw.addch(curses.ACS_VLINE, attr)
+						dtw.addstr(self.encode_language(transfers[0])[40:44], attr)
+						dtw.addch(curses.ACS_VLINE, attr)
+						dtw.addstr(self.encode_language(transfers[0])[45:w["width"]], attr)
 						
-					except:
+					except :
 						pass
 					count += 1
 			except Exception, e:
@@ -2777,21 +2797,30 @@ class mucous(driver.Driver):
 				return
 
 			utw = self.windows["text"]["uploads"]
+			w = self.windows["dimensions"]["uploads"]
 			
 			finallist = self.TransfersListCompact("uploads")
 			s = self.scrolling["uploads"]
 			start = self.windows["dimensions"]["uploads"]["start"]
 			try:
 				if self.display["t_speed"] == True:
-					swting = "Numb|Speed| Size | Username |  Status  |  Path"
+					swting = "Numb","Speed"," Size "," Username ","  Status  ","  Path"
 				else:
-					swting = "Numb|Perc | Size | Username |  Status  |  Path"
-				swting += ((self.w-2-len(swting)) * " ")
+					swting = "Numb","Perc "," Size "," Username ","  Status  ","  Path"
 				utw.erase()
+				length = 0
 				if self.display["transfers"] == "uploads":
-					utw.addstr(swting, self.colors["green"] | curses.A_REVERSE)
+					hattr = self.colors["green"] | curses.A_REVERSE
 				else:
-					utw.addstr(swting, self.colors["blafgcyabg"] )
+					hattr = self.colors["blafgcyabg"] 
+				for i in swting:
+					length += len(i)
+					utw.addstr(i, hattr)
+					if i is not swting[-1]:
+						utw.addch(curses.ACS_VLINE, hattr)
+						length += 1
+				filler = ((self.w-2 - length) * " ")
+				utw.addstr(filler, hattr)
 			except Exception, e:
 				self.Hlog("debug", "Upload Item: " + str(e))
 				
@@ -2818,11 +2847,20 @@ class mucous(driver.Driver):
 						attr = curses.A_REVERSE | curses.A_BOLD
 						sattr = curses.A_REVERSE | curses.A_BOLD | sattr
 					try:
-						utw.addstr(self.encode_language(transfers[0])[:29], attr)
+						utw.addstr(self.encode_language(transfers[0])[:4], attr)
+						utw.addch(curses.ACS_VLINE, attr)
+						utw.addstr(self.encode_language(transfers[0])[5:10], attr)
+						utw.addch(curses.ACS_VLINE, attr)
+						utw.addstr(self.encode_language(transfers[0])[11:17], attr)
+						utw.addch(curses.ACS_VLINE, attr)
+						utw.addstr(self.encode_language(transfers[0])[18:28], attr)
+						utw.addch(curses.ACS_VLINE, attr)
 						utw.addstr(self.encode_language(transfers[0])[29:39], sattr)
-						utw.addstr(self.encode_language(transfers[0])[39:], attr)
-					except:
-						pass
+						utw.addch(curses.ACS_VLINE, attr)
+						utw.addstr(self.encode_language(transfers[0])[40:w["width"]], attr)
+
+					except Exception, e:
+						self.Hlog("debug", "Upload Manager: " + str(e))
 					count += 1
 					
 			except:
