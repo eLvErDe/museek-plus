@@ -2821,8 +2821,8 @@ class mucous(driver.Driver):
 						length += 1
 				filler = ((self.w-2 - length) * " ")
 				utw.addstr(filler, hattr)
-			except Exception, e:
-				self.Hlog("debug", "Upload Item: " + str(e))
+			except:
+				pass
 				
 			try:
 				if finallist == []:
@@ -2859,8 +2859,8 @@ class mucous(driver.Driver):
 						utw.addch(curses.ACS_VLINE, attr)
 						utw.addstr(self.encode_language(transfers[0])[40:w["width"]], attr)
 
-					except Exception, e:
-						self.Hlog("debug", "Upload Manager: " + str(e))
+					except:
+						pass
 					count += 1
 					
 			except:
