@@ -7261,7 +7261,10 @@ class mucous(driver.Driver):
 				a = f.read()
 				f.close()
 				lines = a.split("\n" )
-				for line in lines[-30:]:
+				numlines = -30
+				if len(lines) < 30:
+					numlines = 0
+				for line in lines[numlines:]:
 					if line == "":
 						continue
 					timex = line[12:20]
@@ -7291,7 +7294,10 @@ class mucous(driver.Driver):
 				a = f.read()
 				f.close()
 				lines = a.split("\n" )
-				for line in lines[-30:]:
+				numlines = -30
+				if len(lines) < 30:
+					numlines = 0
+				for line in lines[numlines:]:
 					if line == "":
 						continue
 					timex = line[12:20]
