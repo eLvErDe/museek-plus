@@ -499,7 +499,13 @@ class mucous(driver.Driver):
 		driver.Driver.__init__(self)
 		self.config = {}
 		self.usernames = {"username": None, "download": None, "private":None, "info": None, "upload": None, "search": None, "privileges": None, "browse": "default__"}
-		self.Spl = {"menunumber": 0, "title": None,  "status": None, "connected": 0, "room": None, "history_count": 0, "current_search": "default__",  "dir_browse": "", "search_method": "globally", "search_order": "num", "show_menu": False, "current_menu": None, "setup_input": "default", "interests_input": "add_likes", "ticker_room": None, "uploads": 0, "downloads": 0 , "search_reverse": False, "recommend_sort": "alpha", "ticker_num":  0, "downloaddir": os.path.expanduser("~/")}
+		self.Spl = {"menunumber": 0, "title": None,  "status": None, "connected": 0, \
+		"room": None, "history_count": 0, "current_search": "default__",  "dir_browse": "", \
+		"search_method": "globally", "search_order": "num", "show_menu": False, \
+		"current_menu": None, "setup_input": "default", "interests_input": "add_likes", \
+		"ticker_room": None, "uploads": 0, "downloads": 0 , "search_reverse": False, \
+		"recommend_sort": "alpha", "ticker_num":  0, "downloaddir": os.path.expanduser("~/") \
+		}
 		self.data = {"rooms": {}, "tickers": {}, "shares": {} , "roomlist": {}, "search_tickets": {}, "search_results": {}, "browse_num": {}, "browse_results": {}, "mystats": [], "downloads": {}, "uploads": {}, "recommendations": {}, "similar_users": {} }
 		self.logs = {"buddied": [], "banned": [], "ignored": [], "trusted": [], "uploads": "Up: 0", "downloads": "Down: 0", "tab_completion": [], "search_count": ["Results: ", 0], "history": [], "alert": "", "onlinestatus": "Offline", "info": {}, "private": {}, "rooms": {}, "browse": {}, "search":{} , "roombox": {} , "roomstatus": {} , "recommendations": [], "likes": [], "hates": [], "similar_users":[]    }
 		self.activeitems = {"info": [], "search": [], "browse": [], "private": [], "positions": {}}
@@ -532,8 +538,6 @@ class mucous(driver.Driver):
 
 		# config
 		self.invalidpass = 0
-
-		
 		
 		self.line = "" # Input Line
 		
@@ -1089,24 +1093,9 @@ class mucous(driver.Driver):
 				# tickers == (rooms, [(user1: message1), (user2: message2),] )
 				# a string and then a dictionary
 	
-				for rooms14, ticks in tickers.items():
-					if rooms14 == room:
-						self.data["tickers"][room] = ticks
-	
+				for rooms, ticks in tickers.items():
+					self.data["tickers"][rooms] = ticks
 
-	
-				#if mucous_config["tickers"]["tickers_enabled"] == 'yes' and len(joined[room]) >= 30:
-				#for rooms3, ticks in self.data["tickers"].items():
-					#if rooms3 == room:
-						#ttickers = []
-						#ttickers = ticks.keys()
-						#if ttickers == []:
-							#continue
-						#self.LogInfo("Tickers in room: "+str(rooms3))
-						#ttickers.sort(key=str.lower)
-						#for names in ttickers:
-							#self.LogInfo(" ["+str(names)+'] '+str(ticks[names]))
-						#self.LogInfo("")
 	
 			joined = self.data["rooms"].keys()
 			joined.sort(key=str.lower)
@@ -1887,7 +1876,8 @@ class mucous(driver.Driver):
 				if os.path.expandvars("$SHELL") in  ("/bin/bash", "/bin/sh"):
 					os.system("echo -ne \\\\a " )
 		except Exception,e:
-			self.Hlog("debug", "beep: " + str(e))				
+			self.Hlog("debug", "beep: " + str(e))
+			
 	def BrowseFiles(self, user, dirs):
 		try:
 			if self.display["mode"] != "browse":
@@ -1902,7 +1892,7 @@ class mucous(driver.Driver):
 			# file, stats[ size, ftype, [bitrate, length ] ]
 			if dirs not in self.data["shares"][user]:
 				tw.erase()
-				tw.addstr("Empty..")
+				tw.addstr("Nothing shared..")
 				tw.refresh()
 				self.data["files"] = []
 				return
@@ -1948,11 +1938,13 @@ class mucous(driver.Driver):
 				filename = dirs + "\\" + file
 				#result_list = user, filename
 				# Activate Number for Result
-				if len(str(count)) < length_list:
-					s = " " * (length_list - len(str(count)))
+				if len(str(count)) < 4:
+					s = " " * (4 - len(str(count)))
 				else:
 					s = ''
-				line = "%s%s|%s| %s" % ( s, str(count), size, file )
+				
+				size = " " * (7 - len(str(size))) + size[:7]
+				line = "%s%s|%s|%s" % ( s, str(count), size, file )
 				browse_list.append(line)
 				
 			self.data["files"] = list1
@@ -2672,7 +2664,7 @@ class mucous(driver.Driver):
 				status_list = ( 10, 11, 12, 13)
 				
 			self.data["downloads"] = {}
-			#
+
 			statuslist = []
 			statuslist = self.transfers[list].keys()
 			statuslist.sort()
@@ -2693,12 +2685,8 @@ class mucous(driver.Driver):
 					filterlist.append([user_path, num])
 				
 			del statuslist
-			
-			if mucous_config["mucous"]["transbox"] == "split":
-				self.Win_Height =self.h/2-5
-			else:
-				self.Win_Height =self.h -8
-			clipped_list, self.scrolling[list], self.windows["dimensions"][list]["start"] = self.scrollbox(filterlist, self.scrolling[list], self.Win_Height)
+
+			clipped_list, self.scrolling[list], self.windows["dimensions"][list]["start"] = self.scrollbox(filterlist, self.scrolling[list], self.windows["dimensions"][list]["height"]-1)
 			del filterlist
 			finallist = []
 			for user_path, number in clipped_list:
@@ -2894,8 +2882,10 @@ class mucous(driver.Driver):
 				filefrmt = '0 Bits'
 			n =  ((4 - len(str(num))) * " ") + str(num)
 			u =  user[:10] + ((10 - len(user[:10])) * " ")
-
-			cut_status = self.states[status][:10]
+			if status == 14 :
+				cut_status = self.dlang(error)[:10]
+			else:	
+				cut_status = self.states[status][:10]
 			if len(cut_status) < 10:
 				cut_status += (10-len(cut_status)) *" "
 			
@@ -8264,7 +8254,14 @@ class mucous(driver.Driver):
 					attr = self.colors["green"] | curses.A_BOLD
 				else:
 					attr = curses.A_BOLD
-				mw.addstr(0, 3, "< Browse users >",  attr)
+				if self.usernames["browse"] == "default__":
+					mw.addstr(0, 3, "< Browse users >",  attr)
+				else:
+					mw.addstr(0, 1, "<Num",  attr)
+					mw.addch(curses.ACS_VLINE, attr)
+					mw.addstr(" Size  ",  attr)
+					mw.addch(curses.ACS_VLINE, attr)
+					mw.addstr(" Filename >",  attr)
 			except:
 				pass
 			mw.noutrefresh()
@@ -8314,7 +8311,6 @@ class mucous(driver.Driver):
                                 # List, Directory, Scroll position 
 				if self.display["browse"] == "directories":
 					clipped_list, self.scrolling["browsedir"], start = self.scrollbox(self.data["directories"], self.scrolling["browsedir"], d["height"])
-# 					self.scrolling["browsedir"] = self.Sup
 				else:
 					clipped_list, self.scrolling["browsedir"], start = self.scrollbox(self.data["directories"], self.scrolling["browsedir"], d["height"])
 				self.windows["dimensions"]["directories"]["start"] = start
@@ -8389,10 +8385,18 @@ class mucous(driver.Driver):
 				
 			if count + w["start"] == sup:
 				attr = self.colors["blafgcyabg"] |curses.A_REVERSE|curses.A_BOLD	
-				tw.addstr(this_line, attr)
+				nattr = self.colors["cyan"] |curses.A_REVERSE|curses.A_BOLD
 			else:
 				attr = curses.A_NORMAL
+				nattr = self.colors["cyan"] 
+			if self.usernames["browse"] == "default__":
 				tw.addstr(this_line, attr )
+			else:
+				tw.addstr(this_line[:4], attr )
+				tw.addch(curses.ACS_VLINE, attr)
+				tw.addstr(this_line[5:12], nattr )
+				tw.addch(curses.ACS_VLINE, attr)
+				tw.addstr(this_line[13:], attr )
 			z = w["width"]-len(this_line)
 			space = " " * ( z )
 			tw.addstr(space, attr)
