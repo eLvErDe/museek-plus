@@ -112,7 +112,7 @@ mucous_config = {"connection":{"interface":'localhost:2240', "passw":None}, \
 	"url reader": "firefox", "url custom prefix": "", "url custom suffix": "", \
 	"transbox" : "split", "language": "iso-8859-1", "beep": "yes", "autoaway": "yes", \
 	"auto-retry": "yes", "auto-clear": "no", "logging": "yes", "extra_requests": "Yes"}, \
-	"tickers":{'tickers_enabled': 'yes', "ticker_cycle": "yes", "rooms":{} }, \
+	"tickers":{'tickers_enabled': 'yes', "ticker_cycle": "no", "rooms":{}, "ticker_scroll": "yes", "scrolltime": "0.3", "cycletime": "3.0"}, \
 	"aliases": {"mucous":"Mucous is a Curses client for the Museek Soulseek Daemon. Website: http://thegraveyard.org/daelstorm/mucous.php", "museek":"Museek+ is a Soulseek Daemon/Client. The website is http://museek-plus.org/"},\
 	"rooms": {"default_room":"museek"}\
 	}
@@ -170,7 +170,7 @@ def read_config():
 		for j in parser.options(i):
 			val = parser.get(i,j, raw = 1)
 
-			if j in ['login','passw','interface', 'roombox', 'tickers_enabled', "ticker_cycle", 'default_room', "autobuddy", "now-playing", "log_dir", "aliases" "now-playing-prefix", "browse_display_mode", "url reader", "url custom prefix", "url custom suffix", "transbox", "autoaway", "rooms_sort", "logging", "beep", "auto-clear", "auto-retry", "extra_requests"] :
+			if j in ['login','passw','interface', 'roombox', 'tickers_enabled', "ticker_cycle", "ticker_scroll", "scrolltime", "cycletime", 'default_room', "autobuddy", "now-playing", "log_dir", "aliases" "now-playing-prefix", "browse_display_mode", "url reader", "url custom prefix", "url custom suffix", "transbox", "autoaway", "rooms_sort", "logging", "beep", "auto-clear", "auto-retry", "extra_requests"] :
 				if val != "None":
 					mucous_config[i][j] = val
 			elif i == 'aliases':
@@ -560,7 +560,11 @@ class mucous(driver.Driver):
 		self.muscan_timer = threading.Timer(1.0, self.ThreadMuscan)
 		self.timeout_time =  900 * 1.0
 		self.timeout_timer = threading.Timer(self.timeout_time, self.timeout)
-		self.ticker_timer = threading.Timer(3.0, self.DrawTicker)
+		if mucous_config["tickers"]["ticker_cycle"] == "yes":
+			time = float(mucous_config["tickers"]["cycletime"])
+		if mucous_config["tickers"]["ticker_scroll"] == "yes":
+			time = float(mucous_config["tickers"]["scrolltime"])
+		self.ticker_timer = threading.Timer(time, self.DrawTicker)
 		
 		if "ticker_cycle" in mucous_config["tickers"].keys():
 			pass
@@ -1091,18 +1095,18 @@ class mucous(driver.Driver):
 	
 
 	
-				if mucous_config["tickers"]["tickers_enabled"] == 'yes' and len(joined[room]) >= 30:
-					for rooms3, ticks in self.data["tickers"].items():
-						if rooms3 == room:
-							ttickers = []
-							ttickers = ticks.keys()
-							if ttickers == []:
-								continue
-							self.LogInfo("Tickers in room: "+str(rooms3))
-							ttickers.sort(key=str.lower)
-							for names in ttickers:
-								self.LogInfo(" ["+str(names)+'] '+str(ticks[names]))
-							self.LogInfo("")
+				#if mucous_config["tickers"]["tickers_enabled"] == 'yes' and len(joined[room]) >= 30:
+				#for rooms3, ticks in self.data["tickers"].items():
+					#if rooms3 == room:
+						#ttickers = []
+						#ttickers = ticks.keys()
+						#if ttickers == []:
+							#continue
+						#self.LogInfo("Tickers in room: "+str(rooms3))
+						#ttickers.sort(key=str.lower)
+						#for names in ttickers:
+							#self.LogInfo(" ["+str(names)+'] '+str(ticks[names]))
+						#self.LogInfo("")
 	
 			joined = self.data["rooms"].keys()
 			joined.sort(key=str.lower)
@@ -1835,17 +1839,20 @@ class mucous(driver.Driver):
 				self.ModeSetup()
 		except Exception, e:
 			self.Hlog("debug", "ToggleTickersDisplay: "+str(e))
-			
-	def ToggleTickersCycle(self):
+	def ToggleTickers(self):
 		try:
 			if mucous_config["tickers"]["ticker_cycle"] == 'no':
 				mucous_config["tickers"]["ticker_cycle"] = 'yes'
+				if str(mucous_config["tickers"]["ticker_scroll"]) == 'yes':
+					mucous_config["tickers"]["ticker_scroll"] = 'no'
 				
 			elif mucous_config["tickers"]["ticker_cycle"] == 'yes':
 				mucous_config["tickers"]["ticker_cycle"] = 'no'
+				if str(mucous_config["tickers"]["ticker_scroll"]) == 'no':
+					mucous_config["tickers"]["ticker_scroll"] = 'yes'
 				
 				
-			self.ticker_timer.cancel()
+			#self.ticker_timer.cancel()
 			if self.display["mode"]=="chat":
 				self.DrawChatRoomStatusWin()
 				self.DrawChatRoomStatusText()
@@ -1853,7 +1860,7 @@ class mucous(driver.Driver):
 			elif self.display["mode"]=="setup":
 				self.ModeSetup()
 		except Exception, e:
-			self.Hlog("debug", "ToggleTickersCycle: "+str(e))
+			self.Hlog("debug", "ToggleTickers: "+str(e))
 					
 	def ToggleAwayStatus(self):
 		try:
@@ -1872,7 +1879,8 @@ class mucous(driver.Driver):
 					os.system("echo -ne \"\033]0;Mucous %s: %s\007\" " %(Version, self.logs["onlinestatus"] ))
 		except Exception,e:
 			self.Hlog("debug", "TerminalTitle: " +str( e) )
-
+			
+		
 	def beep(self):
 		try:
 			if str(mucous_config["mucous"]["beep"]) == "yes":
@@ -1896,13 +1904,13 @@ class mucous(driver.Driver):
 				tw.erase()
 				tw.addstr("Empty..")
 				tw.refresh()
-				self.files =  []
+				self.data["files"] = []
 				return
 			if self.data["shares"][user][dirs] == {}:
 				tw.erase()
 				tw.addstr("Empty..")
 				tw.refresh()
-				self.files =  []
+				self.data["files"] =  []
 				return
 			length_list = len(str(len(self.data["shares"][user][dirs].keys() ) ) )
 			list1 = self.data["shares"][user][dirs].keys()
@@ -1947,7 +1955,7 @@ class mucous(driver.Driver):
 				line = "%s%s|%s| %s" % ( s, str(count), size, file )
 				browse_list.append(line)
 				
-			self.files = list1
+			self.data["files"] = list1
 				
 			if self.bfilter != None:
 				a = []
@@ -1976,11 +1984,11 @@ class mucous(driver.Driver):
 	
 	def BrowseFileBar(self, user, dirs):
 		try:
-			self.windows["browse"]["browsebar"].erase()
+			self.windows["text"]["browsebar"].erase()
 			num = self.scrolling["browsefile"]
                         #self.usernames["browse"], self.Spl["dir_browse"]
 			if dirs not in self.data["shares"][user]:
-				self.windows["browse"]["browsebar"].refresh()
+				self.windows["text"]["browsebar"].refresh()
 				return
 			if self.data["shares"][user][dirs].keys() != []:
                                 list1 = self.data["shares"][user][dirs].keys()
@@ -1988,7 +1996,7 @@ class mucous(driver.Driver):
                                 file = list1[num]
                                 stats = self.data["shares"][user][dirs][file] 
 			else: 
-				self.windows["browse"]["browsebar"].refresh()
+				self.windows["text"]["browsebar"].refresh()
 				return
 	
 
@@ -2016,15 +2024,15 @@ class mucous(driver.Driver):
                         #l=len('['+str(num+1)+'] '+" Size: " + str(size)+" Length: " + length + " Bitrate: " + bitrate)
                         atr = self.colors["cyan"] | curses.A_BOLD
 
-			self.windows["browse"]["browsebar"].addstr("[")
-                        self.windows["browse"]["browsebar"].addstr(str(num+1), atr )
-                        self.windows["browse"]["browsebar"].addstr("] | Size: ")
-                        self.windows["browse"]["browsebar"].addstr(str(size), atr)
-                        self.windows["browse"]["browsebar"].addstr(" | ")
-                        self.windows["browse"]["browsebar"].addstr(bitrate, atr)
-                        self.windows["browse"]["browsebar"].addstr("Kbps | Length: ")
-                        self.windows["browse"]["browsebar"].addstr(length, atr)
-			self.windows["browse"]["browsebar"].refresh()
+			self.windows["text"]["browsebar"].addstr("[")
+                        self.windows["text"]["browsebar"].addstr(str(num+1), atr )
+                        self.windows["text"]["browsebar"].addstr("] | Size: ")
+                        self.windows["text"]["browsebar"].addstr(str(size), atr)
+                        self.windows["text"]["browsebar"].addstr(" | ")
+                        self.windows["text"]["browsebar"].addstr(bitrate, atr)
+                        self.windows["text"]["browsebar"].addstr("Kbps | Length: ")
+                        self.windows["text"]["browsebar"].addstr(length, atr)
+			self.windows["text"]["browsebar"].refresh()
 		except Exception, e:
 			self.Hlog("debug", "BrowseFileBar: " + str(e))
 			
@@ -2609,12 +2617,12 @@ class mucous(driver.Driver):
 					w = self.windows["dimensions"]["browse"]
 					if dtype == "dir":
 						path = self.Spl["dir_browse"]
-						#self.files[self.Sup+w["start"]
+						#self.data["files"][self.Sup+w["start"]
 						user = self.usernames["browse"]
 						#self.SendMessage(messages.GetFolderContents(user, directory))
 					elif dtype == "file":
 						user = self.usernames["browse"]
-						path = self.Spl["dir_browse"]+"\\"+self.files[number]
+						path = self.Spl["dir_browse"]+"\\"+self.data["files"][number]
 				elif self.display["browse"] == "directories":
 					w = self.windows["dimensions"]["directories"]
 					if dtype == "dir":
@@ -3646,9 +3654,9 @@ class mucous(driver.Driver):
 			elif self.display["mode"] == "browse":
 				if self.usernames["browse"] != "default__":
 					if self.display["browse"] == "files":
-						this_list = self.files
+						this_list = self.data["files"]
 					elif self.display["browse"] == "directories":
-						this_list = self.directories
+						this_list = self.data["directories"]
 				
 			return this_list
 		except Exception, e:
@@ -4048,7 +4056,7 @@ class mucous(driver.Driver):
 				self.windows["border"]["chat"].refresh()
 				self.windows["text"]["chat"].redrawwin()
 				self.windows["text"]["chat"].refresh()
-				if self.display["chatshape"] !=  "nostatuslog":
+				if self.display["chatshape"] not in ("chat-only",  "nostatuslog"):
 					self.windows["border"]["roomstatus"].redrawwin()
 					self.windows["border"]["roomstatus"].refresh()
 					self.windows["text"]["roomstatus"].redrawwin()
@@ -4716,14 +4724,12 @@ class mucous(driver.Driver):
 					if x >=1 and x <=35:
 						self.Spl["setup_input"]="interface-password"
 					self.ModeSetup()
-					
 				elif y == 8 and x >=1 and x <=40:
 					self.ToggleTickersDisplay()
-					
-				elif y == 9 and  x >=1 and x <=40:
-					self.ToggleTickersCycle()
-					
-				elif y == 10 and x >=1 and x <=40:
+				elif y in (9, 10) and  x >=1 and x <=38:
+					self.ToggleTickers()
+						
+				elif y == 11 and x >=1 and x <=38:
 					if mucous_config["mucous"]["auto-clear"] == "yes":
 						mucous_config["mucous"]["auto-clear"] = "no"
 						self.clear_timer.cancel()
@@ -4735,18 +4741,39 @@ class mucous(driver.Driver):
 						self.clear_timer = threading.Timer(30.0, self.ThreadTransfersClear)
 						self.clear_timer.start()
 					self.ModeSetup()
-					
-				elif y in (8, 9, 10) and x >= 49 and x <= 64:
+				elif y in (8, 9, 10, 11) and x >= 39 and x <= 54:
 					# Minimum size of rooms displayed in room list
-					if x >=49 and x <=54:
+					
+					if x >=39 and x <=47:
+						
+						if y in (8, 9):
+							
+							mucous_config["tickers"]["cycletime"] = str(float (mucous_config["tickers"]["cycletime"])-0.5) 
+						elif y in (10,11):
+							
+							mucous_config["tickers"]["scrolltime"] = str(float( mucous_config["tickers"]["scrolltime"])-0.1)
+					elif x >=48 and x <=54:
+						if y in (8, 9):
+							
+							mucous_config["tickers"]["cycletime"] = str( float( mucous_config["tickers"]["cycletime"])+0.5)
+						elif y in (10,11):
+							mucous_config["tickers"]["scrolltime"] = str(float( mucous_config["tickers"]["scrolltime"])+0.1)
+					if float(mucous_config["tickers"]["scrolltime"]) < 0.1:
+						mucous_config["tickers"]["scrolltime"] = str(0.1)
+					if float(mucous_config["tickers"]["cycletime"]) < 1.0:
+						mucous_config["tickers"]["cycletime"] = str(1.0)
+					self.ModeSetup()
+				elif y in (8, 9, 10) and x >= 55 and x <= 71:
+					# Minimum size of rooms displayed in room list
+					if x >=55 and x <=61:
 						mucous_config["mucous"]["roomlistminsize"] -= 1
-					elif x >=55 and x <=64:
+					elif x >=62 and x <=71:
 						mucous_config["mucous"]["roomlistminsize"] += 1
 					if mucous_config["mucous"]["roomlistminsize"] < 1:
 						mucous_config["mucous"]["roomlistminsize"] = 1
 					self.ModeSetup()
 				
-				elif y == 11 and x >=1 and x <=40:
+				elif y == 12 and x >=1 and x <=40:
 					if str(mucous_config["mucous"]["auto-retry"]) == "yes":
 						mucous_config["mucous"]["auto-retry"] = "no"
 						self.retry_timer.cancel()
@@ -4757,7 +4784,7 @@ class mucous(driver.Driver):
 						self.retry_timer.start()
 					self.ModeSetup()
 					
-				elif y ==12  and x >=1 and x <=40:
+				elif y ==13  and x >=1 and x <=40:
 					# Toggle Autobuddy
 					if mucous_config["mucous"]["autobuddy"]  == "yes":
 						mucous_config["mucous"]["autobuddy"] = "no"
@@ -4765,11 +4792,11 @@ class mucous(driver.Driver):
 					elif mucous_config["mucous"]["autobuddy"]  == "no":
 						mucous_config["mucous"]["autobuddy"] = "yes"
 					self.ModeSetup()
-				elif y == 13 and  x >=1 and x <=40:
+				elif y == 14 and  x >=1 and x <=40:
 					self.ToggleBeep()
 
 					
-				elif y in (11, 12, 13) and x >=49 and x <=65:
+				elif y in (12, 13, 14) and x >=39 and x <=55:
 					# Change charset, encoding, language that text is piped thru
 					if "language" in mucous_config["mucous"]:
 						if mucous_config["mucous"]["language"] in self.encodings:
@@ -4783,7 +4810,7 @@ class mucous(driver.Driver):
 							mucous_config["mucous"]["language"]=self.encodings [0]
 							self.ModeSetup()
 			
-				elif y in (14, 15, 16):
+				elif y in (15, 16, 17):
 					if x >=1 and x <=32:
 						# Edit custom URL handler process
 						self.Spl["setup_input"]="custom-url"
@@ -5530,12 +5557,10 @@ class mucous(driver.Driver):
 					self.Spl["ticker_room"] =  self.Spl["room"]
 				elif line[9:10] == " " and line[10:] != '':
 					self.Spl["ticker_room"] = line[10:]
-					
-			elif line == "/tickers":
+			elif line == "/showtickers":
 				self.ToggleTickersDisplay()
-				
-			elif line[:10] == "/tickcycle" and line[10:] == '':
-				self.ToggleTickersCycle()
+			elif line[:10] == "/tickers" and line[10:] == '':
+				self.ToggleTickers()
 			elif line[:13] == "/defaulttick " and line[13:] != '':
 				message = line[13:]
 				self.SendMessage(messages.ConfigSet("default-ticker", "ticker", message))
@@ -5566,16 +5591,16 @@ class mucous(driver.Driver):
 				alpha_list  = SortedDict()
 				for rooms12 in self.data["tickers"]:
 					alpha_list[rooms12] = self.data["tickers"][rooms12]
-				if mucous_config["tickers"]["tickers_enabled"] == 'yes':
-					for rooms13, ticks in alpha_list.items():
-						if rooms13 == woom:
-							ttickers =[]
-							ttickers = ticks.keys()
-							if ttickers != []:
-								self.LogInfo("Tickers in room: "+str(rooms13))
-							ttickers.sort(key=str.lower)
-							for names in ttickers:
-								self.LogInfo(" ["+str(names)+'] '+str(ticks[names]))
+				#if mucous_config["tickers"]["tickers_enabled"] == 'yes':
+				for rooms13, ticks in alpha_list.items():
+					if rooms13 == woom:
+						ttickers =[]
+						ttickers = ticks.keys()
+						if ttickers != []:
+							self.LogInfo("Tickers in room: "+str(rooms13))
+						ttickers.sort(key=str.lower)
+						for names in ttickers:
+							self.LogInfo(" ["+str(names)+'] '+str(ticks[names]))
 		
 		
 				'''
@@ -6969,12 +6994,12 @@ class mucous(driver.Driver):
 	def TickersStartTimer(self):
 		try:
 			if self.display["mode"] == "chat":
-				if mucous_config["tickers"]["ticker_cycle"] == "yes" and mucous_config["tickers"]["tickers_enabled"] == "yes":
-					if self.data["rooms"].keys() != []:
-						self.Spl["ticker_num"] = 0
-						self.ticker_timer.cancel()
-						self.ticker_timer = threading.Timer(3.0, self.DrawTicker)
-						self.ticker_timer.start()
+
+				if self.data["rooms"].keys() != []:
+					self.Spl["ticker_num"] = 0
+					self.ticker_timer.cancel()
+					self.ticker_timer = threading.Timer(1.0, self.DrawTicker)
+					self.ticker_timer.start()
 		except Exception, e:
 			self.Hlog("debug", "TickersStartTimer: " + str(e))
 			
@@ -8181,17 +8206,17 @@ class mucous(driver.Driver):
 				del self.windows["text"]["browse"]
 			if "browse" in self.windows["border"]: 
 				del self.windows["border"]["browse"]
-			if "dirwin" in self.windows["browse"]:
-				del self.windows["browse"]["dirwin"]
-			if "dirborder" in self.windows["browse"]:
-				del self.windows["browse"]["dirborder"]
-			if "browsebar" in self.windows["browse"]:
-				del self.windows["browse"]["browsebar"]
+			if "dirwin" in self.windows["text"]:
+				del self.windows["text"]["dirwin"]
+			if "dirborder" in self.windows["border"]:
+				del self.windows["border"]["dirborder"]
+			if "browsebar" in self.windows["text"]:
+				del self.windows["text"]["browsebar"]
 				
 			w = self.windows["dimensions"]["browse"] = {"height": self.h-11, "width": self.w-25, "top": 5, "left": 24, "start": 0}	
 			wbb = self.windows["border"]["browse"] = curses.newwin(w["height"]+2, w["width"]+2, w["top"]-1, w["left"]-1)
 				
-			self.windows["browse"]["dirborder"] = curses.newwin(w["height"]+2, self.w-w["width"]-2, w["top"]-1, 0)
+			self.windows["border"]["dirborder"] = curses.newwin(w["height"]+2, self.w-w["width"]-2, w["top"]-1, 0)
 			
 			self.DrawBrowseWin()
 			self.windows["text"]["browse"] = wbb.subwin(w["height"], w["width"], w["top"], w["left"])
@@ -8200,26 +8225,20 @@ class mucous(driver.Driver):
 			self.windows["text"]["browse"].noutrefresh()
 
 			d =self.windows["dimensions"]["directories"]= {"height": w["height"], "width": self.w-w["width"]-4, "top": w["top"], "left":1}
-			self.windows["browse"]["dirwin"] = self.windows["browse"]["dirborder"].subwin(d["height"], d["width"], d["top"], d["left"])
-			self.windows["browse"]["dirwin"].erase()
-			self.windows["browse"]["dirwin"].noutrefresh()
+			self.windows["text"]["dirwin"] = self.windows["border"]["dirborder"].subwin(d["height"], d["width"], d["top"], d["left"])
+			self.windows["text"]["dirwin"].erase()
+			self.windows["text"]["dirwin"].noutrefresh()
 	
 # 			self.scrolling["browsefile"] = self.scrolling["browsedir"] = 0
 			# Vars
-			self.filesdirs = []
-			self.numberfiles=0
-			self.from_s = 0
-			self.to = 0
-			self.files = []
-			self.directories = []
-	
+
+			self.data["files"] = []
+			self.data["directories"] = []
 			
-			self.windows["browse"]["browsebar"] = curses.newwin(1, self.w, w["top"]+w["height"]+1, 0)
-			self.windows["browse"]["browsebar"].erase()
-			self.windows["browse"]["browsebar"].noutrefresh()
+			self.windows["text"]["browsebar"] = curses.newwin(1, self.w, w["top"]+w["height"]+1, 0)
+			self.windows["text"]["browsebar"].erase()
+			self.windows["text"]["browsebar"].noutrefresh()
 			
-			#if self.logs["alert"][:6] == "Browse":
-			#	self.AlertStatus("")
 			self.AlertCheck()
 			self.HotKeyBar()
 			self.FormatBrowse()
@@ -8248,16 +8267,16 @@ class mucous(driver.Driver):
 				pass
 			mw.noutrefresh()
 			
-			self.windows["browse"]["dirborder"].erase()
+			self.windows["border"]["dirborder"].erase()
 			if self.display["browse"] == "directories":
-				self.windows["browse"]["dirborder"].attron(self.colors["green"])
+				self.windows["border"]["dirborder"].attron(self.colors["green"])
 				attr = self.colors["green"] | curses.A_BOLD
 			else:
 				attr = curses.A_BOLD
-			self.windows["browse"]["dirborder"].border()
-			self.windows["browse"]["dirborder"].attroff(self.colors["green"] )
-			self.windows["browse"]["dirborder"].addstr(0, 4, "< Directories >",  attr)
-			self.windows["browse"]["dirborder"].noutrefresh()
+			self.windows["border"]["dirborder"].border()
+			self.windows["border"]["dirborder"].attroff(self.colors["green"] )
+			self.windows["border"]["dirborder"].addstr(0, 4, "< Directories >",  attr)
+			self.windows["border"]["dirborder"].noutrefresh()
 
 			if self.usernames["browse"] == "default__":
 				self.scrolling["browsedir"] = 0
@@ -8277,27 +8296,26 @@ class mucous(driver.Driver):
 			d =self.windows["dimensions"]["directories"]
 			w = self.windows["dimensions"]["browse"] 
 			tw = self.windows["text"]["browse"]
-			#self.display["browse"] = "directories"
+
                         # If the default help isn't displayed
 			if self.usernames["browse"] != "default__":
 				
-				directories = []
+				self.data["directories"] = []
 				for s in self.data["browse_results"][self.usernames["browse"]]["dirs"]:
 					try:
-						directories.append(s)
+						self.data["directories"].append(s)
 					except:
 						pass
-				directories.sort(key=str.lower)
-				self.directories = directories
+				self.data["directories"].sort(key=str.lower)
                                 # List, Directory, Scroll position 
 				if self.display["browse"] == "directories":
-					clipped_list, self.scrolling["browsedir"], self.windows["dimensions"]["directories"]["start"] = self.scrollbox(directories, self.scrolling["browsedir"], d["height"])
+					clipped_list, self.scrolling["browsedir"], start = self.scrollbox(self.data["directories"], self.scrolling["browsedir"], d["height"])
 # 					self.scrolling["browsedir"] = self.Sup
 				else:
-					clipped_list, self.scrolling["browsedir"], self.windows["dimensions"]["directories"]["start"] = self.scrollbox(directories, self.scrolling["browsedir"], d["height"])
-				
+					clipped_list, self.scrolling["browsedir"], start = self.scrollbox(self.data["directories"], self.scrolling["browsedir"], d["height"])
+				self.windows["dimensions"]["directories"]["start"] = start
 				count = 0
-				self.windows["browse"]["dirwin"].erase()
+				self.windows["text"]["dirwin"].erase()
                                 # Display directory tree
 				for s in clipped_list:
 					try:
@@ -8307,35 +8325,35 @@ class mucous(driver.Driver):
 						string += self.dlang(dir[-1][:self.w-w["width"]-4-len(string)])
 						string += " " * ( (self.w-w["width"]-4) -len(string) )
 						if count +d["start"] == self.scrolling["browsedir"]:
-							self.windows["browse"]["dirwin"].addstr(string, self.colors["green"])
+							self.windows["text"]["dirwin"].addstr(string, self.colors["green"])
 						else:
-							self.windows["browse"]["dirwin"].addstr(string)
+							self.windows["text"]["dirwin"].addstr(string)
 						count += 1
 					except Exception, e:
 						pass
 						#self.Hlog("debug", str(e))
 				
-				self.Spl["dir_browse"] = self.directories[self.scrolling["browsedir"]]
+				self.Spl["dir_browse"] = self.data["directories"][self.scrolling["browsedir"]]
 				self.set_edit_title(self.Spl["dir_browse"] )
                                 
 				self.BrowseFiles( self.usernames["browse"], self.Spl["dir_browse"])
                                 
 				self.BrowseFileBar( self.usernames["browse"], self.Spl["dir_browse"])
 				
-				self.windows["browse"]["dirwin"].noutrefresh()
+				self.windows["text"]["dirwin"].noutrefresh()
 			
 				del clipped_list
 				del directories
 			
 			elif self.usernames["browse"] == "default__":
                                 # Clear windows, display browse help
-				self.windows["browse"]["dirwin"].erase()
-				self.windows["browse"]["dirwin"].noutrefresh()
+				self.windows["text"]["dirwin"].erase()
+				self.windows["text"]["dirwin"].noutrefresh()
 				tw.erase()
 				count = 0
 				
 				for lines in self.logs["browse"][self.usernames["browse"]]:
-				#self.BrowseFiles(self, self.usernames["browse"], self.Spl["dir_browse"]):
+
 					try:
 						self.DrawBrowseFileText(lines, count , self.scrolling["browsefile"])
 		
@@ -8378,8 +8396,6 @@ class mucous(driver.Driver):
 		except:
 			pass
 			
-
-
 
 	def ModeSearch(self):
 		try:
@@ -8928,23 +8944,22 @@ class mucous(driver.Driver):
 "/npprefix <text>       (set to np: or /me is now playing:)",\
 "/alias <alias> <text>  /unalias <alias>"]
 
-		
 		self.help_ticker = ["----<Ticker Commands>---- ",\
-"/listtick <room>       (Lists tickers in room)",\
-"/settick <message>     (set ticker for last room)",\
-"/tickcycle             (Toggle cycling tickers in Chat Rooms)",\
-"/tickers               (Toggle tickers)",\
-"/defaulttick <message> (Set & save default ticker)",\
+"/showtickers           (Hide/Show tickers)",\
+"/tickers               (Scroll or Cycle through tickers)",\
+"/listtick <room>       (List tickers in the Info mode)",\
 "/tickroom <room>       (Choose room for setting tickers)",\
 "/settick <message>     (Set ticker to message, and save it)",\
-"/settemptick <message> (Set ticker only for this session)",\
-]
+"/defaulttick <message> (Set & save default ticker)",\
+"/settemptick <message> (Set ticker only for this session)"]
 
 		self.help_connect = ["Connection Configuration",\
 "/interface </tmp/museekd.[username]> or <host:port>",\
 "/password <interface password>",\
 "/connect               (Attempts to connect to Museekd)",\
 "/disconnect            (Disconnects from Museekd)",\
+"/login                 (Login to Soulseek Server)",\
+"/logout                (Logout from Soulseek Server)",\
 "/save                  (Writes settings to config)"]
 
 		self.help_setup = ["Setup",\
@@ -9404,10 +9419,20 @@ class mucous(driver.Driver):
 
 		except Exception, e:
 			self.Hlog( "debug", "InterestsWindows: " + str(e))
+			
+	def DestroyOldWindows(self):
+		mode = self.display["mode"]
+		if mode == "lists":
+			userlist = self.display["list"]
+		for window in self.windows["text"]:
+			del window
+		for window in self.windows["border"]:
+			del window
 		
 	def ModeTrust(self):
 		try:
 			self.display["list"] = "trusted"
+			self.DestroyOldWindows()
 			self.Spl["show_menu"] = False
 			
 			s = self.windows["dimensions"][self.display["list"]] = {"height": self.h-7, "top": 2, "left": 1, "width": self.w-2, "start": 0}
@@ -9632,7 +9657,7 @@ class mucous(driver.Driver):
 		except Exception,e:
 			self.Hlog("debug", "SetupButton: "+title+" "+ str(e))
 			
-	def SetupCheck(self, title, option, x, y, height, width, titlebold=False):
+	def SetupCheck(self, title, option, x, y, height, width, titlebold=False, toggle=False):
 		try:
 			enabled = "[x]"
 			disabled = "[ ]"
@@ -9642,9 +9667,15 @@ class mucous(driver.Driver):
 			win = curses.newwin(height,width,x,y)
 			win.erase()
 			if option in ("True", "true", "yes"):
-				z = enabled
+				if toggle:
+					z = selected
+				else:
+					z = enabled
 			else:
-				z = disabled
+				if toggle:
+					z = notselected
+				else:
+					z = disabled
 			win.addstr(z+" ", self.colors["cyan"])
 			if title != None:
 				if titlebold:
@@ -9875,33 +9906,34 @@ class mucous(driver.Driver):
 				del inbwin1_4 
 				del bwin
 				
-				self.SetupCheck("Show Tickers:         /tickers", mucous_config["tickers"]["tickers_enabled"] ,8,1,1,45, True)
+				self.SetupCheck("Show Tickers:         /showtickers", mucous_config["tickers"]["tickers_enabled"] ,8,1,1,45, True)
 
-				self.SetupCheck("Cycle Tickers:        /tickcycle", mucous_config["tickers"]["ticker_cycle"] ,9,1,1,45, True)
+				self.SetupCheck("Cycle Tickers:        /tickers", mucous_config["tickers"]["ticker_cycle"] ,9,1,1,45, True, True)
+				self.SetupCheck("Scroll Tickers:       /tickers", mucous_config["tickers"]["ticker_scroll"] ,10,1,1,45, True, True)
+				self.SetupCheck("Auto-clear Transfers: /autoclear", mucous_config["mucous"]["auto-clear"],11,1,1,45, True)
+
+				self.SetupCheck("Auto-retry Transfers: /autoretry", mucous_config["mucous"]["auto-retry"],12,1, 1,45, True)
+
+				self.SetupCheck("Auto-Buddy downloads: /autobuddy", mucous_config["mucous"]["autobuddy"],13,1,1,45, True)
 				
-				self.SetupCheck("Auto-clear Transfers: /autoclear", mucous_config["mucous"]["auto-clear"],10,1,1,45, True)
-
-				self.SetupCheck("Auto-retry Transfers: /autoretry", mucous_config["mucous"]["auto-retry"],11,1, 1,45, True)
-
-				self.SetupCheck("Auto-Buddy downloads: /autobuddy", mucous_config["mucous"]["autobuddy"],12,1,1,45, True)
-				
-				self.SetupCheck("Beep:                 /beep", mucous_config["mucous"]["beep"],13,1,1,45, True)
-
+				self.SetupCheck("Beep:                 /beep", mucous_config["mucous"]["beep"],14,1,1,45, True)
+				self.SetupButton("< Ticker Time >", " -  %.2f +\n -  %.2f +" % ( float(mucous_config["tickers"]["cycletime"]), float(mucous_config["tickers"]["scrolltime"])), 8,39, 4,16, False, False)
 				# Minimum Room size for Roomlist
-				self.SetupButton("<Min Roomlist>", " -  "+str(mucous_config["mucous"]["roomlistminsize"])+" +", 8,49, 3,16, False, False)
+				
+				self.SetupButton("<Min Roomlist>", " -  "+str(mucous_config["mucous"]["roomlistminsize"])+" +", 8,55, 3,16, False, False)
 
-				self.SetupButton("Encoding", mucous_config["mucous"]["language"], 11,49,3,16)
+				self.SetupButton("Encoding", mucous_config["mucous"]["language"], 12,39,3,16)
 				
 				# Custom URL
 				prefix =""
 				if "url custom prefix" in mucous_config["mucous"] and "url custom suffix" in mucous_config["mucous"]:
 					prefix = self.dlang(mucous_config["mucous"]["url custom prefix"])+"$"+self.dlang(mucous_config["mucous"]["url custom suffix"])
-				self.SetupButton("Custom URL Reader", prefix,14,1,3,32, optionbold=True)
-				self.SetupButton("URL Reader", self.dlang(mucous_config["mucous"]["url reader"]), 14,33,3,16)
+				self.SetupButton("Custom URL Reader", prefix,15,1,3,32, optionbold=True)
+				self.SetupButton("URL Reader", self.dlang(mucous_config["mucous"]["url reader"]), 15,33,3,16)
 
 
 				# Save button
-				self.SetupButton(None, " Save Config", 14,49,3,16, True)
+				self.SetupButton(None, " Save Config", 15,49,3,16, True)
 				
 
 
@@ -10603,17 +10635,9 @@ class mucous(driver.Driver):
 			
 	def DrawTicker(self):
 		try:
-			if self.display["mode"] != "chat":
+			if self.display["mode"] != "chat" or self.Spl["room"] not in self.data["tickers"] or mucous_config["tickers"]["tickers_enabled"] != 'yes':
 				return
-			mw = self.windows["border"]["chat"]
-			if "roomstatus" in self.windows["border"]:
-				bw = self.windows["border"]["roomstatus"]
-			s = self.windows["dimensions"]["chat"]
-			if self.Spl["room"] not in self.data["tickers"]:
-				return
-			
 			ticks = self.data["tickers"][self.Spl["room"]]
-			ttickers =[]
 			ttickers = ticks.keys()
 			if ttickers == []:
 				self.ticker_timer.cancel()
@@ -10624,8 +10648,31 @@ class mucous(driver.Driver):
 				except:
 					pass
 			else:
-				
 				ttickers.sort(key=str.lower)
+				if mucous_config["tickers"]["ticker_scroll"] == "yes":
+					longstring = ""
+					for user in ttickers:
+						longstring += "[%s] %s " % (user, ticks[user])
+					bw = self.windows["border"]["roomstatus"]
+					s = self.windows["dimensions"]["roomstatus"]
+					
+					if self.Spl["ticker_num"] >= len(longstring):
+						self.Spl["ticker_num"] = 0
+					part = longstring[self.Spl["ticker_num"]:self.Spl["ticker_num"]+s["width"]-2]
+					while len(part) < s["width"]-2:
+						part += longstring[:(s["width"]-2 - len(part))] 
+					fill = (s["width"]-2 - len(part)) * " "
+					bw.addstr(5, 1, "<%s%s>" %(part, fill))
+					bw.refresh()
+					self.Spl["ticker_num"] += 1
+					#if self.Spl["ticker_num"] >= len(ttickers):
+						#self.Spl["ticker_num"] = 0
+					self.ticker_timer.cancel()
+					self.ticker_timer = threading.Timer(float(mucous_config["tickers"]["scrolltime"]), self.DrawTicker)
+					self.ticker_timer.start()
+					return
+			
+				
 				if self.Spl["ticker_num"] >= len(ttickers):
 					self.Spl["ticker_num"] = 0
 				names = ttickers[self.Spl["ticker_num"]]
@@ -10633,37 +10680,32 @@ class mucous(driver.Driver):
 				try:
 					if self.Spl["show_menu"] == True: raise Exception,  "Noticker"
 					if self.display["chatshape"] not in ("nostatuslog", "chat-only"):
-						if self.display["chatshape"] == "noroombox":
-							ticker = "< ["+names+"] "+str(ticks[names][:self.w-9-n])
-						else:
-							ticker = "< ["+names+"] "+str(ticks[names][:self.w-15-9-n])
-						bw.addstr(5, 1, self.dlang( ticker ))
-						t = len(ticker)
-						fill = ""
-						while len(fill) < s["width"]-4-t:
-							fill += " "
-						fill += ">"
-						bw.addstr(fill)
+						if "roomstatus" not in self.windows["border"]:
+							return
+						bw = self.windows["border"]["roomstatus"]
+						s = self.windows["dimensions"]["roomstatus"]
+						tick = str(ticks[names][:s["width"]-7-n])
+						fill = (s["width"]-6-len(tick)-len(names)) * " "
+						string = "< [%s] %s%s>" % (names, tick, fill)
+						bw.addstr(5, 1, self.dlang( string ))
 						bw.refresh()
+						
 					elif self.display["chatshape"] in ("nostatuslog", "chat-only"):
-						ticker = "< ["+names+"] "+str(ticks[names][:s["width"]-25-n])
-						mw.addstr(0, 18, self.dlang( ticker ))
-						t = len(ticker)
-						fill = ""
-						while len(fill) < s["width"]-t-20:
-							fill += " "
-						fill += ">"
-						mw.addstr(fill)
+						mw = self.windows["border"]["chat"]
+						s = self.windows["dimensions"]["chat"]
+						tick = str(ticks[names][:s["width"]-25-n])
+						fill = (s["width"]-25-len(tick)-len(names)) * " "
+						string = "< [%s] %s%s>" %(names, tick, fill)
+						mw.addstr(0, 18, self.dlang( string ))
 						mw.refresh()
 				except:
 					pass
 				
 
 				self.Spl["ticker_num"] += 1
-				if self.Spl["ticker_num"] >= len(ttickers):
-					self.Spl["ticker_num"] = 0
+
 				self.ticker_timer.cancel()
-				self.ticker_timer = threading.Timer(3.0, self.DrawTicker)
+				self.ticker_timer = threading.Timer(float(mucous_config["tickers"]["cycletime"]), self.DrawTicker)
 				self.ticker_timer.start()
 				
 				
