@@ -108,7 +108,7 @@ parser = ConfigParser.ConfigParser()
 mucous_config = {"connection":{"interface":'localhost:2240', "passw":None}, \
 	"mucous":{"autobuddy": "no", "roomlistminsize": 5, "rooms_sort": "size", \
 	"roombox": "big", "log_dir": "~/.mucous/logs/", "now-playing": "default", \
-	"now-playing-prefix": None, "browse_display_mode": "filesystem", \
+	"now-playing-prefix": None, "browse_display_mode": "filesystem", "browse_width": 35, \
 	"url reader": "firefox", "url custom prefix": "", "url custom suffix": "", \
 	"transbox" : "split", "language": "iso-8859-1", "beep": "yes", "autoaway": "yes", \
 	"auto-retry": "yes", "auto-clear": "no", "logging": "yes", "extra_requests": "Yes"}, \
@@ -219,7 +219,7 @@ if str(mucous_config["mucous"]["logging"]) == "True":
 
 		
 # This is the input line/bar
-class editor(threading.Thread):
+class CharacterParse(threading.Thread):
 	def __init__(self, win, mucous):
 		threading.Thread.__init__(self)
 		self.win = win
@@ -279,13 +279,7 @@ class editor(threading.Thread):
 					self.InputFunctions(c, self.line)
 				else:
 					self.x -= 1
-			elif c == chr(93) or c == chr(91)  or c == chr(34) or c == chr(35):
-				error = 'right'
-				if self.escape:
-					self.InputFunctions(c, self.line)
-				else:
-					self.line = self.line[:pos] + c + self.line[pos:]
-					self.x += 1
+			
 			elif c == "KEY_RIGHT" or c == chr(6):
 				error = 'right'
 				if self.escape:
@@ -305,6 +299,7 @@ class editor(threading.Thread):
 						self.x = len(self.line)
 					
 				elif self.escape:
+					# Alt+Up/Down
 					line, self.mucous.Spl["history_count"] = self.InputHistory(c, self.line, self.mucous.Spl["history_count"])
 					if line is not None:
 						self.line = line
@@ -320,29 +315,10 @@ class editor(threading.Thread):
 					if line != None:
 						self.line = line
 						self.x = len(self.line)
-					
 			elif c == "KEY_IC": # Insert
 				self.InputFunctions(c, self.line)
-			elif c == "KEY_DC" or c == chr(4):
-				self.line = self.line[:pos] + self.line[pos+1:]
-			elif c == chr(5):
-				self.x = len(self.line)
-			elif c == chr(1): # Ctrl - a
-				self.x = self.scroll = 0
-			elif c == chr(10) or c == "KEY_ENTER":
-				if self.mucous.Spl["show_menu"] == True:
-					self.mucous.MenuEnter()
-				else:
-					self.escape = False
-					self.InputFunctions(c, self.line)
-					return True
-			elif c == chr(27):
-				if self.mucous.Spl["show_menu"] == True:
-					self.mucous.MenuClear()
-				else:
-					self.escape = True
-					return False		
-			elif c in ("t", "T", "p", "P", "d", "D"):
+			
+			elif c in ("t", "T", "p", "P", "d", "D", "x", "X"):
 				if self.escape:
 					if c in ("t", "T"):
 						self.InputFunctions("switch", self.line)
@@ -350,10 +326,34 @@ class editor(threading.Thread):
 						self.InputFunctions("delete", self.line)
 					elif c in ("p", "P"):
 						self.InputFunctions("popup", self.line)
+					elif c in ("x", "X"):
+						self.InputFunctions("collapse", self.line)
 				else:
 					self.line = self.line[:pos] + c + self.line[pos:]
 					self.x += 1
-			elif c == chr(9): # Tab
+			elif c == chr(1): 
+				# Ctrl-A
+				self.x = self.scroll = 0
+			elif c == chr(5):
+				# Ctrl-E
+				self.x = len(self.line)
+			#elif c == chr(32):
+				#self.mucous.Hlog("debug", "space")
+			#elif c == chr(13):
+				#pass
+				#self.mucous.Hlog("debug", "carriage")
+			elif c == "KEY_ENTER" or c == chr(10):
+				# Keypad Enter, Normal Enter, or Newline pasted from another app
+				if self.mucous.Spl["show_menu"] == True:
+					self.mucous.MenuEnter()
+				else:
+					self.escape = False
+					self.InputFunctions(c, self.line)
+					return True
+			
+			
+			elif c == chr(9): 
+				# Tab
 				if self.word == None:
 					#self.x
 					#w = self.line.split(' ')
@@ -401,14 +401,20 @@ class editor(threading.Thread):
 				
 				#self.x = len(self.line)
 				#return False
-			elif c == chr(11):
+			elif c == chr(11): 
+				# Ctrl-K
+				# Delete everything after cursor position
 				self.line = self.line[:pos]
 				self.x = len(self.line)
 				self.scroll = 0
-			elif c == chr(21): # Ctrl-U
+			elif c == chr(21): 
+				# Ctrl-U
+				# Delete line
 				self.line = ''
 				self.x = 0
-			elif c == chr(23): # Ctrl-W
+			elif c == chr(23): 
+				# Ctrl-W
+				# Delete word before cursor
 				z = self.line.split(' ')
 	
 				if len(z) >1:
@@ -431,8 +437,27 @@ class editor(threading.Thread):
 				else:
 					self.line = ''
 				self.x = len(self.line)
-	
-			elif c == chr(127) or c == "KEY_BACKSPACE" or c == chr(8):
+			elif c == chr(27):
+				# Escape ^[
+				if self.mucous.Spl["show_menu"] == True:
+					self.mucous.MenuClear()
+				else:
+					self.escape = True
+					return False
+			elif c == chr(93) or c == chr(91) or c == chr(60) or c == chr(62):
+				# ], [, <, >
+				if self.escape:
+					self.InputFunctions(c, self.line)
+				else:
+					self.line = self.line[:pos] + c + self.line[pos:]
+					self.x += 1
+			elif c == "KEY_DC"  or c == chr(4):
+				# Delete
+				# Delete letter after cursor
+				self.line = self.line[:pos] + self.line[pos+1:]
+			elif c == "KEY_BACKSPACE" or c == chr(8) or c == chr(127):
+				# Backspace, Ctrl-H
+				# Delete letter before cursor
 				if pos > 0:
 					self.line = self.line[:pos-1] + self.line[pos:]
 					self.x -= 1
@@ -441,16 +466,18 @@ class editor(threading.Thread):
 				# normal letters 
 				self.line = self.line[:pos] + c + self.line[pos:]
 				self.x += 1
-			elif len(c) == 1 and ord(c[0]) >= 127 and ord(c[0]) <327:
-	
-				self.line = self.line[:pos] + c + self.line[pos:]
-				self.x += 1
+				
+			if c.startswith("KEY_") or len(c) > 1:
+				pass
+			else:
+				pass 
+			
 			self.fixpos()
 			self.mucous.line = self.line
 			self.escape = False
 			return False
 		except Exception, e:
-			self.mucous.Hlog("debug", "editor process: \""+str(self.line)+"\" "+ str(e))
+			self.mucous.Hlog("debug", "CharacterParse process: \""+str(self.line)+"\" "+ str(e))
 
 	def fixpos(self):
 		try:
@@ -506,7 +533,7 @@ class mucous(driver.Driver):
 		"ticker_room": None, "uploads": 0, "downloads": 0 , "search_reverse": False, \
 		"recommend_sort": "alpha", "ticker_num":  0, "downloaddir": os.path.expanduser("~/") \
 		}
-		self.data = {"rooms": {}, "tickers": {}, "shares": {} , "roomlist": {}, "search_tickets": {}, "search_results": {}, "browse_num": {}, "browse_results": {}, "mystats": [], "downloads": {}, "uploads": {}, "recommendations": {}, "similar_users": {} }
+		self.data = {"rooms": {}, "tickers": {}, "shares": {} , "roomlist": {}, "search_tickets": {}, "search_results": {}, "browse_num": {}, "browse_results": {}, "mystats": [], "downloads": {}, "uploads": {}, "recommendations": {}, "similar_users": {}, "collapsed_dirs":{} }
 		self.logs = {"buddied": [], "banned": [], "ignored": [], "trusted": [], "uploads": "Up: 0", "downloads": "Down: 0", "tab_completion": [], "search_count": ["Results: ", 0], "history": [], "alert": "", "onlinestatus": "Offline", "info": {}, "private": {}, "rooms": {}, "browse": {}, "search":{} , "roombox": {} , "roomstatus": {} , "recommendations": [], "likes": [], "hates": [], "similar_users":[]    }
 		self.activeitems = {"info": [], "search": [], "browse": [], "private": [], "positions": {}}
 		self.requests = {"ip":[], "info": [], "statistics": [], "browse": []}
@@ -756,7 +783,7 @@ class mucous(driver.Driver):
 			self.Hlog("debug", "Build part 2: " + str(e))
 			curses.doupdate()
 		try:
-			self.edit = editor(self.windows["text"]["input"], self)
+			self.edit = CharacterParse(self.windows["text"]["input"], self)
 
 			self.stdscr.nodelay(1)
 				
@@ -1597,6 +1624,7 @@ class mucous(driver.Driver):
 					self.AlertCheck()
 
 				self.data["browse_results"][user] = {}
+				self.data["collapsed_dirs"][user] = []
 				self.data["browse_num"][user] = 0
 				self.data["browse_results"][user]["dirs"] = []
 				# Debugging
@@ -2721,13 +2749,15 @@ class mucous(driver.Driver):
 				length = 0
 				if self.display["transfers"] == "downloads":
 					hattr = self.colors["green"] | curses.A_REVERSE
+					hattr1 = self.colors["green"]
 				else:
-					hattr = self.colors["blafgcyabg"] 
+					hattr = self.colors["blafgcyabg"]
+					hattr1 = curses.A_NORMAL  
 				for i in swting:
 					length += len(i)
 					dtw.addstr(i, hattr)
 					if i is not swting[-1]:
-						dtw.addch(curses.ACS_VLINE, hattr)
+						dtw.addch(curses.ACS_VLINE, hattr1)
 						length += 1
 				filler = ((self.w-2 - length) * " ")
 				dtw.addstr(filler, hattr)
@@ -2756,24 +2786,26 @@ class mucous(driver.Driver):
 						sattr = self.colors["red"] | curses.A_BOLD
 					else:
 						sattr = curses.color_pair(0) | curses.A_BOLD
-					attr = curses.color_pair(0)
+					attr = curses.A_NORMAL
+					attr1 = curses.A_NORMAL
 					if count + start == s:
 						attr = curses.A_REVERSE | curses.A_BOLD
+						attr1 = curses.A_NORMAL | curses.A_BOLD
 						sattr = curses.A_REVERSE | curses.A_BOLD | sattr
 
 					try:
 						dtw.addstr(self.encode_language(transfers[0])[:4], attr)
-						dtw.addch(curses.ACS_VLINE, attr)
+						dtw.addch(curses.ACS_VLINE, attr1)
 						dtw.addstr(self.encode_language(transfers[0])[5:10], attr)
-						dtw.addch(curses.ACS_VLINE, attr)
+						dtw.addch(curses.ACS_VLINE, attr1)
 						dtw.addstr(self.encode_language(transfers[0])[11:17], attr)
-						dtw.addch(curses.ACS_VLINE, attr)
+						dtw.addch(curses.ACS_VLINE, attr1)
 						dtw.addstr(self.encode_language(transfers[0])[18:28], attr)
-						dtw.addch(curses.ACS_VLINE, attr)
+						dtw.addch(curses.ACS_VLINE, attr1)
 						dtw.addstr(self.encode_language(transfers[0])[29:39], sattr)
-						dtw.addch(curses.ACS_VLINE, attr)
+						dtw.addch(curses.ACS_VLINE, attr1)
 						dtw.addstr(self.encode_language(transfers[0])[40:44], attr)
-						dtw.addch(curses.ACS_VLINE, attr)
+						dtw.addch(curses.ACS_VLINE, attr1)
 						dtw.addstr(self.encode_language(transfers[0])[45:w["width"]], attr)
 						
 					except :
@@ -2808,13 +2840,15 @@ class mucous(driver.Driver):
 				length = 0
 				if self.display["transfers"] == "uploads":
 					hattr = self.colors["green"] | curses.A_REVERSE
+					hattr1 = self.colors["green"]
 				else:
-					hattr = self.colors["blafgcyabg"] 
+					hattr = self.colors["blafgcyabg"]
+					hattr1 = curses.A_NORMAL  
 				for i in swting:
 					length += len(i)
 					utw.addstr(i, hattr)
 					if i is not swting[-1]:
-						utw.addch(curses.ACS_VLINE, hattr)
+						utw.addch(curses.ACS_VLINE, hattr1)
 						length += 1
 				filler = ((self.w-2 - length) * " ")
 				utw.addstr(filler, hattr)
@@ -2839,21 +2873,25 @@ class mucous(driver.Driver):
 						sattr = self.colors["red"] | curses.A_BOLD
 					else:
 						sattr = curses.color_pair(0) | curses.A_BOLD
-					attr = curses.color_pair(0)
+					
 					if count + start == s:
 						attr = curses.A_REVERSE | curses.A_BOLD
+						attr1 = curses.A_NORMAL | curses.A_BOLD
 						sattr = curses.A_REVERSE | curses.A_BOLD | sattr
+					else:
+						attr = curses.A_NORMAL 
+						attr1 = curses.A_NORMAL
 					try:
 						utw.addstr(self.encode_language(transfers[0])[:4], attr)
-						utw.addch(curses.ACS_VLINE, attr)
+						utw.addch(curses.ACS_VLINE, attr1)
 						utw.addstr(self.encode_language(transfers[0])[5:10], attr)
-						utw.addch(curses.ACS_VLINE, attr)
+						utw.addch(curses.ACS_VLINE, attr1)
 						utw.addstr(self.encode_language(transfers[0])[11:17], attr)
-						utw.addch(curses.ACS_VLINE, attr)
+						utw.addch(curses.ACS_VLINE, attr1)
 						utw.addstr(self.encode_language(transfers[0])[18:28], attr)
-						utw.addch(curses.ACS_VLINE, attr)
+						utw.addch(curses.ACS_VLINE, attr1)
 						utw.addstr(self.encode_language(transfers[0])[29:39], sattr)
-						utw.addch(curses.ACS_VLINE, attr)
+						utw.addch(curses.ACS_VLINE, attr1)
 						utw.addstr(self.encode_language(transfers[0])[40:w["width"]], attr)
 
 					except:
@@ -3214,11 +3252,12 @@ class mucous(driver.Driver):
 		except Exception, e:
 			self.Hlog("debug", "InputCompletionList: " + str(e))
 
-	def scrolltext(self, line):
+	def ScrollText(self, line):
 		try:
 			key = self.key
 			color_added = None
 			scrolltext = None
+			scrollchange = 0
 			if self.display["mode"] not in ( "transfer", "search", "help", "debug", "info", "private", "lists", "roomlist", "chat", "browse"):
 				self.key = None
 				return 
@@ -3276,13 +3315,18 @@ class mucous(driver.Driver):
 					
 			if key == "KEY_UP":	
 				self.scrolling[scrolltext] -= 1
+				scrollchange = -1
 			elif key == "KEY_DOWN":
 				self.scrolling[scrolltext] += 1
+				scrollchange = 1
 			elif key == "KEY_PPAGE":
-				self.scrolling[scrolltext] -= scrolldiff + 1
+				self.scrolling[scrolltext] -= scrolldiff
+				scrollchange = -scrolldiff 
+				
 				# upload or download window height - one line for heading
 			elif key == "KEY_NPAGE":
-				self.scrolling[scrolltext] += scrolldiff + 1
+				self.scrolling[scrolltext] += scrolldiff
+				scrollchange = scrolldiff
 			if self.scrolling[scrolltext] < 0:
 				self.scrolling[scrolltext] = 0
 			
@@ -3295,9 +3339,15 @@ class mucous(driver.Driver):
 				elif self.display["chat"]  == "roomstatus":
 					self.DrawChatRoomStatusText()
 					
-			elif self.display["mode"] == "browse":	
-				
-				self.FormatBrowse()
+			elif self.display["mode"] == "browse":
+				if self.scrolling[scrolltext]  >= len(self.data["directories"]):
+					self.scrolling[scrolltext] = len(self.data["directories"] )
+					curses.doupdate()
+					return
+				if self.display["browse"] == "directories":
+					self.FormatBrowse(1)
+				else:
+					self.FormatBrowse(0)
 				curses.doupdate()
 			elif self.display["mode"] == "info":
 				self.DrawUserInfoText()
@@ -4238,11 +4288,11 @@ class mucous(driver.Driver):
 					
 			elif y  in (w["top"] + w["height"], w["top"] + w["height"]-1) and x >= w["left"] + w["width"]-5 and x <= w["left"] + w["width"]:
 				self.key = "KEY_NPAGE"
-				self.scrolltext(line)
+				self.ScrollText(line)
 				
 			elif y in ( w["top"], w["top"]+1)  and x >= w["left"] + w["width"]-5 and x <= w["left"] + w["width"]:
 				self.key = "KEY_PPAGE"
-				self.scrolltext(line)
+				self.ScrollText(line)
 			else:
 				if y >= w["top"]-1 and y < w["top"] + w["height"] +1 and x >= w["left"] -1 and x < w["left"] +w["width"]+1:
 					if self.display["chat"] != "chatroom":
@@ -6423,7 +6473,7 @@ class mucous(driver.Driver):
 						key = "menu_down"
 				else:
 					self.key = key
-					sline = self.scrolltext(line)
+					sline = self.ScrollText(line)
 					#self.Hlog("debug", "scrolltext"+str(sline))
 					if sline != None:
 						line = sline
@@ -6499,6 +6549,17 @@ class mucous(driver.Driver):
 					self.Spl["interests_input"]  = inp
 					self.ModeInterests()
 				
+			elif key == "collapse":
+				if self.display["mode"] == "browse" and self.display["browse"] == "directories":
+					if self.data["directories"] == []:
+						return
+					Dir = self.data["directories"][ self.scrolling["browsedir"] ]
+
+					if Dir not in self.data["collapsed_dirs"][ self.usernames["browse"] ]:
+						self.data["collapsed_dirs"][ self.usernames["browse"] ].append(Dir)
+					else:
+						self.data["collapsed_dirs"][ self.usernames["browse"] ].remove(Dir)
+					self.FormatBrowse()
 					
 			elif key in ("switch", "KEY_HOME", "KEY_END"):
 				if self.display["mode"] == "transfer":
@@ -6560,10 +6621,10 @@ class mucous(driver.Driver):
 					self.display["interests"] = self.RotateList("right", _list, self.display["interests"], "no")
 					self.ModeInterests()
 					
-			elif key in( "KEY_LEFT", chr(91), chr(34), "KEY_RIGHT", chr(93), chr(35), "KEY_IC"):
-				if key == "KEY_LEFT" or key == chr(91) or key == chr(34):
+			elif key in( "KEY_LEFT", chr(91), chr(60), "KEY_RIGHT", chr(93), chr(62), "KEY_IC"):
+				if key == "KEY_LEFT" or key == chr(91) or key == chr(60):
 					direction = "left"
-				elif key == "KEY_RIGHT" or key == chr(93) or key == chr(35) or key == "KEY_IC":
+				elif key == "KEY_RIGHT" or key == chr(93) or key == chr(62) or key == "KEY_IC":
 					direction = "right"
 				if self.display["mode"] == "chat":
 					place = self.RotateList(direction, self.data["rooms"].keys(), self.Spl["room"], "yes" )
@@ -6605,7 +6666,7 @@ class mucous(driver.Driver):
 					self.ModeTransfers()
 		
 				elif self.display["mode"] == "search":
-					if key in( "KEY_LEFT", chr(91), chr(34), "KEY_RIGHT", chr(93), chr(35)):
+					if key in( "KEY_LEFT", chr(91), chr(60), "KEY_RIGHT", chr(93), chr(62)):
 						if len(self.data["search_tickets"].keys()) >= 1:
 	
 								
@@ -8204,22 +8265,24 @@ class mucous(driver.Driver):
 				del self.windows["border"]["dirborder"]
 			if "browsebar" in self.windows["text"]:
 				del self.windows["text"]["browsebar"]
-				
-			w = self.windows["dimensions"]["browse"] = {"height": self.h-11, "width": self.w-25, "top": 5, "left": 24, "start": 0}	
-			wbb = self.windows["border"]["browse"] = curses.newwin(w["height"]+2, w["width"]+2, w["top"]-1, w["left"]-1)
-				
-			self.windows["border"]["dirborder"] = curses.newwin(w["height"]+2, self.w-w["width"]-2, w["top"]-1, 0)
 			
+			w = self.windows["dimensions"]["browse"] = {"height": self.h-11, "width": self.w-mucous_config["mucous"]["browse_width"], "top": 5, "left": mucous_config["mucous"]["browse_width"]-1, "start": 0}
+			# Files Border	
+			wbb = self.windows["border"]["browse"] = curses.newwin(w["height"]+2, w["width"]+2, w["top"]-1, w["left"]-1)
+			# Directories Border
+			self.windows["border"]["dirborder"] = curses.newwin(w["height"]+2, self.w-w["width"]-2, w["top"]-1, 0)
 			self.DrawBrowseWin()
-			self.windows["text"]["browse"] = wbb.subwin(w["height"], w["width"], w["top"], w["left"])
-			self.windows["text"]["browse"].scrollok(0)
-			self.windows["text"]["browse"].idlok(1)
-			self.windows["text"]["browse"].noutrefresh()
+			# Files Text
+			tbb = self.windows["text"]["browse"] = wbb.subwin(w["height"], w["width"], w["top"], w["left"])
+			tbb.scrollok(0)
+			tbb.idlok(1)
+			tbb.noutrefresh()
 
 			d = self.windows["dimensions"]["directories"] = {"height": w["height"], "width": self.w-w["width"]-4, "top": w["top"], "left":1}
-			self.windows["text"]["dirwin"] = self.windows["border"]["dirborder"].subwin(d["height"], d["width"], d["top"], d["left"])
-			self.windows["text"]["dirwin"].erase()
-			self.windows["text"]["dirwin"].noutrefresh()
+			# Directories Text
+			dw = self.windows["text"]["dirwin"] = self.windows["border"]["dirborder"].subwin(d["height"], d["width"], d["top"], d["left"])
+			dw.erase()
+			dw.noutrefresh()
 	
 # 			self.scrolling["browsefile"] = self.scrolling["browsedir"] = 0
 			# Vars
@@ -8289,11 +8352,9 @@ class mucous(driver.Driver):
 				self.set_edit_title( self.Spl["dir_browse"][:self.w-8] )
 		except Exception, e:
 			self.Hlog("debug", "DrawBrowseWin: " + str(e))
-		
-	def FormatBrowse(self):
-		try:
-			if "directories" not in self.windows["dimensions"]:
-				return 
+			
+	def FormatBrowseDirs(self):
+			 
 			d = self.windows["dimensions"]["directories"]
 			w = self.windows["dimensions"]["browse"] 
 			tw = self.windows["text"]["browse"]
@@ -8301,29 +8362,79 @@ class mucous(driver.Driver):
                         # If the default help isn't displayed
 			if self.usernames["browse"] != "default__":
 				
+				tempdirs = self.data["browse_results"][self.usernames["browse"]]["dirs"]
+				#tempdirs.sort(key=str.lower)
+                                # List, Directory, Scroll position
+				collapsed = self.data["collapsed_dirs"][self.usernames["browse"]]
+				num = 0
+				dirswithtree = []
 				self.data["directories"] = []
-				for s in self.data["browse_results"][self.usernames["browse"]]["dirs"]:
+				parents = []
+				for directory in tempdirs:
+					parent = "\\".join(directory.split("\\")[:-1])
+					if parent in tempdirs and parent not in parents:
+						parents.append(parent)
+	
+				for directory in tempdirs:
 					try:
-						self.data["directories"].append(s)
-					except:
-						pass
-				self.data["directories"].sort(key=str.lower)
-                                # List, Directory, Scroll position 
+						parent = "\\".join(directory.split("\\")[:-1]) 
+						a = 0
+						for dirs in collapsed:
+							if parent.startswith(dirs+"\\") or parent == dirs:
+								a = 1
+								break
+						if a == 1:
+							num += 1
+							continue
+						if directory in parents:
+							if directory in collapsed:
+								dirswithtree.append([directory, 2])
+								self.data["directories"].append(directory)
+							else:
+								for dir in collapsed:
+									if dir in directory:
+										pass
+								else:
+									dirswithtree.append([directory, 1])
+									self.data["directories"].append(directory)
+						else:
+							for dir in collapsed:
+								if dir in directory:
+									pass
+							else:
+								dirswithtree.append([directory, 0])
+								self.data["directories"].append(directory)
+					except Exception, e:
+						for dir in collapsed:
+							if dir in directory:
+								pass
+						else:
+							dirswithtree.append([directory, 0])
+							self.data["directories"].append(directory)
+					num += 1 
+				
 				if self.display["browse"] == "directories":
-					clipped_list, self.scrolling["browsedir"], start = self.scrollbox(self.data["directories"], self.scrolling["browsedir"], d["height"])
+					clipped_list, self.scrolling["browsedir"], start = self.scrollbox(dirswithtree, self.scrolling["browsedir"], d["height"])
 				else:
-					clipped_list, self.scrolling["browsedir"], start = self.scrollbox(self.data["directories"], self.scrolling["browsedir"], d["height"])
+					clipped_list, self.scrolling["browsedir"], start = self.scrollbox(dirswithtree, self.scrolling["browsedir"], d["height"])
+				#self.Hlog("debug", self.scrolling["browsedir"])
 				self.windows["dimensions"]["directories"]["start"] = start
 				count = 0
 				self.windows["text"]["dirwin"].erase()
                                 # Display directory tree
-				for s in clipped_list:
+				for s, has_child in clipped_list:
 					try:
 						dir = s.split("\\")
+						if has_child == 1:
+							modifier = "[-]"
+						elif has_child == 2:
+							modifier = "[+]"
+						else: 
+							modifier = "|\\"
                                                 # Spaces before directory, to make it look like a tree
-						string = (" " * (len(dir)-2)) + "\\"
-						string += self.dlang(dir[-1][:self.w-w["width"]-4-len(string)])
-						string += " " * ( (self.w-w["width"]-4) -len(string) )
+						string = (" " * (len(dir)-2)) + modifier
+						string += self.dlang(dir[-1][:d["width"]-len(string)])
+						string += " " * ( d["width"] -len(string) )
 						if count +d["start"] == self.scrolling["browsedir"]:
 							self.windows["text"]["dirwin"].addstr(string, self.colors["green"])
 						else:
@@ -8332,18 +8443,7 @@ class mucous(driver.Driver):
 					except Exception, e:
 						pass
 						#self.Hlog("debug", str(e))
-				
-				self.Spl["dir_browse"] = self.data["directories"][self.scrolling["browsedir"]]
-				self.set_edit_title(self.Spl["dir_browse"] )
-                                
-				self.BrowseFiles( self.usernames["browse"], self.Spl["dir_browse"])
-                                
-				self.BrowseFileBar( self.usernames["browse"], self.Spl["dir_browse"])
-				
-				self.windows["text"]["dirwin"].noutrefresh()
-			
 				del clipped_list
-				
 			
 			elif self.usernames["browse"] == "default__":
                                 # Clear windows, display browse help
@@ -8360,6 +8460,25 @@ class mucous(driver.Driver):
 					except Exception, e:
 						self.Hlog("debug", "Browse mode" + str(e))
 			tw.noutrefresh()
+			
+	def FormatBrowse(self, FormatDirs=1):
+		try:
+			if "directories" not in self.windows["dimensions"]:
+				return
+			if FormatDirs:
+				self.FormatBrowseDirs()
+			if self.usernames["browse"] != "default__":
+				self.Spl["dir_browse"] = self.data["directories"][self.scrolling["browsedir"]]
+				self.set_edit_title(self.Spl["dir_browse"] )
+			
+				self.BrowseFiles( self.usernames["browse"], self.Spl["dir_browse"])
+			
+				self.BrowseFileBar( self.usernames["browse"], self.Spl["dir_browse"])
+			
+			self.windows["text"]["dirwin"].noutrefresh()
+		
+			
+			
 			self.DrawTabs(self.activeitems["browse"], self.usernames["browse"])
 
 			
@@ -9225,17 +9344,18 @@ class mucous(driver.Driver):
 			sup = self.scrolling[ mode ]
 			if self.data[mode] != {}:
 				if self.Spl["recommend_sort"] == "alpha":
-					dict = []
-					for item, num in self.data[mode].items():
-						dict.append([item, num])
+					dict = self.data[mode].keys()
+					dict.sort(key=str.lower)
+					for item in dict:
+						self.logs[mode].append( [item, self.data[mode][item] ])
+
 				elif self.Spl["recommend_sort"] == "size":
 					dict = self.sortbyvalue(self.data[mode])
 					dict.reverse()
-				for item, num in dict:
-					self.logs[mode].append( [item, num])
+					for item, num in dict:
+						self.logs[mode].append( [item, num])
+				
 					
-				if self.Spl["recommend_sort"] == "alpha":
-					self.logs[mode].sort(key=str.lower)
 			else:
 				self.logs[mode] = [["EMPTY RECOMMENDATIONS", 0]]
 			count = 0
@@ -9254,42 +9374,51 @@ class mucous(driver.Driver):
 			self.windows["text"][mode].refresh()
 		except Exception, e:
 			self.windows["text"][mode].refresh()
-# 			self.Hlog("debug", "DrawRecommendations: " + str(e))
+ 			#self.Hlog("debug", "DrawRecommendations: " + str(e))
 
 	def DrawSimilarUsers(self):
 		try:
 			mode  = "similar_users"
 			self.windows["text"][mode].erase()
-
+			sup = self.scrolling[ mode ]
+			w = self.windows["dimensions"][mode]
 			if self.data[mode] != {}:
 				self.logs[mode] = []
-				w = self.windows["dimensions"][mode]
-				for user, status in self.data[mode].items():
-					self.logs[mode].append( [user, status])
-				sup = self.scrolling[ mode ]
-				count = 0 
-				self.logs[mode].sort(key=str.lower)
+				
+				users = self.data[mode].keys()
+				users.sort(key=str.lower)
+				for user in users:
+					self.logs[mode].append( [user, self.data[mode][user] ])
+				
+				 
+				
 				clipped_list, sup, start = self.scrollbox(self.logs[mode], sup, w["height"])
 				self.windows["dimensions"][mode]["start"] = start
 				self.scrolling[mode] = sup
-				for user, status in clipped_list:
-					if count + start == sup:
-						attr = curses.A_BOLD
-					else: 
-						attr = curses.A_NORMAL
-					if status == 1:
-						self.windows["text"][mode].addstr("* ", self.colors["yellow"] | attr)
-					elif status == 2:
-						self.windows["text"][mode].addstr("* ", self.colors["green"] | attr)
-					else:
-						self.windows["text"][mode].addstr("* " , attr)
-					if len (user )+2 > w["width"]:
-						user = user[ :w["width"]-2-len(user) ]
-					self.windows["text"][mode].addstr(user + " " * (w["width"] - len(user)-2),   attr)
-					count +=1
-				self.windows["text"][mode].refresh()
+			else:
+				clipped_list = [["NO SIMILAR USERS", 0]]
+				start = 0
+			count = 0
+			for user, status in clipped_list:
+				if count + start == sup:
+					attr = curses.A_BOLD
+				else: 
+					attr = curses.A_NORMAL
+				if status == 1:
+					self.windows["text"][mode].addstr("* ", self.colors["yellow"] | attr)
+				elif status == 2:
+					self.windows["text"][mode].addstr("* ", self.colors["green"] | attr)
+				else:
+					self.windows["text"][mode].addstr("* " , attr)
+				if len (user )+2 > w["width"]:
+					user = user[ :w["width"]-2-len(user) ]
+				self.windows["text"][mode].addstr(user + " " * (w["width"] - len(user)-2),   attr)
+				count +=1
+				
+			
+			self.windows["text"][mode].refresh()
 		except Exception, e:
-# 			self.Hlog( "debug", "DrawSimilarUsers " + str(e) + str(self.scrolling["similar_users" ]))
+			self.Hlog( "debug", "DrawSimilarUsers " + str(e) + str(self.scrolling["similar_users" ]))
 			self.windows["text"]["similar_users"].refresh()
 	
 	def DrawHatedInterests(self):
@@ -9440,7 +9569,7 @@ class mucous(driver.Driver):
 	def ModeTrust(self):
 		try:
 			self.display["list"] = "trusted"
-			self.DestroyOldWindows()
+			#self.DestroyOldWindows()
 			self.Spl["show_menu"] = False
 			
 			s = self.windows["dimensions"][self.display["list"]] = {"height": self.h-7, "top": 2, "left": 1, "width": self.w-2, "start": 0}
