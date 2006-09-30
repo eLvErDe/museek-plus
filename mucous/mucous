@@ -2606,6 +2606,17 @@ class mucous(driver.Driver):
 					if self.data["search_results"][number] != None:
 						user = self.data["search_results"][number][1]
 						path = self.data["search_results"][number][5]
+						directory = ''
+						if dtype == "dir":
+							path = path.replace("/", "\\")
+							r = path.split('\\')
+							r.remove(r[-1])
+		
+							for s in r:
+								if s is not r[-1]:
+									directory += s + "\\"
+								else:
+									directory += s
 					else:
 						self.Hlog("status", "No such file")
 				else:
@@ -2616,36 +2627,26 @@ class mucous(driver.Driver):
 				if self.display["browse"] == "files":
 					w = self.windows["dimensions"]["browse"]
 					if dtype == "dir":
-						path = self.Spl["dir_browse"]
-						#self.data["files"][self.Sup+w["start"]
+						directory = path = self.Spl["dir_browse"]
 						user = self.usernames["browse"]
-						#self.SendMessage(messages.GetFolderContents(user, directory))
+
 					elif dtype == "file":
 						user = self.usernames["browse"]
 						path = self.Spl["dir_browse"]+"\\"+self.data["files"][number]
 				elif self.display["browse"] == "directories":
 					w = self.windows["dimensions"]["directories"]
-					if dtype == "dir":
-						path = self.Spl["dir_browse"]
-						user = self.usernames["browse"]
-						#self.SendMessage(messages.GetFolderContents(user, directory))
+					if dtype != "dir":
+						return
+					directory = path = self.Spl["dir_browse"]
+					user = self.usernames["browse"]
+
 			if user != None and path != None:
 				if dtype == "file":
 					path = path.replace("/", "\\")
 					self.SendMessage(messages.DownloadFile(user, path))
 					self.Hlog("status", "Try to Download file: %s from %s" % (path, user))
 				elif dtype == "dir":
-					path = path.replace("/", "\\")
-					r = path.split('\\')
-					directory = ''
-					r.remove(r[-1])
-
-					for s in r:
-						if s is not r[-1]:
-							directory += s + "\\"
-						else:
-							directory += s
-
+					directory = directory.replace("/", "\\")
 					self.SendMessage(messages.GetFolderContents(user, directory))
 					self.Hlog("status", "Try to Download directory: %s from %s" % (directory, user))
 				
@@ -5085,6 +5086,7 @@ class mucous(driver.Driver):
 			#if line[:1] == "/" and line[:4] != "/me " and line[:2] != '//':
 			
 			if line == "/quit" or line == "/exit":
+				update_config()
 				self.shutdown()
 				return 2
 			elif line[:11] == "/disconnect":
@@ -8224,7 +8226,7 @@ class mucous(driver.Driver):
 			self.windows["text"]["browse"].idlok(1)
 			self.windows["text"]["browse"].noutrefresh()
 
-			d =self.windows["dimensions"]["directories"]= {"height": w["height"], "width": self.w-w["width"]-4, "top": w["top"], "left":1}
+			d = self.windows["dimensions"]["directories"] = {"height": w["height"], "width": self.w-w["width"]-4, "top": w["top"], "left":1}
 			self.windows["text"]["dirwin"] = self.windows["border"]["dirborder"].subwin(d["height"], d["width"], d["top"], d["left"])
 			self.windows["text"]["dirwin"].erase()
 			self.windows["text"]["dirwin"].noutrefresh()
@@ -8293,7 +8295,9 @@ class mucous(driver.Driver):
 		
 	def FormatBrowse(self):
 		try:
-			d =self.windows["dimensions"]["directories"]
+			if "directories" not in self.windows["dimensions"]:
+				return 
+			d = self.windows["dimensions"]["directories"]
 			w = self.windows["dimensions"]["browse"] 
 			tw = self.windows["text"]["browse"]
 
@@ -8343,7 +8347,7 @@ class mucous(driver.Driver):
 				self.windows["text"]["dirwin"].noutrefresh()
 			
 				del clipped_list
-				del directories
+				
 			
 			elif self.usernames["browse"] == "default__":
                                 # Clear windows, display browse help
