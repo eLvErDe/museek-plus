@@ -10799,6 +10799,11 @@ class mucous(driver.Driver):
 			else:
 				ttickers.sort(key=str.lower)
 				if mucous_config["tickers"]["ticker_scroll"] == "yes":
+					if self.Spl["show_menu"] == True:
+						self.ticker_timer.cancel()
+						self.ticker_timer = threading.Timer(float(mucous_config["tickers"]["scrolltime"]), self.DrawTicker)
+						self.ticker_timer.start()
+						return
 					longstring = ""
 					for user in ttickers:
 						longstring += "[%s] %s " % (user, ticks[user])
