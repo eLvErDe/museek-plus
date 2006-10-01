@@ -466,12 +466,11 @@ class CharacterParse(threading.Thread):
 				# normal letters 
 				self.line = self.line[:pos] + c + self.line[pos:]
 				self.x += 1
-				
-			if c.startswith("KEY_") or len(c) > 1:
-				pass
-			else:
-				pass 
-			
+			elif len(c) == 1 and ord(c[0]) >= 127 and ord(c[0]) <256:
+				# ISO8859-* characters
+				self.line = self.line[:pos] + c + self.line[pos:]
+				self.x += 1
+	
 			self.fixpos()
 			self.mucous.line = self.line
 			self.escape = False
