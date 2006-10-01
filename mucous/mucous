@@ -108,7 +108,7 @@ parser = ConfigParser.ConfigParser()
 mucous_config = {"connection":{"interface":'localhost:2240', "passw":None}, \
 	"mucous":{"autobuddy": "no", "roomlistminsize": 5, "rooms_sort": "size", \
 	"roombox": "big", "log_dir": "~/.mucous/logs/", "now-playing": "default", \
-	"now-playing-prefix": None, "browse_display_mode": "filesystem", "browse_width": 35, \
+	"now-playing-prefix": None, "browse_display_mode": "filesystem", "browse_width": 25, \
 	"url reader": "firefox", "url custom prefix": "", "url custom suffix": "", \
 	"transbox" : "split", "language": "iso-8859-1", "beep": "yes", "autoaway": "yes", \
 	"auto-retry": "yes", "auto-clear": "no", "logging": "yes", "extra_requests": "Yes"}, \
@@ -605,7 +605,7 @@ class mucous(driver.Driver):
 		self.commandlist =  ["/me", "/j", "/join", "/p", "/part", "/l", "/leave", "/talk", "/say", "/alias", "/list", "/users", \
 "/cd",  "/get", "/getdir", "/nick", "/privs", "/privileges", "/giveprivs",\
 "/help", "/info",  "/autojoin", "/roombox", "/autoaway", "/transbox", "/roomlist", "/roomlistrefresh", \
-"/inrooms", "/pm",  "/msg", "/np", "/npset", "/npcheck",\
+"/inrooms", "/pm",  "/msg", "/np", "/npset", "/npcheck", "/browsewidth", \
 "/npprefix", "/tickroom", "/tickcycle",  "/listtick", "/tickers", "/interface", "/password",\
 "/save", "/connect", "/disconnect", "/autobuddy", "/autoclear", "/autoretry", "/privbuddy", "/onlybuddy",\
 "/slots","/buddy", "/unbuddy",  "/ban", "/banlist", "/beep", "/trust", "/distrust", "/unban", "/nuke", "/unnuke",\
@@ -4172,8 +4172,19 @@ class mucous(driver.Driver):
 						self.Spl["dir_browse"]=sdirs[0]
 					
 					self.ModeBrowse()
-			
+			elif y == w["top"] + w["height"]:
+				if x < mucous_config["mucous"]["browse_width"]:
+					if x in (7,8,9,10):
+						if mucous_config["mucous"]["browse_width"] > 20: 
+							mucous_config["mucous"]["browse_width"] -= 1
+							self.ModeBrowse()
+					elif x in (12,13,14,15,16,17):
+						if mucous_config["mucous"]["browse_width"] < self.w-20:
+							mucous_config["mucous"]["browse_width"] += 1
+							self.ModeBrowse()
+					
 			elif y == w["top"]-1:
+			
 				if x >=self.w-17 and self.usernames["browse"] != "default__":
 					self.usernames["browse"]="default__"
 					self.ModeBrowse()
@@ -5925,7 +5936,18 @@ class mucous(driver.Driver):
 					else:
 						self.Hlog("status", "Enter an Integer")
 						
-				
+			elif line[:13] == "/browsewidth " and line[13:] != "":
+				if line[13:].isdigit():
+					width = int(line[13:])
+					if width > self.w-20:
+						width = self.w-20
+					if width < 20:
+						width = 20 
+					mucous_config["mucous"]["browse_width"] = width
+					
+					if self.display["mode"] == "browse":
+						self.ModeBrowse()
+					
 			elif line[:12] == "/browseuser " or line[:7] == "/buser ":
 				user = None
 				if line[:12] == "/browseuser " and line[12:] != '':
@@ -8337,7 +8359,8 @@ class mucous(driver.Driver):
 				attr = curses.A_BOLD
 			self.windows["border"]["dirborder"].border()
 			self.windows["border"]["dirborder"].attroff(self.colors["green"] )
-			self.windows["border"]["dirborder"].addstr(0, 4, "< Directories >",  attr)
+			self.windows["border"]["dirborder"].addstr(0, 1, "< Directories >",  attr)
+			self.windows["border"]["dirborder"].addstr(w["height"]+1, 1, "< Width - %s + >"  % mucous_config["mucous"]["browse_width"],  attr)
 			self.windows["border"]["dirborder"].noutrefresh()
 
 			if self.usernames["browse"] == "default__":
@@ -9019,32 +9042,7 @@ class mucous(driver.Driver):
 "/ip                    (Get the IP of current user)",\
 "/msg <message>         (Send message to previous chosen user)"]
 
-		self.logs["search"]["default__"] = ["Search commands:",\
-"/searchfor   <query>   (Global Search)",\
-"/searchbuddy <query>   (Buddy Search)",\
-"/searchroom  <query>   (Room Search)",\
-"/download <number>     (Download File with number)",\
-"/downdir  <number>     (Download directory of File)",\
-"/close                 (Close current search)",\
-"/filter <string>       (limit displayed results)",\
-"Mouse: Right-Click     (popup menu)",\
-"Press Insert to toggle between searches.",\
-"Press Alt-T to toggle Global/Buddy/Room searches",\
-
-"Or, type in the query, below."]
-
-		self.logs["browse"]["default__"] = ["----<Browse Commands>----",\
-"/browse        (Switch to Browse Mode)",\
-"/buser    <user>       (Browse User)",\
-"/bsearch  <query>      (Search thru Shares)",\
-"/download <number>     (Download file with this number)",\
-"/close                 (close current shares)",\
-"Press Insert to toggle between shares.",\
-"--File System browsing commands--",\
-"cd (change dir) get, getdir (download)",\
-"First, type in the user you wish to browse, below.",\
-"Right-click on directories or files to display the popup menu."]
-
+		
 
 		self.infolog = ["Global User Information commands:",\
 "/userinfo <user>",\
@@ -9156,28 +9154,42 @@ class mucous(driver.Driver):
 "/help keys     (Special Keys)",\
 "/quit          (Close Mucous)"]
 		
-		self.help_search = ["----<Search Commands>----",\
-"/search        (Switch to Search Mode)",\
-"/searchfor   <query>",\
-"/searchbuddy <query>",\
-"/searchroom  <query>",\
-"/searchuser  <user>",\
-"/download <search number>",\
-"/downdir  <search number>",\
-"/close         (Close Current Search)",\
-"/clearsearchs  (Removes all searches)",\
-"/filter (Turn OFF Filter) /filter <query> (Set Filter)"]
+		
+		self.help_search2 = [\
+"/search                (Switch to Search Mode)",\
+"/searchfor   <query>   (Global Search)",\
+"/searchbuddy <query>   (Buddy Search)",\
+"/searchroom  <query>   (Room Search)",\
+"/searchuser  <user>    (Search only one user's shares)",\
+"/download <number>     (Download File with number)",\
+"/downdir  <number>     (Download directory of File)",\
+"/close                 (Close current search)",\
+"/clearsearchs          (Removes all searches)",\
+"/filter <string>       (limit displayed files)",\
+"Mouse: Right-Click     (popup menu)",\
+"Press Insert to toggle sorting methods.",\
+"Press Alt-T to toggle Global/Buddy/Room searches",\
+"Press Insert to toggle sorting methods."]
+
+		self.help_search = ["----<Search Commands>----"] + self.help_search2
+		self.logs["search"]["default__"] = ["Search commands:"] + self.help_search2 + ["Or, type in the query, below."]
+
 
 		self.help_browse = ["----<Browse Commands>----",\
-"/browse        (Switch to Browse Mode)",\
+"/browse                (Switch to Browse Mode)",\
 "/buser    <user>       (Browse User)",\
 "/bsearch  <query>      (Search thru Shares)",\
 "/download <number>     (Download file with this number)",\
 "/close                 (close current shares)",\
 "Press Insert to toggle between shares.",\
+"Alt-X                  (Expand/Collapse directory)",\
+"/browsewidth <number>  (Resize Directories window)",\
 "--File System browsing commands--",\
 "cd (change dir) get, getdir (download)",\
-"First, type in the user you wish to browse, below."]
+"First, type in the user you wish to browse, below.", \
+"Right-click on directories or files to display the popup menu."]
+
+		self.logs["browse"]["default__"] = self.help_browse
 		
 		self.help_download = ["----<Manual Download Commands>----",\
 "/downuser <user>    (Set download user)",\
