@@ -7180,12 +7180,15 @@ class mucous(driver.Driver):
 	def DrawChatRoomText(self, roomlinenumber):
 		try:
 			room = self.Spl["room"]
-			mtype, timestamp, username, message = roomlinenumber
+			mtype, timestamp, username, message2 = roomlinenumber
 			lang = mucous_config["mucous"]["language"]
 			w = self.windows["dimensions"]["chat"]
 			room = self.dlang(room)
 			length = 0
 			tw = self.windows["text"]["chat"]
+			message = ""
+			for m in message2:
+				message += curses.unctrl(m)
 			try:
 				if mtype == "Me":
 					# /me message
@@ -7332,7 +7335,7 @@ class mucous(driver.Driver):
 				f.close()
 				lines = a.split("\n" )
 				numlines = -30
-				if len(lines) < 30:
+				if len(lines) <= 30:
 					numlines = 0
 				for line in lines[numlines:]:
 					if line == "":
@@ -7365,7 +7368,7 @@ class mucous(driver.Driver):
 				f.close()
 				lines = a.split("\n" )
 				numlines = -30
-				if len(lines) < 30:
+				if len(lines) <= 30:
 					numlines = 0
 				for line in lines[numlines:]:
 					if line == "":
