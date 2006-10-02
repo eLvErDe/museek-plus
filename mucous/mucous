@@ -462,11 +462,11 @@ class CharacterParse(threading.Thread):
 					self.line = self.line[:pos-1] + self.line[pos:]
 					self.x -= 1
 	
-			elif len(c) == 1 and ord(c[0]) >= 32 and ord(c[0]) <127:
-				# normal letters 
+			elif len(c) == 1 and ord(c[0]) >= 32 and ord(c[0]) < 127:
+				# ASCII letters 
 				self.line = self.line[:pos] + c + self.line[pos:]
 				self.x += 1
-			elif len(c) == 1 and ord(c[0]) >= 127 and ord(c[0]) <256:
+			elif len(c) == 1 and ord(c[0]) > 127 and ord(c[0]) < 256:
 				# ISO8859-* characters
 				self.line = self.line[:pos] + c + self.line[pos:]
 				self.x += 1
@@ -1090,9 +1090,11 @@ class mucous(driver.Driver):
 				
 			days = hours_i/24
 			hours = hours_i - (days*24)
-			time = 'You have %d Days, %2.2d:%2.2d:%2.2d of privileges left' % (days, hours, minutes_i, seconds_i)
-				
-			self.Hlog("status", time)
+			if time:
+				stime = 'You have %d Days, %2.2d:%2.2d:%2.2d of privileges left' % (days, hours, minutes_i, seconds_i)
+			else:
+				stime = 'You have no global privileges.'
+			self.Hlog("status", stime)
 		except Exception,e:
 			self.Hlog("debug", "cb_server_privileges: " +str( e) )
 		
@@ -1917,13 +1919,7 @@ class mucous(driver.Driver):
 			browse_list = []
 			count =0 
 			# file, stats[ size, ftype, [bitrate, length ] ]
-			if dirs not in self.data["shares"][user]:
-				tw.erase()
-				tw.addstr("Nothing shared..")
-				tw.refresh()
-				self.data["files"] = []
-				return
-			if self.data["shares"][user][dirs] == {}:
+			if dirs not in self.data["shares"][user] or self.data["shares"][user][dirs] == {}:
 				tw.erase()
 				tw.addstr("Empty..")
 				tw.refresh()
@@ -10806,16 +10802,22 @@ class mucous(driver.Driver):
 					longstring = ""
 					for user in ttickers:
 						longstring += "[%s] %s " % (user, ticks[user])
-					bw = self.windows["border"]["roomstatus"]
-					s = self.windows["dimensions"]["roomstatus"]
+					if self.display["chatshape"] in ("nostatuslog", "chat-only"):
+						bw = self.windows["border"]["chat"]
+						s = self.windows["dimensions"]["chat"]
+						padd = -3; posy = 0; posx = 2
+					else:
+						bw = self.windows["border"]["roomstatus"]
+						s = self.windows["dimensions"]["roomstatus"]
+						padd = 0; posy = 5; posx = 1
 					
 					if self.Spl["ticker_num"] >= len(longstring):
 						self.Spl["ticker_num"] = 0
 					part = longstring[self.Spl["ticker_num"]:self.Spl["ticker_num"]+s["width"]-2]
-					while len(part) < s["width"]-2:
-						part += longstring[:(s["width"]-2 - len(part))] 
-					fill = (s["width"]-2 - len(part)) * " "
-					bw.addstr(5, 1, "<%s%s>" %(part, fill))
+					while len(part) < s["width"]-2 +padd:
+						part += longstring[:(s["width"]-2+padd - len(part))] 
+					fill = (s["width"]-2 - len(part) +padd) * " "
+					bw.addstr(posy, posx, "<%s%s>" %(part, fill))
 					bw.refresh()
 					self.Spl["ticker_num"] += 1
 					#if self.Spl["ticker_num"] >= len(ttickers):
