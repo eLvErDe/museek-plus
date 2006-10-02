@@ -530,8 +530,8 @@ class mucous(driver.Driver):
 		"search_method": "globally", "search_order": "num", "show_menu": False, \
 		"current_menu": None, "setup_input": "default", "interests_input": "add_likes", \
 		"ticker_room": None, "uploads": 0, "downloads": 0 , "search_reverse": False, \
-		"recommend_sort": "alpha", "ticker_num":  0, "downloaddir": os.path.expanduser("~/") \
-		}
+		"recommend_sort": "alpha", "ticker_num":  0, "downloaddir": os.path.expanduser("~/"), \
+		"museekconfigfile": ""}
 		self.data = {"rooms": {}, "tickers": {}, "shares": {} , "roomlist": {}, "search_tickets": {}, "search_results": {}, "browse_num": {}, "browse_results": {}, "mystats": [], "downloads": {}, "uploads": {}, "recommendations": {}, "similar_users": {}, "collapsed_dirs":{} }
 		self.logs = {"buddied": [], "banned": [], "ignored": [], "trusted": [], "uploads": "Up: 0", "downloads": "Down: 0", "tab_completion": [], "search_count": ["Results: ", 0], "history": [], "alert": "", "onlinestatus": "Offline", "info": {}, "private": {}, "rooms": {}, "browse": {}, "search":{} , "roombox": {} , "roomstatus": {} , "recommendations": [], "likes": [], "hates": [], "similar_users":[]    }
 		self.activeitems = {"info": [], "search": [], "browse": [], "private": [], "positions": {}}
@@ -1807,6 +1807,12 @@ class mucous(driver.Driver):
 			self.ListBan()
 			self.ListIgnore()
 			self.refresh_windows()
+			self.Spl["museekconfigfile"] = os.path.expanduser("~/.museekd/config.xml")
+			if self.config["shares"]["database"] != "":
+				pos = self.config["shares"]["database"].rfind(".")
+				file = self.config["shares"]["database"][:33]+".xml"
+				if os.path.exists(file):
+					self.Spl["museekconfigfile"] = file
 		except Exception, e:
 			self.Hlog("debug", "cb_config_state: " + str(e))
 	# -- ^ Museek Messages ^
@@ -4610,66 +4616,35 @@ class mucous(driver.Driver):
 						self.display["setup"]="logs"
 						self.Spl["setup_input"] = "default"
 				self.ModeSetup()
-				
+
 			if self.display["setup"]=="shares":
 				if y in ( 3, 4, 5):
 					if x >= 1 and x <= 16:
-						self.muscan_command = ["muscan", "-v", "-r"]
-						self.muscan_timer.cancel()
-						self.muscan_timer = threading.Timer(1.0, self.ThreadMuscan)
-						self.muscan_timer.start()
-						self.Hlog("status", "Rescanning shares with muscan, don't forget to Reload them.")
-					elif x >= 17 and x <= 29:
-					
-						self.muscan_command = ["muscan", "-v"]
-						self.muscan_timer.cancel()
-						self.muscan_timer = threading.Timer(1.0, self.ThreadMuscan)
-						self.muscan_timer.start()
-						self.Hlog("status", "Updating shares with muscan, don't forget to Reload them.")
-					elif x >= 33 and x <= 49:
-						
-						self.SendMessage(messages.ReloadShares())
+						self.MuscanListNormal()
+					elif x >= 17 and x <= 32:
+						self.MuscanAddNormal()
+					elif x >= 33 and x < 49:
+						self.MuscanRemoveNormal()
 
 				if y in ( 6, 7, 8):
 					if x >= 1 and x <= 16:
-						self.muscan_command = ["muscan",  "-l"]
-						self.muscan_timer.cancel()
-						self.muscan_timer = threading.Timer(1.0, self.ThreadMuscan)
-						self.muscan_timer.start()
-						self.Hlog("status", "Listing normal shares with muscan.")
-					elif x >= 17 and x <= 29:
-						self.Spl["setup_input"]="adddir"
-						self.ModeSetup()
-					elif x >= 33 and x <= 49:
-						self.Spl["setup_input"]="rmdir"
-						self.ModeSetup()
+						self.MuscanRescanNormal()
+					elif x >= 17 and x <= 32:
+						self.MuscanUpdateNormal()
 				elif y in ( 9, 10, 11):
 					if x >= 1 and x <= 16:
-						self.muscan_command = ["muscan",  "-b", "-l"]
-						self.muscan_timer.cancel()
-						self.muscan_timer = threading.Timer(1.0, self.ThreadMuscan)
-						self.muscan_timer.start()
-						self.Hlog("status", "Listing buddy shares with muscan.")
-					elif x >= 17 and x <= 29:
-						self.Spl["setup_input"]="addbuddydir"
-						self.ModeSetup()
-					elif x >= 33 and x <= 49:
-						self.Spl["setup_input"]="rmbuddydir"
-						self.ModeSetup()
+						self.MuscanListBuddy()
+					elif x >= 17 and x <= 32:
+						self.MuscanAddBuddy()
+					elif x >= 33 and x < 49:
+						self.MuscanRemoveBuddy()
 				elif y in ( 12, 13, 14):
 					if x >= 1 and x <= 16:
-						self.muscan_command = ["muscan", "-v", "-b", "-r"]
-						self.muscan_timer.cancel()
-						self.muscan_timer = threading.Timer(1.0, self.ThreadMuscan)
-						self.muscan_timer.start()
-						self.Hlog("status", "Rescanning buddy shares with muscan, don't forget to Reload them.")
-					elif x >= 17 and x <= 29:
-					
-						self.muscan_command = ["muscan", "-v", "-b"]
-						self.muscan_timer.cancel()
-						self.muscan_timer = threading.Timer(1.0, self.ThreadMuscan)
-						self.muscan_timer.start()
-						self.Hlog("status", "Updating buddy shares with muscan, don't forget to Reload them.")
+						self.MuscanRescanBuddy()
+					elif x >= 17 and x <= 32:
+						self.MuscanUpdateBuddy()
+					elif x >= 49 and x <= 66:
+						self.SendMessage(messages.ReloadShares())
 			elif self.display["setup"]=="userinfo":
 				if y >= 1 and y < self.h-7:
 					self.Spl["setup_input"]="userinfo"
@@ -9778,10 +9753,11 @@ class mucous(driver.Driver):
 		except Exception, e:
 			self.Hlog("debug", "ModeSetupDefault: "+ str(e))
 			
-	def SetupButton(self, title, option, x, y, height, width, optionbold=False, titlepad=True):
+	def SetupButton(self, title, option, x, y, height, width, optionbold=False, titlepad=True, border=True):
 		try:
 			winborder = curses.newwin(height,width,x,y)
-			winborder.border()
+			if border:
+				winborder.border()
 			if title != None:
 				if titlepad:
 					winborder.addstr(0,1, "< %s >" % title, curses.A_BOLD)
@@ -9937,33 +9913,27 @@ class mucous(driver.Driver):
 			# Create buttons, settings and immediately Delete them to aviod leaks
 			if self.display["setup"] in ("shares"):
 				# First Row
-				self.SetupButton("Normal", "Rescan Shares",3,1,3,16)
-				
-				self.SetupButton("Normal", "Upload Shares", 3,17,3,16) 
-				
-				self.SetupButton(None, "Reload Shares", 3,33,3,16)
-				
+				self.SetupButton("Normal", "List Shared", 3,1,3,16)
+				self.SetupButton(None, "Add Directory", 3,17,3,16)
+				self.SetupButton(None, "Remove Dir", 3,33,3,16)
+				self.SetupButton(None, "Click on the buttons to run the local muscan.\nWhen you click on Add/Remove Directory, type in the directory below, and start with '//' instead of just a '/'", 2,49,10,self.w-50)
 				# Second Row
+				self.SetupButton(None, "Rescan Shares",6,1,3,16)
+				self.SetupButton(None, "Update Shares", 6,17,3,16)
 				
-				self.SetupButton("Normal", "List Shared", 6,1,3,16)
-				
-				self.SetupButton("Normal", "Add Directory", 6,17,3,16)
-				
-				self.SetupButton("Normal", "Remove Dir", 6,33,3,16)
-
+				# Third Row
 				self.SetupButton("Buddy-only", "List Shared", 9,1,3,16)
+				self.SetupButton(None, "Add Directory", 9,17,3,16)
+				self.SetupButton(None, "Remove Dir", 9,33,3,16)
 				
-				self.SetupButton("Buddy-only", "Add Directory", 9,17,3,16)
+				# Fourth Row
+				self.SetupButton(None, "Rescan Shares", 12,1,3,16)
+				self.SetupButton(None, "Update Shares", 12,17,3,16)
+				self.SetupButton(None, "Reload Shares", 12,49,3,16, optionbold=True)
 				
-				self.SetupButton("Buddy-only", "Remove Dir", 9,33,3,16)
-				
-				self.SetupButton("Buddy-only", "Rescan Shares", 12,1,3,16)
-				
-				self.SetupButton("Buddy-only", "Update Shares", 12,17,3,16)
-				
-				self.SetupButton(None, "Click on the buttons to run the local muscan.\n\nWhen you click on Add/Remove Directory, type in the directory below, and start with '//' instead of just a '/'", 2,49,self.h-8,self.w-50)
-
-
+				museekconfigfile = self.Spl["museekconfigfile"]
+				# Fifth Row
+				self.SetupButton("Museek Config File", museekconfigfile[:self.w-2], 15,1,3,self.w-2)
 			elif self.display["setup"] in ("userinfo"):
 				info = ""
 				if "userinfo" in self.config.keys():
@@ -10745,37 +10715,78 @@ class mucous(driver.Driver):
 	def ThreadMuscan(self):
 		try:
 			self.muscan_timer.cancel()
-			if subprocess_fail == 0:
-				if mucous_config["connection"]["interface"][:9] in ("localhost", "/tmp/muse") and self.muscan_command != [] :
-					p = "/usr/bin/muscan"
-					if os.path.exists(p):
-					
-						z = subprocess.Popen( self.muscan_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-						#, close_fds = True)
-						stdout_text, stderr_text = z.communicate()
-						z.wait()
-						
-						stdout_text = stdout_text.split('\n')
-						stderr_text = stderr_text.split('\n')
-						#self.Hlog("debug", str(stdout_text))
-						for line in stdout_text:
-							if line.isspace() or line == '':
-								pass
-							else:
-								self.Hlog("debug", line)
-						for line in stderr_text:
-							if line.isspace() or line == '':
-								pass
-							else:
-								self.Hlog("status", line)
-						self.Hlog("status", "Finished with shares.")
-				else:
-					self.Hlog("status", "Your Museekd is either running remotely or already running a command, cancelling.")
-			else:
+			if subprocess_fail:
 				self.Hlog("status", "This feature requires Python 2.4")
+				return
+			if mucous_config["connection"]["interface"][:9] in ("localhost", "/tmp/muse") and self.muscan_command != [] :
+				p = "/usr/bin/muscan"
+				if os.path.exists(p):
+				
+					z = subprocess.Popen( self.muscan_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+					stdout_text, stderr_text = z.communicate()
+					z.wait()
+					
+					stdout_text = stdout_text.split('\n')
+					stderr_text = stderr_text.split('\n')
+					for line in stdout_text:
+						if line.isspace() or line == '':
+							pass
+						else:
+							self.Hlog("status", line)
+					for line in stderr_text:
+						if line.isspace() or line == '':
+							pass
+						else:
+							self.Hlog("status", line)
+					self.Hlog("status", "Finished with shares.")
+			else:
+				self.Hlog("status", "Your Museekd is either running remotely or already running a command, cancelling.")
+		
+				
 			self.muscan_command = []
 		except Exception,e:
 			self.Hlog("debug", "ThreadMuscan: " + str(e))
+			
+	def MuscanAddNormal(self):
+		self.Spl["setup_input"]="adddir"
+		self.ModeSetup()
+	def MuscanAddBuddy(self):
+		self.Spl["setup_input"]="addbuddydir"
+		self.ModeSetup()
+	def MuscanRemoveBuddy(self):
+		self.Spl["setup_input"]="rmbuddydir"
+		self.ModeSetup()
+	def MuscanRemoveNormal(self):
+		self.Spl["setup_input"]="rmdir"
+		self.ModeSetup()
+	def MuscanRestartThread(self):
+		self.muscan_timer.cancel()
+		self.muscan_timer = threading.Timer(1.0, self.ThreadMuscan)
+		self.muscan_timer.start()
+	def MuscanListNormal(self):
+		self.muscan_command = ["muscan", "-c", self.Spl["museekconfigfile"], "-l"]
+		self.MuscanRestartThread()
+		self.Hlog("status", "Listing normal shares with muscan.")
+	def MuscanListBuddy(self):
+		self.muscan_command = ["muscan", "-c", self.Spl["museekconfigfile"], "-b", "-l"]
+		self.MuscanRestartThread()
+		self.Hlog("status", "Listing buddy shares with muscan.")
+	def MuscanRescanBuddy(self):
+		self.muscan_command = ["muscan", "-c", self.Spl["museekconfigfile"], "-v", "-b", "-r"]
+		self.MuscanRestartThread()
+		self.Hlog("status", "Rescanning buddy shares with muscan, don't forget to Reload them.")
+	def MuscanUpdateBuddy(self):
+		self.muscan_command = ["muscan", "-c", self.Spl["museekconfigfile"], "-v", "-b"]
+		self.MuscanRestartThread()
+		self.Hlog("status", "Updating buddy shares with muscan, don't forget to Reload them.")
+	def MuscanUpdateNormal(self):
+		self.muscan_command = ["muscan", "-c", self.Spl["museekconfigfile"], "-v"]
+		self.MuscanRestartThread()
+		self.Hlog("status", "Updating shares with muscan, don't forget to Reload them.")
+	def MuscanRescanNormal(self):
+		self.muscan_command = ["muscan", "-c", self.Spl["museekconfigfile"], "-v", "-r"]
+		self.MuscanRestartThread()
+		self.Hlog("status", "Rescanning shares with muscan, don't forget to Reload them.")
 			
 	def DrawTicker(self):
 		try:
@@ -10813,7 +10824,7 @@ class mucous(driver.Driver):
 					
 					if self.Spl["ticker_num"] >= len(longstring):
 						self.Spl["ticker_num"] = 0
-					part = longstring[self.Spl["ticker_num"]:self.Spl["ticker_num"]+s["width"]-2]
+					part = longstring[self.Spl["ticker_num"]:self.Spl["ticker_num"]+s["width"]-2+padd]
 					while len(part) < s["width"]-2 +padd:
 						part += longstring[:(s["width"]-2+padd - len(part))] 
 					fill = (s["width"]-2 - len(part) +padd) * " "
