@@ -5326,9 +5326,13 @@ class mucous(driver.Driver):
 				self.url = None
 				logfile = None
 				if self.display["mode"] == "chat" and self.Spl["room"] != None:
-					logfile = self.logs["rooms"][self.Spl["room"]]
+					logfile = []
+					for line in self.logs["rooms"][self.Spl["room"]]:
+						logfile.append(line)
 				elif self.display["mode"] == "private" and self.usernames["private"] != None:
-					logfile = self.logs["private"][self.usernames["private"]]
+					logfile = []
+					for line in self.logs["private"][self.usernames["private"]]:
+						logfile.append(line)
 				if logfile != None:
 					lene = len(logfile)
 					if self.display["mode"] == "chat":
@@ -7335,7 +7339,7 @@ class mucous(driver.Driver):
 				f.close()
 				lines = a.split("\n" )
 				numlines = -30
-				if len(lines) <= 30:
+				if len(lines) <= abs(numlines):
 					numlines = 0
 				for line in lines[numlines:]:
 					if line == "":
@@ -7368,7 +7372,7 @@ class mucous(driver.Driver):
 				f.close()
 				lines = a.split("\n" )
 				numlines = -30
-				if len(lines) <= 30:
+				if len(lines) <= abs(numlines):
 					numlines = 0
 				for line in lines[numlines:]:
 					if line == "":
@@ -8075,11 +8079,32 @@ class mucous(driver.Driver):
 					win.attron(self.colors["green"])
 					win.border()
 					if window == "uploads":
-						win.addstr(0, 3, "< Uploading Transfers >",  self.colors["green"] | curses.A_BOLD)
-						win.addstr(0, 27, "< Downloading Transfers >")
+						uattr = self.colors["green"] | curses.A_BOLD
+						uuattr = self.colors["green"] | curses.A_BOLD | curses.A_UNDERLINE
+						duattr = self.colors["green"] | curses.A_UNDERLINE
+						dattr = self.colors["green"]
+							
+						
 					elif window == "downloads":
-						win.addstr(0, 3, "< Uploading Transfers >")
-						win.addstr(0, 27, "< Downloading Transfers >",   curses.A_BOLD|self.colors["green"])	
+						uattr = self.colors["green"] 
+						uuattr = self.colors["green"] | curses.A_UNDERLINE
+						duattr = self.colors["green"] | curses.A_BOLD  | curses.A_UNDERLINE
+						dattr = self.colors["green"] | curses.A_BOLD
+						
+					pos = 3
+					win.addstr(0, pos, "<", dattr)
+					pos += 1
+					u = " Uploading Transfers "
+					win.addstr(0, pos, u,  uuattr)
+					pos += len(u)
+					win.addstr(0, pos, ">", dattr)
+					pos += 2
+					win.addstr(0, pos, "<", dattr)
+					pos += 1
+					d = " Downloading Transfers "
+					win.addstr(0, pos, d,  duattr)
+					pos += len(d)
+					win.addstr(0, pos, ">", dattr)
 					
 				else:
 					if self.display["transfers"] == "uploads" and window == "uploads":
@@ -8089,6 +8114,7 @@ class mucous(driver.Driver):
 					elif self.display["transfers"] == "uploads" and window == "downloads":
 						win.border()
 						win.addstr(0, 3, "< Downloading Transfers >", curses.A_BOLD)
+						
 					elif self.display["transfers"] == "downloads" and window == "downloads":
 						win.attron(self.colors["green"])
 						win.border()
@@ -8096,7 +8122,12 @@ class mucous(driver.Driver):
 					elif self.display["transfers"] == "downloads" and window == "uploads":
 						win.border()
 						win.addstr(0, 3, "< Uploading Transfers >", curses.A_BOLD)
-						
+					win.addch(0, 29, curses.ACS_TTEE )
+					win.addch(0, 29, curses.ACS_TTEE )
+					win.addch(0, 40, curses.ACS_TTEE )
+					if window == "downloads":
+						win.addch(0, 45, curses.ACS_TTEE )
+					
 	
 	
 			self.scrolling[self.display["list"]] = 0
