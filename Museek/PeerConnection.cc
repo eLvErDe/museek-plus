@@ -52,58 +52,61 @@ void PeerConnection::process_message(uint32 code) {
 	
 	switch(code) {
 	case 4: {
-		if(! mMuseek->is_banned(mUser)) {
-			if (mUser == mMuseek->username()) {
-				DEBUG("you are attempting to browse yourself... or being spoofed, blocked");
-				break;
-			}
-			if (mMuseek->is_receiving_shares(mUser)) {
-				DEBUG("already sent shared files list %s", mUser.c_str());
-			} else {
-				// Unfinished receiving users list
-// 				mMuseek->add_receiving(mUser);
-
-				if ( mMuseek->mBuddySharesHave && mMuseek->is_buddied(mUser)) {
-					lock();
-					DEBUG("sending buddy shared files list %s", mUser.c_str());
-					PSharesReply r(mMuseek->buddyshares()->shares());
-					send(r);
-					mMuseek->cb_peer_sent_buddy_shares(mUser);
-					}
-				else {
-					lock();
-					DEBUG("sending normal shared files list %s", mUser.c_str());
-					PSharesReply r(mMuseek->shares()->shares());
-					send(r);
-					mMuseek->cb_peer_sent_normal_shares(mUser);
-					}
-				
-			}
-		}
-		else {
+		// Recieved a Request for Shares List
+		if( mMuseek->is_banned(mUser)) {
 			mMuseek->cb_peer_banned(mUser);
+			break;
+		}
+		
+		if (mUser == mMuseek->username()) {
+			DEBUG("you are attempting to browse yourself... or being spoofed, blocked");
+			break;
+		}
+		if (mMuseek->is_receiving_shares(mUser)) {
+			DEBUG("already sent shared files list %s", mUser.c_str());
+		} else {
+			// Unfinished receiving users list
+			// mMuseek->add_receiving(mUser);
+
+			if ( mMuseek->mBuddySharesHave && mMuseek->is_buddied(mUser)) {
+				lock();
+				DEBUG("sending buddy shared files list %s", mUser.c_str());
+				PSharesReply r(mMuseek->buddyshares()->shares());
+				send(r);
+				mMuseek->cb_peer_sent_buddy_shares(mUser);
+				}
+			else {
+				lock();
+				DEBUG("sending normal shared files list %s", mUser.c_str());
+				PSharesReply r(mMuseek->shares()->shares());
+				send(r);
+				mMuseek->cb_peer_sent_normal_shares(mUser);
+				}
+			
 		}
 		break;
-
 	}
 	case 5: {
+		// Recieved a Shares List; Send Data to User Interfaces
 		PARSE(PSharesReply)
 		DEBUG("got shared file list %s with %u directories", mUser.c_str(), s.shares.size());
 		mMuseek->cb_peer_shares(mUser, mMuseek->recoder()->decode_shares(mUser, s.shares));
 		break;
 	}
 	case 8: {
+		// Recieved a Search Request; Check shares for a match
 		PARSE(PSearchRequest);
 		DEBUG("peer search request from %s: %s", mUser.c_str(), s.query.c_str());
 		mMuseek->cb_peer_search(this, mUser, s.ticket, mMuseek->recoder()->decode_user(mUser, s.query));
 		break;
 	}
 	case 9: {
+		// Recieved a Search Reply (Results); Send Data to User Interfaces
 		PARSE(PSearchReply);
 		DEBUG("search results %s, %i", mUser.c_str(), s.results.size());
 		if(! s.results.empty())
 			mMuseek->cb_peer_results(s.ticket, mUser, mMuseek->recoder()->decode_folder(mUser, s.results),
-			                         s.avgspeed, s.queuelen, s.slotfree);
+			s.avgspeed, s.queuelen, s.slotfree);
 		
 		/* yes, this is one of those evil-yet-functionalisms: */
 		if(inbuf.empty())
@@ -112,6 +115,7 @@ void PeerConnection::process_message(uint32 code) {
 		break;
 	}
 	case 15: {
+		// A User Info Request was recieved; Craft a User Info Reply
 		if(! mMuseek->is_banned(mUser)) {
 			if (mUser == mMuseek->username()) {
 				DEBUG("you are attempting to get your own userinfo... or being spoofed, blocked");
@@ -127,17 +131,21 @@ void PeerConnection::process_message(uint32 code) {
 				mMuseek->transfer_manager()->slot_free());
 			send(r);
 			mMuseek->cb_peer_sent_user_info(mUser);
-			break;
 		}
+		break;
 	}
 	case 16: {
+		// Recieved a User Info Reply; Send Data to User Interfaces
 		PARSE(PInfoReply);
 		DEBUG("got user info %s", mUser.c_str());
-		mMuseek->cb_peer_info(mUser, mMuseek->recoder()->decode_user(mUser, s.description), s.picture,
-		                      s.totalupl, s.queuesize, s.slotfree);
+		mMuseek->cb_peer_info(mUser, 
+		mMuseek->recoder()->decode_user(mUser, s.description), 
+		s.picture, s.totalupl, s.queuesize, s.slotfree);
+	
 		break;
 	}
 	case 36: {
+		// Folder Contents Request; Check shares for this folder, and send contents
 		if(! mMuseek->is_banned(mUser)) {
 			PARSE(PFolderContentsRequest);
 			if ( mMuseek->mBuddySharesHave && mMuseek->is_buddied(mUser))
@@ -163,6 +171,7 @@ void PeerConnection::process_message(uint32 code) {
 		break;
 	}
 	case 37: {
+		// Recieved Folder Contents Reply; Try to download these files
 		PARSE(PFolderContentsReply);
 		DEBUG("got folder contents reply from %s <...> (%d)", mUser.c_str(), s.folders.size());
 		Folders::iterator it = s.folders.begin();
@@ -174,27 +183,29 @@ void PeerConnection::process_message(uint32 code) {
 		PARSE(PTransferRequest);
 		
 		if (s.direction == 0) {
+			// Recieved Upload Request; Craft Upload Reply
 			PUploadReply r;
 			
 			DEBUG("request for upload %s %s %u", mUser.c_str(), s.filename.c_str(), s.ticket);
 			if ( mUser == mMuseek->username() ) {
 				r = PUploadReply(s.ticket, "Cannot Transfer to yourself");
-				send(r);
-				break;
-				}
-			if(mMuseek->is_banned(mUser)) {
+
+			} else if(mMuseek->is_banned(mUser)) {
 				DEBUG("banned");
-				r = PUploadReply(s.ticket, "Banned or Sharing Only to List");
-			
-			} else if(! mMuseek->buddyshares()->is_shared(s.filename) && mMuseek->mBuddySharesHave && mMuseek->is_buddied(mUser)) {
-				DEBUG("not shared in buddy shares");
-				r = PUploadReply(s.ticket, "File not shared");
-			} else if( mMuseek->buddyshares()->is_shared(s.filename) && mMuseek->mBuddySharesHave && ! mMuseek->is_buddied(mUser) && ! mMuseek->shares()->is_shared(s.filename)) {
-				DEBUG("shared in buddy shares, but user is not a buddy");
-				r = PUploadReply(s.ticket, "File not shared");
+				if (mMuseek->mBuddiesOnly)
+					r = PUploadReply(s.ticket, "Sharing Only to List");
+				else
+					r = PUploadReply(s.ticket, "Banned");
 			} else if(! mMuseek->shares()->is_shared(s.filename) && ! mMuseek->buddyshares()->is_shared(s.filename) ) {
 				DEBUG("not shared");
 				r = PUploadReply(s.ticket, "File not shared");
+			
+			} else if(mMuseek->mBuddySharesHave && mMuseek->buddyshares()->is_shared(s.filename) && ! mMuseek->shares()->is_shared(s.filename) && ! mMuseek->is_buddied(mUser)) {
+				DEBUG("shared only in buddy shares, but user is not a buddy");
+				r = PUploadReply(s.ticket, "File not shared");
+ 			} else if( ! mMuseek->mBuddySharesHave  && mMuseek->buddyshares()->is_shared(s.filename)  && ! mMuseek->shares()->is_shared(s.filename) ) {
+ 				DEBUG("shared in buddy shares, but buddy shares not enabled");
+ 				r = PUploadReply(s.ticket, "File not shared");
 			} else {
 				DEBUG("shared");
 				wstring path = mMuseek->recoder()->decode_network(s.filename);
@@ -215,7 +226,7 @@ void PeerConnection::process_message(uint32 code) {
 			}
 			send(r);
 		} else if (s.direction == 1) {
-
+			// Recieved Download Request; Craft Download Reply
 			PDownloadReply r;
 			
 			DEBUG("request for download %s %s %u", mUser.c_str(), s.filename.c_str(), s.ticket);
