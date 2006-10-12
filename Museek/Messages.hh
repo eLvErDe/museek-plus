@@ -23,6 +23,7 @@
 #include <string>
 #include <queue>
 #include <vector>
+#include <iostream>
 
 typedef unsigned char uchar;
 
@@ -60,8 +61,16 @@ protected:
 	std::string unpack_ip();
 	uint32 unpack_int();
 	off_t unpack_off();
-	uchar unpack_char()
-		{ uchar c = buffer.front(); buffer.pop(); return c; }
+	uchar unpack_char() { 
+		uchar c = 0;
+		if(! buffer.empty()) {
+			c = buffer.front(); 
+			buffer.pop(); 
+		}  else {
+			std::cerr << "WARNING: trying to unpack from an empty buffer" << std::endl;
+		}
+		return c;
+	}
 
 	void compress();
 	void decompress();

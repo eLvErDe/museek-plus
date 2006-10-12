@@ -80,7 +80,10 @@ private:
 			PInit m;
 			m.parse_network_packet(message);
 			DEBUG("got peer init message %u, %s, %s, %u, <...> (%d)", sock, m.user.c_str(), m.type.c_str(), m.token, inbuf.size());
-			mListener->museek()->cb_listen_init(sock, m.user, m.type, m.token, inbuf);
+			if (! mListener->museek()->cb_listen_init(sock, m.user, m.type, m.token, inbuf) ) {
+				disconnect();
+				return;
+			}	
 			break;
 		    }
 		default:

@@ -229,7 +229,7 @@ public:
 	
 	
 	// Peer listener callbacks
-	virtual void cb_listen_init(int sock, STR user, STR type, uint32 token, const std::queue<unsigned char>& data);
+	virtual bool cb_listen_init(int sock, STR user, STR type, uint32 token, const std::queue<unsigned char>& data);
 	virtual bool cb_listen_pierce_firewall(int sock, uint32 token);
 	
 	

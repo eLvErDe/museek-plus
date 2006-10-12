@@ -544,12 +544,15 @@ void Museek::server_get_item_similar_users(const string& item) {
 void Museek::cb_server_exact_file_search(const string& user, uint32 ticket, const string& filename, const string& path, off_t filesize, uint32 checksum) {
 }
 
-void Museek::cb_listen_init(int sock, const string& user, const string& type, uint32 token, const queue<unsigned char>& data) {
+bool Museek::cb_listen_init(int sock, const string& user, const string& type, uint32 token, const queue<unsigned char>& data) {
 	CT("cb_listen_init %u, %s, %s, %u, <...> (%d)", sock, user.c_str(), type.c_str(), token, data.size());
 	if(type == "P")
 		mPeerManager->get_peer(user)->set_socket(sock, token, data);
 	else if(type == "F")
 		(new TransferPreConnection(mPeerManager->get_peer(user), token))->set_socket(sock, data);
+	else 
+		return false;
+	return true;
 }
 
 bool Museek::cb_listen_pierce_firewall(int sock, uint32 token) {
