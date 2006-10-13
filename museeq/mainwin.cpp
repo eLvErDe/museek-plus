@@ -120,6 +120,7 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 	mMenuSettings->insertItem(tr("Show &Log"), this, SLOT(toggleLog()), 0, 6);
 	mMenuSettings->insertItem(tr("Show T&imestamps"), this, SLOT(toggleTimestamps()), 0, 7);
 	mMenuSettings->insertItem(tr("Auto-Connect to Daemon"), this, SLOT(toggleAutoConnect()), 0, 8);
+	mMenuSettings->insertItem(tr("Show Exit Dialog"), this, SLOT(toggleExitDialog()), 0, 9);
 	mMenuSettings->insertSeparator();
 	mMenuSettings->setItemEnabled(1, false);
 	mMenuSettings->setItemEnabled(2, false);
@@ -270,6 +271,12 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 
 	connect(museeq->driver(), SIGNAL(userStatus(const QString&, uint)), SLOT(slotUserStatus(const QString&, uint)));
 	QSettings settings;
+	QString exitdialog = settings.readEntry("/TheGraveyard.org/Museeq/ShowExitDialog");
+	
+	if (exitdialog.isEmpty() || exitdialog == "yes") {
+		settings.writeEntry("/TheGraveyard.org/Museeq/ShowExitDialog", "yes");
+		mMenuSettings->setItemChecked(9, true);
+	}
 	mMoves = 0;
 	int w = settings.readNumEntry("/TheGraveyard.org/Museeq/Width", 600);
 	int h = settings.readNumEntry("/TheGraveyard.org/Museeq/Height", -1);
@@ -885,6 +892,16 @@ void MainWindow::toggleAutoConnect() {
 		mMenuSettings->setItemChecked(8, true);
 	}
 }
+void MainWindow::toggleExitDialog() {
+	QSettings settings;
+	if(settings.readEntry("/TheGraveyard.org/Museeq/ShowExitDialog") == "yes") {
+		settings.writeEntry("/TheGraveyard.org/Museeq/ShowExitDialog", "no");
+		mMenuSettings->setItemChecked(9, false);
+	} else {
+		settings.writeEntry("/TheGraveyard.org/Museeq/ShowExitDialog", "yes");
+		mMenuSettings->setItemChecked(9, true);
+	}
+}
 void MainWindow::changeColors() {
 	if(mColorsDialog->exec() == QDialog::Accepted) {
 		if (! mColorsDialog->SMessageFont->text().isEmpty() )
@@ -1103,21 +1120,21 @@ void MainWindow::resizeEvent(QResizeEvent * ev) {
 
 void MainWindow::closeEvent(QCloseEvent * ev) {
 	QSettings settings;
-	
-	if (daemon->isRunning() && settings.readEntry("/TheGraveyard.org/Museeq/ShutDownDaemonOnExit") == "yes") {
-		if (QMessageBox::question(this, tr("Shutdown Museeq"), tr("The Museek Daemon was launched by Museeq and is still running, and will be shut down if you close Museeq, are you sure you want to?"), tr("&Yes"), tr("&No"), QString::null, 1 ) ) {
- 			return;
-		}
-	} else if (daemon->isRunning() && settings.readEntry("/TheGraveyard.org/Museeq/ShutDownDaemonOnExit") == "no")  {
-		if (QMessageBox::question(this, tr("Shutdown Museeq"), tr("The Museek Daemon was launched by Museeq and is still running, but will <b>not</b> be shut down if you close Museeq. Are you sure you want to?"), tr("&Yes"), tr("&No"), QString::null, 1 ) ) {
- 			return;
-		}
-	} else {
-		if (QMessageBox::question(this, tr("Shutdown Museeq"), tr("It's safe to close Museeq, but are you sure you want to?"), tr("&Yes"), tr("&No"), QString::null, 1 ) ) {
- 			return;
+	if ( settings.readEntry("/TheGraveyard.org/Museeq/ShowExitDialog") == "yes") {
+		if (daemon->isRunning() && settings.readEntry("/TheGraveyard.org/Museeq/ShutDownDaemonOnExit") == "yes") {
+			if (QMessageBox::question(this, tr("Shutdown Museeq"), tr("The Museek Daemon was launched by Museeq and is still running, and will be shut down if you close Museeq, are you sure you want to?"), tr("&Yes"), tr("&No"), QString::null, 1 ) ) {
+				return;
+			}
+		} else if (daemon->isRunning() && settings.readEntry("/TheGraveyard.org/Museeq/ShutDownDaemonOnExit") == "no")  {
+			if (QMessageBox::question(this, tr("Shutdown Museeq"), tr("The Museek Daemon was launched by Museeq and is still running, but will <b>not</b> be shut down if you close Museeq. Are you sure you want to?"), tr("&Yes"), tr("&No"), QString::null, 1 ) ) {
+				return;
+			}
+		} else {
+			if (QMessageBox::question(this, tr("Shutdown Museeq"), tr("It's safe to close Museeq, but are you sure you want to?"), tr("&Yes"), tr("&No"), QString::null, 1 ) ) {
+				return;
+			}
 		}
 	}
-	
 	settings.beginGroup("/TheGraveyard.org/Museeq");
 	settings.writeEntry("X", mLastPos.x());
 	settings.writeEntry("Y", mLastPos.y());
