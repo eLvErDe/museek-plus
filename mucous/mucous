@@ -218,8 +218,12 @@ if str(mucous_config["mucous"]["logging"]) == "True":
 	mucous_config["mucous"]["logging"] = "yes"
 
 		
-# This is the input line/bar
+## This is the input line/bar
 class CharacterParse(threading.Thread):
+	## Constructor
+	# @param self is CharacterParse
+	# @param win is mucous.Editwin
+	# @param mucous is the mucous class
 	def __init__(self, win, mucous):
 		threading.Thread.__init__(self)
 		self.win = win
@@ -238,7 +242,7 @@ class CharacterParse(threading.Thread):
 		self.listline = mucous.listline
 		self.firsttab = 0
 		
-
+	## Add normal characters to the line, or respond to escaped characters or mouse presses
 	def process(self, c):
 		try:
 			pos = self.x + self.scroll
@@ -337,9 +341,9 @@ class CharacterParse(threading.Thread):
 			elif c == chr(5):
 				# Ctrl-E
 				self.x = len(self.line)
-			#elif c == chr(32):
+			# elif c == chr(32):
 				#self.mucous.Hlog("debug", "space")
-			#elif c == chr(13):
+			# elif c == chr(13):
 				#pass
 				#self.mucous.Hlog("debug", "carriage")
 			elif c == "KEY_ENTER" or c == chr(10):
@@ -477,7 +481,8 @@ class CharacterParse(threading.Thread):
 			return False
 		except Exception, e:
 			self.mucous.Hlog("debug", "CharacterParse process: \""+str(self.line)+"\" "+ str(e))
-
+			
+	## Allow for horizontal scrolling of line
 	def fixpos(self):
 		try:
 			self.x1 = self.x
@@ -507,7 +512,8 @@ class CharacterParse(threading.Thread):
 			self.win.refresh()
 		except Exception, e:
 			self.mucous.Hlog("debug", "fixpos: \""+str(self.line)+"\" "+ str(e))
-
+			
+	## Delete contents of line
 	def reset(self):
 		try:
 			self.x = self.scroll = 0
@@ -518,8 +524,9 @@ class CharacterParse(threading.Thread):
 		except Exception, e:
 			self.mucous.Hlog("debug", "reset: \""+str(self.line)+"\" "+ str(e))
 
+## Main class
 class mucous(driver.Driver):
-
+	## Constructor
 	def __init__(self):
 		
 		driver.Driver.__init__(self)
@@ -717,7 +724,7 @@ class mucous(driver.Driver):
 				self.shutdown()
 
 	
-	
+	## Create curses parent window, get terminal size, draw windows
 	def build(self):
 # 		h, w = struct.unpack("HHHH", fcntl.ioctl(sys.stdout.fileno(),termios.TIOCGWINSZ, struct.pack("HHHH", 0, 0, 0, 0)))[:2]
 # 		os.environ["LINES"] = str(h)
@@ -789,7 +796,8 @@ class mucous(driver.Driver):
 		except Exception, e:
 			self.Hlog("debug", "Build: " + str(e))
 		return self.line
-		
+	
+	## Close mucous after disconnecting from museekd
 	def shutdown(self):
 		try:
 			self.disconnect()
@@ -807,7 +815,8 @@ class mucous(driver.Driver):
 		curses.endwin()
 	
 		os._exit(0)
-		
+	
+	## Disconnect from museekd
 	def disconnect(self):
 		
 		try:
@@ -815,7 +824,10 @@ class mucous(driver.Driver):
 				driver.Driver.close(self)
 		except Exception,e:
 			self.Hlog("debug", "disconnect: " + str(e))
-		
+	
+	## Connect to museekd, password, a museekd socket need to be set
+	#
+	# If mucous cannot connect, enter a loop which allows commands to be inputted
 	def connect(self):
 		try:
 			keys = []
@@ -880,7 +892,8 @@ class mucous(driver.Driver):
 					break
 		except Exception, e:
 			self.Hlog("debug", "Connect "+str( e) )
-
+			
+	## Recieve Messages from Museekd and collect new key presses
 	def process(self):
 
 		keys = []
@@ -933,16 +946,22 @@ class mucous(driver.Driver):
 
 		
 	# -- v Museek Messages v
+	
+	## Failsafe Sending of messages to Museekd
 	def SendMessage(self, message):
 		try:
 			if self.Spl["connected"] == 0: return
 			self.send(message)
 		except Exception, e:
 			self.Hlog("debug", "SendMessage: " + str(e))
-
+	
+	## Recieved Ping from museekd
 	def cb_ping(self):
 		self.Hlog("debug", "Recieved ping from daemon...")
-
+		
+	## Recieved Login Error from museekd
+	# @param self is the mucous class
+	# @param reason is a string containing the reason for login failure
 	def cb_login_error(self, reason):
 		try:
 			self.Spl["connected"] = 0
@@ -955,7 +974,8 @@ class mucous(driver.Driver):
 				self.Hlog("status", "couldn't log in: " + reason)
 		except Exception,e:
 			self.Hlog("debug", "cb_login_error: " + str(e))
-
+			
+	## Recieved Login Okay from museekd
 	def cb_login_ok(self):
 		try:
 			self.invalidpass = 0
@@ -966,7 +986,7 @@ class mucous(driver.Driver):
 		except Exception,e:
 			self.Hlog("debug", "cb_login_ok: " + str(e))
 		
-		
+	## Museekd notified that we are disconnected
 	def cb_disconnected(self):
 		try:
 			if self.Spl["connected"] == 1:
@@ -1014,7 +1034,11 @@ class mucous(driver.Driver):
 		except Exception,e:
 			self.Hlog("debug", "cb_disconnected: " + str(e))
 			
-			
+	## Museekd sent us a special message
+	#
+	# @param self is the mucous class
+	# @param type is a bool; False if the message relates to the Server / True for Peer
+	# @param message is the message string
 	def cb_status_message(self, type, message):
 		try:
 			if type == 1:
@@ -1023,8 +1047,13 @@ class mucous(driver.Driver):
 				stype = "Server"
 			self.Hlog("status", "%s Message: %s" % (stype, message))
 		except Exception,e:
-			self.Hlog("debug", "cb_status_message: " +str( e) )	
-			
+			self.Hlog("debug", "cb_status_message: " +str( e) )
+				
+	## Museekd sent us the server state and our username
+	#
+	# @param self is the mucous class
+	# @param state is a bool; False if disconnected from the server / True if connected
+	# @param username is a string
 	def cb_server_state(self, state, username):
 		try:
 			self.usernames["username"] = username
@@ -4591,6 +4620,12 @@ class mucous(driver.Driver):
 		except Exception, e:
 			self.Hlog("debug", "MouseSearch: " +str(e) )
 			
+	## Mouse Coordinates in the Setup Mode
+	# @param self is mucous
+	# @param x is the horizontal position from the left
+	# @param y is the vertical postion from the top
+	# @param z is unimportant
+	# @param event is the mouse event (button, doubleclick, etc) represented by a number
 	def MouseSetup(self, x,y,z,event):
 		try:
 			
@@ -4853,6 +4888,12 @@ class mucous(driver.Driver):
 		except Exception, e:
 			self.Hlog("debug", "MouseSetup: " +str(e) )
 	
+	## Mouse Coordinates in the Transfers Modes
+	# @param self is mucous
+	# @param x is the horizontal position from the left
+	# @param y is the vertical postion from the top
+	# @param z is unimportant
+	# @param event is the mouse event (button, doubleclick, etc) represented by a number
 	def MouseTransfers(self, x,y,z,event):
 		try:
 			up = self.scrolling[self.display["transfers"]]
@@ -4875,7 +4916,7 @@ class mucous(driver.Driver):
 					w = d
 
 				if w != None:
-					if self.MouseTransferWindow(w, event, x, y, up) == 1:
+					if self.MouseTransferWindow(x, y, z, event, w) == 1:
 						return
 
 			else:
@@ -4891,13 +4932,20 @@ class mucous(driver.Driver):
 					w = self.windows["dimensions"]["uploads"]
 				else:
 					w = self.windows["dimensions"]["downloads"]
-				r = self.MouseTransferWindow(w, event, x, y, up)
+				r = self.MouseTransferWindow(x, y, z, event, w)
 				if r == 1:
 					return	
 		except Exception, e:
 			self.Hlog("debug", "MouseTransfers: " +str(e) )
-			
-	def MouseTransferWindow(self, w, event, x, y, up):
+	
+	## Mouse Coordinates in a Transfers Window
+	# @param self is mucous
+	# @param x is the horizontal position from the left
+	# @param y is the vertical postion from the top
+	# @param z is unimportant
+	# @param event is the mouse event (button, doubleclick, etc) represented by a number
+	# @param w is the curses window
+	def MouseTransferWindow(self, x, y, z, event, w):
 		try:
 			if y >= w["top"]+1 and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
 							
@@ -4944,6 +4992,12 @@ class mucous(driver.Driver):
 		except Exception, e:
 			self.Hlog("debug", "MouseTransferWindow: " + str(e))
 		
+	## Mouse Coordinates in the User Info Mode
+	# @param self is mucous
+	# @param x is the horizontal position from the left
+	# @param y is the vertical postion from the top
+	# @param z is unimportant
+	# @param event is the mouse event (button, doubleclick, etc) represented by a number
 	def MouseUserInfo(self, x,y,z,event):
 		try:
 			if y in (2, 3, 4):
@@ -4969,6 +5023,12 @@ class mucous(driver.Driver):
 		except Exception, e:
 			self.Hlog("debug", "MouseUserInfo: " +str(e) )
 	
+	## Mouse Coordinates in the Users Lists
+	# @param self is mucous
+	# @param x is the horizontal position from the left
+	# @param y is the vertical postion from the top
+	# @param z is unimportant
+	# @param event is the mouse event (button, doubleclick, etc) represented by a number
 	def MouseUsersLists(self, x,y,z,event):
 		try:
 			
@@ -5009,10 +5069,14 @@ class mucous(driver.Driver):
 							self.SelectLists()
 		except Exception, e:
 			self.Hlog("debug", "MouseUsersLists: " +str(e) )
-		
+	
+	## Mouse Coordinates: Switch modes or options in position matches requirements
+	# @param self is mucous
+	# @param line is a text string
 	def MouseXY(self, line):
+		
 		try:
-			(id,x,y,z,event)=curses.getmouse()
+			(id,x,y,z,event) = curses.getmouse()
 			#self.Hlog("debug", "%d %d %d %d %d" % (id, x, y, z,event))
 			if event in (1, 128, 8192):
 				# Ignore PRESSED and RELEASED
@@ -5097,7 +5161,9 @@ class mucous(driver.Driver):
 		except Exception, e:
 			self.Hlog("debug", "MouseXY: "+str(e) )
 	
-	
+	## Parse Entry box for commands
+	# @param self is mucous
+	# @param line is a text string
 	def InputCommands(self, line):
 		try:
 			if line[:1] != "/" or line[:2] == '//' or line[:4] == '/me ':
@@ -5335,17 +5401,16 @@ class mucous(driver.Driver):
 						logfile.append(line)
 				if logfile != None:
 					lene = len(logfile)
+					logfile.reverse()
 					if self.display["mode"] == "chat":
-						logfile.reverse()
 						for line in logfile:
-
 							if "://" in line[3]:
 								urline = line[3].split(" ")
 								for x in urline:
 									if "://" in x: self.url = x
 									break
+								break
 					elif self.display["mode"] == "private":
-						logfile.reverse()
 						for timestamp, user, message in logfile:
 							if "://" not in message:
 								continue
@@ -5354,6 +5419,7 @@ class mucous(driver.Driver):
 								if "://" in x:
 									 self.url = x
 									 break
+							break
 						
 		
 				if self.url != None:
@@ -6181,12 +6247,14 @@ class mucous(driver.Driver):
 				
 			
 		except Exception,e:
-			self.Hlog("debug", "commands: " + str(e))
-			
+			self.Hlog("debug", 'commands: ' + str(e))
+		pass
+					
+	## Special Function that parses the input line, if it's not a command
+	# @param self is mucous
+	# @param line is a text string
 	def InputText(self, line):
-		'''
-		Special Input Box for Downloading Manually
-		'''
+		## Special Input Box for Downloading Manually
 		# escape //
 		if line[:2] == '//':
 			line = line[1:]
@@ -6296,12 +6364,12 @@ class mucous(driver.Driver):
 					self.doJoin(line)
 				elif self.display["mode"] == "setup":
 					self.InputSetup(line)
-					#.decode(mucous_config["mucous"]["language"])
+				
 		try:
 			self.edit.reset()
 		except:
 			pass
-		
+	
 	def doJoin(self, room):
 		try:
 			self.SendMessage(messages.JoinRoom( self.dlang( room ) ))
