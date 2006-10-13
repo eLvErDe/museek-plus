@@ -94,12 +94,9 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 	mMenuFile->insertItem(IMG("connect"), tr("&Connect..."), this, SLOT(connectToMuseek()), ALT + Key_C, 0);
 	mMenuFile->insertItem(IMG("disconnect"), tr("&Disconnect"), museeq->driver(), SLOT(disconnect()), ALT + Key_D, 1);
 	mMenuFile->insertSeparator();
-	mMenuFile->insertItem( tr("Toggled &away"), this, SLOT(toggleAway()), ALT + Key_A, 2);
+	mMenuFile->insertItem( tr("Toggle &away"), this, SLOT(toggleAway()), ALT + Key_A, 2);
 	mMenuFile->insertItem(tr("Check &privileges"), this, SLOT(checkPrivileges()), 0, 3);
 	mMenuFile->insertItem( IMG("browser-small"),tr("&Browse My Shares"), this, SLOT(getOwnShares()), ALT + Key_B, 4); // , 
-#ifdef HAVE_TRAYICON
-	mMenuFile->insertItem( tr("Enable &Trayicon"), this, SLOT(toggleTrayicon()), ALT + Key_T, 5); // ,
-#endif // HAVE_TRAYICON
 	mMenuFile->insertSeparator();
 	mMenuFile->insertItem(IMG("exit"), tr("E&xit"), this, SLOT(close()), ALT + Key_X);
 	mMenuFile->setItemEnabled(1, false);
@@ -121,6 +118,9 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 	mMenuSettings->insertItem(tr("Show T&imestamps"), this, SLOT(toggleTimestamps()), 0, 7);
 	mMenuSettings->insertItem(tr("Auto-Connect to Daemon"), this, SLOT(toggleAutoConnect()), 0, 8);
 	mMenuSettings->insertItem(tr("Show Exit Dialog"), this, SLOT(toggleExitDialog()), 0, 9);
+#ifdef HAVE_TRAYICON
+	mMenuSettings->insertItem(tr("Enable &Trayicon"), this, SLOT(toggleTrayicon()), ALT + Key_T, 10); // ,
+#endif // HAVE_TRAYICON
 	mMenuSettings->insertSeparator();
 	mMenuSettings->setItemEnabled(1, false);
 	mMenuSettings->setItemEnabled(2, false);
@@ -148,7 +148,7 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 	mMenuHelp->insertItem(IMG("help"), tr("&About..."), this, SLOT(displayAboutDialog()), 0, 0);
 	mMenuHelp->insertItem(IMG("help"), tr("&Commands..."), this, SLOT(displayCommandsDialog()), 0, 1);
 	mMenuHelp->insertItem(IMG("help"), tr("&Help..."), this, SLOT(displayHelpDialog()), 0, 2);
-	menuBar()->insertItem(tr("&Help"), mMenuHelp);
+	
 #ifdef HAVE_QSA
 	if(libqsa_is_present)
 	{
@@ -160,12 +160,12 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 		mMenuScripts->insertSeparator();
 		menuBar()->insertItem(tr("Sc&ripts"), mMenuScripts);
 		
-		museeq->registerMenu(tr("File"), mMenuFile);
-		museeq->registerMenu(tr("Settings"), mMenuSettings);
-		museeq->registerMenu(tr("Scripts"), mMenuScripts);
+		museeq->registerMenu("File", mMenuFile);
+		museeq->registerMenu("Settings", mMenuSettings);
+		museeq->registerMenu("Scripts", mMenuScripts);
 	}
 #endif // HAVE_QSA
-	
+	menuBar()->insertItem(tr("&Help"), mMenuHelp);
 	statusBar()->message(tr("Welcome to Museeq"));
 	
 	mConnectDialog = new ConnectDialog(this, "connectDialog");

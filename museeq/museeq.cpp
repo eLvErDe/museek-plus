@@ -924,7 +924,7 @@ void Museeq::trayicon_hide() {
 	if (mTray) {
 		trayicon()->hide();
 		mUsetray = false;
-		mMainWin->mMenuFile->setItemChecked(5, mUsetray);
+		mMainWin->mMenuSettings->setItemChecked(10, mUsetray);
 	}
 #endif // HAVE_TRAYICON
 }
@@ -933,7 +933,7 @@ void Museeq::trayicon_show() {
 	if (mTray) {
 		trayicon()->show();
 		mUsetray = true;
-		mMainWin->mMenuFile->setItemChecked(5, mUsetray);
+		mMainWin->mMenuSettings->setItemChecked(10, mUsetray);
 	}
 #endif // HAVE_TRAYICON
 }
@@ -952,7 +952,7 @@ void Museeq::trayicon_load() {
 	if (mUsetray == true)
 		mTray->show();
 	menutray->show();
-	mMainWin->mMenuFile->setItemChecked(5, mUsetray);
+	mMainWin->mMenuSettings->setItemChecked(10, mUsetray);
 #endif // HAVE_TRAYICON
 }
 
