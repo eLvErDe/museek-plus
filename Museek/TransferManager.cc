@@ -96,6 +96,9 @@ Transfer* TransferManager::new_upload(const string& user, const wstring& path) {
 
 }
 void TransferManager::remove_transfer(Transfer* transfer) {
+	map<Transfer*, BaseConnection*>::iterator it = mInitiating.find(transfer);
+	if(it != mInitiating.end())
+		mInitiating.erase(it);
 	if(transfer->direction() == Transfer::Download)
 		mDownloads.erase(find(mDownloads.begin(), mDownloads.end(), transfer));
 	else
