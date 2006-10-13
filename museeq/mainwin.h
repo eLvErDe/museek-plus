@@ -79,6 +79,7 @@ public slots:
 	void toggleTimestamps();
 	void toggleLog();
 	void toggleAutoConnect();
+	void toggleExitDialog();
 	void toggleVisibility();
 
 	void showIPDialog();
