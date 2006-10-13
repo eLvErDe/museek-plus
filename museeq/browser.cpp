@@ -474,10 +474,10 @@ void FileListView::doCopyURL() {
 
 void FileListView::doUploadFiles() {
 	bool ok = false;
-
-	const QString& user = QInputDialog::getText(tr("Upload File(s)"),
+	QStringList buddies = museeq->buddies();
+	const QString& user = QInputDialog::getItem(tr("Upload File(s)"),
 	             tr("Which user do you wish to upload these to?"),
-	             QLineEdit::Normal, QString::null, &ok, this);
+	             buddies, 0, true, &ok, this);
 	if(ok && user) {
 		QListViewItemIterator item(firstChild(), QListViewItemIterator::Selected);
 		for(; item.current() != 0; ++item) {
