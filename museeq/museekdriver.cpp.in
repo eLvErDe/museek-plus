@@ -32,7 +32,7 @@ MuseekDriver::MuseekDriver(QObject* parent, const char* name)
 
 void MuseekDriver::connectToHost(const QString& host, Q_UINT16 port, const QString& password) {
 	if(mSocket) {
-		delete mSocket;
+		mSocket->deleteLater();
 		mSocket = 0;
 	}
 	
@@ -52,7 +52,7 @@ void MuseekDriver::connectToHost(const QString& host, Q_UINT16 port, const QStri
 
 void MuseekDriver::connectToUnix(const QString& path, const QString& password) {
 	if(mSocket) {
-		delete mSocket;
+		mSocket->deleteLater();
 		mSocket = 0;
 	}
 	
@@ -91,7 +91,7 @@ void MuseekDriver::connectToUnix(const QString& path, const QString& password) {
 void MuseekDriver::disconnect() {
 	if(mSocket) {
 		mSocket->disconnect();
-		delete mSocket;
+		mSocket->deleteLater();
 		mSocket = 0;
 		emit connectionClosed();
 	}
