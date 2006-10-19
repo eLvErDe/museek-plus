@@ -463,12 +463,11 @@ void Museekd::cb_iface_config_set(IfaceConnection* conn, const string& domain, c
 			mHaveBuddyShares = mConfig[domain][key].asBool();
 			set_have_buddy_shares(mHaveBuddyShares);
 		}
-	} else if(domain == "clients") {
-		 if (key == "active")
+	} else if(domain == "clients" && key == "connectmode") {
+		if (value == "active")
 			set_connect_mode(CM_Active);
-		else if ( key == "passive")
+		else if (value == "passive")
 			set_connect_mode(CM_Passive);
-		
 	} else if(domain == "userinfo" && key == "text")
 		mUserinfo = mRecoder->decode_utf8(value);
 	
