@@ -308,7 +308,7 @@ FAMHandler::deleted(FAMDirScanner *ds, const char *filename)
 
 void help() {
 	cout << "muscand [-c --config PATH] [-b --buddy] [-h --help]" << endl;
-	cout << "Version 0.1.10" << endl;
+	cout << "Version 0.1.12" << endl;
 	exit(-1);
 }
 

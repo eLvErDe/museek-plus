@@ -38,7 +38,7 @@ void help() {
 	cout << "muscan [-c --config PATH] [-b --buddy] [-v --verbose] [-r --rescan] [-n --noscan] [-s --share PATH]... [-u --unshare PATH]..." << endl;
 	cout << "or:" << endl;
 	cout << "muscan [-c --config PATH] -l --list" << endl;
-	cout << "Version 0.1.10" << endl;
+	cout << "Version 0.1.12" << endl;
 	exit(-1);
 }
 

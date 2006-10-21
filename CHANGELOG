@@ -1,4 +1,6 @@
-Unreleased
+Museek Plus Changelog
+
+0.1.12:  October 21th 2006
 
 MUSEEK DAEMON
  * Fixed museekd not reacting on connect mode changes during run-time (hyriand)

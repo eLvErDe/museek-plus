@@ -25,7 +25,7 @@ DEFAULT_CONFIG = os.path.join('~', '.museekd', 'config.xml')
 
 CONFIG_PATH = (os.path.expanduser(DEFAULT_CONFIG))
 
-version = "0.1.11"
+version = "0.1.12"
 
 def usage():
 	print ("""MuSetup GTK  %s
