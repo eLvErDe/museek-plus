@@ -1,16 +1,16 @@
 General To Dos
  * Right-click in upload-queue gives a option 'message all downloading users' (chs_kasper)
- * Show things like 'send search results 123 to user xyz' in the new museeq log-window (chs_kasper) 
  * Auto-Away in museekd (chs_kasper's idea)
  * Make Muscan work properly on Sparc (Big Endian problem?)
  * Make museeq convert newlines to spliting off seperate messages to facilitate pasting debug messages.
- * Fix segfault that happens immediately after a "timeout connecting to host" DEBUG message.
- * Find out why some SCONS versions other than v0.95 do not compile museeq .ui.h files correctly. and instead give errors like: " SettingsDlg::SReloadShares_clicked(): Not implemented yet"
- * Find out why uploading to windows soulseek is still broken, even after peer message 52 was sent.
+ * Find out why uploading to windows soulseek is still sometimes broken, even after peer message 52 was sent.
  * Adding logging of Chat Rooms and Private Message to museeq
  * Upload limits
- * Wishlist - with auto-download. (mer.lin.ux) Status: Partially complete (untimed searches only) 
+ * Wishlist - with auto-download. (mer.lin.ux) Status: Partially complete (untimed searches only)
 
+Bugs
+ * None discovered, yet
+ 
 Unlikely to be added anytime soon
 
  * Up/Down transfer rate status in status bar
@@ -18,4 +18,16 @@ Unlikely to be added anytime soon
  * Round robin queueing
  * "max amount of MB's per day per user/list-user" (suggested by Dalai on slsk forum Mar 27 2004, 11:30 AM) (This feature would limit certain users to a maximum total amount downloaded per day.)
  * swarmed downloads
- * Trusted users -> Privileges to individual buddies (chs_kasper) REASON: Buddies already have optional special privileges "privilege_buddies", but it applies to ALL buddies if enabled. 
+ * Trusted users -> Privileges to individual buddies (chs_kasper) REASON: Buddies already have optional special privileges "privilege_buddies", but it applies to ALL buddies if enabled.
+ 
+==============================================================================
+
+DONE:
+ * Drop-Down list in museeq for user-initiated-uploads (When browsing your own shares, add a buddylist dropdown menu from the 'Upload files' option to simplify uploading files to your buddies.) (daelstorm)
+ * Find out why some SCONS versions other than v0.95 do not compile museeq .ui.h files correctly. and instead give errors like: " SettingsDlg::SReloadShares_clicked(): Not implemented yet" (doesn't matter anymore, issue went away when .ui files were ported to pure c++)
+ * Show things like 'send search results 123 to user xyz' in the new museeq log-window (chs_kasper's request) (daelstorm) 
+ 
+FIXED BUGS:
+ * Museeq crashes 2-3 seconds after you disconnect while connecting. the bug is in museekdriver.cpp I added a check for mSocket in dataReady(), but it didn't help. I also tried flush(), close(), and clearPendingData() on the socket, but nothing helped. (hyriand)
+ * museekd crashes a little while after a initializing transfer is cleared or aborted. the bug is somewhere is the TransferManager? and goes thru TransferManager::cannot_connect (hyriand)
+ * Fix segfault that happens immediately after a "timeout connecting to host" DEBUG message. (hyriand)

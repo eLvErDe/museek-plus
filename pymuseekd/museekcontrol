@@ -654,7 +654,7 @@ class museekcontrol(driver.Driver):
 				for u in list:
 					
 					print u
-					sleep(3)
+					sleep(0.5)
 					self.send(messages.PeerAddress(u))
 			else:
 				print "%s not joined" % room

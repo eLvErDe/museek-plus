@@ -910,7 +910,6 @@ class mucous(driver.Driver):
 			else:
 				d = 0
 			if self.socket != None:
-			
 				r, w, x = select.select([self.socket, sys.stdin], [], [self.socket], d)
 				
 			else:
@@ -1704,7 +1703,6 @@ class mucous(driver.Driver):
 	def cb_transfer_state(self, downloads, uploads):
 		try:
 			for transfer in uploads:
-	
 				self.transfers["uploads"][(transfer.user, transfer.path)] =  [transfer.is_upload, transfer.user, transfer.path, int(transfer.state), transfer.error, transfer.filepos, transfer.filesize, transfer.rate, transfer.place]
 			self.DrawUploadCount(str(len(self.transfers["uploads"].keys())))
 			
@@ -1739,7 +1737,6 @@ class mucous(driver.Driver):
 	def cb_transfer_update(self, transfer):
 		try:
 			if transfer.is_upload:
-				
 				self.transfers["uploads"][(transfer.user, transfer.path)] =   [transfer.is_upload, transfer.user, transfer.path, int(transfer.state), transfer.error, transfer.filepos, transfer.filesize, transfer.rate, transfer.place]
 				if self.display["mode"] == "transfer":
 					if mucous_config["mucous"]["transbox"] == "split":

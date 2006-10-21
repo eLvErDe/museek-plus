@@ -1,19 +1,32 @@
 Unreleased
 
 MUSEEK DAEMON
+ * Fixed museekd not reacting on connect mode changes during run-time (hyriand)
+ * Fixed the clear-initiating-transfer that causes a delayed crash (hyriand)
+ * Character unpacking checks (fixes corrupted message crashes) (hyriand)
  * IMPORTANT NOTE: the CFLAGS variable is now a String instead of List, your 
  mulocal.py will need to be modified or erased to allow SCons to run 
  correctly. Not doing so will result in SCons failing at the first compile-test.
+ * Change the way the IP Address string is created to fix endian bug (hyriand) 
  * New SCons variable LOCKFLAGS disables SCons' automatic flag adding
  * Replaced depreciated call to Send Speed (34) on download completion
-   with Send Upload Speed (121) on upload completion.
- * Added Global message (66) handler, and pass it to the clients
+   with Send Upload Speed (121) on upload completion. (daelstorm)
+ * Check for read/write permissions to config file before loading (daelstorm)
+ * Added Global message (66) handler, and pass it to the clients (daelstorm)
  * Removed disconnect-on-hangup-signal (caused a loop)
- * Client message 'Download file to a directory' added
- * Sends a Museek Daemon version message to clients on connection
- * Sends the number of privileged users to clients on Server Login
+ * Client message 'Download file to a directory' added (daelstorm)
+ * Sends a Museek Daemon version message to clients on connection (daelstorm)
+ * Sends the number of privileged users to clients on Server Login (daelstorm)
+
+MUSCAN
+ * Ignore .dotfiles and .dotdirs/
+ * Removing trailing /s for shared directories
  
 MUSEEQ
+ * Fixed crash when disconnecting while still connecting to museekd by using
+   "mSocket->deleteLater()" instead of "delete mSocket" (hyriand)
+ * Fixed method of creating UNIX socket (hyriand)
+ * Check option in settings to toggle display of exit dialog
  * Added nick's transfer list color patch transfers are now different colors,
    depending upon their state.
  * Added MUSEEQTRAYICON scons option to enable/disable trayicon at buildtime.
@@ -22,13 +35,29 @@ MUSEEQ
  * Added /commands to private chat
  * Autoconnect to daemon option added
  * IP addresses can now be viewed in the log window
- * 
+ * Updated Italian translation (requiem)
+ * Updated Polish translation (belegdol)
+ 
 MUSETUP-GTK
- * Tries more than one method to detect PyGTK
+ * Scons tries more than one method to detect PyGTK
  
 MUCOUS
- * Many changes
-  
+ * Browse Shares now has expandable/collapsable directories and resizeable
+   windows. There are some other UI improvements, as well.
+ * Added /me and status colors to Private chat 
+ * Rewrote tab completion
+ * Case-insensitive sorting
+ * Refactored / Renamed lots of functions
+ * Killed dozens of memory leaks
+ * Removed vertical borders from private chat and rooms
+ * Added scrolling ticker to chat rooms
+ * Improved the Transfers colors and use vertical lines instead of pipes
+ * Fixed some broken config options
+ * Simplified creation of setup widgets
+ * Setup's control over muscan is slightly better, attempts to detect museekd
+   config, to better scan correct shares databases.
+ * Hundreds of minor changes
+ 
 0.1.11:  July 7th 2006
 
 MUSEEK DAEMON
