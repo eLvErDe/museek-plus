@@ -35,7 +35,7 @@ public:
 
 #define MAKE virtual std::queue<uchar>& make_network_packet() { pack(get_type());
 #define END_MAKE return buffer; };
-#define PARSE virtual void parse_network_packet(std::queue<uchar>& data) { buffer = data;
+#define PARSE virtual void parse_network_packet_(std::queue<uchar>& data) { buffer = data;
 #define END_PARSE };
 
 class NetworkMessage: public GenericMessage {
@@ -48,6 +48,18 @@ public:
 
 	PARSE
 	END_PARSE
+
+	virtual void parse_network_packet(std::queue<uchar>& data)
+	{
+		try
+		{
+			parse_network_packet_(data);
+		}
+		catch(std::bad_alloc e)
+		{
+			std::cerr << "Ran out of memory while unpacking message!" << std::endl;
+		}
+	}
 
 protected:
 	void pack(const std::string&, bool=false);
