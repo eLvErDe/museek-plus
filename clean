@@ -2,6 +2,6 @@ find ./ -name "*.o" -exec rm {} \;
 find ./ -name "*.pyc"  -exec rm {} \;
 find ./ -name "*.pyo"  -exec rm {} \;
 find ./ -name "*~"  -exec rm {} \;
+rm -rf workdir/
 rm -rf .sconf_temp/
-rm -rf build-*-linux/
-rm .sconsign* config.log system.h mulocal.py
+rm -f .sconsign* config.log system.h mulocal.py

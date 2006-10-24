@@ -64,16 +64,9 @@ env = Environment (
 
 env.SConsignFile()
 
-
-# Build-dir, inspired by <...>
-
-if env['BUILDDIR']:
-    arch = os.uname()[4]
-    if arch == 'Power Macintosh': arch = 'ppc'
-    os_name = os.uname()[0].lower().replace('-','')
-    buildDir = 'build-%s-%s' % (arch, os_name)
-else:
-    buildDir = None
+# Define a static buildir, so we can clean the sources tree
+# by removing workdir/
+buildDir = 'workdir'
 
 if buildDir is None:
     libbase = '#'
