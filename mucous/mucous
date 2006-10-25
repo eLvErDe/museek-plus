@@ -365,7 +365,7 @@ class CharacterParse(threading.Thread):
 			elif c == "KEY_ENTER" or c == chr(10):
 				# Keypad Enter, Normal Enter, or Newline pasted from another app
 				if self.mucous.PopupMenu.show == True:
-					self.mucous.PopupMenu.MenuEnter()
+					self.mucous.PopupMenu.Enter()
 				else:
 					self.escape = False
 					self.InputFunctions(c, self.line)
@@ -460,7 +460,7 @@ class CharacterParse(threading.Thread):
 			elif c == chr(27):
 				# Escape ^[
 				if self.mucous.PopupMenu.show == True:
-					self.mucous.PopupMenu.clear()
+					self.mucous.PopupMenu.Clear()
 				else:
 					self.escape = True
 					return False
@@ -540,32 +540,34 @@ class CharacterParse(threading.Thread):
 		except Exception, e:
 			self.mucous.Hlog("debug", "reset: \""+str(self.line)+"\" "+ str(e))
 			
-## Parse data and reformat it to fit inside the constraints of its window
+## Create, Display and do things with Popup menus
 #
 class PopupMenu:
+	## Constructor
 	def __init__(self, mucous):
 		self.mucous = mucous
 		self.show = False
 		self.current = None
 		self.position = 0
-		pass
-			
-	def refresh(self):
+	
+	## Redraw Windows and (maybe) Menu
+	def Refresh(self):
 		try:
-			#self.menu()
 			self.mucous.refresh_windows()
 		except Exception, e:
-			self.mucous.Hlog("debug", "MenuRefresh: " + str(e))
+			self.mucous.Hlog("debug", "PopupMenu.Refresh: " + str(e))
 			
-	def clear(self):
+	## Redraw Windows and close Menu
+	def Clear(self):
 		try:
 			self.show = False
 			self.current = None
-			self.refresh()
+			self.Refresh()
 		except Exception, e:
-			self.mucous.Hlog("debug", "MenuClear: " + str(e))
+			self.mucous.Hlog("debug", "PopupMenu.Clear: " + str(e))
 			
-	def MenuFindList(self):
+	## Return the correct list for the current menu
+	def List(self):
 		try:
 			mode = self.mucous.display["mode"] 
 			if self.current == "encoding":
@@ -574,7 +576,6 @@ class PopupMenu:
 				this_list = self.mucous.logs["roombox"][self.mucous.Spl["room"]]
 			elif mode  == "lists":
 				this_list = self.mucous.logs[self.mucous.display["list"]]
-
 			elif mode == "transfer":
 				this_list = self.mucous.get_transfers_list()
 			elif mode == "search":
@@ -588,9 +589,10 @@ class PopupMenu:
 				
 			return this_list
 		except Exception, e:
-			self.mucous.Hlog("debug", "MenuFindList " +str(e))
+			self.mucous.Hlog("debug", "PopupMenu.List " +str(e))
 			
-	def MenuPickItem(self, x, y, click):
+	## Map mouse-clicks to events
+	def Mouse(self, x, y, click):
 		try:
 			menu = self.mucous.menus[self.current]
 			width = menu["width"]
@@ -603,10 +605,10 @@ class PopupMenu:
 					y -= top+1
 					#self.error_bar("y"+str(y) + " x"+ str(x))
 					self.position = y
-					self.MenuDraw(self.current)
+					self.Draw()
 					if click in (2, 8, 16384):
 						
-						s = self.MenuExecute()
+						s = self.Execute()
 						if s == 0:
 							self.mucous.refresh_windows()
 							self.show = False
@@ -617,13 +619,14 @@ class PopupMenu:
 			else:
 				self.show = False
 				self.current = None
-				self.refresh()
+				self.Refresh()
 		except Exception, e:
-			self.mucous.Hlog("debug", "MenuPickItem: " + str(e))
+			self.mucous.Hlog("debug", "PopupMenu.Mouse: " + str(e))
 			
-	def MenuEnter(self):
+	## Run function associated with current menu position
+	def Enter(self):
 		try:
-			s = self.MenuExecute()
+			s = self.Execute()
 			if s == 0:
 				self.mucous.refresh_windows()
 				self.show = False
@@ -632,14 +635,15 @@ class PopupMenu:
 				self.show = False
 				self.current = None
 			else:
-				self.MenuDraw(self.current)
+				self.Draw()
 			#self.menu()
 		except Exception, e:
-			self.mucous.Hlog("debug", "MenuEnter: " + str(e))
+			self.mucous.Hlog("debug", "PopupMenu.Enter: " + str(e))
 
-		
-	def MenuDraw(self, menu):
+	## Build Current Menu and display it
+	def Draw(self):
 		try:
+			menu = self.current
 			self.mucous.menus[menu]["scroll"].erase()
 			c = 0
 
@@ -693,17 +697,27 @@ class PopupMenu:
 			self.mucous.menus[menu]["scroll"].noutrefresh()
 			curses.doupdate()
 		except Exception, e:
-			self.mucous.Hlog("debug", "MenuDraw " +str(e))
-
-	def MenuCreate(self, menu, position, create=None):
+			self.mucous.Hlog("debug", "PopupMenu.Draw " +str(e))
+	
+	## Create Package menu
+	#
+	# @param menu New Current Menu
+	# @param position vertical position of menu item
+	# @param create Show this menu
+	def Create(self, menu=None, position=0, show=None):
 		try:
-			if create:
+			if menu:
+				self.current = menu
+			if position:
+				self.position = position
+			if show:
 				self.show = True
-			self.current = menu
+			
+			
 			title = None
 			number = None
-			self.position = position
-			this_list = self.MenuFindList()
+			
+			this_list = self.List()
 			if this_list == []:
 				return
 			if menu == "roombox":
@@ -776,7 +790,7 @@ class PopupMenu:
 				
 				if self.mucous.display["mode"] == "browse":
 					if self.mucous.usernames["browse"] != "default__":
-						name = self.usernames["browse"]
+						name = self.mucous.usernames["browse"]
 					else:
 						name = "Filesystem"
 				elif self.mucous.display["mode"] == "chat":
@@ -815,15 +829,16 @@ class PopupMenu:
 			scroll.scrollok(0)
 # 			scroll.noutrefresh()
 			self.mucous.menus[menu] = {"window": win, "scroll": scroll, "name": name, "items": items, "top": top, "width": width, "height": height, "left": left}
-			self.MenuDraw(menu)
+			self.Draw()
 
 			#sleep(1)
 		except Exception, e:
-			self.mucous.Hlog("debug", "Create Menu " +str(e))
+			self.mucous.Hlog("debug", "PopupMenu.Create " +str(e))
 
 
-			
-	def MenuExecute(self):
+	## Call functions associated with the menu item and the list item the menu is connected to
+	#
+	def Execute(self):
 		try:
 			
 			if self.current in ("roombox", "lists", "transfers", "search", "browse-dirs", "browse-files"):
@@ -832,10 +847,10 @@ class PopupMenu:
 					username = self.mucous.logs["roombox"][self.mucous.Spl["room"]][self.mucous.scrolling[mode]]
 				elif self.current == "lists":
 					mode = self.mucous.display["list"]
-					username = self.MenuFindList()[self.mucous.scrolling[mode]][1]
+					username = self.List()[self.mucous.scrolling[mode]][1]
 				elif self.current == "transfers":
 					mode = self.mucous.display["transfers"]
-					the_list = self.MenuFindList()
+					the_list = self.List()
 					item_num = self.mucous.scrolling[mode]
 					username = the_list[item_num][1] 
 					
@@ -941,7 +956,7 @@ class PopupMenu:
 					else:
 						self.position -=8
 				elif self.current == "search":
-					the_list = self.MenuFindList()
+					the_list = self.List()
 					mode = "search"
 					number = the_list[self.mucous.scrolling[mode]-self.mucous.windows["dimensions"]["search"]["start"]]
 					#self.Hlog("status", number)
@@ -967,7 +982,7 @@ class PopupMenu:
 					else:
 						self.position -= 4
 				elif self.current in ("browse-dirs", "browse-files"):
-					the_list = self.MenuFindList()
+					the_list = self.List()
 					username = self.mucous.usernames["browse"]
 
 					path = self.mucous.Spl["dir_browse"]
@@ -1093,7 +1108,7 @@ class PopupMenu:
 					
 			return 0
 		except Exception, e:
-			self.mucous.Hlog("debug", "MenuExecute " +str(e))
+			self.mucous.Hlog("debug", "PopupMenu.Execute " +str(e))
 			
 ## Parse data and reformat it to fit inside the constraints of its window
 #
@@ -1109,7 +1124,7 @@ class FormatData:
 	def scrollbox(self, current_list, hightlight_position, height):
 		# Limit text to what fits inside the window
 		try:
-			length =len(current_list)
+			length = len(current_list)
 			if hightlight_position < 0:
 				hightlight_position = 0
 			elif hightlight_position > length -1:
@@ -1139,7 +1154,10 @@ class FormatData:
 		except Exception, e:
 			self.mucous.Hlog("debug", "scrollbox: " + str(e))
 			
-	
+	## Convert a number into a human-readable string
+	# Formats are: 0GB, 0MB, 0KB, 0B
+	# @param self FormatData
+	# @param filesize can be integer in a string or an integer
 	def byte_format(self, filesize):
 		try:
 			filesize =  int(filesize)
@@ -1156,7 +1174,11 @@ class FormatData:
 			return filefrmt
 		except Exception, e:
 			self.mucous.Hlog("debug", "byte_format: " + str(e))
-                        
+        
+	## Another int-to-string Conversion
+	# Formats are: 0.0GB, 0.0MB, 0.0KB, 0 
+	# @param self FormatData
+	# @param filesize can be integer in a string or an integer
 	def Humanize(self, size):
 		if size is None:
 			return None
@@ -1174,19 +1196,6 @@ class FormatData:
 		except Exception, e:
 			return size
 
-	def StringSplitPath(self, path):
-		try:
-			r = path.split('\\')
-			directory = ''
-			for s in r:
-				if s is not r[-1]:
-					directory += s+'\\'
-				if s is r[-1]:
-					file = s
-			return directory, file
-		except Exception, e:
-			self.mucous.Hlog("debug", "StringSplitPath: " + str(e))
-			
 	def sortbyvalue(self, dict):
 		try:
 			""" Return a list of (key, value) pairs, sorted by value. """
@@ -1230,10 +1239,10 @@ class mucous(driver.Driver):
 		driver.Driver.__init__(self)
 		self.config = {}
 		self.usernames = {"username": None, "download": None, "private":None, "info": None, "upload": None, "search": None, "privileges": None, "browse": "default__"}
-		self.Spl = {"menunumber": 0, "title": None,  "status": None, "connected": 0, \
+		self.Spl = {"title": None,  "status": None, "connected": 0, \
 		"room": None, "history_count": 0, "current_search": "default__",  "dir_browse": "", \
 		"search_method": "globally", "search_order": "num",  \
-		"current_menu": None, "setup_input": "default", "interests_input": "add_likes", \
+		"setup_input": "default", "interests_input": "add_likes", \
 		"ticker_room": None, "uploads": 0, "downloads": 0 , "search_reverse": False, \
 		"recommend_sort": "alpha", "ticker_num":  0, "downloaddir": os.path.expanduser("~/"), \
 		"museekconfigfile": ""}
@@ -1421,6 +1430,9 @@ class mucous(driver.Driver):
 				self.Hlog("status", "Shutting Down Mucous.. " +str(e) )
 				sleep(1)
 				self.shutdown()
+				
+	## @var activeitems
+	# lists of users and search queries
 	
 	## Create curses parent window, get terminal size, draw windows
 	def build(self):
@@ -2461,7 +2473,7 @@ class mucous(driver.Driver):
 				self.DrawDownloadCount(str(len(self.transfers["downloads"].keys())))
 			if self.display["mode"] == "transfer":
 				if self.PopupMenu.show == True:
-					self.PopupMenu.MenuCreate(self.PopupMenu.current, self.PopupMenu.position)
+					self.PopupMenu.Create()
 		except Exception, e:
 			self.Hlog("debug", "cb_transfer_update: " + str(e))
 		
@@ -3121,7 +3133,7 @@ class mucous(driver.Driver):
 						if len(nub+"| ")+len(path) >= self.w-2:
 							pos = self.w-2-len(str(nub)+"| ")-len(path)
 							#pp = path[-pos:]
-							directory, file = self.FormatData.StringSplitPath(path)
+							directory, file = os.path.split(path)
 							if abs(pos) > len(directory):
 								a = abs(pos) - len(directory)
 								file = file[:-a]
@@ -3133,10 +3145,10 @@ class mucous(driver.Driver):
 						else:
 							if len(str(nub)+"| "+ path) < self.w-2:
 								
-								directory, file = self.FormatData.StringSplitPath(path)
+								directory, file = os.path.split(path)
 								extra = " " * (self.w-2-len(str(nub)+"| "+ path))
 							else:
-								directory, file = self.FormatData.StringSplitPath(path)
+								directory, file = os.path.split(path)
 								extra = ''
 						tw.addstr(nub, attrc)
 						tw.addstr("| "+directory, attr)
@@ -3280,7 +3292,7 @@ class mucous(driver.Driver):
 					self.DrawChatRoomBox()
 					
 				if self.PopupMenu.show == True:
-					self.PopupMenu.MenuDraw(self.PopupMenu.current)
+					self.PopupMenu.Draw(self.PopupMenu.current)
 					
 			elif domain in ("interests.like", "interests.hate"):
 				if self.display["mode"] == "lists" and self.display["list"] == "interests":
@@ -4313,7 +4325,7 @@ class mucous(driver.Driver):
 				
 				if event in ( 4096, 16384):
 					self.DrawChatRoomBox()
-					self.PopupMenu.MenuCreate("browse-dirs", 0, True)
+					self.PopupMenu.Create("browse-dirs", 0, True)
 				else:
 					self.DrawChatRoomBox()
 				curses.doupdate()
@@ -4329,14 +4341,14 @@ class mucous(driver.Driver):
 				
 				if event in ( 4096, 16384):
 					self.DrawChatRoomBox()
-					self.PopupMenu.MenuCreate("browse-files", 0, True)
+					self.PopupMenu.Create("browse-files", 0, True)
 				else:
 					self.DrawChatRoomBox()
 				curses.doupdate()
 				
 			elif y in ( self.h-5, self.h-6):
 				if x>= self.w-27 and x < self.w-18:
-					self.PopupMenu.MenuCreate("encoding", 0, True)
+					self.PopupMenu.Create("encoding", 0, True)
 					return
 				elif x >=self.w-10 and x < self.w-1 and self.usernames["browse"] != "default__":
 					self.BrowseClose(self.usernames["browse"])
@@ -4368,7 +4380,7 @@ class mucous(driver.Driver):
 								self.scrolling["roombox"] = sup
 							self.DrawChatRoomBox()
 							
-							self.PopupMenu.MenuCreate("roombox", 0, True)
+							self.PopupMenu.Create("roombox", 0, True)
 							curses.doupdate()
 						else:
 							if sup != self.scrolling["roombox"]:
@@ -4381,7 +4393,7 @@ class mucous(driver.Driver):
 						
 			if y == self.h-3 or y == self.h-4:
 				if x>= self.w-27 and x < self.w-18:
-					self.PopupMenu.MenuCreate("encoding", 0, True)
+					self.PopupMenu.Create("encoding", 0, True)
 				
 				elif x >= self.w-17 and x < self.w-1:
 					joined = self.data["rooms"].keys()
@@ -4568,7 +4580,7 @@ class mucous(driver.Driver):
 					
 			if y == self.h-3 or y == self.h-4:
 				if x>= self.w-27 and x < self.w-18:
-					self.PopupMenu.MenuCreate("encoding", 0, True)
+					self.PopupMenu.Create("encoding", 0, True)
 				elif x >=self.w-10 and x < self.w-1:
 					self.PrivateChatClose(self.usernames["private"])
 		except Exception, e:
@@ -4615,7 +4627,7 @@ class mucous(driver.Driver):
 						self.scrolling["search"]  = y1  + w["start"]
 						self.FormatSearches()
 						if event in ( 4096, 16384):
-							self.PopupMenu.MenuCreate("search", 0, True)
+							self.PopupMenu.Create("search", 0, True)
 							return
 
 			if y in (1, 2, 3):
@@ -5040,7 +5052,7 @@ class mucous(driver.Driver):
 					curses.doupdate()
 				if event in ( 4096, 16384):
 					if self.get_transfers_list() != []:
-						self.PopupMenu.MenuCreate("transfers", 0, True)
+						self.PopupMenu.Create("transfers", 0, True)
 				return 1
 			elif y == w["top"] + w["height"]:
 				if x >=2 and x < 18:
@@ -5138,7 +5150,7 @@ class mucous(driver.Driver):
 						
 						if event in ( 4096, 16384):
 							self.SelectLists()
-							self.PopupMenu.MenuCreate("lists", 0, True)
+							self.PopupMenu.Create("lists", 0, True)
 						else:
 							self.SelectLists()
 		except Exception, e:
@@ -5192,10 +5204,10 @@ class mucous(driver.Driver):
 				height = self.menus[self.PopupMenu.current]["height"]
 				left = self.menus[self.PopupMenu.current]["left"]
 				if x >= left and x < left+width and y >= top and y < top+height:
-					self.PopupMenu.MenuPickItem(x, y, event)
+					self.PopupMenu.Mouse(x, y, event)
 					return
 				else:
-					self.PopupMenu.clear()
+					self.PopupMenu.Clear()
 					
 			if self.display["mode"] == "chat":
 				self.MouseChat(x,y,z,event, line)
@@ -6671,28 +6683,28 @@ class mucous(driver.Driver):
 					self.logs["history"].append(line)
 			elif key in ("popup"):
 				if self.PopupMenu.show == True:
-					self.PopupMenu.clear()
+					self.PopupMenu.Clear()
 				else:
 					self.PopupMenu.show = True
 					if self.display["mode"] == "chat":
 						if self.display["chatshape"] not in ( "noroombox", "chat-only"):
-							self.PopupMenu.MenuCreate("roombox", 0)
+							self.PopupMenu.Create("roombox", 0)
 						else:
 							return
 					elif self.display["mode"] == "lists":
-						self.PopupMenu.MenuCreate("lists", 0)
+						self.PopupMenu.Create("lists", 0)
 					elif self.display["mode"] == "transfer":
-						self.PopupMenu.MenuCreate("transfers", 0)
+						self.PopupMenu.Create("transfers", 0)
 					elif self.display["mode"] == "search":
 						if self.Spl["current_search"] != "default__":
-							self.PopupMenu.MenuCreate("search", 0)
+							self.PopupMenu.Create("search", 0)
 					elif self.display["mode"] == "browse":
 						
 						if self.usernames["browse"] != "default__":
 							if self.display["browse"] == "files":
-								self.PopupMenu.MenuCreate("browse-files", 0)
+								self.PopupMenu.Create("browse-files", 0)
 							elif self.display["browse"] == "directories":
-								self.PopupMenu.MenuCreate("browse-dirs", 0)
+								self.PopupMenu.Create("browse-dirs", 0)
 			elif key in ("delete"):
 				if self.display["mode"] == "lists" and self.display["list"] == "interests":
 					inp = self.Spl["interests_input"]
@@ -6881,12 +6893,12 @@ class mucous(driver.Driver):
 					if key == "menu_up":
 						if self.PopupMenu.position >0:
 							self.PopupMenu.position -= 1
-							self.PopupMenu.MenuDraw(self.PopupMenu.current)
+							self.PopupMenu.Draw()
 							
 					elif key == "menu_down":
 						if self.PopupMenu.position < len(self.menus[self.PopupMenu.current]['items'])-1:
 							self.PopupMenu.position += 1
-							self.PopupMenu.MenuDraw(self.PopupMenu.current)
+							self.PopupMenu.Draw()
 				except Exception, e:
 					pass
 			
@@ -8699,6 +8711,8 @@ class mucous(driver.Driver):
 		except Exception, e:
 			self.Hlog("debug", "FormatBrowse: " + str(e))
 			
+	## Send a request to museekd to browse this user
+	#
 	def BrowseUser(self, user):
 		try:
 			if user not in self.requests["browse"]:
@@ -8706,7 +8720,8 @@ class mucous(driver.Driver):
 			self.SendMessage(messages.UserShares(user))
 		except Exception, e:
 			self.Hlog("debug", "BrowseUser" + str(e))
-			
+	
+	## Draw file's number, name and size	
 	def DrawBrowseFileText(self,  line, count, sup):
 		try:
 			w = self.windows["dimensions"]["browse"]
@@ -8737,7 +8752,7 @@ class mucous(driver.Driver):
 		except:
 			pass
 			
-
+	## Create Search window
 	def ModeSearch(self):
 		try:
 			self.display["mode"] = "search"
