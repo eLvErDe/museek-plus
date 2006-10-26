@@ -5,7 +5,7 @@
 # Mucous - a Python/Curses client for Museek                             #
 ##########################################################################
 #
-# Majority of code by daelstorm (C) 2005-2006
+# Majority of code (C) 2005-2006 daelstorm <daelstorm@gmail.com>
 #
 # Based on Museekchat
 # Copyright (C) 2003-2004 Hyriand <hyriand@thegraveyard.org>
@@ -3004,6 +3004,477 @@ class Recommendations:
 		## @var mucous 
 		# Mucous (Class)
 		self.mucous = mucous
+		self.dimensions = {}
+		self.input = "add_likes"
+		self.sort = "alpha"
+		self.selected = "recommendations"
+		self.logs = {"recommendations": [], "likes": [], "hates": [], "similar_users":[] }
+		self.windows = {"text":{}, "border":{}}
+		self.scrolling = {"likes": 0, "hates": 0, "recommendations": 0, "similar_users": 0}
+		self.data = {"recommendations": {}, "similar_users": {}}
+
+
+					
+	def ModeInterests(self):
+		try:
+			self.mucous.display["list"] = "interests"
+			self.mucous.PopupMenu.show = False
+# 			self.scrolling[ "recommendations" ] = self.scrolling[ "likes" ] = self.scrolling[ "hates" ] = self.scrolling[ "similar_users" ] = 0
+			self.dimensions["recommendations"] = s = {"height": self.mucous.h-8, "top": 3, "left": 21, "width": self.mucous.w-42, "start": 0}
+			self.dimensions["likes"] = l = {"height": self.mucous.h/2-5, "top": 3, "left": 1, "width": 18, "start": 0}
+			self.dimensions["hates"] = h = {"height": self.mucous.h-8-(l["height"])-2, "top": 5+l["height"], "left": 1, "width": 18, "start": 0}
+			self.dimensions["similar_users"] = u = {"height": self.mucous.h-8, "top":3 , "left": self.mucous.w-19, "width": 18, "start": 0}
+			
+			mw = curses.newwin(3, self.mucous.w,  1, 0)
+			mw.attron(self.mucous.colors["green"])
+# 			win = curses.newwin(w["height"]+2, w["width"]+2, w["top"]-1, w["left"]-1)
+			mw.erase()
+			mw.border()
+			mw.addstr(0, 3, "< Buddied >",  self.mucous.colors["green"])
+			mw.addstr(0, 16, "< Banned >", self.mucous.colors["green"])
+			mw.addstr(0, 28, "< Ignored >", self.mucous.colors["green"])
+			mw.addstr(0, 40, "< Trusted >", self.mucous.colors["green"] )
+			mw.addstr(0, 52, "< Interests >", self.mucous.colors["green"]  | curses.A_BOLD)
+			mw.noutrefresh()
+			# Cleanup stale windows
+			del mw
+	
+
+			if self.selected == "likes":
+				if self.input not in ("add_likes", "del_likes"):
+					self.input = "add_likes"
+				if self.input == "add_likes":
+					self.mucous.set_edit_title("Add Liked (Alt-D to Toggle to Delete)")
+				elif self.input == "del_likes":
+					self.mucous.set_edit_title("Delete Liked (Alt-D to Toggle to Add)")
+			elif self.selected == "hates":
+				if self.input not in ("add_hates", "del_hates"):
+					self.input = "add_hates"
+				if self.input == "add_hates":
+					self.mucous.set_edit_title("Add Hated (Alt-D to Toggle to Delete)")
+				elif self.input == "del_hates":
+					self.mucous.set_edit_title("Delete Hated (Alt-D to Toggle to Add)")
+			elif self.selected == "recommendations":
+				self.mucous.set_edit_title("Recommendations:")
+			elif self.selected == "similar_users":
+				self.mucous.set_edit_title("Similar Users:")
+			self.InterestsWindows(s, "recommendations")
+			self.InterestsWindows(l, "likes")
+			self.InterestsWindows(h, "hates")
+			self.InterestsWindows(u, "similar_users")
+			self.DrawInterests()
+
+			
+			self.mucous.HotKeyBar()
+			curses.doupdate()
+		except Exception, e:
+			self.mucous.Help.Log("debug", "ModeInterests: " + str(e))
+			
+	def MouseInterests(self, x,y,z,event):
+		try:
+			rexw = self.dimensions["recommendations"]
+			userw = self.dimensions["similar_users"]
+			hatew = self.dimensions["hates"]
+			likew = self.dimensions["likes"]
+			
+			if y >= userw["top"]-1 and y < userw["top"] + userw["height"]+1 and x >= userw["left"]-1 and x < userw["left"]+1 +userw["width"]:
+				w = userw
+				if self.selected != "similar_users":
+					self.selected = "similar_users"
+			
+				if y == w["top"] + w["height"]:
+					if x >= w["left"]+w["width"] -11 and x <=  w["left"]+w["width"]:
+						self.mucous.SendMessage(messages.GetSimilarUsers())
+				if y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
+					y -= w["top"]
+					this_list = self.logs[self.selected]
+					if y  + w["start"] in range(len(this_list)):
+						self.scrolling[self.selected]  = y  + w["start"]
+						self.mucous.line = str(self.logs[self.selected][self.scrolling[self.selected]][0])
+				self.ModeInterests()
+				return self.mucous.line
+			elif y >= likew["top"]-1 and y < likew["top"] + likew["height"]+1 and x >= likew["left"]-1 and x < likew["left"]+1 +likew["width"]:
+				w = likew
+				if self.selected != "likes":
+					self.selected = "likes"
+					
+				
+				if y == w["top"] + w["height"]:
+					
+					if x >= w["left"]+2 and x <= w["left"]+7:
+						
+						if self.input == "add_likes":
+							self.InterestLikedAdd(self.mucous.line)
+						else:
+							self.input = "add_likes"
+					elif x >= w["left"]+9 and x <= w["left"]+w["width"]:
+						if self.input == "del_likes":
+							self.InterestLikedRemove(self.mucous.line)
+						else:
+							self.input = "del_likes"
+						
+				if y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
+					y -= w["top"]
+					this_list = self.logs[self.selected]
+					
+					if y  + w["start"] in range(len(this_list)):
+						self.scrolling[self.selected]  = y  + w["start"]
+						self.mucous.line = self.logs[self.selected][self.scrolling[self.selected]]
+
+					
+				self.ModeInterests()
+				return self.mucous.line
+			elif y >= hatew["top"]-1 and y < hatew["top"] + hatew["height"]+1 and x >= hatew["left"]-1 and x < hatew["left"]+1 +hatew["width"]:
+				w = hatew
+				if self.selected != "hates":
+					self.selected = "hates"
+				if y == w["top"] + w["height"]:
+					if x >= 2 and x <= 7:
+						if self.input == "add_hates":
+							self.InterestHatedAdd(self.mucous.line)
+						else:
+							self.input = "add_hates"
+						
+					elif x >= w["left"]+9 and x <= w["left"]+w["width"]:
+						if self.input == "del_hates":
+							self.InterestHatedRemove(self.mucous.line)
+						else:
+							self.input = "del_hates"
+				if y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
+					y -= w["top"]
+					this_list = self.logs[self.selected]
+					if y  + w["start"] in range(len(this_list)):
+						self.scrolling[self.selected]  = y  + w["start"]
+						self.mucous.line = self.logs[self.selected][self.scrolling[self.selected]]
+				self.ModeInterests()
+				return self.mucous.line
+					
+			elif y >= rexw["top"]-1 and y < rexw["top"] + rexw["height"]+1 and x >= rexw["left"]-1 and x < rexw["left"]+1 +rexw["width"]:
+				w = rexw
+				if self.selected != "recommendations":
+					self.selected = "recommendations"
+				if y == w["top"] -1:
+					if x >= w["left"]+w["width"] -len(self.sort) -5 and x <=  w["left"]+w["width"]:
+						if self.sort == "size":
+							self.sort = "alpha"
+						elif self.sort == "alpha":
+							self.sort = "size"
+				elif y == w["top"] + w["height"]:
+					if x >= w["left"]+ 1 and x <=  w["left"]+12:
+						self.mucous.SendMessage(messages.GetRecommendations())
+					elif x >= w["left"]+w["width"] -10 and x <=  w["left"]+w["width"]:
+						self.mucous.SendMessage(messages.GetGlobalRecommendations())
+				elif y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
+					y -= w["top"]
+					this_list = self.logs[self.selected]
+					if y  + w["start"] in range(len(this_list)):
+						self.scrolling[self.selected]  = y  + w["start"]
+						self.mucous.line = self.logs[self.selected][self.scrolling[self.selected]][0]
+						
+				self.ModeInterests()
+				return self.mucous.line
+		except Exception, e:
+			self.mucous.Help.Log("debug", "MouseInterests: " +str(e) )
+			
+	
+
+	def DrawRecommendations(self):
+		try:
+			mode  = "recommendations"
+			self.windows["text"][mode].erase()
+			w = self.dimensions[mode]
+			self.logs[mode] = []
+			sup = self.scrolling[ mode ]
+			if self.data[mode] != {}:
+				if self.sort == "alpha":
+					dict = self.data[mode].keys()
+					dict.sort(key=str.lower)
+					for item in dict:
+						self.logs[mode].append( [item, self.data[mode][item] ])
+
+				elif self.sort == "size":
+					dict = self.mucous.FormatData.sortbyvalue(self.data[mode])
+					dict.reverse()
+					for item, num in dict:
+						self.logs[mode].append( [item, num])
+				
+					
+			else:
+				self.logs[mode] = [["EMPTY RECOMMENDATIONS", 0]]
+			count = 0
+			clipped_list, sup, self.dimensions[mode]["start"] = self.mucous.FormatData.scrollbox(self.logs[mode], sup, w["height"])
+			self.scrolling[mode] = sup
+			start = self.dimensions[mode]["start"]
+			for item, num in clipped_list:
+				length = len( item+( " " * (w["width"] - len(item)-len(str(num))))+str(num ) )
+				if length > w["width"]:
+					item = item [:w["width"] - length  ]
+				if count + start == sup:
+					self.windows["text"][mode].addstr(item +( " " * (w["width"] - len(item)-len(str(num))))+str(num ), curses.A_BOLD)
+				else:
+					self.windows["text"][mode].addstr(item +( " " * (w["width"] - len(item)-len(str(num))))+str(num ))
+				count += 1
+			self.windows["text"][mode].refresh()
+		except Exception, e:
+			self.windows["text"][mode].refresh()
+ 			self.mucous.Help.Log("debug", "DrawRecommendations: " + str(e))
+
+	def DrawSimilarUsers(self):
+		try:
+			mode  = "similar_users"
+			self.windows["text"][mode].erase()
+			sup = self.scrolling[ mode ]
+			w = self.dimensions[mode]
+			if self.data[mode] != {}:
+				self.logs[mode] = []
+				
+				users = self.data[mode].keys()
+				users.sort(key=str.lower)
+				for user in users:
+					self.logs[mode].append( [user, self.data[mode][user] ])
+				
+				 
+				
+				clipped_list, sup, start = self.mucous.FormatData.scrollbox(self.logs[mode], sup, w["height"])
+				self.dimensions[mode]["start"] = start
+				self.scrolling[mode] = sup
+			else:
+				clipped_list = [["NO SIMILAR USERS", 0]]
+				start = 0
+			count = 0
+			for user, status in clipped_list:
+				if count + start == sup:
+					attr = curses.A_BOLD
+				else: 
+					attr = curses.A_NORMAL
+				if status == 1:
+					self.windows["text"][mode].addstr("* ", self.mucous.colors["yellow"] | attr)
+				elif status == 2:
+					self.windows["text"][mode].addstr("* ", self.mucous.colors["green"] | attr)
+				else:
+					self.windows["text"][mode].addstr("* " , attr)
+				if len (user )+2 > w["width"]:
+					user = user[ :w["width"]-2-len(user) ]
+				self.windows["text"][mode].addstr(user + " " * (w["width"] - len(user)-2),   attr)
+				count +=1
+				
+			
+			self.windows["text"][mode].refresh()
+		except Exception, e:
+			self.mucous.Help.Log( "debug", "DrawSimilarUsers " + str(e) + str(self.scrolling["similar_users" ]))
+			self.windows["text"]["similar_users"].refresh()
+	
+
+	def DrawInterests(self):
+		self.DrawLikedInterests()
+		self.DrawHatedInterests()
+		self.DrawRecommendations()
+		self.DrawSimilarUsers()
+		
+	def DrawHatedInterests(self):
+		try:
+			mode = "hates"
+
+			self.windows["text"][mode].erase()
+			w = self.dimensions[mode]
+			self.logs[mode] = []
+			sup = self.scrolling[ mode ]
+			if "interests.hate" in self.mucous.config.keys():
+				for item in self.mucous.config["interests.hate"]:
+					
+					self.logs[mode].append( item)
+	
+			count = 0
+			clipped_list, sup, self.dimensions[mode]["start"] = self.mucous.FormatData.scrollbox(self.logs[mode], sup, w["height"])
+			self.scrolling[mode] = sup
+			start = self.dimensions[mode]["start"]
+			for line in clipped_list:
+				length = len( line+( " " * (w["width"] - len(line) ) ) )
+				if length > w["width"]:
+					line = line [:w["width"] - length  ]
+				if count + start == sup:
+					self.windows["text"][mode].addstr(line + " " * (self.dimensions["hates"]["width"] - len(line)), curses.A_BOLD)
+				else:
+					self.windows["text"][mode].addstr(line + " " * (self.dimensions["hates"]["width"] - len(line)))
+				count += 1
+			self.windows["text"][mode].refresh()
+		
+		except Exception, e:
+			#self.mucous.Help.Log( "debug", "DrawHatedInterests " + str(e))
+			self.windows["text"]["hates"].refresh()
+			
+	def DrawLikedInterests(self):
+		try:
+			mode = "likes"
+			self.windows["text"][mode].erase()
+			w = self.dimensions[mode]
+			self.logs[mode] = []
+			sup = self.scrolling[ mode ]
+			if "interests.hate" in self.mucous.config.keys():
+				for item in self.mucous.config["interests.like"]:
+
+					self.logs[mode].append( item)
+	
+			count = 0
+			clipped_list, sup, self.dimensions[mode]["start"] = self.mucous.FormatData.scrollbox(self.logs[mode], sup, w["height"])
+			self.scrolling[mode] = sup
+			start = self.dimensions[mode]["start"]
+			for line in clipped_list:
+				length = len( line+( " " * (w["width"] - len(line) ) ) )
+				if length > w["width"]:
+					line = line [:w["width"] - length  ]
+				if count + start == sup:
+					self.windows["text"][mode].addstr(line + " " * (w["width"] - len(line)), curses.A_BOLD)
+				else:
+					self.windows["text"][mode].addstr(line + " " * (w["width"] - len(line)))
+				count += 1
+			self.windows["text"][mode].refresh()
+		except Exception, e:
+			self.mucous.Help.Log( "debug", "DrawHatedInterests " + str(e))
+			self.windows["text"][mode].refresh()
+			
+
+	def InterestsWindows(self, w, mode):
+		try:
+			# Cleanup stale windows
+			if mode in self.windows["text"]:
+				del self.windows["text"][mode]
+			if mode in self.windows["border"]:
+				del self.windows["border"][mode]
+				 
+			self.windows["border"][mode] = win = curses.newwin(w["height"]+2, w["width"]+2, w["top"]-1, w["left"]-1)
+			if self.selected == mode:
+				win.attron(self.mucous.colors["green"])
+			win.border()
+			if mode == "recommendations":
+				title = "Recommendations"
+				rs = len(self.sort)
+				win.addstr(0, w["width"]-rs-4, "< %s >" % (" "*rs))
+				win.addstr(0, w["width"]-rs-2, self.sort.capitalize(),  curses.A_BOLD | self.mucous.colors["cyan"])
+				win.addstr(w["height"]+1, 1, "<          >")
+				win.addstr(w["height"]+1, 3, "PERSONAL",  curses.A_BOLD | self.mucous.colors["cyan"])
+				win.addstr(w["height"]+1, w["width"]-10, "<        >")
+				win.addstr(w["height"]+1, w["width"]-8, "GLOBAL",  curses.A_BOLD | self.mucous.colors["cyan"])
+			elif mode == "likes":
+				title = "Liked"
+				if self.input == "add_likes":
+					aattr = curses.A_BOLD | self.mucous.colors["cyan"]
+					dattr = curses.A_NORMAL
+				elif self.input  == "del_likes":
+					aattr = curses.A_NORMAL
+					dattr = curses.A_BOLD | self.mucous.colors["cyan"]
+				else:
+					aattr = curses.A_NORMAL
+					dattr = curses.A_NORMAL
+				win.addstr(w["height"]+1, 1, "<     >")
+				win.addstr(w["height"]+1, 3, "ADD", aattr)
+				win.addstr(w["height"]+1, w["width"]-9, "<        >")
+				win.addstr(w["height"]+1, w["width"]-7, "DELETE", dattr)
+			elif mode == "hates":
+				title = "Hated"
+				if self.input == "add_hates":
+					aattr = curses.A_BOLD | self.mucous.colors["cyan"]
+					dattr = curses.A_NORMAL
+				elif self.input  == "del_hates":
+					aattr = curses.A_NORMAL
+					dattr = curses.A_BOLD | self.mucous.colors["cyan"]
+				else:
+					aattr = curses.A_NORMAL
+					dattr = curses.A_NORMAL
+				win.addstr(w["height"]+1, 1, "<     >")
+				win.addstr(w["height"]+1, 3, "ADD", aattr)
+				win.addstr(w["height"]+1, w["width"]-9, "<        >")
+				win.addstr(w["height"]+1, w["width"]-7, "DELETE", dattr)
+			elif mode == "similar_users":
+				title = "Users"
+				win.addstr(w["height"]+1, w["width"]-10, "<         >")
+				win.addstr(w["height"]+1, w["width"]-8, "REFRESH",  curses.A_BOLD | self.mucous.colors["cyan"])
+			
+			win.addstr(0, 1, "< %s >" % (" " * len(title)))
+			if mode == self.selected:
+				 win.addstr(0, 3, title, curses.A_BOLD | self.mucous.colors["green"])
+			else:
+				 win.addstr(0, 3, title, curses.A_BOLD)
+			if self.selected == mode:
+				win.attroff(self.mucous.colors["green"])
+			win.refresh()
+			self.windows["text"][mode] = twin = win.subwin(w["height"], w["width"], w["top"], w["left"])
+			
+			twin.scrollok(0)
+			twin.idlok(1)
+	
+			
+
+		except Exception, e:
+			self.mucous.Help.Log( "debug", "InterestsWindows: " + str(e))
+			
+	
+	## Add an item of interest to your liked list
+	# @param self is mucous
+	# @param interest is a text string
+	def InterestLikedAdd(self, interest):
+		try:
+			if not interest.isspace() and interest != "":
+				self.mucous.SendMessage(messages.AddInterest(interest))
+		except Exception,e:
+			self.mucous.Help.Log("debug", "InterestLikedAdd: " + str(e))	
+			
+	## Add an item of interest to your hated list
+	# @param self is mucous
+	# @param interest is a text string
+	def InterestHatedAdd(self, interest):
+		try:
+			if not interest.isspace() and interest != "":
+				self.mucous.SendMessage(messages.AddHatedInterest(interest))
+		except Exception,e:
+			self.mucous.Help.Log("debug", "InterestHatedAdd: " + str(e))
+	
+	## Remove an item of interest from your liked list
+	# @param self is mucous
+	# @param interest is a text string
+	def InterestLikedRemove(self, interest):
+		try:
+			if not interest.isspace() and interest != "":
+				if interest in self.mucous.config["interests.like"]:
+					self.mucous.SendMessage(messages.RemoveInterest(interest))
+		except Exception,e:
+			self.mucous.Help.Log("debug", "InterestLikedRemove: " + str(e))
+	
+	## Remove an item of interest from your hated list
+	# @param self is mucous
+	# @param interest is a text string
+	def InterestHatedRemove(self, interest):
+		try:
+			if not interest.isspace() and interest != "":
+				if interest in self.mucous.config["interests.hate"]:
+					self.mucous.SendMessage(messages.RemoveHatedInterest(interest))
+		except Exception,e:
+			self.mucous.Help.Log("debug", "InterestHatedRemove: " + str(e))
+			
+	## Parse input entry line for interest and match it with display["interests"]
+	# @param self is mucous
+	# @param interest is a text string	
+	def InputInterests(self, interest):
+		try:
+			interest = self.mucous.dlang(interest)
+			if self.selected == "likes":
+				if self.input == "add_likes":
+					self.InterestLikedAdd(interest)
+				elif self.input == "del_likes":
+					self.InterestLikedRemove(interest)
+			elif self.selected == "hates":
+				if self.input == "add_hates":
+					self.InterestHatedAdd(interest)
+				elif self.input == "del_hates":
+					self.InterestHatedRemove(interest)
+				
+				
+		except Exception,e:
+			self.mucous.Help.Log("debug", "InputInterests: " + str(e))
+
+			
+			
+			
 ## RoomsList
 # Scrollable and sortable list of rooms on the server
 class RoomsList:
@@ -4014,8 +4485,8 @@ class Mucous(driver.Driver):
 		"ticker_room": None, "uploads": 0, "downloads": 0 , \
 		"recommend_sort": "alpha", "ticker_num":  0, "downloaddir": os.path.expanduser("~/"), \
 		"museekconfigfile": ""}
-		self.data = {"rooms": {}, "tickers": {}, "shares": {} , "roomlist": {}, "search_tickets": {}, "search_results": {}, "browse_num": {}, "browse_results": {}, "mystats": [], "downloads": {}, "uploads": {}, "recommendations": {}, "similar_users": {}, "collapsed_dirs":{} }
-		self.logs = {"buddied": [], "banned": [], "ignored": [], "trusted": [], "uploads": "Up: 0", "downloads": "Down: 0", "tab_completion": [], "search_count": ["Results: ", 0], "history": [], "alert": "", "onlinestatus": "Offline", "info": {}, "private": {}, "rooms": {}, "browse": {}, "search":{} , "roombox": {} , "roomstatus": {} , "recommendations": [], "likes": [], "hates": [], "similar_users":[]    }
+		self.data = {"rooms": {}, "tickers": {}, "shares": {} , "roomlist": {}, "search_tickets": {}, "search_results": {}, "browse_num": {}, "browse_results": {}, "mystats": [], "downloads": {}, "uploads": {},  "collapsed_dirs":{} }
+		self.logs = {"buddied": [], "banned": [], "ignored": [], "trusted": [], "uploads": "Up: 0", "downloads": "Down: 0", "tab_completion": [], "search_count": ["Results: ", 0], "history": [], "alert": "", "onlinestatus": "Offline", "info": {}, "private": {}, "rooms": {}, "browse": {}, "search":{} , "roombox": {} , "roomstatus": {}   }
 		self.activeitems = {"info": [], "search": [], "browse": [], "private": [], "positions": {}}
 		self.requests = {"ip":[],  "statistics": [], "browse": []}
 		self.transfers = {"downloads": {}, "uploads": {} }
@@ -4023,7 +4494,7 @@ class Mucous(driver.Driver):
 		self.modes = {"setup":  ["mucous", "museek", "shares", "userinfo", "logs"], "transfers": ["all","active",  "queued", "finished", "failed"] }
 		self.user = { "status": {}, "statistics": {}  }
 		self.windows = {"text": {}, "border": {}, "dimensions": {}, "browse": {}, "tab": {} }
-		self.scrolling = {"chatroom": -1, "roombox": 0, "roomstatus": -1, "info": 0, "private": 0, "files": 0, "directories": 0, "likes": 0, "hates": 0, "recommendations": 0, "similar_users": 0, "help":0, "debug": 0, "search": 0, "uploads": 0, "downloads": 0, "buddied": 0, "banned": 0, "ignored": 0, "trusted": 0, "roomlist":0 }
+		self.scrolling = {"chatroom": -1, "roombox": 0, "roomstatus": -1, "info": 0, "private": 0, "files": 0, "directories": 0, "help":0, "debug": 0, "search": 0, "uploads": 0, "downloads": 0, "buddied": 0, "banned": 0, "ignored": 0, "trusted": 0, "roomlist":0 }
 		## @var FormatData
 		# FormatData (Class)
 		self.FormatData = FormatData(self)
@@ -4705,53 +5176,53 @@ class Mucous(driver.Driver):
 			
 	def cb_get_global_recommendations(self, recommendations):
 		try:
-			self.data["recommendations"] = SortedDict()
+			self.Recommendations.data["recommendations"] = SortedDict()
 			for rec, num in recommendations.items():
-				self.data["recommendations"] [rec] = num
+				self.Recommendations.data["recommendations"] [rec] = num
 			if self.display["mode"] == "lists" and self.display["list"] == "interests":
-				self.DrawInterests()
+				self.Recommendations.DrawInterests()
 		except Exception, e:
 			self.Help.Log("debug", "CB Get Global Recommendations" + str(e))
 
 	def cb_get_similar_users(self, users):
 		try:
 			
-			self.data["similar_users"] = SortedDict()
+			self.Recommendations.data["similar_users"] = SortedDict()
 			for rec, num in users.items():
-				self.data["similar_users"][rec] = num
+				self.Recommendations.data["similar_users"][rec] = num
 			if self.display["mode"] == "lists" and self.display["list"] == "interests":
-				self.DrawInterests()
+				self.Recommendations.DrawInterests()
 		except Exception, e:
 			self.Help.Log("debug", "CB Similar Users" + str(e))
 			
 	def cb_get_recommendations(self, recommendations):
 		try:
-			self.data["recommendations"] = SortedDict()
+			self.Recommendations.data["recommendations"] = SortedDict()
 			for rec, num in recommendations.items():
-				self.data["recommendations"] [rec] = num
+				self.Recommendations.data["recommendations"] [rec] = num
 			if self.display["mode"] == "lists" and self.display["list"] == "interests":
-				self.DrawInterests()
+				self.Recommendations.DrawInterests()
 		except Exception, e:
 			self.Help.Log("debug", "CB Get  Recommendations" + str(e))
 			
 	def cb_get_item_similar_users(self, item, users):
 		try:
-			self.data["similar_users"] = SortedDict()
+			self.Recommendations.data["similar_users"] = SortedDict()
 			for rec, num in users.items():
-				self.data["similar_users"][rec] = num
+				self.Recommendations.data["similar_users"][rec] = num
 			if self.display["mode"] == "lists" and self.display["list"] == "interests":
-				self.DrawInterests()
+				self.Recommendations.DrawInterests()
 		except Exception, e:
 			self.Help.Log("debug", "CB Item Similar Users" + str(e))
 			
 	def cb_get_item_recommendations(self, item, recommendations):
 		try:
 
-			self.data["recommendations"] = SortedDict()
+			self.Recommendations.data["recommendations"] = SortedDict()
 			for rec, num in recommendations.items():
-				self.data["recommendations"] [rec] = num
+				self.Recommendations.data["recommendations"] [rec] = num
 			if self.display["mode"] == "lists" and self.display["list"] == "interests":
-				self.DrawInterests()
+				self.Recommendations.DrawInterests()
 		except Exception, e:
 			self.Help.Log("debug", "CB Get Item Recommendations" + str(e))
 
@@ -5559,7 +6030,7 @@ class Mucous(driver.Driver):
 					
 			elif domain in ("interests.like", "interests.hate"):
 				if self.display["mode"] == "lists" and self.display["list"] == "interests":
-					self.ModeInterests()
+					self.Recommendations.ModeInterests()
 			elif domain in ("clients", "transfers", "server", "interfaces", "interfaces.bind", "userinfo") and self.display["mode"] == "setup":
 				self.ModeSetup()
 			elif domain in ("encoding.users", "encoding" ) and self.display["mode"] == "browse":
@@ -6152,9 +6623,10 @@ class Mucous(driver.Driver):
 				
 			elif self.display["mode"] == "lists":
 				if self.display["list"] == "interests":
-					scrolltext = self.display["interests"]
-					scrolldiff = self.windows["dimensions"][self.display["list"]]["height"]
-					selected_log = self.logs[self.display["interests"]]
+					#scrolltext = self.Recommendations.selected
+					scrollnum = self.Recommendations.scrolling[self.Recommendations.selected]
+					scrolldiff = self.Recommendations.dimensions[self.Recommendations.selected]["height"]
+					#selected_log = self.logs[self.Recommendations.selected]
 				else:
 					scrolltext = self.display["list"]
 					scrolldiff = self.windows["dimensions"][self.display["list"]]["height"]
@@ -6220,10 +6692,11 @@ class Mucous(driver.Driver):
 				if self.display["list"] != "interests":
 					self.SelectLists()
 				else:
-					self.DrawLikedInterests()
-					self.DrawHatedInterests()
-					self.DrawRecommendations()
-					self.DrawSimilarUsers()
+					self.Recommendations.DrawInterests()
+					#self.DrawLikedInterests()
+					#self.DrawHatedInterests()
+					#self.DrawRecommendations()
+					#self.DrawSimilarUsers()
 				return
 			elif self.display["mode"] == "roomlist":
 				self.RoomsList.Format()
@@ -6255,6 +6728,8 @@ class Mucous(driver.Driver):
 				self.RoomsList.scrolling = num
 			if self.display["mode"] == "browse":
 				self.BrowseShares.scrolling[self.BrowseShares.selected] = num
+			if self.display["mode"] == "lists" and self.display["list"] == "interests":
+				self.Recommendations.scrolling[self.Recommendations.selected] = num
 		except Exception, e:
 			self.Help.Log("debug", "UpdateScrollNum: " + str(e))
 			
@@ -6565,113 +7040,6 @@ class Mucous(driver.Driver):
 		except Exception, e:
 			self.Help.Log("debug", "MouseClickTab: " +str(e) )
 		
-	def MouseInterests(self, x,y,z,event):
-		try:
-			rexw = self.windows["dimensions"]["recommendations"]
-			userw = self.windows["dimensions"]["similar_users"]
-			hatew = self.windows["dimensions"]["hates"]
-			likew = self.windows["dimensions"]["likes"]
-			
-			if y >= userw["top"]-1 and y < userw["top"] + userw["height"]+1 and x >= userw["left"]-1 and x < userw["left"]+1 +userw["width"]:
-				w = userw
-				if self.display["interests"] != "similar_users":
-					self.display["interests"] = "similar_users"
-			
-				if y == w["top"] + w["height"]:
-					if x >= w["left"]+w["width"] -11 and x <=  w["left"]+w["width"]:
-						self.SendMessage(messages.GetSimilarUsers())
-				if y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
-					y -= w["top"]
-					this_list = self.logs[self.display["interests"]]
-					if y  + w["start"] in range(len(this_list)):
-						self.scrolling[self.display["interests"]]  = y  + w["start"]
-						self.line = str(self.logs[self.display["interests"]][self.scrolling[self.display["interests"]]][0])
-				self.ModeInterests()
-				return self.line
-			elif y >= likew["top"]-1 and y < likew["top"] + likew["height"]+1 and x >= likew["left"]-1 and x < likew["left"]+1 +likew["width"]:
-				w = likew
-				if self.display["interests"] != "likes":
-					self.display["interests"] = "likes"
-					
-				
-				if y == w["top"] + w["height"]:
-					
-					if x >= w["left"]+2 and x <= w["left"]+7:
-						
-						if self.Spl["interests_input"] == "add_likes":
-							self.InterestLikedAdd(self.line)
-						else:
-							self.Spl["interests_input"] = "add_likes"
-					elif x >= w["left"]+9 and x <= w["left"]+w["width"]:
-						if self.Spl["interests_input"] == "del_likes":
-							self.InterestLikedRemove(self.line)
-						else:
-							self.Spl["interests_input"] = "del_likes"
-						
-				if y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
-					y -= w["top"]
-					this_list = self.logs[self.display["interests"]]
-					
-					if y  + w["start"] in range(len(this_list)):
-						self.scrolling[self.display["interests"]]  = y  + w["start"]
-						self.line = self.logs[self.display["interests"]][self.scrolling[self.display["interests"]]]
-
-					
-				self.ModeInterests()
-				return self.line
-			elif y >= hatew["top"]-1 and y < hatew["top"] + hatew["height"]+1 and x >= hatew["left"]-1 and x < hatew["left"]+1 +hatew["width"]:
-				w = hatew
-				if self.display["interests"] != "hates":
-					self.display["interests"] = "hates"
-				if y == w["top"] + w["height"]:
-					if x >= 2 and x <= 7:
-						if self.Spl["interests_input"] == "add_hates":
-							self.InterestHatedAdd(self.line)
-						else:
-							self.Spl["interests_input"] = "add_hates"
-						
-					elif x >= w["left"]+9 and x <= w["left"]+w["width"]:
-						if self.Spl["interests_input"] == "del_hates":
-							self.InterestHatedRemove(self.line)
-						else:
-							self.Spl["interests_input"] = "del_hates"
-				if y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
-					y -= w["top"]
-					this_list = self.logs[self.display["interests"]]
-					if y  + w["start"] in range(len(this_list)):
-						self.scrolling[self.display["interests"]]  = y  + w["start"]
-						self.line = self.logs[self.display["interests"]][self.scrolling[self.display["interests"]]]
-				self.ModeInterests()
-				return self.line
-					
-			elif y >= rexw["top"]-1 and y < rexw["top"] + rexw["height"]+1 and x >= rexw["left"]-1 and x < rexw["left"]+1 +rexw["width"]:
-				w = rexw
-				if self.display["interests"] != "recommendations":
-					self.display["interests"] = "recommendations"
-				if y == w["top"] -1:
-					if x >= w["left"]+w["width"] -len(self.Spl["recommend_sort"]) -5 and x <=  w["left"]+w["width"]:
-						if self.Spl["recommend_sort"] == "size":
-							self.Spl["recommend_sort"] = "alpha"
-						elif self.Spl["recommend_sort"] == "alpha":
-							self.Spl["recommend_sort"] = "size"
-				elif y == w["top"] + w["height"]:
-					if x >= w["left"]+ 1 and x <=  w["left"]+12:
-						self.SendMessage(messages.GetRecommendations())
-					elif x >= w["left"]+w["width"] -10 and x <=  w["left"]+w["width"]:
-						self.SendMessage(messages.GetGlobalRecommendations())
-				elif y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
-					y -= w["top"]
-					this_list = self.logs[self.display["interests"]]
-					if y  + w["start"] in range(len(this_list)):
-						self.scrolling[self.display["interests"]]  = y  + w["start"]
-						self.line = self.logs[self.display["interests"]][self.scrolling[self.display["interests"]]][0]
-						
-				self.ModeInterests()
-				return self.line
-		except Exception, e:
-			self.Help.Log("debug", "MouseInterests: " +str(e) )
-			
-	
 
 			
 
@@ -7057,7 +7425,10 @@ class Mucous(driver.Driver):
 	def MouseUsersLists(self, x,y,z,event):
 		try:
 			
-			w = self.windows["dimensions"][self.display["list"]]
+			if self.display["list"] == "interests":
+				w = self.Recommendations.dimensions[self.Recommendations.selected]
+			else:
+				w = self.windows["dimensions"][self.display["list"]]
 			if y == 1:
 				if x >= 4 and x <= 15:
 					self.display["list"]="buddied"
@@ -7076,7 +7447,7 @@ class Mucous(driver.Driver):
 					self.ModeLists()
 				return
 			if self.display["list"] == "interests":
-				return self.MouseInterests(x,y,z,event)
+				return self.Recommendations.MouseInterests(x,y,z,event)
 			elif self.display["list"] in ("buddied", "banned", "ignored", "trusted"):
 				# clicking on items in lists
 				if y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
@@ -8377,7 +8748,7 @@ class Mucous(driver.Driver):
 					elif self.display["list"] == "trusted":
 						self.ModifyConfig("trusted", line, '')
 					elif self.display["list"] == "interests":
-						self.InputInterests(line)
+						self.Recommendations.InputInterests(line)
 				elif self.display["mode"] == "roomlist":
 					self.doJoin(line)
 				elif self.display["mode"] == "setup":
@@ -8395,69 +8766,6 @@ class Mucous(driver.Driver):
 			self.SendMessage(messages.JoinRoom( self.dlang( room ) ))
 		except Exception,e:
 			self.Help.Log("debug", "doJoin: " + str(e))
-	
-	## Add an item of interest to your liked list
-	# @param self is mucous
-	# @param interest is a text string
-	def InterestLikedAdd(self, interest):
-		try:
-			if not interest.isspace() and interest != "":
-				self.SendMessage(messages.AddInterest(interest))
-		except Exception,e:
-			self.Help.Log("debug", "InterestLikedAdd: " + str(e))	
-			
-	## Add an item of interest to your hated list
-	# @param self is mucous
-	# @param interest is a text string
-	def InterestHatedAdd(self, interest):
-		try:
-			if not interest.isspace() and interest != "":
-				self.SendMessage(messages.AddHatedInterest(interest))
-		except Exception,e:
-			self.Help.Log("debug", "InterestHatedAdd: " + str(e))
-	
-	## Remove an item of interest from your liked list
-	# @param self is mucous
-	# @param interest is a text string
-	def InterestLikedRemove(self, interest):
-		try:
-			if not interest.isspace() and interest != "":
-				if interest in self.config["interests.like"]:
-					self.SendMessage(messages.RemoveInterest(interest))
-		except Exception,e:
-			self.Help.Log("debug", "InterestLikedRemove: " + str(e))
-	
-	## Remove an item of interest from your hated list
-	# @param self is mucous
-	# @param interest is a text string
-	def InterestHatedRemove(self, interest):
-		try:
-			if not interest.isspace() and interest != "":
-				if interest in self.config["interests.hate"]:
-					self.SendMessage(messages.RemoveHatedInterest(interest))
-		except Exception,e:
-			self.Help.Log("debug", "InterestHatedRemove: " + str(e))
-			
-	## Parse input entry line for interest and match it with display["interests"]
-	# @param self is mucous
-	# @param interest is a text string	
-	def InputInterests(self, interest):
-		try:
-			interest = self.dlang(interest)
-			if self.display["interests"] == "likes":
-				if self.Spl["interests_input"] == "add_likes":
-					self.InterestLikedAdd(interest)
-				elif self.Spl["interests_input"] == "del_likes":
-					self.InterestLikedRemove(interest)
-			elif self.display["interests"] == "hates":
-				if self.Spl["interests_input"] == "add_hates":
-					self.InterestHatedAdd(interest)
-				elif self.Spl["interests_input"] == "del_hates":
-					self.InterestHatedRemove(interest)
-				
-				
-		except Exception,e:
-			self.Help.Log("debug", "InputInterests: " + str(e))
 			
 	## Parse input entry line for interest and match it with Spl["setup_input"]
 	# @param self is mucous
@@ -8623,7 +8931,7 @@ class Mucous(driver.Driver):
 								self.PopupMenu.Create("browse-dirs", 0)
 			elif key in ("delete"):
 				if self.display["mode"] == "lists" and self.display["list"] == "interests":
-					inp = self.Spl["interests_input"]
+					inp = self.Recommendations.input
 					if inp == "add_likes":
 						inp = "del_likes"
 					elif inp == "del_likes":
@@ -8632,8 +8940,8 @@ class Mucous(driver.Driver):
 						inp = "add_hates"
 					elif inp == "add_hates":
 						inp = "del_hates"
-					self.Spl["interests_input"]  = inp
-					self.ModeInterests()
+					self.Recommendations.input = inp
+					self.Recommendations.ModeInterests()
 				
 			elif key == "collapse":
 				if self.display["mode"] == "browse" and self.BrowseShares.selected == "directories":
@@ -8704,8 +9012,8 @@ class Mucous(driver.Driver):
 					self.BrowseShares.Mode()
 				elif self.display["mode"] == "lists" and self.display["list"] == "interests":
 					_list = [ "recommendations", "similar_users", "likes", "hates" ]
-					self.display["interests"] = self.FormatData.RotateList("right", _list, self.display["interests"], "no")
-					self.ModeInterests()
+					self.Recommendations.selected = self.FormatData.RotateList("right", _list, self.Recommendations.selected, "no")
+					self.Recommendations.ModeInterests()
 					
 			elif key in( "KEY_LEFT", chr(91), chr(60), "KEY_RIGHT", chr(93), chr(62), "KEY_IC"):
 				if key == "KEY_LEFT" or key == chr(91) or key == chr(60):
@@ -10289,291 +10597,6 @@ class Mucous(driver.Driver):
 		except Exception, e:
 			self.Help.Log("debug", "DrawTabs: " + str(e))
 			
-
-					
-	def ModeInterests(self):
-		try:
-			self.display["list"] = "interests"
-			self.PopupMenu.show = False
-# 			self.scrolling[ "recommendations" ] = self.scrolling[ "likes" ] = self.scrolling[ "hates" ] = self.scrolling[ "similar_users" ] = 0
-			self.windows["dimensions"]["recommendations"] = s = self.windows["dimensions"][self.display["list"]] = {"height": self.h-8, "top": 3, "left": 21, "width": self.w-42, "start": 0}
-			self.windows["dimensions"]["likes"] = l  = self.windows["dimensions"][self.display["list"]] = {"height": self.h/2-5, "top": 3, "left": 1, "width": 18, "start": 0}
-			self.windows["dimensions"]["hates"] = h = self.windows["dimensions"][self.display["list"]] = {"height": self.h-8-(l["height"])-2, "top": 5+l["height"], "left": 1, "width": 18, "start": 0}
-			self.windows["dimensions"]["similar_users"] = u = self.windows["dimensions"][self.display["list"]] = {"height": self.h-8, "top":3 , "left": self.w-19, "width": 18, "start": 0}
-			
-			mw = curses.newwin(3, self.w,  1, 0)
-			mw.attron(self.colors["green"])
-# 			win = curses.newwin(w["height"]+2, w["width"]+2, w["top"]-1, w["left"]-1)
-			mw.erase()
-			mw.border()
-			mw.addstr(0, 3, "< Buddied >",  self.colors["green"])
-			mw.addstr(0, 16, "< Banned >", self.colors["green"])
-			mw.addstr(0, 28, "< Ignored >", self.colors["green"])
-			mw.addstr(0, 40, "< Trusted >", self.colors["green"] )
-			mw.addstr(0, 52, "< Interests >", self.colors["green"]  | curses.A_BOLD)
-			mw.noutrefresh()
-			# Cleanup stale windows
-			del mw
-	
-
-			if self.display["interests"] == "likes":
-				if self.Spl["interests_input"] not in ("add_likes", "del_likes"):
-					self.Spl["interests_input"] = "add_likes"
-				if self.Spl["interests_input"] == "add_likes":
-					self.set_edit_title("Add Liked (Alt-D to Toggle to Delete)")
-				elif self.Spl["interests_input"] == "del_likes":
-					self.set_edit_title("Delete Liked (Alt-D to Toggle to Add)")
-			elif self.display["interests"] == "hates":
-				if self.Spl["interests_input"] not in ("add_hates", "del_hates"):
-					self.Spl["interests_input"] = "add_hates"
-				if self.Spl["interests_input"] == "add_hates":
-					self.set_edit_title("Add Hated (Alt-D to Toggle to Delete)")
-				elif self.Spl["interests_input"] == "del_hates":
-					self.set_edit_title("Delete Hated (Alt-D to Toggle to Add)")
-			elif self.display["interests"] == "recommendations":
-				self.set_edit_title("Recommendations:")
-			elif self.display["interests"] == "similar_users":
-				self.set_edit_title("Similar Users:")
-			self.InterestsWindows(s, "recommendations")
-			self.InterestsWindows(l, "likes")
-			self.InterestsWindows(h, "hates")
-			self.InterestsWindows(u, "similar_users")
-			self.DrawInterests()
-
-			
-			self.HotKeyBar()
-			curses.doupdate()
-		except Exception, e:
-			self.Help.Log("debug", "ModeInterests: " + str(e))
-			
-	def DrawInterests(self):
-		self.DrawLikedInterests()
-		self.DrawHatedInterests()
-		self.DrawRecommendations()
-		self.DrawSimilarUsers()
-		
-	def DrawRecommendations(self):
-		try:
-			mode  = "recommendations"
-			self.windows["text"][mode].erase()
-			w = self.windows["dimensions"][mode]
-			self.logs[mode] = []
-			sup = self.scrolling[ mode ]
-			if self.data[mode] != {}:
-				if self.Spl["recommend_sort"] == "alpha":
-					dict = self.data[mode].keys()
-					dict.sort(key=str.lower)
-					for item in dict:
-						self.logs[mode].append( [item, self.data[mode][item] ])
-
-				elif self.Spl["recommend_sort"] == "size":
-					dict = self.FormatData.sortbyvalue(self.data[mode])
-					dict.reverse()
-					for item, num in dict:
-						self.logs[mode].append( [item, num])
-				
-					
-			else:
-				self.logs[mode] = [["EMPTY RECOMMENDATIONS", 0]]
-			count = 0
-			clipped_list, sup, self.windows["dimensions"][mode]["start"] = self.FormatData.scrollbox(self.logs[mode], sup, w["height"])
-			self.scrolling[mode] = sup
-			start = self.windows["dimensions"][mode]["start"]
-			for item, num in clipped_list:
-				length = len( item+( " " * (w["width"] - len(item)-len(str(num))))+str(num ) )
-				if length > w["width"]:
-					item = item [:w["width"] - length  ]
-				if count + start == sup:
-					self.windows["text"][mode].addstr(item +( " " * (w["width"] - len(item)-len(str(num))))+str(num ), curses.A_BOLD)
-				else:
-					self.windows["text"][mode].addstr(item +( " " * (w["width"] - len(item)-len(str(num))))+str(num ))
-				count += 1
-			self.windows["text"][mode].refresh()
-		except Exception, e:
-			self.windows["text"][mode].refresh()
- 			#self.Help.Log("debug", "DrawRecommendations: " + str(e))
-
-	def DrawSimilarUsers(self):
-		try:
-			mode  = "similar_users"
-			self.windows["text"][mode].erase()
-			sup = self.scrolling[ mode ]
-			w = self.windows["dimensions"][mode]
-			if self.data[mode] != {}:
-				self.logs[mode] = []
-				
-				users = self.data[mode].keys()
-				users.sort(key=str.lower)
-				for user in users:
-					self.logs[mode].append( [user, self.data[mode][user] ])
-				
-				 
-				
-				clipped_list, sup, start = self.FormatData.scrollbox(self.logs[mode], sup, w["height"])
-				self.windows["dimensions"][mode]["start"] = start
-				self.scrolling[mode] = sup
-			else:
-				clipped_list = [["NO SIMILAR USERS", 0]]
-				start = 0
-			count = 0
-			for user, status in clipped_list:
-				if count + start == sup:
-					attr = curses.A_BOLD
-				else: 
-					attr = curses.A_NORMAL
-				if status == 1:
-					self.windows["text"][mode].addstr("* ", self.colors["yellow"] | attr)
-				elif status == 2:
-					self.windows["text"][mode].addstr("* ", self.colors["green"] | attr)
-				else:
-					self.windows["text"][mode].addstr("* " , attr)
-				if len (user )+2 > w["width"]:
-					user = user[ :w["width"]-2-len(user) ]
-				self.windows["text"][mode].addstr(user + " " * (w["width"] - len(user)-2),   attr)
-				count +=1
-				
-			
-			self.windows["text"][mode].refresh()
-		except Exception, e:
-			self.Help.Log( "debug", "DrawSimilarUsers " + str(e) + str(self.scrolling["similar_users" ]))
-			self.windows["text"]["similar_users"].refresh()
-	
-	def DrawHatedInterests(self):
-		try:
-			mode = "hates"
-
-			self.windows["text"][mode].erase()
-			w = self.windows["dimensions"][mode]
-			self.logs[mode] = []
-			sup = self.scrolling[ mode ]
-			if "interests.hate" in self.config.keys():
-				for item in self.config["interests.hate"]:
-					
-					self.logs[mode].append( item)
-	
-			count = 0
-			clipped_list, sup, self.windows["dimensions"][mode]["start"] = self.FormatData.scrollbox(self.logs[mode], sup, w["height"])
-			self.scrolling[mode] = sup
-			start = self.windows["dimensions"][mode]["start"]
-			for line in clipped_list:
-				length = len( line+( " " * (w["width"] - len(line) ) ) )
-				if length > w["width"]:
-					line = line [:w["width"] - length  ]
-				if count + start == sup:
-					self.windows["text"][mode].addstr(line + " " * (self.windows["dimensions"]["hates"]["width"] - len(line)), curses.A_BOLD)
-				else:
-					self.windows["text"][mode].addstr(line + " " * (self.windows["dimensions"]["hates"]["width"] - len(line)))
-				count += 1
-			self.windows["text"][mode].refresh()
-		
-		except Exception, e:
-			#self.Help.Log( "debug", "DrawHatedInterests " + str(e))
-			self.windows["text"]["hates"].refresh()
-			
-	def DrawLikedInterests(self):
-		try:
-			mode = "likes"
-			self.windows["text"][mode].erase()
-			w = self.windows["dimensions"][mode]
-			self.logs[mode] = []
-			sup = self.scrolling[ mode ]
-			if "interests.hate" in self.config.keys():
-				for item in self.config["interests.like"]:
-
-					self.logs[mode].append( item)
-	
-			count = 0
-			clipped_list, sup, self.windows["dimensions"][mode]["start"] = self.FormatData.scrollbox(self.logs[mode], sup, w["height"])
-			self.scrolling[mode] = sup
-			start = self.windows["dimensions"][mode]["start"]
-			for line in clipped_list:
-				length = len( line+( " " * (w["width"] - len(line) ) ) )
-				if length > w["width"]:
-					line = line [:w["width"] - length  ]
-				if count + start == sup:
-					self.windows["text"][mode].addstr(line + " " * (w["width"] - len(line)), curses.A_BOLD)
-				else:
-					self.windows["text"][mode].addstr(line + " " * (w["width"] - len(line)))
-				count += 1
-			self.windows["text"][mode].refresh()
-		except:
-			self.windows["text"][mode].refresh()
-			
-
-	def InterestsWindows(self, w, mode):
-		try:
-			# Cleanup stale windows
-			if mode in self.windows["text"]:
-				del self.windows["text"][mode]
-			if mode in self.windows["border"]:
-				del self.windows["border"][mode]
-				 
-			self.windows["border"][mode] = win = curses.newwin(w["height"]+2, w["width"]+2, w["top"]-1, w["left"]-1)
-			if self.display["interests"] == mode:
-				win.attron(self.colors["green"])
-			win.border()
-			if mode == "recommendations":
-				title = "Recommendations"
-				rs = len(self.Spl["recommend_sort"])
-				win.addstr(0, w["width"]-rs-4, "< %s >" % (" "*rs))
-				win.addstr(0, w["width"]-rs-2, self.Spl["recommend_sort"].capitalize(),  curses.A_BOLD | self.colors["cyan"])
-				win.addstr(w["height"]+1, 1, "<          >")
-				win.addstr(w["height"]+1, 3, "PERSONAL",  curses.A_BOLD | self.colors["cyan"])
-				win.addstr(w["height"]+1, w["width"]-10, "<        >")
-				win.addstr(w["height"]+1, w["width"]-8, "GLOBAL",  curses.A_BOLD | self.colors["cyan"])
-			elif mode == "likes":
-				title = "Liked"
-				if self.Spl["interests_input"] == "add_likes":
-					aattr = curses.A_BOLD | self.colors["cyan"]
-					dattr = curses.A_NORMAL
-				elif self.Spl["interests_input"]  == "del_likes":
-					aattr = curses.A_NORMAL
-					dattr = curses.A_BOLD | self.colors["cyan"]
-				else:
-					aattr = curses.A_NORMAL
-					dattr = curses.A_NORMAL
-				win.addstr(w["height"]+1, 1, "<     >")
-				win.addstr(w["height"]+1, 3, "ADD", aattr)
-				win.addstr(w["height"]+1, w["width"]-9, "<        >")
-				win.addstr(w["height"]+1, w["width"]-7, "DELETE", dattr)
-			elif mode == "hates":
-				title = "Hated"
-				if self.Spl["interests_input"] == "add_hates":
-					aattr = curses.A_BOLD | self.colors["cyan"]
-					dattr = curses.A_NORMAL
-				elif self.Spl["interests_input"]  == "del_hates":
-					aattr = curses.A_NORMAL
-					dattr = curses.A_BOLD | self.colors["cyan"]
-				else:
-					aattr = curses.A_NORMAL
-					dattr = curses.A_NORMAL
-				win.addstr(w["height"]+1, 1, "<     >")
-				win.addstr(w["height"]+1, 3, "ADD", aattr)
-				win.addstr(w["height"]+1, w["width"]-9, "<        >")
-				win.addstr(w["height"]+1, w["width"]-7, "DELETE", dattr)
-			elif mode == "similar_users":
-				title = "Users"
-				win.addstr(w["height"]+1, w["width"]-10, "<         >")
-				win.addstr(w["height"]+1, w["width"]-8, "REFRESH",  curses.A_BOLD | self.colors["cyan"])
-			
-			win.addstr(0, 1, "< %s >" % (" " * len(title)))
-			if mode == self.display["interests"]:
-				 win.addstr(0, 3, title, curses.A_BOLD | self.colors["green"])
-			else:
-				 win.addstr(0, 3, title, curses.A_BOLD)
-			if self.display["interests"] == mode:
-				win.attroff(self.colors["green"])
-			win.refresh()
-			self.windows["text"][mode] = twin = win.subwin(w["height"], w["width"], w["top"], w["left"])
-			
-			twin.scrollok(0)
-			twin.idlok(1)
-	
-			
-
-		except Exception, e:
-			self.Help.Log( "debug", "InterestsWindows: " + str(e))
-			
 	def DestroyOldWindows(self):
 		mode = self.display["mode"]
 		if mode == "lists":
@@ -10697,7 +10720,7 @@ class Mucous(driver.Driver):
 		elif self.display["list"] == "trusted":
 			self.ModeTrust()	
 		elif self.display["list"] == "interests":
-			self.ModeInterests()	
+			self.Recommendations.ModeInterests()	
 			
 
 	def ModeSetupDefault(self):
