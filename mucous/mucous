@@ -598,7 +598,7 @@ class PopupMenu:
 			if mode == "chat":
 				this_list = self.mucous.logs["roombox"][self.mucous.Spl["room"]]
 			elif mode  == "lists":
-				this_list = self.mucous.logs[self.mucous.display["list"]]
+				this_list = self.mucous.UsersLists.logs[self.mucous.UsersLists.current]
 			elif mode == "transfer":
 				this_list = self.mucous.get_transfers_list()
 			elif mode == "search":
@@ -734,8 +734,10 @@ class PopupMenu:
 		try:
 			if menu:
 				self.current = menu
-			if position:
-				self.position = position
+			else:
+				menu = self.current 
+			self.position = position
+			
 			if show:
 				self.show = True
 			
@@ -746,6 +748,7 @@ class PopupMenu:
 			this_list = self.List()
 			if this_list == []:
 				return
+			
 			if menu == "roombox":
 				mode = "roombox"
 				if self.mucous.display["chatshape"] == "rightlist":
@@ -760,11 +763,11 @@ class PopupMenu:
 				items = [["Private Message", "all"], ["Userinfo", "all"], ["IP Address", "all"], ["Browse", "all"], ["", "line"], ["Buddy", "buddies"], ["Ban", "banned"], ["Ignore", "ignored"], ["Trusted", "trusted"], ["Give Privileges", "giveprivs"]  ]
 				height = len(items) + 2	
 			elif menu == "lists":
-				mode = self.mucous.display["list"]
+				mode = self.mucous.UsersLists.current
 				left = 25; top = 2; width = 20
-				title = "%s" % (this_list[self.mucous.scrolling[mode]])[1][:16]
-				name = this_list[self.mucous.scrolling[mode]][1]
-				number = self.mucous.scrolling[mode] +1
+				title = "%s" % (this_list[self.mucous.UsersLists.scrolling[mode]])[1][:16]
+				name = this_list[self.mucous.UsersLists.scrolling[mode]][1]
+				number = self.mucous.UsersLists.scrolling[mode] +1
 				
 				items = [["Private Message", "all"], ["Userinfo", "all"], ["IP Address", "all"], ["Browse", "all"], ["", "line"], ["Buddy", "buddies"], ["Ban", "banned"], ["Ignore", "ignored"], ["Trusted", "trusted"], ["Give Privileges", "giveprivs"]  ]
 				height = len(items) + 2
@@ -860,7 +863,7 @@ class PopupMenu:
 # 			scroll.noutrefresh()
 			self.menus[menu] = {"window": win, "shadow": shadow, "scroll": scroll, "name": name, "items": items, "top": top, "width": width, "height": height, "left": left}
 			self.Draw()
-
+			curses.doupdate()
 			#sleep(1)
 		except Exception, e:
 			self.mucous.Help.Log("debug", "PopupMenu.Create " +str(e))
@@ -921,8 +924,8 @@ class PopupMenu:
 				mode = "roombox"
 				username = self.mucous.logs["roombox"][self.mucous.Spl["room"]][self.mucous.scrolling[mode]]
 			elif self.current == "lists":
-				mode = self.mucous.display["list"]
-				username = self.List()[self.mucous.scrolling[mode]][1]
+				mode = self.mucous.UsersLists.current
+				username = self.List()[self.mucous.UsersLists.scrolling[mode]][1]
 			elif self.current == "transfers":
 				mode = self.mucous.display["transfers"]
 				the_list = self.List()
@@ -1475,8 +1478,17 @@ class Help:
 							self.helpdebuglog.append("%s %s%s" % (timestamp,ex,line))
 						else:
 							self.helpdebuglog.append("%s%s" % (ex,line))
+				
 				else:
 					self.helpdebuglog.append("%s %s%s" %(timestamp, ex,s))
+				if htype == "debug":
+					import traceback
+					ex = "BUG "
+					tb = traceback.extract_tb(sys.exc_info()[2])
+					for line in tb:
+						if line is tb[0]:
+							self.helpdebuglog.append("%s %s%s" % (timestamp,ex,line))
+						else: self.helpdebuglog.append("%s%s" % (ex,line))
 				
 			if self.mucous.display["mode"] in ( "help", "debug", "status"):
 				#self.Draw( htype, s, 0)
@@ -2984,16 +2996,496 @@ class BrowseShares:
 
 			
 			
-## User Lists
+## Users Lists
 #			
-class UserLists:
+class UsersLists:
 	## Constructor
-	# @param self UserLists (class)
+	# @param self UsersLists (class)
 	# @param mucous Mucous (class)
 	def __init__(self, mucous):
 		## @var mucous 
 		# Mucous (Class)
 		self.mucous = mucous
+		self.logs = {"buddied": [], "banned": [], "ignored": [], "trusted": []}
+		self.scrolling = {"buddied": 0, "banned": 0, "ignored": 0, "trusted": 0}
+		self.current = "buddied"
+		self.windows= {"text":{}, "border":{} }
+		self.dimensions = {}
+		#self.user = {}
+		
+	def ModeLists(self):
+		self.mucous.display["mode"] = "lists"
+		self.mucous.PopupMenu.show = False
+		if self.current == "buddied":
+			self.ModeBuddy()
+		elif self.current == "banned":
+			self.ModeBan()
+		elif self.current == "ignored":
+			self.ModeIgnore()
+		elif self.current == "trusted":
+			self.ModeTrust()	
+		elif self.current == "interests":
+			self.mucous.Recommendations.ModeInterests()	
+		
+	def ModeTrust(self):
+		try:
+			self.current = "trusted"
+			#self.DestroyOldWindows()
+			self.mucous.PopupMenu.show = False
+			
+			s = self.dimensions[self.current] = {"height": self.mucous.h-7, "top": 2, "left": 1, "width": self.mucous.w-2, "start": 0}
+			self.ListTrust()
+			self.DrawListsWindows(self.current)
+			
+			self.FormatLists(s, "trusted")
+			
+			self.mucous.HotKeyBar()
+			curses.doupdate()
+		except Exception, e:
+			self.mucous.Help.Log("debug", "ModeTrust: " + str(e))
+			
+	def ModeBuddy(self):
+		try:
+			self.current = "buddied"
+			self.mucous.PopupMenu.show = False
+			
+			s = self.dimensions[self.current] = {"height": self.mucous.h-7, "top": 2, "left": 1, "width": self.mucous.w-2, "start": 0}
+			self.ListBuddy()
+			self.DrawListsWindows(self.current)
+			
+			self.FormatLists(s, "buddied")
+			
+			self.mucous.HotKeyBar()
+			curses.doupdate()
+		except Exception, e:
+			self.mucous.Help.Log("debug", "ModeBuddy: " + str(e))
+			
+	def ModeBan(self):
+		try:
+			self.current = "banned"
+			self.mucous.PopupMenu.show = False
+			
+			s = self.dimensions[self.current] = {"height": self.mucous.h-7, "top": 2, "left": 1, "width": self.mucous.w-2, "start": 0}
+			self.DrawListsWindows(self.current)
+			self.ListBan()
+			self.FormatLists(s, "banned")
+			self.mucous.HotKeyBar()
+			curses.doupdate()
+		except Exception, e:
+			self.mucous.Help.Log("debug", "ban_mode: " + str(e))
+			
+	def ModeIgnore(self):
+		try:
+			self.current = "ignored"
+			self.mucous.PopupMenu.show = False
+			
+			s = self.dimensions[self.current] = {"height": self.mucous.h-7, "top": 2, "left": 1, "width": self.mucous.w-2, "start": 0}
+			self.DrawListsWindows(self.current)
+			
+			self.FormatLists(s, "ignored")
+			self.mucous.HotKeyBar()
+			curses.doupdate()
+		except Exception, e:
+			self.mucous.Help.Log("debug", "ModeIgnore: " + str(e))
+			
+	def FormatLists(self, window, mode):
+		try:
+			if self.logs[mode] != None and self.logs[mode] != []:
+				clipped_list, self.scrolling[mode], self.dimensions[self.current]["start"] = self.mucous.FormatData.scrollbox(self.logs[mode], self.scrolling[mode], window["height"])
+				count = 0 
+				try:
+					self.windows["border"][self.current].addstr(self.mucous.h-6, self.mucous.w-18, "< "+str(len(self.logs[mode]))+" >", self.mucous.colors["green"] | curses.A_BOLD)
+					self.windows["border"][self.current].noutrefresh()	
+				except:
+					pass
+				self.windows["text"][self.current].erase()
+				for lines in clipped_list:
+					self.DrawLists(lines, count, self.current)
+					count += 1
+				
+				self.windows["text"][self.current].noutrefresh()
+		except Exception, e:
+			self.mucous.Help.Log("debug", "FormatLists: " + str(e))
+			
+			 
+
+
+
+
+	def DrawListsWindows(self, window):
+		try:
+			# Cleanup stale windows
+			if self.current in self.windows["text"]: 
+				del self.windows["text"][self.current]
+			if self.current in self.windows["border"]:
+				del self.windows["border"][self.current]
+				
+			s = self.dimensions[self.current]
+			mw = self.windows["border"][self.current] = curses.newwin(s["height"]+2, s["width"]+2, s["top"]-1, s["left"]-1)
+			mw.attron(self.mucous.colors["green"])
+			mw.border()
+			mw.attroff(self.mucous.colors["green"])
+
+			if self.current =="buddied":
+				mw.addstr(0, 3, "< Buddied >",  self.mucous.colors["green"] | curses.A_BOLD)
+				mw.addstr(0, 16, "< Banned >", self.mucous.colors["green"])
+				mw.addstr(0, 28, "< Ignored >", self.mucous.colors["green"])
+				mw.addstr(0, 40, "< Trusted >", self.mucous.colors["green"])
+				mw.addstr(0, 52, "< Interests >", self.mucous.colors["green"])
+				
+				self.mucous.set_edit_title("Add Buddy:")
+			elif self.current =="banned":
+				mw.addstr(0, 3, "< Buddied >",  self.mucous.colors["green"] )
+				mw.addstr(0, 16, "< Banned >", self.mucous.colors["green"]| curses.A_BOLD)
+				mw.addstr(0, 28, "< Ignored >", self.mucous.colors["green"])
+				mw.addstr(0, 40, "< Trusted >", self.mucous.colors["green"])
+				mw.addstr(0, 52, "< Interests >", self.mucous.colors["green"])
+				self.mucous.set_edit_title("Ban User:")
+			elif self.current =="ignored":
+				mw.addstr(0, 3, "< Buddied >",  self.mucous.colors["green"] )
+				mw.addstr(0, 16, "< Banned >", self.mucous.colors["green"])
+				mw.addstr(0, 28, "< Ignored >", self.mucous.colors["green"]| curses.A_BOLD)
+				mw.addstr(0, 40, "< Trusted >", self.mucous.colors["green"])
+				mw.addstr(0, 52, "< Interests >", self.mucous.colors["green"])
+				self.mucous.set_edit_title("Ignore User:")
+			elif self.current =="trusted":
+				mw.addstr(0, 3, "< Buddied >",  self.mucous.colors["green"] )
+				mw.addstr(0, 16, "< Banned >", self.mucous.colors["green"])
+				mw.addstr(0, 28, "< Ignored >", self.mucous.colors["green"])
+				mw.addstr(0, 40, "< Trusted >", self.mucous.colors["green"] | curses.A_BOLD)
+				mw.addstr(0, 52, "< Interests >", self.mucous.colors["green"])
+				self.mucous.set_edit_title("Add Trusted:")
+		
+			mw.noutrefresh()
+			tw = self.windows["text"][self.current] = mw.subwin(s["height"], s["width"], s["top"], s["left"])
+			tw.scrollok(0)
+			tw.idlok(1)
+		except Exception, e:
+			self.mucous.Help.Log("debug", "DrawLists: " + str(e))
+	def DrawLists(self, line, count, window):
+		try:
+			if self.mucous.display["mode"] == "lists":
+				start = self.dimensions[window]["start"]
+				tw = self.windows["text"][self.current]
+				linenumber = line
+				attributes = linenumber[0]
+				username = linenumber[1]
+				note = linenumber[2]
+				
+				tabbeduser = self.mucous.dlang(username[:20])
+	
+				while len(tabbeduser) < 24:
+					tabbeduser += ' '
+				try:
+					if username in self.mucous.user["status"].keys():
+						if self.mucous.user["status"][username] == 1:
+							tw.addstr('* ', self.mucous.colors["yellow"]|curses.A_BOLD)
+						elif self.mucous.user["status"][username] == 2:
+							tw.addstr('* ', self.mucous.colors["green"]|curses.A_BOLD)
+						elif self.mucous.user["status"][username] == 0:
+							tw.addstr('* ', self.mucous.colors["red"]|curses.A_BOLD)
+					else: 
+						tw.addstr('* ',  curses.A_BOLD )	
+					pos = 2
+					
+					if self.current == "buddied":
+						attrcount = 0
+						try:
+							if 'trusted' in attributes:
+								color = self.mucous.colors["cyan"] | curses.A_BOLD 
+								tw.addstr('!', color)
+							else: tw.addstr(' ')
+							color = self.mucous.colors["green"] | curses.A_BOLD 
+							tw.addstr('!', color)
+							if 'banned' in attributes:
+								color = self.mucous.colors["red"] | curses.A_BOLD 
+								tw.addstr('!', color)
+							else: tw.addstr(' ')
+							
+							if 'ignored' in attributes:
+								color = self.mucous.colors["yellow"] | curses.A_BOLD 
+								tw.addstr('! ', color)
+							else: tw.addstr('  ')
+								
+						except Exception, e:
+							self.mucous.Help.Log("debug", "display list text" + str(e))
+							pass
+						
+						
+					elif self.current == "banned":
+						
+						try:
+							if 'trusted' in attributes:
+								color = self.mucous.colors["cyan"] | curses.A_BOLD 
+								tw.addstr('!', color)
+							else: tw.addstr(' ')
+							
+							if 'buddies' in attributes:
+								color = self.mucous.colors["green"] | curses.A_BOLD 
+								tw.addstr('!', color)
+							else: tw.addstr(' ')
+							color = self.mucous.colors["red"] | curses.A_BOLD 
+							tw.addstr('!', color)
+							if 'ignored' in attributes:
+								color = self.mucous.colors["yellow"] | curses.A_BOLD 
+								tw.addstr('! ', color)
+							else: tw.addstr('  ')
+							
+	
+						except:
+							self.mucous.Help.Log("debug", "display list text" + str(e))
+							
+					elif self.current == "trusted":
+						try:
+							color = self.mucous.colors["cyan"] | curses.A_BOLD 
+							tw.addstr('!', color)
+							
+							if 'buddies' in attributes:
+								color = self.mucous.colors["green"] | curses.A_BOLD 
+								tw.addstr('!', color)
+							else: tw.addstr(' ')
+							if 'banned' in attributes:
+								color = self.mucous.colors["red"] | curses.A_BOLD 
+								tw.addstr('!', color)
+							else: tw.addstr(' ')
+							if 'ignored' in attributes:
+								color = self.mucous.colors["yellow"] | curses.A_BOLD 
+								tw.addstr('! ', color)
+							else: tw.addstr('  ')
+						except Exception, e:
+							self.mucous.Help.Log("debug", "display list text" + str(e))
+							
+					elif self.current == "ignored":
+						try:
+							if 'trusted' in attributes:
+								color = self.mucous.colors["cyan"] | curses.A_BOLD 
+								tw.addstr('!', color)
+							else: tw.addstr(' ')
+							if 'buddies' in attributes:
+								color = self.mucous.colors["green"] | curses.A_BOLD 
+								tw.addstr('!', color)
+							else: tw.addstr(' ')
+							if 'banned' in attributes:
+								color = self.mucous.colors["red"] | curses.A_BOLD 
+								tw.addstr('!', color)
+							else: tw.addstr(' ')
+							color = self.mucous.colors["yellow"] | curses.A_BOLD 
+							tw.addstr('! ', color)
+						except Exception, e:
+							self.mucous.Help.Log("debug", "display list text" + str(e))
+					#else:
+						#tw.addstr(tabbeduser)
+						#stats = note = ''
+					color = curses.A_NORMAL
+					pos +=5
+					
+					if count + start == self.scrolling[self.current]:
+						attrib = curses.A_BOLD | curses.A_REVERSE | color
+						attrib2 = curses.A_BOLD | curses.A_REVERSE 
+					else:
+						attrib = curses.A_BOLD | color
+						attrib2 = curses.A_BOLD 
+						
+					tw.addstr(tabbeduser, attrib)
+								
+					if username in self.mucous.user["statistics"]:
+						stats = " %sKB/s" % str(self.mucous.user["statistics"][username][0]/1024)
+						while len(stats) < 9:
+							stats += " "
+						files = str(self.mucous.user["statistics"][username][2])
+						while len(files) < 7:
+							files = " " + files
+						stats += files
+						while len(stats) < 18:
+							stats += " "
+						tw.addstr( stats, attrib2)
+					else:
+						stats  = " 0KB/s         0  "
+						tw.addstr(stats, attrib2)
+						
+					width = len(tabbeduser) + len(stats) + len(note) + 5
+					subtract = self.mucous.w - width
+					if subtract < 0:
+						tw.addstr(note[:len(note)+subtract], attrib2)
+					else:
+						tw.addstr(note, attrib2)
+						
+						
+					pos += len(tabbeduser) + len(stats) + len(note)
+					if self.dimensions[window]["width"] - pos > 0:
+						spaces = " " * (self.dimensions[window]["width"] - pos)
+						tw.addstr(spaces, attrib2)
+				except Exception, e:
+					pass
+					#self.mucous.Help.Log("debug", "DLT"+str(e))
+		except Exception, e:
+			self.mucous.Help.Log("debug", "DrawLists: " + str(e))
+
+	## Mouse Coordinates in the Users Lists
+	# @param self is mucous
+	# @param x is the horizontal position from the left
+	# @param y is the vertical postion from the top
+	# @param z is unimportant
+	# @param event is the mouse event (button, doubleclick, etc) represented by a number
+	def Mouse(self, x,y,z,event):
+		try:
+			
+			if self.current == "interests":
+				w = self.mucous.Recommendations.dimensions[self.mucous.Recommendations.selected]
+			else:
+				w = self.dimensions[self.current]
+			if y == 1:
+				if x >= 4 and x <= 15:
+					self.current="buddied"
+					self.ModeLists()
+				elif x >= 17 and x <= 27:
+					self.current="banned"
+					self.ModeLists()
+				elif x >= 29 and x <= 40:
+					self.current="ignored"
+					self.ModeLists()
+				elif x >= 42 and x <= 51:
+					self.current="trusted"
+					self.ModeLists()
+				elif x >= 52 and x <= 64:
+					self.current="interests"
+					self.ModeLists()
+				return
+			if self.current == "interests":
+				return self.mucous.Recommendations.MouseInterests(x,y,z,event)
+			elif self.current in ("buddied", "banned", "ignored", "trusted"):
+				# clicking on items in lists
+				if y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
+					y -= w["top"]
+					
+					this_list = self.logs[self.current]
+					if y  + w["start"] in range(len(this_list)):
+						self.scrolling[self.current]  = y  + w["start"]
+						
+						if event in ( 4096, 16384):
+							self.SelectLists()
+							self.mucous.PopupMenu.Create("lists", 0, True)
+						else:
+							self.SelectLists()
+		except Exception, e:
+			self.mucous.Help.Log("debug", "UsersLists.Mouse: " +str(e) )
+	
+
+	def SelectLists(self):
+		try:
+			if self.current=="buddied":
+				this_list = self.logs["buddied"]
+			elif self.current=="banned":
+				this_list = self.logs["banned"]
+			elif self.current=="ignored":
+				this_list = self.logs["ignored"]
+			elif self.current=="trusted":
+				this_list = self.logs["trusted"]
+			if self.scrolling[self.current] > len(this_list):
+				self.scrolling[self.current] = len(this_list)
+			clipped_list, self.scrolling[self.current], self.dimensions[self.current]["start"] = self.mucous.FormatData.scrollbox(this_list, self.scrolling[self.current], self.mucous.h-7)
+			count = 0
+			self.windows["text"][self.current].erase()
+			for lines in clipped_list:
+				self.DrawLists(lines, count, self.current)
+				count += 1
+			self.windows["text"][self.current].refresh()
+		except Exception, e:
+			self.mucous.Help.Log("debug", "SelectLists: " + str(e))
+			
+	# Rebuild ListBuddy from self.mucous.config
+	def ListBuddy(self):
+		try:
+			if "buddies" not in self.mucous.config.keys():
+				return
+			self.logs["buddied"] = []
+			alpha_list = SortedDict()
+			for keyname, keyvalue in self.mucous.config["buddies"].items():
+				alpha_list[keyname] = keyvalue
+			
+			for user, note in alpha_list.items():
+				attributes = []
+				if user in self.mucous.config["trusted"].keys():
+					attributes.append("trusted")
+				if user in self.mucous.config["ignored"].keys():
+					attributes.append("ignored")
+				if user in self.mucous.config["banned"].keys():
+					attributes.append("banned")
+				self.logs["buddied"].append([attributes, user, note])
+		except Exception, e:
+			self.mucous.Help.Log("debug", "ListBuddy: " + str(e))
+			
+	# Rebuild ListTrust from self.mucous.config
+	def ListTrust(self):
+		try:
+			if "trusted" not in self.mucous.config.keys():
+				return
+			self.logs["trusted"] = []
+			alpha_list = SortedDict()
+			for keyname, keyvalue in self.mucous.config["trusted"].items():
+				alpha_list[keyname] = keyvalue
+			
+			for user, note in alpha_list.items():
+				attributes = []
+				if user in self.mucous.config["ignored"].keys():
+					attributes.append("ignored")
+				if user in self.mucous.config["banned"].keys():
+					attributes.append("banned")
+				if user in self.mucous.config["buddies"].keys():
+					attributes.append("buddies")
+				self.logs["trusted"].append([attributes, user, note])
+				
+		except Exception, e:
+			self.mucous.Help.Log("debug", "ListTrust: " + str(e))
+	## Rebuild ListBan from self.mucous.config
+	def ListBan(self):
+		try:
+			if "banned" not in self.mucous.config.keys():
+				return
+			self.logs["banned"] = []
+			alpha_list = SortedDict()
+			for keyname, keyvalue in self.mucous.config["banned"].items():
+				alpha_list[keyname] = keyvalue
+			
+			for user, note in alpha_list.items():
+				attributes = []
+				if user in self.mucous.config["ignored"].keys():
+					attributes.append("ignored")
+				if user in self.mucous.config["buddies"].keys():
+					attributes.append("buddies")
+				if user in self.mucous.config["trusted"].keys():
+					attributes.append("trusted")
+				self.logs["banned"].append([attributes, user, note])
+		except Exception, e:
+			self.mucous.Help.Log("debug", "ListBan: " + str(e))
+	# Rebuild ListIgnore from self.mucous.config
+	def ListIgnore(self):
+		try:
+			if self.mucous.config ==  {}:
+				return
+			if "ignored" not in self.mucous.config.keys():
+				return
+			self.logs["ignored"] = []
+			alpha_list = SortedDict()
+			for keyname, keyvalue in self.mucous.config["ignored"].items():
+				alpha_list[keyname] = keyvalue
+			
+			for user, note in alpha_list.items():
+				attributes = []
+				if user in self.mucous.config["banned"].keys():
+					attributes.append("banned")
+				if user in self.mucous.config["buddies"].keys():
+					attributes.append("buddies")
+				if user in self.mucous.config["trusted"].keys():
+					attributes.append("trusted")
+				self.logs["ignored"].append([attributes, user, note])
+				
+							
+		except Exception, e:
+			self.mucous.Help.Log("debug", "ListIgnore: " + str(e))	
+			
+			
+		
 ## Recommendations
 #			
 class Recommendations:
@@ -4256,7 +4748,7 @@ class PrivateChat:
 				for lines in self.mucous.Help.pminfolog:
 					try:
 						lines, ls = self.mucous.FormatData.StringAddBlanks(lines, w)
-						#tw.addstr(self.dlang(lines))
+						#tw.addstr(self.mucous.dlang(lines))
 						tw.addstr(self.mucous.dlang(lines))
 					except Exception, e:
 						self.mucous.Help.Log("debug", "private display: " + str(e))
@@ -4494,7 +4986,7 @@ class Mucous(driver.Driver):
 		self.modes = {"setup":  ["mucous", "museek", "shares", "userinfo", "logs"], "transfers": ["all","active",  "queued", "finished", "failed"] }
 		self.user = { "status": {}, "statistics": {}  }
 		self.windows = {"text": {}, "border": {}, "dimensions": {}, "browse": {}, "tab": {} }
-		self.scrolling = {"chatroom": -1, "roombox": 0, "roomstatus": -1, "info": 0, "private": 0, "files": 0, "directories": 0, "help":0, "debug": 0, "search": 0, "uploads": 0, "downloads": 0, "buddied": 0, "banned": 0, "ignored": 0, "trusted": 0, "roomlist":0 }
+		self.scrolling = {"chatroom": -1, "roombox": 0, "roomstatus": -1, "info": 0, "private": 0, "files": 0, "directories": 0, "help":0, "debug": 0, "search": 0, "uploads": 0, "downloads": 0, "roomlist":0 }
 		## @var FormatData
 		# FormatData (Class)
 		self.FormatData = FormatData(self)
@@ -4527,7 +5019,7 @@ class Mucous(driver.Driver):
 		self.Setup = Setup(self)
 		## @var UserLists
 		# UserLists (Class)
-		self.UserLists = UserLists(self)
+		self.UsersLists = UsersLists(self)
 		## @var Search
 		# Search (Class)
 		self.Search = Search(self)
@@ -4761,7 +5253,7 @@ class Mucous(driver.Driver):
 				self.Search.Mode()
 				
 			elif self.display["mode"] == "lists":
-				self.ModeLists()
+				self.UsersLists.ModeLists()
 				
 			elif self.display["mode"] == "roomlist":
 				self.RoomsList.Mode()
@@ -5179,7 +5671,7 @@ class Mucous(driver.Driver):
 			self.Recommendations.data["recommendations"] = SortedDict()
 			for rec, num in recommendations.items():
 				self.Recommendations.data["recommendations"] [rec] = num
-			if self.display["mode"] == "lists" and self.display["list"] == "interests":
+			if self.display["mode"] == "lists" and self.UsersLists.current == "interests":
 				self.Recommendations.DrawInterests()
 		except Exception, e:
 			self.Help.Log("debug", "CB Get Global Recommendations" + str(e))
@@ -5190,7 +5682,7 @@ class Mucous(driver.Driver):
 			self.Recommendations.data["similar_users"] = SortedDict()
 			for rec, num in users.items():
 				self.Recommendations.data["similar_users"][rec] = num
-			if self.display["mode"] == "lists" and self.display["list"] == "interests":
+			if self.display["mode"] == "lists" and self.UsersLists.current == "interests":
 				self.Recommendations.DrawInterests()
 		except Exception, e:
 			self.Help.Log("debug", "CB Similar Users" + str(e))
@@ -5200,7 +5692,7 @@ class Mucous(driver.Driver):
 			self.Recommendations.data["recommendations"] = SortedDict()
 			for rec, num in recommendations.items():
 				self.Recommendations.data["recommendations"] [rec] = num
-			if self.display["mode"] == "lists" and self.display["list"] == "interests":
+			if self.display["mode"] == "lists" and self.UsersLists.current == "interests":
 				self.Recommendations.DrawInterests()
 		except Exception, e:
 			self.Help.Log("debug", "CB Get  Recommendations" + str(e))
@@ -5210,7 +5702,7 @@ class Mucous(driver.Driver):
 			self.Recommendations.data["similar_users"] = SortedDict()
 			for rec, num in users.items():
 				self.Recommendations.data["similar_users"][rec] = num
-			if self.display["mode"] == "lists" and self.display["list"] == "interests":
+			if self.display["mode"] == "lists" and self.UsersLists.current == "interests":
 				self.Recommendations.DrawInterests()
 		except Exception, e:
 			self.Help.Log("debug", "CB Item Similar Users" + str(e))
@@ -5221,7 +5713,7 @@ class Mucous(driver.Driver):
 			self.Recommendations.data["recommendations"] = SortedDict()
 			for rec, num in recommendations.items():
 				self.Recommendations.data["recommendations"] [rec] = num
-			if self.display["mode"] == "lists" and self.display["list"] == "interests":
+			if self.display["mode"] == "lists" and self.UsersLists.current == "interests":
 				self.Recommendations.DrawInterests()
 		except Exception, e:
 			self.Help.Log("debug", "CB Get Item Recommendations" + str(e))
@@ -5754,9 +6246,9 @@ class Mucous(driver.Driver):
 		try:
 			self.config = museek_config.copy()
 			self.Help.Log("status", "Server is at: "+self.config["server"]["host"]+":"+self.config["server"]["port"])
-			self.ListBuddy()
-			self.ListBan()
-			self.ListIgnore()
+			self.UsersLists.ListBuddy()
+			self.UsersLists.ListBan()
+			self.UsersLists.ListIgnore()
 			self.refresh_windows()
 			self.Spl["museekconfigfile"] = os.path.expanduser("~/.museekd/config.xml")
 			if self.config["shares"]["database"] != "":
@@ -5880,9 +6372,9 @@ class Mucous(driver.Driver):
 			if user in self.Userinfo.users:
 				self.Userinfo.Mode()
 		elif self.display["mode"] == "lists":
-			if self.display["list"] in self.config.keys():
-				if user in self.config[self.display["list"]].keys():
-					self.ModeLists()
+			if self.UsersLists.current in self.config.keys():
+				if user in self.config[self.UsersLists.current].keys():
+					self.UsersLists.ModeLists()
 		elif self.display["mode"] == "browse":
 			if user in self.BrowseShares.users:
 				self.BrowseShares.Mode()
@@ -6014,13 +6506,13 @@ class Mucous(driver.Driver):
 		try:
 			if domain in ("buddies", "banned", "trusted", "ignored",  "autojoin", "trusted"):
 				if self.display["mode"] == "lists":
-					if self.display["list"] == "buddied" and domain == "buddies":
+					if self.UsersLists.current == "buddied" and domain == "buddies":
 						self.ModeBuddy()
-					elif self.display["list"] == "banned"  and domain == "banned":
+					elif self.UsersLists.current == "banned"  and domain == "banned":
 						self.ModeBan()
-					elif self.display["list"] == "ignored" and domain == "ignored":
+					elif self.UsersLists.current == "ignored" and domain == "ignored":
 						self.ModeIgnore()
-					elif self.display["list"] == "trusted" and domain == "trusted":
+					elif self.UsersLists.current == "trusted" and domain == "trusted":
 						self.ModeTrust()
 				elif self.display["mode"] == "chat" :
 					self.DrawChatRoomBox()
@@ -6029,7 +6521,7 @@ class Mucous(driver.Driver):
 					self.PopupMenu.Draw(self.PopupMenu.current)
 					
 			elif domain in ("interests.like", "interests.hate"):
-				if self.display["mode"] == "lists" and self.display["list"] == "interests":
+				if self.display["mode"] == "lists" and self.UsersLists.current == "interests":
 					self.Recommendations.ModeInterests()
 			elif domain in ("clients", "transfers", "server", "interfaces", "interfaces.bind", "userinfo") and self.display["mode"] == "setup":
 				self.ModeSetup()
@@ -6431,95 +6923,8 @@ class Mucous(driver.Driver):
 			
 
 
-	# Rebuild ListBuddy from self.config
-	def ListBuddy(self):
-		try:
-			if "buddies" not in self.config.keys():
-				return
-			self.logs["buddied"] = []
-			alpha_list = SortedDict()
-			for keyname, keyvalue in self.config["buddies"].items():
-				alpha_list[keyname] = keyvalue
-			
-			for user, note in alpha_list.items():
-				attributes = []
-				if user in self.config["trusted"].keys():
-					attributes.append("trusted")
-				if user in self.config["ignored"].keys():
-					attributes.append("ignored")
-				if user in self.config["banned"].keys():
-					attributes.append("banned")
-				self.logs["buddied"].append([attributes, user, note])
-		except Exception, e:
-			self.Help.Log("debug", "ListBuddy: " + str(e))
-	# Rebuild ListTrust from self.config
-	def ListTrust(self):
-		try:
-			if "trusted" not in self.config.keys():
-				return
-			self.logs["trusted"] = []
-			alpha_list = SortedDict()
-			for keyname, keyvalue in self.config["trusted"].items():
-				alpha_list[keyname] = keyvalue
-			
-			for user, note in alpha_list.items():
-				attributes = []
-				if user in self.config["ignored"].keys():
-					attributes.append("ignored")
-				if user in self.config["banned"].keys():
-					attributes.append("banned")
-				if user in self.config["buddies"].keys():
-					attributes.append("buddies")
-				self.logs["trusted"].append([attributes, user, note])
-				
-		except Exception, e:
-			self.Help.Log("debug", "ListTrust: " + str(e))
-	# Rebuild ListBan from self.config
-	def ListBan(self):
-		try:
-			if "banned" not in self.config.keys():
-				return
-			self.logs["banned"] = []
-			alpha_list = SortedDict()
-			for keyname, keyvalue in self.config["banned"].items():
-				alpha_list[keyname] = keyvalue
-			
-			for user, note in alpha_list.items():
-				attributes = []
-				if user in self.config["ignored"].keys():
-					attributes.append("ignored")
-				if user in self.config["buddies"].keys():
-					attributes.append("buddies")
-				if user in self.config["trusted"].keys():
-					attributes.append("trusted")
-				self.logs["banned"].append([attributes, user, note])
-		except Exception, e:
-			self.Help.Log("debug", "ListBan: " + str(e))
-	# Rebuild ListIgnore from self.config
-	def ListIgnore(self):
-		try:
-			if self.config ==  {}:
-				return
-			if "ignored" not in self.config.keys():
-				return
-			self.logs["ignored"] = []
-			alpha_list = SortedDict()
-			for keyname, keyvalue in self.config["ignored"].items():
-				alpha_list[keyname] = keyvalue
-			
-			for user, note in alpha_list.items():
-				attributes = []
-				if user in self.config["banned"].keys():
-					attributes.append("banned")
-				if user in self.config["buddies"].keys():
-					attributes.append("buddies")
-				if user in self.config["trusted"].keys():
-					attributes.append("trusted")
-				self.logs["ignored"].append([attributes, user, note])
-				
-							
-		except Exception, e:
-			self.Help.Log("debug", "ListIgnore: " + str(e))
+
+
 					
 	def InputCompletionList(self):
 		try:
@@ -6622,15 +7027,16 @@ class Mucous(driver.Driver):
 				scrolldiff = self.Search.dimensions["height"]
 				
 			elif self.display["mode"] == "lists":
-				if self.display["list"] == "interests":
+				if self.UsersLists.current == "interests":
 					#scrolltext = self.Recommendations.selected
 					scrollnum = self.Recommendations.scrolling[self.Recommendations.selected]
 					scrolldiff = self.Recommendations.dimensions[self.Recommendations.selected]["height"]
 					#selected_log = self.logs[self.Recommendations.selected]
 				else:
-					scrolltext = self.display["list"]
-					scrolldiff = self.windows["dimensions"][self.display["list"]]["height"]
-					selected_log = self.logs[self.display["list"]]
+					#scrolltext = self.UsersLists.current
+					scrollnum = self.UsersLists.scrolling[self.UsersLists.current]
+					scrolldiff = self.UsersLists.dimensions[self.UsersLists.current]["height"]
+					#selected_log = self.logs[self.UsersLists.current]
 
 			elif self.display["mode"] == "roomlist":
 				#scrolltext = "roomlist"
@@ -6689,14 +7095,11 @@ class Mucous(driver.Driver):
 			elif self.display["mode"] == "search":
 				self.Search.Draw()
 			elif self.display["mode"] == "lists":
-				if self.display["list"] != "interests":
-					self.SelectLists()
+				if self.UsersLists.current != "interests":
+					self.UsersLists.SelectLists()
 				else:
 					self.Recommendations.DrawInterests()
-					#self.DrawLikedInterests()
-					#self.DrawHatedInterests()
-					#self.DrawRecommendations()
-					#self.DrawSimilarUsers()
+		
 				return
 			elif self.display["mode"] == "roomlist":
 				self.RoomsList.Format()
@@ -6728,8 +7131,11 @@ class Mucous(driver.Driver):
 				self.RoomsList.scrolling = num
 			if self.display["mode"] == "browse":
 				self.BrowseShares.scrolling[self.BrowseShares.selected] = num
-			if self.display["mode"] == "lists" and self.display["list"] == "interests":
-				self.Recommendations.scrolling[self.Recommendations.selected] = num
+			if self.display["mode"] == "lists":
+				if self.UsersLists.current == "interests":
+					self.Recommendations.scrolling[self.Recommendations.selected] = num
+				else:
+					self.UsersLists.scrolling[self.UsersLists.current] = num
 		except Exception, e:
 			self.Help.Log("debug", "UpdateScrollNum: " + str(e))
 			
@@ -6900,10 +7306,10 @@ class Mucous(driver.Driver):
 						self.windows["border"]["uploads"].redrawwin()
 						self.windows["border"]["uploads"].refresh()
 			elif self.display["mode"] =="lists":
-				self.windows["border"][self.display["list"]].redrawwin()
-				self.windows["border"][self.display["list"]].refresh()
-				self.windows["text"][self.display["list"]].redrawwin()
-				self.windows["text"][self.display["list"]].refresh()
+				self.UsersLists.windows["border"][self.UsersLists.current].redrawwin()
+				self.UsersLists.windows["border"][self.UsersLists.current].refresh()
+				self.UsersLists.windows["text"][self.UsersLists.current].redrawwin()
+				self.UsersLists.windows["text"][self.UsersLists.current].refresh()
 			elif self.display["mode"] =="chat":
 				self.windows["border"]["chat"].redrawwin()
 				self.windows["border"]["chat"].refresh()
@@ -7415,56 +7821,7 @@ class Mucous(driver.Driver):
 			self.Help.Log("debug", "MouseTransferWindow: " + str(e))
 		
 
-	
-	## Mouse Coordinates in the Users Lists
-	# @param self is mucous
-	# @param x is the horizontal position from the left
-	# @param y is the vertical postion from the top
-	# @param z is unimportant
-	# @param event is the mouse event (button, doubleclick, etc) represented by a number
-	def MouseUsersLists(self, x,y,z,event):
-		try:
-			
-			if self.display["list"] == "interests":
-				w = self.Recommendations.dimensions[self.Recommendations.selected]
-			else:
-				w = self.windows["dimensions"][self.display["list"]]
-			if y == 1:
-				if x >= 4 and x <= 15:
-					self.display["list"]="buddied"
-					self.ModeLists()
-				elif x >= 17 and x <= 27:
-					self.display["list"]="banned"
-					self.ModeLists()
-				elif x >= 29 and x <= 40:
-					self.display["list"]="ignored"
-					self.ModeLists()
-				elif x >= 42 and x <= 51:
-					self.display["list"]="trusted"
-					self.ModeLists()
-				elif x >= 52 and x <= 64:
-					self.display["list"]="interests"
-					self.ModeLists()
-				return
-			if self.display["list"] == "interests":
-				return self.Recommendations.MouseInterests(x,y,z,event)
-			elif self.display["list"] in ("buddied", "banned", "ignored", "trusted"):
-				# clicking on items in lists
-				if y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
-					y -= w["top"]
-					
-					this_list = self.logs[self.display["list"]]
-					if y  + w["start"] in range(len(this_list)):
-						self.scrolling[self.display["list"]]  = y  + w["start"]
-						
-						if event in ( 4096, 16384):
-							self.SelectLists()
-							self.PopupMenu.Create("lists", 0, True)
-						else:
-							self.SelectLists()
-		except Exception, e:
-			self.Help.Log("debug", "MouseUsersLists: " +str(e) )
-	
+
 	## Mouse Coordinates: Switch modes or options in position matches requirements
 	# @param self is mucous
 	# @param line is a text string
@@ -7498,7 +7855,7 @@ class Mucous(driver.Driver):
 				elif x >= 41 and x < 49:
 					self.BrowseShares.Mode()
 				elif x >= 49 and x < 56:
-					self.ModeLists()
+					self.UsersLists.ModeLists()
 				elif x >= 56 and x < 63:
 					self.RoomsList.Mode()
 				elif x >= 63 and x < 70:
@@ -7534,7 +7891,7 @@ class Mucous(driver.Driver):
 				# ROOMLIST BUTTONS
 				return self.RoomsList.Mouse(x,y,z,event)
 			elif self.display["mode"] == "lists":
-				return self.MouseUsersLists(x,y,z,event)
+				return self.UsersLists.Mouse(x,y,z,event)
 			elif self.display["mode"] == "transfer":
 				# TRANSFERS BUTTONS
 				# Clickable transfer type switcher
@@ -7869,7 +8226,7 @@ class Mucous(driver.Driver):
 				elif num == "6":
 					self.BrowseShares.Mode()
 				elif num == "7":
-					self.ModeLists()
+					self.UsersLists.ModeLists()
 				elif num == "8":
 					self.RoomsList.Mode()
 				elif num == "9":
@@ -7979,22 +8336,22 @@ class Mucous(driver.Driver):
 				self.BrowseShares.Mode()
 					
 			elif line == "/buddylist" :
-				self.display["list"] = "buddied"
-				self.ModeLists()
+				self.UsersLists.current = "buddied"
+				self.UsersLists.ModeLists()
 			elif line == "/ListTrust" :
-				self.display["list"] = "trusted"
-				self.ModeLists()	
+				self.UsersLists.current = "trusted"
+				self.UsersLists.ModeLists()	
 			elif line == "/banlist" :
-				self.display["list"] = "banned"
-				self.ModeLists()
+				self.UsersLists.current = "banned"
+				self.UsersLists.ModeLists()
 				
 			elif line == "/ignorelist" :
-				self.display["list"] = "ignored"
-				self.ModeLists()
+				self.UsersLists.current = "ignored"
+				self.UsersLists.ModeLists()
 				
 			elif line == "/interests" :
-				self.display["list"] = "interests"
-				self.ModeLists()
+				self.UsersLists.current = "interests"
+				self.UsersLists.ModeLists()
 				
 			elif line[:6] == "/setup"   and line[6:] == '':
 				self.ModeSetupDefault()
@@ -8739,15 +9096,15 @@ class Mucous(driver.Driver):
 					self.SendMessage(messages.PeerStats(user))
 					
 				elif self.display["mode"] == "lists":
-					if self.display["list"] == "buddied":
+					if self.UsersLists.current == "buddied":
 						self.ModifyConfig("buddy", line, '')
-					elif self.display["list"] == "banned":
+					elif self.UsersLists.current == "banned":
 						self.ModifyConfig("ban", line, '')
-					elif self.display["list"] == "ignored":
+					elif self.UsersLists.current == "ignored":
 						self.ModifyConfig("ignore", line, '')
-					elif self.display["list"] == "trusted":
+					elif self.UsersLists.current == "trusted":
 						self.ModifyConfig("trusted", line, '')
-					elif self.display["list"] == "interests":
+					elif self.UsersLists.current == "interests":
 						self.Recommendations.InputInterests(line)
 				elif self.display["mode"] == "roomlist":
 					self.doJoin(line)
@@ -8891,7 +9248,7 @@ class Mucous(driver.Driver):
 				if self.display["mode"] != "browse": self.BrowseShares.Mode()
 				return
 			elif key == "KEY_F(7)":
-				if self.display["mode"] != "lists": self.ModeLists()
+				if self.display["mode"] != "lists": self.UsersLists.ModeLists()
 				return
 			elif key == "KEY_F(8)":
 				if self.display["mode"] != "roomlist": self.RoomsList.Mode()
@@ -8930,7 +9287,7 @@ class Mucous(driver.Driver):
 							elif self.BrowseShares.selected == "directories":
 								self.PopupMenu.Create("browse-dirs", 0)
 			elif key in ("delete"):
-				if self.display["mode"] == "lists" and self.display["list"] == "interests":
+				if self.display["mode"] == "lists" and self.UsersLists.current == "interests":
 					inp = self.Recommendations.input
 					if inp == "add_likes":
 						inp = "del_likes"
@@ -9010,7 +9367,7 @@ class Mucous(driver.Driver):
 					_list = [ "files", "directories" ]
 					self.BrowseShares.selected = self.FormatData.RotateList("right", _list, self.BrowseShares.selected, "no")
 					self.BrowseShares.Mode()
-				elif self.display["mode"] == "lists" and self.display["list"] == "interests":
+				elif self.display["mode"] == "lists" and self.UsersLists.current == "interests":
 					_list = [ "recommendations", "similar_users", "likes", "hates" ]
 					self.Recommendations.selected = self.FormatData.RotateList("right", _list, self.Recommendations.selected, "no")
 					self.Recommendations.ModeInterests()
@@ -9090,10 +9447,10 @@ class Mucous(driver.Driver):
 					return line	
 				elif self.display["mode"]=="lists":
 					
-					place = self.FormatData.RotateList(direction, [ "buddied", "banned", "ignored", "trusted", "interests"], self.display["list"], "no" )
-					if self.display["list"]  != place:
-						self.display["list"] = place
-						self.ModeLists()
+					place = self.FormatData.RotateList(direction, [ "buddied", "banned", "ignored", "trusted", "interests"], self.UsersLists.current, "no" )
+					if self.UsersLists.current  != place:
+						self.UsersLists.current = place
+						self.UsersLists.ModeLists()
 
 					
 				elif self.display["mode"]=="roomlist":
@@ -9895,164 +10252,6 @@ class Mucous(driver.Driver):
 		except Exception, e:
 			self.Help.Log("debug", "set_edit_title: " + str(e))
 			
-	def DrawLists(self, line, count, window):
-		try:
-			if self.display["mode"] == "lists":
-				start = self.windows["dimensions"][window]["start"]
-				tw = self.windows["text"][self.display["list"]]
-				linenumber = line
-				attributes = linenumber[0]
-				username = linenumber[1]
-				note = linenumber[2]
-				
-				tabbeduser = self.dlang(username[:20])
-	
-				while len(tabbeduser) < 24:
-					tabbeduser += ' '
-				try:
-					if username in self.user["status"].keys():
-						if self.user["status"][username] == 1:
-							tw.addstr('* ', self.colors["yellow"]|curses.A_BOLD)
-						elif self.user["status"][username] == 2:
-							tw.addstr('* ', self.colors["green"]|curses.A_BOLD)
-						elif self.user["status"][username] == 0:
-							tw.addstr('* ', self.colors["red"]|curses.A_BOLD)
-					else: 
-						tw.addstr('* ',  curses.A_BOLD )	
-					pos = 2
-					
-					if self.display["list"] == "buddied":
-						attrcount = 0
-						try:
-							if 'trusted' in attributes:
-								color = self.colors["cyan"] | curses.A_BOLD 
-								tw.addstr('!', color)
-							else: tw.addstr(' ')
-							color = self.colors["green"] | curses.A_BOLD 
-							tw.addstr('!', color)
-							if 'banned' in attributes:
-								color = self.colors["red"] | curses.A_BOLD 
-								tw.addstr('!', color)
-							else: tw.addstr(' ')
-							
-							if 'ignored' in attributes:
-								color = self.colors["yellow"] | curses.A_BOLD 
-								tw.addstr('! ', color)
-							else: tw.addstr('  ')
-								
-						except Exception, e:
-							self.Help.Log("debug", "display list text" + str(e))
-							pass
-						
-						
-					elif self.display["list"] == "banned":
-						
-						try:
-							if 'trusted' in attributes:
-								color = self.colors["cyan"] | curses.A_BOLD 
-								tw.addstr('!', color)
-							else: tw.addstr(' ')
-							
-							if 'buddies' in attributes:
-								color = self.colors["green"] | curses.A_BOLD 
-								tw.addstr('!', color)
-							else: tw.addstr(' ')
-							color = self.colors["red"] | curses.A_BOLD 
-							tw.addstr('!', color)
-							if 'ignored' in attributes:
-								color = self.colors["yellow"] | curses.A_BOLD 
-								tw.addstr('! ', color)
-							else: tw.addstr('  ')
-							
-	
-						except:
-							self.Help.Log("debug", "display list text" + str(e))
-							
-					elif self.display["list"] == "trusted":
-						try:
-							color = self.colors["cyan"] | curses.A_BOLD 
-							tw.addstr('!', color)
-							
-							if 'buddies' in attributes:
-								color = self.colors["green"] | curses.A_BOLD 
-								tw.addstr('!', color)
-							else: tw.addstr(' ')
-							if 'banned' in attributes:
-								color = self.colors["red"] | curses.A_BOLD 
-								tw.addstr('!', color)
-							else: tw.addstr(' ')
-							if 'ignored' in attributes:
-								color = self.colors["yellow"] | curses.A_BOLD 
-								tw.addstr('! ', color)
-							else: tw.addstr('  ')
-						except Exception, e:
-							self.Help.Log("debug", "display list text" + str(e))
-							
-					elif self.display["list"] == "ignored":
-						try:
-							if 'trusted' in attributes:
-								color = self.colors["cyan"] | curses.A_BOLD 
-								tw.addstr('!', color)
-							else: tw.addstr(' ')
-							if 'buddies' in attributes:
-								color = self.colors["green"] | curses.A_BOLD 
-								tw.addstr('!', color)
-							else: tw.addstr(' ')
-							if 'banned' in attributes:
-								color = self.colors["red"] | curses.A_BOLD 
-								tw.addstr('!', color)
-							else: tw.addstr(' ')
-							color = self.colors["yellow"] | curses.A_BOLD 
-							tw.addstr('! ', color)
-						except Exception, e:
-							self.Help.Log("debug", "display list text" + str(e))
-					#else:
-						#tw.addstr(tabbeduser)
-						#stats = note = ''
-					color = curses.A_NORMAL
-					pos +=5
-					
-					if count + start == self.scrolling[self.display["list"]]:
-						attrib = curses.A_BOLD | curses.A_REVERSE | color
-						attrib2 = curses.A_BOLD | curses.A_REVERSE 
-					else:
-						attrib = curses.A_BOLD | color
-						attrib2 = curses.A_BOLD 
-						
-					tw.addstr(tabbeduser, attrib)
-								
-					if username in self.user["statistics"]:
-						stats = " %sKB/s" % str(self.user["statistics"][username][0]/1024)
-						while len(stats) < 9:
-							stats += " "
-						files = str(self.user["statistics"][username][2])
-						while len(files) < 7:
-							files = " " + files
-						stats += files
-						while len(stats) < 18:
-							stats += " "
-						tw.addstr( stats, attrib2)
-					else:
-						stats  = " 0KB/s         0  "
-						tw.addstr(stats, attrib2)
-						
-					width = len(tabbeduser) + len(stats) + len(note) + 5
-					subtract = self.w - width
-					if subtract < 0:
-						tw.addstr(note[:len(note)+subtract], attrib2)
-					else:
-						tw.addstr(note, attrib2)
-						
-						
-					pos += len(tabbeduser) + len(stats) + len(note)
-					if self.windows["dimensions"][window]["width"] - pos > 0:
-						spaces = " " * (self.windows["dimensions"][window]["width"] - pos)
-						tw.addstr(spaces, attrib2)
-				except Exception, e:
-					pass
-					#self.Help.Log("debug", "DLT"+str(e))
-		except Exception, e:
-			self.Help.Log("debug", "DrawLists: " + str(e))
 
 		
 	def DrawChatRoomWin(self):
@@ -10198,56 +10397,9 @@ class Mucous(driver.Driver):
 				
 				
 
-			if self.display["mode"] == "lists":
-				# Cleanup stale windows
-				if self.display["list"] in self.windows["text"]: 
-					del self.windows["text"][self.display["list"]]
-				if self.display["list"] in self.windows["border"]:
-					del self.windows["border"][self.display["list"]]
-					
-				s = self.windows["dimensions"][self.display["list"]]
-				mw = self.windows["border"][self.display["list"]] = curses.newwin(s["height"]+2, s["width"]+2, s["top"]-1, s["left"]-1)
-				mw.attron(self.colors["green"])
-				mw.border()
-				mw.attroff(self.colors["green"])
-
-				if self.display["list"] =="buddied":
-					mw.addstr(0, 3, "< Buddied >",  self.colors["green"] | curses.A_BOLD)
-					mw.addstr(0, 16, "< Banned >", self.colors["green"])
-					mw.addstr(0, 28, "< Ignored >", self.colors["green"])
-					mw.addstr(0, 40, "< Trusted >", self.colors["green"])
-					mw.addstr(0, 52, "< Interests >", self.colors["green"])
-					
-					self.set_edit_title("Add Buddy:")
-				elif self.display["list"] =="banned":
-					mw.addstr(0, 3, "< Buddied >",  self.colors["green"] )
-					mw.addstr(0, 16, "< Banned >", self.colors["green"]| curses.A_BOLD)
-					mw.addstr(0, 28, "< Ignored >", self.colors["green"])
-					mw.addstr(0, 40, "< Trusted >", self.colors["green"])
-					mw.addstr(0, 52, "< Interests >", self.colors["green"])
-					self.set_edit_title("Ban User:")
-				elif self.display["list"] =="ignored":
-					mw.addstr(0, 3, "< Buddied >",  self.colors["green"] )
-					mw.addstr(0, 16, "< Banned >", self.colors["green"])
-					mw.addstr(0, 28, "< Ignored >", self.colors["green"]| curses.A_BOLD)
-					mw.addstr(0, 40, "< Trusted >", self.colors["green"])
-					mw.addstr(0, 52, "< Interests >", self.colors["green"])
-					self.set_edit_title("Ignore User:")
-				elif self.display["list"] =="trusted":
-					mw.addstr(0, 3, "< Buddied >",  self.colors["green"] )
-					mw.addstr(0, 16, "< Banned >", self.colors["green"])
-					mw.addstr(0, 28, "< Ignored >", self.colors["green"])
-					mw.addstr(0, 40, "< Trusted >", self.colors["green"] | curses.A_BOLD)
-					mw.addstr(0, 52, "< Interests >", self.colors["green"])
-					self.set_edit_title("Add Trusted:")
-			
-				mw.noutrefresh()
-				tw = self.windows["text"][self.display["list"]] = mw.subwin(s["height"], s["width"], s["top"], s["left"])
-				tw.scrollok(0)
-				tw.idlok(1)
+			#if self.display["mode"] == "lists":
 				
-				
-			elif self.display["mode"] == "transfer":
+			if self.display["mode"] == "transfer":
 				# Cleanup stale windows
 				if window in self.windows["border"]:
 					del self.windows["border"][window]
@@ -10309,7 +10461,7 @@ class Mucous(driver.Driver):
 					
 	
 	
-			self.scrolling[self.display["list"]] = 0
+			self.scrolling[self.UsersLists.current] = 0
 		except Exception, e:
 			self.Help.Log("debug", "DrawListsWindows: " + str(e))
 		
@@ -10477,7 +10629,7 @@ class Mucous(driver.Driver):
 				else:
 					mw = self.windows["border"][ self.display["mode"] ]
 			else:
-				mw = self.windows["border"][ self.display["list"] ]
+				mw = self.windows["border"][ self.UsersLists.current ]
 			mw.addstr(0,pos, "< ")
 			mw.addstr(0,pos+2, gi, self.colors["cyan"] | curses.A_BOLD)
 			mw.addstr(0,pos+2+len(gi), " >")
@@ -10600,127 +10752,13 @@ class Mucous(driver.Driver):
 	def DestroyOldWindows(self):
 		mode = self.display["mode"]
 		if mode == "lists":
-			userlist = self.display["list"]
+			userlist = self.UsersLists.current
 		for window in self.windows["text"]:
 			del self.windows["text"][window]
 			del window
 		for window in self.windows["border"]:
 			del self.windows["text"][window]
 			del window
-		
-	def ModeTrust(self):
-		try:
-			self.display["list"] = "trusted"
-			#self.DestroyOldWindows()
-			self.PopupMenu.show = False
-			
-			s = self.windows["dimensions"][self.display["list"]] = {"height": self.h-7, "top": 2, "left": 1, "width": self.w-2, "start": 0}
-			self.ListTrust()
-			self.DrawListsWindows(self.display["list"])
-			
-			self.FormatLists(s, "trusted")
-			
-			self.HotKeyBar()
-			curses.doupdate()
-		except Exception, e:
-			self.Help.Log("debug", "ModeTrust: " + str(e))
-			
-	def ModeBuddy(self):
-		try:
-			self.display["list"] = "buddied"
-			self.PopupMenu.show = False
-			
-			s = self.windows["dimensions"][self.display["list"]] = {"height": self.h-7, "top": 2, "left": 1, "width": self.w-2, "start": 0}
-			self.ListBuddy()
-			self.DrawListsWindows(self.display["list"])
-			
-			self.FormatLists(s, "buddied")
-			
-			self.HotKeyBar()
-			curses.doupdate()
-		except Exception, e:
-			self.Help.Log("debug", "ModeBuddy: " + str(e))
-			
-	def ModeBan(self):
-		try:
-			self.display["list"] = "banned"
-			self.PopupMenu.show = False
-			
-			s = self.windows["dimensions"][self.display["list"]] = {"height": self.h-7, "top": 2, "left": 1, "width": self.w-2, "start": 0}
-			self.DrawListsWindows(self.display["list"])
-			self.ListBan()
-			self.FormatLists(s, "banned")
-			self.HotKeyBar()
-			curses.doupdate()
-		except Exception, e:
-			self.Help.Log("debug", "ban_mode: " + str(e))
-			
-	def ModeIgnore(self):
-		try:
-			self.display["list"] = "ignored"
-			self.PopupMenu.show = False
-			
-			s = self.windows["dimensions"][self.display["list"]] = {"height": self.h-7, "top": 2, "left": 1, "width": self.w-2, "start": 0}
-			self.DrawListsWindows(self.display["list"])
-			
-			self.FormatLists(s, "ignored")
-			self.HotKeyBar()
-			curses.doupdate()
-		except Exception, e:
-			self.Help.Log("debug", "ModeIgnore: " + str(e))
-			
-	def FormatLists(self, window, mode):
-		try:
-			if self.logs[mode] != None and self.logs[mode] != []:
-				clipped_list, self.scrolling[mode], self.windows["dimensions"][self.display["list"]]["start"] = self.FormatData.scrollbox(self.logs[mode], self.scrolling[mode], window["height"])
-				count = 0 
-				try:
-					self.windows["border"][self.display["list"]].addstr(self.h-6, self.w-18, "< "+str(len(self.logs[mode]))+" >", self.colors["green"] | curses.A_BOLD)
-					self.windows["border"][self.display["list"]].noutrefresh()	
-				except:
-					pass
-				self.windows["text"][self.display["list"]].erase()
-				for lines in clipped_list:
-					self.DrawLists(lines, count, self.display["list"])
-					count += 1
-				
-				self.windows["text"][self.display["list"]].noutrefresh()
-		except Exception, e:
-			self.Help.Log("debug", "FormatLists: " + str(e))
-			
-	def SelectLists(self):
-		try:
-			if self.display["list"]=="buddied":
-				this_list = self.logs["buddied"]
-			elif self.display["list"]=="banned":
-				this_list = self.logs["banned"]
-			elif self.display["list"]=="ignored":
-				this_list = self.logs["ignored"]
-			elif self.display["list"]=="trusted":
-				this_list = self.logs["trusted"]
-			clipped_list, self.scrolling[self.display["list"]], self.windows["dimensions"][self.display["list"]]["start"] = self.FormatData.scrollbox(this_list, self.scrolling[self.display["list"]], self.h-7)
-			count = 0
-			self.windows["text"][self.display["list"]].erase()
-			for lines in clipped_list:
-				self.DrawLists(lines, count, self.display["list"])
-				count += 1
-			self.windows["text"][self.display["list"]].refresh()
-		except Exception, e:
-			self.Help.Log("debug", "SelectLists: " + str(e))
-			
-	def ModeLists(self):
-		self.display["mode"] = "lists"
-		self.PopupMenu.show = False
-		if self.display["list"] == "buddied":
-			self.ModeBuddy()
-		elif self.display["list"] == "banned":
-			self.ModeBan()
-		elif self.display["list"] == "ignored":
-			self.ModeIgnore()
-		elif self.display["list"] == "trusted":
-			self.ModeTrust()	
-		elif self.display["list"] == "interests":
-			self.Recommendations.ModeInterests()	
 			
 
 	def ModeSetupDefault(self):
