@@ -1406,7 +1406,7 @@ class Help:
 			self.mucous.Alerts.Check()
 			curses.doupdate()
 		except Exception, e:
-# 			self.Help.Log("debug", ": " + str(e))
+# 			self.Log("debug", ": " + str(e))
 			self.mucous.ChatRoomAppend("Status", self.mucous.Spl["room"], "Format: ", str(e))
 			pass
 			
@@ -1451,7 +1451,7 @@ class Help:
 				except Exception, e:
 					self.mucous.ChatRoomAppend("Status", self.mucous.Spl["room"], 'ERR', str(e) )
 			tw.refresh()
-			
+	
 		except Exception, e:
 			self.mucous.ChatRoomAppend("Status", self.mucous.Spl["room"], "Format: ", str(e))
 			
@@ -1492,9 +1492,11 @@ class Help:
 				
 			if self.mucous.display["mode"] in ( "help", "debug", "status"):
 				#self.Draw( htype, s, 0)
+				
 				self.mucous.scrolling[self.mucous.display["mode"]] = -1
-				self.Help.Format()
+				self.Format()
 				self.mucous.Alerts.Check()
+				curses.doupdate()
 			else:
 	
 				if htype not in self.mucous.Alerts.alert["HELP"]:
@@ -1530,6 +1532,7 @@ class Help:
 			else:
 				self.mucous.Alerts.setStatus("New Help")
 		except: # Exception, e:
+			
 			#self.ChatRoomAppend("Status", self.Spl["room"], "Draw: ", str(e))
 			pass
 		#return #total_lines
@@ -1955,7 +1958,7 @@ class Muscan:
 	# @param inputmode string that is set as Spl["setup_input"] variable
 	def ChangeInput(self, inputmode):
 		self.mucous.Spl["setup_input"] = inputmode
-		self.mucous.ModeSetup()
+		self.mucous.Setup.Mode()
 
 	## Output list of Normal shared directories to debug log
 	# @param self Muscan (Class)
@@ -2215,7 +2218,7 @@ class Userinfo:
 					
 			if self.current != None:
 				if y  in (5,6):
-					if x >=self.w-19-2-16 and x < self.mucous.w-12:
+					if x >=self.mucous.w-19-2-16 and x < self.mucous.w-12:
 						self.current=None
 						self.Mode()
 				elif y in ( self.mucous.h-3, self.mucous.h-4, self.mucous.h-5):
@@ -3758,12 +3761,12 @@ class Recommendations:
 	
 
 	def DrawInterests(self):
-		self.DrawLikedInterests()
-		self.DrawHatedInterests()
+		self.DrawLiked()
+		self.DrawHated()
 		self.DrawRecommendations()
 		self.DrawSimilarUsers()
 		
-	def DrawHatedInterests(self):
+	def DrawHated(self):
 		try:
 			mode = "hates"
 
@@ -3792,10 +3795,10 @@ class Recommendations:
 			self.windows["text"][mode].refresh()
 		
 		except Exception, e:
-			#self.mucous.Help.Log( "debug", "DrawHatedInterests " + str(e))
+			#self.mucous.Help.Log( "debug", "DrawHated " + str(e))
 			self.windows["text"]["hates"].refresh()
 			
-	def DrawLikedInterests(self):
+	def DrawLiked(self):
 		try:
 			mode = "likes"
 			self.windows["text"][mode].erase()
@@ -3822,7 +3825,7 @@ class Recommendations:
 				count += 1
 			self.windows["text"][mode].refresh()
 		except Exception, e:
-			self.mucous.Help.Log( "debug", "DrawHatedInterests " + str(e))
+
 			self.windows["text"][mode].refresh()
 			
 
@@ -3904,7 +3907,7 @@ class Recommendations:
 	## Add an item of interest to your liked list
 	# @param self is mucous
 	# @param interest is a text string
-	def InterestLikedAdd(self, interest):
+	def LikedAdd(self, interest):
 		try:
 			if not interest.isspace() and interest != "":
 				self.mucous.SendMessage(messages.AddInterest(interest))
@@ -3914,7 +3917,7 @@ class Recommendations:
 	## Add an item of interest to your hated list
 	# @param self is mucous
 	# @param interest is a text string
-	def InterestHatedAdd(self, interest):
+	def HatedAdd(self, interest):
 		try:
 			if not interest.isspace() and interest != "":
 				self.mucous.SendMessage(messages.AddHatedInterest(interest))
@@ -3924,7 +3927,7 @@ class Recommendations:
 	## Remove an item of interest from your liked list
 	# @param self is mucous
 	# @param interest is a text string
-	def InterestLikedRemove(self, interest):
+	def LikedRemove(self, interest):
 		try:
 			if not interest.isspace() and interest != "":
 				if interest in self.mucous.config["interests.like"]:
@@ -3935,7 +3938,7 @@ class Recommendations:
 	## Remove an item of interest from your hated list
 	# @param self is mucous
 	# @param interest is a text string
-	def InterestHatedRemove(self, interest):
+	def HatedRemove(self, interest):
 		try:
 			if not interest.isspace() and interest != "":
 				if interest in self.mucous.config["interests.hate"]:
@@ -4159,6 +4162,789 @@ class Setup:
 		## @var mucous 
 		# Mucous (Class)
 		self.mucous = mucous
+		self.windows = {"border":{}, }
+		self.input = "default"
+		self.current = "mucous"
+		self.dimensions = {}
+		
+	## Resut input to 'default' and redraw setup
+	# @param self Setup (class)
+	def Default(self):
+		try:
+			self.input = "default"
+			self.Mode()
+		except Exception, e:
+			self.mucous.Help.Log("debug", "Setup.Default: "+ str(e))
+
+	def Mode(self):
+		
+		self.mucous.display["mode"] = "setup"
+		self.mucous.PopupMenu.show = False
+		try:
+			# Cleanup stale windows
+			if "setup" in self.windows["border"]:
+				del self.windows["border"]["setup"]
+				
+			w = self.dimensions["setup"] = {"height": self.mucous.h-5, "width": self.mucous.w, "top": 1, "left": 0}	
+			mw = self.windows["border"]["setup"] = curses.newwin(w["height"], w["width"], w["top"], w["left"])
+			mw.erase()
+			mw.border()
+			mw.addstr(w["height"]-1, 2, "< Use the mouse, if possible. Otherwise: /help setup >")
+
+			if self.current == "mucous":
+				#self.mucous.set_edit_title("Mucous Setup")
+				try:
+					mw.addstr(0, 1, "< Mucous >",  curses.A_BOLD)
+					mw.addstr(0, 15, "< Museek >")
+					mw.addstr(0, 30, "< Shares >")
+					mw.addstr(0, 45, "< Userinfo >")
+					mw.addstr(0, 60, "< Logs >")
+				except:
+					pass
+			elif self.current == "museek":
+				try:
+					mw.addstr(0, 1, "< Mucous >")
+					mw.addstr(0, 15, "< Museek >",  curses.A_BOLD)
+					mw.addstr(0, 30, "< Shares >")
+					mw.addstr(0, 45, "< Userinfo >")
+					mw.addstr(0, 60, "< Logs >")
+				except:
+					pass
+			elif self.current == "shares":
+				try:
+					mw.addstr(0, 1, "< Mucous >")
+					mw.addstr(0, 15, "< Museek >")
+					mw.addstr(0, 30, "< Shares >",  curses.A_BOLD)
+					mw.addstr(0, 45, "< Userinfo >")
+					mw.addstr(0, 60, "< Logs >")
+				except:
+					pass
+			elif self.current == "userinfo":
+				try:
+					mw.addstr(0, 1, "< Mucous >")
+					mw.addstr(0, 15, "< Museek >")
+					mw.addstr(0, 30, "< Shares >")
+					mw.addstr(0, 45, "< Userinfo >",  curses.A_BOLD)
+					mw.addstr(0, 60, "< Logs >")
+				except:
+					pass
+			elif self.current == "logs":
+				try:
+					mw.addstr(0, 1, "< Mucous >")
+					mw.addstr(0, 15, "< Museek >")
+					mw.addstr(0, 30, "< Shares >")
+					mw.addstr(0, 45, "< Userinfo >")
+					mw.addstr(0, 60, "< Logs >",  curses.A_BOLD)
+				except:
+					pass
+			self.InputTitle()
+			mw.noutrefresh()
+			# Create buttons, settings and immediately Delete them to aviod leaks
+			if self.current in ("shares"):
+				self.DrawShares()
+			elif self.current in ("userinfo"):
+				self.DrawUserinfo()
+			elif self.current in ("logs"):
+				self.DrawLogs()
+			elif self.current == "mucous":
+				self.DrawMucous()
+			elif self.current == "museek":
+				self.DrawMuseek()
+				
+
+		except Exception, e:
+			self.mucous.Help.Log("debug", "Setup.Mode: " + str(e) )
+		self.mucous.ModeTopbar()
+		self.mucous.HotKeyBar()
+		curses.doupdate()
+		
+	def InputTitle(self):
+		si = self.input
+		if si == "default":
+			self.mucous.set_edit_title("Setup Mode")
+		elif si == "interface":
+			self.mucous.set_edit_title("Set Interface")
+		elif si == "custom-url":
+			self.mucous.set_edit_title("Set custom URL handler: command$command")
+		elif si == "interface-password":
+			self.mucous.set_edit_title("Set Mucous's Interface password")
+		elif si == "museek-interface-password":
+			self.mucous.set_edit_title("Set Museek's Interface password")
+		elif si == "museek-interface-bind":
+			self.mucous.set_edit_title("Add a Museek Interface")
+		elif si == "server-host":
+			self.mucous.set_edit_title("Set Server Address")
+		elif si == "server-port":
+			self.mucous.set_edit_title("Set Server Port")
+		elif si == "soulseek-username":
+			self.mucous.set_edit_title("Set Soulseek Username")
+		elif si == "soulseek-password":
+			self.mucous.set_edit_title("Set Soulseek Password")
+		elif si == "slots":
+			self.mucous.set_edit_title("Set Number of Upload Slots to:")
+		elif si == "download-dir":
+			self.mucous.set_edit_title("Set completed download directory")
+		elif si == "incomplete-dir":
+			self.mucous.set_edit_title("Set incompleted download directory")
+		elif si == "userinfo":
+			self.mucous.set_edit_title("Set UserInfo")
+		elif si == "userimage":
+			self.mucous.set_edit_title("Set UserImage")
+		elif si == "adddir":
+			self.mucous.set_edit_title("Add directory to your normal shares")
+		elif si == "rmdir":
+			self.mucous.set_edit_title("Remove directory from your normal shares")
+		elif si == "addbuddydir":
+			self.mucous.set_edit_title("Add directory to your buddy shares")
+		elif si == "rmbuddydir":
+			self.mucous.set_edit_title("Remove directory from your buddy shares")
+			
+	## Parse input entry line for interest and match it with Spl["setup_input"]
+	# @param self is mucous
+	# @param line is a text string
+	def InputSetup(self, line):
+		try:
+			line = self.mucous.dlang(line)
+			if self.input == "interface":
+				mucous_config["connection"]["interface"] = line
+			elif self.input=="interface-password":
+				mucous_config["connection"]["passw"] = line
+			elif self.input=="custom-url":
+				if "$" in line:
+					custom = line.split("$")
+					if len(custom) > 1 and len(custom) < 3:
+						mucous_config["mucous"]["url custom prefix"] = custom[0]
+						mucous_config["mucous"]["url custom suffix"] = custom[1]
+					elif len(custom) == 1:
+						mucous_config["mucous"]["url custom prefix"] = custom[0]
+						mucous_config["mucous"]["url custom suffix"] = ''
+			elif self.input=="museek-interface-password":
+				
+				self.mucous.SendMessage(messages.ConfigSet("interfaces", "password", line))
+			elif self.input=="museek-interface-bind":
+				
+				self.mucous.SendMessage(messages.ConfigSet("interfaces.bind", line))
+			elif self.input=="server-host":
+				
+				self.mucous.SendMessage(messages.ConfigSet("server", "host", line))
+			elif self.input=="server-port":
+				
+				self.mucous.SendMessage(messages.ConfigSet("server", "port", line))
+			elif self.input=="soulseek-username":
+				self.mucous.SendMessage(messages.ConfigSet("server", "username", line))
+			elif self.input=="soulseek-password":
+				self.mucous.SendMessage(messages.ConfigSet("server", "password", line))
+			elif self.input=="download-dir":
+				self.mucous.SendMessage(messages.ConfigSet("transfers", "download-dir", line))
+			elif self.input=="incomplete-dir":
+				
+				self.mucous.SendMessage(messages.ConfigSet("transfers", "incomplete-dir", line))
+			elif self.input=="userinfo":
+				
+				try:
+					if '\\n' in line:
+						line = line.replace('\\n', '\n')
+					self.mucous.SendMessage(messages.ConfigSet("userinfo", "text", line))
+				except Exception, e:
+					self.mucous.Help.Log("debug", "set userinfo: "+str( e))
+			elif self.input=="userimage":
+				
+				try:
+					self.mucous.SendMessage(messages.ConfigSet("userinfo", "image", line))
+				except:
+					pass
+			elif self.input=="adddir":
+				self.mucous.Muscan.Command(["muscan", "-s", line])
+				self.mucous.Help.Log("status", "Adding "+line+" to normal shares. Scanning will begin.")
+			elif self.input=="rmdir":
+				self.mucous.Muscan.Command(["muscan", "-u", line])
+				self.mucous.Help.Log("status", "Removing "+line+" from normal shares. Please rescan or update.")
+			elif self.input=="addbuddydir":
+				
+				self.mucous.Muscan.Command(["muscan", "-b", "-s", line])
+				self.mucous.Help.Log("status", "Adding "+line+" to buddy shares. Scanning will begin.")
+			elif self.input=="rmbuddydir":
+				self.mucous.Muscan.Command(["muscan", "-b", "-u", line])
+				self.mucous.Help.Log("status", "Removing "+line+" from buddy shares. Please rescan or update.")
+			self.input = "default"
+			self.Setup.Mode()
+		except Exception,e:
+			self.mucous.Help.Log("debug", "InputSetup: " + str(e))
+				
+	def DrawMucous(self):
+		w = self.dimensions["setup"]
+		mw = self.windows["border"]["setup"]
+		# Interface
+		interface =""
+		if "connection" in mucous_config:
+			interface = self.mucous.dlang( mucous_config["connection"]["interface"][:28] )
+		
+		self.SetupButton("Museek Interface", interface ,2,1, 3,32)
+		
+		
+		if "connection" in mucous_config:
+			if self.mucous.display["password"]=="yes":
+				password = self.mucous.dlang( str(mucous_config["connection"]["passw"]) )
+			else:
+				password = '*********'
+		else:
+			password = "NOT set"
+			
+		self.SetupButton("Interface Password", password, 5,1,3,32)
+		
+		bwin = curses.newwin(6,22,2,33)
+		bwin.border()
+		try:
+			bwin.addstr(0, 1, "< Stats >",  curses.A_BOLD)
+		except:
+			pass
+		bwin.noutrefresh()
+		inbwin1_1 = bwin.subwin(1,20,3,34)
+		inbwin1_2 = bwin.subwin(1,20,4,34)
+		inbwin1_3 = bwin.subwin(1,20,5,34)
+		inbwin1_4 = bwin.subwin(1,20,6,34)
+		inbwin1_1.scrollok(1)
+		inbwin1_2.scrollok(1)
+		inbwin1_3.scrollok(1)
+		inbwin1_4.scrollok(1)
+		if self.mucous.data["mystats"] != []:
+			try:
+				inbwin1_1.addstr("Files: "+str(self.mucous.data["mystats"][3]), self.mucous.colors["cyan"] )
+				inbwin1_2.addstr("Dirs: "+str(self.mucous.data["mystats"][4]), self.mucous.colors["cyan"] )
+				inbwin1_3.addstr("Downloads: "+str(self.mucous.data["mystats"][2]), self.mucous.colors["cyan"] )
+				inbwin1_4.addstr("Speed: "+str(self.mucous.data["mystats"][1]/1024)+"KB/s", self.mucous.colors["cyan"] )
+				#self.data["mystats"] = user,  avgspeed, numdownloads, numfiles, numdirs
+			except:
+				pass
+		else:
+			if self.mucous.usernames["username"] != None:
+				self.mucous.SendMessage(messages.PeerStats(self.mucous.usernames["username"]))
+		inbwin1_1.noutrefresh()
+		inbwin1_2.noutrefresh()
+		inbwin1_3.noutrefresh()
+		inbwin1_4.noutrefresh()
+		del inbwin1_1
+		del inbwin1_2
+		del inbwin1_3
+		del inbwin1_4 
+		del bwin
+		
+		self.SetupCheck("Show Tickers:         /showtickers", mucous_config["tickers"]["tickers_enabled"] ,8,1,1,45, True)
+
+		self.SetupCheck("Cycle Tickers:        /tickers", mucous_config["tickers"]["ticker_cycle"] ,9,1,1,45, True, True)
+		self.SetupCheck("Scroll Tickers:       /tickers", mucous_config["tickers"]["ticker_scroll"] ,10,1,1,45, True, True)
+		self.SetupCheck("Auto-clear Transfers: /autoclear", mucous_config["mucous"]["auto-clear"],11,1,1,45, True)
+
+		self.SetupCheck("Auto-retry Transfers: /autoretry", mucous_config["mucous"]["auto-retry"],12,1, 1,45, True)
+
+		self.SetupCheck("Auto-Buddy downloads: /autobuddy", mucous_config["mucous"]["autobuddy"],13,1,1,45, True)
+		
+		self.SetupCheck("Beep:                 /beep", mucous_config["mucous"]["beep"],14,1,1,45, True)
+		self.SetupButton("< Ticker Time >", " -  %.2f +\n -  %.2f +" % ( float(mucous_config["tickers"]["cycletime"]), float(mucous_config["tickers"]["scrolltime"])), 8,39, 4,16, False, False)
+		# Minimum Room size for Roomlist
+		
+		self.SetupButton("<Min Roomlist>", " -  "+str(mucous_config["mucous"]["roomlistminsize"])+" +", 8,55, 3,16, False, False)
+
+		self.SetupButton("Encoding", mucous_config["mucous"]["language"], 12,39,3,16)
+		
+		# Custom URL
+		prefix =""
+		if "url custom prefix" in mucous_config["mucous"] and "url custom suffix" in mucous_config["mucous"]:
+			prefix = self.mucous.dlang(mucous_config["mucous"]["url custom prefix"])+"$"+self.mucous.dlang(mucous_config["mucous"]["url custom suffix"])
+		self.SetupButton("Custom URL Reader", prefix,15,1,3,32, optionbold=True)
+		self.SetupButton("URL Reader", self.mucous.dlang(mucous_config["mucous"]["url reader"]), 15,33,3,16)
+
+
+		# Save button
+		self.SetupButton(None, " Save Config", 15,49,3,16, True)
+		
+	def DrawMuseek(self):
+		w = self.dimensions["setup"]
+		mw = self.windows["border"]["setup"]
+		# Server
+		bw = curses.newwin(5,38,2,1)
+		bw.border()
+		bw.addstr(0, 1, "< Server >",  curses.A_BOLD)
+			
+		bw.noutrefresh()
+		inbw = bw.subwin(1,36,3,2)
+		inbw.scrollok(1)
+		inbw.addstr("Host: ")
+		if "server" in self.mucous.config:
+			try:
+				inbw.addstr(self.mucous.dlang( self.mucous.config["server"]["host"][:22] )+":"+self.mucous.config["server"]["port"], self.mucous.colors["cyan"] )
+			except:
+				pass
+		inbw.noutrefresh()
+		del inbw
+		
+
+		
+		inusernamewin2 = bw.subwin(1,36,4,2)
+		inusernamewin2.scrollok(1)
+		inusernamewin2.addstr("Name: ")
+		if "server" in self.mucous.config:
+			a = self.mucous.dlang(self.mucous.config["server"]["username"])
+			try:
+				inusernamewin2.addstr(a, self.mucous.colors["cyan"])
+			except:
+				pass
+
+		inusernamewin2.noutrefresh()
+		del inusernamewin2
+
+		inifacepasswin = bw.subwin(1,36,5,2)
+		inifacepasswin.addstr("Pass: ")
+		if self.mucous.display["password"]=="yes":
+			if "server" in self.mucous.config:
+				inifacepasswin.addstr(self.mucous.dlang( self.mucous.config["server"]["password"] ), self.mucous.colors["cyan"])
+				
+		else:
+			if "server" in self.mucous.config:
+				inifacepasswin.addstr("*********", self.mucous.colors["cyan"])
+		inifacepasswin.noutrefresh()
+		del inifacepasswin
+		del bw
+
+		ifacepasswin = curses.newwin(3,26,2,39)
+		ifacepasswin.border()
+		ifacepasswin.addstr(0, 1, "< Interface Password >",  curses.A_BOLD)
+
+		ifacepasswin.noutrefresh()
+		inifacepasswin = ifacepasswin.subwin(1,24,3,40)
+		inifacepasswin.scrollok(1)
+		if "interfaces" in self.mucous.config:
+			if self.mucous.display["password"]=="yes":
+				try:
+					inifacepasswin.addstr(self.mucous.dlang( self.mucous.config["interfaces"]["password"] ), self.mucous.colors["cyan"])
+				except:
+					pass
+			else:
+				inifacepasswin.addstr("*********", self.mucous.colors["cyan"])
+		inifacepasswin.noutrefresh()
+		del inifacepasswin
+
+		#------------------------
+
+		self.SetupCheck("Share to Buddies-Only", self.mucous.config["transfers"]["only_buddies"],8,1,1,30, True)
+
+		self.SetupCheck("Buddies get Privileges", self.mucous.config["transfers"]["privilege_buddies"],9,1,1,30, True)
+
+		self.SetupCheck("Enable Buddy-Only shares",self.mucous.config["transfers"]["have_buddy_shares"],10,1,1,30, True)
+
+		self.SetupCheck("Allow Trusted users to send you files",self.mucous.config["transfers"]["trusting_uploads"],11,1,1,self.mucous.w-3, True)
+
+		self.SetupCheck("Send automatic warnings via Private Chat",self.mucous.config["transfers"]["user_warnings"],12,1,1,self.mucous.w-3, True)
+
+		self.SetupButton("<Connections >", self.mucous.config["clients"]["connectmode"],5,49,3,16, True, False)
+
+		self.SetupButton("<Upload Slots>", " - " + self.mucous.config["transfers"]["upload_slots"]+ " +", 8,49,3,16, True, False)
+
+		dirwin = curses.newwin(4,self.mucous.w-2,13,1)
+		dirwin.border()
+		dirwin.addstr(0, 1, "< Download/Incomplete Directories >",  curses.A_BOLD)
+		dirwin.noutrefresh()
+		dircompletewin = dirwin.subwin(1,self.mucous.w-4,14,2)
+		try:
+			dircompletewin.addstr(self.mucous.dlang(self.mucous.config["transfers"]["download-dir"]), self.mucous.colors["cyan"])
+		except: pass
+		dircompletewin.noutrefresh()
+		dirincompletewin = dirwin.subwin(1,self.mucous.w-4,15,2)
+		try:
+			dirincompletewin.addstr(self.mucous.dlang(self.mucous.config["transfers"]["incomplete-dir"]), self.mucous.colors["cyan"])
+		except: pass
+		dirincompletewin.noutrefresh()
+		del dirincompletewin
+		del dircompletewin
+		del dirwin
+
+	def DrawShares(self):
+		w = self.dimensions["setup"]
+		mw = self.windows["border"]["setup"]
+		# First Row
+		self.SetupButton("Normal", "List Shared", 3,1,3,16)
+		self.SetupButton(None, "Add Directory", 3,17,3,16)
+		self.SetupButton(None, "Remove Dir", 3,33,3,16)
+		self.SetupButton(None, "Click on the buttons to run the local muscan.\nWhen you click on Add/Remove Directory, type in the directory below, and start with '//' instead of just a '/'", 2,49,10,self.mucous.w-50)
+		# Second Row
+		self.SetupButton(None, "Rescan Shares",6,1,3,16)
+		self.SetupButton(None, "Update Shares", 6,17,3,16)
+		
+		# Third Row
+		self.SetupButton("Buddy-only", "List Shared", 9,1,3,16)
+		self.SetupButton(None, "Add Directory", 9,17,3,16)
+		self.SetupButton(None, "Remove Dir", 9,33,3,16)
+		
+		# Fourth Row
+		self.SetupButton(None, "Rescan Shares", 12,1,3,16)
+		self.SetupButton(None, "Update Shares", 12,17,3,16)
+		self.SetupButton(None, "Reload Shares", 12,49,3,16, optionbold=True)
+		
+		museekconfigfile = self.mucous.Spl["museekconfigfile"]
+		# Fifth Row
+		self.SetupButton("Museek Config File", museekconfigfile[:self.mucous.w-2], 15,1,3,self.mucous.w-2)
+		
+	def DrawLogs(self):
+		w = self.dimensions["setup"]
+		mw = self.windows["border"]["setup"]
+		self.SetupCheck("Log Chat messages? ", mucous_config["mucous"]["logging"],2,1,1,30, True)
+		self.SetupButton("Log Directory", os.path.expanduser(mucous_config["mucous"]["log_dir"])[:37], 5,1,3,self.mucous.w-2)
+		
+	def DrawUserinfo(self):
+		w = self.dimensions["setup"]
+		mw = self.windows["border"]["setup"]
+		info = ""
+		if "userinfo" in self.mucous.config.keys():
+			if "text" in self.mucous.config["userinfo"]:
+				info = self.mucous.config["userinfo"]["text"]
+				#for line in self.mucous.config["userinfo"]["text"]:
+					#info += line.decode(mucous_config["mucous"]["language"], "replace") +"\n"
+		
+		self.SetupButton("Your Userinfo", info, 2,1,self.mucous.h-8,self.mucous.w-2)
+		
+		inputimage = curses.newwin(1,13,self.mucous.h-6,1)
+		inputimage.erase()
+		inputimage.addstr( "Your Image: ")
+		inputimage.noutrefresh()
+		
+		if "userinfo" in self.mucous.config.keys():
+			if "image" in self.mucous.config["userinfo"]:
+				inputimage2 = curses.newwin(1,self.mucous.w-2-14,self.mucous.h-6,14)
+				inputimage2.erase()
+				inputimage2.scrollok(1)
+				inputimage2.addstr( str(self.mucous.config["userinfo"]["image"][:self.mucous.w-3-14]))
+				inputimage2.noutrefresh()
+		del inputimage2
+		del inputimage
+			
+	# Create a Button
+	# @param self Setup (class)
+	def SetupButton(self, title, option, x, y, height, width, optionbold=False, titlepad=True, border=True):
+		try:
+			winborder = curses.newwin(height,width,x,y)
+			if border:
+				winborder.border()
+			if title != None:
+				if titlepad:
+					winborder.addstr(0,1, "< %s >" % title, curses.A_BOLD)
+				else:
+					winborder.addstr(0,1, title, curses.A_BOLD)
+			winborder.noutrefresh()
+			win = winborder.subwin(height-2,width-2,x+1,y+1)
+			win.scrollok(1)
+			if option != None:
+				if optionbold:
+					win.addstr(option, self.mucous.colors["cyan"] | curses.A_BOLD)
+				else:
+					win.addstr(option, self.mucous.colors["cyan"])
+			win.noutrefresh()
+			del win
+			del winborder
+		except Exception,e:
+			self.mucous.Help.Log("debug", "SetupButton: "+title+" "+ str(e))
+			
+	# Create a Checkbox or togglebox
+	# @param self Setup (class)
+	def SetupCheck(self, title, option, x, y, height, width, titlebold=False, toggle=False):
+		try:
+			enabled = "[x]"
+			disabled = "[ ]"
+			selected = "(*)"
+			notselected = "( )"
+			
+			win = curses.newwin(height,width,x,y)
+			win.erase()
+			if option in ("True", "true", "yes"):
+				if toggle:
+					z = selected
+				else:
+					z = enabled
+			else:
+				if toggle:
+					z = notselected
+				else:
+					z = disabled
+			win.addstr(z+" ", self.mucous.colors["cyan"])
+			if title != None:
+				if titlebold:
+					win.addstr(title,  curses.A_BOLD)
+				else:
+					win.addstr(title)
+			win.noutrefresh()
+			
+			del win
+
+		except Exception,e:
+			self.mucous.Help.Log("debug", "SetupButton: "+title+" "+ str(e))
+			
+	## Mouse Coordinates in the Setup Mode
+	# @param self is mucous
+	# @param x is the horizontal position from the left
+	# @param y is the vertical postion from the top
+	# @param z is unimportant
+	# @param event is the mouse event (button, doubleclick, etc) represented by a number
+	def Mouse(self, x,y,z,event):
+		try:
+			
+			if y in (0, 1):
+				if x >=1 and x <=12:
+					if self.current != "mucous":
+						self.current="mucous"
+						self.input = "default"
+				elif x >=16 and x <=26:
+					if self.current != "museek":
+						self.current="museek"
+						self.input = "default"
+				elif x >=31 and x <=41:
+					if self.current != "shares":
+						self.current="shares"
+						self.input = "default"
+				elif x >=46 and x <=57:
+					if self.current != "userinfo":
+						self.current="userinfo"
+						self.input = "default"
+				elif x >=60 and x <=69:
+					if self.current != "logs":
+						self.current="logs"
+						self.input = "default"
+				self.Mode()
+
+			if self.current=="shares":
+				if y in ( 3, 4, 5):
+					if x >= 1 and x <= 16:
+						self.mucous.Muscan.ListNormal()
+					elif x >= 17 and x <= 32:
+						self.mucous.Muscan.ChangeInput("adddir")
+					elif x >= 33 and x < 49:
+						self.mucous.Muscan.ChangeInput("rmdir")
+
+				if y in ( 6, 7, 8):
+					if x >= 1 and x <= 16:
+						self.mucous.Muscan.RescanNormal()
+					elif x >= 17 and x <= 32:
+						self.mucous.Muscan.UpdateNormal()
+				elif y in ( 9, 10, 11):
+					if x >= 1 and x <= 16:
+						self.mucous.Muscan.ListBuddy()
+					elif x >= 17 and x <= 32:
+						self.mucous.Muscan.ChangeInput("addbuddydir")
+					elif x >= 33 and x < 49:
+						self.mucous.Muscan.ChangeInput("rmbuddydir")
+				elif y in ( 12, 13, 14):
+					if x >= 1 and x <= 16:
+						self.mucous.Muscan.RescanBuddy()
+					elif x >= 17 and x <= 32:
+						self.mucous.Muscan.UpdateBuddy()
+					elif x >= 49 and x <= 66:
+						self.mucous.SendMessage(messages.ReloadShares())
+			elif self.current=="userinfo":
+				if y >= 1 and y < self.mucous.h-7:
+					self.input="userinfo"
+				elif y <= self.mucous.h-5 and y >= self.mucous.h-7:
+					self.input="userimage"
+				self.Mode()
+			elif self.current=="logs":
+				if y >= 2 and y <= 3 and x < 37:
+					self.mucous.ToggleLogging()
+					self.Mode()
+				
+					
+			if self.current not in ("museek", "mucous"):
+				return
+			if y not in (2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17):
+				return
+			if self.current=="museek" and "transfers" in self.mucous.config:
+				if y in (2, 3) and x >=1 and x <=35:
+					self.input="server-host"
+					self.Mode()
+				elif y == 4 and x >=1 and x <=35:
+					self.input="soulseek-username"
+					self.Mode()
+				elif y == 5 and x >=1 and x <=35:
+					self.input="soulseek-password"
+					self.Mode()
+				elif y in (2, 3, 4) and x >=40 and x <=63:
+					self.input="museek-interface-password"
+					self.Mode()
+				elif y in (5,6,7) and x >=50 and x <=63:
+					# Connect Mode
+					if "clients" in self.mucous.config:
+						
+						if self.mucous.config["clients"]["connectmode"] == "passive":
+							self.mucous.SendMessage(messages.ConfigSet("clients", "connectmode", "active"))
+						elif self.mucous.config["clients"]["connectmode"] == "active":
+							self.mucous.SendMessage(messages.ConfigSet("clients", "connectmode", "passive"))
+							
+				elif y==8 and x >=1 and x <=30:
+					#Buddies-only
+					
+					if self.mucous.config["transfers"]["only_buddies"] == "true":
+						self.mucous.SendMessage(messages.ConfigSet("transfers", "only_buddies", "false"))
+					elif self.mucous.config["transfers"]["only_buddies"] == "false":
+						self.mucous.SendMessage(messages.ConfigSet("transfers", "only_buddies", "true"))
+				elif y==9 and x >=1 and x <=30:
+					
+					if self.mucous.config["transfers"]["privilege_buddies"] == "true":
+						self.mucous.SendMessage(messages.ConfigSet("transfers", "privilege_buddies", "false"))
+							
+					elif self.mucous.config["transfers"]["privilege_buddies"] == "false":
+						self.mucous.SendMessage(messages.ConfigSet("transfers", "privilege_buddies", "true"))
+				elif y==10 and x >=1 and x <=30:
+					if self.mucous.config["transfers"]["have_buddy_shares"] == "true":
+						self.mucous.SendMessage(messages.ConfigSet("transfers", "have_buddy_shares", "false"))
+							
+					elif self.mucous.config["transfers"]["have_buddy_shares"] == "false":
+						self.mucous.SendMessage(messages.ConfigSet("transfers", "have_buddy_shares", "true"))
+				elif y==11 and x >=1 and x <=50:
+					if self.mucous.config["transfers"]["trusting_uploads"]== "true":
+						self.mucous.SendMessage(messages.ConfigSet("transfers", "trusting_uploads", "false"))
+							
+					elif self.mucous.config["transfers"]["trusting_uploads"] == "false":
+						self.mucous.SendMessage(messages.ConfigSet("transfers", "trusting_uploads", "true"))
+				elif y==12 and x >=1 and x <=50:
+					if self.mucous.config["transfers"]["user_warnings"] == "true":
+						self.mucous.SendMessage(messages.ConfigSet("transfers", "user_warnings", "false"))
+							
+					elif self.mucous.config["transfers"]["user_warnings"] == "false":
+						self.mucous.SendMessage(messages.ConfigSet("transfers", "user_warnings", "true"))
+				
+				elif y in (8,9,10)  and x >=49 and x <=64:
+					s = int(self.mucous.config["transfers"]["upload_slots"]) 
+					if x >=49 and x <=53:
+						s  -= 1
+					elif x >=54 and x <=64:
+						s  += 1
+					if s < 0:
+						s = 0
+					s = str(s)
+					self.mucous.SendMessage(messages.ConfigSet("transfers", "upload_slots", s))
+					self.Mode()
+				elif y in (13, 14):
+					# Download Directory
+					self.input="download-dir"
+					self.Mode()
+				elif y in (15, 16):
+					# Incomplete Download Directory
+					self.input="incomplete-dir"
+					#if x >=1 and x <=61:
+					self.Mode()
+					
+			elif self.current=="mucous":
+				if y in (2, 3, 4):
+					if x >=1 and x <=35:
+						self.input="interface"
+						self.Mode()
+				elif y in (5, 6, 7):
+					if x >=1 and x <=35:
+						self.input="interface-password"
+					self.Mode()
+				elif y == 8 and x >=1 and x <=40:
+					self.mucous.ToggleTickersDisplay()
+				elif y in (9, 10) and  x >=1 and x <=38:
+					self.mucous.ToggleTickers()
+						
+				elif y == 11 and x >=1 and x <=38:
+					if mucous_config["mucous"]["auto-clear"] == "yes":
+						mucous_config["mucous"]["auto-clear"] = "no"
+						self.mucous.clear_timer.cancel()
+						self.mucous.clear_timer = threading.Timer(30.0, self.mucous.ThreadTransfersClear)
+						
+					else:
+						mucous_config["mucous"]["auto-clear"] ="yes"
+						self.mucous.clear_timer.cancel()
+						self.mucous.clear_timer = threading.Timer(30.0, self.mucous.ThreadTransfersClear)
+						self.mucous.clear_timer.start()
+					self.Mode()
+				elif y in (8, 9, 10, 11) and x >= 39 and x <= 54:
+					# Minimum size of rooms displayed in room list
+					
+					if x >=39 and x <=47:
+						
+						if y in (8, 9):
+							
+							mucous_config["tickers"]["cycletime"] = str(float (mucous_config["tickers"]["cycletime"])-0.5) 
+						elif y in (10,11):
+							
+							mucous_config["tickers"]["scrolltime"] = str(float( mucous_config["tickers"]["scrolltime"])-0.1)
+					elif x >=48 and x <=54:
+						if y in (8, 9):
+							
+							mucous_config["tickers"]["cycletime"] = str( float( mucous_config["tickers"]["cycletime"])+0.5)
+						elif y in (10,11):
+							mucous_config["tickers"]["scrolltime"] = str(float( mucous_config["tickers"]["scrolltime"])+0.1)
+					if float(mucous_config["tickers"]["scrolltime"]) < 0.1:
+						mucous_config["tickers"]["scrolltime"] = str(0.1)
+					if float(mucous_config["tickers"]["cycletime"]) < 1.0:
+						mucous_config["tickers"]["cycletime"] = str(1.0)
+					self.Mode()
+				elif y in (8, 9, 10) and x >= 55 and x <= 71:
+					# Minimum size of rooms displayed in room list
+					if x >=55 and x <=61:
+						mucous_config["mucous"]["roomlistminsize"] -= 1
+					elif x >=62 and x <=71:
+						mucous_config["mucous"]["roomlistminsize"] += 1
+					if mucous_config["mucous"]["roomlistminsize"] < 1:
+						mucous_config["mucous"]["roomlistminsize"] = 1
+					self.Mode()
+				
+				elif y == 12 and x >=1 and x <=40:
+					if str(mucous_config["mucous"]["auto-retry"]) == "yes":
+						mucous_config["mucous"]["auto-retry"] = "no"
+						self.mucous.retry_timer.cancel()
+					else:
+						mucous_config["mucous"]["auto-retry"] ="yes"
+						self.mucous.retry_timer.cancel()
+						self.mucous.retry_timer = threading.Timer(30.0, self.mucous.ThreadTransfersRetry)
+						self.mucous.retry_timer.start()
+					self.Mode()
+					
+				elif y ==13  and x >=1 and x <=40:
+					# Toggle Autobuddy
+					if mucous_config["mucous"]["autobuddy"]  == "yes":
+						mucous_config["mucous"]["autobuddy"] = "no"
+
+					elif mucous_config["mucous"]["autobuddy"]  == "no":
+						mucous_config["mucous"]["autobuddy"] = "yes"
+					self.Mode()
+				elif y == 14 and  x >=1 and x <=40:
+					self.mucous.ToggleBeep()
+
+					
+				elif y in (12, 13, 14) and x >=39 and x <=55:
+					# Change charset, encoding, language that text is piped thru
+					if "language" in mucous_config["mucous"]:
+						if mucous_config["mucous"]["language"] in self.mucous.encodings:
+							pos = self.mucous.encodings.index(mucous_config["mucous"]["language"])
+							pos +=1
+							if pos not in range(len(self.mucous.encodings)):
+								pos = 0
+							mucous_config["mucous"]["language"]=self.mucous.encodings [pos]
+							self.Mode()
+						else:
+							mucous_config["mucous"]["language"]=self.mucous.encodings [0]
+							self.Mode()
+			
+				elif y in (15, 16, 17):
+					if x >=1 and x <=32:
+						# Edit custom URL handler process
+						self.input="custom-url"
+						self.Mode()
+					elif x >=35 and x <=49:
+						# Cycle thru list of URL handlers
+						u = mucous_config["mucous"]["url reader"]
+						if u == 'lynx': u = 'links'
+						elif u == 'links': u = 'elinks'
+						elif u == 'elinks': u = 'firefox'
+						elif u == 'firefox': u = 'custom'
+						elif u == 'custom': u = 'lynx'
+						mucous_config["mucous"]["url reader"] = u
+						self.Mode()
+					elif x >=50 and x <=65:
+						config_manager.update_config()
+						self.mucous.Help.Log("status", "Config Saved")
+		except Exception, e:
+			self.mucous.Help.Log("debug", "Setup.Mouse: " +str(e) )
+		
 		
 ## Search for files
 #			
@@ -5259,7 +6045,7 @@ class Mucous(driver.Driver):
 				self.RoomsList.Mode()
 				
 			elif self.display["mode"] == "setup":
-				self.ModeSetupDefault()
+				self.Setup.Default()
 				
 			elif self.display["mode"] in ("debug", "help"):
 				self.Help.Mode()
@@ -5974,7 +6760,7 @@ class Mucous(driver.Driver):
 			if user == self.usernames["username"]:
 				self.data["mystats"] = user,  avgspeed, numdownloads, numfiles, numdirs
 				if self.display["mode"] == "setup":
-					self.ModeSetup()
+					self.Setup.Mode()
 		except Exception, e:
 			self.Help.Log( "debug", "cb_peer_stats: " + str(e))
 
@@ -6292,7 +7078,7 @@ class Mucous(driver.Driver):
 			else:
 				mucous_config["mucous"]["beep"] = "yes"
 			if self.display["mode"]=="setup":
-				self.ModeSetup()
+				self.Setup.Mode()
 		except Exception, e:
 			self.Help.Log("debug", "ToggleBeep: "+str(e))
 	def ToggleTickersDisplay(self):
@@ -6303,7 +7089,7 @@ class Mucous(driver.Driver):
 			elif str(mucous_config["tickers"]["tickers_enabled"]) == 'yes':
 				mucous_config["tickers"]["tickers_enabled"] = 'no'
 			if self.display["mode"]=="setup":
-				self.ModeSetup()
+				self.Setup.Mode()
 		except Exception, e:
 			self.Help.Log("debug", "ToggleTickersDisplay: "+str(e))
 	def ToggleTickers(self):
@@ -6325,7 +7111,7 @@ class Mucous(driver.Driver):
 				self.DrawChatRoomStatusText()
 				curses.doupdate()
 			elif self.display["mode"]=="setup":
-				self.ModeSetup()
+				self.Setup.Mode()
 		except Exception, e:
 			self.Help.Log("debug", "ToggleTickers: "+str(e))
 					
@@ -6386,7 +7172,7 @@ class Mucous(driver.Driver):
 		elif self.display["mode"] == "roomlist":
 			self.RoomsList.Mode()
 		elif self.display["mode"] == "setup":
-			self.ModeSetupDefault()
+			self.Setup.Default()
 		elif self.display["mode"] in ("help", "debug", "status"):
 			self.Help.Mode()
 			
@@ -6524,7 +7310,7 @@ class Mucous(driver.Driver):
 				if self.display["mode"] == "lists" and self.UsersLists.current == "interests":
 					self.Recommendations.ModeInterests()
 			elif domain in ("clients", "transfers", "server", "interfaces", "interfaces.bind", "userinfo") and self.display["mode"] == "setup":
-				self.ModeSetup()
+				self.Setup.Mode()
 			elif domain in ("encoding.users", "encoding" ) and self.display["mode"] == "browse":
 				self.BrowseShares.Mode()
 			elif domain in ("encoding.users" ) and self.display["mode"] == "private":	
@@ -7331,7 +8117,7 @@ class Mucous(driver.Driver):
 				self.BrowseShares.FormatBrowse()
 				curses.doupdate()
 			elif self.display["mode"] =="setup":
-				self.ModeSetup()
+				self.Setup.Mode()
 			else:
 				if self.display["mode"] in self.windows["border"]:
 					self.windows["border"][self.display["mode"]].redrawwin()
@@ -7449,273 +8235,6 @@ class Mucous(driver.Driver):
 
 			
 
-	## Mouse Coordinates in the Setup Mode
-	# @param self is mucous
-	# @param x is the horizontal position from the left
-	# @param y is the vertical postion from the top
-	# @param z is unimportant
-	# @param event is the mouse event (button, doubleclick, etc) represented by a number
-	def MouseSetup(self, x,y,z,event):
-		try:
-			
-			if y in (0, 1):
-				if x >=1 and x <=12:
-					if self.display["setup"] != "mucous":
-						self.display["setup"]="mucous"
-						self.Spl["setup_input"] = "default"
-				elif x >=16 and x <=26:
-					if self.display["setup"] != "museek":
-						self.display["setup"]="museek"
-						self.Spl["setup_input"] = "default"
-				elif x >=31 and x <=41:
-					if self.display["setup"] != "shares":
-						self.display["setup"]="shares"
-						self.Spl["setup_input"] = "default"
-				elif x >=46 and x <=57:
-					if self.display["setup"] != "userinfo":
-						self.display["setup"]="userinfo"
-						self.Spl["setup_input"] = "default"
-				elif x >=60 and x <=69:
-					if self.display["setup"] != "logs":
-						self.display["setup"]="logs"
-						self.Spl["setup_input"] = "default"
-				self.ModeSetup()
-
-			if self.display["setup"]=="shares":
-				if y in ( 3, 4, 5):
-					if x >= 1 and x <= 16:
-						self.Muscan.ListNormal()
-					elif x >= 17 and x <= 32:
-						self.Muscan.ChangeInput("adddir")
-					elif x >= 33 and x < 49:
-						self.Muscan.ChangeInput("rmdir")
-
-				if y in ( 6, 7, 8):
-					if x >= 1 and x <= 16:
-						self.Muscan.RescanNormal()
-					elif x >= 17 and x <= 32:
-						self.Muscan.UpdateNormal()
-				elif y in ( 9, 10, 11):
-					if x >= 1 and x <= 16:
-						self.Muscan.ListBuddy()
-					elif x >= 17 and x <= 32:
-						self.Muscan.ChangeInput("addbuddydir")
-					elif x >= 33 and x < 49:
-						self.Muscan.ChangeInput("rmbuddydir")
-				elif y in ( 12, 13, 14):
-					if x >= 1 and x <= 16:
-						self.Muscan.RescanBuddy()
-					elif x >= 17 and x <= 32:
-						self.Muscan.UpdateBuddy()
-					elif x >= 49 and x <= 66:
-						self.SendMessage(messages.ReloadShares())
-			elif self.display["setup"]=="userinfo":
-				if y >= 1 and y < self.h-7:
-					self.Spl["setup_input"]="userinfo"
-				elif y <= self.h-5 and y >= self.h-7:
-					self.Spl["setup_input"]="userimage"
-				self.ModeSetup()
-			elif self.display["setup"]=="logs":
-				if y >= 2 and y <= 3 and x < 37:
-					self.ToggleLogging()
-					self.ModeSetup()
-				
-					
-			if self.display["setup"] not in ("museek", "mucous"):
-				return
-			if y not in (2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17):
-				return
-			if self.display["setup"]=="museek" and "transfers" in self.config:
-				if y in (2, 3) and x >=1 and x <=35:
-					self.Spl["setup_input"]="server-host"
-					self.ModeSetup()
-				elif y == 4 and x >=1 and x <=35:
-					self.Spl["setup_input"]="soulseek-username"
-					self.ModeSetup()
-				elif y == 5 and x >=1 and x <=35:
-					self.Spl["setup_input"]="soulseek-password"
-					self.ModeSetup()
-				elif y in (2, 3, 4) and x >=40 and x <=63:
-					self.Spl["setup_input"]="museek-interface-password"
-					self.ModeSetup()
-				elif y in (5,6,7) and x >=50 and x <=63:
-					# Connect Mode
-					if "clients" in self.config:
-						
-						if self.config["clients"]["connectmode"] == "passive":
-							self.SendMessage(messages.ConfigSet("clients", "connectmode", "active"))
-						elif self.config["clients"]["connectmode"] == "active":
-							self.SendMessage(messages.ConfigSet("clients", "connectmode", "passive"))
-							
-				elif y==8 and x >=1 and x <=30:
-					#Buddies-only
-					
-					if self.config["transfers"]["only_buddies"] == "true":
-						self.SendMessage(messages.ConfigSet("transfers", "only_buddies", "false"))
-					elif self.config["transfers"]["only_buddies"] == "false":
-						self.SendMessage(messages.ConfigSet("transfers", "only_buddies", "true"))
-				elif y==9 and x >=1 and x <=30:
-					
-					if self.config["transfers"]["privilege_buddies"] == "true":
-						self.SendMessage(messages.ConfigSet("transfers", "privilege_buddies", "false"))
-							
-					elif self.config["transfers"]["privilege_buddies"] == "false":
-						self.SendMessage(messages.ConfigSet("transfers", "privilege_buddies", "true"))
-				elif y==10 and x >=1 and x <=30:
-					if self.config["transfers"]["have_buddy_shares"] == "true":
-						self.SendMessage(messages.ConfigSet("transfers", "have_buddy_shares", "false"))
-							
-					elif self.config["transfers"]["have_buddy_shares"] == "false":
-						self.SendMessage(messages.ConfigSet("transfers", "have_buddy_shares", "true"))
-				elif y==11 and x >=1 and x <=50:
-					if self.config["transfers"]["trusting_uploads"]== "true":
-						self.SendMessage(messages.ConfigSet("transfers", "trusting_uploads", "false"))
-							
-					elif self.config["transfers"]["trusting_uploads"] == "false":
-						self.SendMessage(messages.ConfigSet("transfers", "trusting_uploads", "true"))
-				elif y==12 and x >=1 and x <=50:
-					if self.config["transfers"]["user_warnings"] == "true":
-						self.SendMessage(messages.ConfigSet("transfers", "user_warnings", "false"))
-							
-					elif self.config["transfers"]["user_warnings"] == "false":
-						self.SendMessage(messages.ConfigSet("transfers", "user_warnings", "true"))
-				
-				elif y in (8,9,10)  and x >=49 and x <=64:
-					s = int(self.config["transfers"]["upload_slots"]) 
-					if x >=49 and x <=53:
-						s  -= 1
-					elif x >=54 and x <=64:
-						s  += 1
-					if s < 0:
-						s = 0
-					s = str(s)
-					self.SendMessage(messages.ConfigSet("transfers", "upload_slots", s))
-					self.ModeSetup()
-				elif y in (13, 14):
-					# Download Directory
-					self.Spl["setup_input"]="download-dir"
-					self.ModeSetup()
-				elif y in (15, 16):
-					# Incomplete Download Directory
-					self.Spl["setup_input"]="incomplete-dir"
-					#if x >=1 and x <=61:
-					self.ModeSetup()
-					
-			elif self.display["setup"]=="mucous":
-				if y in (2, 3, 4):
-					if x >=1 and x <=35:
-						self.Spl["setup_input"]="interface"
-						self.ModeSetup()
-				elif y in (5, 6, 7):
-					if x >=1 and x <=35:
-						self.Spl["setup_input"]="interface-password"
-					self.ModeSetup()
-				elif y == 8 and x >=1 and x <=40:
-					self.ToggleTickersDisplay()
-				elif y in (9, 10) and  x >=1 and x <=38:
-					self.ToggleTickers()
-						
-				elif y == 11 and x >=1 and x <=38:
-					if mucous_config["mucous"]["auto-clear"] == "yes":
-						mucous_config["mucous"]["auto-clear"] = "no"
-						self.clear_timer.cancel()
-						self.clear_timer = threading.Timer(30.0, self.ThreadTransfersClear)
-						
-					else:
-						mucous_config["mucous"]["auto-clear"] ="yes"
-						self.clear_timer.cancel()
-						self.clear_timer = threading.Timer(30.0, self.ThreadTransfersClear)
-						self.clear_timer.start()
-					self.ModeSetup()
-				elif y in (8, 9, 10, 11) and x >= 39 and x <= 54:
-					# Minimum size of rooms displayed in room list
-					
-					if x >=39 and x <=47:
-						
-						if y in (8, 9):
-							
-							mucous_config["tickers"]["cycletime"] = str(float (mucous_config["tickers"]["cycletime"])-0.5) 
-						elif y in (10,11):
-							
-							mucous_config["tickers"]["scrolltime"] = str(float( mucous_config["tickers"]["scrolltime"])-0.1)
-					elif x >=48 and x <=54:
-						if y in (8, 9):
-							
-							mucous_config["tickers"]["cycletime"] = str( float( mucous_config["tickers"]["cycletime"])+0.5)
-						elif y in (10,11):
-							mucous_config["tickers"]["scrolltime"] = str(float( mucous_config["tickers"]["scrolltime"])+0.1)
-					if float(mucous_config["tickers"]["scrolltime"]) < 0.1:
-						mucous_config["tickers"]["scrolltime"] = str(0.1)
-					if float(mucous_config["tickers"]["cycletime"]) < 1.0:
-						mucous_config["tickers"]["cycletime"] = str(1.0)
-					self.ModeSetup()
-				elif y in (8, 9, 10) and x >= 55 and x <= 71:
-					# Minimum size of rooms displayed in room list
-					if x >=55 and x <=61:
-						mucous_config["mucous"]["roomlistminsize"] -= 1
-					elif x >=62 and x <=71:
-						mucous_config["mucous"]["roomlistminsize"] += 1
-					if mucous_config["mucous"]["roomlistminsize"] < 1:
-						mucous_config["mucous"]["roomlistminsize"] = 1
-					self.ModeSetup()
-				
-				elif y == 12 and x >=1 and x <=40:
-					if str(mucous_config["mucous"]["auto-retry"]) == "yes":
-						mucous_config["mucous"]["auto-retry"] = "no"
-						self.retry_timer.cancel()
-					else:
-						mucous_config["mucous"]["auto-retry"] ="yes"
-						self.retry_timer.cancel()
-						self.retry_timer = threading.Timer(30.0, self.ThreadTransfersRetry)
-						self.retry_timer.start()
-					self.ModeSetup()
-					
-				elif y ==13  and x >=1 and x <=40:
-					# Toggle Autobuddy
-					if mucous_config["mucous"]["autobuddy"]  == "yes":
-						mucous_config["mucous"]["autobuddy"] = "no"
-
-					elif mucous_config["mucous"]["autobuddy"]  == "no":
-						mucous_config["mucous"]["autobuddy"] = "yes"
-					self.ModeSetup()
-				elif y == 14 and  x >=1 and x <=40:
-					self.ToggleBeep()
-
-					
-				elif y in (12, 13, 14) and x >=39 and x <=55:
-					# Change charset, encoding, language that text is piped thru
-					if "language" in mucous_config["mucous"]:
-						if mucous_config["mucous"]["language"] in self.encodings:
-							pos = self.encodings.index(mucous_config["mucous"]["language"])
-							pos +=1
-							if pos not in range(len(self.encodings)):
-								pos = 0
-							mucous_config["mucous"]["language"]=self.encodings [pos]
-							self.ModeSetup()
-						else:
-							mucous_config["mucous"]["language"]=self.encodings [0]
-							self.ModeSetup()
-			
-				elif y in (15, 16, 17):
-					if x >=1 and x <=32:
-						# Edit custom URL handler process
-						self.Spl["setup_input"]="custom-url"
-						self.ModeSetup()
-					elif x >=35 and x <=49:
-						# Cycle thru list of URL handlers
-						u = mucous_config["mucous"]["url reader"]
-						if u == 'lynx': u = 'links'
-						elif u == 'links': u = 'elinks'
-						elif u == 'elinks': u = 'firefox'
-						elif u == 'firefox': u = 'custom'
-						elif u == 'custom': u = 'lynx'
-						mucous_config["mucous"]["url reader"] = u
-						self.ModeSetup()
-					elif x >=50 and x <=65:
-						config_manager.update_config()
-						self.Help.Log("status", "Config Saved")
-		except Exception, e:
-			self.Help.Log("debug", "MouseSetup: " +str(e) )
 	
 	## Mouse Coordinates in the Transfers Modes
 	# @param self is mucous
@@ -7859,7 +8378,7 @@ class Mucous(driver.Driver):
 				elif x >= 56 and x < 63:
 					self.RoomsList.Mode()
 				elif x >= 63 and x < 70:
-					self.ModeSetupDefault()
+					self.Setup.Default()
 				elif x >= 70 and x < 76:
 					self.Help.Mode()
 				return
@@ -7897,7 +8416,7 @@ class Mucous(driver.Driver):
 				# Clickable transfer type switcher
 				return self.MouseTransfers(x,y,z,event)
 			elif self.display["mode"] == "setup":
-				return self.MouseSetup(x,y,z,event)
+				return self.Setup.Mouse(x,y,z,event)
 				
 
 			elif self.display["mode"] in ("help", "debug"):
@@ -8230,7 +8749,7 @@ class Mucous(driver.Driver):
 				elif num == "8":
 					self.RoomsList.Mode()
 				elif num == "9":
-					self.ModeSetupDefault()
+					self.Setup.Default()
 				elif num == "10":
 					self.Help.Mode()
 						
@@ -8265,7 +8784,7 @@ class Mucous(driver.Driver):
 				self.ToggleLogging()
 				
 				if self.display["mode"]=="setup":
-					self.ModeSetup()
+					self.Setup.Mode()
 			elif line[:8] == "/logdir ":
 				path = line[8:]
 				if not path.isspace() and path != "":
@@ -8354,7 +8873,7 @@ class Mucous(driver.Driver):
 				self.UsersLists.ModeLists()
 				
 			elif line[:6] == "/setup"   and line[6:] == '':
-				self.ModeSetupDefault()
+				self.Setup.Default()
 				
 				'''
 				CONFIG
@@ -8503,21 +9022,21 @@ class Mucous(driver.Driver):
 					mucous_config["mucous"]["autobuddy"] = "yes"
 					self.Help.Log("status", "AutoBuddy Enabled")
 				if self.display["mode"] == "setup":
-					self.ModeSetup()
+					self.Setup.Mode()
 			elif line == "/autoclear":
 				if str(mucous_config["mucous"]["auto-clear"]) == "yes":
 					mucous_config["mucous"]["auto-clear"] = "no"
 				else:
 					mucous_config["mucous"]["auto-clear"] = "yes"
 				if self.display["mode"] == "setup":
-					self.ModeSetup()
+					self.Setup.Mode()
 			elif line == "/autoretry":
 				if str(mucous_config["mucous"]["auto-retry"]) == "yes":
 					mucous_config["mucous"]["auto-retry"] = "no"
 				else:
 					mucous_config["mucous"]["auto-retry"] = "yes"
 				if self.display["mode"] == "setup":
-					self.ModeSetup()
+					self.Setup.Mode()
 				'''
 				List Users in room
 				'''
@@ -8578,21 +9097,21 @@ class Mucous(driver.Driver):
 					
 			elif line[:6] == "/like ":
 				interest = line[6:]
-				self.InterestLikedAdd(interest)
+				self.Recommendations.LikedAdd(interest)
 					
 			elif line[:6] == "/hate ":
 				interest = line[6:]
-				self.InterestHatedAdd(interest)
+				self.Recommendations.HatedAdd(interest)
 					
 			elif line[:11] == "/donotlike ":
 				interest = line[11:]
 				if interest in self.config["interests.like"]:
-					self.InterestLikedRemove(interest)
+					self.Recommendations.LikedRemove(interest)
 					
 			elif line[:11] == "/donothate ":
 				interest = line[11:]
 				if interest in self.config["interests.hate"]:
-					self.InterestHatedRemove(interest)
+					self.Recommendations.HatedRemove(interest)
 					
 			elif line == "/transbox":
 				if mucous_config["mucous"]["transbox"]=="split":
@@ -8893,7 +9412,7 @@ class Mucous(driver.Driver):
 				elif self.display["password"] == "no":
 					self.display["password"] = "yes"
 				if self.display["mode"] == "setup":
-					self.ModeSetup()
+					self.Setup.Mode()
 			elif line[:10] == "/buddyall":
 				self.Help.Log("status", "Buddying ALL users currently transferring to or from you.")
 				currentusersintransferlist = {}
@@ -9124,87 +9643,7 @@ class Mucous(driver.Driver):
 		except Exception,e:
 			self.Help.Log("debug", "doJoin: " + str(e))
 			
-	## Parse input entry line for interest and match it with Spl["setup_input"]
-	# @param self is mucous
-	# @param line is a text string
-	def InputSetup(self, line):
-		try:
-			if self.Spl["setup_input"] == "interface":
-				line = self.dlang(line)
-				mucous_config["connection"]["interface"] = line
-			elif self.Spl["setup_input"]=="interface-password":
-				line = self.dlang(line)
-				mucous_config["connection"]["passw"] = line
-			elif self.Spl["setup_input"]=="custom-url":
-				line = self.dlang(line)
-				if "$" in line:
-					custom = line.split("$")
-					if len(custom) > 1 and len(custom) < 3:
-						mucous_config["mucous"]["url custom prefix"] = custom[0]
-						mucous_config["mucous"]["url custom suffix"] = custom[1]
-					elif len(custom) == 1:
-						mucous_config["mucous"]["url custom prefix"] = custom[0]
-						mucous_config["mucous"]["url custom suffix"] = ''
-			elif self.Spl["setup_input"]=="museek-interface-password":
-				
-				self.SendMessage(messages.ConfigSet("interfaces", "password", line))
-			elif self.Spl["setup_input"]=="museek-interface-bind":
-				
-				self.SendMessage(messages.ConfigSet("interfaces.bind", line))
-			elif self.Spl["setup_input"]=="server-host":
-				
-				self.SendMessage(messages.ConfigSet("server", "host", line))
-			elif self.Spl["setup_input"]=="server-port":
-				
-				self.SendMessage(messages.ConfigSet("server", "port", line))
-			elif self.Spl["setup_input"]=="soulseek-username":
-				
-				line = self.dlang(line)
-				self.SendMessage(messages.ConfigSet("server", "username", line))
-			elif self.Spl["setup_input"]=="soulseek-password":
-				
-				line = self.dlang(line)
-				self.SendMessage(messages.ConfigSet("server", "password", line))
-			elif self.Spl["setup_input"]=="download-dir":
-				
-				self.SendMessage(messages.ConfigSet("transfers", "download-dir", line))
-			elif self.Spl["setup_input"]=="incomplete-dir":
-				
-				self.SendMessage(messages.ConfigSet("transfers", "incomplete-dir", line))
-			elif self.Spl["setup_input"]=="userinfo":
-				
-				try:
-					if '\\n' in line:
-						line = line.replace('\\n', '\n')
-					self.SendMessage(messages.ConfigSet("userinfo", "text", line))
-				except Exception, e:
-					self.Help.Log("debug", "set userinfo: "+str( e))
-			elif self.Spl["setup_input"]=="userimage":
-				
-				try:
-					self.SendMessage(messages.ConfigSet("userinfo", "image", line))
-				except:
-					pass
-			elif self.Spl["setup_input"]=="adddir":
-				line = self.dlang(line)
-				self.Muscan.Command(["muscan", "-s", line])
-				self.Help.Log("status", "Adding "+line+" to normal shares. Scanning will begin.")
-			elif self.Spl["setup_input"]=="rmdir":
-				line = self.dlang(line)
-				self.Muscan.Command(["muscan", "-u", line])
-				self.Help.Log("status", "Removing "+line+" from normal shares. Please rescan or update.")
-			elif self.Spl["setup_input"]=="addbuddydir":
-				line = self.dlang(line)
-				self.Muscan.Command(["muscan", "-b", "-s", line])
-				self.Help.Log("status", "Adding "+line+" to buddy shares. Scanning will begin.")
-			elif self.Spl["setup_input"]=="rmbuddydir":
-				line = self.dlang(line)
-				self.Muscan.Command(["muscan", "-b", "-u", line])
-				self.Help.Log("status", "Removing "+line+" from buddy shares. Please rescan or update.")
-			self.Spl["setup_input"] = "default"
-			self.ModeSetup()
-		except Exception,e:
-			self.Help.Log("debug", "InputSetup: " + str(e))
+
 				
 	def InputFunctions(self, key, line):
 		try:
@@ -9254,7 +9693,7 @@ class Mucous(driver.Driver):
 				if self.display["mode"] != "roomlist": self.RoomsList.Mode()
 				return
 			elif key == "KEY_F(9)":
-				if self.display["mode"] != "setup": self.ModeSetupDefault()
+				if self.display["mode"] != "setup": self.Setup.Default()
 				return
 			elif key == "KEY_F(10)":
 				if self.display["mode"] not in ("help", "debug", "status") : self.Help.Mode()
@@ -9397,9 +9836,9 @@ class Mucous(driver.Driver):
 							
 				elif self.display["mode"] == "setup":
 					
-					self.display["setup"]  = self.FormatData.RotateList(direction, self.modes["setup"], self.display["setup"], "no" )
+					self.Setup.current  = self.FormatData.RotateList(direction, self.modes["setup"], self.Setup.current, "no" )
 
-					self.ModeSetup()
+					self.Setup.Mode()
 					
 				elif self.display["mode"] == "transfer":
 					# HotKeyBar to switch listing transfer types
@@ -10761,416 +11200,6 @@ class Mucous(driver.Driver):
 			del window
 			
 
-	def ModeSetupDefault(self):
-		try:
-			self.Spl["setup_input"] = "default"
-			self.ModeSetup()
-		except Exception, e:
-			self.Help.Log("debug", "ModeSetupDefault: "+ str(e))
-			
-	def SetupButton(self, title, option, x, y, height, width, optionbold=False, titlepad=True, border=True):
-		try:
-			winborder = curses.newwin(height,width,x,y)
-			if border:
-				winborder.border()
-			if title != None:
-				if titlepad:
-					winborder.addstr(0,1, "< %s >" % title, curses.A_BOLD)
-				else:
-					winborder.addstr(0,1, title, curses.A_BOLD)
-			winborder.noutrefresh()
-			win = winborder.subwin(height-2,width-2,x+1,y+1)
-			win.scrollok(1)
-			if option != None:
-				if optionbold:
-					win.addstr(option, self.colors["cyan"] | curses.A_BOLD)
-				else:
-					win.addstr(option, self.colors["cyan"])
-			win.noutrefresh()
-			del win
-			del winborder
-		except Exception,e:
-			self.Help.Log("debug", "SetupButton: "+title+" "+ str(e))
-			
-	def SetupCheck(self, title, option, x, y, height, width, titlebold=False, toggle=False):
-		try:
-			enabled = "[x]"
-			disabled = "[ ]"
-			selected = "(*)"
-			notselected = "( )"
-			
-			win = curses.newwin(height,width,x,y)
-			win.erase()
-			if option in ("True", "true", "yes"):
-				if toggle:
-					z = selected
-				else:
-					z = enabled
-			else:
-				if toggle:
-					z = notselected
-				else:
-					z = disabled
-			win.addstr(z+" ", self.colors["cyan"])
-			if title != None:
-				if titlebold:
-					win.addstr(title,  curses.A_BOLD)
-				else:
-					win.addstr(title)
-			win.noutrefresh()
-			
-			del win
-
-		except Exception,e:
-			self.Help.Log("debug", "SetupButton: "+title+" "+ str(e))
-			
-	def ModeSetup(self):
-		
-		self.display["mode"] = "setup"
-		self.PopupMenu.show = False
-		try:
-			# Cleanup stale windows
-			if "setup" in self.windows["border"]:
-				del self.windows["border"]["setup"]
-				
-			w = self.windows["dimensions"]["setup"] = {"height": self.h-5, "width": self.w, "top": 1, "left": 0}	
-			mw = self.windows["border"]["setup"] = curses.newwin(w["height"], w["width"], w["top"], w["left"])
-			mw.erase()
-			mw.border()
-			mw.addstr(w["height"]-1, 2, "< Use the mouse, if possible. Otherwise: /help setup >")
-
-			if self.display["setup"] == "mucous":
-				self.set_edit_title("Mucous Setup")
-				try:
-					mw.addstr(0, 1, "< Mucous >",  curses.A_BOLD)
-					mw.addstr(0, 15, "< Museek >")
-					mw.addstr(0, 30, "< Shares >")
-					mw.addstr(0, 45, "< Userinfo >")
-					mw.addstr(0, 60, "< Logs >")
-				except:
-					pass
-			elif self.display["setup"] == "museek":
-				try:
-					mw.addstr(0, 1, "< Mucous >")
-					mw.addstr(0, 15, "< Museek >",  curses.A_BOLD)
-					mw.addstr(0, 30, "< Shares >")
-					mw.addstr(0, 45, "< Userinfo >")
-					mw.addstr(0, 60, "< Logs >")
-				except:
-					pass
-			elif self.display["setup"] == "shares":
-				try:
-					mw.addstr(0, 1, "< Mucous >")
-					mw.addstr(0, 15, "< Museek >")
-					mw.addstr(0, 30, "< Shares >",  curses.A_BOLD)
-					mw.addstr(0, 45, "< Userinfo >")
-					mw.addstr(0, 60, "< Logs >")
-				except:
-					pass
-			elif self.display["setup"] == "userinfo":
-				try:
-					mw.addstr(0, 1, "< Mucous >")
-					mw.addstr(0, 15, "< Museek >")
-					mw.addstr(0, 30, "< Shares >")
-					mw.addstr(0, 45, "< Userinfo >",  curses.A_BOLD)
-					mw.addstr(0, 60, "< Logs >")
-				except:
-					pass
-			elif self.display["setup"] == "logs":
-				try:
-					mw.addstr(0, 1, "< Mucous >")
-					mw.addstr(0, 15, "< Museek >")
-					mw.addstr(0, 30, "< Shares >")
-					mw.addstr(0, 45, "< Userinfo >")
-					mw.addstr(0, 60, "< Logs >",  curses.A_BOLD)
-				except:
-					pass
-			si = self.Spl["setup_input"]
-			if si == "default":
-				self.set_edit_title("Setup Mode")
-			elif si == "interface":
-				self.set_edit_title("Set Interface")
-			elif si == "custom-url":
-				self.set_edit_title("Set custom URL handler: command$command")
-			elif si == "interface-password":
-				self.set_edit_title("Set Mucous's Interface password")
-			elif si == "museek-interface-password":
-				self.set_edit_title("Set Museek's Interface password")
-			elif si == "museek-interface-bind":
-				self.set_edit_title("Add a Museek Interface")
-			elif si == "server-host":
-				self.set_edit_title("Set Server Address")
-			elif si == "server-port":
-				self.set_edit_title("Set Server Port")
-			elif si == "soulseek-username":
-				self.set_edit_title("Set Soulseek Username")
-			elif si == "soulseek-password":
-				self.set_edit_title("Set Soulseek Password")
-			elif si == "slots":
-				self.set_edit_title("Set Number of Upload Slots to:")
-			elif si == "download-dir":
-				self.set_edit_title("Set completed download directory")
-			elif si == "incomplete-dir":
-				self.set_edit_title("Set incompleted download directory")
-			elif si == "userinfo":
-				self.set_edit_title("Set UserInfo")
-			elif si == "userimage":
-				self.set_edit_title("Set UserImage")
-			elif si == "adddir":
-				self.set_edit_title("Add directory to your normal shares")
-			elif si == "rmdir":
-				self.set_edit_title("Remove directory from your normal shares")
-			elif si == "addbuddydir":
-				self.set_edit_title("Add directory to your buddy shares")
-			elif si == "rmbuddydir":
-				self.set_edit_title("Remove directory from your buddy shares")
-			mw.noutrefresh()
-			# Create buttons, settings and immediately Delete them to aviod leaks
-			if self.display["setup"] in ("shares"):
-				# First Row
-				self.SetupButton("Normal", "List Shared", 3,1,3,16)
-				self.SetupButton(None, "Add Directory", 3,17,3,16)
-				self.SetupButton(None, "Remove Dir", 3,33,3,16)
-				self.SetupButton(None, "Click on the buttons to run the local muscan.\nWhen you click on Add/Remove Directory, type in the directory below, and start with '//' instead of just a '/'", 2,49,10,self.w-50)
-				# Second Row
-				self.SetupButton(None, "Rescan Shares",6,1,3,16)
-				self.SetupButton(None, "Update Shares", 6,17,3,16)
-				
-				# Third Row
-				self.SetupButton("Buddy-only", "List Shared", 9,1,3,16)
-				self.SetupButton(None, "Add Directory", 9,17,3,16)
-				self.SetupButton(None, "Remove Dir", 9,33,3,16)
-				
-				# Fourth Row
-				self.SetupButton(None, "Rescan Shares", 12,1,3,16)
-				self.SetupButton(None, "Update Shares", 12,17,3,16)
-				self.SetupButton(None, "Reload Shares", 12,49,3,16, optionbold=True)
-				
-				museekconfigfile = self.Spl["museekconfigfile"]
-				# Fifth Row
-				self.SetupButton("Museek Config File", museekconfigfile[:self.w-2], 15,1,3,self.w-2)
-			elif self.display["setup"] in ("userinfo"):
-				info = ""
-				if "userinfo" in self.config.keys():
-					if "text" in self.config["userinfo"]:
-						info = self.config["userinfo"]["text"]
-						#for line in self.config["userinfo"]["text"]:
-							#info += line.decode(mucous_config["mucous"]["language"], "replace") +"\n"
-				
-				self.SetupButton("Your Userinfo", info, 2,1,self.h-8,self.w-2)
-				
-				inputimage = curses.newwin(1,13,self.h-6,1)
-				inputimage.erase()
-				inputimage.addstr( "Your Image: ")
-				inputimage.noutrefresh()
-				
-				if "userinfo" in self.config.keys():
-					if "image" in self.config["userinfo"]:
-						inputimage2 = curses.newwin(1,self.w-2-14,self.h-6,14)
-						inputimage2.erase()
-						inputimage2.scrollok(1)
-						inputimage2.addstr( str(self.config["userinfo"]["image"][:self.w-3-14]))
-						inputimage2.noutrefresh()
-				del inputimage2
-				del inputimage
-			elif self.display["setup"] in ("logs"):
-				self.SetupCheck("Log Chat messages? ", mucous_config["mucous"]["logging"],2,1,1,30, True)
-				
-				self.SetupButton("Log Directory", os.path.expanduser(mucous_config["mucous"]["log_dir"])[:37], 5,1,3,self.w-2)
-				
-
-			elif self.display["setup"] == "mucous":
-				# Interface
-				interface =""
-				if "connection" in mucous_config:
-					interface = self.dlang( mucous_config["connection"]["interface"][:28] )
-				
-				self.SetupButton("Museek Interface", interface ,2,1, 3,32)
-				
-				
-				if "connection" in mucous_config:
-					if self.display["password"]=="yes":
-						password = self.dlang( str(mucous_config["connection"]["passw"]) )
-					else:
-						password = '*********'
-				else:
-					password = "NOT set"
-					
-				self.SetupButton("Interface Password", password, 5,1,3,32)
-				
-				bwin = curses.newwin(6,22,2,33)
-				bwin.border()
-				try:
-					bwin.addstr(0, 1, "< Stats >",  curses.A_BOLD)
-				except:
-					pass
-				bwin.noutrefresh()
-				inbwin1_1 = bwin.subwin(1,20,3,34)
-				inbwin1_2 = bwin.subwin(1,20,4,34)
-				inbwin1_3 = bwin.subwin(1,20,5,34)
-				inbwin1_4 = bwin.subwin(1,20,6,34)
-				inbwin1_1.scrollok(1)
-				inbwin1_2.scrollok(1)
-				inbwin1_3.scrollok(1)
-				inbwin1_4.scrollok(1)
-				if self.data["mystats"] != []:
-					try:
-						inbwin1_1.addstr("Files: "+str(self.data["mystats"][3]), self.colors["cyan"] )
-						inbwin1_2.addstr("Dirs: "+str(self.data["mystats"][4]), self.colors["cyan"] )
-						inbwin1_3.addstr("Downloads: "+str(self.data["mystats"][2]), self.colors["cyan"] )
-						inbwin1_4.addstr("Speed: "+str(self.data["mystats"][1]/1024)+"KB/s", self.colors["cyan"] )
-						#self.data["mystats"] = user,  avgspeed, numdownloads, numfiles, numdirs
-					except:
-						pass
-				else:
-					if self.usernames["username"] != None:
-						self.SendMessage(messages.PeerStats(self.usernames["username"]))
-				inbwin1_1.noutrefresh()
-				inbwin1_2.noutrefresh()
-				inbwin1_3.noutrefresh()
-				inbwin1_4.noutrefresh()
-				del inbwin1_1
-				del inbwin1_2
-				del inbwin1_3
-				del inbwin1_4 
-				del bwin
-				
-				self.SetupCheck("Show Tickers:         /showtickers", mucous_config["tickers"]["tickers_enabled"] ,8,1,1,45, True)
-
-				self.SetupCheck("Cycle Tickers:        /tickers", mucous_config["tickers"]["ticker_cycle"] ,9,1,1,45, True, True)
-				self.SetupCheck("Scroll Tickers:       /tickers", mucous_config["tickers"]["ticker_scroll"] ,10,1,1,45, True, True)
-				self.SetupCheck("Auto-clear Transfers: /autoclear", mucous_config["mucous"]["auto-clear"],11,1,1,45, True)
-
-				self.SetupCheck("Auto-retry Transfers: /autoretry", mucous_config["mucous"]["auto-retry"],12,1, 1,45, True)
-
-				self.SetupCheck("Auto-Buddy downloads: /autobuddy", mucous_config["mucous"]["autobuddy"],13,1,1,45, True)
-				
-				self.SetupCheck("Beep:                 /beep", mucous_config["mucous"]["beep"],14,1,1,45, True)
-				self.SetupButton("< Ticker Time >", " -  %.2f +\n -  %.2f +" % ( float(mucous_config["tickers"]["cycletime"]), float(mucous_config["tickers"]["scrolltime"])), 8,39, 4,16, False, False)
-				# Minimum Room size for Roomlist
-				
-				self.SetupButton("<Min Roomlist>", " -  "+str(mucous_config["mucous"]["roomlistminsize"])+" +", 8,55, 3,16, False, False)
-
-				self.SetupButton("Encoding", mucous_config["mucous"]["language"], 12,39,3,16)
-				
-				# Custom URL
-				prefix =""
-				if "url custom prefix" in mucous_config["mucous"] and "url custom suffix" in mucous_config["mucous"]:
-					prefix = self.dlang(mucous_config["mucous"]["url custom prefix"])+"$"+self.dlang(mucous_config["mucous"]["url custom suffix"])
-				self.SetupButton("Custom URL Reader", prefix,15,1,3,32, optionbold=True)
-				self.SetupButton("URL Reader", self.dlang(mucous_config["mucous"]["url reader"]), 15,33,3,16)
-
-
-				# Save button
-				self.SetupButton(None, " Save Config", 15,49,3,16, True)
-				
-
-
-
-			elif self.display["setup"] == "museek":
-				# Server
-				bw = curses.newwin(5,38,2,1)
-				bw.border()
-				bw.addstr(0, 1, "< Server >",  curses.A_BOLD)
-					
-				bw.noutrefresh()
-				inbw = bw.subwin(1,36,3,2)
-				inbw.scrollok(1)
-				inbw.addstr("Host: ")
-				if "server" in self.config:
-					try:
-						inbw.addstr(self.dlang( self.config["server"]["host"][:22] )+":"+self.config["server"]["port"], self.colors["cyan"] )
-					except:
-						pass
-				inbw.noutrefresh()
-				del inbw
-				
-	
-				
-				inusernamewin2 = bw.subwin(1,36,4,2)
-				inusernamewin2.scrollok(1)
-				inusernamewin2.addstr("Name: ")
-				if "server" in self.config:
-					a = self.dlang(self.config["server"]["username"])
-					try:
-						inusernamewin2.addstr(a, self.colors["cyan"])
-					except:
-						pass
-
-				inusernamewin2.noutrefresh()
-				del inusernamewin2
-
-				inifacepasswin = bw.subwin(1,36,5,2)
-				inifacepasswin.addstr("Pass: ")
-				if self.display["password"]=="yes":
-					if "server" in self.config:
-						inifacepasswin.addstr(self.dlang( self.config["server"]["password"] ), self.colors["cyan"])
-						
-				else:
-					if "server" in self.config:
-						inifacepasswin.addstr("*********", self.colors["cyan"])
-				inifacepasswin.noutrefresh()
-				del inifacepasswin
-				del bw
-	
-				ifacepasswin = curses.newwin(3,26,2,39)
-				ifacepasswin.border()
-				ifacepasswin.addstr(0, 1, "< Interface Password >",  curses.A_BOLD)
-
-				ifacepasswin.noutrefresh()
-				inifacepasswin = ifacepasswin.subwin(1,24,3,40)
-				inifacepasswin.scrollok(1)
-				if "interfaces" in self.config:
-					if self.display["password"]=="yes":
-						try:
-							inifacepasswin.addstr(self.dlang( self.config["interfaces"]["password"] ), self.colors["cyan"])
-						except:
-							pass
-					else:
-						inifacepasswin.addstr("*********", self.colors["cyan"])
-				inifacepasswin.noutrefresh()
-				del inifacepasswin
-
-				#------------------------
-
-				self.SetupCheck("Share to Buddies-Only", self.config["transfers"]["only_buddies"],8,1,1,30, True)
-
-				self.SetupCheck("Buddies get Privileges", self.config["transfers"]["privilege_buddies"],9,1,1,30, True)
-
-				self.SetupCheck("Enable Buddy-Only shares",self.config["transfers"]["have_buddy_shares"],10,1,1,30, True)
-
-				self.SetupCheck("Allow Trusted users to send you files",self.config["transfers"]["trusting_uploads"],11,1,1,self.w-3, True)
-
-				self.SetupCheck("Send automatic warnings via Private Chat",self.config["transfers"]["user_warnings"],12,1,1,self.w-3, True)
-
-				self.SetupButton("<Connections >", self.config["clients"]["connectmode"],5,49,3,16, True, False)
-
-				self.SetupButton("<Upload Slots>", " - " + self.config["transfers"]["upload_slots"]+ " +", 8,49,3,16, True, False)
-
-				dirwin = curses.newwin(4,self.w-2,13,1)
-				dirwin.border()
-				dirwin.addstr(0, 1, "< Download/Incomplete Directories >",  curses.A_BOLD)
-				dirwin.noutrefresh()
-				dircompletewin = dirwin.subwin(1,self.w-4,14,2)
-				try:
-					dircompletewin.addstr(self.dlang(self.config["transfers"]["download-dir"]), self.colors["cyan"])
-				except: pass
-				dircompletewin.noutrefresh()
-				dirincompletewin = dirwin.subwin(1,self.w-4,15,2)
-				try:
-					dirincompletewin.addstr(self.dlang(self.config["transfers"]["incomplete-dir"]), self.colors["cyan"])
-				except: pass
-				dirincompletewin.noutrefresh()
-				del dirincompletewin
-				del dircompletewin
-				del dirwin
-				
-
-		except Exception, e:
-			self.Help.Log("debug", "ModeSetup: " + str(e) )
-		self.ModeTopbar()
-		self.HotKeyBar()
-		curses.doupdate()
 	# TOPBAR MODE
 	
 	
