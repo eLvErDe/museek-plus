@@ -604,11 +604,11 @@ class PopupMenu:
 			elif mode == "search":
 				this_list = self.mucous.activeitems["search"]
 			elif mode  == "browse":
-				if self.mucous.usernames["browse"] != "default__":
-					if self.mucous.display["browse"] == "files":
-						this_list = self.mucous.data["files"]
-					elif self.mucous.display["browse"] == "directories":
-						this_list = self.mucous.data["directories"]
+				if self.mucous.BrowseShares.current != None:
+					if self.mucous.BrowseShares.selected == "files":
+						this_list = self.mucous.BrowseShares.files
+					elif self.mucous.BrowseShares.selected == "directories":
+						this_list = self.mucous.BrowseShares.dirs
 				
 			return this_list
 		except Exception, e:
@@ -792,20 +792,23 @@ class PopupMenu:
 				items = [ ["Download", "download"], ["Download Dir", "downdir"], ["Display Full Path", "displaypath"], ["", "line"], ["Private Message", "all"], ["Userinfo", "all"], ["IP Address", "all"], ["Browse", "all"], ["", "line"], ["Buddy", "buddies"], ["Ban", "banned"], ["Ignore", "ignored"], ["Trusted", "trusted"], ["Give Privileges", "giveprivs"]]
 				height = len(items) + 2	
 			elif menu == "browse-dirs":
-				mode = "browsedir"
+				mode = "directories"
 				left = 23; top = 5; width = 20
 				#number = this_list[self.scrolling[mode]-self.windows["dimensions"]["directories"]["start"]]
 				title = "Directory" 
-				name = self.mucous.usernames["browse"]
+				name = self.mucous.BrowseShares.current
 				
 				items = [ ["Download Dir", "downdir"], ["Display Full Path", "displaypath"], ["", "line"], ["Private Message", "all"], ["Userinfo", "all"], ["IP Address", "all"], ["Refresh Shares", "all"], ["", "line"], ["Buddy", "buddies"], ["Ban", "banned"], ["Ignore", "ignored"], ["Trusted", "trusted"],  ["Give Privileges", "giveprivs"]]
 				height = len(items) + 2	
 			elif menu == "browse-files":	
-				mode = "browsefile"
+				mode = "files"
 				left = 2; top = 5; width = 20
-				number =self.mucous.scrolling[mode] + 1 #self.windows["dimensions"]["browse"]["start"]+1
-				title = "File"
-				name = self.mucous.usernames["browse"]
+				number = self.mucous.BrowseShares.scrolling[mode] + 1 #self.windows["dimensions"]["browse"]["start"]+1
+				title = " File "
+				name = self.mucous.BrowseShares.current
+				dir = self.mucous.BrowseShares.current_dir
+				#print self.mucous.BrowseShares.files[number-1]
+				#title = self.mucous.BrowseShares.files[number -1]
 				
 				items = [ ["Download", "download"], ["Download Dir", "downdir"], ["Display Full Path", "displaypath"], ["", "line"], ["Private Message", "all"], ["Userinfo", "all"], ["IP Address", "all"], ["Browse", "all"], ["", "line"], ["Buddy", "buddies"], ["Ban", "banned"], ["Ignore", "ignored"], ["Trusted", "trusted"], ["Give Privileges", "giveprivs"]]
 				height = len(items) + 2	
@@ -815,8 +818,8 @@ class PopupMenu:
 				title = "Encoding"
 				
 				if self.mucous.display["mode"] == "browse":
-					if self.mucous.usernames["browse"] != "default__":
-						name = self.mucous.usernames["browse"]
+					if self.mucous.BrowseShares.current != None:
+						name = self.mucous.BrowseShares.current
 					else:
 						name = "Filesystem"
 				elif self.mucous.display["mode"] == "chat":
@@ -862,136 +865,225 @@ class PopupMenu:
 		except Exception, e:
 			self.mucous.Help.Log("debug", "PopupMenu.Create " +str(e))
 
-
+	def ExecuteEncodingsMenu(self):
+		if self.position == 0: coding = "UTF-8"
+		elif self.position == 1: coding = "iso-8859-1"  
+		elif self.position == 2: coding = "iso-8859-2"  
+		elif self.position == 3: coding = "iso-8859-3"  
+		elif self.position == 4: coding = "iso-8859-4"  
+		elif self.position == 5: coding = "iso-8859-5"  
+		elif self.position == 6: coding = "iso-8859-6"  
+		elif self.position == 7: coding = "iso-8859-7" 
+		elif self.position == 8: coding = "iso-8859-8"  
+		elif self.position == 9: coding = "iso-8859-9"  
+		elif self.position == 10: coding = "iso-8859-10"  
+		elif self.position == 11: coding = "iso-8859-11"  
+		elif self.position == 12: coding = "iso-8859-13" 
+		elif self.position == 13: coding = "iso-8859-14" 
+		elif self.position == 14: coding = "iso-8859-15"  
+		elif self.position == 15: coding = "iso-8859-16" 
+		elif self.position == 16: coding = "KIO8-R" 
+		elif self.position == 17: coding = "CP1250" 
+		elif self.position == 18: coding = "CP1251" 
+		elif self.position == 19: coding = "CP1252" 
+		elif self.position == 20: coding = "CP1253" 
+		elif self.position == 21: coding = "CP1254" 
+		elif self.position == 22: coding = "CP1255" 
+		elif self.position == 23: coding = "CP1256" 
+		elif self.position == 24: coding = "CP1257" 
+		elif self.position == 25: coding = "CP1258"
+		elif self.position == 26: coding = "CP874" 
+		#self.Help.Log("debug", coding)
+		if self.mucous.display["mode"] == "chat":
+			self.mucous.SendMessage(messages.ConfigSet("encoding.rooms", self.mucous.Spl["room"], coding))
+		elif self.mucous.display["mode"] == "private":
+			self.mucous.SendMessage(messages.ConfigSet("encoding.users", self.mucous.PrivateChat.current, coding))
+		elif self.mucous.display["mode"] == "browse":
+			if self.mucous.BrowseShares.current != None:
+				self.mucous.SendMessage(messages.ConfigSet("encoding.users", self.mucous.BrowseShares.current, coding))
+			else:
+				self.mucous.SendMessage(messages.ConfigSet("encoding", "filesystem", coding))
+		return 0
+			
 	## Call functions associated with the menu item and the list item the menu is connected to
 	# @param self PopupMenu
 	def Execute(self):
 		try:
-			
-			if self.current in ("roombox", "lists", "transfers", "search", "browse-dirs", "browse-files"):
-				if self.current == "roombox":
-					mode = "roombox"
-					username = self.mucous.logs["roombox"][self.mucous.Spl["room"]][self.mucous.scrolling[mode]]
-				elif self.current == "lists":
-					mode = self.mucous.display["list"]
-					username = self.List()[self.mucous.scrolling[mode]][1]
-				elif self.current == "transfers":
-					mode = self.mucous.display["transfers"]
-					the_list = self.List()
-					item_num = self.mucous.scrolling[mode]
-					username = the_list[item_num][1] 
+			## ENCODINGS
+			if self.current == "encoding":
+				return self.ExecuteEncodingsMenu()
 					
-					path = the_list[item_num][2]
-					userpath = (username, path)
-					transfer = self.mucous.get_transfer_number(the_list)
-					if transfer == None:
-						return
-					if self.position == 0:
-						# RETRY DOWNLOAD
-						
-						if self.mucous.display["transfers"] != "downloads":
-							return 1
+			## The rest of the popup menus
+			
+			if self.current not in ("roombox", "lists", "transfers", "search", "browse-dirs", "browse-files"):
+				return 0
+			if self.current == "roombox":
+				mode = "roombox"
+				username = self.mucous.logs["roombox"][self.mucous.Spl["room"]][self.mucous.scrolling[mode]]
+			elif self.current == "lists":
+				mode = self.mucous.display["list"]
+				username = self.List()[self.mucous.scrolling[mode]][1]
+			elif self.current == "transfers":
+				mode = self.mucous.display["transfers"]
+				the_list = self.List()
+				item_num = self.mucous.scrolling[mode]
+				username = the_list[item_num][1] 
+				
+				path = the_list[item_num][2]
+				userpath = (username, path)
+				transfer = self.mucous.get_transfer_number(the_list)
+				if transfer == None:
+					return
+				if self.position == 0:
+					# RETRY DOWNLOAD
+					
+					if self.mucous.display["transfers"] != "downloads":
+						return 1
+					if transfer in self.mucous.data["downloads"].keys():
+						for username, path in self.mucous.data["downloads"][transfer].items():
+							self.mucous.Help.Log("status", "Retrying download: [%s] %s" % (username, path))
+							self.mucous.SendMessage(messages.DownloadFile(username, path))
+					else:
+						self.mucous.Help.Log("status", "No such transfer #" + str(transfer))
+					return 0
+				elif self.position == 1:
+					# RETRY ALL DOWNLOADS
+					if self.mucous.display["transfers"] != "downloads":
+						return 1
+					for user_path, transfer  in self.mucous.transfers["downloads"].items():
+						if int(transfer[3]) in (10, 11, 12, 13, 14):
+							self.mucous.SendMessage(messages.DownloadFile(transfer[1], transfer[2]))
+					return 0
+				elif self.position == 2:
+					# ABORT TRANSFER
+					if self.mucous.display["transfers"] == "downloads":
 						if transfer in self.mucous.data["downloads"].keys():
 							for username, path in self.mucous.data["downloads"][transfer].items():
-								self.mucous.Help.Log("status", "Retrying download: [%s] %s" % (username, path))
-								self.mucous.SendMessage(messages.DownloadFile(username, path))
+								self.mucous.Help.Log("status", "Aborting download: [%s] %s" % (username, path))
+								self.mucous.SendMessage(messages.TransferAbort(0, username, path))
 						else:
 							self.mucous.Help.Log("status", "No such transfer #" + str(transfer))
+					elif self.mucous.display["transfers"] == "uploads":
+						if transfer in self.mucous.data["uploads"].keys():
+							for username, path in self.mucous.data["uploads"][transfer].items():
+								self.mucous.Help.Log("status", "Aborting upload: [%s] %s" % (username, path))
+								self.mucous.SendMessage(messages.TransferAbort(1, username, path))
+						else:
+							self.mucous.Help.Log("status", "No such transfer #" + str(transfer))
+					return 0
+				elif self.position == 3:
+					# ABORT USER's TRANSFER(s)
+					if self.mucous.display["transfers"] == "downloads":
+						for userpath, values in self.mucous.transfers["downloads"].items():
+							if userpath[0] == username:
+								self.mucous.Help.Log("status", "Aborting download: [%s] %s" % (username, values[2]))
+								self.mucous.SendMessage(messages.TransferAbort(0, username, values[2]))
+
+					elif self.mucous.display["transfers"] == "uploads":
+						for userpath, values in self.mucous.transfers["uploads"].items():
+							if userpath[0] == username:
+								self.mucous.Help.Log("status", "Aborting upload: [%s] %s" % (username, values[2]))
+								self.mucous.SendMessage(messages.TransferAbort(1, username, values[2]))
+
+					return 0
+				elif self.position == 4:
+					# Clear
+					if self.mucous.display["transfers"] == "downloads":
+						if transfer in self.mucous.data["downloads"].keys():
+							for username, path in self.mucous.data["downloads"][transfer].items():
+								self.mucous.Help.Log("status", "Removing download: [%s] %s" % (username, path))
+								self.mucous.SendMessage(messages.TransferRemove(0, username, path))
+						else:
+							self.mucous.Help.Log("status", "No such transfer #" + str(transfer))
+						
+					elif self.mucous.display["transfers"] == "uploads":
+						if transfer in self.mucous.data["uploads"].keys():
+							for username, path in self.mucous.data["uploads"][transfer].items():
+								self.mucous.Help.Log("status", "Removing upload: [%s] %s" % (username, path))
+								self.mucous.SendMessage(messages.TransferRemove(1, username, path))
+						else:
+							self.mucous.Help.Log("status", "No such transfer #" + str(transfer))
+					return 0
+				elif self.position == 5:
+					# Clear ALL FINISHED/FAILED
+					if self.mucous.display["transfers"] == "downloads":
+						for userpath, values in self.mucous.transfers["downloads"].items():
+							if values[3] == 0:
+								self.mucous.SendMessage(messages.TransferRemove(0, values[1], values[2]))
+					elif self.mucous.display["transfers"] == "uploads":
+						for userpath, values in self.mucous.transfers["uploads"].items():
+							if values[3] in (0, 10, 11, 12, 13, 14):
+								self.mucous.SendMessage(messages.TransferRemove(1, values[1], values[2]))
+					return 0
+				elif self.position == 6:
+					# Clear USER's Transfers
+					if self.mucous.display["transfers"] == "downloads":
+						for userpath, values in self.mucous.transfers["downloads"].items():
+							if userpath[0] == username:
+								self.mucous.SendMessage(messages.TransferRemove(0, values[1], values[2]))
+					elif self.mucous.display["transfers"] == "uploads":
+						for userpath, values in self.mucous.transfers["uploads"].items():
+							if userpath[0] == username:
+								self.mucous.SendMessage(messages.TransferRemove(1, values[1], values[2]))
+					return 0
+				elif self.position == 7:
+					return 1
+				else:
+					self.position -=8
+			elif self.current == "search":
+				the_list = self.List()
+				mode = "search"
+				number = the_list[self.mucous.Search.scrolling-self.mucous.Search.dimensions["start"]]
+				#self.Help.Log("status", number)
+				username = self.mucous.data["search_results"][number][1]
+				path = self.mucous.data["search_results"][number][5]
+				
+				userpath = (username, path)
+				
+				if self.position == 0:
+					# Download
+					self.mucous.download_path_file("file", number)
+					return 0
+				elif self.position == 1:
+					# Download Dir
+					self.mucous.download_path_file("dir", number)
+					return 0
+				elif self.position == 2:
+					self.mucous.Help.Log("status", "[%d] %s" % (number, path))
+					return 0
+				elif self.position == 3:
+					# Line
+					return 1
+				else:
+					self.position -= 4
+			elif self.current in ("browse-dirs", "browse-files"):
+				the_list = self.List()
+				username = self.mucous.BrowseShares.current
+
+				
+				
+				if self.mucous.BrowseShares.selected == "directories":
+					user, directory = self.mucous.BrowseShares.CurrentDir()
+					#path = self.mucous.BrowseShares.current_dir
+					userpath = (user, directory)
+					mode = "directories"
+					number = self.mucous.BrowseShares.scrolling[mode]-self.mucous.BrowseShares.dimensions["directories"]["start"]
+					if self.position == 0:
+						# Download
+						self.mucous.download_path_file("dir", number)
 						return 0
 					elif self.position == 1:
-						# RETRY ALL DOWNLOADS
-						if self.mucous.display["transfers"] != "downloads":
-							return 1
-						for user_path, transfer  in self.mucous.transfers["downloads"].items():
-							if int(transfer[3]) in (10, 11, 12, 13, 14):
-								self.mucous.SendMessage(messages.DownloadFile(transfer[1], transfer[2]))
+						self.mucous.Help.Log("status", "[%d] %s" % (number, directory))
 						return 0
-					elif self.position == 2:
-						# ABORT TRANSFER
-						if self.mucous.display["transfers"] == "downloads":
-							if transfer in self.mucous.data["downloads"].keys():
-								for username, path in self.mucous.data["downloads"][transfer].items():
-									self.mucous.Help.Log("status", "Aborting download: [%s] %s" % (username, path))
-									self.mucous.SendMessage(messages.TransferAbort(0, username, path))
-							else:
-								self.mucous.Help.Log("status", "No such transfer #" + str(transfer))
-						elif self.mucous.display["transfers"] == "uploads":
-							if transfer in self.mucous.data["uploads"].keys():
-								for username, path in self.mucous.data["uploads"][transfer].items():
-									self.mucous.Help.Log("status", "Aborting upload: [%s] %s" % (username, path))
-									self.mucous.SendMessage(messages.TransferAbort(1, username, path))
-							else:
-								self.mucous.Help.Log("status", "No such transfer #" + str(transfer))
-						return 0
-					elif self.position == 3:
-						# ABORT USER's TRANSFER(s)
-						if self.mucous.display["transfers"] == "downloads":
-							for userpath, values in self.mucous.transfers["downloads"].items():
-								if userpath[0] == username:
-									self.mucous.Help.Log("status", "Aborting download: [%s] %s" % (username, values[2]))
-									self.mucous.SendMessage(messages.TransferAbort(0, username, values[2]))
-	
-						elif self.mucous.display["transfers"] == "uploads":
-							for userpath, values in self.mucous.transfers["uploads"].items():
-								if userpath[0] == username:
-									self.mucous.Help.Log("status", "Aborting upload: [%s] %s" % (username, values[2]))
-									self.mucous.SendMessage(messages.TransferAbort(1, username, values[2]))
-	
-						return 0
-					elif self.position == 4:
-						# Clear
-						if self.mucous.display["transfers"] == "downloads":
-							if transfer in self.mucous.data["downloads"].keys():
-								for username, path in self.mucous.data["downloads"][transfer].items():
-									self.mucous.Help.Log("status", "Removing download: [%s] %s" % (username, path))
-									self.mucous.SendMessage(messages.TransferRemove(0, username, path))
-							else:
-								self.mucous.Help.Log("status", "No such transfer #" + str(transfer))
-							
-						elif self.mucous.display["transfers"] == "uploads":
-							if transfer in self.mucous.data["uploads"].keys():
-								for username, path in self.mucous.data["uploads"][transfer].items():
-									self.mucous.Help.Log("status", "Removing upload: [%s] %s" % (username, path))
-									self.mucous.SendMessage(messages.TransferRemove(1, username, path))
-							else:
-								self.mucous.Help.Log("status", "No such transfer #" + str(transfer))
-						return 0
-					elif self.position == 5:
-						# Clear ALL FINISHED/FAILED
-						if self.mucous.display["transfers"] == "downloads":
-							for userpath, values in self.mucous.transfers["downloads"].items():
-								if values[3] == 0:
-									self.mucous.SendMessage(messages.TransferRemove(0, values[1], values[2]))
-						elif self.mucous.display["transfers"] == "uploads":
-							for userpath, values in self.mucous.transfers["uploads"].items():
-								if values[3] in (0, 10, 11, 12, 13, 14):
-									self.mucous.SendMessage(messages.TransferRemove(1, values[1], values[2]))
-						return 0
-					elif self.position == 6:
-						# Clear USER's Transfers
-						if self.mucous.display["transfers"] == "downloads":
-							for userpath, values in self.mucous.transfers["downloads"].items():
-								if userpath[0] == username:
-									self.mucous.SendMessage(messages.TransferRemove(0, values[1], values[2]))
-						elif self.mucous.display["transfers"] == "uploads":
-							for userpath, values in self.mucous.transfers["uploads"].items():
-								if userpath[0] == username:
-									self.mucous.SendMessage(messages.TransferRemove(1, values[1], values[2]))
-						return 0
-					elif self.position == 7:
-						return 1
 					else:
-						self.position -=8
-				elif self.current == "search":
-					the_list = self.List()
-					mode = "search"
-					number = the_list[self.mucous.Search.scrolling-self.mucous.Search.dimensions["start"]]
-					#self.Help.Log("status", number)
-					username = self.mucous.data["search_results"][number][1]
-					path = self.mucous.data["search_results"][number][5]
-					
-					userpath = (username, path)
-					
+						self.position -= 2
+				if self.mucous.BrowseShares.selected == "files":
+					user, path = self.mucous.BrowseShares.CurrentFile()
+					#path = self.mucous.BrowseShares.scrolling["files"]
+					userpath = (user, path)
+					mode = "files"
+					number = self.mucous.BrowseShares.scrolling[mode]
+					file = self.mucous.BrowseShares.files[number]
 					if self.position == 0:
 						# Download
 						self.mucous.download_path_file("file", number)
@@ -1000,139 +1092,61 @@ class PopupMenu:
 						# Download Dir
 						self.mucous.download_path_file("dir", number)
 						return 0
+				
 					elif self.position == 2:
-						self.mucous.Help.Log("status", "[%d] %s" % (number, path))
+						self.mucous.Help.Log("status", "[%d] %s" % (number+1, file))
 						return 0
-					elif self.position == 3:
-						# Line
-						return 1
 					else:
-						self.position -= 4
-				elif self.current in ("browse-dirs", "browse-files"):
-					the_list = self.List()
-					username = self.mucous.usernames["browse"]
+						self.position -= 3
 
-					path = self.mucous.Spl["dir_browse"]
-					
-					userpath = (username, path)
-					
-					if self.mucous.display["browse"] == "directories":
-						mode = "browsedir"
-						number = self.mucous.scrolling[mode]-self.mucous.windows["dimensions"]["directories"]["start"]
-						if self.position == 0:
-							# Download
-							self.mucous.download_path_file("dir", number)
-							return 0
-						elif self.position == 1:
-							self.mucous.Help.Log("status", "[%d] %s" % (number, path))
-							return 0
-						else:
-							self.position -= 2
-					if self.mucous.display["browse"] == "files":
-						mode = "browsefile"
-						number = self.mucous.scrolling[mode]
-						if self.position == 0:
-							# Download
-							self.mucous.download_path_file("file", number)
-							return 0
-						elif self.position == 1:
-							# Download Dir
-							self.mucous.download_path_file("dir", number)
-							return 0
-					
-						elif self.position == 2:
-							self.mucous.Help.Log("status", "[%d] %s" % (number, path))
-							return 0
-						else:
-							self.position -= 3
-	
-					if self.position == 0:
-						return 1
-					else:
-						self.position -=1
 				if self.position == 0:
-					self.mucous.PrivateChat.Start(username)
-					self.mucous.PrivateChat.Mode()
-				elif self.position == 1:
-					self.mucous.Userinfo.Get(username)
+					return 1
+				else:
+					self.position -=1
+			if self.position == 0:
+				self.mucous.PrivateChat.Start(username)
+				self.mucous.PrivateChat.Mode()
+			elif self.position == 1:
+				self.mucous.Userinfo.Get(username)
 
-					self.mucous.Userinfo.Mode()
-				elif self.position == 2:
-					self.mucous.requests["ip"].append(username)
-					self.mucous.SendMessage(messages.PeerAddress(username))
-					self.mucous.Userinfo.Mode()
-				elif self.position == 3:
-					self.mucous.BrowseUser(username)
-				elif self.position == 4:
-					return 1
-				elif self.position == 5:
-					if username not in self.mucous.config["buddies"].keys():
-						self.mucous.ModifyConfig("buddy", username, '')
-					else:
-						self.mucous.ModifyConfig("unbuddy", username, '')
-					return 1
-				elif self.position == 6:
-					if username not in self.mucous.config["banned"].keys():
-						self.mucous.ModifyConfig("ban", username, '')
-					else:
-						self.mucous.ModifyConfig("unban", username, '')
-					return 1
-				elif self.position == 7:
-					if username not in self.mucous.config["ignored"].keys():
-						self.mucous.ModifyConfig("ignore", username, '')
-					else:
-						self.mucous.ModifyConfig("unignore", username, '')
-					return 1
-				elif self.position == 8:
-					if username not in self.mucous.config["trusted"].keys():
-						self.mucous.ModifyConfig("trust", username, '')
-					else:
-						self.mucous.ModifyConfig("distrust", username, '')
-					return 1
-				elif self.position == 9:
-					self.mucous.usernames["privileges"] = username
-					self.mucous.set_edit_title( "% Give Privileges to " + self.mucous.usernames["privileges"])
-				elif self.position == 10:
-					self.mucous.SendMessage(messages.TransferUpdate(username, path) )
-			elif self.current == "encoding":
-				if self.position == 0: coding = "UTF-8"
-				elif self.position == 1: coding = "iso-8859-1"  
-				elif self.position == 2: coding = "iso-8859-2"  
-				elif self.position == 3: coding = "iso-8859-3"  
-				elif self.position == 4: coding = "iso-8859-4"  
-				elif self.position == 5: coding = "iso-8859-5"  
-				elif self.position == 6: coding = "iso-8859-6"  
-				elif self.position == 7: coding = "iso-8859-7" 
-				elif self.position == 8: coding = "iso-8859-8"  
-				elif self.position == 9: coding = "iso-8859-9"  
-				elif self.position == 10: coding = "iso-8859-10"  
-				elif self.position == 11: coding = "iso-8859-11"  
-				elif self.position == 12: coding = "iso-8859-13" 
-				elif self.position == 13: coding = "iso-8859-14" 
-				elif self.position == 14: coding = "iso-8859-15"  
-				elif self.position == 15: coding = "iso-8859-16" 
-				elif self.position == 16: coding = "KIO8-R" 
-				elif self.position == 17: coding = "CP1250" 
-				elif self.position == 18: coding = "CP1251" 
-				elif self.position == 19: coding = "CP1252" 
-				elif self.position == 20: coding = "CP1253" 
-				elif self.position == 21: coding = "CP1254" 
-				elif self.position == 22: coding = "CP1255" 
-				elif self.position == 23: coding = "CP1256" 
-				elif self.position == 24: coding = "CP1257" 
-				elif self.position == 25: coding = "CP1258"
-				elif self.position == 26: coding = "CP874" 
-				#self.Help.Log("debug", coding)
-				if self.mucous.display["mode"] == "chat":
-					self.mucous.SendMessage(messages.ConfigSet("encoding.rooms", self.mucous.Spl["room"], coding))
-				elif self.mucous.display["mode"] == "private":
-					self.mucous.SendMessage(messages.ConfigSet("encoding.users", self.mucous.PrivateChat.current, coding))
-				elif self.display["mode"] == "browse":
-					if self.mucous.usernames["browse"] != "default__":
-						self.mucous.SendMessage(messages.ConfigSet("encoding.users", self.mucous.usernames["browse"], coding))
-					else:
-						self.mucous.SendMessage(messages.ConfigSet("encoding", "filesystem", coding))
-					
+				self.mucous.Userinfo.Mode()
+			elif self.position == 2:
+				self.mucous.requests["ip"].append(username)
+				self.mucous.SendMessage(messages.PeerAddress(username))
+				self.mucous.Userinfo.Mode()
+			elif self.position == 3:
+				self.mucous.BrowseShares.Get(username)
+			elif self.position == 4:
+				return 1
+			elif self.position == 5:
+				if username not in self.mucous.config["buddies"].keys():
+					self.mucous.ModifyConfig("buddy", username, '')
+				else:
+					self.mucous.ModifyConfig("unbuddy", username, '')
+				return 1
+			elif self.position == 6:
+				if username not in self.mucous.config["banned"].keys():
+					self.mucous.ModifyConfig("ban", username, '')
+				else:
+					self.mucous.ModifyConfig("unban", username, '')
+				return 1
+			elif self.position == 7:
+				if username not in self.mucous.config["ignored"].keys():
+					self.mucous.ModifyConfig("ignore", username, '')
+				else:
+					self.mucous.ModifyConfig("unignore", username, '')
+				return 1
+			elif self.position == 8:
+				if username not in self.mucous.config["trusted"].keys():
+					self.mucous.ModifyConfig("trust", username, '')
+				else:
+					self.mucous.ModifyConfig("distrust", username, '')
+				return 1
+			elif self.position == 9:
+				self.mucous.usernames["privileges"] = username
+				self.mucous.set_edit_title( "% Give Privileges to " + self.mucous.usernames["privileges"])
+			elif self.position == 10:
+				self.mucous.SendMessage(messages.TransferUpdate(username, path) )
 			return 0
 		except Exception, e:
 			self.mucous.Help.Log("debug", "PopupMenu.Execute " +str(e))
@@ -1300,7 +1314,7 @@ class Help:
 "First, type in the user you wish to browse, below.", \
 "Right-click on directories or files to display the popup menu."]
 
-		self.mucous.logs["browse"]["default__"] = self.help_browse
+		self.mucous.BrowseShares.help = self.help_browse
 		
 		self.help_download = ["----<Manual Download Commands>----",\
 "/downuser <user>    (Set download user)",\
@@ -1339,7 +1353,7 @@ class Help:
 	## Create window, draw title, 
 	# call Help.Format
 	# call Mucous.set_edit_title
-	# call Mucous.AlertCheck	
+	# call Mucous.Alert.Check	
 	def Mode(self):
 		try:
 			# Cleanup stale windows
@@ -1382,11 +1396,11 @@ class Help:
 			self.Format()
 			
 			self.mucous.set_edit_title("Use /help")
-			#if self.logs["alert"] in ("New Help", "New Bug", "New Status"):
-			#	self.AlertStatus("")
+			#if self.Alerts.log in ("New Help", "New Bug", "New Status"):
+			#	self.Alerts.setStatus("")
 				
 			
-			self.mucous.AlertCheck()
+			self.mucous.Alerts.Check()
 			curses.doupdate()
 		except Exception, e:
 # 			self.Help.Log("debug", ": " + str(e))
@@ -1464,21 +1478,22 @@ class Help:
 				else:
 					self.helpdebuglog.append("%s %s%s" %(timestamp, ex,s))
 				
-			if self.display["mode"] in ( "help", "debug", "status"):
+			if self.mucous.display["mode"] in ( "help", "debug", "status"):
 				#self.Draw( htype, s, 0)
 				self.mucous.scrolling[self.mucous.display["mode"]] = -1
 				self.Help.Format()
-				#self.AlertCheck()
+				self.mucous.Alerts.Check()
 			else:
-				if htype not in self.mucous.alert["HELP"]:
+	
+				if htype not in self.mucous.Alerts.alert["HELP"]:
 					if htype == "help":
-						self.mucous.alert["HELP"].append("help")
+						self.mucous.Alerts.alert["HELP"].append("help")
 					elif htype == "status":
-						self.mucous.alert["HELP"].append("status")
+						self.mucous.Alerts.alert["HELP"].append("status")
 					elif htype == "debug":
-						self.mucous.alert["HELP"].append("debug")
+						self.mucous.Alerts.alert["HELP"].append("debug")
 				
-				self.mucous.AlertCheck()
+				self.mucous.Alerts.Check()
 		except Exception, e:
 			pass
 
@@ -1499,21 +1514,184 @@ class Help:
 				elif self.mucous.display["mode"] == "debug" and htype in( "status", "debug"):
 					tw.addstr(self.mucous.dlang(s), attr)
 				else:
-					self.mucous.AlertStatus("New Help")
+					self.mucous.Alerts.setStatus("New Help")
 			else:
-				self.mucous.AlertStatus("New Help")
+				self.mucous.Alerts.setStatus("New Help")
 		except: # Exception, e:
 			#self.ChatRoomAppend("Status", self.Spl["room"], "Draw: ", str(e))
 			pass
-		return #total_lines
+		#return #total_lines
+				
+## Alerts
+#
+class Alerts:
+	## Constructor
+	# @param self Alerts (class)
+	# @param mucous Mucous (Class)
+	def __init__(self, mucous):
+		self.mucous = mucous
+		self.alert = { "CHAT": {}, "PRIVATE": [], "TRANSFERS" : [],  "SEARCH": [], "INFO": [], "BROWSE": [],  "HELP": [] }
+		self.log = ""
+		self.windows = {}
+		
+	def Mode(self):
+		try:
+			if "border" in self.windows:
+				del self.windows["border"]
+			aw = self.windows["border"] = curses.newwin(1, 15, 0, self.mucous.w-15)
+			aw.bkgdset(" ", self.mucous.colors["blafgcyabg"]  | curses.A_REVERSE | curses.A_BOLD)
+			aw.idlok(1)
+			
+			self.setStatus(self.log)
+		except:
+			pass
+			
+	def Remove(self, string, place):
+		if place in self.alert:
+			if string in self.alert[place]:
+				self.alert[place].remove(string)
+	## Add Alert
+	# @param self Alerts (Class)
+	# @param string alert text
+	# @param place where the alert is stored
+	def Add(self, string, place):
+		if place in self.alert:
+			if string not in self.alert[place]:
+				self.alert[place].append(string)
+			else:
+				self.alert[place].remove(string)
+				self.alert[place].append(string)
+			self.Check()
+		
+	def Check(self):
+		try:
+			if self.mucous.display["mode"] == "chat":
+				if self.mucous.Spl["room"] in self.alert["CHAT"].keys():
+					del self.alert["CHAT"][self.mucous.Spl["room"]]
+			elif self.mucous.display["mode"] == "private":
+				if self.mucous.PrivateChat.current in self.alert["PRIVATE"]:
+					self.alert["PRIVATE"].remove(self.mucous.PrivateChat.current)
+			elif self.mucous.display["mode"] == "browse":
+				if self.mucous.BrowseShares.current in self.alert["BROWSE"] and self.mucous.BrowseShares.current != "__default":
+					self.alert["BROWSE"].remove(self.mucous.BrowseShares.current)
+			elif self.mucous.display["mode"] == "search":
+				if self.mucous.Search.current in self.alert["SEARCH"]:
+					self.alert["SEARCH"].remove(self.mucous.Search.current)
+			elif self.mucous.display["mode"] == "info":
+				if self.mucous.Userinfo.current in self.alert["INFO"]:
+					self.alert["INFO"].remove(self.mucous.Userinfo.current)
+			elif self.mucous.display["mode"] in ("help", "debug", "status"):
+				#if ("debug", "help", "status") in self.alert["HELP"]:
+				self.alert["HELP"] = []
+			self.Next()
+			self.mucous.HotKeyBar()
+		except Exception, e:
+			self.mucous.Help.Log("debug", "Alert.Check: " + str(e))
+
+	def Next(self):
+		try:
+			if self.mucous.display["mode"] ==  "search":
+				if self.alert[self.mucous.display["mode"].upper()] != []:
+					for s in self.alert[self.mucous.display["mode"].upper()]:
+						self.setStatus(self.mucous.data["search_tickets"][s])
+						return
+				else:
+					self.Pick()
+			if self.mucous.display["mode"] in ("info", "private",  "browse"):
+			#if self.display["mode"].upper() in ("PRIVATE", "TRANSFERS",  "SEARCH", "INFO", "BROWSE"):
+			
+				if self.alert[self.mucous.display["mode"].upper()] != []:
+					for s in self.alert[self.mucous.display["mode"].upper()]:
+						self.setStatus(s)
+						return
+				else:
+					self.Pick()
+			elif self.mucous.display["mode"].upper()  == "CHAT":
+				if self.alert[self.mucous.display["mode"].upper()] != {}:
+					for m, l in self.alert["CHAT"].items():
+						self.setStatus(m)
+						return
+					self.setStatus("")
+				else:
+					self.Pick()
+			elif self.mucous.display["mode"] in ("help", "debug", "status"):
+				for s in self.alert["HELP"]:
+					if s == "help":
+						self.setStatus("New Help")
+					elif s == "debug":
+						self.setStatus("New Bug")
+					elif s == "status":	
+						self.setStatus("New Status")
+					break
+				else:
+					self.Pick()
+			else:
+				self.Pick()
+		except Exception, e:
+			self.mucous.Help.Log( "debug", "Alert.Next: " + str(e))
+			
+	def Pick(self):
+		try:
+			for mode, lists in self.alert.items():
+				#self.helplog.append(str(mode)+" " +str(l))
+				if lists == []:
+					continue
+				elif lists == {}:
+					continue
+				
+				if mode == "HELP":
+					for s in self.alert["HELP"]:
+						if s == "help":
+							self.setStatus("New Help")
+						elif s == "debug":
+							self.setStatus("New Bug")
+						elif s == "status":	
+							self.setStatus("New Status")
+						break
+					return
+				elif mode == "SEARCH":
+					for s in self.alert["SEARCH"]:
+						self.setStatus(self.data["search_tickets"][s])
+						return
+
+				for i in lists:
+					if i != "":
+						self.setStatus(i)
+						return
+			self.setStatus("")
+		except Exception, e:
+			self.mucous.Help.Log( "debug", "Pick: " + str(e))
+			
+	def setStatus(self, s):
+		try:
+			self.log = s
+			aw = self.windows["border"]
+			aw.erase()
+			
+			if len(self.log[:14]) < 13 and len(self.log[:14]) > 0:
+				line = " "+self.mucous.dlang( self.log[:14] )+" "
+			else:
+				line = self.mucous.dlang( self.log[:14] )
+			aw.addstr(line, self.mucous.colors["yellow"] )
+			aw.refresh()
+		except Exception, e:
+			self.mucous.Help.Log( "debug", "Alert.setStatus: " + str(e))
+				
+				
 ## Parse data and reformat it to fit inside the constraints of its window
 #
 class FormatData:
+	## Constructor
+	# @param self FormatData (class)
+	# @param mucous Mucous (Class)
 	def __init__(self, mucous):
+		## @var mucous 
+		# Mucous (Class)
 		self.mucous = mucous
-		pass
+
 	## Determine Line number and list size to height
 	# We assume that this list has already been wrapped
+	# @param self FormatData (class)
 	# @param current_list list to be shrunk
 	# @param hightlight_position where our vertical scroll position is
 	# @param height how many lines are in the window
@@ -1574,7 +1752,7 @@ class FormatData:
 	## Another int-to-string Conversion
 	# Formats are: 0.0GB, 0.0MB, 0.0KB, 0 
 	# @param self FormatData
-	# @param filesize can be integer in a string or an integer
+	# @param size filesize can be integer in a string or an integer
 	def Humanize(self, size):
 		if size is None:
 			return None
@@ -1591,7 +1769,11 @@ class FormatData:
 			return r
 		except Exception, e:
 			return size
-
+			
+	## Sort a dict by values
+	# Return the sorted dict
+	# @param self FormatData (class)
+	# @param dict the dict
 	def sortbyvalue(self, dict):
 		try:
 			""" Return a list of (key, value) pairs, sorted by value. """
@@ -1603,7 +1785,8 @@ class FormatData:
 		except Exception, e:
 			self.mucous.Help.Log("debug", "sortbyvalue: " + str(e))
 			
-	## Pad string to fill width of window 
+	## Pad string to fill width of window
+	# @param self FormatData (class) 
 	# @param s string
 	# @param w window_dimensions dict	
 	def StringAddBlanks(self, s, w):
@@ -1626,7 +1809,12 @@ class FormatData:
 		except Exception, e:
 			self.mucous.Help.Log("debug", "StringAddBlanks: " + str(e))
 			
-			
+	## Select an item in the list one place away
+	# @param self FormatData (class)
+	# @param direction (left or right)
+	# @param _list the list
+	# @param place current position in list
+	# @param sort do we alphabetically sort this list? (true/false) 
 	def RotateList(self, direction, _list, place, sort):
 		try:
 			if not _list:
@@ -1657,10 +1845,14 @@ class FormatData:
 		except Exception, e:
 			self.mucous.Help.Log("debug", "RotateList: " +str(e) )
 					
-
-	def StringCutWidth(self, s, w):
+	## Break a long string into a list of strings that each fit inside the required width
+	# @param self FormatData (class)
+	# @param string our long string
+	# @param w the window dimensions dict contains "width"
+	def StringCutWidth(self, string, w):
 		try:
-			s = str(s); ls = len(s)
+			s = str(string) 
+			ls = len(s)
 			list_of_strings = []
 			if ls > w["width"]:
 				div = (ls/w["width"]) + 1
@@ -1816,6 +2008,8 @@ class Userinfo:
 		## @var users 
 		# Users whose info we have
 		self.users = []
+		## @var logs
+		# dict containing descriptions and stats of users
 		self.logs = {}
 		
 	## Request userinfo from a user
@@ -1847,8 +2041,9 @@ class Userinfo:
 			r.close()
 			self.StatsLog( "Saved UserImage as: "+ str(user)+".image")
 		if self.mucous.display["mode"] != "info":
-			self.mucous.AlertStatus("New Userinfo")
-			self.mucous.alert["INFO"].append(user)
+			#self.mucous.Alerts.setStatus("New Userinfo")
+			#self.mucous.Alerts.alert["INFO"].append(user)
+			self.mucous.Alerts.Add(user, "INFO")
 			self.mucous.HotKeyBar()
 	## Draw windows
 	# @param self Userinfo (class)
@@ -1900,7 +2095,7 @@ class Userinfo:
 
 			self.mucous.DrawTabs(self.users, self.current)
 			self.DrawStats()
-			self.mucous.AlertCheck()
+			self.mucous.Alerts.Check()
 			curses.doupdate()
 			#self.HotKeyBar()
 		except Exception, e:
@@ -2019,6 +2214,7 @@ class Userinfo:
 			
 	## Close userinfo
 	# @param self Userinfo (class)
+	# @param user the Username
 	def Close(self, user):
 		try:
 			if user in self.users:
@@ -2097,7 +2293,697 @@ class BrowseShares:
 		## @var mucous 
 		# Mucous (Class)
 		self.mucous = mucous
+		## @var requests 
+		# Users whose shares we've requested (Discard other requests)
+		self.requests = []
+		## @var current
+		# Currently shown user's shares
+		self.current = None
+		## @var users 
+		# Users whose info we have
+		self.users = []
+		## @var logs
+		# dict containing descriptions and stats of users
+		self.logs = {}
+		self.windows = {}
+		self.dimensions = {}
+		self.files = []
+		self.dirs = []
+		self.scrolling = {"files": 0, "directories": 0}
+		self.selected = "directories"
+		self.current_dir = None
+		self.results = {}
+		self.shares = {}
+		self.collapsed = {}
+		self.browse_num = {}
+		self.bfilter = None
 		
+	def CurrentFile(self):
+		user = self.current
+		path = self.current_dir+"\\"+self.files[self.scrolling["files"]]
+		return user, path
+	
+	def CurrentDir(self):
+		if self.selected == "files":
+			w = self.dimensions["browse"]
+			directory = self.current_dir
+			user = self.current
+			
+		elif self.selected == "directories":
+			w = self.dimensions["directories"]
+			directory = self.current_dir
+			user = self.current
+		return user, directory
+		
+	def Mode(self):
+		try:
+			self.mucous.display["mode"] = "browse"
+			self.mucous.PopupMenu.show = False
+
+			# Cleanup stale windows
+			if "text" in self.windows:
+				del self.windows["text"]
+			if "border" in self.windows: 
+				del self.windows["border"]
+			if "dirwin" in self.windows:
+				del self.windows["dirwin"]
+			if "dirborder" in self.windows:
+				del self.windows["dirborder"]
+			if "browsebar" in self.windows:
+				del self.windows["browsebar"]
+			
+			w = self.dimensions["browse"] = {"height": self.mucous.h-11, "width": self.mucous.w-mucous_config["mucous"]["browse_width"], "top": 5, "left": mucous_config["mucous"]["browse_width"]-1, "start": 0}
+			# Files Border	
+			wbb = self.windows["border"] = curses.newwin(w["height"]+2, w["width"]+2, w["top"]-1, w["left"]-1)
+			# Directories Border
+			self.windows["dirborder"] = curses.newwin(w["height"]+2, self.mucous.w-w["width"]-2, w["top"]-1, 0)
+			self.DrawBrowseWin()
+			# Files Text
+			tbb = self.windows["text"] = wbb.subwin(w["height"], w["width"], w["top"], w["left"])
+			tbb.scrollok(0)
+			tbb.idlok(1)
+			tbb.noutrefresh()
+
+			d = self.dimensions["directories"] = {"height": w["height"], "width": self.mucous.w-w["width"]-4, "top": w["top"], "left":1}
+			# Directories Text
+			dw = self.windows["dirwin"] = self.windows["dirborder"].subwin(d["height"], d["width"], d["top"], d["left"])
+			dw.erase()
+			dw.noutrefresh()
+	
+# 			self.scrolling["files"] = self.scrolling["directories"] = 0
+			# Vars
+
+			self.files = []
+			self.dirs = []
+			
+			self.windows["browsebar"] = curses.newwin(1, self.mucous.w, w["top"]+w["height"]+1, 0)
+			self.windows["browsebar"].erase()
+			self.windows["browsebar"].noutrefresh()
+			
+			self.mucous.Alerts.Check()
+			self.mucous.HotKeyBar()
+			self.FormatBrowse()
+			curses.doupdate()
+			del w
+		except Exception, e:
+			self.mucous.Help.Log("debug", "BrowseShares.Mode: " + str(e))
+			
+	def Recieved(self, user, shares):
+		try:
+			if user in self.requests:
+				self.requests.remove(user)
+				if user not in self.users:
+					self.users.append(user)
+				
+				self.current = user
+				if self.mucous.display["mode"] != "browse":
+					self.mucous.Alerts.alert["BROWSE"].append(self.current)
+					self.mucous.Alerts.Check()
+
+				self.results[user] = {}
+				self.collapsed[user] = []
+				#self.num[user] = 0
+				self.results[user]["dirs"] = []
+				# Debugging
+				#self.Help.Log("debug", shares.keys())
+				#########
+				if shares != {}:
+					sdirs = shares.keys()
+					sdirs.sort(key=str.lower)
+				
+					if sdirs != []:
+						for item in sdirs:
+							s = item.split("\\")
+							path = ''
+		
+							parent = s[0]
+							for seq in s[1:]:
+	
+								parent += "\\"
+		
+								path = parent+seq
+	
+				
+								if path not in self.results[user]["dirs"]:
+									self.results[user]["dirs"].append(path)
+								parent =  path
+									
+					self.results[user]["dirs"].sort(key=str.lower)
+				else:
+					self.results[user]["dirs"].append("Empty Shares")
+                                        
+				self.current_dir = self.results[user]["dirs"][0]
+				
+				self.results[user]["shares"] = shares
+				
+				for dirs, files in shares.items():
+					self.results[user][dirs] = files
+					#result_list = []
+					
+				if self.mucous.display["mode"] == "browse":
+					self.mucous.set_edit_title("Browse "+user+"'s files in " + self.current_dir + " ")
+					self.Mode()
+		except Exception, e:
+			self.mucous.Help.Log("debug", "BrowseShares.Recieved: " + str(e))
+			
+	def DrawBrowseWin(self):
+		try:
+			w = self.dimensions["browse"]
+			mw = self.windows["border"]
+			if self.mucous.BrowseShares.selected == "files":
+				mw.attron(self.mucous.colors["green"])
+			else:
+				mw.attroff(self.mucous.colors["green"])
+			mw.border()
+	
+			try:
+				if self.mucous.BrowseShares.selected == "files":
+					attr = self.mucous.colors["green"] | curses.A_BOLD
+				else:
+					attr = curses.A_BOLD
+				if self.current == None:
+					mw.addstr(0, 3, "< Browse users >",  attr)
+				else:
+					mw.addstr(0, 1, "<Num",  attr)
+					mw.addch(curses.ACS_VLINE, attr)
+					mw.addstr(" Size  ",  attr)
+					mw.addch(curses.ACS_VLINE, attr)
+					mw.addstr(" Filename >",  attr)
+			except:
+				pass
+			mw.noutrefresh()
+			
+			self.windows["dirborder"].erase()
+			if self.mucous.BrowseShares.selected == "directories":
+				self.windows["dirborder"].attron(self.mucous.colors["green"])
+				attr = self.mucous.colors["green"] | curses.A_BOLD
+			else:
+				attr = curses.A_BOLD
+			self.windows["dirborder"].border()
+			self.windows["dirborder"].attroff(self.mucous.colors["green"] )
+			self.windows["dirborder"].addstr(0, 1, "< Directories >",  attr)
+			self.windows["dirborder"].addstr(w["height"]+1, 1, "< Width - %s + >"  % mucous_config["mucous"]["browse_width"],  attr)
+			self.windows["dirborder"].noutrefresh()
+
+			if self.current == None:
+				self.scrolling["directories"] = 0
+				self.mucous.set_edit_title("Choose a user to Browse Shares")
+				self.mucous.DrawInstructionsButtons()
+			else:
+				self.mucous.DrawInstructionsButtons()
+				#s = "Browse "+self.current+"'s files in "
+				#ls = len(s)
+				#self.set_edit_title(s  + self.Spl["dir_browse"][:self.w-ls-8] )
+				#self.mucous.set_edit_title( self.current_dir[:self.mucous.w-8] )
+		except Exception, e:
+			self.mucous.Help.Log("debug", "BrowseShares.DrawBrowseWin: " + str(e))
+			
+	def FormatBrowseDirs(self):
+		try: 
+			d = self.dimensions["directories"]
+			w = self.dimensions["browse"] 
+			tw = self.windows["text"]
+			
+			if self.current == None:
+                                # Clear windows, display browse help
+				self.windows["dirwin"].erase()
+				self.windows["dirwin"].noutrefresh()
+				tw.erase()
+				count = 0
+				
+				for lines in self.help:
+
+					try:
+						self.DrawBrowseFileText(lines, count , self.scrolling["files"])
+		
+					except Exception, e:
+						self.mucous.Help.Log("debug", "Browse mode" + str(e))
+				tw.noutrefresh()
+				return
+                        # If the default help isn't displayed
+						
+			tempdirs = self.results[self.current]["dirs"]
+			#tempdirs.sort(key=str.lower)
+			# List, Directory, Scroll position
+			collapsed = self.collapsed[self.current]
+			num = 0
+			dirswithtree = []
+			self.dirs = []
+			parents = []
+			for directory in tempdirs:
+				parent = "\\".join(directory.split("\\")[:-1])
+				if parent in tempdirs and parent not in parents:
+					parents.append(parent)
+
+			for directory in tempdirs:
+				try:
+					parent = "\\".join(directory.split("\\")[:-1]) 
+					a = 0
+					for dirs in collapsed:
+						if parent.startswith(dirs+"\\") or parent == dirs:
+							a = 1
+							break
+					if a == 1:
+						num += 1
+						continue
+					if directory in parents:
+						if directory in collapsed:
+							dirswithtree.append([directory, 2])
+							self.dirs.append(directory)
+						else:
+							for dir in collapsed:
+								if dir in directory:
+									pass
+							else:
+								dirswithtree.append([directory, 1])
+								self.dirs.append(directory)
+					else:
+						for dir in collapsed:
+							if dir in directory:
+								pass
+						else:
+							dirswithtree.append([directory, 0])
+							self.dirs.append(directory)
+				except Exception, e:
+					for dir in collapsed:
+						if dir in directory:
+							pass
+					else:
+						dirswithtree.append([directory, 0])
+						self.dirs.append(directory)
+				num += 1 
+			
+			if self.mucous.BrowseShares.selected == "directories":
+				clipped_list, self.scrolling["directories"], start = self.mucous.FormatData.scrollbox(dirswithtree, self.scrolling["directories"], d["height"])
+			else:
+				clipped_list, self.scrolling["directories"], start = self.mucous.FormatData.scrollbox(dirswithtree, self.scrolling["directories"], d["height"])
+			#self.Help.Log("debug", self.scrolling["directories"])
+			self.dimensions["directories"]["start"] = start
+			count = 0
+			self.windows["dirwin"].erase()
+			# Display directory tree
+			for s, has_child in clipped_list:
+				try:
+					dir = s.split("\\")
+					if has_child == 1:
+						modifier = "[-]"
+					elif has_child == 2:
+						modifier = "[+]"
+					else: 
+						modifier = "|\\"
+					# Spaces before directory, to make it look like a tree
+					string = (" " * (len(dir)-2)) + modifier
+					string += self.mucous.dlang(dir[-1][:d["width"]-len(string)])
+					string += " " * ( d["width"] -len(string) )
+					if count +d["start"] == self.scrolling["directories"]:
+						self.windows["dirwin"].addstr(string, self.mucous.colors["green"])
+					else:
+						self.windows["dirwin"].addstr(string)
+					count += 1
+				except Exception, e:
+					pass
+					#self.Help.Log("debug", str(e))
+			del clipped_list
+			
+			
+		except Exception, e:
+			self.mucous.Help.Log("debug", "BrowseShares.FormatBrowseDirs: " + str(e))
+				
+	def FormatBrowse(self, FormatDirs=1):
+		try:
+			if "directories" not in self.dimensions:
+				return
+			if FormatDirs:
+				self.FormatBrowseDirs()
+			if self.current != None:
+				self.current_dir = self.dirs[self.scrolling["directories"]]
+				self.mucous.set_edit_title(self.current_dir )
+			
+				self.BrowseFiles( self.current, self.current_dir)
+			
+				self.BrowseFileBar( self.current, self.current_dir)
+			
+			self.windows["dirwin"].noutrefresh()
+		
+			
+			
+			self.mucous.DrawTabs(self.users, self.current)
+
+			
+		except Exception, e:
+			self.mucous.Help.Log("debug", "BrowseShares.FormatBrowse: " + str(e))
+			
+
+
+	## Send a request to museekd to browse this user
+	#
+	def Get(self, user):
+		try:
+			if user not in self.requests:
+				self.requests.append(user)
+			self.mucous.SendMessage(messages.UserShares(user))
+		except Exception, e:
+			self.mucous.Help.Log("debug", "BrowseShares.Get" + str(e))
+
+	## Draw file's number, name and size	
+	def DrawBrowseFileText(self,  line, count, sup):
+		try:
+			w = self.dimensions["browse"]
+			tw = self.windows["text"]
+			this_line = self.mucous.dlang( line )
+			if len(this_line) > self.dimensions["browse"]["width"]:
+				crop = len(this_line) - self.dimensions["browse"]["width"]
+				this_line = this_line[:-crop]
+				
+			if count + w["start"] == sup:
+				attr = self.mucous.colors["blafgcyabg"] |curses.A_REVERSE|curses.A_BOLD	
+				nattr = self.mucous.colors["cyan"] |curses.A_REVERSE|curses.A_BOLD
+			else:
+				attr = curses.A_NORMAL
+				nattr = self.mucous.colors["cyan"] 
+			if self.current == None:
+				tw.addstr(this_line, attr )
+			else:
+				tw.addstr(this_line[:4], attr )
+				tw.addch(curses.ACS_VLINE, attr)
+				tw.addstr(this_line[5:12], nattr )
+				tw.addch(curses.ACS_VLINE, attr)
+				tw.addstr(this_line[13:], attr )
+			z = w["width"]-len(this_line)
+			space = " " * ( z )
+			tw.addstr(space, attr)
+			
+		except Exception, e:
+			#self.mucous.Help.Log("debug", "BrowseShares.BrowseFileText: " + str(e))
+			pass
+			
+	def BrowseFiles(self, user, dirs):
+		try:
+			if self.mucous.display["mode"] != "browse":
+				self.mucous.Alerts.alert["BROWSE"].append(user)
+				self.mucous.Alerts.setStatus("Browse: %s" % user)
+				return
+			
+			tw = self.windows["text"]
+			w = self.dimensions["browse"]
+			self.browse_num[user] = 0
+			browse_list = []
+			count =0 
+			# file, stats[ size, ftype, [bitrate, length ] ]
+			
+			if dirs not in self.results[user]["shares"] or self.results[user]["dirs"] == {}:
+				tw.erase()
+				tw.addstr("Empty..")
+				tw.refresh()
+				self.files =  []
+				return
+			
+			length_list = len(str(len(self.results[user][dirs].keys() ) ) )
+			list1 = self.results[user][dirs].keys()
+			list1.sort(key=str.lower)
+
+			for file in list1:
+				stats = self.results[user][dirs][file]
+				count += 1
+				
+				self.browse_num[user] = self.browse_num[user] +1
+				size = str(self.mucous.FormatData.Humanize(stats[0]))
+				if len(size) < 6:
+					size = ' '* (6-len(size)) + size
+				ftype =stats[1]
+				
+				if ftype.upper() in ('OGG', 'MP3') and stats[2] != []:
+					bitrate =str(stats[2][0])
+					if bitrate == '':
+						bitrate = '0'	
+					length =str(stats[2][1])
+					if length != '' and length != None:
+						minutes = int(length)/60
+						seconds = str( int(length) - (60 * minutes))
+						if len(seconds) < 2:
+							seconds = '0' + seconds
+						length = str(minutes)+":"+str(seconds)
+					else:
+						length = "0:00"
+						bitrate = '0'
+				else:
+					ftype = "None"
+					length = "0:00"
+					bitrate = '0'
+					
+				filename = dirs + "\\" + file
+				#result_list = user, filename
+				# Activate Number for Result
+				if len(str(count)) < 4:
+					s = " " * (4 - len(str(count)))
+				else:
+					s = ''
+				
+				size = " " * (7 - len(str(size))) + size[:7]
+				line = "%s%s|%s|%s" % ( s, str(count), size, file )
+				browse_list.append(line)
+				
+			self.files = list1
+				
+			if self.bfilter != None:
+				a = []
+				for path in browse_list:
+					if re.match( self.bfilter, path):
+						a.append(path)
+				browse_list = a
+				del a
+					
+			clipped_list, self.scrolling["files"], self.dimensions["browse"]["start"] = self.mucous.FormatData.scrollbox(browse_list, self.scrolling["files"], w["height"])
+			sup = self.scrolling["files"]
+				
+			
+
+			count = 0
+			tw.erase()
+			for line in clipped_list:
+				self.DrawBrowseFileText(line, count, sup)
+				count += 1
+			tw.refresh()
+			
+		except Exception, e:
+			self.mucous.Help.Log("debug", "BrowseShares.BrowseFiles: " + str(e))
+			
+	
+	def BrowseFileBar(self, user, dirs):
+		try:
+			self.windows["browsebar"].erase()
+			num = self.scrolling["files"]
+                        #self.current, self.Spl["dir_browse"]
+			if dirs not in self.results[user]["shares"]:
+				self.windows["browsebar"].refresh()
+				return
+			if self.results[user]["shares"][dirs].keys() != []:
+                                list1 = self.results[user]["shares"][dirs].keys()
+			        list1.sort(key=str.lower)
+                                file = list1[num]
+                                stats = self.results[user]["shares"][dirs][file] 
+			else: 
+				self.windows["browsebar"].refresh()
+				return
+	
+
+			size  = self.mucous.FormatData.Humanize(stats[0])
+			
+			ftype =stats[1]
+			if ftype == '':
+				ftype = "None"
+				length = "0:00"
+				bitrate = '0'
+			else:
+				bitrate =str(stats[2][0])
+				if bitrate == '':
+					bitrate = '0'	
+				length =str(stats[2][1])
+				if length != '' and length != None:
+					minutes = int(length)/60
+					seconds = str( int(length) - (60 * minutes))
+					if len(seconds) < 2:
+						seconds = '0' + seconds
+					length = str(minutes)+":"+str(seconds)
+				else:
+					length = "0:00"
+			
+                        #l=len('['+str(num+1)+'] '+" Size: " + str(size)+" Length: " + length + " Bitrate: " + bitrate)
+                        atr = self.mucous.colors["cyan"] | curses.A_BOLD
+
+			self.windows["browsebar"].addstr("[")
+                        self.windows["browsebar"].addstr(str(num+1), atr )
+                        self.windows["browsebar"].addstr("] | Size: ")
+                        self.windows["browsebar"].addstr(str(size), atr)
+                        self.windows["browsebar"].addstr(" | ")
+                        self.windows["browsebar"].addstr(bitrate, atr)
+                        self.windows["browsebar"].addstr("Kbps | Length: ")
+                        self.windows["browsebar"].addstr(length, atr)
+			self.windows["browsebar"].refresh()
+		except Exception, e:
+			self.mucous.Help.Log("debug", "BrowseShares.BrowseFileBar: " + str(e))
+			
+	def BrowseChangeDir(self, line):
+		try:
+			if self.current_dir == '' or line[0:1] == '\\' or line[1:2] == ":":
+				if self.current in self.results.keys():
+					if line[0:1] == '\\':
+						if line in self.results[self.current].keys():
+							self.current_dir = line
+						else:
+							self.mucous.Help.Log("status", "No such directory: %s user:" % (line[1:],  self.current))
+					if line[1:2] == ":":
+						if line in self.results[self.current].keys():
+							self.current_dir = line
+						else:
+							self.mucous.Help.Log("status", "No such directory: %s user:" % (line,  self.current))
+					else:
+						if line in self.results[self.current].keys():
+							self.current_dir = line
+						else:
+							self.mucous.Help.Log("status", "No such directory: %s user:" % (line,  self.current))
+				
+			elif line =='..':
+				z = self.BrowseParentDir()
+				if z != 0:
+					self.current_dir = z
+				else:
+					self.mucous.Help.Log("status", "No parent directory, User: " +  self.current)
+			else:
+				if self.current_dir + '\\'+line in self.results[self.current].keys():
+					self.current_dir += '\\'+line
+				else:
+					self.mucous.Help.Log("status", "No such directory: %sUser: " % (line, self.current) )
+					
+			if self.current == None:
+				self.mucous.set_edit_title("Choose a user to Browse Shares")
+			else:
+				s = "Browse "+self.current+"'s files in "
+				ls = len(s)
+				self.mucous.set_edit_title(s  + self.current_dir[:self.mucous.w-ls-4] + " ")
+		except Exception, e:
+			self.mucous.Help.Log("debug", "BrowseShares.BrowseChangeDir: " + str(e))
+			
+	def BrowseParentDir(self):
+		try:
+			splitit = self.current_dir
+			splitit = splitit.split("\\")
+			s = len(splitit)
+			z=''
+			for r in range(s-1):
+				if r == 0:
+					z += splitit[r]
+				else:
+					z += "\\"+splitit[r]
+					
+			if z in self.results[self.current]["shares"].keys():
+				return z
+			else:
+				return 0
+		except Exception, e:
+			self.mucous.Help.Log("debug", "BrowseShares.BrowseParentDir: " + str(e))
+
+	def BrowseClose(self, user):
+		try:
+			if user in self.users:
+				self.users.remove(user)
+				self.scrolling["directories"] = 0
+			if user in self.logs:
+				del self.logs[user]
+			if user in self.results:
+				del self.results[user]
+			if self.users != []:
+				if self.current == user:
+					self.current = self.users[0]
+			else:
+				self.current = None
+			if user in self.mucous.Alerts.alert["BROWSE"] and user != "__default":
+				self.mucous.Alerts.alert["BROWSE"].remove(user)
+			self.Mode()
+		except Exception, e:
+			self.mucous.Help.Log("debug", "BrowseShares.BrowseClose: " + str(e))
+			
+	def MouseBrowse(self, x,y,z,event):
+		try:
+			d = self.dimensions["directories"]
+			w = self.dimensions["browse"]
+			if y in (1, 2, 3):
+				if len(self.users) == 1 and self.current == None:
+					self.current = self.users[0]
+					self.Mode()
+				if len(self.users) > 1:	
+					if self.current == None:
+						self.current = self.users[0]
+					else:
+						self.current, match = self.mucous.MouseClickTab(x, self.current)
+						if match == None:
+							s = self.users.index(self.current)
+							self.current = self.users[s-1]
+						sdirs =  self.results[self.current].keys()
+						sdirs.sort(key=str.lower)
+						self.current_dir=sdirs[0]
+					
+					self.Mode()
+			elif y == w["top"] + w["height"]:
+				if x < mucous_config["mucous"]["browse_width"]:
+					if x in (7,8,9,10):
+						if mucous_config["mucous"]["browse_width"] > 20: 
+							mucous_config["mucous"]["browse_width"] -= 1
+							self.Mode()
+					elif x in (12,13,14,15,16,17):
+						if mucous_config["mucous"]["browse_width"] < self.mucous.w-20:
+							mucous_config["mucous"]["browse_width"] += 1
+							self.Mode()
+					
+			elif y == w["top"]-1:
+			
+				if x >= self.mucous.w-17 and self.current != None:
+					self.current = None
+					self.Mode()
+			elif x in range(d["width"]) and y >= d["top"] and y <= d["top"] + d["height"]:
+				if self.current == None:
+					return
+				if self.mucous.BrowseShares.selected != "directories":
+					self.mucous.BrowseShares.selected = "directories"
+					self.mucous.BrowseShares.DrawBrowseWin()
+					
+				self.scrolling["directories"] = y - d["top"] + d["start"]
+				self.FormatBrowse()
+				
+				if event in ( 4096, 16384):
+					self.mucous.DrawChatRoomBox()
+					self.mucous.PopupMenu.Create("browse-dirs", 0, True)
+				else:
+					self.mucous.DrawChatRoomBox()
+				curses.doupdate()
+				
+			elif x >=  w["left"] and y >= w["top"] and y <= w["top"] + w["height"]:
+				if self.current == None:
+					return
+				if self.mucous.BrowseShares.selected != "files":
+					self.mucous.BrowseShares.selected = "files"
+					self.mucous.BrowseShares.DrawBrowseWin()
+				self.scrolling["files"] = y - w["top"]+ w["start"]
+				self.FormatBrowse()
+				
+				if event in ( 4096, 16384):
+					#self.mucous.DrawChatRoomBox()
+					self.mucous.PopupMenu.Create("browse-files", 0, True)
+				#else:
+					#self.DrawChatRoomBox()
+				curses.doupdate()
+				
+			elif y in ( self.mucous.h-5, self.mucous.h-6):
+				if x>= self.mucous.w-27 and x < self.mucous.w-18:
+					self.mucous.PopupMenu.Create("encoding", 0, True)
+					return
+				elif x >=self.mucous.w-10 and x < self.mucous.w-1 and self.current != None:
+					self.BrowseClose(self.current)
+		except Exception, e:
+			self.mucous.Help.Log("debug", "BrowseShares.MouseBrowse: " +str(e) )
+
+			
+			
 ## User Lists
 #			
 class UserLists:
@@ -2200,6 +3086,7 @@ class RoomsList:
 					return self.sizedrooms[self.scrolling]
 		except Exception, e:
 			self.mucous.Help.Log("debug", "RoomsList.Mouse: " +str(e) )
+			
 	def DrawWindow(self):
 		try:
 			# Cleanup stale windows
@@ -2265,7 +3152,7 @@ class RoomsList:
 		except Exception, e:
 			self.mucous.Help.Log("debug", "RoomsList.DrawWindow: " + str(e))
 			
-	def DrawRoomsList(self, roomitem, count, start):
+	def Draw(self, roomitem, count, start):
 		try:
 			
 			if count + start == self.scrolling:
@@ -2284,7 +3171,7 @@ class RoomsList:
 			self.windows["text"].addstr(string+spaces, attrib)
 			
 		except Exception, e:
-			self.mucous.Help.Log("debug", "RoomsList.DrawRoomsList: " + str(e))
+			self.mucous.Help.Log("debug", "RoomsList.Draw: " + str(e))
 
 	def Format(self):
 		try:
@@ -2292,7 +3179,7 @@ class RoomsList:
 			clipped_list, self.scrolling, self.dimensions["start"] = self.mucous.FormatData.scrollbox(self.sizedrooms, self.scrolling, self.mucous.h-7)
 			count =0 
 			for rooms10 in clipped_list:
-				self.DrawRoomsList(rooms10, count, self.dimensions["start"])
+				self.Draw(rooms10, count, self.dimensions["start"])
 				count += 1
 			self.windows["text"].refresh()
 		except Exception, e:
@@ -2396,7 +3283,7 @@ class Search:
 
 			if self.current != "default__":
 				self.mucous.DrawInstructionsButtons()
-				self.mucous.AlertCheck()
+				self.mucous.Alerts.Check()
 			else:
 				self.mucous.HotKeyBar()
 			curses.doupdate()
@@ -2852,14 +3739,14 @@ class PrivateChat:
 					pass
 				ibw.noutrefresh()
 				self.mucous.windows["text"]["input"].noutrefresh()
-				self.mucous.AlertCheck()
+				self.mucous.Alerts.Check()
 	
 			else:
 				self.mucous.set_edit_title("Set a user to Private Message")
 				self.mucous.HotKeyBar()
 	
-			if self.mucous.logs["alert"] == "New PM" or self.mucous.logs["alert"][:5] =="PM: ":
-				self.mucous.AlertStatus("")
+			if self.mucous.Alerts.log == "New PM" or self.mucous.Alerts.log[:5] =="PM: ":
+				self.mucous.Alerts.setStatus("")
 			pmusers = self.logs.keys()
 			pmusers.sort(key=str.lower)
 			self.mucous.DrawTabs(pmusers, self.current)
@@ -3004,8 +3891,8 @@ class PrivateChat:
 			#pmtype = "outgoing"
 			self.Log(1, user, message)
 			
-			if self.mucous.logs["alert"] == "New PM":
-				self.mucous.AlertStatus("")
+			if self.mucous.Alerts.log == "New PM":
+				self.mucous.Alerts.setStatus("")
 		except Exception ,e:
 			self.mucous.Help.Log("debug", "PrivateChat.Send: " + str(e))
 			
@@ -3048,7 +3935,7 @@ class PrivateChat:
 				if self.mucous.display["mode"] == "private":
 					self.Mode()
 			elif self.current != user and self.current != None:
-				self.mucous.AlertStatus("PM: "+user)
+				self.mucous.Alerts.setStatus("PM: "+user)
 				
 		except Exception, e:
 			self.mucous.Help.Log( "debug", "PrivateChat.Log: " + str(e))
@@ -3119,7 +4006,7 @@ class Mucous(driver.Driver):
 	def __init__(self):
 		driver.Driver.__init__(self)
 		self.config = {}
-		self.usernames = {"username": None, "download": None, "private":None, "upload": None, "search": None, "privileges": None, "browse": "default__"}
+		self.usernames = {"username": None, "download": None, "private":None, "upload": None, "search": None, "privileges": None }
 		self.Spl = {"title": None,  "status": None, "connected": 0, \
 		"room": None, "history_count": 0, "dir_browse": "", \
 		"search_order": "num",  \
@@ -3136,7 +4023,7 @@ class Mucous(driver.Driver):
 		self.modes = {"setup":  ["mucous", "museek", "shares", "userinfo", "logs"], "transfers": ["all","active",  "queued", "finished", "failed"] }
 		self.user = { "status": {}, "statistics": {}  }
 		self.windows = {"text": {}, "border": {}, "dimensions": {}, "browse": {}, "tab": {} }
-		self.scrolling = {"chatroom": -1, "roombox": 0, "roomstatus": -1, "info": 0, "private": 0, "browsefile": 0, "browsedir": 0, "likes": 0, "hates": 0, "recommendations": 0, "similar_users": 0, "help":0, "debug": 0, "search": 0, "uploads": 0, "downloads": 0, "buddied": 0, "banned": 0, "ignored": 0, "trusted": 0, "roomlist":0 }
+		self.scrolling = {"chatroom": -1, "roombox": 0, "roomstatus": -1, "info": 0, "private": 0, "files": 0, "directories": 0, "likes": 0, "hates": 0, "recommendations": 0, "similar_users": 0, "help":0, "debug": 0, "search": 0, "uploads": 0, "downloads": 0, "buddied": 0, "banned": 0, "ignored": 0, "trusted": 0, "roomlist":0 }
 		## @var FormatData
 		# FormatData (Class)
 		self.FormatData = FormatData(self)
@@ -3176,6 +4063,9 @@ class Mucous(driver.Driver):
 		## @var Help
 		# Help (Class)
 		self.Help = Help(self)
+		## @var Alerts
+		# Alerts (Class)
+		self.Alerts = Alerts(self)
 		
 		self.url = None
 		self.bfilter = None
@@ -3210,7 +4100,7 @@ class Mucous(driver.Driver):
 		else:
 			mucous_config["mucous"]["language"] = "iso-8859-1"
 		self.states = {0: "Finished", 1: "Xferring", 2: "Negotiating", 3:"Waiting", 4: "Establishing", 5: "Initiating", 6: "Connecting",  7: "Queued", 8:"Address", 9:  "Status", 10: "Offline",11: "Closed",12: "Can't Connect", 13: "Aborted",14: "Not Shared"}
-		self.alert = { "CHAT": {}, "PRIVATE": [], "TRANSFERS" : [],  "SEARCH": [], "INFO": [], "BROWSE": [],  "HELP": [] }
+		
 		
 		
 		
@@ -3388,7 +4278,7 @@ class Mucous(driver.Driver):
 				self.PrivateChat.Mode()
 
 			elif self.display["mode"] == "browse":
-				self.ModeBrowse()
+				self.BrowseShares.Mode()
 
 			elif self.display["mode"] == "transfer":
 				self.ModeTransfers()
@@ -3403,7 +4293,7 @@ class Mucous(driver.Driver):
 				self.ModeLists()
 				
 			elif self.display["mode"] == "roomlist":
-				self.Mode()
+				self.RoomsList.Mode()
 				
 			elif self.display["mode"] == "setup":
 				self.ModeSetupDefault()
@@ -3877,47 +4767,47 @@ class Mucous(driver.Driver):
 				self.ChatRoomAppend("Me", room, user, text[4:])
 				if self.usernames["username"] in text[4:]:
 					if self.display["mode"] != "chat":
-						self.AlertStatus(room)
+						self.Alerts.setStatus(room)
 						
-						self.alert["CHAT"][room] = "nick"
+						self.Alerts.alert["CHAT"][room] = "nick"
 						self.beep()
 					elif self.display["mode"] == "chat" and self.Spl["room"] != room:
-						self.AlertStatus(room[:14])
-						self.alert["CHAT"][room] = "nick"
+						self.Alerts.setStatus(room[:14])
+						self.Alerts.alert["CHAT"][room] = "nick"
 						self.beep()
 					
 				else:
 					if self.display["mode"] != "chat":
-						self.AlertStatus("%s" % room)
-						if room not in self.alert["CHAT"]:
-							self.alert["CHAT"][room] = "normal"
+						self.Alerts.setStatus("%s" % room)
+						if room not in self.Alerts.alert["CHAT"]:
+							self.Alerts.alert["CHAT"][room] = "normal"
 					elif self.display["mode"] == "chat" and self.Spl["room"] != room:
-						self.AlertStatus(room)
-						if room not in self.alert["CHAT"]:
-							self.alert["CHAT"][room] = "normal"
+						self.Alerts.setStatus(room)
+						if room not in self.Alerts.alert["CHAT"]:
+							self.Alerts.alert["CHAT"][room] = "normal"
 			else:
 				if self.usernames["username"] in text:
 					self.ChatRoomAppend("Mentioned", room, user, text)
 					if self.display["mode"] != "chat":
-						self.AlertStatus(room)
+						self.Alerts.setStatus(room)
 						self.beep()
-						self.alert["CHAT"][room] = "nick"
+						self.Alerts.alert["CHAT"][room] = "nick"
 					elif self.display["mode"] == "chat" and self.Spl["room"] != room:
-						self.AlertStatus(room)
+						self.Alerts.setStatus(room)
 						self.beep()
-						self.alert["CHAT"][room] = "nick"
+						self.Alerts.alert["CHAT"][room] = "nick"
 	
 				else:
 					self.ChatRoomAppend("Normal", room, user, text)
 					if self.display["mode"] != "chat":
-						self.AlertStatus( room)
-						if room not in self.alert["CHAT"]:
-							self.alert["CHAT"][room] = "normal"
+						self.Alerts.setStatus( room)
+						if room not in self.Alerts.alert["CHAT"]:
+							self.Alerts.alert["CHAT"][room] = "normal"
 	
 					elif self.display["mode"] == "chat" and self.Spl["room"] != room:
-						self.AlertStatus(room)
-						if room not in self.alert["CHAT"]:
-							self.alert["CHAT"][room] = "normal"
+						self.Alerts.setStatus(room)
+						if room not in self.Alerts.alert["CHAT"]:
+							self.Alerts.alert["CHAT"][room] = "normal"
 			self.HotKeyBar()
 						
 			if mucous_config["mucous"]["logging"] == "yes":
@@ -3973,14 +4863,14 @@ class Mucous(driver.Driver):
 				self.windows["text"]["chat"].noutrefresh()
 			else:
 				joined.sort(key=str.lower)
-			if room in self.alert["CHAT"]:
-				del self.alert["CHAT"][room]
+			if room in self.Alerts.alert["CHAT"]:
+				del self.Alerts.alert["CHAT"][room]
 			curses.doupdate()	
 		except Exception, e:
 			self.Help.Log("debug", "CB Room Left" + str(e))
 			
-		if self.logs["alert"] == "%s" % room[:14]:
-			self.AlertStatus("")
+		if self.Alerts.log == "%s" % room[:14]:
+			self.Alerts.setStatus("")
 	
 	def cb_room_user_joined(self, room, user, data):
 		try:
@@ -4098,7 +4988,7 @@ class Mucous(driver.Driver):
 				else:
 					self.Userinfo.StatsLog("%s's IP: %s Port: %s"  % (user, str(ip), str(port)) )
 				if self.display["mode"] != "info":
-					self.AlertStatus("New IP")
+					self.Alerts.setStatus("New IP")
 		except Exception, e:
 			self.Help.Log( "debug", "cb_peer_address: " + str(e))
 			
@@ -4115,7 +5005,7 @@ class Mucous(driver.Driver):
 				
 				self.requests["statistics"].remove(user)
 				if self.display["mode"] != "info":
-					self.AlertStatus("New Stats")
+					self.Alerts.setStatus("New Stats")
 				else:
 					self.Userinfo.DrawStats()
 			if user == self.usernames["username"]:
@@ -4151,15 +5041,16 @@ class Mucous(driver.Driver):
 			self.PrivateChat.Log(direction, user, message)
 			
 			if self.display["mode"] != "private":
-				self.AlertStatus("New PM")
-				if user not in self.alert["PRIVATE"]:
-					self.alert["PRIVATE"].append(user)
-					self.HotKeyBar()
+				self.Alerts.Add(user, "PRIVATE")
+				#self.Alerts.setStatus("New PM")
+				#if user not in self.Alerts.alert["PRIVATE"]:
+					#self.Alerts.alert["PRIVATE"].append(user)
+				self.HotKeyBar()
 				self.beep()
 				
 			elif self.display["mode"] == "private" and self.PrivateChat.current != user:
-				if user not in self.alert["PRIVATE"]:
-					self.alert["PRIVATE"].append(user)
+				if user not in self.Alerts.alert["PRIVATE"]:
+					self.Alerts.alert["PRIVATE"].append(user)
 					self.HotKeyBar()
 				self.beep()
 				
@@ -4245,9 +5136,9 @@ class Mucous(driver.Driver):
 				self.data["search_results"][self.Search.search_number] = result_list
 				
 			if self.display["mode"] != "search" or self.Search.current != str(ticket):
-				if str(ticket) not in self.alert["SEARCH"]:
-					self.alert["SEARCH"].append( str(ticket) )
-					self.AlertCheck()
+				if str(ticket) not in self.Alerts.alert["SEARCH"]:
+					self.Alerts.alert["SEARCH"].append( str(ticket) )
+					self.Alerts.Check()
 				
 			if self.Search.current == str(ticket) and  self.PopupMenu.show != True:
 					self.Search.FormatResults(str(ticket))
@@ -4257,59 +5148,7 @@ class Mucous(driver.Driver):
 
 	def cb_user_shares(self, user, shares):
 		try:
-			if user in self.requests["browse"]:
-				
-				if user not in self.activeitems["browse"]:
-					self.activeitems["browse"].append(user)
-				self.requests["browse"].remove(user)
-				self.usernames["browse"] = user
-				if self.display["mode"] != "browse":
-					self.alert["BROWSE"].append(self.usernames["browse"])
-					self.AlertCheck()
-
-				self.data["browse_results"][user] = {}
-				self.data["collapsed_dirs"][user] = []
-				self.data["browse_num"][user] = 0
-				self.data["browse_results"][user]["dirs"] = []
-				# Debugging
-				#self.Help.Log("debug", shares.keys())
-				#########
-				if shares != {}:
-					sdirs = shares.keys()
-					sdirs.sort(key=str.lower)
-				
-					if sdirs != []:
-						for item in sdirs:
-							s = item.split("\\")
-							path = ''
-		
-							parent = s[0]
-							for seq in s[1:]:
-	
-								parent += "\\"
-		
-								path = parent+seq
-	
-				
-								if path not in self.data["browse_results"][user]["dirs"]:
-									self.data["browse_results"][user]["dirs"].append(path)
-								parent =  path
-									
-					self.data["browse_results"][user]["dirs"].sort(key=str.lower)
-				else:
-					self.data["browse_results"][user]["dirs"].append("Empty Shares")
-                                        
-				self.Spl["dir_browse"] = self.data["browse_results"][user]["dirs"][0]
-				
-				self.data["shares"][user] = shares
-				
-				for dirs, files in shares.items():
-					self.data["browse_results"][user][dirs] = files
-					#result_list = []
-					
-				if self.display["mode"] == "browse":
-					self.set_edit_title("Browse "+user+"'s files in " + self.Spl["dir_browse"] + " ")
-					self.ModeBrowse()
+			self.BrowseShares.Recieved(user, shares)
 					
 		except Exception, e:
 			self.Help.Log("debug", "CB User Shares: " + str(e))
@@ -4554,150 +5393,9 @@ class Mucous(driver.Driver):
 		except Exception,e:
 			self.Help.Log("debug", "beep: " + str(e))
 			
-	def BrowseFiles(self, user, dirs):
-		try:
-			if self.display["mode"] != "browse":
-				self.alert["BROWSE"].append(user)
-				self.AlertStatus("Browse: %s" % user)
-				return
-			tw = self.windows["text"]["browse"]
-			w = self.windows["dimensions"]["browse"]
-			self.data["browse_num"][user] = 0
-			browse_list = []
-			count =0 
-			# file, stats[ size, ftype, [bitrate, length ] ]
-			if dirs not in self.data["shares"][user] or self.data["shares"][user][dirs] == {}:
-				tw.erase()
-				tw.addstr("Empty..")
-				tw.refresh()
-				self.data["files"] =  []
-				return
-			length_list = len(str(len(self.data["shares"][user][dirs].keys() ) ) )
-			list1 = self.data["shares"][user][dirs].keys()
-			list1.sort(key=str.lower)
 
-			for file in list1:
-				stats = self.data["shares"][user][dirs][file]
-				count += 1
-				
-				self.data["browse_num"][user] = self.data["browse_num"][user] +1
-				size = str(self.FormatData.Humanize(stats[0]))
-				if len(size) < 6:
-					size = ' '* (6-len(size)) + size
-				ftype =stats[1]
-				
-				if ftype.upper() in ('OGG', 'MP3') and stats[2] != []:
-					bitrate =str(stats[2][0])
-					if bitrate == '':
-						bitrate = '0'	
-					length =str(stats[2][1])
-					if length != '' and length != None:
-						minutes = int(length)/60
-						seconds = str( int(length) - (60 * minutes))
-						if len(seconds) < 2:
-							seconds = '0' + seconds
-						length = str(minutes)+":"+str(seconds)
-					else:
-						length = "0:00"
-						bitrate = '0'
-				else:
-					ftype = "None"
-					length = "0:00"
-					bitrate = '0'
-					
-				filename = dirs + "\\" + file
-				#result_list = user, filename
-				# Activate Number for Result
-				if len(str(count)) < 4:
-					s = " " * (4 - len(str(count)))
-				else:
-					s = ''
-				
-				size = " " * (7 - len(str(size))) + size[:7]
-				line = "%s%s|%s|%s" % ( s, str(count), size, file )
-				browse_list.append(line)
-				
-			self.data["files"] = list1
-				
-			if self.bfilter != None:
-				a = []
-				for path in browse_list:
-					if re.match( self.bfilter, path):
-						a.append(path)
-				browse_list = a
-				del a
-					
-			clipped_list, self.scrolling["browsefile"], self.windows["dimensions"]["browse"]["start"] = self.FormatData.scrollbox(browse_list, self.scrolling["browsefile"], w["height"])
-			sup = self.scrolling["browsefile"]
-				
-			
-
-			count = 0
-			tw.erase()
-			for line in clipped_list:
-				self.DrawBrowseFileText(line, count, sup)
-				count += 1
-			tw.refresh()
-			
-		except Exception, e:
-			self.Help.Log("debug", "BrowseFiles: " + str(e))
-			
-	
-	
-	def BrowseFileBar(self, user, dirs):
-		try:
-			self.windows["text"]["browsebar"].erase()
-			num = self.scrolling["browsefile"]
-                        #self.usernames["browse"], self.Spl["dir_browse"]
-			if dirs not in self.data["shares"][user]:
-				self.windows["text"]["browsebar"].refresh()
-				return
-			if self.data["shares"][user][dirs].keys() != []:
-                                list1 = self.data["shares"][user][dirs].keys()
-			        list1.sort(key=str.lower)
-                                file = list1[num]
-                                stats = self.data["shares"][user][dirs][file] 
-			else: 
-				self.windows["text"]["browsebar"].refresh()
-				return
 	
 
-			size  = self.FormatData.Humanize(stats[0])
-			
-			ftype =stats[1]
-			if ftype == '':
-				ftype = "None"
-				length = "0:00"
-				bitrate = '0'
-			else:
-				bitrate =str(stats[2][0])
-				if bitrate == '':
-					bitrate = '0'	
-				length =str(stats[2][1])
-				if length != '' and length != None:
-					minutes = int(length)/60
-					seconds = str( int(length) - (60 * minutes))
-					if len(seconds) < 2:
-						seconds = '0' + seconds
-					length = str(minutes)+":"+str(seconds)
-				else:
-					length = "0:00"
-			
-                        #l=len('['+str(num+1)+'] '+" Size: " + str(size)+" Length: " + length + " Bitrate: " + bitrate)
-                        atr = self.colors["cyan"] | curses.A_BOLD
-
-			self.windows["text"]["browsebar"].addstr("[")
-                        self.windows["text"]["browsebar"].addstr(str(num+1), atr )
-                        self.windows["text"]["browsebar"].addstr("] | Size: ")
-                        self.windows["text"]["browsebar"].addstr(str(size), atr)
-                        self.windows["text"]["browsebar"].addstr(" | ")
-                        self.windows["text"]["browsebar"].addstr(bitrate, atr)
-                        self.windows["text"]["browsebar"].addstr("Kbps | Length: ")
-                        self.windows["text"]["browsebar"].addstr(length, atr)
-			self.windows["text"]["browsebar"].refresh()
-		except Exception, e:
-			self.Help.Log("debug", "BrowseFileBar: " + str(e))
-			
 			
 	def ModeReload(self, user):
 		# Redraw if user is in the current mode
@@ -4715,8 +5413,8 @@ class Mucous(driver.Driver):
 				if user in self.config[self.display["list"]].keys():
 					self.ModeLists()
 		elif self.display["mode"] == "browse":
-			if user in self.activeitems["browse"]:
-				self.ModeBrowse()
+			if user in self.BrowseShares.users:
+				self.BrowseShares.Mode()
 		elif self.display["mode"] == "search":
 			if user in self.data["search_tickets"].keys():
 				self.Search.Mode()
@@ -4784,65 +5482,6 @@ class Mucous(driver.Driver):
 
 
 
-	def BrowseChangeDir(self, line):
-		try:
-			if self.Spl["dir_browse"]== '' or line[0:1] == '\\' or line[1:2] == ":":
-				if self.usernames["browse"] in self.data["browse_results"].keys():
-					if line[0:1] == '\\':
-						if line in self.data["browse_results"][self.usernames["browse"]].keys():
-							self.Spl["dir_browse"] = line
-						else:
-							self.Help.Log("status", "No such directory: %s user:" % (line[1:],  self.usernames["browse"]))
-					if line[1:2] == ":":
-						if line in self.data["browse_results"][self.usernames["browse"]].keys():
-							self.Spl["dir_browse"] = line
-						else:
-							self.Help.Log("status", "No such directory: %s user:" % (line,  self.usernames["browse"]))
-					else:
-						if line in self.data["browse_results"][self.usernames["browse"]].keys():
-							self.Spl["dir_browse"] = line
-						else:
-							self.Help.Log("status", "No such directory: %s user:" % (line,  self.usernames["browse"]))
-				
-			elif line =='..':
-				z = self.BrowseParentDir()
-				if z != 0:
-					self.Spl["dir_browse"] = z
-				else:
-					self.Help.Log("status", "No parent directory, User: " +  self.usernames["browse"])
-			else:
-				if self.Spl["dir_browse"] + '\\'+line in self.data["browse_results"][self.usernames["browse"]].keys():
-					self.Spl["dir_browse"] += '\\'+line
-				else:
-					self.Help.Log("status", "No such directory: %sUser: " % (line, self.usernames["browse"]) )
-					
-			if self.usernames["browse"] == None:
-				self.set_edit_title("Choose a user to Browse Shares")
-			else:
-				s = "Browse "+self.usernames["browse"]+"'s files in "
-				ls = len(s)
-				self.set_edit_title(s  + self.Spl["dir_browse"][:self.w-ls-4] + " ")
-		except Exception, e:
-			self.Help.Log("debug", "BrowseChangeDir: " + str(e))
-			
-	def BrowseParentDir(self):
-		try:
-			splitit = self.Spl["dir_browse"]
-			splitit = splitit.split("\\")
-			s = len(splitit)
-			z=''
-			for r in range(s-1):
-				if r == 0:
-					z += splitit[r]
-				else:
-					z += "\\"+splitit[r]
-					
-			if z in self.data["browse_results"][self.usernames["browse"]].keys():
-				return z
-			else:
-				return 0
-		except Exception, e:
-			self.Help.Log("debug", "BrowseParentDir: " + str(e))
 			
 	#Add new/replace old keys to self.config
 	def ModifyConfig(self, changetype, username, value):
@@ -4924,7 +5563,7 @@ class Mucous(driver.Driver):
 			elif domain in ("clients", "transfers", "server", "interfaces", "interfaces.bind", "userinfo") and self.display["mode"] == "setup":
 				self.ModeSetup()
 			elif domain in ("encoding.users", "encoding" ) and self.display["mode"] == "browse":
-				self.ModeBrowse()
+				self.BrowseShares.Mode()
 			elif domain in ("encoding.users" ) and self.display["mode"] == "private":	
 				self.PrivateChat.Mode()
 			elif domain in ("encoding.rooms" ) and self.display["mode"] == "chat":
@@ -4959,21 +5598,21 @@ class Mucous(driver.Driver):
 					
 			elif self.display["mode"]=="browse":
 				
-				if self.display["browse"] == "files":
-					w = self.windows["dimensions"]["browse"]
+				if self.BrowseShares.selected == "files":
+					w = self.BrowseShares.dimensions["browse"]
 					if dtype == "dir":
-						directory = path = self.Spl["dir_browse"]
-						user = self.usernames["browse"]
+						directory = path = self.BrowseShares.current_dir
+						user = self.BrowseShares.current
 
 					elif dtype == "file":
-						user = self.usernames["browse"]
-						path = self.Spl["dir_browse"]+"\\"+self.data["files"][number]
-				elif self.display["browse"] == "directories":
-					w = self.windows["dimensions"]["directories"]
+						user = self.BrowseShares.current
+						path = self.BrowseShares.current_dir+"\\"+self.BrowseShares.files[number]
+				elif self.BrowseShares.selected == "directories":
+					w = self.BrowseShares.dimensions["directories"]
 					if dtype != "dir":
 						return
-					directory = path = self.Spl["dir_browse"]
-					user = self.usernames["browse"]
+					directory = path = self.BrowseShares.current_dir
+					user = self.BrowseShares.current
 
 			if user != None and path != None:
 				if dtype == "file":
@@ -4991,7 +5630,7 @@ class Mucous(driver.Driver):
 						self.Help.Log("status", "Auto-Buddied: %s" % user)
 				
 		except Exception, e:
-			self.Help.Log("debug", "DPF: " + str(e))
+			self.Help.Log("debug", "download_path_file: " + str(e))
 			
 	def TransfersListCompact(self, list):
 		try:
@@ -5320,23 +5959,6 @@ class Mucous(driver.Driver):
 			self.Help.Log("debug", "show_nick_list: " + str(e))
 			
 
-	def BrowseClose(self, user):
-		try:
-			if user in self.activeitems["browse"]:
-				self.activeitems["browse"].remove(user)
-				self.scrolling["browsedir"] = 0
-			if user in self.logs["browse"]:
-				del self.logs["browse"][user]
-			if self.activeitems["browse"] != []:
-				if self.usernames["browse"] == user:
-					self.usernames["browse"] = self.activeitems["browse"][0]
-			else:
-				self.usernames["browse"] = "default__"
-			if user in self.alert["BROWSE"] and user != "__default":
-				self.alert["BROWSE"].remove(user)
-			self.ModeBrowse()
-		except Exception, e:
-			self.Help.Log("debug", "BrowseClose: " + str(e))
 
 	# Rebuild ListBuddy from self.config
 	def ListBuddy(self):
@@ -5458,9 +6080,9 @@ class Mucous(driver.Driver):
 					for userpath, values in self.transfers["downloads"].items():
 						usercompletionlist[self.dlang(values[1])] = 0
 			elif self.display["mode"] == "browse":
-				if self.usernames["browse"] != None:
-					if self.usernames["browse"] in self.data["browse_results"]:
-						for dirs in self.data["browse_results"][self.usernames["browse"]].keys():
+				if self.BrowseShares.current != None:
+					if self.BrowseShares.current in self.data["browse_results"]:
+						for dirs in self.data["browse_results"][self.BrowseShares.current].keys():
 							usercompletionlist[self.dlang(dirs)] = 0
 			for values in self.commandlist:
 				usercompletionlist[self.dlang(values)] = 0
@@ -5505,11 +6127,13 @@ class Mucous(driver.Driver):
 					selected_log = self.logs["roomstatus"][self.Spl["room"]]
 				scrolldiff = w["height"]
 			elif self.display["mode"] == "browse":
-				if self.display["browse"] == "directories":
-					scrolltext = "browsedir"
-				else:
-					scrolltext = "browsefile"
-				scrolldiff = self.windows["dimensions"]["browse"]["height"]
+				#self.Help.Log("debug", self.BrowseShares.selected)
+				scrollnum = self.BrowseShares.scrolling[self.BrowseShares.selected]
+				#if self.BrowseShares.selected == "directories":
+					#scrolltext = "directories"
+				#else:
+					#scrolltext = "files"
+				scrolldiff =self.BrowseShares.dimensions["browse"]["height"]
 			elif self.display["mode"] in ("debug", "help"):
 				scrolltext = self.display["mode"]
 				scrolldiff = self.windows["dimensions"]["help"]["height"]
@@ -5580,14 +6204,11 @@ class Mucous(driver.Driver):
 					self.DrawChatRoomStatusText()
 					
 			elif self.display["mode"] == "browse":
-				if self.scrolling[scrolltext]  >= len(self.data["directories"]):
-					self.scrolling[scrolltext] = len(self.data["directories"] )
-					curses.doupdate()
-					return
-				if self.display["browse"] == "directories":
-					self.FormatBrowse(1)
+
+				if self.BrowseShares.selected == "directories":
+					self.BrowseShares.FormatBrowse(1)
 				else:
-					self.FormatBrowse(0)
+					self.BrowseShares.FormatBrowse(0)
 				curses.doupdate()
 			elif self.display["mode"] == "info":
 				self.Userinfo.DrawText()
@@ -5619,19 +6240,24 @@ class Mucous(driver.Driver):
 				
 			self.key = None
 		except Exception, e:
-			self.Help.Log("debug", "scrolltext: " + str(e))
+			self.Help.Log("debug", "ScrollText: " + str(e))
 	# ---v  KEYS v
 	
 	# Tab completion
 
 	def UpdateScrollNum(self, num):
-		if self.display["mode"] ==  "private":
-			self.PrivateChat.scrolling = num
-		if self.display["mode"] ==  "search":
-			self.Search.scrolling = num
-		if self.display["mode"] ==  "roomlist":
-			self.RoomsList.scrolling = num
-				
+		try:
+			if self.display["mode"] == "private":
+				self.PrivateChat.scrolling = num
+			if self.display["mode"] == "search":
+				self.Search.scrolling = num
+			if self.display["mode"] == "roomlist":
+				self.RoomsList.scrolling = num
+			if self.display["mode"] == "browse":
+				self.BrowseShares.scrolling[self.BrowseShares.selected] = num
+		except Exception, e:
+			self.Help.Log("debug", "UpdateScrollNum: " + str(e))
+			
 	def InputTabCompletion(self, line, part, firsttab, listline, pos):
 		try:
 			self.firsttab = firsttab
@@ -5820,8 +6446,8 @@ class Mucous(driver.Driver):
 					self.windows["border"]["roombox"].refresh()
 					
 			elif self.display["mode"] =="browse":
-				self.DrawBrowseWin()
-				self.FormatBrowse()
+				self.BrowseShares.DrawBrowseWin()
+				self.BrowseShares.FormatBrowse()
 				curses.doupdate()
 			elif self.display["mode"] =="setup":
 				self.ModeSetup()
@@ -5837,83 +6463,7 @@ class Mucous(driver.Driver):
 			self.Help.Log("debug", "Refresh Windows: "+str(e))
 
 			
-	def MouseBrowse(self, x,y,z,event):
-		try:
-			d = self.windows["dimensions"]["directories"]
-			w = self.windows["dimensions"]["browse"]
-			if y in (1, 2, 3):
-				if len(self.activeitems["browse"]) >= 1:
-					
-					if self.usernames["browse"] == "default__":
-						self.usernames["browse"] = self.activeitems["browse"][0]
-					else:
-						self.usernames["browse"], match = self.MouseClickTab(x, self.usernames["browse"])
-						if match == None:
-							s = self.activeitems["browse"].index(self.usernames["browse"])
-							self.usernames["browse"] = self.activeitems["browse"][s-1]
-						sdirs =  self.data["browse_results"][self.usernames["browse"]].keys()
-						sdirs.sort(key=str.lower)
-						self.Spl["dir_browse"]=sdirs[0]
-					
-					self.ModeBrowse()
-			elif y == w["top"] + w["height"]:
-				if x < mucous_config["mucous"]["browse_width"]:
-					if x in (7,8,9,10):
-						if mucous_config["mucous"]["browse_width"] > 20: 
-							mucous_config["mucous"]["browse_width"] -= 1
-							self.ModeBrowse()
-					elif x in (12,13,14,15,16,17):
-						if mucous_config["mucous"]["browse_width"] < self.w-20:
-							mucous_config["mucous"]["browse_width"] += 1
-							self.ModeBrowse()
-					
-			elif y == w["top"]-1:
-			
-				if x >=self.w-17 and self.usernames["browse"] != "default__":
-					self.usernames["browse"]="default__"
-					self.ModeBrowse()
-			elif x in range(d["width"]) and y >= d["top"] and y <= d["top"] + d["height"]:
-				if self.usernames["browse"] == "default__":
-					return
-				if self.display["browse"] != "directories":
-					self.display["browse"] = "directories"
-					self.DrawBrowseWin()
-					
-				self.scrolling["browsedir"] = y - d["top"] + d["start"]
-				self.FormatBrowse()
-				
-				if event in ( 4096, 16384):
-					self.DrawChatRoomBox()
-					self.PopupMenu.Create("browse-dirs", 0, True)
-				else:
-					self.DrawChatRoomBox()
-				curses.doupdate()
-				
-			elif x >=  w["left"] and y >= w["top"] and y <= w["top"] + w["height"]:
-				if self.usernames["browse"] == "default__":
-					return
-				if self.display["browse"] != "files":
-					self.display["browse"] = "files"
-					self.DrawBrowseWin()
-				self.scrolling["browsefile"] = y - w["top"]+ w["start"]
-				self.FormatBrowse()
-				
-				if event in ( 4096, 16384):
-					self.DrawChatRoomBox()
-					self.PopupMenu.Create("browse-files", 0, True)
-				else:
-					self.DrawChatRoomBox()
-				curses.doupdate()
-				
-			elif y in ( self.h-5, self.h-6):
-				if x>= self.w-27 and x < self.w-18:
-					self.PopupMenu.Create("encoding", 0, True)
-					return
-				elif x >=self.w-10 and x < self.w-1 and self.usernames["browse"] != "default__":
-					self.BrowseClose(self.usernames["browse"])
-		except Exception, e:
-			self.Help.Log("debug", "MouseBrowse: " +str(e) )
-			
+
 	def MouseChat(self, x,y,z,event, line):
 		try:
 			w = self.windows["dimensions"]["chat"]
@@ -6575,7 +7125,7 @@ class Mucous(driver.Driver):
 				elif x >= 35 and x < 41:
 					self.Userinfo.Mode()
 				elif x >= 41 and x < 49:
-					self.ModeBrowse()
+					self.BrowseShares.Mode()
 				elif x >= 49 and x < 56:
 					self.ModeLists()
 				elif x >= 56 and x < 63:
@@ -6603,7 +7153,7 @@ class Mucous(driver.Driver):
 				# Clickable private message switch
 				return self.PrivateChat.Mouse(x,y,z,event)
 			elif self.display["mode"] == "browse":
-				return self.MouseBrowse(x,y,z,event)
+				return self.BrowseShares.MouseBrowse(x,y,z,event)
 			elif self.display["mode"] == "info":
 				# Clickable user info tabs
 				return self.Userinfo.Mouse(x,y,z,event)
@@ -6786,7 +7336,7 @@ class Mucous(driver.Driver):
 						
 				elif self.display["mode"] == 'browse':
 					if user != None: this_user = user
-					else: this_user = self.usernames["browse"]
+					else: this_user = self.BrowseShares.current
 					if this_user != "default__":
 						self.BrowseClose(this_user)
 						
@@ -6946,7 +7496,7 @@ class Mucous(driver.Driver):
 				elif num == "5":
 					self.Userinfo.Mode()
 				elif num == "6":
-					self.ModeBrowse()
+					self.BrowseShares.Mode()
 				elif num == "7":
 					self.ModeLists()
 				elif num == "8":
@@ -7055,7 +7605,7 @@ class Mucous(driver.Driver):
 				self.Userinfo.Mode()
 				
 			elif line == "/browse":
-				self.ModeBrowse()
+				self.BrowseShares.Mode()
 					
 			elif line == "/buddylist" :
 				self.display["list"] = "buddied"
@@ -7455,7 +8005,7 @@ class Mucous(driver.Driver):
 					mucous_config["mucous"]["browse_width"] = width
 					
 					if self.display["mode"] == "browse":
-						self.ModeBrowse()
+						self.BrowseShares.Mode()
 					
 			elif line[:12] == "/browseuser " or line[:7] == "/buser ":
 				user = None
@@ -7464,7 +8014,7 @@ class Mucous(driver.Driver):
 				elif line[:7] == "/buser " and line[7:] != '':
 					user = line[7:]
 				if user != None:
-					self.BrowseUser(user)
+					self.BrowseShares.Get(user)
 					
 					
 			elif line[:14] == "/browsesearch " or line[:9] == "/bsearch ":
@@ -7475,11 +8025,11 @@ class Mucous(driver.Driver):
 					l_input = line[9:]
 				if l_input != None:
 					self.bfilter = re.compile('.*' +str(l_input) + '.*', re.DOTALL | re.I)
-					self.FormatBrowse()
+					self.BrowseShares.FormatBrowse()
 					curses.doupdate()
 			elif line == "/browsesearch" or line == "/bsearch":
 				self.bfilter = None
-				self.FormatBrowse()
+				self.BrowseShares.FormatBrowse()
 				curses.doupdate()
 				'''
 				Manage Transfers
@@ -7806,7 +8356,7 @@ class Mucous(driver.Driver):
 							return 1
 					
 					
-					self.BrowseUser(line)
+					self.BrowseShares.Get(line)
 					
 					
 				elif self.display["mode"] == "info":
@@ -8030,7 +8580,7 @@ class Mucous(driver.Driver):
 				if self.display["mode"] != "info": self.Userinfo.Mode()
 				return
 			elif key == "KEY_F(6)":
-				if self.display["mode"] != "browse": self.ModeBrowse()
+				if self.display["mode"] != "browse": self.BrowseShares.Mode()
 				return
 			elif key == "KEY_F(7)":
 				if self.display["mode"] != "lists": self.ModeLists()
@@ -8066,10 +8616,10 @@ class Mucous(driver.Driver):
 							self.PopupMenu.Create("search", 0)
 					elif self.display["mode"] == "browse":
 						
-						if self.usernames["browse"] != "default__":
-							if self.display["browse"] == "files":
+						if self.BrowseShares.current != "default__":
+							if self.BrowseShares.selected == "files":
 								self.PopupMenu.Create("browse-files", 0)
-							elif self.display["browse"] == "directories":
+							elif self.BrowseShares.selected == "directories":
 								self.PopupMenu.Create("browse-dirs", 0)
 			elif key in ("delete"):
 				if self.display["mode"] == "lists" and self.display["list"] == "interests":
@@ -8086,16 +8636,16 @@ class Mucous(driver.Driver):
 					self.ModeInterests()
 				
 			elif key == "collapse":
-				if self.display["mode"] == "browse" and self.display["browse"] == "directories":
-					if self.data["directories"] == []:
+				if self.display["mode"] == "browse" and self.BrowseShares.selected == "directories":
+					if self.BrowseShares.dirs == []:
 						return
-					Dir = self.data["directories"][ self.scrolling["browsedir"] ]
+					Dir = self.BrowseShares.dirs[ self.BrowseShares.scrolling["directories"] ]
 
-					if Dir not in self.data["collapsed_dirs"][ self.usernames["browse"] ]:
-						self.data["collapsed_dirs"][ self.usernames["browse"] ].append(Dir)
+					if Dir not in self.BrowseShares.collapsed[ self.BrowseShares.current ]:
+						self.BrowseShares.collapsed[ self.BrowseShares.current ].append(Dir)
 					else:
-						self.data["collapsed_dirs"][ self.usernames["browse"] ].remove(Dir)
-					self.FormatBrowse()
+						self.BrowseShares.collapsed[ self.BrowseShares.current ].remove(Dir)
+					self.BrowseShares.FormatBrowse()
 					
 			elif key in ("switch", "KEY_HOME", "KEY_END"):
 				if self.display["mode"] == "transfer":
@@ -8150,8 +8700,8 @@ class Mucous(driver.Driver):
 					self.Search.Mode()
 				elif self.display["mode"] == "browse":	
 					_list = [ "files", "directories" ]
-					self.display["browse"] = self.FormatData.RotateList("right", _list, self.display["browse"], "no")
-					self.ModeBrowse()
+					self.BrowseShares.selected = self.FormatData.RotateList("right", _list, self.BrowseShares.selected, "no")
+					self.BrowseShares.Mode()
 				elif self.display["mode"] == "lists" and self.display["list"] == "interests":
 					_list = [ "recommendations", "similar_users", "likes", "hates" ]
 					self.display["interests"] = self.FormatData.RotateList("right", _list, self.display["interests"], "no")
@@ -8215,20 +8765,20 @@ class Mucous(driver.Driver):
 							curses.doupdate()
 					
 				elif self.display["mode"] == "browse":
-					if len(self.activeitems["browse"]) >= 1:
-						if self.usernames["browse"] == "default__":
-							self.usernames["browse"] = self.activeitems["browse"][0]
+					if len(self.BrowseShares.users) >= 1:
+						if self.BrowseShares.current == "default__":
+							self.BrowseShares.current = self.BrowseShares.users[0]
 
 							
-						place = self.FormatData.RotateList(direction, self.activeitems["browse"], self.usernames["browse"], "yes" )
-						if place != self.usernames["browse"]:
-							self.usernames["browse"] = place 
+						place = self.FormatData.RotateList(direction, self.BrowseShares.users, self.BrowseShares.current, "yes" )
+						if place != self.BrowseShares.current:
+							self.BrowseShares.current = place 
 
-							sdirs =  self.data["browse_results"][self.usernames["browse"]].keys()
+							sdirs =  self.data["browse_results"][self.BrowseShares.current].keys()
 							sdirs.sort(key=str.lower)
 							self.Spl["dir_browse"]=sdirs[0]
-							self.scrolling["browsefile"] = self.scrolling["browsedir"] = 0
-							self.ModeBrowse()
+							self.scrolling["files"] = self.scrolling["directories"] = 0
+							self.BrowseShares.Mode()
 					return line	
 				elif self.display["mode"]=="lists":
 					
@@ -8574,8 +9124,8 @@ class Mucous(driver.Driver):
 			tw.scrollok(0)
 			tw.idlok(1)
 
-			if self.logs["alert"] in ( "New Chat", "Nick Mention"):
-				self.AlertStatus("")	
+			if self.Alerts.log in ( "New Chat", "Nick Mention"):
+				self.Alerts.setStatus("")	
 
 			self.set_room(self.Spl["room"])
 
@@ -8996,8 +9546,8 @@ class Mucous(driver.Driver):
 				self.FormatChatRoomText()
 				
 				# Clear Alert log
-				if "%s" % self.Spl["room"] == self.logs["alert"]:
-					self.AlertStatus("")
+				if "%s" % self.Spl["room"] == self.Alerts.log:
+					self.Alerts.setStatus("")
 				
 				self.TickersStartTimer()
 			try:
@@ -9005,7 +9555,7 @@ class Mucous(driver.Driver):
 			except:
 				pass
 			
-			self.AlertCheck()
+			self.Alerts.Check()
 		except Exception, e:
 			self.Help.Log("debug", "set_room: " + str(e))
 			
@@ -9595,285 +10145,7 @@ class Mucous(driver.Driver):
 		except Exception, e:
 			self.Help.Log("debug", "TransferBar: " + str(e))
 		
-			
-	def ModeBrowse(self):
-		try:
-			self.display["mode"] = "browse"
-			self.PopupMenu.show = False
 
-			# Cleanup stale windows
-			if "browse" in self.windows["text"]:
-				del self.windows["text"]["browse"]
-			if "browse" in self.windows["border"]: 
-				del self.windows["border"]["browse"]
-			if "dirwin" in self.windows["text"]:
-				del self.windows["text"]["dirwin"]
-			if "dirborder" in self.windows["border"]:
-				del self.windows["border"]["dirborder"]
-			if "browsebar" in self.windows["text"]:
-				del self.windows["text"]["browsebar"]
-			
-			w = self.windows["dimensions"]["browse"] = {"height": self.h-11, "width": self.w-mucous_config["mucous"]["browse_width"], "top": 5, "left": mucous_config["mucous"]["browse_width"]-1, "start": 0}
-			# Files Border	
-			wbb = self.windows["border"]["browse"] = curses.newwin(w["height"]+2, w["width"]+2, w["top"]-1, w["left"]-1)
-			# Directories Border
-			self.windows["border"]["dirborder"] = curses.newwin(w["height"]+2, self.w-w["width"]-2, w["top"]-1, 0)
-			self.DrawBrowseWin()
-			# Files Text
-			tbb = self.windows["text"]["browse"] = wbb.subwin(w["height"], w["width"], w["top"], w["left"])
-			tbb.scrollok(0)
-			tbb.idlok(1)
-			tbb.noutrefresh()
-
-			d = self.windows["dimensions"]["directories"] = {"height": w["height"], "width": self.w-w["width"]-4, "top": w["top"], "left":1}
-			# Directories Text
-			dw = self.windows["text"]["dirwin"] = self.windows["border"]["dirborder"].subwin(d["height"], d["width"], d["top"], d["left"])
-			dw.erase()
-			dw.noutrefresh()
-	
-# 			self.scrolling["browsefile"] = self.scrolling["browsedir"] = 0
-			# Vars
-
-			self.data["files"] = []
-			self.data["directories"] = []
-			
-			self.windows["text"]["browsebar"] = curses.newwin(1, self.w, w["top"]+w["height"]+1, 0)
-			self.windows["text"]["browsebar"].erase()
-			self.windows["text"]["browsebar"].noutrefresh()
-			
-			self.AlertCheck()
-			self.HotKeyBar()
-			self.FormatBrowse()
-			curses.doupdate()
-			del w
-		except Exception, e:
-			self.Help.Log("debug", "ModeBrowse: " + str(e))
-			
-	def DrawBrowseWin(self):
-		try:
-			w = self.windows["dimensions"]["browse"]
-			mw = self.windows["border"]["browse"]
-			if self.display["browse"] == "files":
-				mw.attron(self.colors["green"])
-			else:
-				mw.attroff(self.colors["green"])
-			mw.border()
-	
-			try:
-				if self.display["browse"] == "files":
-					attr = self.colors["green"] | curses.A_BOLD
-				else:
-					attr = curses.A_BOLD
-				if self.usernames["browse"] == "default__":
-					mw.addstr(0, 3, "< Browse users >",  attr)
-				else:
-					mw.addstr(0, 1, "<Num",  attr)
-					mw.addch(curses.ACS_VLINE, attr)
-					mw.addstr(" Size  ",  attr)
-					mw.addch(curses.ACS_VLINE, attr)
-					mw.addstr(" Filename >",  attr)
-			except:
-				pass
-			mw.noutrefresh()
-			
-			self.windows["border"]["dirborder"].erase()
-			if self.display["browse"] == "directories":
-				self.windows["border"]["dirborder"].attron(self.colors["green"])
-				attr = self.colors["green"] | curses.A_BOLD
-			else:
-				attr = curses.A_BOLD
-			self.windows["border"]["dirborder"].border()
-			self.windows["border"]["dirborder"].attroff(self.colors["green"] )
-			self.windows["border"]["dirborder"].addstr(0, 1, "< Directories >",  attr)
-			self.windows["border"]["dirborder"].addstr(w["height"]+1, 1, "< Width - %s + >"  % mucous_config["mucous"]["browse_width"],  attr)
-			self.windows["border"]["dirborder"].noutrefresh()
-
-			if self.usernames["browse"] == "default__":
-				self.scrolling["browsedir"] = 0
-				self.set_edit_title("Choose a user to Browse Shares")
-				self.DrawInstructionsButtons()
-			else:
-				self.DrawInstructionsButtons()
-				#s = "Browse "+self.usernames["browse"]+"'s files in "
-				#ls = len(s)
-				#self.set_edit_title(s  + self.Spl["dir_browse"][:self.w-ls-8] )
-				self.set_edit_title( self.Spl["dir_browse"][:self.w-8] )
-		except Exception, e:
-			self.Help.Log("debug", "DrawBrowseWin: " + str(e))
-			
-	def FormatBrowseDirs(self):
-			 
-			d = self.windows["dimensions"]["directories"]
-			w = self.windows["dimensions"]["browse"] 
-			tw = self.windows["text"]["browse"]
-
-                        # If the default help isn't displayed
-			if self.usernames["browse"] != "default__":
-				
-				tempdirs = self.data["browse_results"][self.usernames["browse"]]["dirs"]
-				#tempdirs.sort(key=str.lower)
-                                # List, Directory, Scroll position
-				collapsed = self.data["collapsed_dirs"][self.usernames["browse"]]
-				num = 0
-				dirswithtree = []
-				self.data["directories"] = []
-				parents = []
-				for directory in tempdirs:
-					parent = "\\".join(directory.split("\\")[:-1])
-					if parent in tempdirs and parent not in parents:
-						parents.append(parent)
-	
-				for directory in tempdirs:
-					try:
-						parent = "\\".join(directory.split("\\")[:-1]) 
-						a = 0
-						for dirs in collapsed:
-							if parent.startswith(dirs+"\\") or parent == dirs:
-								a = 1
-								break
-						if a == 1:
-							num += 1
-							continue
-						if directory in parents:
-							if directory in collapsed:
-								dirswithtree.append([directory, 2])
-								self.data["directories"].append(directory)
-							else:
-								for dir in collapsed:
-									if dir in directory:
-										pass
-								else:
-									dirswithtree.append([directory, 1])
-									self.data["directories"].append(directory)
-						else:
-							for dir in collapsed:
-								if dir in directory:
-									pass
-							else:
-								dirswithtree.append([directory, 0])
-								self.data["directories"].append(directory)
-					except Exception, e:
-						for dir in collapsed:
-							if dir in directory:
-								pass
-						else:
-							dirswithtree.append([directory, 0])
-							self.data["directories"].append(directory)
-					num += 1 
-				
-				if self.display["browse"] == "directories":
-					clipped_list, self.scrolling["browsedir"], start = self.FormatData.scrollbox(dirswithtree, self.scrolling["browsedir"], d["height"])
-				else:
-					clipped_list, self.scrolling["browsedir"], start = self.FormatData.scrollbox(dirswithtree, self.scrolling["browsedir"], d["height"])
-				#self.Help.Log("debug", self.scrolling["browsedir"])
-				self.windows["dimensions"]["directories"]["start"] = start
-				count = 0
-				self.windows["text"]["dirwin"].erase()
-                                # Display directory tree
-				for s, has_child in clipped_list:
-					try:
-						dir = s.split("\\")
-						if has_child == 1:
-							modifier = "[-]"
-						elif has_child == 2:
-							modifier = "[+]"
-						else: 
-							modifier = "|\\"
-                                                # Spaces before directory, to make it look like a tree
-						string = (" " * (len(dir)-2)) + modifier
-						string += self.dlang(dir[-1][:d["width"]-len(string)])
-						string += " " * ( d["width"] -len(string) )
-						if count +d["start"] == self.scrolling["browsedir"]:
-							self.windows["text"]["dirwin"].addstr(string, self.colors["green"])
-						else:
-							self.windows["text"]["dirwin"].addstr(string)
-						count += 1
-					except Exception, e:
-						pass
-						#self.Help.Log("debug", str(e))
-				del clipped_list
-			
-			elif self.usernames["browse"] == "default__":
-                                # Clear windows, display browse help
-				self.windows["text"]["dirwin"].erase()
-				self.windows["text"]["dirwin"].noutrefresh()
-				tw.erase()
-				count = 0
-				
-				for lines in self.logs["browse"][self.usernames["browse"]]:
-
-					try:
-						self.DrawBrowseFileText(lines, count , self.scrolling["browsefile"])
-		
-					except Exception, e:
-						self.Help.Log("debug", "Browse mode" + str(e))
-			tw.noutrefresh()
-			
-	def FormatBrowse(self, FormatDirs=1):
-		try:
-			if "directories" not in self.windows["dimensions"]:
-				return
-			if FormatDirs:
-				self.FormatBrowseDirs()
-			if self.usernames["browse"] != "default__":
-				self.Spl["dir_browse"] = self.data["directories"][self.scrolling["browsedir"]]
-				self.set_edit_title(self.Spl["dir_browse"] )
-			
-				self.BrowseFiles( self.usernames["browse"], self.Spl["dir_browse"])
-			
-				self.BrowseFileBar( self.usernames["browse"], self.Spl["dir_browse"])
-			
-			self.windows["text"]["dirwin"].noutrefresh()
-		
-			
-			
-			self.DrawTabs(self.activeitems["browse"], self.usernames["browse"])
-
-			
-		except Exception, e:
-			self.Help.Log("debug", "FormatBrowse: " + str(e))
-			
-	## Send a request to museekd to browse this user
-	#
-	def BrowseUser(self, user):
-		try:
-			if user not in self.requests["browse"]:
-				self.requests["browse"].append(user)
-			self.SendMessage(messages.UserShares(user))
-		except Exception, e:
-			self.Help.Log("debug", "BrowseUser" + str(e))
-	
-	## Draw file's number, name and size	
-	def DrawBrowseFileText(self,  line, count, sup):
-		try:
-			w = self.windows["dimensions"]["browse"]
-			tw = self.windows["text"]["browse"]
-			this_line = self.dlang( line )
-			if len(this_line) > self.windows["dimensions"]["browse"]["width"]:
-				crop = len(this_line) - self.windows["dimensions"]["browse"]["width"]
-				this_line = this_line[:-crop]
-				
-			if count + w["start"] == sup:
-				attr = self.colors["blafgcyabg"] |curses.A_REVERSE|curses.A_BOLD	
-				nattr = self.colors["cyan"] |curses.A_REVERSE|curses.A_BOLD
-			else:
-				attr = curses.A_NORMAL
-				nattr = self.colors["cyan"] 
-			if self.usernames["browse"] == "default__":
-				tw.addstr(this_line, attr )
-			else:
-				tw.addstr(this_line[:4], attr )
-				tw.addch(curses.ACS_VLINE, attr)
-				tw.addstr(this_line[5:12], nattr )
-				tw.addch(curses.ACS_VLINE, attr)
-				tw.addstr(this_line[13:], attr )
-			z = w["width"]-len(this_line)
-			space = " " * ( z )
-			tw.addstr(space, attr)
-			
-		except:
-			pass
-			
 
 	def DrawInstructionsButtons(self):
 		try:
@@ -9882,7 +10154,7 @@ class Mucous(driver.Driver):
 				w = self.Search.dimensions
 			elif self.display["mode"] == "browse":
 				gi = "Instructions"
-				w = self.windows["dimensions"][self.display["mode"]]
+				w = self.BrowseShares.dimensions["browse"]
 			elif self.display["mode"] == "info":
 				gi = "Instructions"
 				w = self.windows["dimensions"][self.display["mode"]]
@@ -9892,6 +10164,8 @@ class Mucous(driver.Driver):
 			if self.display["mode"] != "lists":
 				if self.display["mode"] == "search":
 					mw = self.Search.windows["border"]
+				elif self.display["mode"] == "browse":
+					mw = self.BrowseShares.windows["border"]
 				else:
 					mw = self.windows["border"][ self.display["mode"] ]
 			else:
@@ -9907,8 +10181,8 @@ class Mucous(driver.Driver):
 			if self.display["mode"] == "browse":
 				blah = None
 				if "encoding.users" in self.config:
-					if self.usernames["browse"] in self.config["encoding.users"]:
-						blah = self.config["encoding.users"][self.usernames["browse"]]
+					if self.BrowseShares.current in self.config["encoding.users"]:
+						blah = self.config["encoding.users"][self.BrowseShares.current]
 					else:
 						blah = self.config["encoding"]["filesystem"]
 				if blah != None:
@@ -10852,11 +11126,10 @@ class Mucous(driver.Driver):
 				del self.windows["border"]["downloadstatus"]
 			if "searchstatus" in self.windows["border"]:
 				del self.windows["border"]["searchstatus"]
-			if "alert" in self.windows["border"]:
-				del self.windows["border"]["alert"]
+			
 			if "username" in self.windows["border"]:
 				del self.windows["border"]["username"]
-				
+			self.Alerts.Mode()	
 			tb = self.windows["border"]["top"] =   curses.newwin(1, self.w, 0, 0)
 			tb.bkgdset(" ", self.colors["blafgcyabg"]  | curses.A_REVERSE | curses.A_BOLD)
 			tb.idlok(1)
@@ -10905,12 +11178,7 @@ class Mucous(driver.Driver):
 				pass
 			ssw.noutrefresh()
 		
-		
-			aw = self.windows["border"]["alert"] = curses.newwin(1, 15, 0, self.w-15)
-			aw.bkgdset(" ", self.colors["blafgcyabg"]  | curses.A_REVERSE | curses.A_BOLD)
-			aw.idlok(1)
 			
-			self.AlertStatus(self.logs["alert"])
 			un = self.windows["border"]["username"] =  curses.newwin(1, 16, 0, 9)
 			un.idlok(1)
 			un.bkgdset(" ", self.colors["blafgcyabg"]  | curses.A_REVERSE | curses.A_BOLD)
@@ -10936,9 +11204,9 @@ class Mucous(driver.Driver):
 			bb = self.windows["border"]["bottom"] = curses.newwin(1, self.w-1, self.h-1, 0)
 			bb.addstr(" 1",  curses.A_BOLD)
 			if self.display["mode"] == "chat":
-				if self.alert["CHAT"] != {}:
+				if self.Alerts.alert["CHAT"] != {}:
 					nick = 0
-					for room, status in self.alert["CHAT"].items():
+					for room, status in self.Alerts.alert["CHAT"].items():
 						if status == "nick":
 							nick = 1
 					if nick == 1:
@@ -10948,9 +11216,9 @@ class Mucous(driver.Driver):
 				else:
 					bb.addstr("Chat",  curses.A_REVERSE |  self.colors["greenbg"])
 			else:
-				if self.alert["CHAT"] != {}:
+				if self.Alerts.alert["CHAT"] != {}:
 					nick = 0
-					for room, status in self.alert["CHAT"].items():
+					for room, status in self.Alerts.alert["CHAT"].items():
 						if status == "nick":
 							nick = 1
 					if nick == 1:
@@ -10961,12 +11229,12 @@ class Mucous(driver.Driver):
 					bb.addstr("Chat",  self.colors["cybg"])
 			bb.addstr(" 2",  curses.A_BOLD)
 			if self.display["mode"] == "private":
-				if self.alert["PRIVATE"] != []:
+				if self.Alerts.alert["PRIVATE"] != []:
 					bb.addstr("Private", self.colors["yellow"] |curses.A_BOLD |curses.A_REVERSE )
 				else:
 					bb.addstr("Private",curses.A_REVERSE |  self.colors["greenbg"])
 			else:
-				if self.alert["PRIVATE"] != []:
+				if self.Alerts.alert["PRIVATE"] != []:
 					bb.addstr("Private", self.colors["yellow"] |curses.A_REVERSE )
 				else:
 					bb.addstr("Private", self.colors["cybg"])
@@ -10978,34 +11246,34 @@ class Mucous(driver.Driver):
 			
 			bb.addstr(" 4",  curses.A_BOLD)
 			if self.display["mode"] == "search":
-				if self.alert["SEARCH"] != []:
+				if self.Alerts.alert["SEARCH"] != []:
 					bb.addstr("Search", self.colors["yellow"] |curses.A_REVERSE |curses.A_BOLD)
 				else:
 					bb.addstr("Search",curses.A_REVERSE |  self.colors["greenbg"])
 			else:
-				if self.alert["SEARCH"] != []:
+				if self.Alerts.alert["SEARCH"] != []:
 					bb.addstr("Search", self.colors["yellow"] |curses.A_REVERSE )
 				else:
 					bb.addstr("Search", self.colors["cybg"])
 			bb.addstr(" 5",  curses.A_BOLD)
 			if self.display["mode"] == "info":
-				if self.alert["INFO"] != []:
+				if self.Alerts.alert["INFO"] != []:
 					bb.addstr("Info", self.colors["yellow"] |curses.A_REVERSE |curses.A_BOLD)
 				else:
 					bb.addstr("Info",curses.A_REVERSE |  self.colors["greenbg"])
 			else:
-				if self.alert["INFO"] != []:
+				if self.Alerts.alert["INFO"] != []:
 					bb.addstr("Info", self.colors["yellow"] |curses.A_REVERSE )
 				else:
 					bb.addstr("Info", self.colors["cybg"])
 			bb.addstr(" 6",  curses.A_BOLD)
 			if self.display["mode"] == "browse":
-				if self.alert["BROWSE"] != []:
+				if self.Alerts.alert["BROWSE"] != []:
 					bb.addstr("Browse", self.colors["yellow"] |curses.A_REVERSE |curses.A_BOLD)
 				else:
 					bb.addstr("Browse",curses.A_REVERSE |  self.colors["greenbg"])
 			else:
-				if self.alert["BROWSE"] != []:
+				if self.Alerts.alert["BROWSE"] != []:
 					bb.addstr("Browse", self.colors["yellow"] |curses.A_REVERSE)
 				else:
 					bb.addstr("Browse", self.colors["cybg"])
@@ -11029,12 +11297,12 @@ class Mucous(driver.Driver):
 				bb.addstr("Setup",  self.colors["cybg"])
 			bb.addstr(" 10",  curses.A_BOLD)
 			if self.display["mode"] in ("debug", "help", "status"):
-				if self.alert["HELP"] != []:
+				if self.Alerts.alert["HELP"] != []:
 					bb.addstr("Help", self.colors["yellow"] |curses.A_BOLD |curses.A_REVERSE )
 				else:
 					bb.addstr("Help",curses.A_REVERSE |  self.colors["greenbg"])
 			else:
-				if self.alert["HELP"] != []:
+				if self.Alerts.alert["HELP"] != []:
 					bb.addstr("Help", self.colors["yellow"] | curses.A_REVERSE )
 				else:
 					bb.addstr("Help",  self.colors["cybg"])
@@ -11145,121 +11413,7 @@ class Mucous(driver.Driver):
 		except Exception, e:
 			self.Help.Log("debug", "DrawDownloadCount: " + str(e))
 
-	def AlertCheck(self):
-		try:
-			if self.display["mode"] == "chat":
-				if self.Spl["room"] in self.alert["CHAT"].keys():
-					del self.alert["CHAT"][self.Spl["room"]]
-			elif self.display["mode"] == "private":
-				if self.PrivateChat.current in self.alert["PRIVATE"]:
-					self.alert["PRIVATE"].remove(self.PrivateChat.current)
-			elif self.display["mode"] == "browse":
-				if self.usernames["browse"] in self.alert["BROWSE"] and self.usernames["browse"] != "__default":
-					self.alert["BROWSE"].remove(self.usernames["browse"])
-			elif self.display["mode"] == "search":
-				if self.Search.current in self.alert["SEARCH"]:
-					self.alert["SEARCH"].remove(self.Search.current)
-			elif self.display["mode"] == "info":
-				if self.Userinfo.current in self.alert["INFO"]:
-					self.alert["INFO"].remove(self.Userinfo.current)
-			elif self.display["mode"] in ("help", "debug", "status"):
-				#if ("debug", "help", "status") in self.alert["HELP"]:
-				self.alert["HELP"] = []
-			self.AlertNext()
-			self.HotKeyBar()
-		except Exception, e:
-			self.Help.Log("debug", "AlertCheck: " + str(e))
-
-	def AlertNext(self):
-		try:
-			if self.display["mode"] ==  "search":
-				if self.alert[self.display["mode"].upper()] != []:
-					for s in self.alert[self.display["mode"].upper()]:
-						self.AlertStatus(self.data["search_tickets"][s])
-						return
-				else:
-					self.AlertPick()
-			if self.display["mode"] in ("info", "private",  "browse"):
-			#if self.display["mode"].upper() in ("PRIVATE", "TRANSFERS",  "SEARCH", "INFO", "BROWSE"):
-			
-				if self.alert[self.display["mode"].upper()] != []:
-					for s in self.alert[self.display["mode"].upper()]:
-						self.AlertStatus(s)
-						return
-				else:
-					self.AlertPick()
-			elif self.display["mode"].upper()  == "CHAT":
-				if self.alert[self.display["mode"].upper()] != {}:
-					for m, l in self.alert["CHAT"].items():
-						self.AlertStatus(m)
-						return
-					self.AlertStatus("")
-				else:
-					self.AlertPick()
-			elif self.display["mode"] in ("help", "debug", "status"):
-				for s in self.alert["HELP"]:
-					if s == "help":
-						self.AlertStatus("New Help")
-					elif s == "debug":
-						self.AlertStatus("New Bug")
-					elif s == "status":	
-						self.AlertStatus("New Status")
-					break
-				else:
-					self.AlertPick()
-			else:
-				self.AlertPick()
-		except Exception, e:
-			self.Help.Log( "debug", "AlertNext: " + str(e))
-			
-	def AlertPick(self):
-		try:
-			for mode, lists in self.alert.items():
-				#self.helplog.append(str(mode)+" " +str(l))
-				if lists == []:
-					continue
-				elif lists == {}:
-					continue
-				
-				if mode == "HELP":
-					for s in self.alert["HELP"]:
-						if s == "help":
-							self.AlertStatus("New Help")
-						elif s == "debug":
-							self.AlertStatus("New Bug")
-						elif s == "status":	
-							self.AlertStatus("New Status")
-						break
-					return
-				elif mode == "SEARCH":
-					for s in self.alert["SEARCH"]:
-						self.AlertStatus(self.data["search_tickets"][s])
-						return
-
-				for i in lists:
-					if i != "":
-						self.AlertStatus(i)
-						return
-			self.AlertStatus("")
-		except Exception, e:
-			self.Help.Log( "debug", "AlertPick: " + str(e))
-			
-	def AlertStatus(self, s):
-		try:
-			self.logs["alert"] = s
-			aw = self.windows["border"]["alert"]
-			aw.erase()
-			
-			if len(self.logs["alert"][:14]) < 13 and len(self.logs["alert"][:14]) > 0:
-				line = " "+self.dlang( self.logs["alert"][:14] )+" "
-			else:
-				line = self.dlang( self.logs["alert"][:14] )
-			aw.addstr(line, self.colors["yellow"] )
-			aw.refresh()
-		except Exception, e:
-			self.Help.Log( "debug", "Alert Status: " + str(e))
-				
-				
+	
 
 	# --- TEXT PLACEMENT ^
 
