@@ -1619,7 +1619,9 @@ class Alerts:
 			pass
 			
 	## Remove Alert from place	
-	# @param self Alerts (class)		
+	# @param self Alerts (class)
+	# @param string alert text
+	# @param place where the alert is stored
 	def Remove(self, string, place):
 		if place in self.alert:
 			if string in self.alert[place]:
@@ -1743,6 +1745,10 @@ class Alerts:
 		except Exception, e:
 			self.mucous.Help.Log( "debug", "Pick: " + str(e))
 			
+	## Change Alert contents directly
+	# shrunk to 14 characters
+	# @param self Alerts (class)
+	# @param s string
 	def setStatus(self, s):
 		try:
 			self.log = s
@@ -4726,7 +4732,8 @@ class Recommendations:
 		self.data = {"recommendations": {}, "similar_users": {}}
 
 
-					
+	## Create the four windows and call the draw functions
+	# @param self Recommendations (class)
 	def ModeInterests(self):
 		try:
 			self.mucous.display["list"] = "interests"
@@ -4782,6 +4789,8 @@ class Recommendations:
 		except Exception, e:
 			self.mucous.Help.Log("debug", "ModeInterests: " + str(e))
 			
+	## Mouse events in likes, hates, recommendations and similar users
+	# @param self Recommendations (class)
 	def MouseInterests(self, x,y,z,event):
 		try:
 			rexw = self.dimensions["recommendations"]
@@ -11190,7 +11199,7 @@ class Mucous(driver.Driver):
 				elif self.display["mode"] == "roomlist":
 					self.ChatRooms.JoinRoom(line)
 				elif self.display["mode"] == "setup":
-					self.InputSetup(line)
+					self.Setup.InputSetup(line)
 				
 		try:
 			self.edit.reset()
