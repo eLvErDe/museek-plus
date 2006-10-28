@@ -2647,7 +2647,7 @@ class ChatRooms:
 						tick = str(ticks[names][:s["width"]-7-n])
 						fill = (s["width"]-6-len(tick)-len(names)) * " "
 						string = "< [%s] %s%s>" % (names, tick, fill)
-						bw.addstr(5, 1, self.dlang( string ))
+						bw.addstr(5, 1, self.mucous.dlang( string ))
 						bw.refresh()
 						
 					elif self.shape in ("nostatuslog", "chat-only"):
@@ -2656,7 +2656,7 @@ class ChatRooms:
 						tick = str(ticks[names][:s["width"]-25-n])
 						fill = (s["width"]-25-len(tick)-len(names)) * " "
 						string = "< [%s] %s%s>" %(names, tick, fill)
-						mw.addstr(0, 18, self.dlang( string ))
+						mw.addstr(0, 18, self.mucous.dlang( string ))
 						mw.refresh()
 				except:
 					pass
