@@ -177,7 +177,8 @@ void ChatRoom::sendMessage(const QString& line_) {
 
 void ChatRoom::append(const QString& _u, const QString& _l) {
 	mChatPanel->append(_u, _l);
-	if(mNickname.isNull() || _l.find(mNickname) == -1)
+	if (mNickname == _u);
+	else if(mNickname.isNull() || _l.find(mNickname) == -1)
 		emit highlight(1);
 	else
 		emit highlight(2);

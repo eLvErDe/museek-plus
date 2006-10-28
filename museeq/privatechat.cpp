@@ -73,7 +73,7 @@ void PrivateChat::append(uint dir, uint ts, const QString& _u, const QString& _l
 	else if (dir == 1)
 	{
 		mChatPanel->append(ts, museeq->nickname(), _l);
-		emit highlight(1);
+// 		emit highlight(1);
 	}
 }
 
