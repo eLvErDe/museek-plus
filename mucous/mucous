@@ -5637,7 +5637,7 @@ class Setup:
 				self.mucous.Muscan.Command(["muscan", "-b", "-u", line])
 				self.mucous.Help.Log("status", "Removing "+line+" from buddy shares. Please rescan or update.")
 			self.input = "default"
-			self.Setup.Mode()
+			self.Mode()
 		except Exception,e:
 			self.mucous.Help.Log("debug", "InputSetup: " + str(e))
 			
