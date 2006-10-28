@@ -560,9 +560,17 @@ class PopupMenu:
 	# @param self PopupMenu
 	# @param mucous mucous (parent)
 	def __init__(self, mucous):
+		## @var mucous 
+		# Mucous (Class)
 		self.mucous = mucous
+		## @var show
+		# menu is redrawn after a refresh_windows
 		self.show = False
+		## @var current
+		# current menu
 		self.current = None
+		## @var position
+		# Vertical position in menu 
 		self.position = 0
 		## @var menus
 		# Menu dict of dicts for each menu with coordinates, 3 windows, and a list of items
@@ -616,7 +624,10 @@ class PopupMenu:
 			
 	## Map mouse-clicks to events
 	# @param self PopupMenu
-	def Mouse(self, x, y, click):
+	# @param x vertical
+	# @param y horizontal
+	# @param event is the mouse event (button, doubleclick, etc) represented by a number
+	def Mouse(self, x, y, event):
 		try:
 			menu = self.menus[self.current]
 			width = menu["width"]
@@ -729,7 +740,7 @@ class PopupMenu:
 	# @param self PopupMenu
 	# @param menu New Current Menu
 	# @param position vertical position of menu item
-	# @param create Show this menu
+	# @param show Show this menu
 	def Create(self, menu=None, position=0, show=None):
 		try:
 			if menu:
@@ -868,7 +879,9 @@ class PopupMenu:
 			#sleep(1)
 		except Exception, e:
 			self.mucous.Help.Log("debug", "PopupMenu.Create " +str(e))
-
+			
+	## Select new encoding based on position
+	# @param self PopupMenu
 	def ExecuteEncodingsMenu(self):
 		if self.position == 0: coding = "UTF-8"
 		elif self.position == 1: coding = "iso-8859-1"  
@@ -908,7 +921,9 @@ class PopupMenu:
 			else:
 				self.mucous.SendMessage(messages.ConfigSet("encoding", "filesystem", coding))
 		return 0
-			
+	
+	## Do an action to the selected transfer
+	# @param self PopupMenu
 	def ExecuteTransfers(self):
 		try:
 			mode = self.mucous.Transfers.current
@@ -1021,7 +1036,9 @@ class PopupMenu:
 			
 		except Exception, e:
 			self.mucous.Help.Log("debug", "PopupMenu.ExecuteTransfers " +str(e))
-			
+	
+	## Do an action to the selected file or directory
+	# @param self PopupMenu
 	def ExecuteBrowse(self):
 		try:
 			the_list = self.List()
@@ -1178,6 +1195,8 @@ class Help:
 	# @param self Help (Class)
 	# @param mucous Mucous (Class)
 	def __init__(self, mucous):
+		## @var mucous
+		# Mucous (Class)
 		self.mucous = mucous
 		
 		self.pminfolog = ["Global Private Messaging commands:",\
@@ -1572,11 +1591,21 @@ class Alerts:
 	# @param self Alerts (class)
 	# @param mucous Mucous (Class)
 	def __init__(self, mucous):
+		## @var mucous
+		# Mucous (Class)
 		self.mucous = mucous
+		## @var alert
+		# dict containing all the alert messages
 		self.alert = { "CHAT": {}, "PRIVATE": [], "TRANSFERS" : [],  "SEARCH": [], "INFO": [], "BROWSE": [],  "HELP": [] }
+		## @var log
+		# log string containing current alert
 		self.log = ""
+		## @var windows
+		# dict containing instances of curses windows
 		self.windows = {}
 		
+	## Create and Draw alert box	
+	# @param self Alerts (class)
 	def Mode(self):
 		try:
 			if "border" in self.windows:
@@ -1589,11 +1618,13 @@ class Alerts:
 		except:
 			pass
 			
+	## Remove Alert from place	
+	# @param self Alerts (class)		
 	def Remove(self, string, place):
 		if place in self.alert:
 			if string in self.alert[place]:
 				self.alert[place].remove(string)
-	## Add Alert
+	## Add Alert to place
 	# @param self Alerts (Class)
 	# @param string alert text
 	# @param place where the alert is stored
@@ -1605,7 +1636,9 @@ class Alerts:
 				self.alert[place].remove(string)
 				self.alert[place].append(string)
 			self.Check()
-		
+			
+	## Check alerts, remove old ones, and call Next
+	# @param self Alerts (class)
 	def Check(self):
 		try:
 			if self.mucous.display["mode"] == "chat":
@@ -1630,7 +1663,9 @@ class Alerts:
 			self.mucous.HotKeyBar()
 		except Exception, e:
 			self.mucous.Help.Log("debug", "Alert.Check: " + str(e))
-
+			
+	## Display old alerts
+	# @param self Alerts (class)
 	def Next(self):
 		try:
 			if self.mucous.display["mode"] ==  "search":
@@ -1673,6 +1708,8 @@ class Alerts:
 		except Exception, e:
 			self.mucous.Help.Log( "debug", "Alert.Next: " + str(e))
 			
+	## Display old alerts
+	# @param self Alerts (class)
 	def Pick(self):
 		try:
 			for mode, lists in self.alert.items():
@@ -2577,7 +2614,7 @@ class ChatRooms:
 	# @param room is a text string
 	def JoinRoom(self, room):
 		try:
-			self.SendMessage(messages.JoinRoom( self.dlang( room ) ))
+			self.mucous.SendMessage(messages.JoinRoom( self.dlang( room ) ))
 		except Exception,e:
 			self.mucous.Help.Log("debug", "JoinRoom: " + str(e))
 			
@@ -6951,7 +6988,7 @@ class Transfers:
 		if username == None or path == None:
 			return
 		p = path.split("\\")
-		self.SendMessage(messages.DownloadFileTo(user, path, self.downloaddirectory+"/"+p[-1]))
+		self.mucous.SendMessage(messages.DownloadFileTo(user, path, self.downloaddirectory+"/"+p[-1]))
 		self.mucous.Help.Log("status", "Trying to Download: " + path+" from "+ user+"to "+self.downloaddirectory+"/"+p[-1])
 		
 		
@@ -6986,29 +7023,29 @@ class Transfers:
 	def ClearAllUploads(self):
 		for userpath, values in self.transfers["uploads"].items():
 			if values[3] in (0, 10, 11, 12, 13, 14):
-				self.SendMessage(messages.TransferRemove(1, values[1], values[2]))
+				self.mucous.SendMessage(messages.TransferRemove(1, values[1], values[2]))
 				
 	def ClearUserDownloads(self, user):
 		for userpath, values in self.transfers["downloads"].items():
 			if values[3] == 0:
-				self.SendMessage(messages.TransferRemove(0, values[1], values[2]))
+				self.mucous.SendMessage(messages.TransferRemove(0, values[1], values[2]))
 	def ClearUserUploads(self, user):
 		for userpath, values in self.transfers["uploads"].items():
 			if values[3] == 0:
-				self.SendMessage(messages.TransferRemove(0, values[1], values[2]))
+				self.mucous.SendMessage(messages.TransferRemove(0, values[1], values[2]))
 	## Remove all finished downloads
 	#
 	def ClearAllDownloads(self):
 		for userpath, values in self.transfers["downloads"].items():
 			if values[3] == 0:
-				self.SendMessage(messages.TransferRemove(0, values[1], values[2]))
+				self.mucous.SendMessage(messages.TransferRemove(0, values[1], values[2]))
 				
 	## Retry all failed downloads
 	# @param self Transfers (Class)
 	def RetryAllDownloads(self):
 		for user_path, transfer in self.transfers["downloads"].items():
 			if int(transfer[3]) in (10, 11, 12, 13, 14):
-				self.SendMessage(messages.DownloadFile(transfer[1], transfer[2]))
+				self.mucous.SendMessage(messages.DownloadFile(transfer[1], transfer[2]))
 	##
 	# @param self Transfers (Class)
 	def RetryDownload(self, username, path):
