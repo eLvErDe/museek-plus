@@ -9,7 +9,7 @@ except:
 		print "WARNING: The Museek Message-Parsing modules, messages.py and/or driver.py  were not found. Please install them into your '/usr/lib/python2.X/site-packages/museek' directory, or place them in a 'museek' subdirectory of the directory that contains the mucous python script."
 		sys.exit()
 import threading
-import os, sys
+import os, sys, time
 import curses.wrapper
 import select, socket
 ## Driver handle
