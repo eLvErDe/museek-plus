@@ -3,7 +3,23 @@ Import('env')
 
 files = Split("""
 	__init__.py
-	utils.py
+	MucousTransfers.py
+	MucousUserInfo.py
+	MucousFormat.py
+	MucousMuscan.py
+	MucousPrivateChat.py
+	MucousPopup.py 
+	MucousHelp.py
+	MucousLists.py
+	MucousInput.py
+	MucousNetworking.py
+	MucousSearch.py
+	MucousSetup.py
+	MucousRoomsList.py
+	MucousRecommendations.py
+	MucousChatRooms.py
+	MucousShares.py
+	MucousAlerts.py
 """)
 
 import sys, os
