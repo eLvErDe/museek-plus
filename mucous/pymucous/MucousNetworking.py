@@ -1225,6 +1225,13 @@ class Networking(driver.Driver):
 	def ConfigSet(self, domain, key, value):
 		message = messages.ConfigSet(domain, key, value)
 		self.SendMessage(message)
+	## Remove an option from Museekd's config
+	# @param self Networking (class)
+	# @param domain parent of key
+	# @param key key being changed
+	def ConfigRemove(self, domain, key):
+		message = messages.ConfigRemove(domain, key)
+		self.SendMessage(message)
 	## Ping Museekd
 	# @param self Networking (class)
 	# @param num number that will be echoed back to us
