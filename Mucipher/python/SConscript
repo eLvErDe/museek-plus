@@ -27,12 +27,15 @@ if os.path.exists(os.path.join(py_inc, "Python.h")):
     env_swigpy.Command("wraphelp.c", "../wraphelp.c", file_copy)
 
     mucipherc = env_swigpy.SharedLibrary('_mucipherc', sources, SWIGFLAGS='-python')
-
+    if type(mucipherc) == type([]):
+        mucipherc = mucipherc[0]
     py_dest = env['DESTDIR'] + os.path.join(sys.prefix, "lib", "python" + py_ver, "site-packages")
 
-    install = env.Install(py_dest, source = [ mucipherc, 'mucipherc.py',  'mucipher.py'])
+    dp1 = env.Install(py_dest, 'mucipherc.py')
+    dp2 = env.Install(py_dest, mucipherc)
+    Depends(dp1, dp2)
 
-    env.Alias('install_mucipher',  install)
+    env.Alias('install_mucipher',  [dp1, dp2])
     env.Alias('install', 'install_mucipher')
 else:
 	print "WARNING: Python.h include not found, please install Python's development packages"
