@@ -315,7 +315,7 @@ class ChatRooms:
 						return
 					longstring = ""
 					for user in ttickers:
-						longstring += "[%s] %s " % (user, ticks[user])
+						longstring += "[%s] %s " % (user, self.mucous.dlang(ticks[user]))
 					if self.shape in ("nostatuslog", "chat-only"):
 						bw = self.windows["border"]["chat"]
 						s = self.dimensions["chat"]
@@ -332,7 +332,11 @@ class ChatRooms:
 					while len(part) < s["width"]-2 +padd:
 						part += longstring[:(s["width"]-2+padd - len(part))] 
 					fill = (s["width"]-2 - len(part) +padd) * " "
-					bw.addstr(posy, posx, "<%s%s>" %(part, fill))
+					
+					message = ""
+					for m in part:
+						message += curses.unctrl(m)
+					bw.addstr(posy, posx, "<%s%s>" %(message, fill))
 					bw.refresh()
 					self.numticker += 1
 					#if self.numticker >= len(ttickers):
@@ -380,7 +384,7 @@ class ChatRooms:
 				
 				
 		except Exception,e:
-			self.mucous.Help.Log("debug", "DrawTicker: " + str(e))
+			self.mucous.Help.Log("debug", "ChatRooms.DrawTicker: " + str(e))
 			
 	## Draw the chat window's border
 	# @param self is ChatRooms (Class)
@@ -488,11 +492,11 @@ class ChatRooms:
 					
 			elif y  in (w["top"] + w["height"], w["top"] + w["height"]-1) and x >= w["left"] + w["width"]-5 and x <= w["left"] + w["width"]:
 				self.mucous.key = "KEY_NPAGE"
-				self.mucous.ScrollText()
+				self.mucous.ScrollText("KEY_NPAGE")
 				
 			elif y in ( w["top"], w["top"]+1)  and x >= w["left"] + w["width"]-5 and x <= w["left"] + w["width"]:
 				self.mucous.key = "KEY_PPAGE"
-				self.mucous.ScrollText()
+				self.mucous.ScrollText("KEY_PPAGE")
 			else:
 				if y >= w["top"]-1 and y < w["top"] + w["height"] +1 and x >= w["left"] -1 and x < w["left"] +w["width"]+1:
 					if self.selected != "chatroom":
