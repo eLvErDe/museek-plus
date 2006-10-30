@@ -628,29 +628,33 @@ class ChatRooms:
 						tw.addstr('* ', self.mucous.colors["red"]|curses.A_BOLD)
 				else:
 					tw.addstr('* ', curses.A_BOLD)
-					
-				if user in self.mucous.config["banned"].keys():
-					if self.scrolling["roombox"] == self.logs["roombox"][self.current].index(user):
-						attrib = curses.A_BOLD | curses.A_REVERSE | self.mucous.colors["red"]
-					else: attrib = self.mucous.colors["red"]| curses.A_BOLD 
-					
-				elif user in self.mucous.config["ignored"].keys():
-					if self.scrolling["roombox"] == self.logs["roombox"][self.current].index(user):
-						attrib = curses.A_BOLD | curses.A_REVERSE | self.mucous.colors["yellow"]
-					else: attrib = self.mucous.colors["yellow"]| curses.A_BOLD 
-					
-				elif user in self.mucous.config["trusted"].keys():
-					if self.scrolling["roombox"] == self.logs["roombox"][self.current].index(user):
-						attrib = curses.A_BOLD | curses.A_REVERSE | self.mucous.colors["cyan"]
+				if self.mucous.config.has_key("banned"):
+					if user in self.mucous.config["banned"].keys():
+						if self.scrolling["roombox"] == self.logs["roombox"][self.current].index(user):
+							attrib = curses.A_BOLD | curses.A_REVERSE | self.mucous.colors["red"]
+						else: attrib = self.mucous.colors["red"]| curses.A_BOLD 
+						
+					elif user in self.mucous.config["ignored"].keys():
+						if self.scrolling["roombox"] == self.logs["roombox"][self.current].index(user):
+							attrib = curses.A_BOLD | curses.A_REVERSE | self.mucous.colors["yellow"]
+						else: attrib = self.mucous.colors["yellow"]| curses.A_BOLD 
+						
+					elif user in self.mucous.config["trusted"].keys():
+						if self.scrolling["roombox"] == self.logs["roombox"][self.current].index(user):
+							attrib = curses.A_BOLD | curses.A_REVERSE | self.mucous.colors["cyan"]
+						else:
+							attrib = self.mucous.colors["cyan"] | curses.A_BOLD 
+								
+					elif user in self.mucous.config["buddies"].keys():
+						if self.scrolling["roombox"] == self.logs["roombox"][self.current].index(user):
+							attrib = curses.A_BOLD | curses.A_REVERSE | self.mucous.colors["green"]
+						else:
+							attrib = self.mucous.colors["green"]| curses.A_BOLD 
 					else:
-						attrib = self.mucous.colors["cyan"] | curses.A_BOLD 
-							
-				elif user in self.mucous.config["buddies"].keys():
-					if self.scrolling["roombox"] == self.logs["roombox"][self.current].index(user):
-						attrib = curses.A_BOLD | curses.A_REVERSE | self.mucous.colors["green"]
-					else:
-						attrib = self.mucous.colors["green"]| curses.A_BOLD 
-					
+						if self.scrolling["roombox"] == self.logs["roombox"][self.current].index(user):
+							attrib = curses.A_BOLD | curses.A_REVERSE 
+						else:
+							attrib = curses.A_NORMAL	
 				else:
 					if self.scrolling["roombox"] == self.logs["roombox"][self.current].index(user):
 						attrib = curses.A_BOLD | curses.A_REVERSE 
@@ -1026,14 +1030,17 @@ class ChatRooms:
 					length += len(timestamp) + len(pre)
 					
 					name = self.mucous.dlang(username)
-					if username == self.mucous.username:
-						tw.addstr(username ,  curses.A_BOLD )
-					elif username not in self.rooms[room]:
-						tw.addstr(name, self.mucous.colors["yellow"])
-					elif username in self.mucous.config["banned"].keys():
-						tw.addstr(name, self.mucous.colors["red"])
-					elif username in self.mucous.config["buddies"].keys():
-						tw.addstr(name, self.mucous.colors["green"])
+					if self.mucous.config.has_key("banned"):
+						if username == self.mucous.username:
+							tw.addstr(username ,  curses.A_BOLD )
+						elif username not in self.rooms[room]:
+							tw.addstr(name, self.mucous.colors["yellow"])
+						elif username in self.mucous.config["banned"].keys():
+							tw.addstr(name, self.mucous.colors["red"])
+						elif username in self.mucous.config["buddies"].keys():
+							tw.addstr(name, self.mucous.colors["green"])
+						else:
+							tw.addstr(name)
 					else:
 						tw.addstr(name)
 					length += len(name)

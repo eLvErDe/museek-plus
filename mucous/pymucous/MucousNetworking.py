@@ -64,7 +64,7 @@ class Networking(driver.Driver):
 					q = "42"
 					while q == "42":
 						# Run Commands while offline
-						sleep(0.01)
+						time.sleep(0.01)
 						try:
 							c = self.mucous.stdscr.getkey(self.mucous.h-3, self.mucous.edit.length+1)
 							keys.append(c)
@@ -114,7 +114,7 @@ class Networking(driver.Driver):
 				r, w, x = select.select([self.socket, sys.stdin], [], [self.socket], d)
 				
 			else:
-				sleep(0.01)
+				time.sleep(0.01)
 			if self.socket in r:
 				driver.Driver.process(self)
 
