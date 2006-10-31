@@ -18,8 +18,25 @@
 
 import socket
 import struct
+import random
 
-import mucipher
+try:
+	from Crypto.Hash import SHA256
+	from Crypto.Cipher import AES
+
+	class Cipher:
+		def __init__(self, key):
+			self.ctx = AES.new(SHA256.new(key).digest())
+		def decipher(self, value):
+			return self.ctx.decrypt(value)
+		def cipher(self, value):
+			block = value
+			while len(block) % 16:
+				block += chr(random.randint(0, 255))
+			return self.ctx.encrypt(block)
+	sha256Block = SHA256.new
+except ImportError:
+	from mucipher import Cipher, sha256Block
 
 class InvalidHostException(Exception):
 	pass
@@ -116,7 +133,7 @@ class Driver:
 			return
 		
 		if message.__class__ is messages.Challenge:
-			chresp = mucipher.sha256Block(message.challenge + self.password).hexdigest()
+			chresp = sha256Block(message.challenge + self.password).hexdigest()
 			self.send(messages.Login("SHA256", chresp, self.mask))
 		elif message.__class__ is messages.Login:
 			self.logged_in = message.result
@@ -124,7 +141,7 @@ class Driver:
 				self.cb_login_error(message.msg)
 			else:
 				self.cb_login_ok()
-				self.cipher = mucipher.Cipher(self.password)
+				self.cipher = Cipher(self.password)
 		elif message.__class__ is messages.Ping:
 			self.cb_ping()
 		elif message.__class__ is messages.ServerState:
