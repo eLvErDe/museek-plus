@@ -272,21 +272,59 @@ static QString qEllipsisText( const QString &org, const QFontMetrics &fm, int wi
 void TransferListItem::paintCell(QPainter * p, const QColorGroup & cg, int column, int width, int align) {
 	// colour based on status
 	QColor base(cg.base());
+	// Text color
+	QColor textcolor(cg.text());
+	textcolor.setRgb(0,0,0);
+	if (column == 2) {
 	switch(state()) {
 	case 0:
-		base.setRgb(225,240,227);
+		// 0 Transfer Finished
+		base.setRgb(30,30,30);
+		textcolor.setRgb(255,255,255);
 		break;
 	case 1:
-		base.setRgb(226,234,240);
+		// 1 Transfering
+		base.setRgb(54,232,96);
+		break;
+	case 2:
+	case 3:
+	case 4:
+	case 5:
+	case 6:
+	case 8:
+	case 9:
+		// 2-6, 8-9 Transfer is not transferring yet and is not queued
+		base.setRgb(230,255,114);
+		break;
+	case 7:
+		// Queued
+		base.setRgb(233,232,197);
+		break;
+	case 10:
+		// User offline
+		base.setRgb(200,200,200);
 		break;
 	case 11:
-		base.setRgb(233,212,197);
-		break;
 	case 12:
-	case 13:
-		base.setRgb(233,197,197);
+		// 11-12 Transfer failed
+		base.setRgb(255,155,135);
 		break;
+	case 13:
+		// 13 Aborted by you
+		base.setRgb(205,177,45);
+		break;
+	case 14:
+		// 14 Error 
+		base.setRgb(179,29,29);
+		textcolor.setRgb(255,255,255);
+		break;
+	case 15:
+		break;
+		// Group row
+		
   	}
+	p->setPen(textcolor);
+	}
 	if(isSelected()) {
 		int r = base.red();
 		int g = base.green();
@@ -300,10 +338,18 @@ void TransferListItem::paintCell(QPainter * p, const QColorGroup & cg, int colum
 			base.setRgb(r,g,b);
 		}
 	}
+	
 	p->fillRect(0, 0, width, height(), base);
+	
+	if (column == 2 && state() != 15) {
+		p->setPen(cg.highlight());
+		p->drawRect(0, 0, width, height());
+		p->setPen(textcolor);
+	}
 	// draw the text of the column, indented byb separation
 	QString t = text(column);
 	QFontMetrics fm(p->fontMetrics());
+	
 	
 	if( (fm.width(t) + 10) > width)
 		t = qEllipsisText(t,fm,(width-10),align);
