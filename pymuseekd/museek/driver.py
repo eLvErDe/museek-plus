@@ -116,8 +116,8 @@ class Driver:
 			return
 		
 		if message.__class__ is messages.Challenge:
-			chresp = mucipher.shaBlock(message.challenge + self.password).hexdigest()
-			self.send(messages.Login("SHA1", chresp, self.mask))
+			chresp = mucipher.sha256Block(message.challenge + self.password).hexdigest()
+			self.send(messages.Login("SHA256", chresp, self.mask))
 		elif message.__class__ is messages.Login:
 			self.logged_in = message.result
 			if not self.logged_in:
