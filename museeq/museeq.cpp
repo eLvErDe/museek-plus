@@ -646,6 +646,10 @@ void Museeq::setConfig(const QString& domain, const QString& key, const QString&
 	mDriver->setConfig(domain, key, value);
 }
 
+void Museeq::removeConfig(const QString& domain, const QString& key) {
+	mDriver->removeConfig(domain, key);
+}
+
 const QString& Museeq::config(const QString& domain, const QString& key) {
 	QMap<QString, QMap<QString, QString> >::const_iterator dom_it = mConfig.find(domain);
 	if(dom_it == mConfig.end())

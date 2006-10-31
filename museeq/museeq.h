@@ -157,6 +157,7 @@ public slots:
 	void getUserShares(const QString&);
 	
 	void setConfig(const QString&, const QString&, const QString&);
+	void removeConfig(const QString&, const QString&);
 	void setProtocolHandlers(const QMap<QString, QString>&);
 	
 	void flush();

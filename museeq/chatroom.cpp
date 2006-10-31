@@ -302,11 +302,17 @@ void ChatRoom::setTicker() {
 		} else if (dlg->mAlways->isChecked()) {
 			QString msg = dlg->mMessage->text();
 			museeq->setTicker(mRoom, msg);
-			museeq->setConfig("tickers", mRoom, msg);
+			if(msg.isEmpty())
+				museeq->removeConfig("tickers", mRoom);
+			else
+				museeq->setConfig("tickers", mRoom, msg);
 		} else if (dlg->mDefault->isChecked()) {
 			QString msg = dlg->mMessage->text();
 			museeq->setTicker(mRoom, msg);
-			museeq->setConfig("default-ticker", "ticker", msg);
+			if(msg.isEmpty())
+				museeq->removeConfig("default-ticker", "ticker");
+			else
+				museeq->setConfig("default-ticker", "ticker", msg);
 		}
 		
 	}
