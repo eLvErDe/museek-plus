@@ -55,6 +55,7 @@ class ChatRooms:
 	## Create and draw current chat room's window and contents 
 	# Cleanup stale windows first
 	# Calls: set_room
+	# @param self ChatRooms (class)
 	def Mode(self):
 		try:
 			self.mucous.mode = "chat"
@@ -123,7 +124,7 @@ class ChatRooms:
 			self.mucous.Help.Log("debug", "ChatRooms.Mode: " + str(e))
 			
 	## Joined a room
-	# 
+	# @param self ChatRooms (class)
 	def Joined(self, name, users, tickers=None):
 		try:
 			if name not in self.logs["rooms"]:
@@ -150,7 +151,7 @@ class ChatRooms:
 			
 	## Leave a room or current room
 	# @param self ChatRooms (class)
-	# @param room Chat room to be left
+	# @param room Chat room to be left :: the current room is left if none is selected
 	def Leave(self, room=None):
 		if room:
 			if room in self.rooms:
@@ -287,6 +288,43 @@ class ChatRooms:
 			self.mucous.D.JoinRoom( self.mucous.dlang( room ) )
 		except Exception,e:
 			self.mucous.Help.Log("debug", "JoinRoom: " + str(e))
+	## A user joined a room we are in
+	# @param self is ChatRooms (Class)
+	# @param room Room name
+	# @param user User name
+	# @param data status, speed, downloads, files, dirs, other
+	def UserJoined(self, room, user, data):
+		try:
+			status, speed, downloads, files, dirs, other = data 
+			s = self.dimensions["chat"]
+			did = "join"
+			what = data
+			if self.mucous.config !=  {}: 
+				if "ignored" in self.mucous.config.keys() and user not in self.mucous.config["ignored"].keys():
+					self.AppendStatus(user, room, did, what)
+				else:
+					self.AppendStatus(user, room, did, what)
+			if user not in self.rooms[room]:
+				self.rooms[room].append(user)
+			self.mucous.user["statistics"][user] = speed, downloads, files, dirs
+			self.mucous.user["status"][user] = status
+			# correct placement in roombox
+			
+			if self.mucous.mode == "chat" and self.current == room:
+				if self.selected  == "roombox":
+					self.rooms[room].sort(key=str.lower)
+					if self.rooms[room].index(user) < self.scrolling[self.selected]:
+						self.scrolling[self.selected] += 1
+
+				self.DrawBox()
+				for lines in self.logs["rooms"][self.current][ len(self.logs["rooms"][self.current]) - s["height"]:]:
+					# Update Chat history if user changes status
+					if lines[2] == user:
+						self.Change(self.current)
+						break
+				curses.doupdate()
+		except Exception, e:
+			self.mucous.Help.Log("debug", "ChatRooms.UserJoined: " + str(e))
 			
 	## Loop and Draw the tickers in one of two ways (scrolling, cycling)
 	# :: Scrolling shows the entire ticker, while Cycling shows only the part that fits in the viewable area
@@ -462,7 +500,7 @@ class ChatRooms:
 								curses.doupdate()
 					return
 				elif y == roombox["top"] + roombox["height"] and x < roombox["width"] + roombox["left"] and x > roombox["left"]:
-					self.ModifyConfig("autojoin", self.current, '')
+					self.mucous.ModifyConfig("autojoin", self.current, '')
 						
 			if y == self.mucous.h-3 or y == self.mucous.h-4:
 				if x>= self.mucous.w-27 and x < self.mucous.w-18:
@@ -730,20 +768,15 @@ class ChatRooms:
 						
 					except:
 						pass
-					if "autojoin" in self.mucous.config:
-						try:
-							if self.selected == "roombox":
-								cs  = self.mucous.colors["green"] |curses.A_BOLD
-							else:
-								cs  = curses.A_BOLD
-							if self.current in self.mucous.config["autojoin"].keys():
-								
-								mw.addstr(self.dimensions["roombox"]["height"]+1, 0, "[x] AutoJoined",  cs)
-							else:
-								mw.addstr(self.dimensions["roombox"]["height"]+1, 0, "[ ] AutoJoined",  cs)
-						except Exception, e:
-							self.mucous.Help.Log("debug", "AutoJoined: " + str(e))
-							
+					if self.selected == "roombox":
+						cs  = self.mucous.colors["green"] |curses.A_BOLD
+					else:
+						cs  = curses.A_BOLD
+					if "autojoin" in self.mucous.config and self.current in self.mucous.config["autojoin"].keys():
+						mw.addstr(self.dimensions["roombox"]["height"]+1, 0, "[x] AutoJoined",  cs)
+					else:
+						cs  = curses.A_BOLD
+						mw.addstr(self.dimensions["roombox"]["height"]+1, 0, "[ ] AutoJoined",  cs)
 				mw.noutrefresh()
 			
 				if self.current != None:

@@ -191,7 +191,7 @@ class Networking(driver.Driver):
 			self.mucous.logs["onlinestatus"]="Closed"
 			self.mucous.Muscan.timer.cancel()
 			self.mucous.NickTimer.cancel()
-			self.mucous.ticker_timer.cancel()
+			self.mucous.ChatRooms.ticker_timer.cancel()
 			self.mucous.retry_timer.cancel()
 			self.mucous.clear_timer.cancel()
 			self.mucous.timeout_timer.cancel()
@@ -515,17 +515,7 @@ class Networking(driver.Driver):
 	def cb_room_joined(self, room, users):
 		try:
 			self.mucous.ChatRooms.Joined(room, users)
-			#self.mucous.ChatRooms.tickers[room] = {}
-			#if room not in self.mucous.ChatRooms.logs["rooms"]:
-				#self.mucous.ChatRooms.logs["rooms"][room] = []
-				#self.mucous.ChatRooms.logs["roomstatus"][room] = []
-				#self.mucous.ChatRooms.OldLogs(room)
-				
-			#for users, stats in list_of_users.items():
-				#self.mucous.user["statistics"][users] = stats[1], stats[2 ], stats[3], stats[4] #avgspeed, numdownloads, numfiles, numdirs
-				#self.mucous.user["status"][users] = stats[0] # online status
-			
-			#self.mucous.ChatRooms.rooms[room] = list_of_users.keys()
+
 			if self.mucous.ChatRooms.current == None or self.mucous.ChatRooms.current == room:
 				self.mucous.ChatRooms.Change(room)
 			curses.doupdate()
@@ -548,33 +538,8 @@ class Networking(driver.Driver):
 	# @param data status, speed, downloads, files, dirs, other
 	def cb_room_user_joined(self, room, user, data):
 		try:
-			status, speed, downloads, files, dirs, other = data 
-			s = self.mucous.ChatRooms.dimensions["chat"]
-			did = "join"
-			what = data
-			if self.mucous.config !=  {}: 
-				if "ignored" in self.mucous.config.keys(): 
-					if user not in self.mucous.config["ignored"].keys():
-						self.mucous.ChatRooms.AppendStatus(user, room, did, what)
-			if user not in self.mucous.ChatRooms.rooms[room]:
-				self.mucous.ChatRooms.rooms[room].append(user)
-			self.mucous.user["statistics"][user] = speed, downloads, files, dirs
-			self.mucous.user["status"][user] = status
-			# correct placement in roombox
-			
-			if self.mucous.mode == "chat" and self.mucous.ChatRooms.current == room:
-				if self.mucous.ChatRooms.selected  == "roombox":
-					self.mucous.ChatRooms.rooms[room].sort(key=str.lower)
-					if self.mucous.ChatRooms.rooms[room].index(user) < self.mucous.ChatRooms.scrolling[self.mucous.ChatRooms[self.mucous.selected]]:
-						self.mucous.ChatRooms.scrolling[self.mucous.ChatRooms[self.mucous.selected]] += 1
+			self.mucous.ChatRooms.UserJoined( room, user, data)
 
-				self.mucous.ChatRooms.DrawBox()
-				for lines in self.mucous.ChatRooms.logs["rooms"][self.mucous.ChatRooms.current][ len(self.mucous.ChatRooms.logs["rooms"][self.mucous.ChatRooms.current]) - s["height"]:]:
-					# Update Chat history if user changes status
-					if lines[2] == user:
-						self.mucous.ChatRooms.Change(self.mucous.ChatRooms.current)
-						break
-				curses.doupdate()
 		except Exception, e:
 			self.mucous.Help.Log("debug", "CB Room User Joined" + str(e))
 			
@@ -587,9 +552,10 @@ class Networking(driver.Driver):
 			did = "left"
 			what = None
 			if self.mucous.config !=  {}: 
-				if "ignored" in self.mucous.config.keys(): 
-					if user not in self.mucous.config["ignored"].keys():
-						self.mucous.ChatRooms.AppendStatus(user, room, did, what)
+				if "ignored" in self.mucous.config.keys() and user not in self.mucous.config["ignored"].keys():
+					self.mucous.ChatRooms.AppendStatus(user, room, did, what)
+				else:
+					self.mucous.ChatRooms.AppendStatus(user, room, did, what)
 			# correct placement in roombox
 			if  self.mucous.mode == "chat" and self.mucous.ChatRooms.selected  == "roombox":
 				self.mucous.ChatRooms.rooms[room].sort(key=str.lower)
@@ -756,6 +722,8 @@ class Networking(driver.Driver):
 		
 		try:
 			for message, user in tickers.items():
+				if "room" not in self.mucous.ChatRooms.tickers:
+					self.mucous.ChatRooms.tickers[room] = {}
 				self.mucous.ChatRooms.tickers[room][user] = message
 		except Exception, e:
 			self.mucous.Help.Log( "debug", "cb_room_tickers: " + str(e))

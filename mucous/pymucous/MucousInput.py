@@ -71,7 +71,9 @@ class CharacterParse(threading.Thread):
 			else:
 				self.mucous.timeout_timer.cancel()
 
-	
+			if c == "r" and self.escape:
+				self.mucous.Build()
+				return False	
 			if c != chr(9) and c !="KEY_MOUSE":  # Clear self.word if tab wasn't pressed
 				self.word = None
 				self.firsttab = 0
@@ -309,7 +311,7 @@ class CharacterParse(threading.Thread):
 	
 			if self.scroll < 0:
 				self.scroll = 0
-	
+			
 			self.win.erase()
 	
 			try:
