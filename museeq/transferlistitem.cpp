@@ -274,8 +274,9 @@ void TransferListItem::paintCell(QPainter * p, const QColorGroup & cg, int colum
 	QColor base(cg.base());
 	// Text color
 	QColor textcolor(cg.text());
-	textcolor.setRgb(0,0,0);
+	
 	if (column == 2) {
+	textcolor.setRgb(0,0,0);
 	switch(state()) {
 	case 0:
 		// 0 Transfer Finished
