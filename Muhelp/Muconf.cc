@@ -122,7 +122,11 @@ void Muconf::store() {
 		
 	}
 	root->add_child_text("\n");
-	doc.write_to_file(mFilename);
+	try {
+		doc.write_to_file(mFilename);
+	} catch(const std::exception& ex) {
+		DEBUG("Exception (%s) caught while writing configuration database to disk", ex.what());
+	}
 }
 
 Muconf::operator std::map<std::string, std::map<std::string, std::string> >() const {
