@@ -233,19 +233,17 @@ class PrivateChat:
 				self.mucous.Alerts.Add(user, "PRIVATE")
 				self.mucous.HotKeyBar()
 				self.mucous.Beep()
-				
-			if self.current == None:
-				self.current = user
-				if self.mucous.mode == "private":
+			if self.mucous.mode == "private":
+				if self.current == None:
+					self.current = user
 					self.Mode()
-			elif self.current == user:
-				if self.mucous.mode == "private":
+				elif self.current == user:
 					self.Mode()
-			elif self.current != user and self.current != None:
-				pmusers = self.logs.keys()
-				pmusers.sort(key=str.lower)
-				self.mucous.DrawTabs(pmusers, self.current)
-				#self.mucous.Alerts.setStatus("PM: "+user)
+				elif self.current != user and self.current != None:
+					pmusers = self.logs.keys()
+					pmusers.sort(key=str.lower)
+					self.mucous.DrawTabs(pmusers, self.current)
+					#self.mucous.Alerts.setStatus("PM: "+user)
 				
 			
 		except Exception ,e:
