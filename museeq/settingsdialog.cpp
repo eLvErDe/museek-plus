@@ -71,7 +71,6 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, W
 	QHBoxLayout* serverLayout_username = new QHBoxLayout; 
 	QHBoxLayout* serverLayout_password = new QHBoxLayout; 
 	QHBoxLayout* serverLayout_connect = new QHBoxLayout;
-	QHBoxLayout* serverLayout_Dencoding = new QHBoxLayout; 
 	QHBoxLayout* serverLayout_Fencoding = new QHBoxLayout; 
 	QHBoxLayout* serverLayout_Nencoding = new QHBoxLayout;
 // 	QHBoxLayout* serverLayout_8 = new QHBoxLayout;
@@ -131,11 +130,7 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, W
 	
 	SDisconnect = new QPushButton( serverTab, "SDisconnect" );
 	serverLayout_connect->addWidget( SDisconnect );
-	// Default encoding
-	dEncodingLabel = new QLabel( serverTab, "dEncodingLabel" );
-	serverLayout_Dencoding->addWidget( dEncodingLabel );
-	SDefaultEncoding =  new CodecCombo("encoding", "default", serverTab, "encoding");
-	serverLayout_Dencoding->addWidget( SDefaultEncoding );
+
 	// Filesystem encoding
 	fEncodingLabel = new QLabel( serverTab, "fEncodingLabel" );
 	serverLayout_Fencoding->addWidget( fEncodingLabel );
@@ -154,7 +149,6 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, W
 	serverLayout->addLayout(serverLayout_username);
 	serverLayout->addLayout(serverLayout_password);
 	serverLayout->addLayout(serverLayout_connect);
-	serverLayout->addLayout(serverLayout_Dencoding);
 	serverLayout->addLayout(serverLayout_Fencoding);
 	serverLayout->addLayout(serverLayout_Nencoding);
 
@@ -252,22 +246,7 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, W
 	connect( SDownloadButton, SIGNAL( clicked() ), this, SLOT( SDownload_clicked() ) );
 	connect( SIncompleteButton, SIGNAL( clicked() ), this, SLOT( SIncomplete_clicked() ) );
 	
-	// tab order
-	setTabOrder( mOK, mCancel );
-	setTabOrder( mCancel, SServerHost );
-	setTabOrder( SServerHost, SServerPort );
-	setTabOrder( SServerPort, SSoulseekUsername );
-	setTabOrder( SSoulseekUsername, SSoulseekPassword );
-	setTabOrder( SSoulseekPassword, SConnect );
-	setTabOrder( SConnect, SDisconnect );
-	setTabOrder( SDisconnect, mTabHolder );
-	setTabOrder( mTabHolder, SReloadShares );
-	setTabOrder( SReloadShares, SActive );
-	setTabOrder( SActive, SPassive );
-	setTabOrder( SPassive, SBuddiesPrivileged );
-	setTabOrder( SBuddiesPrivileged, SShareBuddiesOnly );
-	setTabOrder( SShareBuddiesOnly, STrustedUsers );
-	setTabOrder( STrustedUsers, SDefaultEncoding );
+
 }
 
 /*
@@ -288,7 +267,6 @@ void SettingsDialog::languageChange()
     mOK->setText( tr( "Ok" ) );
     mSave->setText( tr( "Save" ) );
     mCancel->setText( tr( "Cancel" ) );
-    dEncodingLabel->setText( tr( "Default Encoding:" ) );
     fEncodingLabel->setText( tr( "Filesystem Encoding:" ) );
     nEncodingLabel->setText( tr( "Network Encoding:" ) );
     SConnect->setText( tr( "Connect" ) );

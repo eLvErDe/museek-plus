@@ -46,8 +46,8 @@ public:
 	QWidget* sharesTab;
 	QWidget* usersTab;
 	QWidget* serverTab;
-	QComboBox* SDefaultEncoding, * SFileSystemEncoding, * SNetworkEncoding;
-	QLabel* dEncodingLabel, * fEncodingLabel, * nEncodingLabel;
+	QComboBox* SFileSystemEncoding, * SNetworkEncoding;
+	QLabel* fEncodingLabel, * nEncodingLabel;
 	QLabel* serverPortLabel;
 	QLabel* serverHostLabel;
 	QLabel* usernamelabel;
