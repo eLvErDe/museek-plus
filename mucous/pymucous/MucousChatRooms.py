@@ -132,19 +132,15 @@ class ChatRooms:
 				self.logs["roomstatus"][name] = []
 				self.OldLogs(name)
 						
-				
-				for user in users:
-					self.mucous.user["status"][user] = users[user][0]
-					self.mucous.user["statistics"][user] = users[user][1], users[user][2 ], users[user][3], users[user][4]
+			
+			for user in users:
+				self.mucous.user["status"][user] = users[user][0]
+				self.mucous.user["statistics"][user] = users[user][1], users[user][2 ], users[user][3], users[user][4]
 					
-				self.rooms[name] = users.keys()
-					#avgspeed, numdownloads, numfiles, numdirs
-	
-				# tickers == (rooms, [(user1: message1), (user2: message2),] )
-				# a string and then a dictionary
+			self.rooms[name] = users.keys()
 
-				if tickers:
-					self.tickers[name] = tickers
+			if tickers:
+				self.tickers[name] = tickers
 				
 		except Exception, e:
 			self.mucous.Help.Log("debug", "ChatRooms.Joined: " + str(e))

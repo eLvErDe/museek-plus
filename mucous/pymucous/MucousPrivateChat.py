@@ -210,17 +210,16 @@ class PrivateChat:
 				elif direction == 1:
 					self.mucous.FileLog("private", time.strftime("%d %b %Y %H:%M:%S"), user, "["+self.mucous.username+"]\t"+ message )
 			
-			if self.current == None:
-				self.current = user
-			
 			self.Log(direction, user, message)
-			
-			
+
 				
 			if ctcpversion == 1 and direction == 0:
 				if self.mucous.Config["mucous"]["extra_requests"] == "Yes":
 					self.Send(user, "Mucous %s" % Version)
-			
+					
+			if self.current == None:
+				self.current = user
+				
 			if self.mucous.mode != "private":
 				self.mucous.Alerts.Add(user, "PRIVATE")
 				#self.Alerts.setStatus("New PM")
@@ -233,11 +232,9 @@ class PrivateChat:
 				self.mucous.Alerts.Add(user, "PRIVATE")
 				self.mucous.HotKeyBar()
 				self.mucous.Beep()
+				
 			if self.mucous.mode == "private":
-				if self.current == None:
-					self.current = user
-					self.Mode()
-				elif self.current == user:
+				if self.current == user:
 					self.Mode()
 				elif self.current != user and self.current != None:
 					pmusers = self.logs.keys()
