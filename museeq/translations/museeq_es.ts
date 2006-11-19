@@ -834,15 +834,15 @@
     </message>
     <message>
         <source>Show T&amp;imestamps</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar sellos de t&amp;iempo</translation>
     </message>
     <message>
         <source>IP of </source>
-        <translation type="unfinished"></translation>
+        <translation>IP de </translation>
     </message>
     <message>
         <source>Port:</source>
-        <translation type="unfinished"></translation>
+        <translation>Puerto:</translation>
     </message>
 </context>
 <context>
@@ -888,15 +888,15 @@
     <name>PrivateChat</name>
     <message>
         <source>%1 is offline</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 está desconectado</translation>
     </message>
     <message>
         <source>%1 is away</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 está ausente</translation>
     </message>
     <message>
         <source>%1 is online</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 está en linea</translation>
     </message>
 </context>
 <context>
@@ -1270,7 +1270,7 @@
     </message>
     <message>
         <source>IP addresses in Log Window instead of popup</source>
-        <translation type="unfinished"></translation>
+        <translation>Direcciones de IP en la ventana de Log (registro), no como pop-up</translation>
     </message>
 </context>
 <context>
