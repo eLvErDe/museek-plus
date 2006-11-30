@@ -19,7 +19,7 @@ if env['VORBIS']:
 		# FIXME Workaround a scons bug
 		if env_libmuscan['CPPDEFINES'] != []:
 			env_libmuscan.Append(CPPDEFINES = {"HAVE_VORBIS": 1})
-		else
+		else:
 			env_libmuscan.Replace(CPPDEFINES = {"HAVE_VORBIS": 1})
 		print "OGG Vorbis found, compiling into muscan."
 	else:
