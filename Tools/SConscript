@@ -16,7 +16,12 @@ conf = env_libmuscan.Configure()
 if env['VORBIS']:
 	env_libmuscan.ParseConfig('pkg-config --libs --cflags vorbisfile')
 	if conf.CheckLibWithHeader('', 'vorbis/vorbisfile.h', 'C++', 'ov_clear(0);'):
-		env_libmuscan.Append(CPPDEFINES = {'HAVE_VORBIS': 1})
+		# Dirty hack to avoid a scons bug that could pass "-D{'HAVE_VORBIS': 1}" instead of -DHAVE_VORBIS=1 to gcc
+		# env_libmuscan.Append(CPPDEFINES = {'HAVE_VORBIS': 1}) # FIXME
+		if env_libmuscan['CPPDEFINES'] != []:
+			env_libmuscan.Append(CPPDEFINES = {"HAVE_VORBIS": 1})
+		else
+			env_libmuscan.Replace(CPPDEFINES = {"HAVE_VORBIS": 1})
 		print "OGG Vorbis found, compiling into muscan."
 	else:
 		print "OGG Vorbis NOT found, not compiled into muscan."
