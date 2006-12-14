@@ -4,10 +4,11 @@ import sys
 import os
 
 sources = Split("""
+  mucipher.i
   wraphelp.c
 """)
 
-def file_copy(env, target, source):
+def file_copy(target, source, env):
     open(str(target[0]), "w").write(open(str(source[0])).read())
 
 py_ver = str(sys.version_info[0]) + "." + str(sys.version_info[1])
