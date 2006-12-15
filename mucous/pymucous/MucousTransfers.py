@@ -63,6 +63,7 @@ class Transfers:
 	# @param self Transfers (class)
 	def ModeTransfers(self):
 		self.mucous.mode = "transfer"
+		self.mucous.UseAnotherEntryBox()
 		self.mucous.PopupMenu.show = False
 
 		try:
@@ -131,7 +132,7 @@ class Transfers:
 		try:
 			self.TransferBar()
 						
-			self.mucous.set_edit_title("Modify Transfers")
+			self.mucous.SetEditTitle("Modify Transfers")
 			if self.mucous.Config["mucous"]["transbox"] == "split":
 				self.UploadManager()
 				self.DownloadManager()
@@ -143,7 +144,7 @@ class Transfers:
 				if self.current == "downloads":
 					self.DownloadManager()
 					curses.doupdate()
-					
+			self.Status()
 		except Exception, e:
 			self.mucous.Help.Log("debug", "transfer panel: " + str(e))
 

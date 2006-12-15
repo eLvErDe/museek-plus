@@ -1,8 +1,9 @@
 # This is part of the Mucous Museek Client, and distributed under the GPLv2
 # Copyright (c) 2006 daelstorm. 
 import curses.wrapper
-import traceback
+#import traceback
 import time
+import sys
 ## Help logs and windows
 #
 class Help:
@@ -214,11 +215,12 @@ class Help:
 
 	## Create window, draw title, 
 	# call Help.Format
-	# call Mucous.set_edit_title
+	# call Mucous.SetEditTitle
 	# call Mucous.Alert.Check
 	# @param self Help (Class)
 	def Mode(self):
 		try:
+			self.mucous.UseAnotherEntryBox()
 			# Cleanup stale windows
 			if "text" in self.windows:
 				del self.windows["text"]
@@ -258,7 +260,7 @@ class Help:
 			self.scrolling["debug"] = -1
 			self.Format()
 			
-			self.mucous.set_edit_title("Use /help")
+			self.mucous.SetEditTitle("Use /help")
 			#if self.Alerts.log in ("New Help", "New Bug", "New Status"):
 			#	self.Alerts.setStatus("")
 				
@@ -348,9 +350,14 @@ class Help:
 				else:
 					self.log["debug"].append("%s %s%s" %(timestamp, ex,s))
 				if htype == "debug":
-					import traceback
+					
 					ex = "BUG "
-					tb = traceback.extract_tb(sys.exc_info()[2])
+					tbe = sys.exc_info()
+					for line in tbe:
+						if line is tbe[0]:
+							self.log["debug"].append("%s %s%s" % (timestamp,ex,line))
+						#else: self.log["debug"].append("%s%s" % (ex,line))
+					tb = self.mucous.traceback.extract_tb(sys.exc_info()[2])
 					for line in tb:
 						if line is tb[0]:
 							self.log["debug"].append("%s %s%s" % (timestamp,ex,line))
@@ -375,7 +382,7 @@ class Help:
 				
 				self.mucous.Alerts.Check()
 		except Exception, e:
-						
+			#self.mucous.ChatRooms.AppendChat("Status", self.mucous.ChatRooms.current, 'ERR', str(e) )
 			pass
 	
 	## Draw a line in the Help log 

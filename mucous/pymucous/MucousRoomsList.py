@@ -27,15 +27,11 @@ class RoomsList:
 		# Sorted rooms; no size data; rebuilt every time viewed
 		self.sizedrooms = []
 		
-		
-		
-
-		
-		
 	## Build windows and display rooms
 	# @param self RoomsList (class)#
 	def Mode(self):
 		try:
+			self.mucous.UseAnotherEntryBox()
 			self.mucous.mode = "roomlist"
 			self.mucous.PopupMenu.show = False
 			
@@ -160,7 +156,7 @@ class RoomsList:
 			pos += len(sorts09)
 			mw.addstr(self.mucous.h-6, pos, " >",  self.mucous.colors["green"] | curses.A_BOLD)
 			mw.addstr(self.mucous.h-6, self.mucous.w-15, "< Refresh >",  self.mucous.colors["green"] | curses.A_BOLD)
-			self.mucous.set_edit_title("Join a Room")
+			self.mucous.SetEditTitle("Join a Room")
 		
 			mw.noutrefresh()
 			tw = self.windows["text"] =  mw.subwin(s["height"], s["width"], s["top"], s["left"])
@@ -186,7 +182,7 @@ class RoomsList:
 			else:
 				attrib = curses.A_NORMAL
 			num = str(self.rooms[roomitem])
-			while len(num) < 8:
+			while len(num) < 10:
 				num += " "
 			string = num + self.mucous.dlang(roomitem)
 			if len(string) < self.mucous.w-2:

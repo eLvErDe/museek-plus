@@ -31,67 +31,76 @@ class Networking(driver.Driver):
 		try:
 			keys = []
 			
-			while 1:
-				
-				try:
-					if not self.mucous.invalidpass:
-						if self.mucous.Config["connection"]["passw"] != None:
-							
-							self.mucous.NickTimer.cancel()
-							self.mucous.NickTimer = threading.Timer(10.0, self.mucous.ThreadNickCheck)
-							self.mucous.NickTimer.start()
-							driver.Driver.connect(self, self.mucous.Config["connection"]["interface"],  self.mucous.Config["connection"]["passw"], messages.EM_CHAT |  messages.EM_USERINFO| messages.EM_PRIVATE| messages.EM_TRANSFERS  | messages.EM_USERSHARES | messages.EM_CONFIG |  messages.EM_INTERESTS) 
-							
-							break
-						else:
-							raise Exception,  "IdASS"
-					else:
-						raise Exception,  "INVPASS"
-						
-	
-				except Exception, e:
-					self.mucous.mode = "debug"
-					self.mucous.Help.Mode()
-					if self.mucous.NickTimer != None:
-						self.mucous.NickTimer.cancel()
-					if e == "INVPASS":
-						self.mucous.Help.Log("status", "Incorrect Password, try another.")
-					elif e == [111, "Connection refused"]:
-						self.mucous.Help.Log("status", e[1] +", make sure the daemon is running, or change the interface.")
-					self.mucous.Help.Log("debug", "Connection failed, try changing your interface or password")
-					for lines in self.mucous.Help.log["connect"]:
-						self.mucous.Help.Log("status", lines)
-					q = "42"
-					while q == "42":
-						# Run Commands while offline
-						time.sleep(0.01)
-						try:
-							c = self.mucous.stdscr.getkey(self.mucous.h-3, self.mucous.edit.length+1)
-							keys.append(c)
-						except:
-							pass
-	
-						while keys:
-							c, keys = keys[0], keys[1:]
-							
-							try:
-								if self.mucous.edit.process(c):
-									line = self.mucous.edit.line
-									yes = self.mucous.InputCommands(line)
-									
-									if yes == 0:
-										q = 33
-										break
-									elif yes == 2:
-										return
-									else:
-										self.mucous.edit.reset()
-							except:
-								pass
-					break
-		except Exception, e:
-			self.mucous.Help.Log("debug", "Connect "+str( e) )
 			
+		
+		
+			if not self.mucous.invalidpass:
+				if self.mucous.Config["connection"]["passw"] != None:
+					
+					self.mucous.NickTimer.cancel()
+					self.mucous.NickTimer = threading.Timer(10.0, self.mucous.ThreadNickCheck)
+					self.mucous.NickTimer.start()
+					driver.Driver.connect(self, self.mucous.Config["connection"]["interface"],  self.mucous.Config["connection"]["passw"], messages.EM_CHAT |  messages.EM_USERINFO| messages.EM_PRIVATE| messages.EM_TRANSFERS  | messages.EM_USERSHARES | messages.EM_CONFIG |  messages.EM_INTERESTS)
+					
+					#break
+				else:
+					raise Exception,  "No Password Set"
+			else:
+				raise Exception,  "INVPASS"
+				
+
+		except KeyboardInterrupt, e:
+			# Ctrl-C Exits Mucous
+			raise KeyboardInterrupt,  ""
+		except select.error, e:
+			self.mucous.Help.Log("status", "Connection Error2 "+str( e) )
+			raise select.error, e
+		except Exception, e:
+			self.mucous.Help.Mode()
+			if e == "INVPASS":
+				self.mucous.Help.Log("status", "Incorrect Password, try another.")
+			elif str(e) == str((111, 'Connection refused')):
+				
+				self.mucous.Help.Log("status", e[1] +", make sure the daemon is running, or change the interface.")
+			else:
+				self.mucous.Help.Log("status", "Connection Error "+str( e) )
+			if self.mucous.NickTimer != None:
+				self.mucous.NickTimer.cancel()
+			
+	## Find the current Cursor Position and get a keypress
+	# @param self Networking (Driver Class)
+	def GetKey(self):
+		try:
+			# Find Cursor Position
+			y = self.mucous.Spl["input_vertical"]
+			x = self.mucous.Spl["input_horizontal"] + self.mucous.edit.x
+			
+			if self.mucous.edit.wrap:
+				# More complicated for wrapped input boxes
+				#num = 0 
+				#lines = 0
+				#num = len(self.mucous.edit.line)
+				#lines = num/self.mucous.edit.w
+				#a = num
+				#s = lines
+				#s = lines -1 
+				
+				#scroll = self.mucous.edit.scroll
+				ScrollLine = self.mucous.edit.scroll/self.mucous.edit.w
+				y = self.mucous.Spl["input_vertical"] + ScrollLine
+				ScrollRemainder = self.mucous.edit.scroll % self.mucous.edit.w
+				x = ScrollRemainder + self.mucous.Spl["input_horizontal"]
+				
+
+			c = self.mucous.stdscr.getkey( y, x)
+
+			return c
+		except Exception, e:
+			#pass
+			#self.mucous.Help.Mode()
+			#self.mucous.Help.Log("debug", e)
+			return None
+		
 	## Recieve Messages from Museekd and collect new key presses
 	# @param self Networking (Driver Class)
 	def process(self):
@@ -99,32 +108,29 @@ class Networking(driver.Driver):
 		keys = []
 		
 		while 1:
-			try:
-				c = self.mucous.stdscr.getkey(self.mucous.h-3, self.mucous.edit.length+1)
-		
+			# Place Cursor
+			c = self.GetKey()
+			if c != None:
 				keys.append(c)
-			except:
-				pass
+
 
 			if not keys:
 				d = 1000
 			else:
 				d = 0
 			if self.socket != None:
-				r, w, x = select.select([self.socket, sys.stdin], [], [self.socket], d)
-				
+				read, write, exception = select.select([self.socket, sys.stdin], [], [self.socket], d)
+				if self.socket in read:
+					driver.Driver.process(self)
 			else:
-				time.sleep(0.01)
-			if self.socket in r:
-				driver.Driver.process(self)
+				time.sleep(0.001)
+				read, write, exception = select.select([sys.stdin], [], [], d)
 
-			if sys.stdin in r:
-				try:
-					c = self.mucous.stdscr.getkey(self.mucous.h-3, self.mucous.edit.length+1)
+			if sys.stdin in read:
+				# Get a key
+				c = self.GetKey()
+				if c != None:
 					keys.append(c)
-					
-				except Exception, e:
-					pass
 			while keys:
 				
 				c, keys = keys[0], keys[1:]
@@ -132,7 +138,7 @@ class Networking(driver.Driver):
 					
 					if self.mucous.edit.process(c):
 						self.mucous.line = self.mucous.edit.line
-						yes = self.mucous.InputCommands(self.mucous.line)
+						yes = self.mucous.edit.InputCommands(self.mucous.line)
 						
 						if yes == 0:
 							break
@@ -155,14 +161,18 @@ class Networking(driver.Driver):
 	# @param reason is a string containing the reason for login failure
 	def cb_login_error(self, reason):
 		try:
+			self.mucous.NickTimer.cancel()
 			self.mucous.Spl["connected"] = 0
+			self.close()
 			if reason == "INVPASS":
 				self.mucous.invalidpass = True
-				self.mucous.Help.Log("status", "couldn't log in: Invalid Password")
-				self.connect()
+				self.mucous.Help.Mode()
+				self.mucous.Help.Log("status", "Couldn't log in to Museekd: Invalid Password")
+				
+				#self.connect()
 			else:
 				self.mucous.invalidpass = False
-				self.mucous.Help.Log("status", "couldn't log in: " + reason)
+				self.mucous.Help.Log("status", "Couldn't log in to Museekd: " + reason)
 		except Exception,e:
 			self.mucous.Help.Log("debug", "cb_login_error: " + str(e))
 			
@@ -184,10 +194,11 @@ class Networking(driver.Driver):
 		try:
 			if self.mucous.Spl["connected"] == 1:
 				try:
-					driver.Driver.close(self)
+					#driver.Driver.close(self)
+					self.D.close()
 				except:
 					pass
-			self.mucous.Spl["connected"] = 0
+				self.mucous.Spl["connected"] = 0
 			self.mucous.logs["onlinestatus"]="Closed"
 			self.mucous.Muscan.timer.cancel()
 			self.mucous.NickTimer.cancel()
@@ -195,18 +206,16 @@ class Networking(driver.Driver):
 			self.mucous.retry_timer.cancel()
 			self.mucous.clear_timer.cancel()
 			self.mucous.timeout_timer.cancel()
-			
-			osw = self.mucous.windows["border"]["onlinestatus"]
-			osw.erase()
-			osw.addstr(self.mucous.logs["onlinestatus"], self.mucous.colors["red"] | curses.A_BOLD |curses.A_REVERSE)
-			osw.refresh()
+			self.mucous.username = None
+			self.mucous.DrawOnlineStatus()
 
 			
 			for room in self.mucous.ChatRooms.rooms.keys():
-				msg = ("--- Disconnected from the Museek Daemon ---")
-				self.mucous.ChatRooms.AppendChat("Status", room, '!!!!', msg)
+				msg = ("Disconnected from the Museek Daemon")
+				self.mucous.ChatRooms.AppendChat("Status", room, '', msg)
 				self.mucous.ChatRooms.rooms[room] = {}
 				self.mucous.ChatRooms.tickers[room] = {}
+				
 			uploadlist = []
 			self.mucous.Transfers.uploads = {}
 			self.mucous.Transfers.downloads = {}
@@ -249,7 +258,6 @@ class Networking(driver.Driver):
 		try:
 			self.mucous.username = username
 			un = self.mucous.windows["border"]["username"]
-			osw = self.mucous.windows["border"]["onlinestatus"]
 			un.erase()
 			un.addstr(self.mucous.dlang(self.mucous.username[:15]), self.mucous.colors["blafgcyabg"] )
 			un.refresh()
@@ -266,8 +274,8 @@ class Networking(driver.Driver):
 	
 				if self.mucous.ChatRooms.rooms.keys():
 					for room in self.mucous.ChatRooms.rooms.keys():
-						msg = ("--- Connected ---")
-						self.mucous.ChatRooms.AppendChat("Status", room, '!!!!', msg)
+						msg = ("Connected")
+						self.mucous.ChatRooms.AppendChat("Status", room, '', msg)
 				
 			else:
 				self.mucous.Help.Log("status", "Museek is not connected to Soulseek")
@@ -278,8 +286,8 @@ class Networking(driver.Driver):
 	
 				if self.mucous.ChatRooms.rooms.keys():
 					for room in self.mucous.ChatRooms.rooms.keys():
-						msg = ("--- Disconnected from the Server ---")
-						self.mucous.ChatRooms.AppendChat("Status", room, '!!!!', msg)
+						msg = ("Disconnected from the Server")
+						self.mucous.ChatRooms.AppendChat("Status", room, '', msg)
 				uploadlist = []
 				self.mucous.Transfers.uploads = {}
 				self.mucous.Transfers.transfers["downloads"] = {}
@@ -290,10 +298,8 @@ class Networking(driver.Driver):
 					self.mucous.ChatRooms.Mode()
 				elif self.mucous.mode == "transfer":
 					self.mucous.Transfers.ModeTransfers()
+			self.mucous.DrawOnlineStatus()
 
-			osw.erase()
-			osw.addstr(self.mucous.dlang(self.mucous.logs["onlinestatus"]), self.mucous.colors["blafgcyabg"] )
-			osw.refresh()
 			
 		except Exception,e:
 			self.mucous.Help.Log("debug", "cb_server_state: " +str( e) )
@@ -417,60 +423,8 @@ class Networking(driver.Driver):
 	def cb_room_said(self, room, user, text):
 		try:
 			#text = text.replace('\n', " ").replace('\t', "     ")
-			text = text.replace('\t', "     ")
-			
-			
-	
-			if text[:4] == "/me ":
-				self.mucous.ChatRooms.AppendChat("Me", room, user, text[4:])
-				if self.mucous.username in text[4:]:
-					if self.mucous.mode != "chat":
-						self.mucous.Alerts.setStatus(room)
-						
-						self.mucous.Alerts.alert["CHAT"][room] = "nick"
-						self.mucous.Beep()
-					elif self.mucous.mode == "chat" and self.mucous.ChatRooms.current != room:
-						self.mucous.Alerts.setStatus(room[:14])
-						self.mucous.Alerts.alert["CHAT"][room] = "nick"
-						self.mucous.Beep()
-					
-				else:
-					if self.mucous.mode != "chat":
-						self.mucous.Alerts.setStatus("%s" % room)
-						if room not in self.mucous.Alerts.alert["CHAT"]:
-							self.mucous.Alerts.alert["CHAT"][room] = "normal"
-					elif self.mucous.mode == "chat" and self.mucous.ChatRooms.current != room:
-						self.mucous.Alerts.setStatus(room)
-						if room not in self.mucous.Alerts.alert["CHAT"]:
-							self.mucous.Alerts.alert["CHAT"][room] = "normal"
-			else:
-				if self.mucous.username in text:
-					self.mucous.ChatRooms.AppendChat("Mentioned", room, user, text)
-					if self.mucous.mode != "chat":
-						self.mucous.Alerts.setStatus(room)
-						self.mucous.Beep()
-						self.mucous.Alerts.alert["CHAT"][room] = "nick"
-					elif self.mucous.mode == "chat" and self.mucous.ChatRooms.current != room:
-						self.mucous.Alerts.setStatus(room)
-						self.mucous.Beep()
-						self.mucous.Alerts.alert["CHAT"][room] = "nick"
-	
-				else:
-					self.mucous.ChatRooms.AppendChat("Normal", room, user, text)
-					if self.mucous.mode != "chat":
-						self.mucous.Alerts.setStatus( room)
-						if room not in self.mucous.Alerts.alert["CHAT"]:
-							self.mucous.Alerts.alert["CHAT"][room] = "normal"
-	
-					elif self.mucous.mode == "chat" and self.mucous.ChatRooms.current != room:
-						self.mucous.Alerts.setStatus(room)
-						if room not in self.mucous.Alerts.alert["CHAT"]:
-							self.mucous.Alerts.alert["CHAT"][room] = "normal"
-			self.mucous.HotKeyBar()
-						
-			if self.mucous.Config["mucous"]["logging"] == "yes":
-				message = "[%s]\t%s" % (user, text)
-				self.mucous.FileLog("rooms", time.strftime("%d %b %Y %H:%M:%S"), room, message )
+			self.mucous.ChatRooms.SaidInRoom(room, user, text)
+
 		except Exception, e:
 			self.mucous.Help.Log("debug", "CB Room Said" + str(e))
 	
@@ -499,7 +453,8 @@ class Networking(driver.Driver):
 					self.mucous.ChatRooms.Change(self.mucous.Config["rooms"]["default_room"])
 				else:
 					self.mucous.ChatRooms.JoinRoom(self.mucous.Config["rooms"]["default_room"])
-					self.mucous.ChatRooms.Change(joined[0])
+					if len(joined) != 0:
+						self.mucous.ChatRooms.Change(joined[0])
 
 			else:
 				self.mucous.ChatRooms.current = joined[0]
@@ -527,9 +482,9 @@ class Networking(driver.Driver):
 	# @param room Room name
 	def cb_room_left(self, room):
 		try:
-			self.mucous.ChatRooms.Left(room)	
+			self.mucous.ChatRooms.Left(room)
 		except Exception, e:
-			self.mucous.Help.Log("debug", "CB Room Left" + str(e))
+			self.mucous.Help.Log("debug", "CB Room Left: " + str(e))
 			
 	## A user joined a room we are in
 	# @param self Networking (Driver Class)
@@ -702,14 +657,8 @@ class Networking(driver.Driver):
 				stat = "Online"
 			
 			self.mucous.logs["onlinestatus"]=stat
-			osw = self.mucous.windows["border"]["onlinestatus"]
-			try:
-				osw.erase()
-				osw.addstr(self.mucous.dlang(self.mucous.logs["onlinestatus"]), self.mucous.colors["blafgcyabg"] )
-				
-			except:
-				pass
-			osw.refresh()
+			self.mucous.DrawOnlineStatus()
+
 			self.mucous.TerminalTitle()
 		except Exception, e:
 			self.mucous.Help.Log( "debug", "cb_server_status_set: " + str(e))
@@ -1073,6 +1022,11 @@ class Networking(driver.Driver):
 	def PeerStatus(self, user):
 		message = messages.PeerStatus(user)
 		self.SendMessage(message)
+	## Does a user exist in the server's database? 
+	# @param self Networking (class)
+	# @param user username 
+	def PeerExists(self, user):
+		self.SendMessage(messages.PeerExists(user))
 	## Get a user's statistics
 	# @param self Networking (class)
 	# @param user username

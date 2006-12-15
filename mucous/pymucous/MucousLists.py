@@ -47,6 +47,7 @@ class UsersLists:
 	# @param self UsersLists (class)	
 	def ModeTrust(self):
 		try:
+			self.mucous.UseAnotherEntryBox()
 			self.current = "trusted"
 			#self.DestroyOldWindows()
 			self.mucous.PopupMenu.show = False
@@ -66,6 +67,7 @@ class UsersLists:
 	# @param self UsersLists (class)
 	def ModeBuddy(self):
 		try:
+			self.mucous.UseAnotherEntryBox()
 			self.current = "buddied"
 			self.mucous.PopupMenu.show = False
 			
@@ -84,6 +86,7 @@ class UsersLists:
 	# @param self UsersLists (class)
 	def ModeBan(self):
 		try:
+			self.mucous.UseAnotherEntryBox()
 			self.current = "banned"
 			self.mucous.PopupMenu.show = False
 			
@@ -100,6 +103,7 @@ class UsersLists:
 	# @param self UsersLists (class)
 	def ModeIgnore(self):
 		try:
+			self.mucous.UseAnotherEntryBox()
 			self.current = "ignored"
 			self.mucous.PopupMenu.show = False
 			
@@ -158,28 +162,28 @@ class UsersLists:
 				mw.addstr(0, 40, "< Trusted >", self.mucous.colors["green"])
 				mw.addstr(0, 52, "< Interests >", self.mucous.colors["green"])
 				
-				self.mucous.set_edit_title("Add Buddy:")
+				self.mucous.SetEditTitle("Add Buddy:")
 			elif self.current =="banned":
 				mw.addstr(0, 3, "< Buddied >",  self.mucous.colors["green"] )
 				mw.addstr(0, 16, "< Banned >", self.mucous.colors["green"]| curses.A_BOLD)
 				mw.addstr(0, 28, "< Ignored >", self.mucous.colors["green"])
 				mw.addstr(0, 40, "< Trusted >", self.mucous.colors["green"])
 				mw.addstr(0, 52, "< Interests >", self.mucous.colors["green"])
-				self.mucous.set_edit_title("Ban User:")
+				self.mucous.SetEditTitle("Ban User:")
 			elif self.current =="ignored":
 				mw.addstr(0, 3, "< Buddied >",  self.mucous.colors["green"] )
 				mw.addstr(0, 16, "< Banned >", self.mucous.colors["green"])
 				mw.addstr(0, 28, "< Ignored >", self.mucous.colors["green"]| curses.A_BOLD)
 				mw.addstr(0, 40, "< Trusted >", self.mucous.colors["green"])
 				mw.addstr(0, 52, "< Interests >", self.mucous.colors["green"])
-				self.mucous.set_edit_title("Ignore User:")
+				self.mucous.SetEditTitle("Ignore User:")
 			elif self.current =="trusted":
 				mw.addstr(0, 3, "< Buddied >",  self.mucous.colors["green"] )
 				mw.addstr(0, 16, "< Banned >", self.mucous.colors["green"])
 				mw.addstr(0, 28, "< Ignored >", self.mucous.colors["green"])
 				mw.addstr(0, 40, "< Trusted >", self.mucous.colors["green"] | curses.A_BOLD)
 				mw.addstr(0, 52, "< Interests >", self.mucous.colors["green"])
-				self.mucous.set_edit_title("Add Trusted:")
+				self.mucous.SetEditTitle("Add Trusted:")
 		
 			mw.noutrefresh()
 			tw = self.windows["text"][self.current] = mw.subwin(s["height"], s["width"], s["top"], s["left"])
@@ -221,18 +225,18 @@ class UsersLists:
 					try:
 						if 'trusted' in attributes:
 							color = self.mucous.colors["cyan"] | curses.A_BOLD 
-							tw.addstr('!', color)
+							tw.addstr('^', color)
 						else: tw.addstr(' ')
 						color = self.mucous.colors["green"] | curses.A_BOLD 
-						tw.addstr('!', color)
+						tw.addstr('^', color)
 						if 'banned' in attributes:
 							color = self.mucous.colors["red"] | curses.A_BOLD 
-							tw.addstr('!', color)
+							tw.addstr('v', color)
 						else: tw.addstr(' ')
 						
 						if 'ignored' in attributes:
 							color = self.mucous.colors["yellow"] | curses.A_BOLD 
-							tw.addstr('! ', color)
+							tw.addstr('v ', color)
 						else: tw.addstr('  ')
 							
 					except Exception, e:
@@ -245,18 +249,18 @@ class UsersLists:
 					try:
 						if 'trusted' in attributes:
 							color = self.mucous.colors["cyan"] | curses.A_BOLD 
-							tw.addstr('!', color)
+							tw.addstr('^', color)
 						else: tw.addstr(' ')
 						
 						if 'buddies' in attributes:
 							color = self.mucous.colors["green"] | curses.A_BOLD 
-							tw.addstr('!', color)
+							tw.addstr('^', color)
 						else: tw.addstr(' ')
 						color = self.mucous.colors["red"] | curses.A_BOLD 
-						tw.addstr('!', color)
+						tw.addstr('v', color)
 						if 'ignored' in attributes:
 							color = self.mucous.colors["yellow"] | curses.A_BOLD 
-							tw.addstr('! ', color)
+							tw.addstr('v ', color)
 						else: tw.addstr('  ')
 						
 
@@ -266,19 +270,19 @@ class UsersLists:
 				elif self.current == "trusted":
 					try:
 						color = self.mucous.colors["cyan"] | curses.A_BOLD 
-						tw.addstr('!', color)
+						tw.addstr('^', color)
 						
 						if 'buddies' in attributes:
 							color = self.mucous.colors["green"] | curses.A_BOLD 
-							tw.addstr('!', color)
+							tw.addstr('^', color)
 						else: tw.addstr(' ')
 						if 'banned' in attributes:
 							color = self.mucous.colors["red"] | curses.A_BOLD 
-							tw.addstr('!', color)
+							tw.addstr('v', color)
 						else: tw.addstr(' ')
 						if 'ignored' in attributes:
 							color = self.mucous.colors["yellow"] | curses.A_BOLD 
-							tw.addstr('! ', color)
+							tw.addstr('v ', color)
 						else: tw.addstr('  ')
 					except Exception, e:
 						self.mucous.Help.Log("debug", "display list text" + str(e))
@@ -287,18 +291,18 @@ class UsersLists:
 					try:
 						if 'trusted' in attributes:
 							color = self.mucous.colors["cyan"] | curses.A_BOLD 
-							tw.addstr('!', color)
+							tw.addstr('^', color)
 						else: tw.addstr(' ')
 						if 'buddies' in attributes:
 							color = self.mucous.colors["green"] | curses.A_BOLD 
-							tw.addstr('!', color)
+							tw.addstr('^', color)
 						else: tw.addstr(' ')
 						if 'banned' in attributes:
 							color = self.mucous.colors["red"] | curses.A_BOLD 
-							tw.addstr('!', color)
+							tw.addstr('v', color)
 						else: tw.addstr(' ')
 						color = self.mucous.colors["yellow"] | curses.A_BOLD 
-						tw.addstr('! ', color)
+						tw.addstr('v ', color)
 					except Exception, e:
 						self.mucous.Help.Log("debug", "display list text" + str(e))
 				#else:

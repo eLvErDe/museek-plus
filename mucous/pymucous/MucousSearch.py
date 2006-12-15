@@ -66,6 +66,7 @@ class Search:
 	def Mode(self):
 		try:
 			self.mucous.mode = "search"
+			self.mucous.UseAnotherEntryBox()
 			self.mucous.PopupMenu.show = False
 			
 			# Cleanup stale windows
@@ -114,13 +115,14 @@ class Search:
 			if self.method != None:
 				if self.method == "user":
 					if self.username != None:
-						self.mucous.set_edit_title("Search (Alt-t) "+self.method.capitalize()+" "+self.username+"'s shares")
+						self.mucous.SetEditTitle("Search (Alt-t) "+self.method.capitalize()+" "+self.username+"'s shares")
 					else:
-						self.mucous.set_edit_title("Search (Alt-t) "+self.method.capitalize()+" (Pick a user with /searchuser)")
+						self.mucous.SetEditTitle("Search (Alt-t) "+self.method.capitalize()+" (Pick a user with /searchuser)")
 				else:
-					self.mucous.set_edit_title("Search (Alt-t) "+self.method.capitalize()+" for:")
+					self.mucous.SetEditTitle("Search (Alt-t) "+self.method.capitalize()+" for:")
 			
-			self.mucous.DrawTabs(self.results.keys(), self.current)
+			#self.mucous.DrawTabs(self.results.keys(), self.current)
+			self.mucous.DrawTabs(self.tickets.keys(), self.current)
 
 			if self.current != None:
 				self.mucous.DrawInstructionsButtons()
@@ -294,10 +296,16 @@ class Search:
 	# @param s string
 	def Count(self, s):
 		try:
-			if self.mucous.logs["search_count"] == ["Results: ", s]:
-				return
-			self.mucous.logs["search_count"] = "Results: ", s
-			ssw = self.mucous.windows["border"]["searchstatus"]
+			if "searchstatus" in self.mucous.windows["border"]:
+				del self.mucous.windows["border"]["searchstatus"]
+			ssw =self.mucous.windows["border"]["searchstatus"] = curses.newwin(1, 15, 0, 47)
+			ssw.bkgdset(" ", self.mucous.colors["blafgcyabg"]  | curses.A_REVERSE | curses.A_BOLD)
+
+			if s != None:
+				if self.mucous.logs["search_count"] == ["Results: ", s]:
+					return
+				self.mucous.logs["search_count"] = "Results: ", s
+
 			try:
 				ssw.erase()
 				ssw.addstr(self.mucous.logs["search_count"][0],  self.mucous.colors["blafgcyabg"] )
@@ -432,7 +440,8 @@ class Search:
 			
 			tw.noutrefresh()
 			self.Count(self.numresults[self.current])
-			self.mucous.DrawTabs(self.results.keys(), self.current)
+			#self.mucous.DrawTabs(self.results.keys(), self.current)
+			self.mucous.DrawTabs(self.tickets.keys(), self.current)
 			##self.mucous.Help.Log("debug", "Search.Start: " + str(clipped_list))
 		except Exception, e:
 			self.mucous.Help.Log("debug", "Search.FormatResults: " + str(e))
@@ -580,7 +589,7 @@ class Search:
 					if self.current == None:
 						self.current = self.tickets.keys()[0]
 
-					self.current, match = self.mucous.MouseClickTab(x, self.current)	
+					self.current, match = self.mucous.edit.MouseClickTab(x, self.current)	
 						
 					if match == None:
 						s = self.tickets.keys().index(self.current)

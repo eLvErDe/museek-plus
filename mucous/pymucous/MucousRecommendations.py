@@ -67,20 +67,20 @@ class Recommendations:
 				if self.input not in ("add_likes", "del_likes"):
 					self.input = "add_likes"
 				if self.input == "add_likes":
-					self.mucous.set_edit_title("Add Liked (Alt-D to Toggle to Delete)")
+					self.mucous.SetEditTitle("Add Liked (Alt-D to Toggle to Delete)")
 				elif self.input == "del_likes":
-					self.mucous.set_edit_title("Delete Liked (Alt-D to Toggle to Add)")
+					self.mucous.SetEditTitle("Delete Liked (Alt-D to Toggle to Add)")
 			elif self.selected == "hates":
 				if self.input not in ("add_hates", "del_hates"):
 					self.input = "add_hates"
 				if self.input == "add_hates":
-					self.mucous.set_edit_title("Add Hated (Alt-D to Toggle to Delete)")
+					self.mucous.SetEditTitle("Add Hated (Alt-D to Toggle to Delete)")
 				elif self.input == "del_hates":
-					self.mucous.set_edit_title("Delete Hated (Alt-D to Toggle to Add)")
+					self.mucous.SetEditTitle("Delete Hated (Alt-D to Toggle to Add)")
 			elif self.selected == "recommendations":
-				self.mucous.set_edit_title("Recommendations:")
+				self.mucous.SetEditTitle("Recommendations:")
 			elif self.selected == "similar_users":
-				self.mucous.set_edit_title("Similar Users:")
+				self.mucous.SetEditTitle("Similar Users:")
 			self.InterestsWindows(s, "recommendations")
 			self.InterestsWindows(l, "likes")
 			self.InterestsWindows(h, "hates")
@@ -500,17 +500,16 @@ class Recommendations:
 			interest = self.mucous.dlang(interest)
 			if self.selected == "likes":
 				if self.input == "add_likes":
-					self.InterestLikedAdd(interest)
+					self.LikedAdd(interest)
 				elif self.input == "del_likes":
-					self.InterestLikedRemove(interest)
+					self.LikedRemove(interest)
 			elif self.selected == "hates":
 				if self.input == "add_hates":
-					self.InterestHatedAdd(interest)
+					self.HatedAdd(interest)
 				elif self.input == "del_hates":
-					self.InterestHatedRemove(interest)
+					self.HatedRemove(interest)
 				
 				
 		except Exception,e:
 			self.mucous.Help.Log("debug", "InputInterests: " + str(e))
 
-			

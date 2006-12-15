@@ -223,3 +223,13 @@ class FormatData:
 			return clipped_list, scroll, w["start"]
 		except Exception, e:
 			self.mucous.Help.Log("debug", "wrap_n_clip " +str(e))
+			
+	## Add a number of characters to the current cursor position of a window
+	# @param self FormatData (class)
+	# @param window the curses window
+	# @param character the special character
+	# @param number how many times to display the character
+	def Hline(self, window, character, number):
+		while number:
+			window.addch(character)
+			number -= 1

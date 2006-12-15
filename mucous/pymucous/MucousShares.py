@@ -60,6 +60,7 @@ class BrowseShares:
 		## @var bfilter
 		# Filter string for files
 		self.bfilter = None
+		self.dirswithtree = None
 		
 	## Get the currently selected user and file
 	# @param self BrowseShares (class)
@@ -103,7 +104,9 @@ class BrowseShares:
 	# @param self BrowseShares (class)
 	def Mode(self):
 		try:
+			self.dirswithtree = None
 			self.mucous.mode = "browse"
+			self.mucous.UseAnotherEntryBox()
 			self.mucous.PopupMenu.show = False
 
 			# Cleanup stale windows
@@ -182,22 +185,21 @@ class BrowseShares:
 				sdirs = shares.keys()
 				sdirs.sort(key=str.lower)
 			
-				if sdirs != []:
-					for item in sdirs:
-						s = item.split("\\")
-						path = ''
-	
-						parent = s[0]
-						for seq in s[1:]:
+				for item in sdirs:
+					#item.rsplit("\\", 1)
+					s = item.split("\\")
+					path = ''
 
-							parent += "\\"
-	
-							path = parent+seq
+					parent = s[0]
+					for seq in s[1:]:
 
-			
-							if path not in self.results[user]["dirs"]:
-								self.results[user]["dirs"].append(path)
-							parent =  path
+						parent += "\\"
+
+						path = parent+seq
+
+						if path not in self.results[user]["dirs"]:
+							self.results[user]["dirs"].append(path)
+						parent =  path
 								
 				self.results[user]["dirs"].sort(key=str.lower)
 			else:
@@ -212,7 +214,7 @@ class BrowseShares:
 				#result_list = []
 				
 			if self.mucous.mode == "browse":
-				self.mucous.set_edit_title("Browse "+user+"'s files in " + self.current_dir + " ")
+				self.mucous.SetEditTitle("Browse "+user+"'s files in " + self.current_dir + " ")
 				self.Mode()
 		except Exception, e:
 			self.mucous.Help.Log("debug", "BrowseShares.Recieved: " + str(e))
@@ -260,13 +262,13 @@ class BrowseShares:
 
 			if self.current == None:
 				self.scrolling["directories"] = 0
-				self.mucous.set_edit_title("Choose a user to Browse Shares")
+				self.mucous.SetEditTitle("Choose a user to Browse Shares")
 				self.mucous.DrawInstructionsButtons()
 			else:
 				self.mucous.DrawInstructionsButtons()
 				#s = "Browse "+self.current+"'s files in "
 				#ls = len(s)
-				#self.mucous.set_edit_title( self.current_dir[:self.mucous.w-8] )
+				#self.mucous.SetEditTitle( self.current_dir[:self.mucous.w-8] )
 		except Exception, e:
 			self.mucous.Help.Log("debug", "BrowseShares.DrawBrowseWin: " + str(e))
 			
@@ -278,11 +280,11 @@ class BrowseShares:
 			d = self.dimensions["directories"]
 			w = self.dimensions["browse"] 
 			tw = self.windows["text"]
-			
+			Dirwin = self.windows["dirwin"]
 			if self.current == None:
                                 # Clear windows, display browse help
-				self.windows["dirwin"].erase()
-				self.windows["dirwin"].noutrefresh()
+				Dirwin.erase()
+				Dirwin.noutrefresh()
 				tw.erase()
 				count = 0
 				
@@ -297,83 +299,104 @@ class BrowseShares:
 				return
                         # If the default help isn't displayed
 						
-			tempdirs = self.results[self.current]["dirs"]
+			
 			#tempdirs.sort(key=str.lower)
 			# List, Directory, Scroll position
 			collapsed = self.collapsed[self.current]
-			num = 0
-			dirswithtree = []
-			self.dirs = []
-			parents = []
-			for directory in tempdirs:
-				parent = "\\".join(directory.split("\\")[:-1])
-				if parent in tempdirs and parent not in parents:
-					parents.append(parent)
-
-			for directory in tempdirs:
-				try:
-					parent = "\\".join(directory.split("\\")[:-1]) 
-					a = 0
-					for dirs in collapsed:
-						if parent.startswith(dirs+"\\") or parent == dirs:
-							a = 1
-							break
-					if a == 1:
-						num += 1
-						continue
-					if directory in parents:
-						if directory in collapsed:
-							dirswithtree.append([directory, 2])
-							self.dirs.append(directory)
+			
+			if self.dirswithtree == None: 
+				self.dirswithtree = []
+				num = 0
+				self.dirs = []
+				parents = []
+				tempdirs = self.results[self.current]["dirs"]
+				for directory in tempdirs:
+					parent = "\\".join(directory.split("\\")[:-1])
+					if parent in tempdirs and parent not in parents:
+						parents.append(parent)
+		
+				for directory in tempdirs:
+					try:
+						parent = "\\".join(directory.split("\\")[:-1]) 
+						a = 0
+						for dirs in collapsed:
+							if parent.startswith(dirs+"\\") or parent == dirs:
+								a = 1
+								break
+						if a == 1:
+							num += 1
+							continue
+						if directory in parents:
+							if directory in collapsed:
+								self.dirswithtree.append([directory, 2])
+								self.dirs.append(directory)
+							else:
+								for dir in collapsed:
+									if dir in directory:
+										pass
+								else:
+									self.dirswithtree.append([directory, 1])
+									self.dirs.append(directory)
 						else:
 							for dir in collapsed:
 								if dir in directory:
 									pass
 							else:
-								dirswithtree.append([directory, 1])
+								self.dirswithtree.append([directory, 0])
 								self.dirs.append(directory)
-					else:
+					except Exception, e:
 						for dir in collapsed:
 							if dir in directory:
 								pass
 						else:
-							dirswithtree.append([directory, 0])
+							self.dirswithtree.append([directory, 0])
 							self.dirs.append(directory)
-				except Exception, e:
-					for dir in collapsed:
-						if dir in directory:
-							pass
-					else:
-						dirswithtree.append([directory, 0])
-						self.dirs.append(directory)
-				num += 1 
+					num += 1 
 			
 			if self.mucous.BrowseShares.selected == "directories":
-				clipped_list, self.scrolling["directories"], start = self.mucous.FormatData.scrollbox(dirswithtree, self.scrolling["directories"], d["height"])
+				clipped_list, self.scrolling["directories"], start = self.mucous.FormatData.scrollbox(self.dirswithtree, self.scrolling["directories"], d["height"])
 			else:
-				clipped_list, self.scrolling["directories"], start = self.mucous.FormatData.scrollbox(dirswithtree, self.scrolling["directories"], d["height"])
+				clipped_list, self.scrolling["directories"], start = self.mucous.FormatData.scrollbox(self.dirswithtree, self.scrolling["directories"], d["height"])
 			#self.mucous.Help.Log("debug", self.scrolling["directories"])
 			self.dimensions["directories"]["start"] = start
 			count = 0
-			self.windows["dirwin"].erase()
+			Dirwin.erase()
 			# Display directory tree
 			for s, has_child in clipped_list:
 				try:
 					dir = s.split("\\")
+					pre_spaces = " " * (len(dir)-2)
+					Dirwin.addstr(pre_spaces)
 					if has_child == 1:
 						modifier = "[-]"
+						Dirwin.addstr("[")
+						Dirwin.addstr("-", self.mucous.colors["red"] | curses.A_BOLD)
+						Dirwin.addstr("]")
+						size = 3
 					elif has_child == 2:
 						modifier = "[+]"
+						Dirwin.addstr("[")
+						Dirwin.addstr("+", self.mucous.colors["green"] | curses.A_BOLD)
+						Dirwin.addstr("]")
+						size = 3
 					else: 
 						modifier = "|\\"
+						Dirwin.addstr("|\\")
+						size = 2
+					string = dir[-1][:d["width"]-len(pre_spaces)-size]
+					self.mucous.dlang(string)
+					string += " " * ( d["width"] -len(string) -len(pre_spaces)-size)
 					# Spaces before directory, to make it look like a tree
-					string = (" " * (len(dir)-2)) + modifier
-					string += self.mucous.dlang(dir[-1][:d["width"]-len(string)])
-					string += " " * ( d["width"] -len(string) )
+					
+					
+					
+					#string = (" " * (len(dir)-2)) + modifier
+					#string += self.mucous.dlang(dir[-1][:d["width"]-len(string)])
+					#string += " " * ( d["width"] -len(string) )
 					if count +d["start"] == self.scrolling["directories"]:
-						self.windows["dirwin"].addstr(string, self.mucous.colors["green"])
+						Dirwin.addstr(string, self.mucous.colors["green"])
 					else:
-						self.windows["dirwin"].addstr(string)
+						Dirwin.addstr(string)
 					count += 1
 				except Exception, e:
 					pass
@@ -395,7 +418,7 @@ class BrowseShares:
 				self.FormatBrowseDirs()
 			if self.current != None:
 				self.current_dir = self.dirs[self.scrolling["directories"]]
-				self.mucous.set_edit_title(self.current_dir )
+				self.mucous.SetEditTitle(self.current_dir )
 			
 				self.DrawFiles( self.current, self.current_dir)
 			
@@ -649,11 +672,11 @@ class BrowseShares:
 					self.mucous.Help.Log("status", "No such directory: %sUser: " % (line, self.current) )
 					
 			if self.current == None:
-				self.mucous.set_edit_title("Choose a user to Browse Shares")
+				self.mucous.SetEditTitle("Choose a user to Browse Shares")
 			else:
 				s = "Browse "+self.current+"'s files in "
 				ls = len(s)
-				self.mucous.set_edit_title(s  + self.current_dir[:self.mucous.w-ls-4] + " ")
+				self.mucous.SetEditTitle(s  + self.current_dir[:self.mucous.w-ls-4] + " ")
 		except Exception, e:
 			self.mucous.Help.Log("debug", "BrowseShares.ChangeDir: " + str(e))
 			
@@ -719,7 +742,7 @@ class BrowseShares:
 					if self.current == None:
 						self.current = self.users[0]
 					else:
-						self.current, match = self.mucous.MouseClickTab(x, self.current)
+						self.current, match = self.mucous.edit.MouseClickTab(x, self.current)
 						if match == None:
 							s = self.users.index(self.current)
 							self.current = self.users[s-1]

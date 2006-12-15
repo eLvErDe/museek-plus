@@ -51,16 +51,17 @@ class ChatRooms:
 		## @var ticker_timer
 		# Timer instance for displaying tickers
 		self.ticker_timer = threading.Timer(time, self.DrawTicker)
-		
+		self.linewrapped = None
 	## Create and draw current chat room's window and contents 
 	# Cleanup stale windows first
-	# Calls: set_room
+	# Calls: SetRoom
 	# @param self ChatRooms (class)
 	def Mode(self):
 		try:
 			self.mucous.mode = "chat"
+			self.mucous.UseAnotherEntryBox()
 			self.mucous.PopupMenu.show = False
-			
+			self.linewrapped = None
 			# Arrangements: 
 			cs = None
 			if "roomstatus" in self.windows["text"]:
@@ -98,6 +99,8 @@ class ChatRooms:
 				brw = self.windows["border"]["roomstatus"] = curses.newwin(cs["height"]+2, cs["width"]+2, cs["top"]-1, cs["left"]-1)
 				btw= self.windows["text"]["roomstatus"] = brw.subwin(cs["height"], cs["width"], cs["top"],cs["left"])
 				btw.scrollok(0)
+				brw.leaveok(1)
+				btw.leaveok(1)
 					
 			self.dimensions["chat"]["start"] = 0
 			try:
@@ -109,14 +112,15 @@ class ChatRooms:
 				tw =self.windows["text"]["chat"] = self.windows["border"]["chat"].subwin(w["height"], w["width"], w["top"], w["left"]-1)
 			except Exception, e:
 				self.mucous.Help.Log("debug", "Chat Mode: " + str(e))
-
+			mw.leaveok(1)
 			tw.scrollok(0)
+			tw.leaveok(1)
 			tw.idlok(1)
 
 			if self.mucous.Alerts.log in ( "New Chat", "Nick Mention"):
 				self.mucous.Alerts.setStatus("")	
 
-			self.set_room(self.current)
+			self.SetRoom(self.current)
 
 			
 			curses.doupdate()
@@ -141,7 +145,8 @@ class ChatRooms:
 
 			if tickers:
 				self.tickers[name] = tickers
-				
+			else:
+				self.tickers[name] = {}
 		except Exception, e:
 			self.mucous.Help.Log("debug", "ChatRooms.Joined: " + str(e))
 			
@@ -151,17 +156,17 @@ class ChatRooms:
 	def Leave(self, room=None):
 		if room:
 			if room in self.rooms:
-				self.D.LeaveRoom(room)
+				self.mucous.D.LeaveRoom(room)
 			return
 		if self.current:
-			self.D.LeaveRoom(self.ChatRooms.current)
+			self.mucous.D.LeaveRoom(self.current)
 			
 	## Left a room
 	# @param self ChatRooms (class)
 	# @param room room that was left
 	def Left(self, room):
 		
-		del self.rooms[room]
+		
 		joined = self.rooms.keys()
 		joined.sort(key=str.lower)
 		
@@ -175,23 +180,78 @@ class ChatRooms:
 				elif ix == 0:
 					ix = -1
 				self.Change(joined[ix])
-				self.AppendChat("Status", joined[ix], '!!!!', "Left room %s" % room)
-		joined.remove(room)
+				self.AppendChat("Status", joined[ix], '', "Left room %s" % room)
 		del self.rooms[room]
 		del self.tickers[room]
 		del self.logs["roomstatus"][room]
+		del self.logs["rooms"][room]
 		if joined == []:
 			self.Change(None)
 			self.DrawChatWin()
 			self.windows["text"]["chat"].noutrefresh()
 		else:
 			joined.sort(key=str.lower)
-		if room in self.Alerts.alert["CHAT"]:
-			del self.Alerts.alert["CHAT"][room]
+		if room in self.mucous.Alerts.alert["CHAT"]:
+			del self.mucous.Alerts.alert["CHAT"][room]
 		curses.doupdate()
-		if self.Alerts.log == "%s" % room[:14]:
-			self.Alerts.setStatus("")
+		if self.mucous.Alerts.log == "%s" % room[:14]:
+			self.mucous.Alerts.setStatus("")
 			
+	def SaidInRoom(self, room, user, text):
+	
+		text = text.replace('\t', "     ")
+		
+		if text[:4] == "/me ":
+			self.AppendChat("Me", room, user, text[4:])
+			if self.mucous.username in text[4:]:
+				if self.mucous.mode != "chat":
+					self.mucous.Alerts.setStatus(room)
+					
+					self.mucous.Alerts.alert["CHAT"][room] = "nick"
+					self.mucous.Beep()
+				elif self.mucous.mode == "chat" and self.current != room:
+					self.mucous.Alerts.setStatus(room[:14])
+					self.mucous.Alerts.alert["CHAT"][room] = "nick"
+					self.mucous.Beep()
+				
+			else:
+				if self.mucous.mode != "chat":
+					self.mucous.Alerts.setStatus("%s" % room)
+					if room not in self.mucous.Alerts.alert["CHAT"]:
+						self.mucous.Alerts.alert["CHAT"][room] = "normal"
+				elif self.mucous.mode == "chat" and self.current != room:
+					self.mucous.Alerts.setStatus(room)
+					if room not in self.mucous.Alerts.alert["CHAT"]:
+						self.mucous.Alerts.alert["CHAT"][room] = "normal"
+		else:
+			if self.mucous.username in text:
+				self.AppendChat("Mentioned", room, user, text)
+				if self.mucous.mode != "chat":
+					self.mucous.Alerts.setStatus(room)
+					self.mucous.Beep()
+					self.mucous.Alerts.alert["CHAT"][room] = "nick"
+				elif self.mucous.mode == "chat" and self.current != room:
+					self.mucous.Alerts.setStatus(room)
+					self.mucous.Beep()
+					self.mucous.Alerts.alert["CHAT"][room] = "nick"
+
+			else:
+				self.AppendChat("Normal", room, user, text)
+				if self.mucous.mode != "chat":
+					self.mucous.Alerts.setStatus( room)
+					if room not in self.mucous.Alerts.alert["CHAT"]:
+						self.mucous.Alerts.alert["CHAT"][room] = "normal"
+
+				elif self.mucous.mode == "chat" and self.current != room:
+					self.mucous.Alerts.setStatus(room)
+					if room not in self.mucous.Alerts.alert["CHAT"]:
+						self.mucous.Alerts.alert["CHAT"][room] = "normal"
+		self.mucous.HotKeyBar()
+					
+		if self.mucous.Config["mucous"]["logging"] == "yes":
+			message = "[%s]\t%s" % (user, text)
+			self.mucous.FileLog("rooms", time.strftime("%d %b %Y %H:%M:%S"), room, message )
+				
 	## Say message In Chat room or current room
 	# :: Split \n (newlines) into seperate messages
 	# @param self ChatRooms (class)
@@ -438,7 +498,7 @@ class ChatRooms:
 				except: pass
 				mw.addstr(s["height"]+1, 2, "< "+str(abs(self.scrolling["chatroom"]))+" >", self.mucous.colors["green"] | curses.A_BOLD)
 				if self.current != None:
-					if len(self.logs["rooms"][self.current]) -1 <= abs(self.scrolling["chatroom"]):
+					if len(self.linewrapped) -1 <= abs(self.scrolling["chatroom"]):
 						mw.addstr(s["height"]+1, 10, "< AutoScrolling >", self.mucous.colors["green"] | curses.A_BOLD)
 				
 			else:
@@ -526,11 +586,11 @@ class ChatRooms:
 					
 			elif y  in (w["top"] + w["height"], w["top"] + w["height"]-1) and x >= w["left"] + w["width"]-5 and x <= w["left"] + w["width"]:
 				self.mucous.key = "KEY_NPAGE"
-				self.mucous.ScrollText("KEY_NPAGE")
+				self.mucous.edit.ScrollText("KEY_NPAGE")
 				
 			elif y in ( w["top"], w["top"]+1)  and x >= w["left"] + w["width"]-5 and x <= w["left"] + w["width"]:
 				self.mucous.key = "KEY_PPAGE"
-				self.mucous.ScrollText("KEY_PPAGE")
+				self.mucous.edit.ScrollText("KEY_PPAGE")
 			else:
 				if y >= w["top"]-1 and y < w["top"] + w["height"] +1 and x >= w["left"] -1 and x < w["left"] +w["width"]+1:
 					if self.selected != "chatroom":
@@ -551,41 +611,52 @@ class ChatRooms:
 		try:
 			# Read from Chat Room Logs
 			if "\\" in room: room = room.replace("/", "\\")
-			if os.path.exists(os.path.expanduser(self.mucous.Config["mucous"]["log_dir"])+"/rooms/"+room):
-				path = os.path.expanduser(self.mucous.Config["mucous"]["log_dir"])+"/rooms/"+room
-				f = open(path, "r")
-				a = f.read()
-				f.close()
-				lines = a.split("\n" )
-				numlines = -30
-				if len(lines) <= abs(numlines):
-					numlines = 0
-				for line in lines[numlines:]:
-					if line == "":
-						continue
-					timex = line[12:20]
-					if line[21] == "[":
-						user = line[22:]
-						if line.find("\t") == -1:
-						# old format
-							user = user[:user.find("]")]
-							message = line[21+len(user)+3:]
-						else:
-							# new format with Tab
-							user = user[:user.find("\t")-1]
-							message = line[line.find("\t")+1:]
+			if not os.path.exists( os.path.expanduser( self.mucous.Config["mucous"]["log_dir"]) +"/rooms/" + room):
+				return
+			path = os.path.expanduser( self.mucous.Config["mucous"]["log_dir"]) + "/rooms/" + room
+			f = open(path, "r")
+			a = f.read()
+			f.close()
+			lines = a.split("\n" )
+			numlines = -100
+			if abs(numlines) > len(lines):
+				numlines = 0
+			if len(lines) <= abs(numlines):
+				numlines = 0
+			lastday = None
+			for line in lines[numlines:]:
+				if line == "":
+					continue
+				timex = line[12:20]
+				month = line[3:6]
+				day = line[:2]
+				year = line[7:11]
+				if lastday != None and day != lastday:
+					self.logs["rooms"][room].append(["Date", "--------", "", "%s %s %s" % (day, month, year)])
+				lastday = day
+				if line[21] == "[":
+					user = line[22:]
+					if line.find("\t") == -1:
+					# old format
+						user = user[:user.find("]")]
+						message = line[21+len(user)+3:]
 					else:
-						user = line[21:]
-						user = user[:user.find(" ")]
-						message = line[21+len(user)+1:]
-						
+						# new format with Tab
+						user = user[:user.find("\t")-1]
+						message = line[line.find("\t")+1:]
+				else:
+					user = line[21:]
+					user = user[:user.find(" ")]
+					message = line[21+len(user)+1:]
 					
-					if message[:4] == "/me ": 
-						full_message = ["Me", timex, user, message[4:]]
-					else:
-						full_message = ["Normal", timex, user, message]
-					self.logs["rooms"][room].append(full_message)
-				self.logs["rooms"][room].append(["Status", "--------", "!!!!", "Connected to Museek"])
+				
+				if message[:4] == "/me ": 
+					full_message = ["Me", timex, user, message[4:]]
+				else:
+					full_message = ["Normal", timex, user, message]
+				self.logs["rooms"][room].append(full_message)
+			self.AppendChat("Status", room, '', "Connected to Museek")
+			#self.logs["rooms"][room].append(["Status", "--------", "", "Connected to Museek"])
 			
 		except Exception,e:
 			self.mucous.Help.Log("debug", "OldLogs: " +str( e) )
@@ -752,6 +823,8 @@ class ChatRooms:
 			if self.shape in ("big", "small", "nostatuslog", "widelist", "rightlist"):
 				tw.scrollok(0)
 				tw.idlok(1)
+				mw.leaveok(1)
+				tw.leaveok(1)
 			
 
 				if self.current != None:
@@ -871,12 +944,17 @@ class ChatRooms:
 			if self.current != None:
 				w = self.dimensions["chat"]
 				selected_log = self.logs["rooms"][self.current]
-				lol = self.LineWrap(selected_log, w)
-				
+				#if self.scrolling["chatroom"] == -1 or self.scrolling["chatroom"] >  w["height"]:
+					#if len(selected_log) > w["height"]:
+						#selected_log = selected_log[:]
+				#lol = self.LineWrap(selected_log, w)
+				if self.linewrapped == None:
+					self.linewrapped = self.LineWrap(selected_log, w) 
+
 				if self.scrolling["chatroom"] == -1:
-					self.scrolling["chatroom"] = len(lol)
+					self.scrolling["chatroom"] = len(self.linewrapped)
 	
-				clipped_list, self.scrolling["chatroom"], self.dimensions["chat"]["start"] = self.mucous.FormatData.scrollbox(lol, self.scrolling["chatroom"], w["height"])
+				clipped_list, self.scrolling["chatroom"], self.dimensions["chat"]["start"] = self.mucous.FormatData.scrollbox(self.linewrapped, self.scrolling["chatroom"], w["height"])
 				
 				self.windows["text"]["chat"].erase()
 				for lines in clipped_list:
@@ -913,9 +991,9 @@ class ChatRooms:
 # 					length +=  len(pre)
 # 					for user, color in message:
 # 						length += len(self.dlang(user))
-				elif mtype in ("Mentioned", "Normal", "Status"):
+				elif mtype in ("Mentioned", "Normal",  "Date"):
 					if username != "": # Universal Timestamp
-						if mtype == "Status": # Mucous debugging message
+						if mtype in ("Date"): # Mucous debugging message
 							length += len(timestamp) + 2
 						else: # Normal user chat
 							length += len(timestamp) + 4
@@ -1011,8 +1089,9 @@ class ChatRooms:
 					pre = " * %s " % username
 					tw.addstr(pre, self.mucous.colors["green"] | curses.A_BOLD)
 					s = "%s" % self.mucous.dlang(message)
-					tw.addstr(s, self.mucous.colors["green"] | curses.A_BOLD)
 					length += len(timestamp) + len(pre)+ len(s)
+					tw.addstr(s, self.mucous.colors["green"] | curses.A_BOLD)
+					
 				elif mtype == "List":
 					# List of users in Room
 					
@@ -1043,22 +1122,51 @@ class ChatRooms:
 					s = self.mucous.dlang(message) 
 					tw.addstr(s, self.mucous.colors["green"] | curses.A_BOLD)
 					length += len(s)
-				else:
-					if username != "":
-						# Universal Timestamp
-						tw.addstr(timestamp)
-						if mtype == "Status":
-							# Mucous debugging message
-							pre = " "
-							tw.addstr(pre)
+					
+				elif mtype == "Date":
+					
+					self.mucous.FormatData.Hline(tw, curses.ACS_HLINE, 8)
+					# Mucous status message
+					pre = " "
+					tw.addstr( pre)
+					length += len(timestamp) + len(pre)
+					#name = self.mucous.dlang(username)
+					#tw.addstr(name)
+					suf = " "
+					tw.addstr(" ")
+					length += len(suf)
+					s = self.mucous.dlang(message) 
+					tw.addstr(s, self.mucous.colors["cyan"] | curses.A_BOLD)
+					length += len(s)
+					if length < w["width"]:
+						length += 1
+						tw.addstr(" ")
+					if length < w["width"]:
+						ll = w["width"] - length
+						length += ll
+						self.mucous.FormatData.Hline(tw, curses.ACS_HLINE, ll )
+				elif mtype == "Status":
+					tw.addstr(timestamp+" ")
+					length += len(timestamp)+1
+					s = self.mucous.dlang(message)
+					tw.addstr("< ", self.mucous.colors["cyan"] ) 
+					tw.addstr(s, self.mucous.colors["cyan"] | curses.A_BOLD)
+					tw.addstr(" >", self.mucous.colors["cyan"] )
+					length += len(s) + 4
+
 							
-						else:
-							# Normal user chat
-							pre = " ["
-							tw.addstr(pre, curses.A_BOLD | self.mucous.colors["black"])
+				else:
+
+					# Universal Timestamp
+					
+					tw.addstr(timestamp)
+					# Normal user chat
+					pre = " ["
+					tw.addstr(pre, curses.A_BOLD | self.mucous.colors["black"])
 					length += len(timestamp) + len(pre)
 					
 					name = self.mucous.dlang(username)
+					length += len(name)
 					if self.mucous.config.has_key("banned"):
 						if username == self.mucous.username:
 							tw.addstr(username ,  curses.A_BOLD )
@@ -1072,44 +1180,37 @@ class ChatRooms:
 							tw.addstr(name)
 					else:
 						tw.addstr(name)
-					length += len(name)
 					
-					if username != "":
-						if mtype == "Status":
-							suf = " "
-							tw.addstr(" ")
-						else:
-							suf = "] "
-							tw.addstr(suf, curses.A_BOLD | self.mucous.colors["black"])
+					
+					#if username != "":
+					suf = "] "
 					length += len(suf)
+					tw.addstr(suf, curses.A_BOLD | self.mucous.colors["black"])
 					if mtype == "Mentioned":
 						x = message.split(" ")
 						for e in x:
 							e = self.mucous.dlang(e)
-							
 							if self.mucous.username not in e:
+								length += len(e)
 								tw.addstr(e)
-								length += len(e)
 							elif self.mucous.username in e:
-								tw.addstr(e, self.mucous.colors["cyan"] | curses.A_BOLD)
 								length += len(e)
+								tw.addstr(e, self.mucous.colors["cyan"] | curses.A_BOLD)
 							if e is not  x[-1]:
 								if length < w["width"]:
+									length += 1
 									tw.addstr(" ")
-									length +=  1
+									
 					elif mtype == "Normal":
 						
-						s = self.mucous.dlang(message) 
+						s = self.mucous.dlang(message)
+						length += len(s) 
 						tw.addstr(s)
-						length += len(s)
-					elif mtype == "Status":
-						s = self.mucous.dlang(message) 
-						tw.addstr(s)
-						length += len(s)
-				
+						
 	
 			except Exception, e:
 				pass
+				#self.mucous.Help.Log("debug", "DrawChatText: " + str(e))
 				# Exceptions are Inevitable
 			try:
 				if length < w["width"]:
@@ -1129,16 +1230,21 @@ class ChatRooms:
 		try:
 			if room == None:
 				room = self.current
+			if self.linewrapped != None:
+				if self.scrolling["chatroom"] >= len(self.linewrapped) -1:
+					self.scrolling["chatroom"] = -1
+			if room == self.current:
+				self.linewrapped = None
 			full_message = [mtype, time.strftime("%H:%M:%S"), user, message]
 			if len( self.logs["rooms"][room] ) >= 700:
 				del self.logs["rooms"][room][0]
-			oldlen = len(self.logs["rooms"][room])
+			
 			self.logs["rooms"][room].append(full_message)
 				
 			if self.mucous.mode == "chat":
 				if room == self.current and self.selected == "chatroom":
-					if self.scrolling["chatroom"] >= oldlen -1:
-						self.scrolling["chatroom"] = -1
+					
+					if self.scrolling["chatroom"] == -1:
 						self.FormatChatText()
 				elif room == self.current and self.selected == "roombox":
 					temp = self.scrolling["chatroom"]
@@ -1212,16 +1318,15 @@ class ChatRooms:
 	def Change(self, r):
 		self.scrolling["chatroom"] = self.scrolling["roomstatus"] = -1
 		self.scrolling["roombox"] = 0
-		self.set_room(r)
+		self.SetRoom(r)
 		
 	## Change Room
 	# @param self is ChatRooms (class)
 	# @param r room name
-	def set_room(self, r):
+	def SetRoom(self, room):
 		try:
-			
-			self.current = r
-			self.mucous.Spl["title"]= r
+			self.linewrapped = None
+			self.current = room
 			
 			if self.mucous.mode != "chat":
 				return
@@ -1230,26 +1335,26 @@ class ChatRooms:
 			if self.shape not in ("chat-only", "nostatuslog"):
 				self.DrawStatusWin()
 				self.DrawStatusText()
-			self.mucous.set_edit_title(self.current)
+			self.mucous.SetEditTitle(self.current)
 			# Display Next-room hotspot's text
 			try:
-				# Encoding
+				# Encoding button
 				if self.current != None:
 					if self.current in self.mucous.config["encoding.rooms"]:
 						blah = self.mucous.config["encoding.rooms"][self.current]
 					else:
 						blah = self.mucous.config["encoding"]["network"]
-					
-					self.mucous.windows["inputborder"].addstr(0, self.mucous.w-17-len(blah)-4, "<" + (" " *( len(blah) +2) )+  ">")
-					self.mucous.windows["inputborder"].addstr(0, self.mucous.w-17-len(blah)-2, blah, self.mucous.colors["cyan"] | curses.A_BOLD)
+					ibw = self.mucous.windows["inputborder"]
+					ibw.addstr(0, self.mucous.w-17-len(blah)-4, "<" + (" " *( len(blah) +2) )+  ">")
+					ibw.addstr(0, self.mucous.w-17-len(blah)-2, blah, self.mucous.colors["cyan"] | curses.A_BOLD)
 					# Previous, Next Buttons
-					self.mucous.windows["inputborder"].addstr(0, self.mucous.w-17, "<      >")
-					self.mucous.windows["inputborder"].addstr(0, self.mucous.w-15, "Prev", self.mucous.colors["cyan"] | curses.A_BOLD)
-					self.mucous.windows["inputborder"].addstr(0, self.mucous.w-9, "<      >")
-					self.mucous.windows["inputborder"].addstr(0, self.mucous.w-7,"Next", self.mucous.colors["cyan"] | curses.A_BOLD)
+					ibw.addstr(0, self.mucous.w-17, "<      >")
+					ibw.addstr(0, self.mucous.w-15, "Prev", self.mucous.colors["cyan"] | curses.A_BOLD)
+					ibw.addstr(0, self.mucous.w-9, "<      >")
+					ibw.addstr(0, self.mucous.w-7,"Next", self.mucous.colors["cyan"] | curses.A_BOLD)
 	
 					# Clean screen
-					self.mucous.windows["inputborder"].noutrefresh()
+					ibw.noutrefresh()
 			except Exception, e:
 				pass
 			
@@ -1279,6 +1384,6 @@ class ChatRooms:
 			
 			self.mucous.Alerts.Check()
 		except Exception, e:
-			self.mucous.Help.Log("debug", "set_room: " + str(e))
+			self.mucous.Help.Log("debug", "SetRoom: " + str(e))
 		
 		

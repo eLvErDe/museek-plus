@@ -81,6 +81,7 @@ class UserInfo:
 	def Mode(self):
 		try:
 			self.mucous.mode = "info"
+			self.mucous.UseAnotherEntryBox()
 			self.mucous.PopupMenu.show = False
 			# Cleanup stale windows
 			if "text" in self.windows:
@@ -108,7 +109,7 @@ class UserInfo:
 			
 			#self.scrolling = -1
 	
-			self.mucous.set_edit_title("Get info about user:")
+			self.mucous.SetEditTitle("Get info about user:")
 			
 			sw = self.dimensions["infostats"]= {"height": self.mucous.h-10, "width": 16, "top": 5, "left": self.mucous.w-17}
 			isw = self.windows["statsborder"] = curses.newwin(sw["height"]+2, sw["width"]+2, sw["top"]-1, sw["left"]-1)
@@ -236,7 +237,7 @@ class UserInfo:
 					
 					if self.current == None:
 						self.current = self.users[0]
-					self.current, match = self.mucous.MouseClickTab(x, self.current)
+					self.current, match = self.mucous.edit.MouseClickTab(x, self.current)
 					if match == None:
 						s = self.users.index(self.current)
 						self.current = self.users[s-1]

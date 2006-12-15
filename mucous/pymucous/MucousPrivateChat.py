@@ -36,6 +36,7 @@ class PrivateChat:
 	# @param self PrivateChat (class)
 	def Mode(self):
 		self.mucous.mode = "private"
+		self.mucous.UseAnotherEntryBox()
 		self.mucous.PopupMenu.show = False
 		try:
 			# Cleanup stale windows
@@ -52,7 +53,7 @@ class PrivateChat:
 			self.scrolling = -1 
 			self.Draw()
 			if self.current != None:
-				self.mucous.set_edit_title("Send message to: " + self.current)
+				self.mucous.SetEditTitle("Send message to: " + self.current)
 				try:
 					blah = None
 					if "encoding.users" in self.mucous.config:
@@ -73,7 +74,7 @@ class PrivateChat:
 				self.mucous.Alerts.Check()
 	
 			else:
-				self.mucous.set_edit_title("Set a user to Private Message")
+				self.mucous.SetEditTitle("Set a user to Private Message")
 				self.mucous.HotKeyBar()
 	
 			if self.mucous.Alerts.log == "New PM" or self.mucous.Alerts.log[:5] =="PM: ":
@@ -215,7 +216,7 @@ class PrivateChat:
 				
 			if ctcpversion == 1 and direction == 0:
 				if self.mucous.Config["mucous"]["extra_requests"] == "Yes":
-					self.Send(user, "Mucous %s" % Version)
+					self.Send(user, "Mucous %s" % self.mucous.Version)
 					
 			if self.current == None:
 				self.current = user
@@ -407,7 +408,7 @@ class PrivateChat:
 				if len(self.logs.keys()) > 1:
 					pmusers =  self.logs.keys()
 					pmusers.sort(key=str.lower)
-					self.current, match = self.mucous.MouseClickTab(x, self.current)
+					self.current, match = self.mucous.edit.MouseClickTab(x, self.current)
 					if match == None:
 						s = pmusers.index(self.current)
 						self.current = pmusers[s-1]

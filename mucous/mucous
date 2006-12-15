@@ -47,12 +47,12 @@ except:
 	
 import signal, time, os, commands, getopt, threading, select, string, re, ConfigParser
 import curses.wrapper, curses.ascii
-
+import traceback
 from time import sleep
 
 from UserDict import UserDict
 
-subprocess_fail=0
+
 geoip_fail=0
 
 try:
@@ -75,11 +75,7 @@ try:
 	from pymucous.MucousAlerts import Alerts
 except ImportError, e:
 	print "Failed loading Mucous modules:", e
-	
-try:
-	import subprocess
-except ImportError:
-	subprocess_fail=1
+
 try:
 	import GeoIP
 	gi = GeoIP.new(GeoIP.GEOIP_MEMORY_CACHE)
@@ -90,7 +86,7 @@ except ImportError:
 config_dir = str(os.path.expanduser("~/.mucous/"))
 log_dir = None #str(os.path.expanduser("~/.mucous/logs/"))
 config_file = config_dir+"config"
-Version = "0.9.0"
+Version = "0.9.1"
 ## Command Options
 def usage():
 	print ("""Mucous is a client for Museek, the P2P Soulseek Daemon
@@ -216,7 +212,7 @@ class ConfigManager:
 			for j in self.parser.options(i):
 				val = self.parser.get(i,j, raw = 1)
 	
-				if j in ['login','passw','interface', 'roombox', 'tickers_enabled', "ticker_cycle", "ticker_scroll", "scrolltime", "cycletime", 'default_room', "autobuddy", "now-playing", "log_dir", "aliases" "now-playing-prefix", "browse_display_mode", "url reader", "url custom prefix", "url custom suffix", "transbox", "autoaway", "rooms_sort", "logging", "beep", "auto-clear", "auto-retry", "extra_requests"] :
+				if j in ['login','passw','interface', 'roombox', 'tickers_enabled', "ticker_cycle", "ticker_scroll", "scrolltime", "cycletime", 'default_room', "autobuddy", "now-playing", "log_dir", "aliases" "now-playing-prefix", "browse_display_mode", "url reader", "url custom", "transbox", "autoaway", "rooms_sort", "logging", "beep", "auto-clear", "auto-retry", "extra_requests"] :
 					if val != "None":
 						self.mucous.Config[i][j] = val
 				elif i == 'aliases':
@@ -242,6 +238,7 @@ class ConfigManager:
 					self.parser.remove_option(i,j)
 		self.parser.write(mucous_config_file)
 		mucous_config_file.close()
+		self.mucous.Help.Log("status", "Config Saved")
 	
 	## Check the filesystem for the existance of the config file
 	# Create it if it doesn't exist
@@ -282,19 +279,23 @@ class Mucous:
 		## @var geoip_fail
 		# Did GeoIP fail to load? (True/False)
 		self.geoip_fail = geoip_fail
+		## @var Version
+		# Version of program
+		self.Version = Version
 		## @var gi
 		# GeoIP Instance (Class)
 		if not self.geoip_fail:
 			self.gi = gi
 		else:
 			self.gi = None
+		self.traceback = traceback
 		## @var Config
 		# default config
 		self.Config = {"connection":{"interface":'localhost:2240', "passw":None}, \
 			"mucous":{"autobuddy": "no", "roomlistminsize": 5, "rooms_sort": "size", \
 			"roombox": "big", "log_dir": "~/.mucous/logs/", "now-playing": "default", \
 			"now-playing-prefix": None, "browse_display_mode": "filesystem", "browse_width": 25, \
-			"url reader": "firefox", "url custom prefix": "", "url custom suffix": "", \
+			"url reader": "firefox", "url custom": "$", \
 			"transbox" : "split", "language": "iso-8859-1", "beep": "yes", "autoaway": "yes", \
 			"auto-retry": "yes", "auto-clear": "no", "logging": "yes", "extra_requests": "Yes"}, \
 			"tickers":{'tickers_enabled': 'yes', "ticker_cycle": "no", "rooms":{}, "ticker_scroll": "yes", "scrolltime": "0.3", "cycletime": "3.0"}, \
@@ -324,7 +325,7 @@ class Mucous:
 		"museekconfigfile": ""}
 		## @var data
 		# data dict (variable storage)
-		self.data = {   "mystats": [], }
+		self.data = { "mystats": [], }
 		## @var logs
 		# store lists of data here
 		self.logs = {"tab_completion": [], "search_count": ["Results: ", 0], "history": [],  "onlinestatus": "Offline",     }
@@ -400,6 +401,7 @@ class Mucous:
 		# Transfers (Class)
 		self.Transfers = Transfers(self)
 		
+		
 		## @var url
 		# A Url collected from chat logs
 		self.url = None
@@ -409,6 +411,12 @@ class Mucous:
 		## @var listline
 		# Tab Completion Line (split into a list)
 		self.listline = []
+		## @var line
+		# Input Line
+		self.line = "" 
+		## @var edit
+		# CharacterParse (Class)
+		self.edit = CharacterParse(self)
 		## @var keepit
 		# Keep autocompletion list while tabbing
 		self.keepit = []
@@ -416,10 +424,13 @@ class Mucous:
 		## @var invalidpass
 		# If True, password to museekd was invalid 
 		self.invalidpass = False
-		## @var line
-		# Input Line
-		self.line = "" 
 		
+		self.subprocess_fail=0	
+		try:
+			import subprocess
+			self.subprocess = subprocess
+		except ImportError:
+			self.subprocess_fail=1
 		## @var encodings
 		# List of encodings, used in encodings popup :: Recommended: ISO-8859-1
 		# UTF-16 AND ISO-8859-12 crash Mucous
@@ -466,7 +477,7 @@ class Mucous:
 "/search", "/searchfor", "/searchbuddy", "/searchroom", "/download", "/downdir", "/browse",\
 "/browseuser", "/browsesearch", "/browsedown",  "/downuser",\
 "/downpath", "/downpathdir",  "/chat", "/ignorelist", "/banlist", "/transfer", "/transfers", "/private",\
-"/buddylist", "/setup", "/quit", "/logging", "/logdir", "/reloadshares", "/rescanshares", "/version", "/extra", \
+"/buddylist", "/setup", "/quit", "/logging", "/logdir", "/reloadshares", "/rescanshares", "/version", "/extra", "/exist", \
 "/logout", "/login", "/like", "/donotlike", "/donothate", "/hate", "/similar", "/globalrex", "/recommendations", "/rex", "/itemsimilar", "/itemrex", "/uploadto", "/upload", "/ctcpversion", "/defaulttick", "/settemptick", "/settick "]
 		
 		for alias in self.Config["aliases"].keys():
@@ -540,38 +551,74 @@ class Mucous:
 		else:
 			self.colors["blafgcyabg"]  = self.colors["hotkey"] = self.colors["greenbg"] = self.colors["cybg"] = self.colors["magenta"] = self.colors["white"] =self.colors["black"]  = self.colors["cyan"] =  self.colors["yellow"] =self.colors["blue"]  =self.colors["green"] = self.colors["red"] =  curses.color_pair(0)
 			#Disable cursor (bad idea)
-# 			curses.curs_set(0)
-		
+			curses.curs_set(1)
+		# Enable Function Keys
+		self.stdscr.keypad(1)
 		while 1:
+			curses.noecho()
+			curses.cbreak()
 			try:
-				curses.noecho()
-			except:
-				pass
-			try:
-				curses.cbreak()
-			except:
-				pass
-			self.stdscr.keypad(1)
-			try:
-				 self.line = self.Build()
+				self.line = self.Build()
 			except Exception, e:
 				self.Help.Log("debug", str(e) )
-				sleep(0.5)
+				sleep(0.1)
 			if self.D.socket is None:
-				self.D.connect()
+				try:
+					self.D.connect()
+				except select.error, e:
+					# Terminal resized
+					self.line = self.Build()
+				except KeyboardInterrupt, error:
+					# Ctrl-C
+					self.shutdown(error)
 			try:
 				self.D.process()
 			except select.error, e:
-				self.line = self.Build()
 				# Terminal resized
-			except Exception, e:
-				self.Help.Mode()
-				self.Help.Log("status", "Shutting Down Mucous.. " +str(e) )
-				sleep(1)
-				self.shutdown()
+				self.line = self.Build()
 				
-	
-	
+			except KeyboardInterrupt, error:
+				# Ctrl-C
+				self.shutdown(error)
+				
+	## Create curses input window
+	def UseAnotherEntryBox(self, window=None, height=None, width=None, top=None, left=None, contents=None, wrap=None):
+		if window:
+			self.Spl["input_vertical"] = top
+			self.Spl["input_horizontal"] = left
+		else:
+			if self.edit.win == self.windows["input"]:
+				return
+			w = self.dimensions["input"]
+			window = self.windows["input"]
+			self.Spl["input_vertical"] = w["top"]
+			self.Spl["input_horizontal"] = w["left"]
+			self.edit.line = ""
+		self.edit.SelectEntryBox(window, contents, wrap)
+
+		
+	## Create curses input window
+	# @param self Mucous (class)
+	def CreateEntryBox(self):
+		try:
+			# Clean stale windows
+			if "input" in self.windows:
+				del self.windows["input"]
+			if "inputborder" in self.windows:
+				del self.windows["inputborder"]
+				
+			w = self.dimensions["input"] = {"height":1, "width":self.w-2, "top":self.h-3, "left":1}
+			self.Spl["input_vertical"] = w["top"]
+			self.Spl["input_horizontal"] = w["left"]
+			bi = self.windows["inputborder"] = curses.newwin(w["height"]+2, w["width"]+2, w["top"]-1, w["left"]-1)
+			bi.attron(self.colors["blue"])
+			bi.border()
+			bi.refresh()
+			
+			self.windows["input"] = bi.subwin(w["height"], w["width"], w["top"], w["left"])
+			self.windows["input"].attroff(self.colors["blue"])
+		except Exception, e:
+			self.Help.Log("debug", "CreateEntryBox: " + str(e))
 	## Create curses parent window, get terminal size, draw windows
 	# @param self Mucous (class)
 	# @return line
@@ -589,20 +636,9 @@ class Mucous:
 			## @var w
 			# Width of terminal / curses screen
 			self.h, self.w = self.stdscr.getmaxyx()
-			# Clean stale windows
-			if "input" in self.windows:
-				del self.windows["input"]
-			if "inputborder" in self.windows:
-				del self.windows["inputborder"]
-				
-			w = self.dimensions["input"] = {"height":1, "width":self.w-2, "top":self.h-3, "left":1}	
-			bi = self.windows["inputborder"] = curses.newwin(w["height"]+2, w["width"]+2, w["top"]-1, w["left"]-1)
-			bi.attron(self.colors["blue"])
-			bi.border()
-			bi.refresh()
 			
-			self.windows["input"] = bi.subwin(w["height"], w["width"], w["top"], w["left"])
-			self.windows["input"].attroff(self.colors["blue"])
+			self.CreateEntryBox()
+			
 			self.ModeTopbar()
 
 			self.PopupMenu.show  = False
@@ -634,18 +670,38 @@ class Mucous:
 			self.Help.Log("debug", "Build part 2: " + str(e))
 			curses.doupdate()
 		try:
-			## @var edit
-			# CharacterParse (Class)
-			self.edit = CharacterParse(self)
+			
 
 			self.stdscr.nodelay(1)
-				
+			self.edit.SelectEntryBox(self.windows["input"])
 		except Exception, e:
 			self.Help.Log("debug", "Build: " + str(e))
 		return self.line
-	
+		
+	## Connect to Museekd if not connected
+	# @param self Mucous (Class)
+	def ManuallyConnect(self):
+		try:
+			if self.Spl["connected"] == 0:
+				self.invalidpass = False
+				self.line = ""
+				self.edit.reset()
+				self.D.connect()
+				
+				return 0
+			else:
+				self.Help.Log("status", "Already connected... aborting connection attempt.")
+		except Exception, e:
+			self.Help.Log("debug", "ManuallyConnect: " + str(e))
+			
 	## Close mucous after disconnecting from museekd
-	def shutdown(self):
+	# @param self Mucous (Class)
+	# @param error message to be displayed in the help log
+	def shutdown(self, error=None):
+		if error is not None:
+			self.Help.Mode()
+			self.Help.Log("status", "Shutting Down Mucous.. " +str(error) )
+			sleep(1)
 		try:
 			self.disconnect()
 			# Quit		
@@ -669,7 +725,8 @@ class Mucous:
 		
 		try:
 			if self.Spl["connected"] == 1:
-				driver.Driver.close(self.D)
+				#driver.Driver.close(self.D)
+				self.D.close()
 		except Exception,e:
 			self.Help.Log("debug", "disconnect: " + str(e))
 	
@@ -731,7 +788,7 @@ class Mucous:
 		try:
 			if os.path.expandvars("$SHELL") in  ("/bin/bash", "/bin/sh"):
 				if str(curses.termname() ) != "linux":
-					os.system("echo -ne \"\033]0;Mucous %s: %s\007\" " %(Version, self.logs["onlinestatus"] ))
+					os.system("echo -ne \"\033]0;Mucous %s: %s\007\" " %(self.Version, self.logs["onlinestatus"] ))
 		except Exception,e:
 			self.Help.Log("debug", "TerminalTitle: " +str( e) )
 			
@@ -846,14 +903,7 @@ class Mucous:
 		try:
 			if domain in ("buddies", "banned", "trusted", "ignored",  "autojoin", "trusted"):
 				if self.mode == "lists":
-					if self.UsersLists.current == "buddied":
-						self.UsersLists.ModeBuddy()
-					elif self.UsersLists.current == "banned":
-						self.UsersLists.ModeBan()
-					elif self.UsersLists.current == "ignored":
-						self.UsersLists.ModeIgnore()
-					elif self.UsersLists.current == "trusted":
-						self.UsersLists.ModeTrust()
+					self.UsersLists.ModeLists()
 				elif self.mode == "chat" :
 					self.ChatRooms.DrawBox()
 					
@@ -932,326 +982,7 @@ class Mucous:
 		except Exception, e:
 			self.Help.Log("debug", "show_nick_list: " + str(e))
 			
-	## Create Tab Completion List
-	# @param self Mucous (Class)
-	def InputCompletionList(self):
-		try:
-			usercompletionlist = {}
-			if "buddies" in self.config:
-				for users in self.config["buddies"].keys():
-					usercompletionlist[self.dlang(users)] = 0
-			if "banned" in self.config:
-				for users in self.config["banned"].keys():
-					usercompletionlist[self.dlang(users)] = 0
-			if "ignored" in self.config:
-				for users in self.config["ignored"].keys():
-					usercompletionlist[self.dlang(users)] = 0
-			
-			#if self.mode == "chat":
-				# Autocomplete users in the current room only
-			if self.ChatRooms.rooms.keys() != []:
-				for user in self.ChatRooms.rooms[self.ChatRooms.current]:
-					usercompletionlist[self.dlang(user)] = 0
-			#elif self.mode == "private":
-			pmusers = self.PrivateChat.logs.keys()
-			for user in pmusers:
-				usercompletionlist[self.dlang(user)] = 0
-			if self.mode == "transfers":
-				if self.Transfers.transfers["uploads"].keys() != []:
-					for userpath, values in self.Transfers.transfers["uploads"].items():
-						usercompletionlist[self.dlang(values[1])] = 0
-				if self.Transfers.transfers["downloads"].keys() != []:
-					for userpath, values in self.Transfers.transfers["downloads"].items():
-						usercompletionlist[self.dlang(values[1])] = 0
-			elif self.mode == "browse":
-				if self.BrowseShares.current != None:
-					if self.BrowseShares.current in self.BrowseShares.results:
-						for dirs in self.BrowseShares.results[self.BrowseShares.current].keys():
-							usercompletionlist[self.dlang(dirs)] = 0
-			for values in self.commandlist:
-				usercompletionlist[self.dlang(values)] = 0
-				
-			if usercompletionlist.keys() != []:
-				self.logs["tab_completion"] = usercompletionlist.keys()
-				self.logs["tab_completion"].sort(key=str.lower)
-			else:
-				self.logs["tab_completion"] = []
-		except Exception, e:
-			self.Help.Log("debug", "InputCompletionList: " + str(e))
-			
-	## Here's where scrolling works
-	# @param self Mucous (Class)
-	# @param key Key Pressed
-	# @return list / Nothing
-	def ScrollText(self, key):
-		try:
-			color_added = None
-			scrolltext = None
-			scrollnum = None
-			position = None
-			scrollchange = 0
-			if self.mode not in ( "transfer", "search", "help", "debug", "info", "private", "lists", "roomlist", "chat", "browse"):
-				return 
-			if self.mode == "chat":
-				if self.ChatRooms.selected == "chatroom":
-					scrollnum = self.ChatRooms.scrolling["chatroom"]
-					w = self.ChatRooms.dimensions["chat"]
-					if self.ChatRooms.current != None:
-						selected_log = self.ChatRooms.logs["rooms"][self.ChatRooms.current]
-						 
-					else: 
-						self.ChatRooms.DrawChatWin()
-						self.ChatRooms.windows["text"]["chat"].refresh()
-						return
-				elif self.ChatRooms.selected == "roombox":
-					scrollnum = self.ChatRooms.scrolling["roombox"]
-					w = self.ChatRooms.dimensions["roombox"]
-					selected_log = self.ChatRooms.logs["roombox"][self.ChatRooms.current]
-				elif self.ChatRooms.selected == "roomstatus":
-					scrollnum = self.ChatRooms.scrolling["roomstatus"]
-					#scrolltext = "roomstatus"
-					w = self.ChatRooms.dimensions["roomstatus"]
-					selected_log = self.ChatRooms.logs["roomstatus"][self.ChatRooms.current]
-				scrolldiff = w["height"]
-			elif self.mode == "browse":
-				scrollnum = self.BrowseShares.scrolling[self.BrowseShares.selected]
-				scrolldiff =self.BrowseShares.dimensions["browse"]["height"]
-			elif self.mode in ("debug", "help"):
-				scrollnum = self.Help.scrolling[self.mode]
-				scrolldiff = self.Help.dimensions["help"]["height"]
-			elif self.mode ==  "private":
-				scrollnum = self.PrivateChat.scrolling
-				scrolldiff = self.PrivateChat.dimensions["height"]
-				
-			elif self.mode == "info":
-				if self.UserInfo.current == None:
-					scrollnum = self.UserInfo.scrolling_status
-				else:
-					scrollnum = self.UserInfo.scrolling[self.UserInfo.current]
-				scrolldiff = self.UserInfo.dimensions["info"]["height"]
-			elif self.mode == "search":
-				scrollnum = self.Search.scrolling
-				scrolldiff = self.Search.dimensions["height"]
-				
-			elif self.mode == "lists":
-				if self.UsersLists.current == "interests":
-					scrollnum = self.Recommendations.scrolling[self.Recommendations.selected]
-					scrolldiff = self.Recommendations.dimensions[self.Recommendations.selected]["height"]
-				else:
-					scrollnum = self.UsersLists.scrolling[self.UsersLists.current]
-					scrolldiff = self.UsersLists.dimensions[self.UsersLists.current]["height"]
-					
-			elif self.mode == "roomlist":
-				scrollnum = self.RoomsList.scrolling
-				scrolldiff = self.RoomsList.dimensions["height"]
-			elif self.mode == "transfer":
-				scrollnum = self.Transfers.scrolling[self.Transfers.current]
-				scrolldiff = self.Transfers.dimensions[self.Transfers.current]["height"]-1
-				
-			if scrolltext != None:
-				position = self.scrolling[scrolltext]
-			if scrollnum != None:
-				position = scrollnum
-			if key == "KEY_UP":	
-				position -= 1
-				scrollchange = -1
-			elif key == "KEY_DOWN":
-				position += 1
-				scrollchange = 1
-			elif key == "KEY_PPAGE":
-				position -= scrolldiff
-				scrollchange = -scrolldiff 
-				
-				# upload or download window height - one line for heading
-			elif key == "KEY_NPAGE":
-				position += scrolldiff
-				scrollchange = scrolldiff
-			if position < 0:
-				position = 0
-			
-			if scrolltext != None:
-				self.scrolling[scrolltext] = position
-			if scrollnum != None:
-				self.UpdateScrollNum(position)
-				
-			if self.mode == "chat":
-				if self.ChatRooms.selected  == "chatroom":
-					#start -= 1
-					self.ChatRooms.FormatChatText()
-				elif self.ChatRooms.selected  == "roombox":
-					self.ChatRooms.FormatBox()
-				elif self.ChatRooms.selected  == "roomstatus":
-					self.ChatRooms.DrawStatusText()
-					
-			elif self.mode == "browse":
 
-				if self.BrowseShares.selected == "directories":
-					self.BrowseShares.FormatBrowse(True)
-				else:
-					self.BrowseShares.FormatBrowse(False)
-				curses.doupdate()
-			elif self.mode == "info":
-				self.UserInfo.DrawText()
-			elif self.mode == "private":
-				self.PrivateChat.Draw()
-			elif self.mode == "search":
-				self.Search.Draw()
-			elif self.mode == "lists":
-				if self.UsersLists.current != "interests":
-					self.UsersLists.SelectLists()
-				else:
-					self.Recommendations.DrawInterests()
-		
-				return
-			elif self.mode == "roomlist":
-				self.RoomsList.Format()
-				return self.RoomsList.sizedrooms[self.RoomsList.scrolling]
-			elif self.mode in ("help", "debug"):
-				self.Help.Format()
-			elif self.mode == "transfer":
-				if self.Transfers.current == "uploads":
-					self.Transfers.UploadManager()
-					curses.doupdate()
-				elif self.Transfers.current == "downloads":
-					self.Transfers.DownloadManager()
-					curses.doupdate()
-				
-		except Exception, e:
-			self.Help.Log("debug", "ScrollText: " + str(e))
-	# ---v  KEYS v
-	
-	## Update Scrolling Numbers
-	# @param self Mucous (Class)
-	# @param num scrolling number
-	def UpdateScrollNum(self, num):
-		try:
-			if self.mode == "private":
-				self.PrivateChat.scrolling = num
-			elif self.mode == "search":
-				self.Search.scrolling = num
-			elif self.mode == "roomlist":
-				self.RoomsList.scrolling = num
-			elif self.mode == "browse":
-				self.BrowseShares.scrolling[self.BrowseShares.selected] = num
-			elif self.mode == "info":
-				if self.UserInfo.current == None:
-					self.UserInfo.scrolling_status = num
-				else:
-					self.UserInfo.scrolling[self.UserInfo.current] = num
-			elif self.mode == "lists":
-				if self.UsersLists.current == "interests":
-					self.Recommendations.scrolling[self.Recommendations.selected] = num
-				else:
-					self.UsersLists.scrolling[self.UsersLists.current] = num
-			elif self.mode == "transfer":
-				#if self.Transfers.current == "interests":
-				self.Transfers.scrolling[self.Transfers.current] = num
-			elif self.mode == "chat":
-				self.ChatRooms.scrolling[self.ChatRooms.selected] = num
-			elif self.mode in ("debug", "help"):
-				self.Help.scrolling[self.mode] = num
-		except Exception, e:
-			self.Help.Log("debug", "UpdateScrollNum: " + str(e))
-			
-	## Complete command, word, or user in line
-	# @param self Mucous (Class)
-	# @param line string containing the entire line
-	# @param part line segment we are in
-	# @param firsttab (0/1) (do not rebuild and match the completion list if 1)
-	# @param listline line split into a list
-	# @param pos horizontal Postion in line
-	# @return listline, firsttab, part, pos
-	def InputTabCompletion(self, line, part, firsttab, listline, pos):
-		try:
-			self.listline = listline
-			
-			if firsttab ==0:
-				self.InputCompletionList()
-				
-			if self.logs["tab_completion"] == []:
-				return self.listline, firsttab, part, pos
-				
-			if self.mode not in ("roomlist", "chat", "lists", "info", "private", "browse", "transfer", "setup", "search", "help", "debug", "status"):
-				return self.listline, firsttab, part, pos
-			if len(part) <= 0:
-				return self.listline, 0, part, pos
-			if firsttab ==0:
-				self.keepit=[]
-				if self.mode == "roomlist":
-					for words in self.RoomsList.rooms.keys():
-						if words.upper().startswith(part[0:1].upper()):
-							self.keepit.append(words)
-				else:
-					for words in self.logs["tab_completion"]:
-						if part[0:1] == '/':
-							# Be more picky with /commands
-							if len(words) > len(part):
-								if words.upper().startswith(part.upper()):
-									self.keepit.append(words)
-							
-						else:
-							if words.upper().startswith(part.upper()):
-								self.keepit.append(words)
-				self.keepit.sort(key=str.lower)
-			firsttab +=1
-
-			currentword = self.listline[pos]	
-			lw = len(currentword)
-
-			if currentword.upper().startswith(part.upper()):
-				
-				for words in self.keepit:
-					self.listline[pos] = self.keepit[0]
-					z = self.keepit[0]
-					self.keepit.remove(self.keepit[0])
-					self.keepit.append(z)
-
-
-					break
-				else:
-					
-					firsttab = 0
-			else:
-				firsttab = 0
-
-			return self.listline, firsttab, part, pos
-
-		except Exception, e:
-			self.Help.Log("debug", "InputTabCompletion: " + str(e))
-			
-	## Previously inputted messages
-	# @param self Mucous (Class)
-	# @param key KEY_UP or KEY_DOWN
-	# @param line current line
-	# @param history_count position in the history log
-	# @return line, history_count
-	def InputHistory(self, key, line, history_count):
-		try:
-			self.Spl["history_count"] = history_count
-			if line not in self.logs["history"] and line !='' and not line.isspace():
-				self.logs["history"].append(line)
-				
-			if len(self.logs["history"]) == 0:
-				# return current line and current position
-				return line, self.Spl["history_count"]
-			
-			if key == "KEY_UP":
-				self.Spl["history_count"] += 1
-			elif key == "KEY_DOWN":
-				self.Spl["history_count"] -= 1
-	
-			last_line = len(self.logs["history"]) -1 - self.Spl["history_count"]
-			if last_line < 0:
-				last_line = len(self.logs["history"]) -1
-				self.Spl["history_count"] = 0
-			elif last_line > len(self.logs["history"]) -1:
-				last_line = len(self.logs["history"]) -1
-				self.Spl["history_count"] += 1
-			line = self.logs["history"][ last_line]
-			# return old line and line's position
-			return line, self.Spl["history_count"]
-		except Exception, e:
-			self.Help.Log("debug", "history: " + str(e))
 	
 	## Redraw windows for current mode
 	# @param self is Mucous (Class)
@@ -1308,1598 +1039,11 @@ class Mucous:
 				pass
 			self.windows["inputborder"].redrawwin()
 			self.windows["inputborder"].refresh()
+			self.ModeTopbar()
 		except Exception,e:
 			self.Help.Log("debug", "Refresh Windows: "+str(e))
 
 			
-
-	## Clicked on the tab selector
-	# @param self is Mucous (Class)
-	# @param x Horizontal position
-	# @param chosen Mode we are in
-	# @return chose, match
-	def MouseClickTab(self, x, chosen):
-		try:
-			choz = self.activeitems["positions"][chosen]
-			match = None
-			if x >= choz[0] and x < choz[1]:
-				# do nothing if chose search is clicked
-				return chosen, 'yes'
-			else:
-				for key, pos in self.activeitems["positions"].items():
-					if x >= pos[0]   and x < pos[1] :
-						match = 'yes'
-						break
-			if match != None:
-				return key, match
-			else:
-				return chosen, None
-		except Exception, e:
-			self.Help.Log("debug", "MouseClickTab: " +str(e) )
-		
-	## Mouse Coordinates: Switch modes or options in position matches requirements
-	# @param self is Mucous (Class)
-	# @param line is a text string
-	# @return  line / Nothing
-	def MouseXY(self, line):
-		
-		try:
-			(id,x,y,z,event) = curses.getmouse()
-			#self.Help.Log("debug", "%d %d %d %d %d" % (id, x, y, z,event))
-			if event in (1, 128, 8192):
-				# Ignore PRESSED and RELEASED
-				return
-			if x in range(8) and y == 0:
-				if self.Spl["connected"] == 0:
-					self.D.connect()
-				elif self.Spl["connected"] == 1:
-					self.ToggleAwayStatus()
-				return
-		# 1Chat 2Private 3Transfers 4Search 5Info 6Browse 7Users 8Rooms 9Setup 10Help
-			if y >= self.h-1:
-				# clickable mode switching
-				if x >= 0 and x < 7:
-					self.ChatRooms.Mode()
-				elif x >= 7 and x < 16:
-					self.PrivateChat.Mode()
-				elif x >= 16 and x < 27:
-					self.Transfers.ModeTransfers()
-				elif x >= 27 and x < 35:
-					self.Search.Mode()
-				elif x >= 35 and x < 41:
-					self.UserInfo.Mode()
-				elif x >= 41 and x < 49:
-					self.BrowseShares.Mode()
-				elif x >= 49 and x < 56:
-					self.UsersLists.ModeLists()
-				elif x >= 56 and x < 63:
-					self.RoomsList.Mode()
-				elif x >= 63 and x < 70:
-					self.Setup.Default()
-				elif x >= 70 and x < 76:
-					self.Help.Mode()
-				return
-				
-			if self.PopupMenu.show == True and self.PopupMenu.current != None:
-				p = self.PopupMenu.menus[self.PopupMenu.current]
-				#width = self.PopupMenu.menus[self.PopupMenu.current]["width"]
-				#top = self.PopupMenu.menus[self.PopupMenu.current]["top"]
-				#height = self.PopupMenu.menus[self.PopupMenu.current]["height"]
-				#left = self.PopupMenu.menus[self.PopupMenu.current]["left"]
-				if x >= p["left"] and x < p["left"]+p["width"] and y >= p["top"] and y < p["top"]+p["height"]:
-					self.PopupMenu.Mouse(x, y, event)
-					return
-				else:
-					self.PopupMenu.Clear()
-					
-			if self.mode == "chat":
-				self.ChatRooms.MouseChat(x,y,z,event)
-			elif self.mode == "private":
-				# Clickable private message switch
-				return self.PrivateChat.Mouse(x,y,z,event)
-			elif self.mode == "browse":
-				return self.BrowseShares.MouseBrowse(x,y,z,event)
-			elif self.mode == "info":
-				# Clickable user info tabs
-				return self.UserInfo.Mouse(x,y,z,event)
-			elif self.mode == "search":
-				return self.Search.Mouse(x,y,z,event)
-			elif self.mode == "roomlist":
-				# ROOMLIST BUTTONS
-				return self.RoomsList.Mouse(x,y,z,event)
-			elif self.mode == "lists":
-				return self.UsersLists.Mouse(x,y,z,event)
-			elif self.mode == "transfer":
-				# TRANSFERS BUTTONS
-				# Clickable transfer type switcher
-				return self.Transfers.Mouse(x,y,z,event)
-			elif self.mode == "setup":
-				return self.Setup.Mouse(x,y,z,event)
-				
-
-			elif self.mode in ("help", "debug"):
-				if y == self.Help.dimensions["help"]["top"]-1:
-					if x >= 4 and x <= 16 and self.mode != "help":
-						self.mode = "help"
-						self.Help.Mode()
-					elif x >= 18 and x <= 31 and self.mode != "debug":
-						self.mode = "debug"
-						self.Help.Mode()
-			# END OF MOUSE
-			return line
-		except Exception, e:
-			self.Help.Log("debug", "MouseXY: "+str(e) )
-	
-	## Parse Entry box for commands
-	# @param self is mucous
-	# @param line is a text string
-	# @return Nothing / 0 / 1 /2 
-	def InputCommands(self, line):
-		try:
-			if line[:1] != "/" or line[:2] == '//' or line[:4] == '/me ':
-				if self.Spl["title"] and line:
-					self.InputText(line)
-				return
-			#if line[:1] == "/" and line[:4] != "/me " and line[:2] != '//':
-			
-			if line == "/quit" or line == "/exit":
-				config_manager.update_config()
-				self.shutdown()
-				return 2
-			elif line[:11] == "/disconnect":
-				self.disconnect()
-			elif line == "/debug":
-				self.mode = "debug"
-				self.Help.Mode()
-			elif line[:5] == "/help":
-				self.mode = "help"
-				self.Help.Mode()
-				if line[5:] == " chat":
-					for line in self.Help.log["chat"]:
-						self.Help.Log("help", line)
-				elif line[5:] == " mode":
-					for line in self.Help.log["modes"]:
-						self.Help.Log("help", line)
-				elif line[5:] == " user":
-					for line in self.Help.log["user"]:
-						self.Help.Log("help", line)
-				elif line[5:] == " search":
-					for line in self.Help.log["search"]:
-						self.Help.Log("help", line)
-				elif line[5:] == " browse":
-					for line in self.Help.log["browse"]:
-						self.Help.Log("help", line)
-				elif line[5:] == " transfer":
-					for line in self.Help.log["transfer"]:
-						self.Help.Log("help", line)
-				elif line[5:] == " ticker":
-					for line in self.Help.log["tickers"]:
-						self.Help.Log("help", line)
-				elif line[5:] == " download":
-					for line in self.Help.log["download"]:
-						self.Help.Log("help", line)
-				elif line[5:] == "":
-					for line in self.Help.log["helpcommands"]:
-						self.Help.Log("help", line)
-				elif line[5:] == " keys":
-					for line in self.Help.log["keys"]:
-						self.Help.Log("help", line)
-				elif line[5:] == " connect":
-					for line in self.Help.log["connect"]:
-						self.Help.Log("help", line)
-				elif line[5:] == " setup":
-					for line in self.Help.log["setup"]:
-						self.Help.Log("help", line)
-				try:
-					self.edit.reset()
-				except:
-					pass
-				'''
-				Chatrooms
-				'''
-			elif line[:6] == "/talk ": 
-				self.ChatRooms.Change(line[6:])
-				
-			elif line[:6] == "/join ":
-				self.ChatRooms.JoinRoom(line[6:])
-				
-			elif line[:3] == "/j ":
-				self.ChatRooms.JoinRoom(line[3:])
-				
-			elif line in ("/part", "/p", "/l", "/leave"):
-				self.ChatRooms.Leave()
-				
-				
-			elif line[:6] == "/part ":
-				for room in self.ChatRooms.rooms.keys():
-					if self.dlang( line[6:] ) == room:
-						self.D.LeaveRoom(room)
-						
-			elif line[:7] == "/leave ":
-				for room in self.ChatRooms.rooms.keys():
-					if self.dlang( line[7:] ) == room:
-						self.D.LeaveRoom(room)
-				
-			elif line[:10] == "/autojoin " and line[10:] != '':
-				if line[10:] in self.ChatRooms.rooms.keys():
-					room = line[10:]
-					self.ModifyConfig("autojoin", room, '')
-				else:
-					self.Help.Log("status", "You aren't in room: %s" % line[5:])
-					
-			elif line == "/autojoin":
-				if self.ChatRooms.current != None:
-					room = self.ChatRooms.current
-					self.ModifyConfig("autojoin", room, '')
-					
-			elif line == "/extra":
-				
-				if self.Config["mucous"]["extra_requests"] == "Yes":
-					self.Config["mucous"]["extra_requests"] = "No"
-				elif self.Config["mucous"]["extra_requests"] == "No":
-					self.Config["mucous"]["extra_requests"] = "Yes"
-				if self.Config["mucous"]["extra_requests"] not in ("Yes", "No"):
-					self.Config["mucous"]["extra_requests"] = "No"
-				self.Help.Log("status", "Extra CTCP-like version requests are responded to? %s"  % self.Config["mucous"]["extra_requests"] )
-				
-			elif line[:4] == "/ut ":
-				try:
-					num = int(line[4:])
-					for username, path in self.Transfers.downloads[num].items():
-						self.D.TransferUpdate(username, path)
-				except:
-					return
-					
-			elif line == "/beep":
-				self.ToggleBeep()
-			elif line =="/ping":
-				self.D.Ping(1)
-			elif line[:6] == "/close":
-				user = None
-				if line[6:7] == " " and line[7:] != '':
-					user == line[7:]
-					
-				if self.mode == 'private':
-					if user != None: this_user = user
-					else: this_user = self.PrivateChat.current
-					if this_user != None:
-						self.PrivateChat.Close(this_user)
-						
-				elif self.mode == 'chat':
-					if user != None: room = user
-					else: room = self.ChatRooms.current
-					if room in self.ChatRooms.rooms.keys():
-						self.D.LeaveRoom(room)
-						
-				elif self.mode == 'info':
-					if user != None: this_user = user
-					else: this_user = self.UserInfo.current
-					if this_user != None:
-						self.UserInfo.Close(this_user)
-						
-				elif self.mode == 'browse':
-					if user != None: this_user = user
-					else: this_user = self.BrowseShares.current
-					if this_user != "default__":
-						self.Close(this_user)
-						
-				elif self.mode =='search':
-					if self.Search.current != None:
-						self.Search.Close(self.Search.current)
-
-			elif line[:4] == "/pm " and line[4:] != '':
-				self.PrivateChat.current = line[4:]
-				self.PrivateChat.Start(self.PrivateChat.current)
-				if self.mode == 'private':
-					self.PrivateChat.Mode()
-
-					
-			elif line[:5] == "/msg " and line[5:] != '':
-				if self.PrivateChat.current != None:
-					message = line[5:]
-					
-					self.PrivateChat.Send(self.PrivateChat.current, message)
-				else:
-					self.mode = "debug"
-					self.ModeHelp()
-					self.Help.Log("status", "Set a user to message with /pm!")
-					
-			elif line == "/autoaway":
-				aa = self.Config["mucous"]["autoaway"]
-				if aa == "yes":
-					aa = "no"
-				elif aa == "no":
-					aa = "yes"
-				self.Config["mucous"]["autoaway"] = aa
-				self.Help.Log("status", "Autoaway is On? " + aa )
-			elif line[:5] == "/away":
-				self.ToggleAwayStatus()
-					
-			elif line[:5] == "/say " and line[5:] !='':
-				# /say <room> /me is hungry
-				sine = line[5:]
-				splited = sine.split(' ')
-				if len(splited) > 1:
-					
-					if splited[0] in self.ChatRooms.rooms.keys():
-						room = splited[0]
-						if splited[1].isspace():
-							pass
-						else:
-							message = string.join(map(str, splited[1:]))
-							self.ChatRooms.SayInChat(room, message)
-					else:
-						if len(splited) > 2:
-							s = ''
-							n = 0
-							
-							#self.Help.Log("debug", str(splited))
-							for i in range(len(splited)):
-								if i == 0:
-									s =splited[i]
-								else:
-									s += ' ' +splited[i]
-								n += 1
-								if s in self.ChatRooms.rooms.keys():
-									break
-		
-							if s not in self.ChatRooms.rooms.keys():
-								self.Help.Log("debug", s)
-								pass
-							else:
-								room = s
-								message = string.join(map(str, splited[n:]))
-								if message.isspace():
-									pass
-								else:
-									self.ChatRooms.SayInChat(room, message)
-							
-		
-			elif line[:4] == "/url" and line[4:] == '':
-				self.url = None
-				logfile = None
-				if self.mode == "chat" and self.ChatRooms.current != None:
-					logfile = []
-					for line in self.ChatRooms.logs["rooms"][self.ChatRooms.current]:
-						logfile.append(line)
-				elif self.mode == "private" and self.PrivateChat.current != None:
-					logfile = []
-					for line in self.PrivateChat.logs[self.PrivateChat.current]:
-						logfile.append(line)
-				if logfile != None:
-					lene = len(logfile)
-					logfile.reverse()
-					if self.mode == "chat":
-						for line in logfile:
-							if "://" in line[3]:
-								urline = line[3].split(" ")
-								for x in urline:
-									if "://" in x: self.url = x
-									break
-								break
-					elif self.mode == "private":
-						for timestamp, user, message in logfile:
-							if "://" not in message:
-								continue
-							urline = message.split(" ")
-							for x in urline:
-								if "://" in x:
-									 self.url = x
-									 break
-							break
-						
-		
-				if self.url != None:
-					urlr = self.Config["mucous"]["url reader"]
-					if  urlr == "links":
-						if os.path.expandvars("$TERM") != "linux" and os.path.exists("/usr/bin/links"):
-							os.system("xterm -e 'TERM=xterm-color links "+self.url +"' &")
-					elif urlr == "elinks":
-						if os.path.expandvars("$TERM") != "linux" and os.path.exists("/usr/bin/elinks"):
-							os.system("xterm -e 'TERM=xterm-color elinks "+self.url +"' &")
-					elif urlr == "lynx":
-						if os.path.expandvars("$TERM") != "linux" and os.path.exists("/usr/bin/lynx"):
-							os.system("xterm -e 'TERM=xterm-color lynx "+self.url +"' &")	
-					elif urlr == "firefox":
-						os.system("firefox -a firefox -remote 'openURL("+self.url +",new-tab)' &")
-					elif urlr == "custom":
-						os.system(self.Config["mucous"]["url custom prefix"]+self.url+self.Config["mucous"]["url custom suffix"]+" &")
-						
-			elif line[:11] == "/urlreader " and line[11:] != '':
-				self.Config["mucous"]["url reader"] = line[11:]
-			elif line[:11] == "/urlcustom " and line[11:] != '':
-				if "$" in line[11:]:
-					custom = line[11:].split("$")
-					if len(custom) > 1 and len(custom) < 3:
-						self.Config["mucous"]["url custom prefix"] = custom[0]
-						self.Config["mucous"]["url custom suffix"] = custom[1]
-					elif len(custom) == 1:
-						self.Config["mucous"]["url custom prefix"] = custom[0]
-						self.Config["mucous"]["url custom suffix"] = ''
-			elif line[:3] == "/np" and line[3:] == '':
-				self.NowPlaying()
-				
-			elif line[:3] == "/w " and line[3:] != '' or line[:8] == "/window " and line[8:] != "":	
-				if line[:3] == "/w ":
-					num = line[3:]
-				elif line[:8] == "/window ":
-					num = line[8:]
-				
-				if num.isdigit() == 0:
-					return
-				
-				if num == "1":
-					self.ChatRooms.Mode()
-				elif num == "2":
-					self.PrivateChat.Mode()
-				elif num == "3":
-					self.Transfers.ModeTransfers()
-				elif num == "4":
-					self.Search.Mode()
-				elif num == "5":
-					self.UserInfo.Mode()
-				elif num == "6":
-					self.BrowseShares.Mode()
-				elif num == "7":
-					self.UsersLists.ModeLists()
-				elif num == "8":
-					self.RoomsList.Mode()
-				elif num == "9":
-					self.Setup.Default()
-				elif num == "10":
-					self.Help.Mode()
-						
-			elif line[:7] == "/npset " and line[7:] != '':
-				self.Config["mucous"]["now-playing"] =line[7:]
-				
-			elif line[:8] == "/npcheck" and line[8:] == '':
-				if "now-playing" in self.Config["mucous"].keys():
-					self.Help.Log("status", "Now playing command is: "+ str(self.Config["mucous"]["now-playing"]))
-				
-			elif line[:10] == "/npprefix " and line[10:] != '':
-				self.Config["mucous"]["now-playing-prefix"] = line[10:]
-				
-			elif line == "/npprefix":
-				if "now-playing-prefix" in self.Config["mucous"]:
-					self.Config["mucous"]["now-playing-prefix"] = None
-			elif line in ("/rescan", "/rescanshares"):
-				self.Muscan.Command(["muscan", "-v"])
-				
-				self.Help.Log("status", "Updating normal shares with muscan, don't forget to Reload them.")
-			elif line in ("/rescanbuddy"):
-				self.Muscan.Command(["muscan", "-b", "-v"])
-				self.Help.Log("status", "Updating buddy shares with muscan, don't forget to Reload them.")
-					
-			elif line in ("/reload", "/reloadshares"):
-				self.D.ReloadShares()
-						
-			elif line == "/redraw":
-				self.line = self.Build()
-				
-			elif line == "/logging":
-				self.ToggleLogging()
-				
-				if self.mode=="setup":
-					self.Setup.Mode()
-			elif line[:8] == "/logdir ":
-				path = line[8:]
-				if not path.isspace() and path != "":
-					if os.path.exists(os.path.expanduser(path)):
-						self.Config["mucous"]["log_dir"] = os.path.expanduser(path)
-						self.Help.Log("debug", "Logs directory set to: %s" % path)
-					else:
-						self.Help.Log("debug", "Path for logs directory, %s, doesn't exist" % path)
-				'''
-				User Information
-				'''
-			elif line[:10] == "/userinfo " and line[10:] != '':
-				user = self.dlang( line[10:] ) 
-				self.UserInfo.Get(user)
-				
-					
-			elif line[:3] == "/tc":
-				self.InputCompletionList()
-			elif line[:10] == "/language ":
-				self.Config["mucous"]["language"] = line[10:]
-				
-			elif line[:4] == "/ip " and line[4:] != '':
-				try:
-					
-					user  = self.dlang( str(line[4:]) )
-					self.requests["ip"].append(user)
-					self.D.PeerAddress(user)
-				except Exception, e:
-					self.Help.Log("debug", e)
-					
-			elif line == "/ip":
-				try:
-					if self.mode == "private" and self.PrivateChat.current != None:
-						user  =  self.PrivateChat.current
-						self.requests["ip"].append(user)
-						self.D.PeerAddress(user)
-				except Exception, e:
-					self.Help.Log("debug", e)
-					
-			elif line[:6] == "/stat " and line[6:] != '':
-				user = self.dlang( str(line[6:]) )
-				self.requests["statistics"].append(user)
-				self.D.PeerStats(user)
-			elif line[:8] == "/status " and line[8:] != '':
-				user = self.dlang( str(line[8:]) )
-				self.requests["statistics"].append(user)
-				self.D.PeerStatus(user)
-				'''
-				MODE SELECTIONS
-				'''
-			
-			elif line == "/chat" :
-				self.ChatRooms.Mode()
-		
-			elif line == "/private"  or line == "/privatechat":
-				self.PrivateChat.Mode()
-		
-			elif line[:7] == "/search"  and line[7:] == '':
-				self.Search.Mode()
-		
-			elif line == "/transfer"  or line == "/transfers":
-				self.Transfers.ModeTransfers()
-		
-			elif line == "/info":
-				self.UserInfo.Mode()
-				
-			elif line == "/browse":
-				self.BrowseShares.Mode()
-					
-			elif line == "/buddylist" :
-				self.UsersLists.current = "buddied"
-				self.UsersLists.ModeLists()
-			elif line == "/trustlist" :
-				self.UsersLists.current = "trusted"
-				self.UsersLists.ModeLists()	
-			elif line == "/banlist" :
-				self.UsersLists.current = "banned"
-				self.UsersLists.ModeLists()
-				
-			elif line == "/ignorelist" :
-				self.UsersLists.current = "ignored"
-				self.UsersLists.ModeLists()
-				
-			elif line == "/interests" :
-				self.UsersLists.current = "interests"
-				self.UsersLists.ModeLists()
-				
-			elif line[:6] == "/setup"   and line[6:] == '':
-				self.Setup.Default()
-				
-				'''
-				CONFIG
-				'''
-			elif line == "/save":
-				config_manager.update_config()
-				self.mode = "debug"
-				self.Help.Mode()
-				self.Help.Log("status", "Config Saved")
-			elif line[:11] == "/interface " and line[11:] != "":
-				self.Config["connection"]["interface"] = line[11:]
-				self.Help.Log("status", "Museekd interface set to: " + line[11:])
-		
-			elif line[:10] == "/password " and line[10:] != "":
-				self.Config["connection"]["passw"] = line[10:]
-				self.Help.Log("status", "New password set")
-			elif line[:13] == "/ctcpversion ":
-				user = line[13:]
-				if user != "" and user.isspace() == False:
-					self.PrivateChat.Send(user, curses.ascii.ctrl("A")+"VERSION"+curses.ascii.ctrl("A"))
-			elif line == "/version":
-				self.mode = "debug"
-				self.Help.Mode()
-				self.Help.Log("status", "Mucous version: %s" % Version)
-			elif line[:8] == "/connect":
-				if self.Spl["connected"] == 0:
-					self.invalidpass = False
-					self.line =""
-					self.edit.reset()
-					self.D.connect()
-					
-					return 0
-				else:
-					self.Help.Log("status", "Already connected... aborting connection attempt.")
-				'''
-				Tickers
-				'''
-			elif line[:9] == "/tickroom":
-				if line[9:] == '':
-					self.Spl["ticker_room"] =  self.ChatRooms.current
-				elif line[9:10] == " " and line[10:] != '':
-					self.Spl["ticker_room"] = line[10:]
-			elif line == "/showtickers":
-				self.ChatRooms.ToggleTickersDisplay()
-			elif line == "/tickers" :
-				self.ChatRooms.ToggleTickers()
-			elif line[:13] == "/defaulttick " and line[13:] != '':
-				message = line[13:]
-				self.D.ConfigSet("default-ticker", "ticker", message)
-				
-			elif line[:13] == "/settemptick " and line[13:] != '':
-				if self.Spl["ticker_room"] != None:
-					message = line[13:]
-					self.D.RoomTickerSet(self.Spl["ticker_room"], message)
-				else:
-					self.Help.Log("status", "Choose a room with /tickroom, first.") 		
-			elif line[:9] == "/settick " and line[9:] != '':
-				if self.Spl["ticker_room"] != None:
-					message = line[9:]
-					self.D.ConfigSet("tickers", self.Spl["ticker_room"], message)
-					self.D.RoomTickerSet(self.Spl["ticker_room"], message)
-				else:
-					self.Help.Log("status", "Choose a room with /tickroom, first.") 
-				'''
-				List tickers in current room or selected rooms
-				'''
-			
-			elif line[:9] == "/listtick":
-				if line [9:] == '':
-					woom = self.ChatRooms.current
-				else:
-					woom = line[10:]
-					
-				alpha_list  = self.SortedDict()
-				for rooms12 in self.ChatRooms.tickers:
-					alpha_list[rooms12] = self.ChatRooms.tickers[rooms12]
-				#if self.Config["tickers"]["tickers_enabled"] == 'yes':
-				for rooms13, ticks in alpha_list.items():
-					if rooms13 == woom:
-						ttickers =[]
-						ttickers = ticks.keys()
-						if ttickers != []:
-							self.Help.Log("status", "Tickers in room: "+str(rooms13))
-						ttickers.sort(key=str.lower)
-						for names in ttickers:
-							self.Help.Log("status", " ["+str(names)+'] '+str(ticks[names]))
-		
-		
-				'''
-				User Management
-				'''
-			elif line[:5] == "/ban " and line[5:] != '':
-				username = line[5:]
-				self.ModifyConfig("ban", username, '')
-				
-				
-			elif line[:7] == "/unban " and line[7:] != '':
-				username = line[7:]
-				self.ModifyConfig("unban", username, '')
-				
-					
-			elif line[:8] == "/ignore " and line[8:] != '':
-				username = line[8:]
-				self.ModifyConfig("ignore", username, '')
-				
-			elif line[:10] == "/unignore " and line[10:] != '':
-				username = str(line[10:])
-				self.ModifyConfig("unignore", username, '')
-						
-			elif line[:7] == "/buddy " and line[7:] != '':
-				username = str(line[7:])
-				self.ModifyConfig("buddy", username, '')
-				
-			elif line[:9] == "/unbuddy " and line[9:] != '':
-				username = str(line[9:])
-				self.ModifyConfig("unbuddy", username, '')
-				
-			elif line[:6] == "/nuke " and line[6:] != '':
-				username = str(line[6:])
-				self.ModifyConfig("ban", username, '')
-				self.ModifyConfig("ignore", username, '')
-				
-				self.Help.Log("status", "Nuked: %s" % username)
-				
-			elif line[:8] == "/unnuke " and line[8:] != '':
-				username = str(line[8:])
-				if username in self.config["ignored"].keys():
-					self.ModifyConfig("unignore", username, '')
-				if username in self.config["banned"].keys():
-					self.ModifyConfig("unban", username, '')
-					
-				self.Help.Log("status", "Irradiated: %s" % username)
-				
-			elif line[:7] == "/trust ":
-				username = line[7:]
-				self.ModifyConfig("trust", username, '')
-			elif line[:10] == "/distrust ":	
-				username = line[10:]
-				self.ModifyConfig("distrust", username, '')
-				
-			elif line == "/autobuddy":
-				if self.Config["mucous"]["autobuddy"]  == "yes":
-					self.Config["mucous"]["autobuddy"] = "no"
-					self.Help.Log("status", "AutoBuddy Disabled")
-				elif self.Config["mucous"]["autobuddy"]  == "no":
-					self.Config["mucous"]["autobuddy"] = "yes"
-					self.Help.Log("status", "AutoBuddy Enabled")
-				if self.mode == "setup":
-					self.Setup.Mode()
-			elif line == "/autoclear":
-				if str(self.Config["mucous"]["auto-clear"]) == "yes":
-					self.Config["mucous"]["auto-clear"] = "no"
-				else:
-					self.Config["mucous"]["auto-clear"] = "yes"
-				if self.mode == "setup":
-					self.Setup.Mode()
-			elif line == "/autoretry":
-				if str(self.Config["mucous"]["auto-retry"]) == "yes":
-					self.Config["mucous"]["auto-retry"] = "no"
-				else:
-					self.Config["mucous"]["auto-retry"] = "yes"
-				if self.mode == "setup":
-					self.Setup.Mode()
-				'''
-				List Users in room
-				'''
-			elif line[:5] == "/list":
-				if line [5:6] == ' ':
-					woom = line[6:]
-				else:
-					woom = self.ChatRooms.current
-				if woom != None:
-					self.show_nick_list(woom)
-					
-			elif line[:6] == "/users":
-				if line [6:7] == ' ':
-					woom = line[7:]
-				else:
-					woom = self.ChatRooms.current
-				if woom != None:
-					self.show_nick_list(woom)
-					
-			elif line == "/roombox":
-				self.ChatRooms.ChatLayout()
-				
-			elif line == "/login":
-				self.D.ConnectServer()
-				
-			elif line == "/logout":
-				self.D.DisconnectServer()
-				
-			elif line == "/globalrex":
-				self.D.GetGlobalRecommendations()
-
-				
-			elif line in ("/rex", "/recommendations"):
-				self.D.GetRecommendations()
-				
-			elif line[:10] == "/uploadto ":
-				user = line[10:]
-				if user.isspace() == 0 and user != "":
-					self.Transfers.username = user
-					
-			elif line[:8] == "/upload":
-				path = line[8:]
-				if self.Transfers.username == None:
-					return
-				if path.isspace() != 0 and path == "":
-					return
-				self.Transfers.RetryUpload(self.Transfers.username, path)
-					
-			elif line in ("/similar", "/similarusers"):
-				self.D.GetSimilarUsers()
-				
-			elif line[:9] == "/itemrex ":
-				if line[9:] != "" and line[9:].isspace() == 0:
-					item = line[9:]
-					self.D.GetItemRecommendations(item)
-					
-			elif line[:13] == "/itemsimilar ":
-				if line[13:] != "" and line[13:].isspace() == 0:
-					item = line[13:]
-					self.D.GetItemSimilarUsers(item)
-					
-			elif line[:6] == "/like ":
-				interest = line[6:]
-				self.Recommendations.LikedAdd(interest)
-					
-			elif line[:6] == "/hate ":
-				interest = line[6:]
-				self.Recommendations.HatedAdd(interest)
-					
-			elif line[:11] == "/donotlike ":
-				interest = line[11:]
-				if interest in self.config["interests.like"]:
-					self.Recommendations.LikedRemove(interest)
-					
-			elif line[:11] == "/donothate ":
-				interest = line[11:]
-				if interest in self.config["interests.hate"]:
-					self.Recommendations.HatedRemove(interest)
-					
-			elif line == "/transbox":
-				if self.Config["mucous"]["transbox"]=="split":
-					self.Config["mucous"]["transbox"]="tabbed"
-				elif self.Config["mucous"]["transbox"]=="tabbed":
-					self.Config["mucous"]["transbox"]="split"
-				self.Transfers.ModeTransfers()
-				'''
-				List Rooms whose number of users is greater than the number you input
-				'''
-			elif line[:9] == "/roomlist":
-				
-				if line[9:] == '':
-					self.RoomsList.Mode()
-				elif line[9:] == 'refresh':
-					self.D.RoomList()
-					
-			elif line in ("/privs", "/privileges"):
-				self.D.CheckPrivileges()
-				
-			elif line[:11] == "/giveprivs " :
-				try:
-					self.usernames["privileges"]  = str(line[11:])
-					self.set_edit_title( "% Give Privileges to " + self.usernames["privileges"])
-				except Exception, e:
-					self.Help.Log("debug", str(e))
-				
-			elif line[:8] == "/inrooms" and line[8:] == '':
-				w = ''
-				for room in self.ChatRooms.rooms.keys():
-					w += room + ', '
-					
-				self.Help.Log("status", "You are in: %s" %w[:-2])
-				
-				'''
-				Manual Download
-				'''	
-			elif line[:10] == "/downuser " and  line[10:] != '':
-				self.Transfers.ModeTransfers()
-				self.Transfers.downloaduser = line[10:]
-				self.set_edit_title("% % User: "+line[10:] + " (input download path) % %")
-				
-			elif line[:12] == "/setdowndir " and  line[12:] != '':
-				self.Transfers.ModeTransfers()
-				self.Transfers.downloaddirectory = line[12:]
-				self.set_edit_title("Download directory set to: "+self.Transfers.downloaddirectory )
-						
-			elif line[:10] == "/downpath " and line[10:] != '':
-				path = line[10:]
-				user = self.Transfers.downloaduser
-				self.DownloadFileTo(user, path)
-					
-			elif line[:13] == "/downpathdir " and line[13:] != '':
-				directory = line[13:]
-				user = self.Transfers.downloaduser
-				self.Transfers.FolderDownload(user, directory)
-	
-				'''
-				Search Globally for files & Download them
-				'''
-			elif line[:11] == "/searchfor " and line[11:] != '':
-				query = line[11:]
-				if query not in ('mp3', ' ') and len(query) > 2:
-					self.D.Search(0, query)
-					
-				else:
-					self.Search.Stats("status", "Query \""+ query+"\" was ignored", "default__", 0)
-					
-			elif line[:12] == "/searchuser " and line[12:] != '':
-				self.Search.username = user = line[12:]
-				if self.mode=='search':
-					self.Search.Mode()
-			elif line[:13] == "/searchbuddy " and line[13:] != '':
-				query = line[13:]
-				self.D.Search(1, query)
-			elif line[:12] == "/searchroom " and line[12:] != '':
-				query = line[12:]
-				self.D.Search(2, query)
-					
-			elif line[:10] == "/download " or line[:9] == "/downdir ":
-				linput = None
-				if line[:10] == "/download " and line[10:] != '':
-					dtype = "file"
-					linput = line[10:]
-				elif line[:9] == "/downdir "  and line[9:] != '':
-					dtype = "dir"
-					linput = line[9:]
-				if linput == None or not linput.isdigit():
-					self.Help.Log("status", "Enter an Integer")
-					
-				else:
-					if self.mode == "search":
-						user, path = self.Search.GetDownloadFromNum(linput)
-						
-					elif self.mode == "browse":	
-						user, path = self.BrowseShares.GetDownloadFromNum(linput)
-					else:
-						return
-					
-					if dtype == "file":
-						self.Transfers.RetryDownload(user, path)
-					elif dtype == "dir":
-						self.Transfers.FolderDownload(user, path)
-						
-						
-			elif line[:8] == "/filter " and line[8:] != '':
-				
-				self.Search.sfilter = line[8:]
-				if self.mode=='search':
-					self.Search.Mode()
-			elif line == "/filter":
-				self.Search.sfilter=None
-				if self.mode=='search':
-					self.Search.Mode()
-				'''
-				Browse Shares & Download from them
-				'''
-			elif line[:4] == "/cd " and line[4:] != '':
-				self.ChangeDir(line[4:])
-				
-	
-				
-			elif line[:4] == "/get" and line[4:] != '':
-				linput = None
-				if line[:5] == "/get " and line[5:] != '':
-					dtype = "file"
-					linput = line[5:]
-				elif line[:8] == "/getdir "  and line[8:] != '':
-					dtype = "dir"
-					linput = line[8:]
-				if linput == None or not linput.isdigit():
-					self.Help.Log("status", "Enter an Integer")
-					
-				else:
-					if self.mode == "search":
-						user, path = self.Search.GetDownloadFromNum(linput)
-						
-					elif self.mode == "browse":	
-						user, path = self.BrowseShares.GetDownloadFromNum(linput)
-					else:
-						return
-					
-					if dtype == "file":
-						self.Transfers.RetryDownload(user, path)
-					elif dtype == "dir":
-						self.Transfers.FolderDownload(user, path)
-						
-			elif line[:13] == "/browsewidth " and line[13:] != "":
-				if line[13:].isdigit():
-					width = int(line[13:])
-					if width > self.w-20:
-						width = self.w-20
-					if width < 20:
-						width = 20 
-					self.Config["mucous"]["browse_width"] = width
-					
-					if self.mode == "browse":
-						self.BrowseShares.Mode()
-					
-			elif line[:12] == "/browseuser " or line[:7] == "/buser ":
-				user = None
-				if line[:12] == "/browseuser " and line[12:] != '':
-					user = line[12:]
-				elif line[:7] == "/buser " and line[7:] != '':
-					user = line[7:]
-				if user != None:
-					self.BrowseShares.Get(user)
-					
-			elif line[:14] == "/browsesearch " or line[:9] == "/bsearch ":
-				l_input = None
-				if line[:14] == "/browsesearch " and line[14:] != '':
-					l_input = line[14:]
-				elif line[:9] == "/bsearch " and line[9:] != '':
-					l_input = line[9:]
-				if l_input != None:
-					self.BrowseShares.bfilter = re.compile('.*' +str(l_input) + '.*', re.DOTALL | re.I)
-					self.BrowseShares.FormatBrowse()
-					curses.doupdate()
-					
-			elif line == "/browsesearch" or line == "/bsearch":
-				self.BrowseShares.bfilter = None
-				self.BrowseShares.FormatBrowse()
-				curses.doupdate()
-				'''
-				Manage Transfers
-				'''
-			elif line[:8] == "/abortd " or line[:11] == "/abortdown ":
-				transfer = None
-				if line[:8] == "/abortd " and line[8:] != '':
-					if line[8:].isdigit():
-						transfer = int(line[8:])
-					else:
-						self.Help.Log("status", "Enter an Integer")
-				elif line[:11] == "/abortdown " and line[11:] != '':
-					try:
-						transfer = int(line[11:])
-					except:
-						self.Help.Log("status", "Enter an Integer")
-				
-				user, path = self.Transfers.GetDownloadFromNum(transfer)
-				self.Transfers.AbortDownload(user, path)
-					
-			elif line[:8] == "/abortu " or line[:9] == "/abortup ":
-				transfer = None
-				if line[:8] == "/abortu " and line[8:] != '':
-					try:
-						transfer = int(line[8:])
-					except:
-						self.Help.Log("status", "Enter an Integer")
-				elif line[:9] == "/abortup " and line[9:] != '':
-					try:
-						transfer = int(line[9:])
-					except:
-						self.Help.Log("status", "Enter an Integer")
-				user, path = self.Transfers.GetUploadFromNum(transfer)
-				self.Transfers.AbortUpload(user, path)
-				
-			elif line[:9] == "/removeu " or line[:10] == "/removeup ":
-				transfer = None
-				if line[:9] == "/removeu " and line[9:] != '':
-					try:
-						transfer = int(line[9:])
-					except:
-						self.Help.Log("status", "Enter an Integer")
-				elif line[:10] == "/removeup " and line[10:] != '':
-					try:
-						transfer = int(line[10:])
-					except:
-						self.Help.Log("status", "Enter an Integer")
-				user, path = self.Transfers.GetUploadFromNum(transfer)
-				self.Transfers.ClearUpload(user, path)
-				
-					
-		
-			elif line[:9] == "/removed " or line[:12] == "/removedown ":
-				transfer = None
-				if line[:9] == "/removed " and line[9:] != '':
-					try:
-						transfer = int(line[9:])
-					except:
-						self.Help.Log("status", "Enter an Integer")
-				elif line[:12] == "/removedown " and line[12:] != '':
-					try:
-						transfer = int(line[12:])
-					except:
-						self.Help.Log("status", "Enter an Integer")
-				user, path = self.Transfers.GetDownloadFromNum(transfer)
-				self.Transfers.ClearDownload(user, path)
-				
-
-			elif line[:7] == "/retry " and line[7:] != '':
-				transfer = None
-				try:
-					transfer = int(line[7:])
-				except:
-					self.Help.Log("status", "Enter an Integer")
-				user, path = self.Transfers.GetDownloadFromNum(transfer)
-				self.Transfers.RetryDownload(user, path)
-						
-			elif line[:9] == "/retryall":
-				self.Transfers.RetryAllDownloads()
-		
-			elif line[:7] == "/slots " and line[7:] != "":
-				slots = None
-				try:
-					slots = int(line[7:])
-				except:
-					self.Help.Log("status", "Enter an Integer")
-				if slots != None:
-					self.D.ConfigSet("transfers", "upload_slots", str(slots))
-		
-			elif line[:10] == "/privbuddy":
-				if self.config["transfers"]["privilege_buddies"] == "true":
-					self.D.ConfigSet("transfers", "privilege_buddies", "false")
-					
-				elif self.config["transfers"]["privilege_buddies"] == "false":
-					self.D.ConfigSet("transfers", "privilege_buddies", "true")
-					
-					
-			elif line[:10] == "/onlybuddy":
-				if self.config["transfers"]["only_buddies"] == "true":
-					self.D.ConfigSet("transfers", "only_buddies", "false")
-				elif self.config["transfers"]["only_buddies"] == "false":
-					self.D.ConfigSet("transfers", "only_buddies", "true")
-		
-			elif line[:7] == "/unhide":
-				if self.Setup.password == True:
-					self.Setup.password = False
-				elif self.Setup.password == False:
-					self.Setup.password = True
-				if self.mode == "setup":
-					self.Setup.Mode()
-			elif line[:10] == "/buddyall":
-				self.Help.Log("status", "Buddying ALL users currently transferring to or from you.")
-				currentusersintransferlist = {}
-				for userpath, values in self.Transfers.transfers["uploads"].items():
-					currentusersintransferlist[values[1]] = 0
-				for userpath, values in self.Transfers.transfers["downloads"].items():
-					currentusersintransferlist[values[1]] = 0
-				for username in currentusersintransferlist.keys():
-					if username not in self.config["buddies"].keys():
-						self.D.ConfigSet("buddies", username, "Buddied by mucous")
-						
-			elif line[:6] == "/nick " and line[6:] != '':
-				if self.username != None:
-					self.D.ConfigSet("server", "username", line[6:])
-			elif line == "/clearsearchs":
-				self.Search.Clear()
-				
-			elif line[:8] == "/clearup":
-				self.Transfers.ClearAllUploads()
-				
-			elif line == "/percent":
-				if self.Transfers.speed == True:
-					self.Transfers.speed = False
-				elif self.Transfers.speed == False:
-					self.Transfers.speed = True
-				self.Transfers.ModeTransfers()
-				
-			elif line[:10] == "/cleardown":
-				self.Transfers.ClearAllDownloads()
-					
-			elif line[:10] == "/clearroom":
-				if line[10:] == '':
-					
-					self.ChatRooms.logs["rooms"][self.ChatRooms.current] = []
-					if self.mode == "chat":
-						self.ChatRooms.Mode()
-				elif line[10:11] == ' ' and line[11:] != '':
-					if line[11:] in self.ChatRooms.logs["rooms"].keys():
-						self.ChatRooms.logs["rooms"][line[11:]] = []
-						if self.mode == "chat":
-							self.ChatRooms.Mode()
-			elif line == "/aliases":
-				self.Help.Log("status", "Aliases:")
-				for alias in self.Config["aliases"].keys():
-					self.Help.Log("status", "/"+alias+": "+str(self.Config["aliases"][alias]))
-					self.Help.Log("status", "")
-					
-			elif line[:7] == "/alias " and line[7:] != '':
-				if line[7:].find(" ") != -1:
-					splited = line[7:].split(" ")
-					if len(splited) > 1:
-						alias = splited[0]
-						splited = splited[1:]
-						if splited[0] != None:
-							message = ''
-							for i in splited:
-								if i != splited[0]:
-									message += ' ' +i
-								else:
-									message += i
-							self.Config["aliases"][alias] = str(message)
-							if alias in self.Config["aliases"].keys():
-								self.Help.Log("status", "Modified alias: "+alias)
-							else:
-								self.Help.Log("status", "Created alias: "+alias)
-							if "/"+alias not in self.commandlist:
-								self.commandlist.append("/"+alias)
-				else: 
-					return 0
-				
-			elif line[:9] == "/unalias " and line[9:] != '':
-				alias = line[9:]
-				if alias in self.Config["aliases"].keys():
-					self.Help.Log("status", "Deleted alias: "+alias)
-					del self.Config["aliases"][str(alias)]
-					if "/"+alias in self.commandlist:
-						self.commandlist.remove("/"+alias)
-						
-			elif line[:1] == "/":
-				is_alias = 0
-				if  line[1:] in self.Config["aliases"].keys():
-					alias = line[1:]
-					is_alias = 1
-					if self.mode == "chat" and self.ChatRooms.current != None:
-						self.ChatRooms.SayInChat( self.ChatRooms.current, self.Config["aliases"][alias])
-						
-					elif self.mode == "private" and self.PrivateChat.current != None:
-						self.PrivateChat.Send( self.PrivateChat.current, self.Config["aliases"][alias])
-						
-				if not is_alias:
-					return 0
-				
-			else:
-				return 1
-			
-				
-			
-		except Exception,e:
-			self.Help.Log("debug", 'commands: ' + str(e))
-		pass
-					
-	## Special Function that parses the input line, if it's not a command
-	# @param self is Mucous (Class)
-	# @param line is a text string
-	def InputText(self, line):
-		## Special Input Box for Downloading Manually
-		# escape //
-		if line[:2] == '//':
-			line = line[1:]
-		# Manual Download input box
-		if self.Spl["title"][:10] == '% % User: ' and line != '':
-			if self.Transfers.downloaduser != None and self.Transfers.downloaduser != '':
-				path = line
-				self.D.DownloadFile(self.Transfers.downloaduser, path)
-				self.Help.Log("status", "Trying to Download: " + path+" from "+ self.Transfers.downloaduser)
-		# Ticker set input box
-		elif self.Spl["title"][:12] == '% Set ticker' and line != '':
-			self.D.RoomTickerSet(self.Spl["ticker_room"], line)
-			
-		elif self.Spl["title"]== '% Give Privileges to ' + str(self.usernames["privileges"]) and line != '':
-			try:
-				days = int(line)
-				self.D.GivePrivileges(self.usernames["privileges"], days)
-				self.usernames["privileges"] = None
-				if self.mode == "chat":
-					self.set_edit_title(self.ChatRooms.current)
-			except:
-				self.Help.Log("debug", "Enter the Number of days of privileges you wish to give " + self.usernames["privileges"])
-	
-		else:
-			if line != '':
-				if self.mode == "chat":
-					#Normal Chat Room Message
-					if self.ChatRooms.current:
-						self.ChatRooms.SayInChat( self.ChatRooms.current, line)
-				elif self.mode == "private":
-					#Normal Private Messaging
-					if self.PrivateChat.current != None:
-						# Private Message
-						self.PrivateChat.Send(self.PrivateChat.current, line)
-					else:
-						# Set user to message
-						self.PrivateChat.current = self.dlang( line)
-						self.set_edit_title("Send message to: " + self.PrivateChat.current)
-						self.PrivateChat.Start(self.PrivateChat.current)
-						
-						
-				elif self.mode == "search":
-					
-					if len(line) > 2 and line != 'mp3':
-						# Normal Search
-						query = line
-						if self.Search.method == "globally":
-							self.D.Search(0, query )
-							
-						# Buddies Search
-						elif self.Search.method == "buddies":
-							self.D.Search(1, query )
-						# Rooms Search	
-						elif self.Search.method == "rooms":	
-							self.D.Search(2, query )
-						elif self.Search.method == "user":
-							if self.Search.username != None:
-								self.D.UserSearch(self.Search.username, query )
-						elif self.Search.method == "wishlist":	
-							self.D.WishListSearch(query )
-				elif self.mode == "browse":
-					# Browse User's shares
-					if line[:3] == "cd ":
-						self.ChangeDir(line[3:])
-						return 1
-
-					elif line[:3] == "get" and line[3:] != '':
-						linput = None
-						if line[:4] == "get " and line[4:] != '':
-							dtype = "file"
-							linput = line[4:]
-						elif line[:7] == "getdir "  and line[7:] != '':
-							dtype = "dir"
-							linput = line[7:]
-						if linput == None or not linput.isdigit():
-							self.Help.Log("status", "Enter an Integer")
-							
-						else:
-							user, path = self.BrowseShares.GetDownloadFromNum(linput)
-							if dtype == "file":
-								self.Transfers.RetryDownload(user, path)
-							elif dtype == "dir":
-								self.Transfers.FolderDownload(user, path)
-					
-					
-					self.BrowseShares.Get(line)
-					
-					
-				elif self.mode == "info":
-					# Get User's UserInfo and PeerStats
-					user = self.dlang(line)
-					self.UserInfo.Get(user)
-					
-					self.D.PeerStats(user)
-					
-				elif self.mode == "lists":
-					if self.UsersLists.current == "buddied":
-						self.ModifyConfig("buddy", line, '')
-					elif self.UsersLists.current == "banned":
-						self.ModifyConfig("ban", line, '')
-					elif self.UsersLists.current == "ignored":
-						self.ModifyConfig("ignore", line, '')
-					elif self.UsersLists.current == "trusted":
-						self.ModifyConfig("trusted", line, '')
-					elif self.UsersLists.current == "interests":
-						self.Recommendations.InputInterests(line)
-				elif self.mode == "roomlist":
-					self.ChatRooms.JoinRoom(line)
-				elif self.mode == "setup":
-					self.Setup.InputSetup(line)
-				
-		try:
-			self.edit.reset()
-		except:
-			pass
-
-	## Do various things, based on what input was recieved
-	# @param self is Mucous (Class)
-	# @param key keypress
-	# @param line edit bar's contents
-	def InputFunctions(self, key, line):
-		try:
-			if key == "KEY_RESIZE":
-				self.line = line 
-				self.stdscr.keypad(1)
-				self.Build()
-				
-			elif key == "KEY_MOUSE":
-				line = self.MouseXY(line)
-					
-			elif key in ("KEY_UP",  "KEY_DOWN", "KEY_PPAGE", "KEY_NPAGE"):
-				if self.PopupMenu.show == True:
-					if key =="KEY_UP":
-						key = "menu_up"
-					elif key =="KEY_DOWN":
-						key = "menu_down"
-				else:
-					sline = self.ScrollText(key)
-					if sline != None:
-						line = sline
-	
-			elif key == "KEY_F(1)":
-				if self.mode != "chat": self.ChatRooms.Mode()
-				return
-			elif key == "KEY_F(2)":
-				if self.mode != "private": self.PrivateChat.Mode()
-				return
-			elif key == "KEY_F(3)":
-				if self.mode != "transfer": self.Transfers.ModeTransfers()
-				return
-			elif key == "KEY_F(4)":
-				if self.mode != "search": self.Search.Mode()
-				return
-			elif key == "KEY_F(5)":
-				if self.mode != "info": self.UserInfo.Mode()
-				return
-			elif key == "KEY_F(6)":
-				if self.mode != "browse": self.BrowseShares.Mode()
-				return
-			elif key == "KEY_F(7)":
-				if self.mode != "lists": self.UsersLists.ModeLists()
-				return
-			elif key == "KEY_F(8)":
-				if self.mode != "roomlist": self.RoomsList.Mode()
-				return
-			elif key == "KEY_F(9)":
-				if self.mode != "setup": self.Setup.Default()
-				return
-			elif key == "KEY_F(10)":
-				if self.mode not in ("help", "debug", "status") : self.Help.Mode()
-				return
-			elif key == chr(10) or key == "KEY_ENTER":
-				if line not in self.logs["history"] and line !='':
-					self.logs["history"].append(line)
-			elif key in ("popup"):
-				if self.PopupMenu.show == True:
-					self.PopupMenu.Clear()
-				else:
-					self.PopupMenu.show = True
-					if self.mode == "chat":
-						if self.ChatRooms.shape not in ( "noroombox", "chat-only"):
-							self.PopupMenu.Create("roombox", 0)
-						else:
-							return
-					elif self.mode == "lists":
-						self.PopupMenu.Create("lists", 0)
-					elif self.mode == "transfer":
-						self.PopupMenu.Create("transfers", 0)
-					elif self.mode == "search":
-						if self.Search.current != "default__":
-							self.PopupMenu.Create("search", 0)
-					elif self.mode == "browse":
-						
-						if self.BrowseShares.current != "default__":
-							if self.BrowseShares.selected == "files":
-								self.PopupMenu.Create("browse-files", 0)
-							elif self.BrowseShares.selected == "directories":
-								self.PopupMenu.Create("browse-dirs", 0)
-			elif key in ("delete"):
-				if self.mode == "lists" and self.UsersLists.current == "interests":
-					inp = self.Recommendations.input
-					if inp == "add_likes":
-						inp = "del_likes"
-					elif inp == "del_likes":
-						inp = "add_likes"
-					elif inp == "del_hates":
-						inp = "add_hates"
-					elif inp == "add_hates":
-						inp = "del_hates"
-					self.Recommendations.input = inp
-					self.Recommendations.ModeInterests()
-				
-			elif key == "collapse":
-				if self.mode == "browse" and self.BrowseShares.selected == "directories":
-					if self.BrowseShares.dirs == []:
-						return
-					Dir = self.BrowseShares.dirs[ self.BrowseShares.scrolling["directories"] ]
-
-					if Dir not in self.BrowseShares.collapsed[ self.BrowseShares.current ]:
-						self.BrowseShares.collapsed[ self.BrowseShares.current ].append(Dir)
-					else:
-						self.BrowseShares.collapsed[ self.BrowseShares.current ].remove(Dir)
-					self.BrowseShares.FormatBrowse()
-					
-			elif key in ("switch", "KEY_HOME", "KEY_END"):
-				if self.mode == "transfer":
-					# Tab to switch between upload and download scrolling
-					if self.Transfers.current == "uploads":
-						self.Transfers.current="downloads"
-					elif self.Transfers.current=="downloads":
-						self.Transfers.current="uploads"
-					self.Transfers.ModeTransfers()
-				elif self.mode in ( "help", "debug"):
-					if self.mode == "help":
-						self.mode = "debug"
-					elif self.mode == "debug":
-						self.mode = "help"
-					self.Help.Mode()
-				elif self.mode == "chat":
-					if key in ("switch"):
-# 						[ "small","big","widelist","rightlist","nostatuslog","chat-only","noroombox"]
-						_list = None
-						if self.ChatRooms.shape == "chat-only":
-							self.ChatRooms.selected = "chatroom"
-							return
-						elif self.ChatRooms.shape == "nostatuslog":
-							_list = ["chatroom", "roombox"]
-						elif self.ChatRooms.shape ==  "noroombox":
-							_list = ["chatroom", "roomstatus"]
-						else:
-							_list = ["chatroom", "roomstatus", "roombox"]
-						if _list != None:
-							self.ChatRooms.selected = self.FormatData.RotateList("right", _list, self.ChatRooms.selected, "no")
-							self.ChatRooms.Mode()
-						
-					elif key == "KEY_END":
-						if self.ChatRooms.selected == "chatroom":
-							self.ChatRooms.scrolling[self.ChatRooms.selected] = -1
-							self.ChatRooms.FormatChatText()
-						elif self.ChatRooms.selected == "roombox":
-							self.ChatRooms.scrolling[self.ChatRooms.selected] = len(self.ChatRooms.rooms[self.ChatRooms.current])
-							self.ChatRooms.Mode()
-					elif key == "KEY_HOME":
-						if self.ChatRooms.selected == "chatroom":
-							self.ChatRooms.scrolling[self.ChatRooms.selected] = 0 
-							self.ChatRooms.FormatChatText()
-						elif self.ChatRooms.selected == "roombox":
-							self.ChatRooms.scrolling[self.ChatRooms.selected] = 0
-							self.ChatRooms.Mode()
-						
-				elif self.mode == "search":
-					# HotKeyBar to switch types of searches
-					_list = [ "globally", "buddies", "rooms", "user", "wishlist" ]
-					self.Search.method = self.FormatData.RotateList("right", _list, self.Search.method, "no")
-					self.Search.Mode()
-				elif self.mode == "browse":	
-					_list = [ "files", "directories" ]
-					self.BrowseShares.selected = self.FormatData.RotateList("right", _list, self.BrowseShares.selected, "no")
-					self.BrowseShares.Mode()
-				elif self.mode == "lists" and self.UsersLists.current == "interests":
-					_list = [ "recommendations", "similar_users", "likes", "hates" ]
-					self.Recommendations.selected = self.FormatData.RotateList("right", _list, self.Recommendations.selected, "no")
-					self.Recommendations.ModeInterests()
-					
-			elif key in( "KEY_LEFT", chr(91), chr(60), "KEY_RIGHT", chr(93), chr(62), "KEY_IC"):
-				if key == "KEY_LEFT" or key == chr(91) or key == chr(60):
-					direction = "left"
-				elif key == "KEY_RIGHT" or key == chr(93) or key == chr(62) or key == "KEY_IC":
-					direction = "right"
-				if self.mode == "chat":
-					place = self.FormatData.RotateList(direction, self.ChatRooms.rooms.keys(), self.ChatRooms.current, "yes" )
-					if self.ChatRooms.current  != place:
-						self.ChatRooms.Change(place)
-
-							
-				elif self.mode == "info":
-					self.UserInfo.Select(direction)
-
-				elif self.mode == "private":
-					if self.PrivateChat.current != None:
-						place = self.FormatData.RotateList(direction, self.PrivateChat.logs.keys(), self.PrivateChat.current, "yes" )
-						if self.PrivateChat.current != place:
-							self.PrivateChat.current = place
-
-							self.PrivateChat.Start(self.PrivateChat.current)
-							self.PrivateChat.Mode()
-							
-				elif self.mode == "setup":
-					
-					self.Setup.current  = self.FormatData.RotateList(direction, self.Setup.modes, self.Setup.current, "no" )
-
-					self.Setup.Mode()
-					
-				elif self.mode == "transfer":
-					# HotKeyBar to switch listing transfer types
-					
-					self.Transfers.sort  = self.FormatData.RotateList(direction, self.modes["transfers"], self.Transfers.sort, "no" )
-					
-	
-					self.Transfers.ModeTransfers()
-		
-				elif self.mode == "search":
-					if key in( "KEY_LEFT", chr(91), chr(60), "KEY_RIGHT", chr(93), chr(62)):
-						if len(self.Search.tickets.keys()) >= 1:
-	
-								
-							place = self.FormatData.RotateList(direction, self.Search.tickets.keys(), self.Search.current, "yes" )
-							if self.Search.current != place:
-								self.Search.current = place
-								self.Search.Mode()
-
-							
-					elif key == "KEY_IC":
-						place = self.FormatData.RotateList(direction, [ "num", "user", "free", "speed", "que", "path", "size",  "file", "bitrate",  "time"], self.Search.order, "no" )
-						if self.Search.order  != place:
-							self.Search.order = place
-							self.Search.SortBar()
-							if self.Search.current != None:
-								self.Search.FormatResults(self.Search.current)
-							curses.doupdate()
-					
-				elif self.mode == "browse":
-					if len(self.BrowseShares.users) >= 1:
-						if self.BrowseShares.current == None:
-							self.BrowseShares.current = self.BrowseShares.users[0]
-
-							
-						place = self.FormatData.RotateList(direction, self.BrowseShares.users, self.BrowseShares.current, "yes" )
-						if place != self.BrowseShares.current:
-							self.BrowseShares.current = place 
-
-							sdirs =  self.BrowseShares.results[self.BrowseShares.current].keys()
-							sdirs.sort(key=str.lower)
-							self.BrowseShares.current_dir=sdirs[0]
-							self.BrowseShares.scrolling["files"] = self.BrowseShares.scrolling["directories"] = 0
-							self.BrowseShares.Mode()
-					return line	
-				elif self.mode=="lists":
-					
-					place = self.FormatData.RotateList(direction, [ "buddied", "banned", "ignored", "trusted", "interests"], self.UsersLists.current, "no" )
-					if self.UsersLists.current  != place:
-						self.UsersLists.current = place
-						self.UsersLists.ModeLists()
-
-					
-				elif self.mode=="roomlist":
-					place = self.FormatData.RotateList(direction, [ "alpha", "alpha-reversed", "size", "size-reversed"], self.Config["mucous"]["rooms_sort"], "no" )
-					if self.Config["mucous"]["rooms_sort"]  != place:
-						self.Config["mucous"]["rooms_sort"] = place
-						self.RoomsList.Mode()
-			
-			if self.mode in ("chat", "lists", "transfer", "search", "browse") and self.PopupMenu.show == True:
-				# POPUP menu up and down keys
-				try:
-					if self.PopupMenu.current == None:
-							return
-					if key == "menu_up":
-						if self.PopupMenu.position >0:
-							self.PopupMenu.position -= 1
-							self.PopupMenu.Draw()
-							
-					elif key == "menu_down":
-						if self.PopupMenu.position < len(self.PopupMenu.menus[self.PopupMenu.current]['items'])-1:
-							self.PopupMenu.position += 1
-							self.PopupMenu.Draw()
-				except Exception, e:
-					pass
-			
-			return line
-		except Exception, e:
-			self.Help.Log("debug", "InputFunctions: " + str(e))
 	
 	## NewPlaying parser for InfoPipe or custom command
 	# @param self is Mucous (Class)
@@ -2997,7 +1141,7 @@ class Mucous:
 	## Set Input line's title
 	# @param self Mucous (class)
 	# @param title string
-	def set_edit_title(self, title):
+	def SetEditTitle(self, title):
 		try:
 			if title != None:
 				self.Spl["title"]= title
@@ -3008,22 +1152,15 @@ class Mucous:
 			ibw.erase()
 			ibw.border()
 			if self.Spl["title"]:
-				try:
-					current = self.dlang(self.Spl["title"])
-					ibw.addstr(0, 2, "< ")
-					ibw.addstr(0, 4, current[:self.w-8], self.colors["cyan"] | curses.A_BOLD)
-					ibw.addstr(0, 4+len(current[:self.w-8]), " >")
-				except Exception, e:
-					self.Help.Log("debug", "set_edit_title: " + str(e))
-			try:
-				ibw.noutrefresh()
-				itw.erase()
-				itw.addstr(self.line)
-				itw.noutrefresh()
-			except:
-				pass
+				current = self.dlang(self.Spl["title"])
+				ibw.addstr(0, 2, "< ")
+				ibw.addstr(0, 4, current[:self.w-8], self.colors["cyan"] | curses.A_BOLD)
+				ibw.addstr(0, 4+len(current[:self.w-8]), " >")
+			ibw.noutrefresh()
+				
+
 		except Exception, e:
-			self.Help.Log("debug", "set_edit_title: " + str(e))
+			self.Help.Log("debug", "SetEditTitle: " + str(e))
 			
 	## Draw Buttons for switching with the mouse to Instructions view
 	# @param self Mucous (class)
@@ -3105,13 +1242,26 @@ class Mucous:
 			if tab_box_list == []:
 				return
 			pos = 1
+			current = False
+			if self.mode == "search":
+				alpha_list = self.SortedDict()
+				for keyname, keyvalue in self.Search.tickets.items():
+					alpha_list[keyname] = keyvalue
+				tab_box_list = alpha_list.keys()
 			for string in tab_box_list:
 
-				if self.mode=="search":
+				if self.mode == "search":
 					sting = self.Search.tickets[string][:13]
-				
+					if string == self.Search.current:
+						current = True
+					else:
+						current = False
 				else:
 					sting = string[:13]
+					if string == selected_tab:
+						current = True
+					else:
+						current = False
 					
 				move = len(sting)+2
 				
@@ -3122,6 +1272,8 @@ class Mucous:
 					return
 				
 				tb = curses.newwin(3, len(sting)+2, 1, pos)
+				if current == True:
+					tb.attron(self.colors["green"])
 				tb.border()
 				tb.noutrefresh()
 				tl = tb.subwin(1,len(sting),2,pos+1)
@@ -3129,7 +1281,7 @@ class Mucous:
 				try:
 					
 					if self.mode == "search":
-						if string == self.Search.current:
+						if current:
 							tl.addstr(sting, self.colors["green"] | curses.A_BOLD)
 						else:
 							tl.addstr(sting, curses.A_BOLD)
@@ -3137,15 +1289,14 @@ class Mucous:
 						continue
 					
 					username = string
-					if string == selected_tab:
+					if current:
 						if string in self.user["status"]:
 							attr = curses.A_BOLD
-							if self.user["status"][username] == 1:
+							if self.user["status"][username] == 1: # Away
 								attr = self.colors["yellow"] | curses.A_BOLD
-								
-							elif self.user["status"][username] == 2:
+							elif self.user["status"][username] == 2: # Online
 								attr = self.colors["green"] | curses.A_BOLD
-							elif self.user["status"][username] == 0:
+							elif self.user["status"][username] == 0: # Offline
 								attr = self.colors["red"] | curses.A_BOLD
 							tl.addstr(sting, attr)
 						else:
@@ -3174,7 +1325,36 @@ class Mucous:
 				
 		except Exception, e:
 			self.Help.Log("debug", "DrawTabs: " + str(e))
-	
+			
+	## Draw the Online Status in Specific colors
+	# @param self Mucous (class)
+	def DrawOnlineStatus(self):
+		try:
+			osw = self.windows["border"]["onlinestatus"]
+			
+			if self.logs["onlinestatus"] == "Away":
+				
+				color = self.colors["yellow"] | curses.A_BOLD | curses.A_REVERSE
+				status = " " + self.logs["onlinestatus"]
+			elif self.logs["onlinestatus"] == "Online":
+				color = self.colors["green"] | curses.A_BOLD | curses.A_REVERSE
+				status = " " + self.logs["onlinestatus"]
+			elif self.logs["onlinestatus"] == "Offline":
+				color = self.colors["red"] | curses.A_BOLD | curses.A_REVERSE
+				status = self.logs["onlinestatus"]
+			elif self.logs["onlinestatus"] == "Closed":
+				color = self.colors["red"] | curses.A_BOLD | curses.A_REVERSE
+				status = " " + self.logs["onlinestatus"]
+			else:
+				color = self.colors["blafgcyabg"]
+				status = self.logs["onlinestatus"]
+			osw.bkgdset(" ", color)
+			osw.erase()
+			osw.addstr(status,  color )
+			osw.refresh()
+		except Exception,e :
+			self.Help.Log("debug", "DrawOnlineStatus: " + str(e))
+			
 	## Create and Draw the Topbar 
 	# @param self Mucous (class)
 	def ModeTopbar(self):
@@ -3185,14 +1365,11 @@ class Mucous:
 			if "onlinestatus" in self.windows["border"]:
 				del self.windows["border"]["onlinestatus"]
 			
-			if "searchstatus" in self.windows["border"]:
-				del self.windows["border"]["searchstatus"]
 			
 			if "username" in self.windows["border"]:
 				del self.windows["border"]["username"]
 			
-			self.Alerts.Mode()
-			self.Transfers.Status()	
+			
 			tb = self.windows["border"]["top"] =   curses.newwin(1, self.w, 0, 0)
 			tb.bkgdset(" ", self.colors["blafgcyabg"]  | curses.A_REVERSE | curses.A_BOLD)
 			tb.idlok(1)
@@ -3200,42 +1377,28 @@ class Mucous:
 			tb.noutrefresh()
 							
 			osw = self.windows["border"]["onlinestatus"]  =  curses.newwin(1, 8, 0, 0)
-			osw.bkgdset(" ", self.colors["blafgcyabg"]  |curses.A_REVERSE | curses.A_BOLD)
+			#osw.bkgdset(" ", self.colors["blafgcyabg"]  |curses.A_REVERSE | curses.A_BOLD)
 			osw.idlok(1)
-			try:
-				osw.erase()
-				osw.addstr(self.logs["onlinestatus"],  self.colors["blafgcyabg"] )
-			except:
-				pass
-			osw.noutrefresh()
+			self.DrawOnlineStatus()
 			
 			
 			
-		
-			ssw = self.windows["border"]["searchstatus"] = curses.newwin(1, 15, 0, 47)
-			ssw.bkgdset(" ", self.colors["blafgcyabg"]  | curses.A_REVERSE | curses.A_BOLD)
-			ssw.idlok(1)
-			try:
-				ssw.erase()
-				ssw.addstr(self.Search.numresults[self.Search.current] [0],  self.colors["blafgcyabg"] )
-				ssw.addstr(str(self.Search.numresults[self.Search.current][1]),  self.colors["blafgcyabg"] )
-			except:
-				pass
-			ssw.noutrefresh()
-		
-			
+			self.Search.Count(None)
+
 			un = self.windows["border"]["username"] =  curses.newwin(1, 16, 0, 9)
 			un.idlok(1)
 			un.bkgdset(" ", self.colors["blafgcyabg"]  | curses.A_REVERSE | curses.A_BOLD)
-			
+			un.erase()
 			if self.username != None:
 				try:
-					un.erase()
+					
 					un.addstr(self.dlang(self.username[:15]),  self.colors["blafgcyabg"] )
 				except:
 					pass
 			un.noutrefresh()
-		
+			
+			self.Alerts.Mode()
+			self.Transfers.Status()
 		except Exception,e :
 			self.Help.Log("debug", "topbar mode" + str(e))
 
@@ -3395,7 +1558,8 @@ class Mucous:
 			self.Help.Log("status", "Try using /interface to connect to a different port.")
 			for line in self.Help.log["connect"]:
 				self.Help.Log("status", line)
-			driver.Driver.close(self)
+			if self.D.socket is not None:
+				self.D.close()
 		except Exception,e:
 			self.Help.Log("debug", "ThreadNickCheck: " + str(e))
 			
@@ -3466,5 +1630,4 @@ try:
 		curses.wrapper(Mucous())
 except Exception, e:
 	print e
-	
 	

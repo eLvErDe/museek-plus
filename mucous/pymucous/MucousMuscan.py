@@ -2,7 +2,7 @@
 # Copyright (c) 2006 daelstorm. 
 import threading
 import os
-import subprocess
+
 ## Muscan commands, threads
 #
 class Muscan:
@@ -42,14 +42,14 @@ class Muscan:
 	def ThreadMuscan(self):
 		try:
 			self.timer.cancel()
-			if subprocess_fail:
+			if self.mucous.subprocess_fail:
 				self.mucous.Help.Log("status", "This feature requires Python 2.4")
 				return
 			if self.mucous.Config["connection"]["interface"][:9] in ("localhost", "/tmp/muse") and self.command != [] :
 				p = "/usr/bin/muscan"
 				if os.path.exists(p):
 				
-					z = subprocess.Popen( self.command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+					z = self.mucous.subprocess.Popen( self.command, stdout=self.mucous.subprocess.PIPE, stderr=self.mucous.subprocess.PIPE)
 					stdout_text, stderr_text = z.communicate()
 					z.wait()
 					
@@ -85,40 +85,40 @@ class Muscan:
 	def ListNormal(self):
 		self.command = ["muscan", "-c", self.mucous.Spl["museekconfigfile"], "-l"]
 		self.RestartTimer()
-		self.mucous.Help.Log("status", "Listing normal shares with muscan.")
+		self.mucous.Help.Log("status", "Listing normal shares with muscan:")
 
 	## Output list of Buddy-only shared directories to debug log
 	# @param self Muscan (Class)
 	def ListBuddy(self):
 		self.command = ["muscan", "-c", self.mucous.Spl["museekconfigfile"], "-b", "-l"]
 		self.RestartTimer()
-		self.mucous.Help.Log("status", "Listing buddy shares with muscan.")
+		self.mucous.Help.Log("status", "Listing buddy shares with muscan:")
 
 	## Rescan Buddy-only Shares (rebuilds shares from scratch)
 	# @param self Muscan (Class)
 	def RescanBuddy(self):
 		self.command = ["muscan", "-c", self.mucous.Spl["museekconfigfile"], "-v", "-b", "-r"]
 		self.RestartTimer()
-		self.mucous.Help.Log("status", "Rescanning buddy shares with muscan, don't forget to Reload them.")
+		self.mucous.Help.Log("status", "Rescanning buddy shares with muscan, don't forget to Reload them:")
 
 	## Update Buddy-only Shares (checks mtimes and updates only newer dirs/files)
 	# @param self Muscan (Class)
 	def UpdateBuddy(self):
 		self.command = ["muscan", "-c", self.mucous.Spl["museekconfigfile"], "-v", "-b"]
 		self.RestartTimer()
-		self.mucous.Help.Log("status", "Updating buddy shares with muscan, don't forget to Reload them.")
+		self.mucous.Help.Log("status", "Updating buddy shares with muscan, don't forget to Reload them:")
 
 	## Update Normal Shares (checks mtimes and updates only new dirs) 
 	# @param self Muscan (Class)
 	def UpdateNormal(self):
 		self.command = ["muscan", "-c", self.mucous.Spl["museekconfigfile"], "-v"]
 		self.RestartTimer()
-		self.mucous.Help.Log("status", "Updating shares with muscan, don't forget to Reload them.")
+		self.mucous.Help.Log("status", "Updating shares with muscan, don't forget to Reload them:")
 
 	## Rescan Normal Shares (rebuilds shares from scratch)
 	# @param self Muscan (Class)
 	def RescanNormal(self):
 		self.command = ["muscan", "-c", self.mucous.Spl["museekconfigfile"], "-v", "-r"]
 		self.RestartTimer()
-		self.mucous.Help.Log("status", "Rescanning shares with muscan, don't forget to Reload them.")
+		self.mucous.Help.Log("status", "Rescanning shares with muscan, don't forget to Reload them:")
 		

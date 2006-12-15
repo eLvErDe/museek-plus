@@ -141,9 +141,12 @@ class PopupMenu:
 					x = 0
 					## Color asterixs in from of user list toggles
 					if z[1] in ("banned", "ignored", "buddies", "trusted"):
+						
+							 
 						r = 0
-						if self.mucous.config[z[1]].has_key(username):
-							r = 1
+						if self.mucous.config.has_key(z[1]):
+							if self.mucous.config[z[1]].has_key(username):
+								r = 1
 
 						if r == 1:
 							self.menus[menu]["scroll"].addstr(y, x, "* ", self.mucous.colors["green"])
@@ -636,7 +639,7 @@ class PopupMenu:
 				return 1
 			elif self.position == 9:
 				self.mucous.usernames["privileges"] = username
-				self.mucous.set_edit_title( "% Give Privileges to " + self.mucous.usernames["privileges"])
+				self.mucous.SetEditTitle( "% Give Privileges to " + self.mucous.usernames["privileges"])
 			elif self.position == 10:
 				self.mucous.D.TransferUpdate(username, path) 
 			return 0
