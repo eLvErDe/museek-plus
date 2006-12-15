@@ -20,13 +20,18 @@
 
 Version = "0.1.12"
 
-import struct, socket, sys, time, urllib, pwd, os, select, getopt, ConfigParser
+import struct, socket, sys, time, urllib, os, select, getopt, ConfigParser
+try:
+	import pwd
+except:
+	print "pwd not found"
+	pass 
 from time import sleep
 try:
 	from museek import messages, driver
 except:
 	print "WARNING: The Museek Message-Parsing modules, messages.py and/or driver.py  were not found. Please install them into your '/usr/lib/python2.X/site-packages/museek' directory, or place them in a 'museek' subdirectory of the directory that contains the museekcontrol python scipt."
-	sys.exit()
+	#sys.exit()
 def output(s):
 	print s
 	sys.stdout.flush()
@@ -127,7 +132,7 @@ Version: %s
 	sys.exit(2)
 	
 try:
-	opts, args = getopt.getopt(sys.argv[1:], "hc:vi:p:j:l:p:m:b:tar", ["help", "config=", "interface=", "password=", "transfers", "monitor-transfers", "info=",  "minfo", "browse=", "sprivates", "sprivate=", "leave=", "join=", "joined",  "sroom=", "stalk", "rooms", "bs=", "bsearch=", "rs=", "rsearch=", "gs=", "alltickers", "tickers=", "gsearch=", "version", "log=", "chat=", "pm=", "private=", "message=", "away", "download=", "mt", "mtransfers", "mb", "mbrowse", "buddy=", "unbuddy=", "ignore=", "uningore=", "ban=", "unban=", "trust=", "distrust=", "comment=", "roomlist", "abortdown=", "abortup=", "retryup=", "retrydown=", "removeup=", "removedown=", "upload=", "roominfo=", "roomsinfo", "ip=", "iproom=", "setticker=", "settempticker=", "setdefaultticker", "reloadshares", "disconnect", "connect" ])
+	opts, args = getopt.getopt(sys.argv[1:], "hc:vi:p:j:l:p:m:b:tar", ["help", "config=", "interface=", "password=", "transfers", "monitor-transfers", "info=",  "minfo", "browse=", "sprivates", "sprivate=", "leave=", "join=", "joined",  "sroom=", "stalk", "rooms", "bs=", "bsearch=", "rs=", "rsearch=", "gs=", "alltickers", "tickers=", "gsearch=", "version", "log=", "chat=", "pm=", "private=", "message=", "away", "download=", "mt", "mtransfers", "mb", "mbrowse", "buddy=", "unbuddy=", "ignore=", "unignore=", "ban=", "unban=", "trust=", "distrust=", "comment=", "roomlist", "abortdown=", "abortup=", "retryup=", "retrydown=", "removeup=", "removedown=", "upload=", "roominfo=", "roomsinfo", "ip=", "iproom=", "setticker=", "settempticker=", "setdefaultticker", "reloadshares", "disconnect", "connect" ])
 except getopt.GetoptError:
 	usage()
 	sys.exit(2)
@@ -545,16 +550,37 @@ class museekcontrol(driver.Driver):
 				else:
 					self.send(messages.ConfigSet("buddies", user, ""))
 				sys.exit()
+			elif want == "unbuddy":
+				if user != None:
+					self.send(messages.ConfigRemove("buddies", user))
+				sys.exit()
 			elif want == "ban":
-		
 				if user != None:
 					self.send(messages.ConfigSet("banned", user, "a"))
+				sys.exit()
+			elif want == "unban":
+				if user != None:
+					self.send(messages.ConfigRemove("banned", user))
 				sys.exit()
 			elif want == "ignore":
 				if reason != None:
 					self.send(messages.ConfigSet("ignored", user, reason))
 				else:
 					self.send(messages.ConfigSet("ignored", user, ""))
+				sys.exit()
+			elif want == "unignore":
+				if user != None:
+					self.send(messages.ConfigRemove("ignored", user))
+				sys.exit()
+			elif want == "trust":
+				if reason != None:
+					self.send(messages.ConfigSet("trusted", user, reason))
+				else:
+					self.send(messages.ConfigSet("trusted", user, ""))
+				sys.exit()
+			elif want == "distrust":
+				if user != None:
+					self.send(messages.ConfigRemove("trusted", user))
 				sys.exit()
 			elif want == "reloadshares":
 				self.send(messages.ReloadShares())
