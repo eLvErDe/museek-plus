@@ -83,7 +83,18 @@ class BaseMessage:
 	def unpack_string(self, d):
 		l, d = self.unpack_uint(d)
 		return d[0:l], d[l:]
-
+	
+	def unpack_pos_off(self, d, pos):
+		return struct.unpack("<Q", d[pos:pos+8])[0], pos+8
+	
+	def unpack_pos_uint(self, d, pos):
+		return struct.unpack("<I", d[pos:pos+4])[0], pos+4
+	
+	def unpack_pos_string(self, data, position):
+		lenstring, position = self.unpack_pos_uint(data, position)
+		string = data[position:position+lenstring]
+		return string, position+lenstring
+	
 	def unpack_cipher(self, d):
 		l, d = self.unpack_uint(d);
 		if(l % 16) != 0:
@@ -351,41 +362,36 @@ class RoomState(BaseMessage):
 	def parse(self, data):
 		self.roomlist = {}
 		pos = 0
-		
-		n = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
-		for i in range(n):
-			l = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4
-			room = data[pos:pos+l]; pos += l
-			users = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
+ 
+		nr, pos = self.unpack_pos_uint(data, pos)
+		for i in range(nr):
+			room, pos = self.unpack_pos_string(data, pos)
+			users, pos = self.unpack_pos_uint(data, pos)
 			self.roomlist[room] = users
 
 		self.joined_rooms = {}
 		self.tickers = {}
-		n = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
-		
+		n, pos = self.unpack_pos_uint(data, pos)
 		for i in range(n):
-			l = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4
-			room = data[pos:pos+l]; pos += l
+			room, pos = self.unpack_pos_string(data, pos)
 			self.joined_rooms[room] = {}
-			n2 = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
+			n2, pos = self.unpack_pos_uint(data, pos) 
 			for j in range(n2):
-				l = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4
-				user = data[pos:pos+l]; pos += l
-				status = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
-				avgspeed = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
-				downloadnum = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
-				files = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
-				dirs= struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
-				slotsfull = ord(data[0]); pos += 1
+				user, pos = self.unpack_pos_string(data, pos)
+				status, pos = self.unpack_pos_uint(data, pos)
+				avgspeed, pos = self.unpack_pos_uint(data, pos)
+				downloadnum, pos = self.unpack_pos_uint(data, pos)
+				files, pos = self.unpack_pos_uint(data, pos)
+				dirs, pos = self.unpack_pos_uint(data, pos)
+
+				slotsfull = ord(data[pos]); pos += 1
 				self.joined_rooms[room][user] = [status, avgspeed, downloadnum, files, dirs, slotsfull]
 				
-			n2 = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
+			n3, pos = self.unpack_pos_uint(data, pos) 
 			self.tickers[room] = {}
-			for j in range(n2):
-				l = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4
-				user = data[pos:pos+l]; pos += l
-				l = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4
-				message = data[pos:pos+l]; pos += l
+			for j in range(n3):
+				user, pos = self.unpack_pos_string(data, pos)
+				message, pos = self.unpack_pos_string(data, pos)
 				self.tickers[room][user] = message
 		return self
 
@@ -440,17 +446,16 @@ class JoinRoom(BaseMessage):
 	def parse(self, data):
 		self.users = {}
 		pos = 0
-		l = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4
-		self.room = data[pos:pos+l]; pos += l
-		n = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
+		self.room, pos = self.unpack_pos_string(data, pos)
+		n, pos = self.unpack_pos_uint(data, pos) 
 		for i in range(n):
-			l = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4
-			user = data[pos:pos+l]; pos += l
-			status = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
-			avgspeed = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
-			downloadnum = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
-			files = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
-			dirs = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
+			user, pos = self.unpack_pos_string(data, pos)
+			status, pos = self.unpack_pos_uint(data, pos)
+			avgspeed, pos = self.unpack_pos_uint(data, pos)
+			downloadnum, pos = self.unpack_pos_uint(data, pos)
+			files, pos = self.unpack_pos_uint(data, pos)
+			dirs, pos = self.unpack_pos_uint(data, pos)
+
 			free = ord(data[pos]); pos += 1
 			self.users[user] = [status, avgspeed, downloadnum, files, dirs, free]
 		return self
@@ -598,30 +603,27 @@ class UserShares(BaseMessage):
 	def parse(self, data):
 		self.shares = {}
 		pos = 0
-		l = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4
-		self.user = data[pos:pos+l]; pos += l
-		dirs = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
+		
+		self.user, pos = self.unpack_pos_string(data, pos)
+		dirs, pos = self.unpack_pos_uint(data, pos)
 		for i in range(dirs):
-			l = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4
-			dir = data[pos:pos+l]; pos += l  
+			dir, pos = self.unpack_pos_string(data, pos)
 
 			self.shares[dir] = {}
 			
-			files = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
+			files, pos = self.unpack_pos_uint(data, pos)
 
 			for j in range(files):
-				l = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4
-				fn = data[pos:pos+l]; pos += l
-				sz = struct.unpack("<Q", data[pos:pos+8])[0]; pos += 8
-				l = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4
-				ex = data[pos:pos+l]; pos +=  l
-				attrs = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4
-				at = []
+				filename, pos = self.unpack_pos_string(data, pos)
+				size, pos = self.unpack_pos_off(data, pos)
+				extension, pos = self.unpack_pos_string(data, pos)
+				attrs, pos = self.unpack_pos_uint(data, pos)
+				attributes = []
 				for k in range(attrs):
-					a = struct.unpack("<I", data[pos:pos+4])[0]; pos += 4 
-					at.append(a)
+					a, pos = self.unpack_pos_uint(data, pos)
+					attributes.append(a)
 					
-				self.shares[dir][fn] = [sz, ex, at]
+				self.shares[dir][filename] = [size, extension, attributes]
 		return self
 
 

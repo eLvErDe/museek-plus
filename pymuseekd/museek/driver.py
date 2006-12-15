@@ -47,6 +47,7 @@ class InvalidMessageException(Exception):
 class UnknownMessageException(Exception):
 	pass
 
+# Extract message codes and classes from messages.py and add them to MSGTAB
 import messages
 MSGTAB = {}
 for _message in dir(messages):
@@ -71,6 +72,7 @@ class Driver:
 		self.password = password
 		self.mask = mask
 		if host[:1] == '/':
+			# Connect to a unix socket
 			self.socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 			try:
 				self.socket.connect(host)
@@ -78,6 +80,7 @@ class Driver:
 				self.socket = None
 				raise e
 		else:
+			# Connect to a TCP socket
 			ix = host.rfind(":")
 			if(ix == -1):
 				raise InvalidHostException, 'hostname "%s" is missing a port' % host
@@ -91,25 +94,26 @@ class Driver:
 	
 	# Fetch and parse a message from museekd, blocks until an entire message is read
 	def fetch(self):
+		## Unpack the first 8 bytes of the message
 		data = self.socket.recv(8, socket.MSG_WAITALL)
 		if not data:
 			self.cb_disconnected()
 			self.socket = None
 			return
-		
+		## First 4 bytes are the length
 		length = struct.unpack("<i", data[:4])[0]
 		
 		if length < 4:
 			raise InvalidMessageException, 'received invalid message length (%i)' % length
-		
+		## Second 4 bytes are the message code
 		code = struct.unpack("<I", data[4:])[0]
-		
+		## If message is longer than it's code, unpack all data
 		if length > 4:
 			data = self.socket.recv(length - 4, socket.MSG_WAITALL)
-		
+		## If message doesn't match known messages, raise an error
 		if not code in MSGTAB:
 			raise UnknownMessageException, 'received unknown message tyoe 0x%04X' % code
-		
+		## Parse message with the message's class parse function
 		m = MSGTAB[code]()
 		m.cipher = self.cipher
 		return m.parse(data)
