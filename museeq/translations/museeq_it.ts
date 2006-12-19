@@ -616,15 +616,15 @@
     </message>
     <message>
         <source>File</source>
-        <translation>File</translation>
+        <translation type="obsolete">File</translation>
     </message>
     <message>
         <source>Settings</source>
-        <translation>Impostazioni</translation>
+        <translation type="obsolete">Impostazioni</translation>
     </message>
     <message>
         <source>Scripts</source>
-        <translation>Script</translation>
+        <translation type="obsolete">Script</translation>
     </message>
     <message>
         <source>Welcome to Museeq</source>
@@ -850,7 +850,7 @@
     </message>
     <message>
         <source>Toggled &amp;away</source>
-        <translation>Imposta &amp;assente</translation>
+        <translation type="obsolete">Imposta &amp;assente</translation>
     </message>
     <message>
         <source>Show T&amp;imestamps</source>
@@ -871,6 +871,14 @@
     <message>
         <source>Enable &amp;Trayicon</source>
         <translation>Abilita icona &amp;tray</translation>
+    </message>
+    <message>
+        <source>Toggle &amp;away</source>
+        <translation>Imposta &amp;assente</translation>
+    </message>
+    <message>
+        <source>Show Exit Dialog</source>
+        <translation>Mostra dialogo d&apos;uscita</translation>
     </message>
 </context>
 <context>
@@ -1209,7 +1217,7 @@
     </message>
     <message>
         <source>Default Encoding:</source>
-        <translation>Codifica standard:</translation>
+        <translation type="obsolete">Codifica standard:</translation>
     </message>
     <message>
         <source>Filesystem Encoding:</source>
