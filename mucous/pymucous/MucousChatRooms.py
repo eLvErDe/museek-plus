@@ -41,6 +41,7 @@ class ChatRooms:
 		## @var numticker
 		# position of ticker
 		self.numticker = 0
+		self.tickersize = 150
 		## @var tickers
 		# dict of rooms containing lists of tickers 
 		self.tickers = {}
@@ -52,6 +53,7 @@ class ChatRooms:
 		# Timer instance for displaying tickers
 		self.ticker_timer = threading.Timer(time, self.DrawTicker)
 		self.linewrapped = None
+		
 	## Create and draw current chat room's window and contents 
 	# Cleanup stale windows first
 	# Calls: SetRoom
@@ -120,7 +122,7 @@ class ChatRooms:
 			if self.mucous.Alerts.log in ( "New Chat", "Nick Mention"):
 				self.mucous.Alerts.setStatus("")	
 
-			self.SetRoom(self.current)
+			self.Change(self.current)
 
 			
 			curses.doupdate()
@@ -376,7 +378,7 @@ class ChatRooms:
 				for lines in self.logs["rooms"][self.current][ len(self.logs["rooms"][self.current]) - s["height"]:]:
 					# Update Chat history if user changes status
 					if lines[2] == user:
-						self.Change(self.current)
+						self.SetRoom(self.current)
 						break
 				curses.doupdate()
 		except Exception, e:
@@ -389,8 +391,8 @@ class ChatRooms:
 		try:
 			if self.mucous.mode != "chat" or self.current not in self.tickers or self.mucous.Config["tickers"]["tickers_enabled"] != 'yes':
 				return
-			ticks = self.tickers[self.current]
-			ttickers = ticks.keys()
+
+			ttickers = self.tickers[self.current].keys()
 			if ttickers == []:
 				self.ticker_timer.cancel()
 				try:
@@ -409,7 +411,14 @@ class ChatRooms:
 						return
 					longstring = ""
 					for user in ttickers:
-						longstring += "[%s] %s " % (user, self.mucous.dlang(ticks[user]))
+						if self.mucous.config.has_key("ignored") and self.mucous.config["ignored"].has_key(user):
+							continue
+						if not self.tickers[self.current].has_key(user):
+							continue
+						message = self.mucous.dlang(self.tickers[self.current][user])[:self.tickersize]
+						if len(message) == self.tickersize:
+							message += "..."
+						longstring += "[%s] %s " % (user, message)
 					if self.shape in ("nostatuslog", "chat-only"):
 						bw = self.windows["border"]["chat"]
 						s = self.dimensions["chat"]
@@ -427,10 +436,10 @@ class ChatRooms:
 						part += longstring[:(s["width"]-2+padd - len(part))] 
 					fill = (s["width"]-2 - len(part) +padd) * " "
 					
-					message = ""
+					fullmessage = ""
 					for m in part:
-						message += curses.unctrl(m)
-					bw.addstr(posy, posx, "<%s%s>" %(message, fill))
+						fullmessage += curses.unctrl(m)
+					bw.addstr(posy, posx, "<%s%s>" %(fullmessage, fill))
 					bw.refresh()
 					self.numticker += 1
 					#if self.numticker >= len(ttickers):
@@ -452,7 +461,7 @@ class ChatRooms:
 							return
 						bw = self.windows["border"]["roomstatus"]
 						s = self.dimensions["roomstatus"]
-						tick = str(ticks[names][:s["width"]-7-n])
+						tick = str(self.tickers[self.current][names][:s["width"]-7-n])
 						fill = (s["width"]-6-len(tick)-len(names)) * " "
 						string = "< [%s] %s%s>" % (names, tick, fill)
 						bw.addstr(5, 1, self.mucous.dlang( string ))
@@ -461,7 +470,7 @@ class ChatRooms:
 					elif self.shape in ("nostatuslog", "chat-only"):
 						mw = self.windows["border"]["chat"]
 						s = self.dimensions["chat"]
-						tick = str(ticks[names][:s["width"]-25-n])
+						tick = str(self.tickers[self.current][names][:s["width"]-25-n])
 						fill = (s["width"]-25-len(tick)-len(names)) * " "
 						string = "< [%s] %s%s>" %(names, tick, fill)
 						mw.addstr(0, 18, self.mucous.dlang( string ))
@@ -1319,6 +1328,7 @@ class ChatRooms:
 		self.scrolling["chatroom"] = self.scrolling["roomstatus"] = -1
 		self.scrolling["roombox"] = 0
 		self.SetRoom(r)
+		self.TickersStartTimer()
 		
 	## Change Room
 	# @param self is ChatRooms (class)
@@ -1376,7 +1386,7 @@ class ChatRooms:
 			if "%s" % self.current == self.mucous.Alerts.log:
 				self.mucous.Alerts.setStatus("")
 			
-			self.TickersStartTimer()
+			
 			try:
 				self.windows["text"]["chat"].noutrefresh()
 			except:

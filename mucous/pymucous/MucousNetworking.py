@@ -262,9 +262,9 @@ class Networking(driver.Driver):
 			un.addstr(self.mucous.dlang(self.mucous.username[:15]), self.mucous.colors["blafgcyabg"] )
 			un.refresh()
 		
-			self.mucous.Transfers.DrawUploadCount("0")
-			self.mucous.Transfers.DrawDownloadCount("0")
-			self.mucous.Search.Count(0)
+			#self.mucous.Transfers.DrawUploadCount("0")
+			#self.mucous.Transfers.DrawDownloadCount("0")
+			#self.mucous.Search.Count(0)
 		
 			if state:
 # 				self.mucous.Help.Log("status", "Connected to Server, username: " + username)
@@ -288,10 +288,12 @@ class Networking(driver.Driver):
 					for room in self.mucous.ChatRooms.rooms.keys():
 						msg = ("Disconnected from the Server")
 						self.mucous.ChatRooms.AppendChat("Status", room, '', msg)
-				uploadlist = []
-				self.mucous.Transfers.uploads = {}
-				self.mucous.Transfers.transfers["downloads"] = {}
-				self.mucous.Transfers.transfers["uploads"] = {}
+				#uploadlist = []
+				#self.mucous.Transfers.uploads = {}
+				#self.mucous.Transfers.transfers["downloads"] = {}
+				#self.mucous.Transfers.transfers["uploads"] = {}
+				
+				# Clear users from rooms
 				for room in self.mucous.ChatRooms.rooms.keys():
 					self.mucous.ChatRooms.rooms[room] = []
 				if self.mucous.mode == "chat":
