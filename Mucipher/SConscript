@@ -1,5 +1,5 @@
 Import('env')
-
+import os
 sources = Split("""
     md5.c
     sha.c
@@ -10,7 +10,10 @@ sources = Split("""
 
 
 env.StaticLibrary(target = 'ucipher', source = sources)
-
+if not os.path.exists("mucipher.i"):
+    open(str("mucipher.i"), "w").write(open(os.path.abspath("../../Mucipher/mucipher.i")).read())
+if not os.path.exists("wraphelp.c"):
+    open(str("wraphelp.c"), "w").write(open(os.path.abspath("../../Mucipher/wraphelp.c")).read())
 
 if 'swig' in env['TOOLS']:
     import os

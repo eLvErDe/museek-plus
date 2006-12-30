@@ -23,6 +23,12 @@ if os.path.exists(os.path.join(py_inc, "Python.h")):
     env_swigpy.Append(LIBS = ['ucipher'])
     env_swigpy.Replace(SHLIBPREFIX='')
 
+    if not os.path.exists("mucipher.py"):
+        open(str("mucipher.py"), "w").write( open(os.path.abspath("../../../Mucipher/python/mucipher.py")).read())
+    if not os.path.exists("mucipher.i"):
+        open(str("mucipher.i"), "w").write(open(os.path.abspath("../mucipher.i")).read())
+    if not os.path.exists("wraphelp.c"):
+        open(str("wraphelp.c"), "w").write(open(os.path.abspath("../wraphelp.c")).read())
     env_swigpy.Command("mucipher.i", "../mucipher.i", file_copy)
     env_swigpy.Command("wraphelp.c", "../wraphelp.c", file_copy)
 
@@ -31,11 +37,12 @@ if os.path.exists(os.path.join(py_inc, "Python.h")):
         mucipherc = mucipherc[0]
     py_dest = env['DESTDIR'] + os.path.join(sys.prefix, "lib", "python" + py_ver, "site-packages")
 
-    dp1 = env.Install(py_dest, 'mucipherc.py')
-    dp2 = env.Install(py_dest, mucipherc)
+    dp1 = env_swigpy.Install(py_dest, 'mucipherc.py')
+    dp2 = env_swigpy.Install(py_dest, mucipherc)
+    dp3 = env_swigpy.Install(py_dest, "mucipher.py")
     Depends(dp1, dp2)
 
-    env.Alias('install_mucipher',  [dp1, dp2])
+    env.Alias('install_mucipher',  [dp1, dp2, dp3])
     env.Alias('install', 'install_mucipher')
 else:
 	print "WARNING: Python.h include not found, please install Python's development packages"
