@@ -195,13 +195,15 @@ class PopupMenu:
 	# @param menu New Current Menu
 	# @param position vertical position of menu item
 	# @param show Show this menu
-	def Create(self, menu=None, position=0, show=None):
+	def Create(self, menu=None, position=None, show=False):
 		try:
 			if menu:
 				self.current = menu
+				self.position = 0
 			else:
 				menu = self.current 
-			self.position = position
+			if position is not None:
+				self.position = position
 			
 			if show:
 				self.show = True
@@ -488,7 +490,7 @@ class PopupMenu:
 				return 1
 			else:
 				self.position -=8
-				return username
+				return [username, path]
 			
 		except Exception, e:
 			self.mucous.Help.Log("debug", "PopupMenu.ExecuteTransfers " +str(e))
@@ -552,7 +554,7 @@ class PopupMenu:
 				return self.ExecuteEncodingsMenu()
 					
 			## The rest of the popup menus
-			
+			path = username = None
 			if self.current not in ("roombox", "lists", "transfers", "search", "browse-dirs", "browse-files"):
 				return 0
 			if self.current == "roombox":
@@ -562,11 +564,12 @@ class PopupMenu:
 				mode = self.mucous.UsersLists.current
 				username = self.List()[self.mucous.UsersLists.scrolling[mode]][1]
 			elif self.current == "transfers":
-				a  = self.ExecuteTransfers()
-				if a in (0, 1):
-					return a
-				else:
-					username = a 
+				value  = self.ExecuteTransfers()
+				if type(value) is int:
+					return value
+				elif type(value) is list:
+					username = value[0]
+					path = value[1]
 			elif self.current == "search":
 				the_list = self.List()
 				mode = "search"
@@ -597,7 +600,9 @@ class PopupMenu:
 				a = self.ExecuteBrowse()
 				if a in (0, 1):
 					return a
-				else: username = a 
+				else: username = a
+			if username is None:
+				return 1
 			if self.position == 0:
 				self.mucous.PrivateChat.Start(username)
 				self.mucous.PrivateChat.Mode()

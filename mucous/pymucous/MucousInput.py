@@ -1386,8 +1386,9 @@ class CharacterParse:
 							if "://" in line[3]:
 								urline = line[3].split(" ")
 								for x in urline:
-									if "://" in x: self.mucous.url = x
-									break
+									if "://" in x: 
+										self.mucous.url = x
+										break
 								break
 					elif self.mucous.mode == "private":
 						for timestamp, user, message in logfile:
@@ -1418,20 +1419,15 @@ class CharacterParse:
 					elif urlr == "custom":
 						if self.mucous.Config["mucous"]["url custom"] != "$":
 							command = self.mucous.Config["mucous"]["url custom"].replace("$", self.mucous.url)
+						
 					if command is not None:
 						os.system("%s &> /dev/null &" %command)
-
+						self.mucous.Help.Log("status", "Running Process: %s" % command)
 			elif command == "/urlreader" and args != '':
 				self.mucous.Config["mucous"]["url reader"] = args
 			elif command == "/urlcustom" and args != '':
 				if "$" in args:
-					custom = args.split("$")
-					if len(custom) > 1 and len(custom) < 3:
-						self.mucous.Config["mucous"]["url custom prefix"] = custom[0]
-						self.mucous.Config["mucous"]["url custom suffix"] = custom[1]
-					elif len(custom) == 1:
-						self.mucous.Config["mucous"]["url custom prefix"] = custom[0]
-						self.mucous.Config["mucous"]["url custom suffix"] = ''
+					self.mucous.Config["mucous"]["url custom"] = custom
 			elif command == "/np" and args == '':
 				self.mucous.NowPlaying()
 				
