@@ -142,9 +142,9 @@ class Search:
 			self.tickets[str(ticket)] = query
 			if self.current == None:
 				self.current = str(ticket)
-				if self.mucous.mode == "search":
-					self.Mode()
-					self.Stats("status", "Started search for: %s" % query, str(ticket), 0)
+			if self.mucous.mode == "search":
+				self.Mode()
+				self.Stats("status", "Started search for: %s" % query, str(ticket), 0)
 			self.results[str(ticket)] = {}	
 			self.numresults[str(ticket)] = 0
 		except Exception,e:
@@ -185,12 +185,12 @@ class Search:
 				if str(ticket) not in self.mucous.Alerts.alert["SEARCH"]:
 					self.mucous.Alerts.alert["SEARCH"].append( str(ticket) )
 					self.mucous.Alerts.Check()
-
-			if self.current == str(ticket) and  self.mucous.PopupMenu.show != True:
-				self.FormatResults(str(ticket))
 			else:
-				self.Count(num)
-				self.mucous.DrawTabs(self.tickets.keys(), self.current)
+				if self.current == str(ticket) and  self.mucous.PopupMenu.show != True:
+					self.FormatResults(str(ticket))
+				else:
+					self.Count(num)
+					self.mucous.DrawTabs(self.tickets.keys(), self.current)
 		except Exception,e:
 			self.mucous.Help.Log("debug", "Search.NewResults: "+str(e))
 	
