@@ -113,7 +113,10 @@ void ChatRoom::sendMessage(const QString& line_) {
 				museeq->mainwin()->changePMode();
 		else if(cmd == "transfers" || cmd == "transfer")
 			museeq->mainwin()->changeTMode();
-		 else if(cmd == "s" || cmd == "search")
+		else if(cmd == "clear") {
+			mChatPanel->clear();
+		}
+		else if(cmd == "s" || cmd == "search")
 			if(! s.empty())
 				museeq->mainwin()->startSearch(s.join(" "));
 			else

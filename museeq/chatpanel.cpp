@@ -60,6 +60,10 @@ void ChatPanel::append(uint _ts, const QString& _u, const QString& _l) {
 
 }
 
+void ChatPanel::clear() {
+	mScroll->clear();
+}
+
 void ChatPanel::slotSendMessage() {
 	QString line = mEntry->text();
 	mEntry->reset();
