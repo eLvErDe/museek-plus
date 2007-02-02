@@ -67,7 +67,10 @@ class BrowseShares:
 	# @return user, path
 	def CurrentFile(self):
 		user = self.current
-		path = self.current_dir+"\\"+self.files[self.scrolling["files"]]
+		if self.files != []:
+			path = self.current_dir+"\\"+self.files[self.scrolling["files"]]
+		else:
+			path = self.current_dir
 		return user, path
 	
 	## Get the currently selected user and directory

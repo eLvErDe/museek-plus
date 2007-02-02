@@ -354,14 +354,14 @@ class Setup:
 
 		self.SetupButton("Your Userinfo", info, 2,1,self.mucous.h-8,self.mucous.w-18, edit=(self.input == "userinfo"))
 		
-		bwin = curses.newwin(6,16,2,self.mucous.w-17)
+		bwin = curses.newwin(8,16,2,self.mucous.w-17)
 		bwin.border()
 		try:
 			bwin.addstr(0, 1, "< Stats >",  curses.A_BOLD)
 		except:
 			pass
 		bwin.noutrefresh()
-		statswin = bwin.subwin(4,14,3,self.mucous.w-16)
+		statswin = bwin.subwin(6,14,3,self.mucous.w-16)
 
 		statswin.scrollok(1)
 
@@ -843,7 +843,7 @@ class Setup:
 			else:
 				attr = curses.A_NORMAL
 			win.erase()
-			if option in ("True", "true", "yes"):
+			if option in (True, "True", "true", "yes"):
 				if toggle:
 					z = toggled
 				else:

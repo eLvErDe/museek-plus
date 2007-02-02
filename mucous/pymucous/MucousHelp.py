@@ -339,8 +339,14 @@ class Help:
 				if htype == "status":
 					ex = ''
 				else: ex = "BUG " 
-				if "\n" in s:
-					lis = s.split("\n")
+				newline = ""
+				for character in s:
+					if curses.ascii.isctrl(character):
+						character = curses.ascii.unctrl(character)
+					newline += character
+				if "\n" in newline:
+					
+					lis = newline.split("\n")
 					for line in lis:
 						if line is lis[0]:
 							self.log["debug"].append("%s %s%s" % (timestamp,ex,line))
@@ -348,7 +354,7 @@ class Help:
 							self.log["debug"].append("%s%s" % (ex,line))
 				
 				else:
-					self.log["debug"].append("%s %s%s" %(timestamp, ex,s))
+					self.log["debug"].append("%s %s%s" %(timestamp, ex,newline))
 				if htype == "debug":
 					
 					ex = "BUG "
@@ -359,9 +365,20 @@ class Help:
 						#else: self.log["debug"].append("%s%s" % (ex,line))
 					tb = self.mucous.traceback.extract_tb(sys.exc_info()[2])
 					for line in tb:
+						if type(line) is tuple:
+							xline = ""
+							for item in line:
+								xline += str(item) + " "
+							line = xline
+
+						newline = ""
+						for character in line:
+							if curses.ascii.isctrl(character):
+								character = curses.ascii.unctrl(character)
+							newline += character
 						if line is tb[0]:
-							self.log["debug"].append("%s %s%s" % (timestamp,ex,line))
-						else: self.log["debug"].append("%s%s" % (ex,line))
+							self.log["debug"].append("%s %s%s" % (timestamp,ex,newline))
+						else: self.log["debug"].append("%s%s" % (ex,newline))
 				
 			if self.mucous.mode in ( "help", "debug", "status"):
 				#self.Draw( htype, s, 0)
@@ -382,7 +399,7 @@ class Help:
 				
 				self.mucous.Alerts.Check()
 		except Exception, e:
-			#self.mucous.ChatRooms.AppendChat("Status", self.mucous.ChatRooms.current, 'ERR', str(e) )
+			self.mucous.ChatRooms.AppendChat("Status", self.mucous.ChatRooms.current, 'ERR', str(e) )
 			pass
 	
 	## Draw a line in the Help log 
@@ -400,11 +417,15 @@ class Help:
 					attr = curses.A_BOLD
 				else:
 					attr = curses.A_NORMAL
-				
+				lastmessage = ""
+				for character in self.mucous.dlang(s):
+					if curses.ascii.isctrl(character):
+						character = curses.ascii.unctrl(character)
+					lastmessage += character
 				if self.mucous.mode == "help" and htype == "help":
-					tw.addstr(self.mucous.dlang(s), attr)
+					tw.addstr(lastmessage, attr)
 				elif self.mucous.mode == "debug" and htype in( "status", "debug"):
-					tw.addstr(self.mucous.dlang(s), attr)
+					tw.addstr(lastmessage, attr)
 				else:
 					self.mucous.Alerts.setStatus("New Help")
 			else:

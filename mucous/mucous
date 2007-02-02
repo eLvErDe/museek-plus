@@ -329,7 +329,7 @@ class Mucous:
 		self.data = { "mystats": [], }
 		## @var logs
 		# store lists of data here
-		self.logs = {"tab_completion": [], "search_count": ["Results: ", 0], "history": [],  "onlinestatus": "Offline",     }
+		self.logs = {"tab_completion": [], "search_count": ["Results: ", 0], "history": [""],  "onlinestatus": "Offline",     }
 		## @var activeitems
 		# Tab button positions
 		self.activeitems = {"positions": {}}

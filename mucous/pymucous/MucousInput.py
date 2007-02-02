@@ -77,7 +77,8 @@ class CharacterParse:
 			#self.length + 
 			self.length = len(self.line)
 			# debugging: display keypress
-			#self.mucous.Help.Log("debug", c )
+			#try:self.mucous.Help.Log("debug", str(c)+" "+str(chr(c)) )
+			#except:pass
 			
 			# Toggle online ONLY if inactivity timeout was met
 			if self.mucous.timedout == True:
@@ -256,7 +257,7 @@ class CharacterParse:
 				# Delete everything after cursor position
 				self.line = self.line[:self.scroll]
 				self.length = len(self.line)
-				self.scroll = self.length-1
+				self.scroll = self.length
 			elif c == chr(21): 
 				# Ctrl-U
 				# Delete line
@@ -446,6 +447,11 @@ class CharacterParse:
 			elif key == chr(10) or key == "KEY_ENTER":
 				if line not in self.mucous.logs["history"] and line !='':
 					self.mucous.logs["history"].append(line)
+				else:
+					x = self.mucous.logs["history"].pop(self.mucous.logs["history"].index(line))
+					self.mucous.logs["history"].append(line)
+					x = self.mucous.logs["history"].pop(self.mucous.logs["history"].index(""))
+					self.mucous.logs["history"].append("")
 			elif key in ("popup"):
 				if self.mucous.PopupMenu.show == True:
 					self.mucous.PopupMenu.Clear()
@@ -520,8 +526,32 @@ class CharacterParse:
 						self.mucous.BrowseShares.collapsed[ current ].append(Dir)
 						self.mucous.BrowseShares.FormatBrowse()
 					
-			elif key in ("switch", "KEY_HOME", "KEY_END"):
-				if self.mucous.mode == "transfer":
+			elif key  == "switch":
+				if self.mucous.mode == "chat":
+					_list = None
+					if self.mucous.ChatRooms.shape == "chat-only":
+						self.mucous.ChatRooms.selected = "chatroom"
+						return
+					elif self.mucous.ChatRooms.shape == "nostatuslog":
+						_list = ["chatroom", "roombox"]
+					elif self.mucous.ChatRooms.shape ==  "noroombox":
+						_list = ["chatroom", "roomstatus"]
+					else:
+						_list = ["chatroom", "roomstatus", "roombox"]
+					if _list != None:
+						self.mucous.ChatRooms.selected = self.mucous.FormatData.RotateList("right", _list, self.mucous.ChatRooms.selected, "no")
+						self.mucous.ChatRooms.Mode()
+				elif self.mucous.mode == "search":
+					self.mucous.Search.MethodSwitch(direction="right")
+				elif self.mucous.mode == "browse":	
+					_list = [ "files", "directories" ]
+					self.mucous.BrowseShares.selected = self.mucous.FormatData.RotateList("right", _list, self.mucous.BrowseShares.selected, "no")
+					self.mucous.BrowseShares.Mode()
+				elif self.mucous.mode == "lists" and self.mucous.UsersLists.current == "interests":
+					_list = [ "recommendations", "similar_users", "likes", "hates" ]
+					self.mucous.Recommendations.selected = self.mucous.FormatData.RotateList("right", _list, self.mucous.Recommendations.selected, "no")
+					self.mucous.Recommendations.ModeInterests()
+				elif self.mucous.mode == "transfer":
 					# Tab to switch between upload and download scrolling
 					if self.mucous.Transfers.current == "uploads":
 						self.mucous.Transfers.current="downloads"
@@ -534,24 +564,12 @@ class CharacterParse:
 					elif self.mucous.mode == "debug":
 						self.mucous.mode = "help"
 					self.mucous.Help.Mode()
-				elif self.mucous.mode == "chat":
-					if key in ("switch"):
-# 						[ "small","big","widelist","rightlist","nostatuslog","chat-only","noroombox"]
-						_list = None
-						if self.mucous.ChatRooms.shape == "chat-only":
-							self.mucous.ChatRooms.selected = "chatroom"
-							return
-						elif self.mucous.ChatRooms.shape == "nostatuslog":
-							_list = ["chatroom", "roombox"]
-						elif self.mucous.ChatRooms.shape ==  "noroombox":
-							_list = ["chatroom", "roomstatus"]
-						else:
-							_list = ["chatroom", "roomstatus", "roombox"]
-						if _list != None:
-							self.mucous.ChatRooms.selected = self.mucous.FormatData.RotateList("right", _list, self.mucous.ChatRooms.selected, "no")
-							self.mucous.ChatRooms.Mode()
+			elif key in ( "KEY_HOME", "KEY_END"):
+				
+				
+				if self.mucous.mode == "chat":
 						
-					elif key == "KEY_END":
+					if key == "KEY_END":
 						if self.mucous.ChatRooms.selected == "chatroom":
 							self.mucous.ChatRooms.scrolling[self.mucous.ChatRooms.selected] = -1
 							self.mucous.ChatRooms.FormatChatText()
@@ -565,20 +583,8 @@ class CharacterParse:
 						elif self.mucous.ChatRooms.selected == "roombox":
 							self.mucous.ChatRooms.scrolling[self.mucous.ChatRooms.selected] = 0
 							self.mucous.ChatRooms.Mode()
-						
-				elif self.mucous.mode == "search":
-					# HotKeyBar to switch types of searches
-					_list = [ "globally", "buddies", "rooms", "user", "wishlist" ]
-					self.mucous.Search.method = self.mucous.FormatData.RotateList("right", _list, self.mucous.Search.method, "no")
-					self.mucous.Search.Mode()
-				elif self.mucous.mode == "browse":	
-					_list = [ "files", "directories" ]
-					self.mucous.BrowseShares.selected = self.mucous.FormatData.RotateList("right", _list, self.mucous.BrowseShares.selected, "no")
-					self.mucous.BrowseShares.Mode()
-				elif self.mucous.mode == "lists" and self.mucous.UsersLists.current == "interests":
-					_list = [ "recommendations", "similar_users", "likes", "hates" ]
-					self.mucous.Recommendations.selected = self.mucous.FormatData.RotateList("right", _list, self.mucous.Recommendations.selected, "no")
-					self.mucous.Recommendations.ModeInterests()
+	
+				
 					
 			elif key in( "KEY_LEFT", chr(91), chr(60), "KEY_RIGHT", chr(93), chr(62), "KEY_IC"):
 				if key == "KEY_LEFT" or key == chr(91) or key == chr(60):
@@ -783,9 +789,10 @@ class CharacterParse:
 			scrollnum = None
 			position = None
 			scrollchange = 0
-			if self.mucous.mode in "setup":
+			if self.mucous.mode  == "setup":
 				self.mucous.Setup.Switch(key)
 				return None
+
 			elif self.mucous.mode not in ( "transfer", "search", "help", "debug", "info", "private", "lists", "roomlist", "chat", "browse"):
 				return 
 			if self.mucous.mode == "chat":
@@ -1292,7 +1299,7 @@ class CharacterParse:
 					if user != None: this_user = user
 					else: this_user = self.mucous.BrowseShares.current
 					if this_user != "default__":
-						self.mucous.Close(this_user)
+						self.mucous.BrowseShares.Close(this_user)
 						
 				elif self.mucous.mode =='search':
 					if self.mucous.Search.current != None:
@@ -2200,6 +2207,9 @@ class CharacterParse:
 			if self.mucous.mode == "setup":
 				self.mucous.Setup.InputSetup(line)
 				return
+			elif self.mucous.mode == "search":
+				self.mucous.Search.InputSearch(line)
+				return
 			if line != '':
 				if self.mucous.mode == "chat":
 					#Normal Chat Room Message
@@ -2216,26 +2226,7 @@ class CharacterParse:
 						self.mucous.SetEditTitle("Send message to: " + self.mucous.PrivateChat.current)
 						self.mucous.PrivateChat.Start(self.mucous.PrivateChat.current)
 						
-						
-				elif self.mucous.mode == "search":
-					
-					if len(line) > 2 and line != 'mp3':
-						# Normal Search
-						query = line
-						if self.mucous.Search.method == "globally":
-							self.mucous.D.Search(0, query )
-							
-						# Buddies Search
-						elif self.mucous.Search.method == "buddies":
-							self.mucous.D.Search(1, query )
-						# Rooms Search	
-						elif self.mucous.Search.method == "rooms":	
-							self.mucous.D.Search(2, query )
-						elif self.mucous.Search.method == "user":
-							if self.mucous.Search.username != None:
-								self.mucous.D.UserSearch(self.mucous.Search.username, query )
-						elif self.mucous.Search.method == "wishlist":	
-							self.mucous.D.WishListSearch(query )
+
 				elif self.mucous.mode == "browse":
 					# Browse User's shares
 					if line[:3] == "cd ":
