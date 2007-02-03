@@ -747,6 +747,7 @@ class Setup:
 	def EditLine(self, option, x, y, height, width, edit=False):
 		try:
 			window = curses.newwin(height,width,x,y)
+			
 			if edit:
 				window.attron(self.mucous.colors["green"]  | curses.A_BOLD)
 				color = self.mucous.colors["green"] | curses.A_BOLD
@@ -754,6 +755,7 @@ class Setup:
 				color = self.mucous.colors["cyan"]
 			#inputimage2 = curses.newwin(1, self.mucous.w-2-14, self.mucous.h-6, 14)
 			window.erase()
+			window.bkgdset("_")
 			window.scrollok(0)
 			try:
 				window.addstr( option[:width] , color)

@@ -158,9 +158,8 @@ class Help:
 "/clearsearchs          (Removes all searches)",\
 "/filter <string>       (limit displayed files)",\
 "Mouse: Right-Click     (popup menu)",\
-"Press Insert to toggle sorting methods.",\
-"Press Alt-T to toggle Global/Buddy/Room searches",\
-"Press Insert to toggle sorting methods."]
+"Press Alt-Left, Alt-Right and Insert to change the current widget's setting.",\
+"Press Alt-T to switch between the different widgets"]
 
 		self.log["search"] = ["----<Search Commands>----"] + self.log["search"]
 		

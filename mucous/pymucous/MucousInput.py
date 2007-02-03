@@ -167,7 +167,7 @@ class CharacterParse:
 				else:
 					self.line = self.line[:self.scroll] + c + self.line[self.scroll:]
 					self.scroll += 1
-			elif c in ("t", "T", "p", "P", "d", "D", "x", "X"):
+			elif c in ("t", "T", "p", "P", "d", "D", "x", "X", "a", "A"):
 				if self.escape:
 					if c in ("t", "T"):
 						self.InputFunctions("switch", self.line)
@@ -177,6 +177,8 @@ class CharacterParse:
 						self.InputFunctions("popup", self.line)
 					elif c in ("x", "X"):
 						self.InputFunctions("expandcollapse", self.line)
+					elif c in ("a", "A"):	
+						self.mucous.ToggleAwayStatus()
 				else:
 					self.line = self.line[:self.scroll] + c + self.line[self.scroll:]
 					#self.length += 1
@@ -417,7 +419,7 @@ class CharacterParse:
 				if self.mucous.mode != "transfer": self.mucous.Transfers.ModeTransfers()
 				return
 			elif key == "KEY_F(4)":
-				if self.mucous.mode != "search": self.mucous.Search.Mode()
+				if self.mucous.mode != "search": self.mucous.Search.Default()
 				return
 			elif key == "KEY_F(5)":
 				if self.mucous.mode != "info": self.mucous.UserInfo.Mode()
@@ -809,6 +811,9 @@ class CharacterParse:
 					scrollnum = self.mucous.UserInfo.scrolling[self.mucous.UserInfo.current]
 				scrolldiff = self.mucous.UserInfo.dimensions["info"]["height"]
 			elif self.mucous.mode == "search":
+				if self.mucous.Search.input != "results":
+					self.mucous.Search.input="results"
+					self.mucous.Search.Mode()
 				scrollnum = self.mucous.Search.scrolling
 				scrolldiff = self.mucous.Search.dimensions["height"]
 				
@@ -1044,12 +1049,15 @@ class CharacterParse:
 			if event in (1, 128, 8192):
 				# Ignore PRESSED and RELEASED
 				return
-			if x in range(8) and y == 0:
-				if self.mucous.Spl["connected"] == 0:
-					#self.mucous.D.connect()
-					self.mucous.ManuallyConnect()
-				elif self.mucous.Spl["connected"] == 1:
-					self.mucous.ToggleAwayStatus()
+			if y == 0:
+				if x in range(8):
+					if self.mucous.Spl["connected"] == 0:
+						#self.mucous.D.connect()
+						self.mucous.ManuallyConnect()
+					elif self.mucous.Spl["connected"] == 1:
+						self.mucous.ToggleAwayStatus()
+				elif x > self.mucous.w - 15:
+					self.mucous.Help.Mode()
 				return
 		# 1Chat 2Private 3Transfers 4Search 5Info 6Browse 7Users 8Rooms 9Setup 10Help
 			if y >= self.mucous.h-1:
@@ -1061,7 +1069,7 @@ class CharacterParse:
 				elif x >= 16 and x < 27:
 					self.mucous.Transfers.ModeTransfers()
 				elif x >= 27 and x < 35:
-					self.mucous.Search.Mode()
+					self.mucous.Search.Default()
 				elif x >= 35 and x < 41:
 					self.mucous.UserInfo.Mode()
 				elif x >= 41 and x < 49:
@@ -1078,10 +1086,7 @@ class CharacterParse:
 				
 			if self.mucous.PopupMenu.show == True and self.mucous.PopupMenu.current != None:
 				p = self.mucous.PopupMenu.menus[self.mucous.PopupMenu.current]
-				#width = self.mucous.PopupMenu.menus[self.mucous.PopupMenu.current]["width"]
-				#top = self.mucous.PopupMenu.menus[self.mucous.PopupMenu.current]["top"]
-				#height = self.mucous.PopupMenu.menus[self.mucous.PopupMenu.current]["height"]
-				#left = self.mucous.PopupMenu.menus[self.mucous.PopupMenu.current]["left"]
+
 				if x >= p["left"] and x < p["left"]+p["width"] and y >= p["top"] and y < p["top"]+p["height"]:
 					self.mucous.PopupMenu.Mouse(x, y, event)
 					return

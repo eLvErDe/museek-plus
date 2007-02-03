@@ -45,7 +45,7 @@ class Search:
 		self.viewing = []
 		## @var scrolling
 		# vertical scroll position
-		self.scrolling = -1
+		self.scrolling = 0
 		## @var order
 		# Sorting order (default is by number) :: num, user, free, speed, que, path, sizefile, bitrate, time 
 		self.order = "num"
@@ -65,7 +65,18 @@ class Search:
 		# Search commands
 		self.help = ["Search commands:"] + self.mucous.Help.log["search"] + ["Or, type in the query, below."]
 		self.switchorder = ["default", "methods", "user", "sort", "reverse", "results", "filter", "tabs"]
-		
+	
+	
+	## Reset input to 'default' and redraw search
+	# @param self Search (class)
+	def Default(self):
+		try:
+			self.input = "default"
+			self.Mode()
+			self.mucous.ModeTopbar()
+		except Exception, e:
+			self.mucous.Help.Log("debug", "Search.Default: "+ str(e))
+			
 	## Create Search window
 	# @param self Search (class)
 	def Mode(self):
