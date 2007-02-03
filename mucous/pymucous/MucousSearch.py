@@ -734,8 +734,9 @@ class Search:
 				line = None
 			self.username = line
 		elif self.input == "results":
-			if self.scrolling-self.dimensions["start"] in self.viewing:
-				number = self.viewing[self.scrolling-self.dimensions["start"]]
+			position = self.scrolling-self.dimensions["start"]
+			if len(self.viewing)-1 >= position:
+				number = self.viewing[position]
 				user, path = self.GetDownloadFromNum(number)
 				self.DownloadSearch(user, path)
 		elif self.input == "reverse":
