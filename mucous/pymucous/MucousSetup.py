@@ -830,7 +830,7 @@ class Setup:
 	# @param titlebold True/False
 	# @param toggle True/False (is a togglebutton)
 	# @param selected
-	def SetupCheck(self, title, option, x, y, height, width, titlebold=False, toggle=False, selected=False):
+	def SetupCheck(self, title, option, x, y, height, width, titlebold=False, toggle=False, selected=False, underlined=False):
 		try:
 			checked = "[x]"
 			unchecked = "[ ]"
@@ -839,7 +839,10 @@ class Setup:
 			
 			win = curses.newwin(height,width,x,y)
 			if selected:
-				attr = self.mucous.colors["green"] | curses.A_UNDERLINE
+				if underlined:
+					attr = self.mucous.colors["green"] | curses.A_UNDERLINE
+				else:
+					attr = self.mucous.colors["green"] 
 			else:
 				attr = curses.A_NORMAL
 			win.erase()

@@ -259,7 +259,7 @@ class Networking(driver.Driver):
 			self.mucous.username = username
 			un = self.mucous.windows["border"]["username"]
 			un.erase()
-			un.addstr(self.mucous.dlang(self.mucous.username[:15]), self.mucous.colors["blafgcyabg"] )
+			un.addstr(self.mucous.dlang(self.mucous.username[:15]), self.mucous.colors["blackwhite"] )
 			un.refresh()
 		
 			#self.mucous.Transfers.DrawUploadCount("0")

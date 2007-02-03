@@ -29,7 +29,7 @@ class Alerts:
 			if "border" in self.windows:
 				del self.windows["border"]
 			aw = self.windows["border"] = curses.newwin(1, 15, 0, self.mucous.w-15)
-			aw.bkgdset(" ", self.mucous.colors["blafgcyabg"]  | curses.A_REVERSE | curses.A_BOLD)
+			aw.bkgdset(" ", self.mucous.colors["blackwhite"]  | curses.A_REVERSE | curses.A_BOLD)
 			aw.idlok(1)
 			
 			self.setStatus(self.log)

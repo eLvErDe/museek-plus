@@ -31,6 +31,8 @@ class PrivateChat:
 		## @var scrolling
 		# vertical scroll position
 		self.scrolling = -1
+		self.switchorder = ["default", "chat", "tabs"]
+		self.input = "default"
 		
 	## Create window & tabs and draw them
 	# @param self PrivateChat (class)

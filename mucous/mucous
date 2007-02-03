@@ -510,19 +510,22 @@ class Mucous:
 		if curses.has_colors() == True:
 			try:
 				curses.use_default_colors()
-				curses.can_change_color()
+				
 				curses.init_pair(1, curses.COLOR_RED, -1)
 				curses.init_pair(2, curses.COLOR_YELLOW, -1)
 				curses.init_pair(3, curses.COLOR_CYAN, -1)
 				curses.init_pair(4, curses.COLOR_BLUE, -1)
 				curses.init_pair(5, curses.COLOR_GREEN, -1)
+				
 				curses.init_pair(6, curses.COLOR_BLACK, -1)
 				curses.init_pair(7, curses.COLOR_WHITE, -1)
 				curses.init_pair(8, curses.COLOR_MAGENTA, -1)
-				curses.init_pair(9, 0, curses.COLOR_CYAN)
-				curses.init_pair(10, curses.COLOR_GREEN, curses.COLOR_BLACK )
-				curses.init_pair(11, curses.COLOR_YELLOW, curses.COLOR_BLUE)
-				curses.init_pair(12, curses.COLOR_BLACK, curses.COLOR_WHITE)
+				curses.init_pair(9, curses.COLOR_BLACK, curses.COLOR_CYAN)
+				#if curses.can_change_color():
+					#curses.init_pair(5, 33, -1)
+					#curses.init_pair(10, curses.COLOR_GREEN, curses.COLOR_BLACK )
+					#curses.init_pair(11, curses.COLOR_YELLOW, curses.COLOR_BLUE)
+					#curses.init_pair(12, curses.COLOR_BLACK, curses.COLOR_WHITE)
 			except AttributeError:
 				curses.init_pair(1, curses.COLOR_RED, 0)
 				curses.init_pair(2, curses.COLOR_YELLOW, 0)
@@ -533,24 +536,39 @@ class Mucous:
 				curses.init_pair(7, curses.COLOR_WHITE, 0)
 				curses.init_pair(8, curses.COLOR_MAGENTA, 0)
 				curses.init_pair(9, 0, curses.COLOR_CYAN)
-				curses.init_pair(10, curses.COLOR_GREEN, curses.COLOR_BLACK )
-				curses.init_pair(11, curses.COLOR_YELLOW, curses.COLOR_BLUE)
-				curses.init_pair(12, curses.COLOR_BLACK, curses.COLOR_WHITE)
 				
+			curses.init_pair(10, curses.COLOR_GREEN, curses.COLOR_BLACK )
+			curses.init_pair(11, curses.COLOR_YELLOW, curses.COLOR_BLUE)
+			curses.init_pair(12, curses.COLOR_BLACK, curses.COLOR_WHITE)
+			
+			curses.init_pair(13, curses.COLOR_YELLOW, curses.COLOR_CYAN)
+			curses.init_pair(14, curses.COLOR_BLACK, curses.COLOR_GREEN)
+			curses.init_pair(15, curses.COLOR_BLACK, curses.COLOR_RED)
+			curses.init_pair(16, curses.COLOR_WHITE, curses.COLOR_RED)
+			curses.init_pair(17, curses.COLOR_BLACK, curses.COLOR_YELLOW)
+			curses.init_pair(18, curses.COLOR_BLACK, curses.COLOR_MAGENTA)
+			self.colors["cyanyellow"] = curses.color_pair(13)
+			self.colors["blackgreen"] = curses.color_pair(14)
+			self.colors["blackred"] = curses.color_pair(15)
+			self.colors["whitered"] = curses.color_pair(16)
+			self.colors["blackyellow"] = curses.color_pair(17)
+			self.colors["blackmagenta"] = curses.color_pair(18)
+			self.colors["normal"] = curses.color_pair(0)	
 			self.colors["red"] = curses.color_pair(1)
 			self.colors["yellow"] = curses.color_pair(2)
 			self.colors["cyan"] =  curses.color_pair(3)
 			self.colors["blue"] = curses.color_pair(4)
 			self.colors["green"] =  curses.color_pair(5)
+			#self.colors["green"] =  curses.color_pair(27)
 			self.colors["black"] = curses.color_pair(6)
 			self.colors["white"] = curses.color_pair(7)
 			self.colors["magenta"] = curses.color_pair(8)
 			self.colors["cybg"] = curses.color_pair(9)
-			self.colors["greenbg"] = curses.color_pair(10)
+			self.colors["greenblack"] = curses.color_pair(10)
 			self.colors["hotkey"] = curses.color_pair(11)
-			self.colors["blafgcyabg"] = curses.color_pair(12)
+			self.colors["blackwhite"] = curses.color_pair(12)
 		else:
-			self.colors["blafgcyabg"]  = self.colors["hotkey"] = self.colors["greenbg"] = self.colors["cybg"] = self.colors["magenta"] = self.colors["white"] =self.colors["black"]  = self.colors["cyan"] =  self.colors["yellow"] =self.colors["blue"]  =self.colors["green"] = self.colors["red"] =  curses.color_pair(0)
+			self.colors["cyanyellow"] = self.colors["blackgreen"] = self.colors["blackred"] = self.colors["whitered"] = self.colors["blackmagenta"] = self.colors["blackyellow"] = self.colors["normal"] = self.colors["blackwhite"]  = self.colors["hotkey"] = self.colors["greenblack"] = self.colors["cybg"] = self.colors["magenta"] = self.colors["white"] =self.colors["black"]  = self.colors["cyan"] =  self.colors["yellow"] =self.colors["blue"]  =self.colors["green"] = self.colors["red"] =  curses.color_pair(0)
 			#Disable cursor (bad idea)
 			curses.curs_set(1)
 		# Enable Function Keys
@@ -612,12 +630,12 @@ class Mucous:
 			self.Spl["input_vertical"] = w["top"]
 			self.Spl["input_horizontal"] = w["left"]
 			bi = self.windows["inputborder"] = curses.newwin(w["height"]+2, w["width"]+2, w["top"]-1, w["left"]-1)
-			bi.attron(self.colors["blue"])
+			bi.attron(self.colors["blue"] | curses.A_BOLD)
 			bi.border()
-			bi.refresh()
-			
+			bi.noutrefresh()
+			bi.attroff(self.colors["blue"] | curses.A_BOLD)
 			self.windows["input"] = bi.subwin(w["height"], w["width"], w["top"], w["left"])
-			self.windows["input"].attroff(self.colors["blue"])
+			self.windows["input"].attroff(self.colors["blue"] | curses.A_BOLD)
 		except Exception, e:
 			self.Help.Log("debug", "CreateEntryBox: " + str(e))
 	## Create curses parent window, get terminal size, draw windows
@@ -1142,7 +1160,7 @@ class Mucous:
 	## Set Input line's title
 	# @param self Mucous (class)
 	# @param title string
-	def SetEditTitle(self, title):
+	def SetEditTitle(self, title, selected=True):
 		try:
 			if title != None:
 				self.Spl["title"]= title
@@ -1151,12 +1169,26 @@ class Mucous:
 			ibw = self.windows["inputborder"]
 			itw = self.windows["input"]
 			ibw.erase()
+			if selected:
+				attribute = self.colors["blue"] | curses.A_BOLD
+			else:
+				attribute = self.colors["normal"] | curses.A_BOLD
+				ibw.attroff(self.colors["blue"] | curses.A_BOLD)
+			ibw.attron(attribute)
 			ibw.border()
+			#ibw.attroff(self.colors["blue"])
+			
 			if self.Spl["title"]:
 				current = self.dlang(self.Spl["title"])
+				if selected:
+					attribute = self.colors["cyan"] | curses.A_BOLD
+				else:
+					attribute = self.colors["normal"] | curses.A_BOLD
 				ibw.addstr(0, 2, "< ")
-				ibw.addstr(0, 4, current[:self.w-8], self.colors["cyan"] | curses.A_BOLD)
+				ibw.addstr(0, 4, current[:self.w-8], attribute)
 				ibw.addstr(0, 4+len(current[:self.w-8]), " >")
+			itw.redrawwin()
+			itw.noutrefresh()
 			ibw.noutrefresh()
 				
 
@@ -1167,10 +1199,7 @@ class Mucous:
 	# @param self Mucous (class)
 	def DrawInstructionsButtons(self):
 		try:
-			if self.mode == "search":
-				gi = "Instructions"
-				w = self.Search.dimensions
-			elif self.mode == "browse":
+			if self.mode == "browse":
 				gi = "Instructions"
 				w = self.BrowseShares.dimensions["browse"]
 			elif self.mode == "info":
@@ -1180,9 +1209,8 @@ class Mucous:
 			
 			pos = w["width"]-3-len(gi)
 			if self.mode != "lists":
-				if self.mode == "search":
-					mw = self.Search.windows["border"]
-				elif self.mode == "browse":
+	
+				if self.mode == "browse":
 					mw = self.BrowseShares.windows["border"]
 				elif self.mode == "info":
 					mw = self.UserInfo.windows["border"]
@@ -1194,10 +1222,7 @@ class Mucous:
 			mw.addstr(0,pos+2, gi, self.colors["cyan"] | curses.A_BOLD)
 			mw.addstr(0,pos+2+len(gi), " >")
 			vertex = w["height"]+1
-			if self.mode == "search":
-				mw.addstr(vertex,self.w-11, "< ", self.colors["green"])
-				mw.addstr(vertex,self.w-9, "Close ", self.colors["cyan"] | curses.A_BOLD)
-				mw.addstr(vertex,self.w-3, ">", self.colors["green"])
+
 			if self.mode == "browse":
 				blah = None
 				if "encoding.users" in self.config:
@@ -1225,7 +1250,7 @@ class Mucous:
 	# @param self Mucous (class)
 	# @param tab_box_list list of strings
 	# @param selected_tab current tab
-	def DrawTabs(self, tab_box_list, selected_tab):
+	def DrawTabs(self, tab_box_list, selected_tab, selected=False):
 		try:
 			if tab_box_list == [None]:
 				return
@@ -1234,10 +1259,15 @@ class Mucous:
 			if "bar" in self.windows["tab"]:
 				del self.windows["tab"]["bar"]
 			tbar = self.windows["tab"]["bar"] = curses.newwin(3, self.w, 1, 0)
-			tbar.hline(1, 1, curses.ACS_HLINE, self.w-2)
+			if selected:
+				attribute = self.colors["cyan"]
+			else:
+				attribute = self.colors["white"]
+			
+			tbar.hline(1, 1, curses.ACS_HLINE, self.w-2, attribute)
 			self.activeitems["positions"]= {}
-			tbar.addstr(1,0, "<")
-			tbar.addstr(1,self.w-1, ">")
+			tbar.addstr(1,0, "<", attribute)
+			tbar.addstr(1,self.w-1, ">", attribute)
 		
 			tbar.noutrefresh()
 			if tab_box_list == []:
@@ -1334,20 +1364,20 @@ class Mucous:
 			osw = self.windows["border"]["onlinestatus"]
 			
 			if self.logs["onlinestatus"] == "Away":
-				
-				color = self.colors["yellow"] | curses.A_BOLD | curses.A_REVERSE
+				color = self.colors["blackyellow"]
 				status = " " + self.logs["onlinestatus"]
 			elif self.logs["onlinestatus"] == "Online":
-				color = self.colors["green"] | curses.A_BOLD | curses.A_REVERSE
+				color = self.colors["blackgreen"]
+				#color = self.colors["cyanyellow"]
 				status = " " + self.logs["onlinestatus"]
 			elif self.logs["onlinestatus"] == "Offline":
-				color = self.colors["red"] | curses.A_BOLD | curses.A_REVERSE
+				color = self.colors["blackred"]
 				status = self.logs["onlinestatus"]
 			elif self.logs["onlinestatus"] == "Closed":
-				color = self.colors["red"] | curses.A_BOLD | curses.A_REVERSE
+				color = self.colors["whitered"]
 				status = " " + self.logs["onlinestatus"]
 			else:
-				color = self.colors["blafgcyabg"]
+				color = self.colors["blackwhite"]
 				status = self.logs["onlinestatus"]
 			osw.bkgdset(" ", color)
 			osw.erase()
@@ -1372,13 +1402,13 @@ class Mucous:
 			
 			
 			tb = self.windows["border"]["top"] =   curses.newwin(1, self.w, 0, 0)
-			tb.bkgdset(" ", self.colors["blafgcyabg"]  | curses.A_REVERSE | curses.A_BOLD)
+			tb.bkgdset(" ", self.colors["blackwhite"]  | curses.A_REVERSE | curses.A_BOLD)
 			tb.idlok(1)
 			tb.erase()
 			tb.noutrefresh()
 							
 			osw = self.windows["border"]["onlinestatus"]  =  curses.newwin(1, 8, 0, 0)
-			#osw.bkgdset(" ", self.colors["blafgcyabg"]  |curses.A_REVERSE | curses.A_BOLD)
+			#osw.bkgdset(" ", self.colors["blackwhite"]  |curses.A_REVERSE | curses.A_BOLD)
 			osw.idlok(1)
 			self.DrawOnlineStatus()
 			
@@ -1388,12 +1418,12 @@ class Mucous:
 
 			un = self.windows["border"]["username"] =  curses.newwin(1, 16, 0, 9)
 			un.idlok(1)
-			un.bkgdset(" ", self.colors["blafgcyabg"]  | curses.A_REVERSE | curses.A_BOLD)
+			un.bkgdset(" ", self.colors["blackwhite"]  | curses.A_REVERSE | curses.A_BOLD)
 			un.erase()
 			if self.username != None:
 				try:
 					
-					un.addstr(self.dlang(self.username[:15]),  self.colors["blafgcyabg"] )
+					un.addstr(self.dlang(self.username[:15]),  self.colors["blackwhite"] )
 				except:
 					pass
 			un.noutrefresh()
@@ -1424,7 +1454,7 @@ class Mucous:
 					else:
 						bb.addstr("Chat", self.colors["yellow"] |curses.A_BOLD |curses.A_REVERSE )
 				else:
-					bb.addstr("Chat",  curses.A_REVERSE |  self.colors["greenbg"])
+					bb.addstr("Chat",  curses.A_REVERSE |  self.colors["greenblack"])
 			else:
 				if self.Alerts.alert["CHAT"] != {}:
 					nick = 0
@@ -1442,7 +1472,7 @@ class Mucous:
 				if self.Alerts.alert["PRIVATE"] != []:
 					bb.addstr("Private", self.colors["yellow"] |curses.A_BOLD |curses.A_REVERSE )
 				else:
-					bb.addstr("Private",curses.A_REVERSE |  self.colors["greenbg"])
+					bb.addstr("Private",curses.A_REVERSE |  self.colors["greenblack"])
 			else:
 				if self.Alerts.alert["PRIVATE"] != []:
 					bb.addstr("Private", self.colors["yellow"] |curses.A_REVERSE )
@@ -1450,7 +1480,7 @@ class Mucous:
 					bb.addstr("Private", self.colors["cybg"])
 			bb.addstr(" 3",   curses.A_BOLD)
 			if self.mode == "transfer":
-				bb.addstr("Transfers",curses.A_REVERSE |  self.colors["greenbg"])
+				bb.addstr("Transfers",curses.A_REVERSE |  self.colors["greenblack"])
 			else:
 				bb.addstr("Transfers", self.colors["cybg"])
 			
@@ -1459,7 +1489,7 @@ class Mucous:
 				if self.Alerts.alert["SEARCH"] != []:
 					bb.addstr("Search", self.colors["yellow"] |curses.A_REVERSE |curses.A_BOLD)
 				else:
-					bb.addstr("Search",curses.A_REVERSE |  self.colors["greenbg"])
+					bb.addstr("Search",curses.A_REVERSE |  self.colors["greenblack"])
 			else:
 				if self.Alerts.alert["SEARCH"] != []:
 					bb.addstr("Search", self.colors["yellow"] |curses.A_REVERSE )
@@ -1470,7 +1500,7 @@ class Mucous:
 				if self.Alerts.alert["INFO"] != []:
 					bb.addstr("Info", self.colors["yellow"] |curses.A_REVERSE |curses.A_BOLD)
 				else:
-					bb.addstr("Info",curses.A_REVERSE |  self.colors["greenbg"])
+					bb.addstr("Info",curses.A_REVERSE |  self.colors["greenblack"])
 			else:
 				if self.Alerts.alert["INFO"] != []:
 					bb.addstr("Info", self.colors["yellow"] |curses.A_REVERSE )
@@ -1481,7 +1511,7 @@ class Mucous:
 				if self.Alerts.alert["BROWSE"] != []:
 					bb.addstr("Browse", self.colors["yellow"] |curses.A_REVERSE |curses.A_BOLD)
 				else:
-					bb.addstr("Browse",curses.A_REVERSE |  self.colors["greenbg"])
+					bb.addstr("Browse",curses.A_REVERSE |  self.colors["greenblack"])
 			else:
 				if self.Alerts.alert["BROWSE"] != []:
 					bb.addstr("Browse", self.colors["yellow"] |curses.A_REVERSE)
@@ -1490,19 +1520,19 @@ class Mucous:
 	
 			bb.addstr(" 7",  curses.A_BOLD)
 			if self.mode == "lists":
-				bb.addstr("Users",curses.A_REVERSE |  self.colors["greenbg"])
+				bb.addstr("Users",curses.A_REVERSE |  self.colors["greenblack"])
 			else:
 				bb.addstr("Users",  self.colors["cybg"])
 	
 			bb.addstr(" 8",  curses.A_BOLD)
 			if self.mode == "roomlist":
-				bb.addstr("Rooms",curses.A_REVERSE |  self.colors["greenbg"])
+				bb.addstr("Rooms",curses.A_REVERSE |  self.colors["greenblack"])
 			else:
 				bb.addstr("Rooms", self.colors["cybg"])
 	
 			bb.addstr(" 9",  curses.A_BOLD)
 			if self.mode == "setup":
-				bb.addstr("Setup",curses.A_REVERSE |  self.colors["greenbg"])
+				bb.addstr("Setup",curses.A_REVERSE |  self.colors["greenblack"])
 			else:
 				bb.addstr("Setup",  self.colors["cybg"])
 			bb.addstr(" 10",  curses.A_BOLD)
@@ -1510,7 +1540,7 @@ class Mucous:
 				if self.Alerts.alert["HELP"] != []:
 					bb.addstr("Help", self.colors["yellow"] |curses.A_BOLD |curses.A_REVERSE )
 				else:
-					bb.addstr("Help",curses.A_REVERSE |  self.colors["greenbg"])
+					bb.addstr("Help",curses.A_REVERSE |  self.colors["greenblack"])
 			else:
 				if self.Alerts.alert["HELP"] != []:
 					bb.addstr("Help", self.colors["yellow"] | curses.A_REVERSE )

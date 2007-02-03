@@ -404,14 +404,7 @@ class CharacterParse:
 			elif key == "KEY_MOUSE":
 				line = self.MouseXY(line)
 					
-			elif key in ("KEY_UP",  "KEY_DOWN", "KEY_PPAGE", "KEY_NPAGE"):
-				if self.mucous.PopupMenu.show == True:
-					if key =="KEY_UP":
-						key = "menu_up"
-					elif key =="KEY_DOWN":
-						key = "menu_down"
-				else:
-					return self.ScrollText(key)
+			
 
 	
 			elif key == "KEY_F(1)":
@@ -444,7 +437,18 @@ class CharacterParse:
 			elif key == "KEY_F(10)":
 				if self.mucous.mode not in ("help", "debug", "status") : self.mucous.Help.Mode()
 				return
+			
+			elif key in ("KEY_UP",  "KEY_DOWN", "KEY_PPAGE", "KEY_NPAGE"):
+				if self.mucous.PopupMenu.show == True:
+					if key =="KEY_UP":
+						key = "menu_up"
+					elif key =="KEY_DOWN":
+						key = "menu_down"
+				else:
+					return self.ScrollText(key)
+				
 			elif key == chr(10) or key == "KEY_ENTER":
+				# Input Log. Retrieve with <Alt + Up/Down>
 				if line not in self.mucous.logs["history"] and line !='':
 					self.mucous.logs["history"].append(line)
 				else:
@@ -452,7 +456,13 @@ class CharacterParse:
 					self.mucous.logs["history"].append(line)
 					x = self.mucous.logs["history"].pop(self.mucous.logs["history"].index(""))
 					self.mucous.logs["history"].append("")
-			elif key in ("popup"):
+			if key in ("menu_up", "menu_down"):
+				self.mucous.PopupMenu.Scroll(key)
+				return
+			if self.mucous.mode == "search":
+				self.mucous.Search.Input(key)
+				return 
+			if key in ("popup"):
 				if self.mucous.PopupMenu.show == True:
 					self.mucous.PopupMenu.Clear()
 				else:
@@ -466,9 +476,7 @@ class CharacterParse:
 						self.mucous.PopupMenu.Create("lists", 0)
 					elif self.mucous.mode == "transfer":
 						self.mucous.PopupMenu.Create("transfers", 0)
-					elif self.mucous.mode == "search":
-						if self.mucous.Search.current != "default__":
-							self.mucous.PopupMenu.Create("search", 0)
+					
 					elif self.mucous.mode == "browse":
 						
 						if self.mucous.BrowseShares.current != "default__":
@@ -541,8 +549,7 @@ class CharacterParse:
 					if _list != None:
 						self.mucous.ChatRooms.selected = self.mucous.FormatData.RotateList("right", _list, self.mucous.ChatRooms.selected, "no")
 						self.mucous.ChatRooms.Mode()
-				elif self.mucous.mode == "search":
-					self.mucous.Search.MethodSwitch(direction="right")
+				
 				elif self.mucous.mode == "browse":	
 					_list = [ "files", "directories" ]
 					self.mucous.BrowseShares.selected = self.mucous.FormatData.RotateList("right", _list, self.mucous.BrowseShares.selected, "no")
@@ -623,25 +630,7 @@ class CharacterParse:
 	
 					self.mucous.Transfers.ModeTransfers()
 		
-				elif self.mucous.mode == "search":
-					if key in( "KEY_LEFT", chr(91), chr(60), "KEY_RIGHT", chr(93), chr(62)):
-						if len(self.mucous.Search.tickets.keys()) >= 1:
-	
-								
-							place = self.mucous.FormatData.RotateList(direction, self.mucous.Search.tickets.keys(), self.mucous.Search.current, "yes" )
-							if self.mucous.Search.current != place:
-								self.mucous.Search.current = place
-								self.mucous.Search.Mode()
-
-							
-					elif key == "KEY_IC":
-						place = self.mucous.FormatData.RotateList(direction, [ "num", "user", "free", "speed", "que", "path", "size",  "file", "bitrate",  "time"], self.mucous.Search.order, "no" )
-						if self.mucous.Search.order  != place:
-							self.mucous.Search.order = place
-							self.mucous.Search.SortBar()
-							if self.mucous.Search.current != None:
-								self.mucous.Search.FormatResults(self.mucous.Search.current)
-							curses.doupdate()
+				
 					
 				elif self.mucous.mode == "browse":
 					if len(self.mucous.BrowseShares.users) >= 1:
@@ -675,26 +664,13 @@ class CharacterParse:
 			elif key in ("-", "+"):
 				if self.mucous.mode == "setup" and self.mucous.Setup.input in self.mucous.Setup.numberboxes:
 					self.mucous.Setup.ChangeSize(key)
-			if self.mucous.mode in ("chat", "lists", "transfer", "search", "browse") and self.mucous.PopupMenu.show == True:
-				# POPUP menu up and down keys
-				try:
-					if self.mucous.PopupMenu.current == None:
-							return
-					if key == "menu_up":
-						if self.mucous.PopupMenu.position >0:
-							self.mucous.PopupMenu.position -= 1
-							self.mucous.PopupMenu.Draw()
-							
-					elif key == "menu_down":
-						if self.mucous.PopupMenu.position < len(self.mucous.PopupMenu.menus[self.mucous.PopupMenu.current]['items'])-1:
-							self.mucous.PopupMenu.position += 1
-							self.mucous.PopupMenu.Draw()
-				except Exception, e:
-					pass
+			
 			
 			return line
 		except Exception, e:
 			self.mucous.Help.Log("debug", "InputFunctions: " + str(e))
+			
+	
 	# ---v  KEYS v
 	
 	## Update Scrolling Numbers
@@ -868,9 +844,18 @@ class CharacterParse:
 				# upload or download window height - one line for heading
 			elif key == "KEY_NPAGE":
 				position += scrolldiff
-				scrollchange = scrolldiff
+				#scrollchange = scrolldiff
 			if position < 0:
 				position = 0
+			if key == "KEY_HOME":
+				position = 0
+				#scrollchange = -scrolldiff 
+				
+				# upload or download window height - one line for heading
+			elif key == "KEY_END":
+				position = -1
+				#scrollchange = scrolldiff
+			
 			
 			if scrolltext != None:
 				self.mucous.scrolling[scrolltext] = position
@@ -2208,7 +2193,7 @@ class CharacterParse:
 				self.mucous.Setup.InputSetup(line)
 				return
 			elif self.mucous.mode == "search":
-				self.mucous.Search.InputSearch(line)
+				self.mucous.Search.LineInput(line)
 				return
 			if line != '':
 				if self.mucous.mode == "chat":

@@ -163,21 +163,21 @@ class Transfers:
 		## Upload status window
 		usw = 0
 		usw = self.windows["border"]["uploadstatus"]  = curses.newwin(1, 10, 0, 25)
-		usw.bkgdset(" ", self.mucous.colors["blafgcyabg"]  | curses.A_REVERSE | curses.A_BOLD)
+		usw.bkgdset(" ", self.mucous.colors["blackwhite"]  | curses.A_REVERSE | curses.A_BOLD)
 		usw.idlok(1)
 		try:
 			usw.erase()
-			usw.addstr(self.logs["uploads"],  self.mucous.colors["blafgcyabg"] )
+			usw.addstr(self.logs["uploads"],  self.mucous.colors["blackwhite"] )
 		except:
 			pass
 		usw.noutrefresh()
 		
 		dsw = self.windows["border"]["downloadstatus"] = curses.newwin(1, 12, 0, 35)
-		dsw.bkgdset(" ", self.mucous.colors["blafgcyabg"]  | curses.A_REVERSE | curses.A_BOLD)
+		dsw.bkgdset(" ", self.mucous.colors["blackwhite"]  | curses.A_REVERSE | curses.A_BOLD)
 		dsw.idlok(1)
 		try:
 			dsw.erase()
-			dsw.addstr(self.logs["downloads"],  self.mucous.colors["blafgcyabg"] )
+			dsw.addstr(self.logs["downloads"],  self.mucous.colors["blackwhite"] )
 		except:
 			pass
 		dsw.noutrefresh()
@@ -341,7 +341,7 @@ class Transfers:
 			usw = self.windows["border"]["uploadstatus"]
 			try:
 				usw.erase()
-				usw.addstr(self.logs["uploads"], self.mucous.colors["blafgcyabg"] )
+				usw.addstr(self.logs["uploads"], self.mucous.colors["blackwhite"] )
 				usw.refresh()
 			except Exception, e:
 				self.mucous.Help.Log( "debug", "Upload Status: " + str(e))
@@ -356,7 +356,7 @@ class Transfers:
 			dsw = self.windows["border"]["downloadstatus"]
 			try:
 				dsw.erase()
-				dsw.addstr(self.logs["downloads"], self.mucous.colors["blafgcyabg"] )
+				dsw.addstr(self.logs["downloads"], self.mucous.colors["blackwhite"] )
 				dsw.refresh()
 			except Exception, e:
 				self.mucous.Help.Log( "debug", "Download Status: " + str(e))
@@ -574,7 +574,7 @@ class Transfers:
 					hattr = self.mucous.colors["green"] | curses.A_REVERSE
 					hattr1 = self.mucous.colors["green"]
 				else:
-					hattr = self.mucous.colors["blafgcyabg"]
+					hattr = self.mucous.colors["blackwhite"]
 					hattr1 = curses.A_NORMAL  
 				for i in swting:
 					length += len(i)
@@ -666,7 +666,7 @@ class Transfers:
 					hattr = self.mucous.colors["green"] | curses.A_REVERSE
 					hattr1 = self.mucous.colors["green"]
 				else:
-					hattr = self.mucous.colors["blafgcyabg"]
+					hattr = self.mucous.colors["blackwhite"]
 					hattr1 = curses.A_NORMAL  
 				for i in swting:
 					length += len(i)

@@ -465,7 +465,7 @@ class BrowseShares:
 				this_line = this_line[:-crop]
 				
 			if count + w["start"] == sup:
-				attr = self.mucous.colors["blafgcyabg"] |curses.A_REVERSE|curses.A_BOLD	
+				attr = self.mucous.colors["blackwhite"] |curses.A_REVERSE|curses.A_BOLD	
 				nattr = self.mucous.colors["cyan"] |curses.A_REVERSE|curses.A_BOLD
 			else:
 				attr = curses.A_NORMAL

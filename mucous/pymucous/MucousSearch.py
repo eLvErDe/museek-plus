@@ -64,7 +64,7 @@ class Search:
 		## @var help
 		# Search commands
 		self.help = ["Search commands:"] + self.mucous.Help.log["search"] + ["Or, type in the query, below."]
-		self.switchorder = ["default", "filter", "user"]
+		self.switchorder = ["default", "methods", "user", "sort", "reverse", "results", "filter", "tabs"]
 		
 	## Create Search window
 	# @param self Search (class)
@@ -86,11 +86,16 @@ class Search:
 				
 			w = self.dimensions = {"height": self.mucous.h-12, "width": self.mucous.w-2, "top": 5, "left": 1, "start": 0}
 			mw = self.windows["border"] = curses.newwin(w["height"]+2, w["width"]+2, w["top"]-1, w["left"]-1)
-			mw.attron(self.mucous.colors["green"])
-			mw.border()
-			mw.attroff(self.mucous.colors["green"])
+			
+			if self.input == "results":
+				color = self.mucous.colors["greenblack"]
+				mw.attron(self.mucous.colors["green"])
+				mw.border()
+				#mw.attroff(self.mucous.colors["green"])
+			else:
+				mw.border()
 			try:
-				mw.addstr(0, 3, "< Search >",  self.mucous.colors["green"] | curses.A_BOLD)
+				mw.addstr(0, 3, "< Search >")
 			except:
 				pass
 			
@@ -101,27 +106,25 @@ class Search:
 				sfilter = "Filter: Disabled"
 			lfil = len(sfilter)
 			
-			
-			
-			
-			if self.input =="filter":
-				mw.addstr(0,15, "< Filter: ", self.mucous.colors["green"] | curses.A_BOLD)
+			if self.input == "filter":
+				mw.addstr(0,15, "< ")
+				mw.addstr(0,17, "Filter: ", self.mucous.colors["green"] | curses.A_BOLD)
 				self.mucous.Setup.EditLine(self.mucous.dlang(self.sfilter),4, 25,1,lfil, edit=(self.input=="filter") )
-				mw.addstr(0,25+lfil, " >", self.mucous.colors["green"]) 
+				mw.addstr(0,25+lfil, " >")
 			else:
-				mw.addstr(0,15, "< ", self.mucous.colors["green"] | curses.A_BOLD)
+				mw.addstr(0,15, "< ")
 				if self.sfilter != None:
 					mw.addstr(0,17, self.mucous.dlang(sfilter), self.mucous.colors["cyan"] | curses.A_BOLD)
 				else:
 					mw.addstr(0,17, self.mucous.dlang(sfilter), self.mucous.colors["red"] | curses.A_BOLD)
-				mw.addstr(0,17+lfil, " >", self.mucous.colors["green"])
+				mw.addstr(0,17+lfil, " >")
 			
 			
 			self.SortBar()
 			tw = self.windows["query"] = mw.subwin(w["height"], w["width"], w["top"], w["left"])
 			tw.scrollok(0)
 			tw.idlok(1)
-			
+			tw.attroff(self.mucous.colors["green"])
 			self.windows["stats"] = curses.newwin(1, self.mucous.w, self.mucous.h-6, 0)
 			self.windows["stats"].erase()
 			self.windows["stats"].noutrefresh()
@@ -133,27 +136,31 @@ class Search:
 			self.Draw()
 
 			
-			self.mucous.Setup.SetupCheck("Globally", (self.method=="globally"), self.mucous.h-5, 0,1,13, True, True, selected=(self.method=="globally"))
-			self.mucous.Setup.SetupCheck("Buddies", (self.method=="buddies"), self.mucous.h-5, 13,1,13, True, True, selected=(self.method=="buddies"))
-			self.mucous.Setup.SetupCheck("Rooms", (self.method=="rooms"), self.mucous.h-5, 25,1,10, True, True, selected=(self.method=="rooms"))
-			self.mucous.Setup.SetupCheck("User:", (self.method=="user"), self.mucous.h-5, 48,1,10, True, True, selected=(self.method=="user"))
-			self.mucous.Setup.SetupCheck("Wishlist", (self.method=="wishlist"), self.mucous.h-5, 35,1,13, True, True, selected=(self.method=="wishlist"))
+			self.mucous.Setup.SetupCheck("Globally", (self.method=="globally"), self.mucous.h-5, 0,1,13, True, True, selected=(self.method=="globally"), underlined=(self.input=="methods"))
+			self.mucous.Setup.SetupCheck("Buddies", (self.method=="buddies"), self.mucous.h-5, 13,1,13, True, True, selected=(self.method=="buddies"), underlined=(self.input=="methods"))
+			self.mucous.Setup.SetupCheck("Rooms", (self.method=="rooms"), self.mucous.h-5, 25,1,10, True, True, selected=(self.method=="rooms"), underlined=(self.input=="methods"))
+			self.mucous.Setup.SetupCheck("User:", (self.method=="user"), self.mucous.h-5, 48,1,10, True, True, selected=(self.method=="user"), underlined=(self.input=="methods"))
+			self.mucous.Setup.SetupCheck("Wishlist", (self.method=="wishlist"), self.mucous.h-5, 35,1,13, True, True, selected=(self.method=="wishlist"), underlined=(self.input=="methods"))
 			#self.mucous.Setup.SetupCheck(self.method.capitalize(), False,self.mucous.h-5, 0,1,15, True, True, selected=(self.method=="globally"))
 			self.mucous.Setup.EditLine(self.username, self.mucous.h-5, 58,1,15, edit=(self.input=="user") ) 
+			
 			if self.method != None:
 				if self.method == "user":
 					if self.username != None:
-						self.mucous.SetEditTitle("Search (Alt-t) "+self.method.capitalize()+" "+self.username+"'s shares")
+						title = "Search "+self.method.capitalize()+" "+self.username+"'s shares"
 					else:
-						self.mucous.SetEditTitle("Search (Alt-t) "+self.method.capitalize()+" (Pick a user with /searchuser)")
+						title = "Search "+self.method.capitalize()+" (Pick a user with /searchuser)"
 				else:
-					self.mucous.SetEditTitle("Search (Alt-t) "+self.method.capitalize()+" for:")
+					title = "Search "+self.method.capitalize()+" for:"
+			else:
+				title = ""
+			self.mucous.SetEditTitle(title, selected=(self.input=="default"))
 			
 			#self.mucous.DrawTabs(self.results.keys(), self.current)
-			self.mucous.DrawTabs(self.tickets.keys(), self.current)
+			self.mucous.DrawTabs(self.tickets.keys(), self.current, selected=(self.input=="tabs"))
 
 			if self.current != None:
-				self.mucous.DrawInstructionsButtons()
+				self.DrawInstructionsButtons()
 				self.mucous.Alerts.Check()
 			else:
 				self.mucous.HotKeyBar()
@@ -161,28 +168,49 @@ class Search:
 		except Exception,e:
 			self.mucous.Help.Log("debug", "Search.Mode: "+str(e))
 			
+	## Draw Buttons for switching with the mouse to Instructions view
+	# @param self Search (class)
+	def DrawInstructionsButtons(self):
+		try:
+			gi = "Instructions"
+			w = self.dimensions
+			
+			
+			pos = w["width"]-3-len(gi)
+			mw = self.windows["border"]
+			
+			mw.addstr(0,pos, "< ")
+			mw.addstr(0,pos+2, gi, self.mucous.colors["cyan"] | curses.A_BOLD)
+			mw.addstr(0,pos+2+len(gi), " >")
+			vertex = w["height"]+1
+			mw.addstr(vertex,self.mucous.w-11, "< ")
+			mw.addstr(vertex,self.mucous.w-9, "Close ", self.mucous.colors["cyan"] | curses.A_BOLD)
+			mw.addstr(vertex,self.mucous.w-3, ">")
+			
+			mw.noutrefresh()
+		except Exception, e:
+			self.mucous.Help.Log("debug", "DrawInstructionsButtons: " + str(e))
+				
 	def MethodSwitch(self, direction=None):
 		# HotKeyBar to switch types of searches
 		if direction == None:
 			direction = "right"
 		_list = [ "globally", "buddies", "rooms", "wishlist", "user" ]
 		self.method = self.mucous.FormatData.RotateList(direction, _list, self.method, "no")
-		if self.method == "user":
-			self.input="user"
-		else:
-			self.input="default"
+		#if self.method == "user":
+			#self.input="user"
+		#else:
+			#self.input="default"
 		self.Mode()
+		
 	## Draw Mucous settings
 	# @param self is Setup (Class)
 	
-	def Switch(self, key):
-		if key == "KEY_DOWN":
-			self.input = self.mucous.FormatData.RotateList("right", self.switchorder, self.input, "no")
-		elif key == "KEY_UP":
-			self.input = self.mucous.FormatData.RotateList("left", self.switchorder, self.input, "no")
-			
-		else:
-			return
+	def Switch(self, direction=None):
+		if direction == None:
+			direction = "right"
+		self.input = self.mucous.FormatData.RotateList(direction, self.switchorder, self.input, "no")
+
 		self.Mode()
 		
 	## New Search Ticket recieved
@@ -291,23 +319,34 @@ class Search:
 			w = self.dimensions
 			ls = ("Num", "User", "Free", "Speed", "Que", "Path", "Size", "File", "Bitrate", "Time")
 			mw = self.windows["border"]
-			mw.addstr(w["height"]+1, 1, "<    |    |    |     |   |    |    |    |       |     >", self.mucous.colors["green"])
+			mw.addstr(w["height"]+1, 1, "<    |    |    |     |   |    |    |    |       |     >")
 			pos  = 0
 			for i in ls:
 				if i == self.order.capitalize():
-					mw.addstr(w["height"]+1, 3+pos, self.order.capitalize(), self.mucous.colors["green"]| curses.A_BOLD)
+					if self.input == "sort":
+						attrib = self.mucous.colors["green"]| curses.A_BOLD | curses.A_UNDERLINE
+					else:
+						attrib = self.mucous.colors["green"]| curses.A_BOLD
+					mw.addstr(w["height"]+1, 3+pos, self.order.capitalize(), attrib)
 				else:
 					mw.addstr(w["height"]+1, 3+pos, i, self.mucous.colors["red"] | curses.A_BOLD)
 				pos += len(i) + 1
 	
 			pos = 56
-			mw.addstr(w["height"]+1, pos, "<         >", self.mucous.colors["green"])
+			mw.addstr(w["height"]+1, pos, "<         >")
 			pos = 58
+			
+			
 			if self.reverse:
-				
-				mw.addstr(w["height"]+1, pos, "Reverse", self.mucous.colors["green"]| curses.A_BOLD)
+				rcolor = "green"
 			else:
-				mw.addstr(w["height"]+1, pos, "Reverse", self.mucous.colors["red"]| curses.A_BOLD)
+				rcolor = "red"
+				
+			if self.input == "reverse":
+				attrib = self.mucous.colors[rcolor] | curses.A_BOLD | curses.A_UNDERLINE
+			else:
+				attrib = self.mucous.colors[rcolor] | curses.A_BOLD
+			mw.addstr(w["height"]+1, pos, "Reverse", attrib)
 	
 			mw.noutrefresh()
 			
@@ -351,7 +390,7 @@ class Search:
 			if "searchstatus" in self.mucous.windows["border"]:
 				del self.mucous.windows["border"]["searchstatus"]
 			ssw =self.mucous.windows["border"]["searchstatus"] = curses.newwin(1, 15, 0, 47)
-			ssw.bkgdset(" ", self.mucous.colors["blafgcyabg"]  | curses.A_REVERSE | curses.A_BOLD)
+			ssw.bkgdset(" ", self.mucous.colors["blackwhite"]  | curses.A_REVERSE | curses.A_BOLD)
 
 			if s != None:
 				if self.mucous.logs["search_count"] == ["Results: ", s]:
@@ -360,8 +399,8 @@ class Search:
 
 			try:
 				ssw.erase()
-				ssw.addstr(self.mucous.logs["search_count"][0],  self.mucous.colors["blafgcyabg"] )
-				ssw.addstr(str(self.mucous.logs["search_count"][1]),  self.mucous.colors["blafgcyabg"] )
+				ssw.addstr(self.mucous.logs["search_count"][0],  self.mucous.colors["blackwhite"] )
+				ssw.addstr(str(self.mucous.logs["search_count"][1]),  self.mucous.colors["blackwhite"] )
 				ssw.refresh()
 			except Exception, e:
 				pass
@@ -486,7 +525,8 @@ class Search:
 			if self.reverse == True:
 				self.sorted_search.reverse()
 			self.logs[str(this_ticket)] = []
-			
+			if self.scrolling == -1:
+				self.scrolling = len(self.sorted_search)
 			clipped_list, self.scrolling, self.dimensions["start"] = self.mucous.FormatData.scrollbox(self.sorted_search, self.scrolling, self.dimensions["height"])
 			tw.erase()
 			count = 0
@@ -578,7 +618,7 @@ class Search:
 						ss.addstr(str(minutes), atr )
 						ss.addstr(":")
 						ss.addstr(str(seconds), atr )
-					ss.refresh()
+					ss.noutrefresh()
 					
 				else:
 					attr = curses.A_NORMAL
@@ -619,41 +659,96 @@ class Search:
 		except Exception, e:
 			self.mucous.Help.Log("debug", "Search Log: " + str(e))
 			
-			
+	## Parse input functions
+	# @param self is Search (Class)
+	# @param key is the character pressed
+	def Input(self, key):
+		
+		if self.mucous.mode != "search":
+			return
+		elif key in ("popup"):
+			if self.mucous.PopupMenu.show == True:
+				self.mucous.PopupMenu.Clear()
+				return
+			if self.mucous.Search.current != "default__":
+				self.mucous.PopupMenu.show = True
+				self.mucous.PopupMenu.Create("search", 0)
+		elif key == "switch":
+			self.mucous.Search.Switch(direction="right")
+			return
+		
+		
+		elif key in ( "KEY_HOME", "KEY_END"):
+			self.mucous.edit.ScrollText(key)
+			return
+		elif key in( "KEY_LEFT", chr(91), chr(60), "KEY_RIGHT", chr(93), chr(62), "KEY_IC"):
+			if key in ("KEY_LEFT", chr(91), chr(60)):
+				direction = "left"
+			elif key in ("KEY_RIGHT", chr(93), chr(62), "KEY_IC"):
+				direction = "right"
+			if self.input in ("default", "tabs"):
+				if len(self.mucous.Search.tickets.keys()) >= 1:
+					place = self.mucous.FormatData.RotateList(direction, self.mucous.Search.tickets.keys(), self.mucous.Search.current, "yes" )
+					if self.mucous.Search.current != place:
+						self.mucous.Search.current = place
+						self.mucous.Search.Mode()
+			elif self.input == "sort":
+				place = self.mucous.FormatData.RotateList(direction, [ "num", "user", "free", "speed", "que", "path", "size",  "file", "bitrate",  "time"], self.mucous.Search.order, "no" )
+				if self.mucous.Search.order  != place:
+					self.mucous.Search.order = place
+					self.mucous.Search.SortBar()
+					if self.mucous.Search.current != None:
+						self.mucous.Search.FormatResults(self.mucous.Search.current)
+					curses.doupdate()
+			elif self.input == "methods":
+				self.MethodSwitch(direction)
+		
 	## Parse input entry line for seaerch
 	# @param self is Search (Class)
 	# @param line is a text string
-	def InputSearch(self, line):
+	def LineInput(self, line):
 		
-		if self.mucous.mode == "search":
-			if self.input == "default" and line != "":
-				# Normal Search
-				query = line
-				
-				if self.method == "globally":
-					if len(query) > 2 and query != 'mp3':
-						self.mucous.D.Search(0, query )
-				# Buddies Search
-				elif self.method == "buddies":
-					self.mucous.D.Search(1, query )
-				# Rooms Search	
-				elif self.method == "rooms":	
-					self.mucous.D.Search(2, query )
-				elif self.method == "user":
-					if self.username != None:
-						self.mucous.D.UserSearch(self.username, query )
-				elif self.method == "wishlist":	
-					self.mucous.D.WishListSearch(query )
-			elif self.input == "user":
-				if line == "":
-					line = None
-				self.username = line
-			elif self.input == "filter":
-				if line == "":
-					line = None
-				self.sfilter = line
-			if self.input != "default":
-				self.SetInput()
+		if self.mucous.mode != "search":
+			return
+		
+		if self.input == "default" and line != "":
+			# Normal Search
+			query = line
+			
+			if self.method == "globally":
+				if len(query) > 2 and query != 'mp3':
+					self.mucous.D.Search(0, query )
+			# Buddies Search
+			elif self.method == "buddies":
+				self.mucous.D.Search(1, query )
+			# Rooms Search	
+			elif self.method == "rooms":	
+				self.mucous.D.Search(2, query )
+			elif self.method == "user":
+				if self.username != None:
+					self.mucous.D.UserSearch(self.username, query )
+			elif self.method == "wishlist":	
+				self.mucous.D.WishListSearch(query )
+		elif self.input == "user":
+			if line == "":
+				line = None
+			self.username = line
+		elif self.input == "results":
+			if self.scrolling-self.dimensions["start"] in self.viewing:
+				number = self.viewing[self.scrolling-self.dimensions["start"]]
+				user, path = self.GetDownloadFromNum(number)
+				self.DownloadSearch(user, path)
+		elif self.input == "reverse":
+			if self.reverse == True:
+				self.reverse = False
+			elif self.reverse == False:
+				self.reverse= True
+		elif self.input == "filter":
+			if line == "":
+				line = None
+			self.sfilter = line
+		if self.input != "default":
+			self.SetInput()
 				
 	def SetInput(self, input=None):
 		if input == None:
@@ -674,11 +769,15 @@ class Search:
 			
 			w = self.dimensions
 			change = 0
-			if self.current != None:
-				if y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
+			
+			if y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
+				if self.current != None:
 					#self.mucous.Help.Log("debug", "%d:%d::%d" %(x,y,w["top"]) )
 					y1 = y- w["top"]
-					
+					if self.input != "results":
+						self.input = "results"
+						self.Mode()
+						return
 					if y1  + w["start"] in range(self.numresults[self.current]):
 						self.scrolling  = y1  + w["start"]
 						self.Draw()
@@ -686,10 +785,8 @@ class Search:
 							self.mucous.PopupMenu.Create("search", 0, True)
 							return
 
-			if y in (1, 2, 3):
+			elif y in (1, 2, 3):
 				if len(self.tickets.keys()) >= 1:
-					
-					
 					if self.current == None:
 						self.current = self.tickets.keys()[0]
 
@@ -698,13 +795,29 @@ class Search:
 					if match == None:
 						s = self.tickets.keys().index(self.current)
 						self.current = self.tickets.keys()[s-1]
+					self.input = "tabs"
 					self.Mode()
+					return
+#(*) Globally ( ) Buddies ( ) Rooms ( ) Wishlist ( ) User:
 
 			elif y == self.mucous.h-5:
-				if x <= 45:
+				if x < 59:
 					# Toggle type of search
-					self.MethodSwitch()
-				elif x > 45:
+					oldmethod = self.method
+					if x < 13:
+						self.method = "globally"
+					elif x < 25:
+						self.method = "buddies"
+					elif x < 35:
+						self.method = "rooms"
+					elif x < 50:
+						self.method = "wishlist"
+					elif x < 59:
+						self.method = "user"
+					if self.method != oldmethod:
+						self.Mode()
+					#self.MethodSwitch()
+				elif x >= 59:
 					self.input = "user"
 					self.Mode()
 					return

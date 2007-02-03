@@ -44,6 +44,24 @@ class PopupMenu:
 		except Exception, e:
 			self.mucous.Help.Log("debug", "PopupMenu.Clear: " + str(e))
 			
+	def Scroll(self, key):
+		if self.mucous.mode in ("chat", "lists", "transfer", "search", "browse") and self.show == True:
+			# POPUP menu up and down keys
+			try:
+				if self.current == None:
+					return
+				if key == "menu_up":
+					if self.position >0:
+						self.position -= 1
+						self.Draw()
+						
+				elif key == "menu_down":
+					if self.position < len(self.menus[self.current]['items'])-1:
+						self.position += 1
+						self.Draw()
+			except Exception, e:
+				pass
+					
 	## Return the correct list for the current menu
 	# @param self PopupMenu
 	# @return list 
