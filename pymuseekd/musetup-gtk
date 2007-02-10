@@ -2711,14 +2711,12 @@ class MuseekSetupGTK:
 	def OnAddNormalDirs(self, widget):
 		directory = self.OpenDirectory(widget, _("Add a buddy-only Shared Directory"))
 		if directory != None:
-			#self.muscan_execute(["muscan", "-c", self.CONFIG_PATH, "-v", "-s", directory])
-			self.muscan_execute("muscan -c " + self.CONFIG_PATH + " -v -s "+ directory)
+			self.muscan_execute("muscan -c \"%s\" -v -s \"%s\"" % (self.CONFIG_PATH, directory) )
 			self.OnRefreshNormalDirs(None)
 	def OnAddBuddyDirs(self, widget):
 		directory = self.OpenDirectory(widget, _("Add a buddy-only Shared Directory"))
 		if directory != None:
-			#self.muscan_execute(["muscan", "-c", self.CONFIG_PATH, "-v", "-b", "-s", directory])
-			self.muscan_execute("muscan -c " + self.CONFIG_PATH + " -v -b -s "+ directory)
+			self.muscan_execute("muscan -c \"%s\" -v -b  -s \"%s\"" % (self.CONFIG_PATH, directory) )
 			self.OnRefreshBuddyDirs(None)
 			
 	def OnRemoveBuddyDirs(self, widget):
@@ -2728,8 +2726,7 @@ class MuseekSetupGTK:
 		if self.selected_items != []:
 			key, num = self.selected_items
 			if key != "" and key is not None:
-				#self.muscan_execute(["muscan", "-c", self.CONFIG_PATH, "-b", "-v",  "-u", key])
-				self.muscan_execute("muscan -c " + self.CONFIG_PATH + " -b -v -u "+ key)
+				self.muscan_execute("muscan -c \"%s\" -b -v -u \"%s\"" % (self.CONFIG_PATH, key) )
 				self.OnRefreshBuddyDirs(None)
 			
 	def OnRemoveNormalDirs(self, widget):
@@ -2740,8 +2737,7 @@ class MuseekSetupGTK:
 		if self.selected_items != []:
 			key, num = self.selected_items
 			if key != "" and key is not None:
-				#self.muscan_execute(["muscan", "-c", self.CONFIG_PATH, "-v",  "-u", key])
-				self.muscan_execute("muscan -c " + self.CONFIG_PATH + " -v -u "+ key)
+				self.muscan_execute("muscan -c \"%s\" -v -u \"%s\"" % (self.CONFIG_PATH, key) )
 				self.OnRefreshNormalDirs(None)
 				
 	def muscan_execute(self, command):
@@ -2757,28 +2753,20 @@ class MuseekSetupGTK:
 				#print line
 
 	def OnRescanBuddyDirs(self, widget):
-		
-		#self.muscan_execute(["muscan", "-c", self.CONFIG_PATH,  "-b", "-v", "-r"])
-		self.muscan_execute("muscan -c", self.CONFIG_PATH + " -b -v -r")
+		self.muscan_execute("muscan -c \"%s\" -b -v -r" % (self.CONFIG_PATH) )
 		self.Statusbar.pop(self.status_context_id)
 		self.Statusbar.push(self.status_context_id, "Rescanned Buddy shares")
 		
 	def OnRescanNormalDirs(self, widget):
-		#self.muscan_execute("muscan ", "-c", self.CONFIG_PATH,"-v", "-r"])
-		self.muscan_execute("muscan -c "+ self.CONFIG_PATH +" -v  -r")
+		self.muscan_execute("muscan -c \"%s\" -v  -r" % (self.CONFIG_PATH) )
 		self.Statusbar.pop(self.status_context_id)
 		self.Statusbar.push(self.status_context_id, "Rescanned Normal shares")
 		
 	def OnRefreshBuddyDirs(self, widget):
 		p = "/usr/bin/muscan"
 		if os.path.exists(p):
-			output = commands.getoutput("muscan -c "+ self.CONFIG_PATH + " -b  -l")
+			output = commands.getoutput("muscan -c \"%s\" -b  -l" % (self.CONFIG_PATH) )
 			stdout_text = output.split('\n')
-			#z = subprocess.Popen( ["muscan", "-c", self.CONFIG_PATH, "-b", "-l"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-			#stdout_text, stderr_text = z.communicate()
-			#z.wait()
-			#print stdout_text
-			#stdout_text = stdout_text.split('\n')
 			self.SharedDirs["buddy"] = []
 			for line in stdout_text:
 				if line.isspace() or line == '':
@@ -2790,12 +2778,7 @@ class MuseekSetupGTK:
 	def OnRefreshNormalDirs(self, widget):
 		p = "/usr/bin/muscan"
 		if os.path.exists(p):
-		
-			#z = subprocess.Popen( ["muscan", "-c", self.CONFIG_PATH, "-l"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-			#stdout_text, stderr_text = z.communicate()
-			#z.wait()
-			#stdout_text = stdout_text.split('\n')
-			output = commands.getoutput("muscan -c "+ self.CONFIG_PATH + "  -l")
+			output = commands.getoutput("muscan -c \"%s\"  -l" % (self.CONFIG_PATH) )
 			stdout_text = output.split('\n')
 			
 			self.SharedDirs["normal"] = []
