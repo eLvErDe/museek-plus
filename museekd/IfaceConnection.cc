@@ -406,7 +406,7 @@ void IfaceConnection::ping(uint32 id) {
 	}
 }
 
-void IfaceConnection::challenge(uint version, const std::string& challenge) {
+void IfaceConnection::challenge(uint32 version, const std::string& challenge) {
 	CT("challenge");
 	
 	mChallenge = challenge;
