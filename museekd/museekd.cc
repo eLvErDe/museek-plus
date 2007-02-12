@@ -395,7 +395,16 @@ void Museekd::cb_iface_login(IfaceConnection* conn, const string& algorithm, con
 			if(peer->have_stats())
 				conn->peer_stats(*it, peer->avgspeed(), peer->downloadnum(), peer->files(), peer->dirs());
 		}
-		
+		vector<string>::const_iterator itt = mTrusted.begin();
+		for(; itt != mTrusted.end(); ++itt) {
+			Peer* peer = mPeerManager->get_peer(*itt);
+			if(peer->have_exists())
+				conn->peer_exists(*itt, peer->exists());
+			if(peer->have_status())
+				conn->peer_status(*itt, peer->status());
+			if(peer->have_stats())
+				conn->peer_stats(*itt, peer->avgspeed(), peer->downloadnum(), peer->files(), peer->dirs());
+		}
 		if(conn->mask() & EM_PRIVATE) {
 			vector<PrivateMessage>::iterator it = mPrivateMessages.begin();
 			for(; it != mPrivateMessages.end(); ++it) {
