@@ -104,7 +104,7 @@ all_images = Split("""
   logo.png
   icon.png
 """)
-themes = ["default", "mikelabo-tri", "bluebox", "mikelabo-silk"]
+themes = ["default", "mikelabo-tri", "bluebox", "mikelabo-silk", "birdies"]
 theme_lists = {}
 # FIND ICONS IN THEMES
 for theme in themes:
@@ -129,7 +129,7 @@ QTDIR = env['QTDIR']
 
 if not QTDIR and os.environ.has_key('QTDIR'):
     QTDIR = os.environ['QTDIR']
-ts_templates= env['MUSEEQTRANSLATIONS']
+ts_templates= env['MUSEEQTRANSLATIONS'].split(",")
 tr_dir = "translations/"
 translations = []
 qm_files = []

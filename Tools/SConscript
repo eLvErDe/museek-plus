@@ -1,5 +1,5 @@
 Import('env')
-import os
+import os, SCons
 if env['RELAY']:
 	from muscons import Relay
 
@@ -16,11 +16,20 @@ conf = env_libmuscan.Configure()
 if env['VORBIS']:
 	env_libmuscan.ParseConfig('pkg-config --libs --cflags vorbisfile')
 	if conf.CheckLibWithHeader('', 'vorbis/vorbisfile.h', 'C++', 'ov_clear(0);'):
-		# FIXME Workaround a scons bug
-		if env_libmuscan['CPPDEFINES'] != []:
-			env_libmuscan.Append(CPPDEFINES = {"HAVE_VORBIS": 1})
-		else:
-			env_libmuscan.Replace(CPPDEFINES = {"HAVE_VORBIS": 1})
+		#print SCons.__version__
+		sconsversion = SCons.__version__
+		sv = sconsversion.split(".")
+		try:
+			if len(sv) > 2:
+				major, minor, micro = sv[0], sv[1], sv[2]
+			else:
+				major, minor, micro = sv[0], sv[1], 0
+			if int(minor) == 96 and int(micro) >= 93:
+				env_libmuscan.Append(CPPDEFINES = 'HAVE_VORBIS=1')
+			else:
+				env_libmuscan.Append(CPPDEFINES = {'HAVE_VORBIS':1})
+		except Exception, error:
+			print "ERROR:", error
 		print "OGG Vorbis found, compiling into muscan."
 	else:
 		print "OGG Vorbis NOT found, not compiled into muscan."

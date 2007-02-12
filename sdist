@@ -4,7 +4,7 @@
 # ---- CONFIGURABLE OPTIONS ----
 
 PACKAGE = 'museek'
-VERSION = '0.1.8'
+VERSION = '0.1.12'
 
 
 sourcedirs = """
@@ -19,6 +19,7 @@ sourcedirs = """
   museeq
   pymuseekd
   scons
+  mucous
 """.split()
 
 
@@ -28,7 +29,7 @@ files = """
   version.h
   sdist
   defaults.py
-  pymuseekd/museekctl
+  pymuseekd/museekcontrol
   pymuseekd/museekchat
   museeq/*.png
 """.split()

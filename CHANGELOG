@@ -6,9 +6,11 @@ MUSEEK DAEMON
  * Fixed museekd not reacting on connect mode changes during run-time (hyriand)
  * Fixed the clear-initiating-transfer that causes a delayed crash (hyriand)
  * Character unpacking checks (fixes corrupted message crashes) (hyriand)
- * IMPORTANT NOTE: the CFLAGS variable is now a String instead of List, your 
- mulocal.py will need to be modified or erased to allow SCons to run 
- correctly. Not doing so will result in SCons failing at the first compile-test.
+ * Trusted Users' status is now watched
+ * IMPORTANT NOTE: the CFLAGS variable renamed to FLAGS and is now a String 
+   instead of List, your mulocal.py will need to be modified or erased to allow
+   SCons to run correctly. Not doing so will result in SCons failing at the 
+   first compile-test.
  * Change the way the IP Address string is created to fix endian bug (hyriand) 
  * New SCons variable LOCKFLAGS disables SCons' automatic flag adding
  * Replaced depreciated call to Send Speed (34) on download completion
@@ -44,6 +46,7 @@ MUSETUP-GTK
  * Scons tries more than one method to detect PyGTK
  
 MUCOUS
+ * The Setup Interface is now completely controllable from the keyboard
  * Browse Shares now has expandable/collapsable directories and resizeable
    windows. There are some other UI improvements, as well.
  * Added /me and status colors to Private chat 

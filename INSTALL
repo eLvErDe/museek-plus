@@ -81,7 +81,7 @@ runs):
                             default: no
   LOCKFLAGS=yes/no      [*] Do not allow SCons to modify the CFLAGS you set
   			    
-  CFLAGS=-fPIC -Wall -pipe -g -O0 -O1 -O2 -O3 -funrollloop -Os -fomit-frame-pointer
+  FLAGS=-fPIC -Wall -pipe -g -O0 -O1 -O2 -O3 -funrollloop -Os -fomit-frame-pointer
                         [*] Which CCFLAGS to use. (Now a single string, prepend the dash "-" )
                             default: '-fPIC -Wall -pipe'
   MULOG=debug,cycle,calltrace,traffictime

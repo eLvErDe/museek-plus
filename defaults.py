@@ -29,7 +29,7 @@ MULOG='debug'
 LOCKFLAGS=0
 
 # CCFLAGS (fPIC, Wall, pipe) Do not include the prefix "-"
-CFLAGS='-fPIC -Wall -pipe'
+FLAGS='-fPIC -Wall -pipe'
 
 # Enable OGG Vorbis support (if available) in file scanner (muscan)
 VORBIS=1
