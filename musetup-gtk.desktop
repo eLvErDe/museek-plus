@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Musetup-gtk
+Comment=Museekd configuration tool
+Exec=musetup-gtk
+Icon=museek_alt2.png
+Terminal=false
+Type=Application
+Categories=Application;Network;
+StartupNotify=true
+Comment[fr]=Outil de configuration pour museekd
