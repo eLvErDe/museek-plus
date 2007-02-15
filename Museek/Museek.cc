@@ -567,9 +567,13 @@ void Museek::cb_peer_shares(const string& user, const WShares& shares) {
 void Museek::cb_peer_search(PeerConnection* conn, const string& user, uint32 ticket, const wstring& query) {
 	if(! is_banned(user)) {
 		Folder results;
-		mShares->search(query, results);
-		DEBUG("%i results", results.size());
-		
+		if (is_buddied(user) && mBuddySharesHave) {
+			mBuddyShares->search(query, results);
+			DEBUG("%i results", results.size());
+		} else {
+			mShares->search(query, results);
+			DEBUG("%i results", results.size());
+		}
 		if(! results.empty())
 		{
 			if(! conn)
