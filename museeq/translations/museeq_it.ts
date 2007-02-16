@@ -899,6 +899,10 @@
         <source>MuseeqTray</source>
         <translation>MuseeqTray</translation>
     </message>
+    <message>
+        <source>&amp;Museek Settings</source>
+        <translation>&amp;Impostazioni di Museek</translation>
+    </message>
 </context>
 <context>
     <name>OnlineAlert</name>
@@ -1553,6 +1557,21 @@
     </message>
 </context>
 <context>
+    <name>TrustList</name>
+    <message>
+        <source>Add:</source>
+        <translation>Aggiungi:</translation>
+    </message>
+    <message>
+        <source>Comments</source>
+        <translation>Commenti</translation>
+    </message>
+    <message>
+        <source>Comments for </source>
+        <translation> Commenti per </translation>
+    </message>
+</context>
+<context>
     <name>UserInfo</name>
     <message>
         <source>Description</source>
@@ -1674,6 +1693,10 @@
     <message>
         <source>*Banned*</source>
         <translation>*Banditi*</translation>
+    </message>
+    <message>
+        <source>*Trusted*</source>
+        <translation>*Fidati*</translation>
     </message>
 </context>
 <context>
