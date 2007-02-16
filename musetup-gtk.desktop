@@ -10,3 +10,4 @@ Categories=Application;GTK;Network;P2P;
 StartupNotify=true
 Comment[fr]=Outil de configuration pour museekd
 Comment[es]=Herramienta de configuracion para museekd
+Comment[it]=Utilità di configurazione per museekd
