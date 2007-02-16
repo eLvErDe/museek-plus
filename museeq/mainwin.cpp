@@ -144,11 +144,14 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 	mMenuModes->insertItem( IMG("browser-small"), tr("&Browse Shares"), this, SLOT(changeBMode()), 0, 5);
 
 	menuBar()->insertItem(tr("&Modes"), mMenuModes);
+	
 	mMenuHelp = new QPopupMenu(this);
 	mMenuHelp->insertItem(IMG("help"), tr("&About..."), this, SLOT(displayAboutDialog()), 0, 0);
 	mMenuHelp->insertItem(IMG("help"), tr("&Commands..."), this, SLOT(displayCommandsDialog()), 0, 1);
 	mMenuHelp->insertItem(IMG("help"), tr("&Help..."), this, SLOT(displayHelpDialog()), 0, 2);
 	
+
+	menuBar()->insertItem(tr("&Help"), mMenuHelp);
 #ifdef HAVE_QSA
 	if(libqsa_is_present)
 	{
@@ -158,14 +161,15 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 		mMenuScripts->insertItem(tr("&Load script..."), this, SLOT(loadScript()));
 		mMenuScripts->insertItem(tr("&Unload script"), mMenuUnloadScripts);
 		mMenuScripts->insertSeparator();
-		menuBar()->insertItem(tr("Sc&ripts"), mMenuScripts);
+		menuBar()->insertItem(tr("Sc&ripts"), mMenuScripts, -1 , 3);
 		
 		museeq->registerMenu("File", mMenuFile);
 		museeq->registerMenu("Settings", mMenuSettings);
 		museeq->registerMenu("Scripts", mMenuScripts);
+		museeq->registerMenu("Help", mMenuHelp);
 	}
 #endif // HAVE_QSA
-	menuBar()->insertItem(tr("&Help"), mMenuHelp);
+	
 	statusBar()->message(tr("Welcome to Museeq"));
 	
 	mConnectDialog = new ConnectDialog(this, "connectDialog");

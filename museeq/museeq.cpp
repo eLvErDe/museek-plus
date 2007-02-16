@@ -867,7 +867,7 @@ void Museeq::addMenu(const QString& menu, const QString& item, const QString& ca
 	QMap<QString, QPopupMenu*>::iterator it = mMenus.find(menu);
 	if(it == mMenus.end()) {
 		m = new QPopupMenu();
-		mMainWin->menuBar()->insertItem(menu, m);
+		mMainWin->menuBar()->insertItem(menu, m, -1, 4);
 		registerMenu(menu, m);
 	} else
 		m = it.data();
