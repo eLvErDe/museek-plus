@@ -28,6 +28,7 @@
 #include "buddylist.h"
 #include "banlist.h"
 #include "ignorelist.h"
+#include "trustlist.h"
 #include "museeq.h"
 
 UserTabWidget::UserTabWidget(QWidget* _p, const char* _n)
@@ -42,10 +43,13 @@ UserTabWidget::UserTabWidget(QWidget* _p, const char* _n)
 	if (Name == "userInfo") {
 		mBanList = new BanList(0, "banList");
 		mIgnoreList = new IgnoreList(0, "ignoreList");	
+		mTrustList = new TrustList(0, "trustList");	
 		connect(mBanList, SIGNAL(activated(const QString&)), SLOT(setPage(const QString&)));	
 		connect(mIgnoreList, SIGNAL(activated(const QString&)), SLOT(setPage(const QString&)));	
+		connect(mTrustList, SIGNAL(activated(const QString&)), SLOT(setPage(const QString&)));	
 		addTab(mIgnoreList, tr("*Ignored*"));
 		addTab(mBanList, tr("*Banned*"));
+		addTab(mTrustList, tr("*Trusted*"));
 	}
 
 	

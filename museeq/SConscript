@@ -14,9 +14,10 @@ sources = Split("""
   aclineedit.cpp
   browser.cpp
   browsers.cpp
-  ignorelist.cpp  
+  ignorelist.cpp
   buddylist.cpp
-  banlist.cpp  
+  banlist.cpp
+  trustlist.cpp
   chatpanel.cpp
   chatroom.cpp
   chatrooms.cpp

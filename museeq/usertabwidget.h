@@ -26,6 +26,7 @@
 class BuddyList;
 class IgnoreList;
 class BanList;
+class TrustList;
 
 class UserWidget : public QVBox {
 	Q_OBJECT
@@ -64,8 +65,9 @@ protected:
 	
 private:
 	BuddyList* mBuddyList;
-	BanList* mBanList;	
-	IgnoreList* mIgnoreList;	
+	BanList* mBanList;
+	IgnoreList* mIgnoreList;
+	TrustList* mTrustList;
 };
 
 #endif // USERTABWIDGET_H

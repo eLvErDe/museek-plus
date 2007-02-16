@@ -171,6 +171,7 @@ Museeq::Museeq(QApplication * app)
 #ifdef HAVE_TRAYICON
 	menutray = new QPopupMenu();
 	menutray->insertItem(QT_TR_NOOP("&Restore"), mMainWin , SLOT( showNormal() ) );
+	menutray->insertItem(QT_TR_NOOP("&Museek Settings"),  mMainWin , SLOT( changeSettings()) );
 	menutray->insertItem(QT_TR_NOOP("&Hide"),  mMainWin , SLOT( hide()  ) );
 	menutray->insertSeparator();
 	menutray->insertItem( QT_TR_NOOP("&Quit"),  mMainWin , SLOT( close() ) );
