@@ -7,6 +7,6 @@ Icon=museeq-circle2.png
 Terminal=false
 StartupNotify=false
 Type=Application
-Categories=AApplication;Qt;Network;P2P;
+Categories=Application;Qt;Network;P2P;
 Comment[es]=Museeq es un cliente para museek, el demonio de SoulSeek
 Comment[it]=Museeq è un client per museek, il demone di SoulSeek
