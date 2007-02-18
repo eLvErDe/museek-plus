@@ -1568,7 +1568,7 @@
     </message>
     <message>
         <source>Comments for </source>
-        <translation> Commenti per </translation>
+        <translation>Commenti per </translation>
     </message>
 </context>
 <context>
