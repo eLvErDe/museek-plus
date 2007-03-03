@@ -201,7 +201,7 @@ class ChatRooms:
 			
 	def SaidInRoom(self, room, user, text):
 	
-		text = text.replace('\t', "     ")
+		text = text.replace('\t', "     ").replace(chr(10), "\\n")
 		
 		if text[:4] == "/me ":
 			self.AppendChat("Me", room, user, text[4:])
@@ -636,6 +636,7 @@ class ChatRooms:
 			for line in lines[numlines:]:
 				if line == "":
 					continue
+				line = line.replace("\\n", "\n")
 				timex = line[12:20]
 				month = line[3:6]
 				day = line[:2]
@@ -1087,8 +1088,8 @@ class ChatRooms:
 			length = 0
 			tw = self.windows["text"]["chat"]
 			message = ""
-			for m in message2:
-				message += curses.unctrl(m)
+			message = message2
+			
 			try:
 				if mtype == "Me":
 					# /me message
@@ -1097,7 +1098,7 @@ class ChatRooms:
 					username = self.mucous.dlang(username)
 					pre = " * %s " % username
 					tw.addstr(pre, self.mucous.colors["green"] | curses.A_BOLD)
-					s = "%s" % self.mucous.dlang(message)
+					s = message
 					length += len(timestamp) + len(pre)+ len(s)
 					tw.addstr(s, self.mucous.colors["green"] | curses.A_BOLD)
 					
@@ -1124,11 +1125,11 @@ class ChatRooms:
 							tw.addstr(username)
 							
 				elif mtype == "cut":
-					s = self.mucous.dlang(message) 
+					s = message
 					tw.addstr(s)
 					length += len(s)
 				elif mtype == "cutme":
-					s = self.mucous.dlang(message) 
+					s = message
 					tw.addstr(s, self.mucous.colors["green"] | curses.A_BOLD)
 					length += len(s)
 					
@@ -1144,7 +1145,7 @@ class ChatRooms:
 					suf = " "
 					tw.addstr(" ")
 					length += len(suf)
-					s = self.mucous.dlang(message) 
+					s = message
 					tw.addstr(s, self.mucous.colors["cyan"] | curses.A_BOLD)
 					length += len(s)
 					if length < w["width"]:
@@ -1157,7 +1158,7 @@ class ChatRooms:
 				elif mtype == "Status":
 					tw.addstr(timestamp+" ")
 					length += len(timestamp)+1
-					s = self.mucous.dlang(message)
+					s = message
 					tw.addstr("< ", self.mucous.colors["cyan"] ) 
 					tw.addstr(s, self.mucous.colors["cyan"] | curses.A_BOLD)
 					tw.addstr(" >", self.mucous.colors["cyan"] )
@@ -1198,7 +1199,6 @@ class ChatRooms:
 					if mtype == "Mentioned":
 						x = message.split(" ")
 						for e in x:
-							e = self.mucous.dlang(e)
 							if self.mucous.username not in e:
 								length += len(e)
 								tw.addstr(e)
@@ -1212,7 +1212,7 @@ class ChatRooms:
 									
 					elif mtype == "Normal":
 						
-						s = self.mucous.dlang(message)
+						s = message
 						length += len(s) 
 						tw.addstr(s)
 						

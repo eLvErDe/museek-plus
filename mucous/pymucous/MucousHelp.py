@@ -325,7 +325,7 @@ class Help:
 	def Log(self, htype, s):
 		try:
 			s = str(s)
-			
+			s = s.replace("\t", "      ")
 			if htype == "help":
 				if "\n" in s:
 					lis = s.split("\n")
@@ -338,22 +338,24 @@ class Help:
 				if htype == "status":
 					ex = ''
 				else: ex = "BUG " 
-				newline = ""
-				for character in s:
-					if curses.ascii.isctrl(character):
-						character = curses.ascii.unctrl(character)
-					newline += character
-				if "\n" in newline:
+				
+				
+				if "\n" in s:
 					
-					lis = newline.split("\n")
+					lis = s.split("\n")
 					for line in lis:
+						newline = ""
+						for character in line:
+							if curses.ascii.isctrl(character):
+								character = curses.ascii.unctrl(character)
+							newline += character
 						if line is lis[0]:
-							self.log["debug"].append("%s %s%s" % (timestamp,ex,line))
+							self.log["debug"].append("%s %s%s" % (timestamp,ex,newline))
 						else:
-							self.log["debug"].append("%s%s" % (ex,line))
+							self.log["debug"].append("%s%s" % (ex,newline))
 				
 				else:
-					self.log["debug"].append("%s %s%s" %(timestamp, ex,newline))
+					self.log["debug"].append("%s %s%s" %(timestamp, ex,s))
 				if htype == "debug":
 					
 					ex = "BUG "

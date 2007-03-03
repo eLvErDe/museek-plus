@@ -92,7 +92,7 @@ class Muscan:
 	def ListBuddy(self):
 		self.command = ["muscan", "-c", self.mucous.Spl["museekconfigfile"], "-b", "-l"]
 		self.RestartTimer()
-		self.mucous.Help.Log("status", "Listing buddy shares with muscan:")
+		self.mucous.Help.Log("status", "Listing buddy shares with muscan: %s" % self.mucous.Spl["museekconfigfile"])
 
 	## Rescan Buddy-only Shares (rebuilds shares from scratch)
 	# @param self Muscan (Class)

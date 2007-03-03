@@ -140,25 +140,39 @@ class PrivateChat:
 			wrapped_lines = []
 			merged_lines = []
 			for timestamp, user, message in self.logs[self.current]:
-				message_clean = ""
-				for a in message:
-					if curses.ascii.isctrl(a):
-						a = curses.ascii.unctrl(a)
-					message_clean += a
-				message = self.mucous.dlang(message_clean)
-				if message[:4] == "/me ":
-					color = self.mucous.colors['green']
-					merged_lines = "%s * %s %s"% (timestamp, user, message[4:]) 
-				elif user == '':
-					color = self.mucous.colors['cyan']
-					merged_lines = "%s %s"% (timestamp, message)
-				else:
-					color = curses.A_NORMAL
-					merged_lines = "%s [%s] %s"% (timestamp, user, message) 
-				list_of_strings = self.mucous.FormatData.StringCutWidth(merged_lines, w)
-				for line in list_of_strings:
-					wrapped_lines.append(line)
-					listcolors[line] = color
+	
+				message = message.replace("\t", "      ")
+				message = self.mucous.dlang(message)
+				if "\\n" in message:
+					message = message.split("\\n")
+				else: message = [message]
+				
+				for line in message:
+									
+					if line is message[0]:
+						# first line
+						if line[:4] == "/me ":
+							color = self.mucous.colors['green']
+							merged_lines = "%s * %s %s"% (timestamp, user, line[4:]) 
+						elif user == '':
+							color = self.mucous.colors['cyan']
+							merged_lines = "%s %s"% (timestamp, line)
+						else:
+							color = curses.A_NORMAL
+							merged_lines = "%s [%s] %s"% (timestamp, user, line)
+					else:
+						# Second and greater lines
+						if message[0][:4] == "/me ":
+							color = self.mucous.colors['green']
+						elif user == '':
+							color = self.mucous.colors['cyan']
+						else:
+							color = curses.A_NORMAL
+						merged_lines = "- %s" % line 
+					list_of_strings = self.mucous.FormatData.StringCutWidth(merged_lines, w)
+					for line in list_of_strings:
+						wrapped_lines.append(line)
+						listcolors[line] = color
 			if len(self.logs[self.current]):
 				del merged_lines
 				del list_of_strings
@@ -196,7 +210,7 @@ class PrivateChat:
 	# @param message text
 	def Recieved(self,direction, timestamp, user, message):
 		try:
-			
+			message = message.replace("\n", "\\n")
 			ctcpversion = 0
 			if message == curses.ascii.ctrl("A")+"VERSION"+curses.ascii.ctrl("A"):
 				message = "CTCP VERSION"

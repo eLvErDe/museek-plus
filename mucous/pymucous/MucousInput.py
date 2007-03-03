@@ -1365,61 +1365,7 @@ class CharacterParse:
 							
 		
 			elif command == "/url" and args == '':
-				self.mucous.url = None
-				logfile = None
-				if self.mucous.mode == "chat" and self.mucous.ChatRooms.current != None:
-					logfile = []
-					for line in self.mucous.ChatRooms.logs["rooms"][self.mucous.ChatRooms.current]:
-						logfile.append(line)
-				elif self.mucous.mode == "private" and self.mucous.PrivateChat.current != None:
-					logfile = []
-					for line in self.mucous.PrivateChat.logs[self.mucous.PrivateChat.current]:
-						logfile.append(line)
-				if logfile != None:
-					lene = len(logfile)
-					logfile.reverse()
-					if self.mucous.mode == "chat":
-						for line in logfile:
-							if "://" in line[3]:
-								urline = line[3].split(" ")
-								for x in urline:
-									if "://" in x: 
-										self.mucous.url = x
-										break
-								break
-					elif self.mucous.mode == "private":
-						for timestamp, user, message in logfile:
-							if "://" not in message:
-								continue
-							urline = message.split(" ")
-							for x in urline:
-								if "://" in x:
-									 self.mucous.url = x
-									 break
-							break
-						
-		
-				if self.mucous.url != None:
-					urlr = self.mucous.Config["mucous"]["url reader"]
-					command = None
-					if  urlr == "links":
-						if os.path.expandvars("$TERM") != "linux" and os.path.exists("/usr/bin/links"):
-							command = "xterm -e 'TERM=xterm-color links "+self.mucous.url +"'"
-					elif urlr == "elinks":
-						if os.path.expandvars("$TERM") != "linux" and os.path.exists("/usr/bin/elinks"):
-							command = "xterm -e 'TERM=xterm-color elinks "+self.mucous.url +"'"
-					elif urlr == "lynx":
-						if os.path.expandvars("$TERM") != "linux" and os.path.exists("/usr/bin/lynx"):
-							command = "xterm -e 'TERM=xterm-color lynx "+self.mucous.url +"'"	
-					elif urlr == "firefox":
-						command = "firefox -a firefox -remote 'openURL("+self.mucous.url +",new-tab)'"
-					elif urlr == "custom":
-						if self.mucous.Config["mucous"]["url custom"] != "$":
-							command = self.mucous.Config["mucous"]["url custom"].replace("$", self.mucous.url)
-						
-					if command is not None:
-						os.system("%s &> /dev/null &" %command)
-						self.mucous.Help.Log("status", "Running Process: %s" % command)
+				self.ReadURL(args)
 			elif command == "/urlreader" and args != '':
 				self.mucous.Config["mucous"]["url reader"] = args
 			elif command == "/urlcustom" and args != '':
@@ -2164,7 +2110,65 @@ class CharacterParse:
 		except Exception,e:
 			self.mucous.Help.Log("debug", 'commands: ' + str(e))
 		pass
-					
+	
+	def ReadURL(self, args):
+
+		self.mucous.url = None
+		logfile = None
+		if self.mucous.mode == "chat" and self.mucous.ChatRooms.current != None:
+			logfile = []
+			for line in self.mucous.ChatRooms.logs["rooms"][self.mucous.ChatRooms.current]:
+				logfile.append(line)
+		elif self.mucous.mode == "private" and self.mucous.PrivateChat.current != None:
+			logfile = []
+			for line in self.mucous.PrivateChat.logs[self.mucous.PrivateChat.current]:
+				logfile.append(line)
+		if logfile != None:
+			lene = len(logfile)
+			logfile.reverse()
+			if self.mucous.mode == "chat":
+				for line in logfile:
+					if "://" in line[3]:
+						urline = line[3].split(" ")
+						for x in urline:
+							if "://" in x: 
+								self.mucous.url = x
+								break
+						break
+			elif self.mucous.mode == "private":
+				for timestamp, user, message in logfile:
+					if "://" not in message:
+						continue
+					urline = message.split(" ")
+					for x in urline:
+						if "://" in x:
+								self.mucous.url = x
+								break
+					break
+				
+
+		if self.mucous.url != None:
+			urlr = self.mucous.Config["mucous"]["url reader"]
+			command = None
+			if  urlr == "links":
+				if os.path.expandvars("$TERM") != "linux" and os.path.exists("/usr/bin/links"):
+					command = "xterm -e 'TERM=xterm-color links "+self.mucous.url +"'"
+			elif urlr == "elinks":
+				if os.path.expandvars("$TERM") != "linux" and os.path.exists("/usr/bin/elinks"):
+					command = "xterm -e 'TERM=xterm-color elinks "+self.mucous.url +"'"
+			elif urlr == "lynx":
+				if os.path.expandvars("$TERM") != "linux" and os.path.exists("/usr/bin/lynx"):
+					command = "xterm -e 'TERM=xterm-color lynx "+self.mucous.url +"'"	
+			elif urlr == "firefox":
+				command = "firefox -a firefox -remote 'openURL("+self.mucous.url +",new-tab)'"
+			elif urlr == "custom":
+				if self.mucous.Config["mucous"]["url custom"] != "$":
+					command = self.mucous.Config["mucous"]["url custom"].replace("$", self.mucous.url)
+				
+			if command is not None:
+				os.system("%s &> /dev/null &" %command)
+				self.mucous.Help.Log("status", "Running Process: %s" % command)
+	
 	## Special Function that parses the input line, if it's not a command
 	# @param self is CharacterParse (Class)
 	# @param line is a text string

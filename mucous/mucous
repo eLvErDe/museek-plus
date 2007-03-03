@@ -1120,20 +1120,20 @@ class Mucous:
 			string1 = string.decode(self.Config["mucous"]["language"], "replace")
 			string1 = string1.encode(self.Config["mucous"]["language"], "replace")
 			string1 = string1.encode(self.Config["mucous"]["language"], "replace")
-			
+			try:
+				z = ""
+				
+				for s in string1:
+					if s not in ("\n", chr(10)) and  curses.ascii.isctrl(s):
+						z += curses.ascii.unctrl(s)
+					else:
+						z += s
+				return z
+			except:
+				return string1
 		except Exception, e:
-			pass
-		try:
-			z = ""
-			
-			for s in string1:
-				if curses.ascii.isctrl(s):
-					z += curses.ascii.unctrl(s)
-				else:
-					z += s
-			return z
-		except:
 			return string
+
 
 	## One attempt at decoding string 
 	# @param self Mucous (class)

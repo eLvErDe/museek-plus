@@ -136,14 +136,14 @@ class Transfers:
 			if self.mucous.Config["mucous"]["transbox"] == "split":
 				self.UploadManager()
 				self.DownloadManager()
-				curses.doupdate()
+				#curses.doupdate()
 			else:
 				if self.current == "uploads":
 					self.UploadManager()
-					curses.doupdate()
+					#curses.doupdate()
 				if self.current == "downloads":
 					self.DownloadManager()
-					curses.doupdate()
+					#curses.doupdate()
 			self.Status()
 		except Exception, e:
 			self.mucous.Help.Log("debug", "transfer panel: " + str(e))
