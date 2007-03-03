@@ -104,10 +104,11 @@ void PeerConnection::process_message(uint32 code) {
 		// Recieved a Search Reply (Results); Send Data to User Interfaces
 		PARSE(PSearchReply);
 		DEBUG("search results %s, %i", mUser.c_str(), s.results.size());
-		if(! s.results.empty())
+		if(! s.results.empty() or ! s.failed)
 			mMuseek->cb_peer_results(s.ticket, mUser, mMuseek->recoder()->decode_folder(mUser, s.results),
 			s.avgspeed, s.queuelen, s.slotfree);
-		
+		else if (s.failed) 
+			DEBUG("Parsing Search Reply failed");
 		/* yes, this is one of those evil-yet-functionalisms: */
 		if(inbuf.empty())
 			disconnect();

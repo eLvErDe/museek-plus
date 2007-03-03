@@ -117,6 +117,7 @@ PEERMESSAGE(PSearchReply, 9)
                     : user(_u), results(_r), ticket(_t), avgspeed(_spe), queuelen(_que), slotfree(_fre) {}
 
 	MAKE
+		failed = false;
 		pack(user);
 		pack(ticket);
 		pack((uint32)results.size());
@@ -142,7 +143,8 @@ PEERMESSAGE(PSearchReply, 9)
 
 	PARSE
 		decompress();
-
+		failed = false;
+		
 		user = unpack_string();
 		ticket = unpack_int();
 		uint n = unpack_int();
@@ -153,6 +155,14 @@ PEERMESSAGE(PSearchReply, 9)
 			fe.size = unpack_off();
 			fe.ext = unpack_string();
 			int attrs = unpack_int();
+			// Prevent Massive memory/swap usage
+			// eventually goes back to normal, but until then
+			// museekd locks up and uses massive amounts of memory
+			if (attrs > 10) { 
+				failed = true;
+				break;
+			}
+			
 			while(attrs) {
 				unpack_int();
 				fe.attrs.push_back(unpack_int());
@@ -169,7 +179,7 @@ PEERMESSAGE(PSearchReply, 9)
 	std::string user;
 	Folder results;
 	uint ticket, avgspeed, queuelen;
-	bool slotfree;
+	bool slotfree, failed;
 END
 
 PEERMESSAGE(PInfoRequest, 15)

@@ -569,10 +569,14 @@ void Museek::cb_peer_search(PeerConnection* conn, const string& user, uint32 tic
 		Folder results;
 		if (is_buddied(user) && mBuddySharesHave) {
 			mBuddyShares->search(query, results);
-			DEBUG("%i results", results.size());
+			DEBUG("%i results from buddy-shares", results.size());
+			if (! results.size() ) {
+				mShares->search(query, results);
+				DEBUG("%i results from normal-shares ", results.size());
+			}
 		} else {
 			mShares->search(query, results);
-			DEBUG("%i results", results.size());
+			DEBUG("%i results from normal-shares ", results.size());
 		}
 		if(! results.empty())
 		{
