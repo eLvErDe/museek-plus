@@ -76,6 +76,21 @@ bool Museekd::load_config() {
 #endif
 	}
 	
+	// added logging defaults (darrik@mythofbutterfly.com)
+	if (! mConfig["logging"]["output"]) {
+		// console output
+		mConfig["logging"]["output"] = 0;
+	}
+	if (! mConfig["logging"]["syslog_facility"]) {
+		// LOG_LOCAL6 facility (see syslog.h)
+		mConfig["logging"]["syslog_facility"] = 176;
+	}
+	if (! mConfig["logging"]["syslog_priority"]) {
+		// LOG_DEBUG priority (see syslog.h)
+		mConfig["logging"]["syslog_priority"] = 7;
+	}
+	// end logging defaults
+
 	if(! mConfig["shares"]["database"])
 		mConfig["shares"]["database"] = base + "shares";
 
@@ -167,6 +182,12 @@ bool Museekd::load_config() {
 
 
 void Museekd::init() {
+	// initial output sink for mulog
+	DEBUG("changing logging output to %d",mConfig["logging"]["output"].asUint());
+	mulog.setSyslogFacility(mConfig["logging"]["syslog_facility"].asUint());
+	mulog.setSyslogPriority(mConfig["logging"]["syslog_priority"].asUint());
+	mulog.setOutput(mConfig["logging"]["output"].asUint());
+
 	set_port_range(mConfig["clients.bind"]["first"].asUint(), mConfig["clients.bind"]["last"].asUint());
 	
 	Museek::init();
@@ -431,7 +452,22 @@ void Museekd::cb_iface_config_set(IfaceConnection* conn, const string& domain, c
 	mConfig[domain][key] = value;
 	mConfig.store();
 	
-	if(domain == "buddies")
+	// added logging config change (darrik@mythofbutterfly.com)
+	if (domain == "logging")
+	{
+		if (key == "output") {
+			if (value == "1") {
+				mulog.setOutput(1);
+			} else {
+				mulog.setOutput(0);
+			}
+		} else if (key == "syslog_facility") {
+			mulog.setSyslogFacility(atoi(value.data()));
+		} else if (key == "syslog_priority") {
+			mulog.setSyslogPriority(atoi(value.data()));
+		}
+	// end logging config change
+	} else if(domain == "buddies")
 	{
 		ALL_IFACES(config_set(domain, key, value));
 		mBuddies->add(key);

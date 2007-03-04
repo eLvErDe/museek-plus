@@ -18,6 +18,7 @@
  */
 
 #include <system.h>
+#include <syslog.h>
 
 #include <Muhelp/Mulog.hh>
 
@@ -47,6 +48,64 @@ void Mulog::operator() (const std::string& _class, const char* fmt, ...) {
 		if((p = (char *)realloc(p, size)) == NULL)
 			return;
 	}
+}
+
+void Mulog::setOutput(const int o) {
+	if ((o < 0) || (o > 1)) {
+		DEBUG("illegal output value in Mulog::setOutput()");
+		return;
+	}
+	std::list<MulogSink *>::iterator it = sinks.begin();
+	while (sinks.size() > 0) {
+		MulogSink *oldSink = sinks.front();
+		sinks.pop_front();
+		delete(oldSink);
+	}
+	switch (o) {
+		case 1 :
+			add( new MulogSyslog(this) );
+			mOutput = 1;
+			break;
+		case 0 :
+			add (new MulogConsole() );
+			mOutput = 0;
+			break;
+	}
+}
+
+const int Mulog::output() {
+	std::cerr << "Mulog::output()" << std::endl;
+	return(mOutput);
+}
+
+void Mulog::setSyslogFacility(int f) {
+	// hard-coded limits from syslog.h
+	if ((f < 0) || (f > (23<<3))) {
+		return;
+	}
+	mSyslogFacility = f;
+}
+
+const int Mulog::syslogFacility() {
+	return(mSyslogFacility);
+}
+
+void Mulog::setSyslogPriority(int p) {
+	// hard-coded limits from syslog.h
+	if ((p < 0) || (p > 7)) {
+		return;
+	}
+	mSyslogPriority = p;
+}
+
+const int Mulog::syslogPriority() {
+	return(mSyslogPriority);
+}
+
+void MulogSyslog::log(const std::string& _c, const std::string& _m) {
+	openlog("museekd", LOG_PID, mParent->syslogFacility());
+	syslog(mParent->syslogPriority(), "%s", _m.data());
+	closelog();
 }
 
 Mulog mulog;

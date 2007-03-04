@@ -223,6 +223,7 @@ if check_deps == 1:
   sys/poll.h
   pwd.h
   errno.h
+  syslog.h
 """):
 		t = ""
 		for h in headers:

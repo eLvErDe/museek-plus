@@ -25,6 +25,8 @@
 #include <list>
 #include <iostream>
 
+class Mulog;
+
 class MulogSink {
 public:
 	virtual ~MulogSink() {}
@@ -37,14 +39,32 @@ public:
 		{ std::cerr << "[" << _c << "] " << _m << std::endl; };
 };
 
+class MulogSyslog : public MulogSink {
+public:
+	MulogSyslog(Mulog *parent) : mParent(parent) { };
+	virtual void log(const std::string& _c, const std::string& _m);
+
+private:
+	Mulog *mParent;
+};
+
 class Mulog {
 public:
 	Mulog() { add(new MulogConsole()); };
+	void setOutput(int o);
+	const int output();
+	void setSyslogFacility(int f);
+	const int syslogFacility();
+	void setSyslogPriority(int p);
+	const int syslogPriority();
 	void operator() (const std::string&, const char*, ...);
 	void add(MulogSink *_s) { sinks.push_back(_s); };
 	void remove(MulogSink *_s) { sinks.remove(_s); };
 protected:
 	std::list<MulogSink *> sinks;
+	int mOutput;
+	int mSyslogFacility;
+	int mSyslogPriority;
 };
 
 extern Mulog mulog;
