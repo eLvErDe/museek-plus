@@ -865,37 +865,37 @@ class Mucous:
 			
 			username = self.dlang(username)
 			if changetype == "buddy":
-				if username not in self.config["buddies"].keys():
+				if not self.config.has_key("buddies") or username not in self.config["buddies"].keys():
 					self.D.ConfigSet("buddies", username, "buddied by mucous")
 					
 			elif changetype == "unbuddy":
-				if username in self.config["buddies"].keys():
+				if self.config.has_key("buddies") and username in self.config["buddies"].keys():
 					self.D.ConfigRemove("buddies", username)
 				else:
 					self.Help.Log("status", "User not in buddy list: %s" % username)
 			elif changetype == "ban":
-				if username not in self.config["banned"].keys():
+				if not self.config.has_key("banned") or username not in self.config["banned"].keys():
 					self.D.ConfigSet("banned", username, "banned by mucous")
 			elif changetype == "trusted":
-				if username not in self.config["trusted"].keys():
+				if not self.config.has_key("trusted") or username not in self.config["trusted"].keys():
 					self.D.ConfigSet("trusted", username, "")
 			elif changetype == "unban":
-				if username in self.config["banned"].keys():
+				if self.config.has_key("banned") and username in self.config["banned"].keys():
 					self.D.ConfigRemove("banned", username)
 				else:
 					self.Help.Log("status", "User not in ban list: %s" % username)
 			elif changetype == "ignore":
-				if username not in self.config["ignored"].keys():
+				if not self.config.has_key("ignored") or username not in self.config["ignored"].keys():
 					self.D.ConfigSet("ignored", username, "")
 					self.Help.Log("status", "Ignored: %s" % username)
 			elif changetype == "unignore":
-				if username in self.config["ignored"].keys():
+				if self.config.has_key("ignored") and username in self.config["ignored"].keys():
 					self.D.ConfigRemove("ignored", username)
 				else:
 					self.Help.Log("status", "User not in ignore list: %s" % username)
 			elif changetype == "autojoin":
 				room = username
-				if room not in self.config["autojoin"].keys():
+				if not self.config.has_key("autojoin") or room not in self.config["autojoin"].keys():
 					self.D.ConfigSet("autojoin", room, "")
 				else:
 					self.D.ConfigRemove("autojoin", room)
@@ -907,10 +907,10 @@ class Mucous:
 				else:
 					self.D.ConfigSet("autojoin", room, "")
 			elif changetype == "trust":
-				if username not in self.config["trusted"].keys():
+				if not self.config.has_key("trusted") or username not in self.config["trusted"].keys():
 					self.D.ConfigSet("trusted", username,  "")
 			elif changetype == "distrust":
-				if username in self.config["trusted"].keys():
+				if self.config.has_key("trusted") and username in self.config["trusted"].keys():
 					self.D.ConfigRemove("trusted", username)
 		except Exception, e:
 			self.Help.Log("debug", "ModifyConfig: " + str(e))

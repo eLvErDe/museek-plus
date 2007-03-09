@@ -637,25 +637,25 @@ class PopupMenu:
 			elif self.position == 4:
 				return 1
 			elif self.position == 5:
-				if username not in self.mucous.config["buddies"].keys():
+				if not self.mucous.config.has_key("buddies") or username not in self.mucous.config["buddies"].keys():
 					self.mucous.ModifyConfig("buddy", username, '')
 				else:
 					self.mucous.ModifyConfig("unbuddy", username, '')
 				return 1
 			elif self.position == 6:
-				if username not in self.mucous.config["banned"].keys():
+				if not self.mucous.config.has_key("banned") or username not in self.mucous.config["banned"].keys():
 					self.mucous.ModifyConfig("ban", username, '')
 				else:
 					self.mucous.ModifyConfig("unban", username, '')
 				return 1
 			elif self.position == 7:
-				if username not in self.mucous.config["ignored"].keys():
+				if not self.mucous.config.has_key("ignored") or username not in self.mucous.config["ignored"].keys():
 					self.mucous.ModifyConfig("ignore", username, '')
 				else:
 					self.mucous.ModifyConfig("unignore", username, '')
 				return 1
 			elif self.position == 8:
-				if username not in self.mucous.config["trusted"].keys():
+				if not self.mucous.config.has_key("trusted") or username not in self.mucous.config["trusted"].keys():
 					self.mucous.ModifyConfig("trust", username, '')
 				else:
 					self.mucous.ModifyConfig("distrust", username, '')

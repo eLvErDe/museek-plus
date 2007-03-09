@@ -348,7 +348,7 @@ class Setup:
 		mw = self.windows["border"]["setup"]
 		self.switchorder = ["default", "userinfo",  "userimage"]
 		info = ""
-		if "userinfo" in self.mucous.config.keys():
+		if self.mucous.config.has_key("userinfo"):
 			if "text" in self.mucous.config["userinfo"]:
 				info = self.mucous.config["userinfo"]["text"]
 
@@ -451,9 +451,10 @@ class Setup:
 	# @param line is a text string
 	def InputSetup(self, line):
 		try:
-			inputs  = ["default", "interface",  "interface-password", "showtickers", "tickertype", "autoclear", "autoretry", "autobuddy", "beep", "cycletime", "scrolltime", "encoding", "roomsize", "url-custom", "url-reader", "save",  "server-host", "server-port", "soulseek-username", "soulseek-password", "museek-interface-password", "connectmode", "only_buddies", "privilege_buddies", "have_buddy_shares", "trusting_uploads", "user_warnings", "slots", "download-dir", "incomplete-dir", "listnormal", "adddir", "rmdir", "rescannormal", "updatenormal", "listbuddy", "addbuddydir", "rmbuddydir", "rescanbuddy", "updatebuddy", "reloadshares", "logging", "logdir"]
+			inputs  = ["default", "interface",  "interface-password", "showtickers", "tickertype", "autoclear", "autoretry", "autobuddy", "beep", "cycletime", "scrolltime", "encoding", "roomsize", "url-custom", "url-reader", "save",  "server-host", "server-port", "soulseek-username", "soulseek-password", "museek-interface-password", "connectmode", "only_buddies", "privilege_buddies", "have_buddy_shares", "trusting_uploads", "user_warnings", "slots", "download-dir", "incomplete-dir", "listnormal", "adddir", "rmdir", "rescannormal", "updatenormal", "listbuddy", "addbuddydir", "rmbuddydir", "rescanbuddy", "updatebuddy", "reloadshares", "logging", "logdir", "userinfo", "userimage"]
 			
 			if self.input not in inputs:
+				self.mucous.SetEditTitle(self.input)
 				return
 			
 			line = self.mucous.dlang(line)
@@ -570,12 +571,10 @@ class Setup:
 				if line == "": return
 				self.mucous.Muscan.Command(["muscan", "-b", "-u", line])
 				self.mucous.Help.Log("status", "Removing "+line+" from buddy shares. Please rescan or update.")
-			# Userinfo
+				# Userinfo
 			elif self.input=="userinfo":
-				
 				try:
-					if '\\n' in line:
-						line = line.replace('\\n', '\n')
+					line = line.replace('\\n', '\n')
 					self.mucous.D.ConfigSet("userinfo", "text", line)
 				except Exception, e:
 					self.mucous.Help.Log("debug", "set userinfo: "+str( e))

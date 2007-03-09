@@ -240,10 +240,15 @@ class Recommendations:
 				length = len( item+( " " * (w["width"] - len(item)-len(str(num))))+str(num ) )
 				if length > w["width"]:
 					item = item [:w["width"] - length  ]
+				filler = item +( " " * (w["width"] - len(item)-len(str(num))))+str(num )
 				if count + start == sup:
-					self.windows["text"][mode].addstr(item +( " " * (w["width"] - len(item)-len(str(num))))+str(num ), curses.A_BOLD)
+					try:
+						self.windows["text"][mode].addstr(filler, curses.A_BOLD)
+					except: pass
 				else:
-					self.windows["text"][mode].addstr(item +( " " * (w["width"] - len(item)-len(str(num))))+str(num ))
+					try:
+						self.windows["text"][mode].addstr(filler)
+					except: pass
 				count += 1
 			self.windows["text"][mode].refresh()
 		except Exception, e:
@@ -288,7 +293,9 @@ class Recommendations:
 					self.windows["text"][mode].addstr("* " , attr)
 				if len (user )+2 > w["width"]:
 					user = user[ :w["width"]-2-len(user) ]
-				self.windows["text"][mode].addstr(user + " " * (w["width"] - len(user)-2),   attr)
+				try:
+					self.windows["text"][mode].addstr(user + " " * (w["width"] - len(user)-2),   attr)
+				except: pass
 				count +=1
 				
 			
@@ -315,9 +322,8 @@ class Recommendations:
 			w = self.dimensions[mode]
 			self.logs[mode] = []
 			sup = self.scrolling[ mode ]
-			if "interests.hate" in self.mucous.config.keys():
+			if self.mucous.config.has_key("interests.hate"):
 				for item in self.mucous.config["interests.hate"]:
-					
 					self.logs[mode].append( item)
 	
 			count = 0
@@ -348,7 +354,8 @@ class Recommendations:
 			w = self.dimensions[mode]
 			self.logs[mode] = []
 			sup = self.scrolling[ mode ]
-			if "interests.hate" in self.mucous.config.keys():
+
+			if self.mucous.config.has_key("interests.like"):
 				for item in self.mucous.config["interests.like"]:
 
 					self.logs[mode].append( item)

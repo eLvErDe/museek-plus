@@ -159,7 +159,7 @@ class CharacterParse:
 			elif c in ("-", "+"):
 				if self.mucous.mode == "setup" and self.mucous.Setup.input in self.mucous.Setup.numberboxes:
 					self.InputFunctions(c, self.line)
-				elif self.mucous.mode == "browse":
+				elif self.mucous.mode == "browse" and self.mucous.BrowseShares.selected == "directories":
 					if c == "-":
 						self.InputFunctions("collapse", self.line)
 					elif c == "+":
@@ -713,22 +713,21 @@ class CharacterParse:
 	def InputCompletionList(self):
 		try:
 			usercompletionlist = {}
-			if "buddies" in self.mucous.config:
+			if self.mucous.config.has_key("buddies"):
 				for users in self.mucous.config["buddies"].keys():
 					usercompletionlist[self.mucous.dlang(users)] = 0
-			if "banned" in self.mucous.config:
+			if self.mucous.config.has_key("banned"):
 				for users in self.mucous.config["banned"].keys():
 					usercompletionlist[self.mucous.dlang(users)] = 0
-			if "ignored" in self.mucous.config:
+			if self.mucous.config.has_key("ignored"):
 				for users in self.mucous.config["ignored"].keys():
 					usercompletionlist[self.mucous.dlang(users)] = 0
 			
-			#if self.mucous.mode == "chat":
-				# Autocomplete users in the current room only
+			
 			if self.mucous.ChatRooms.rooms.keys() != []:
 				for user in self.mucous.ChatRooms.rooms[self.mucous.ChatRooms.current]:
 					usercompletionlist[self.mucous.dlang(user)] = 0
-			#elif self.mucous.mode == "private":
+		
 			pmusers = self.mucous.PrivateChat.logs.keys()
 			for user in pmusers:
 				usercompletionlist[self.mucous.dlang(user)] = 0
@@ -1639,9 +1638,9 @@ class CharacterParse:
 				
 			elif command == "/unnuke" and args != '':
 				username = args
-				if username in self.mucous.config["ignored"].keys():
+				if self.mucous.config.has_key("ignored") and username in self.mucous.config["ignored"].keys():
 					self.mucous.ModifyConfig("unignore", username, '')
-				if username in self.mucous.config["banned"].keys():
+				if self.mucous.config.has_key("banned") and username in self.mucous.config["banned"].keys():
 					self.mucous.ModifyConfig("unban", username, '')
 					
 				self.mucous.Help.Log("status", "Irradiated: %s" % username)
@@ -2018,7 +2017,7 @@ class CharacterParse:
 				for userpath, values in self.mucous.Transfers.transfers["downloads"].items():
 					currentusersintransferlist[values[1]] = 0
 				for username in currentusersintransferlist.keys():
-					if username not in self.mucous.config["buddies"].keys():
+					if not self.mucous.config.has_key("buddies") or username not in self.mucous.config["buddies"].keys():
 						self.mucous.D.ConfigSet("buddies", username, "Buddied by mucous")
 						
 			elif command == "/nick" and args != '':

@@ -424,7 +424,7 @@ class UsersLists:
 	# @param self UsersLists (class)
 	def ListBuddy(self):
 		try:
-			if "buddies" not in self.mucous.config.keys():
+			if not self.mucous.config.has_key("buddies"):
 				return
 			self.logs["buddied"] = []
 			alpha_list = self.mucous.SortedDict()
@@ -433,11 +433,11 @@ class UsersLists:
 			
 			for user, note in alpha_list.items():
 				attributes = []
-				if self.mucous.config["trusted"].has_key(user):
+				if self.mucous.config.has_key("trusted") and self.mucous.config["trusted"].has_key(user):
 					attributes.append("trusted")
-				if self.mucous.config["ignored"].has_key(user):
+				if self.mucous.config.has_key("ignored") and self.mucous.config["ignored"].has_key(user):
 					attributes.append("ignored")
-				if self.mucous.config["banned"].has_key(user):
+				if self.mucous.config.has_key("banned") and self.mucous.config["banned"].has_key(user):
 					attributes.append("banned")
 				self.logs["buddied"].append([attributes, user, note])
 		except Exception, e:
@@ -447,7 +447,7 @@ class UsersLists:
 	# @param self UsersLists (class)
 	def ListTrust(self):
 		try:
-			if "trusted" not in self.mucous.config.keys():
+			if not self.mucous.config.has_key("trusted"):
 				return
 			self.logs["trusted"] = []
 			alpha_list = self.mucous.SortedDict()
@@ -456,11 +456,11 @@ class UsersLists:
 			
 			for user, note in alpha_list.items():
 				attributes = []
-				if self.mucous.config["ignored"].has_key(user):
+				if self.mucous.config.has_key("ignored") and self.mucous.config["ignored"].has_key(user):
 					attributes.append("ignored")
-				if self.mucous.config["banned"].has_key(user):
+				if self.mucous.config.has_key("banned") and self.mucous.config["banned"].has_key(user):
 					attributes.append("banned")
-				if self.mucous.config["buddies"].has_key(user):
+				if self.mucous.config.has_key("buddies") and self.mucous.config["buddies"].has_key(user):
 					attributes.append("buddies")
 				self.logs["trusted"].append([attributes, user, note])
 				
@@ -471,7 +471,7 @@ class UsersLists:
 	# @param self UsersLists (class)
 	def ListBan(self):
 		try:
-			if "banned" not in self.mucous.config.keys():
+			if not self.mucous.config.has_key("banned"):
 				return
 			self.logs["banned"] = []
 			alpha_list = self.mucous.SortedDict()
@@ -480,11 +480,11 @@ class UsersLists:
 			
 			for user, note in alpha_list.items():
 				attributes = []
-				if self.mucous.config["ignored"].has_key(user):
+				if self.mucous.config.has_key("ignored") and self.mucous.config["ignored"].has_key(user):
 					attributes.append("ignored")
-				if self.mucous.config["buddies"].has_key(user):
+				if self.mucous.config.has_key("buddies") and self.mucous.config["buddies"].has_key(user):
 					attributes.append("buddies")
-				if self.mucous.config["trusted"].has_key(user):
+				if self.mucous.config.has_key("trusted") and self.mucous.config["trusted"].has_key(user):
 					attributes.append("trusted")
 				self.logs["banned"].append([attributes, user, note])
 		except Exception, e:
@@ -494,9 +494,7 @@ class UsersLists:
 	# @param self UsersLists (class)
 	def ListIgnore(self):
 		try:
-			if self.mucous.config ==  {}:
-				return
-			if "ignored" not in self.mucous.config.keys():
+			if not self.mucous.config.has_key("ignored"):
 				return
 			self.logs["ignored"] = []
 			alpha_list = self.mucous.SortedDict()
@@ -505,11 +503,11 @@ class UsersLists:
 			
 			for user, note in alpha_list.items():
 				attributes = []
-				if self.mucous.config["banned"].has_key(user):
+				if self.mucous.config.has_key("banned") and self.mucous.config["banned"].has_key(user):
 					attributes.append("banned")
-				if self.mucous.config["buddies"].has_key(user):
+				if self.mucous.config.has_key("buddies") and self.mucous.config["buddies"].has_key(user):
 					attributes.append("buddies")
-				if self.mucous.config["trusted"].has_key(user):
+				if self.mucous.config.has_key("trusted") and self.mucous.config["trusted"].has_key(user):
 					attributes.append("trusted")
 				self.logs["ignored"].append([attributes, user, note])
 				

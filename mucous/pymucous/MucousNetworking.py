@@ -509,10 +509,10 @@ class Networking(driver.Driver):
 			did = "left"
 			what = None
 			if self.mucous.config !=  {}: 
-				if "ignored" in self.mucous.config.keys() and user not in self.mucous.config["ignored"].keys():
+				if self.mucous.config.has_key("ignored") and user not in self.mucous.config["ignored"].keys():
 					self.mucous.ChatRooms.AppendStatus(user, room, did, what)
 				else:
-					self.mucous.ChatRooms.AppendStatus(user, room, did, what)
+					pass
 			# correct placement in roombox
 			if  self.mucous.mode == "chat" and self.mucous.ChatRooms.selected  == "roombox":
 				self.mucous.ChatRooms.rooms[room].sort(key=str.lower)
@@ -848,16 +848,17 @@ class Networking(driver.Driver):
 	# @param value key's new value
 	def cb_config_set(self, domain, key, value):
 		try:
-			if key in self.mucous.config[domain].keys():
+			if self.mucous.config.has_key(domain) and key in self.mucous.config[domain].keys():
 				if not domain.startswith("museeq"):
 					self.mucous.Help.Log("status", "Modified <"+key+"> in <" +domain+"> to <"+value + ">")
-				self.mucous.config[domain][key] = value
 			else:
 				if value == '' and domain is not "userinfo" and not domain.startswith("museeq"):
 					self.mucous.Help.Log("status", "Added <"+key+"> to <" +domain+">")
 				else:
 					self.mucous.Help.Log("status", "Added <"+key+"> to <" +domain+"> and set to <"+value+">")
-				self.mucous.config[domain][key] = value
+			if not self.mucous.config.has_key(domain):
+				self.mucous.config[domain] = {}
+			self.mucous.config[domain][key] = value
 			self.mucous.ConfigUpdateDisplay(domain)
 		except Exception, e:
 			self.mucous.Help.Log("debug", "cb_config_set: " + str(e))
