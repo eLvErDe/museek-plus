@@ -738,7 +738,7 @@ class Transfers:
 		try:
 			vals = self.transfers[tran][user_path]
 			transfer, user, path, status, error, filepos, filesize, rate, place = vals
-			path = self.mucous.dlang(path)
+			path = self.mucous.dlang(self.mucous.dlang(path))
 
 			if filesize:
 				filefrmt  = self.mucous.FormatData.byte_format(filesize)
@@ -789,7 +789,7 @@ class Transfers:
 				else:
 					line = "%s| %s%%|%s|%s|%s|%s" % (str(n), percent[:5] , filefrmt , u, cut_status,  path[-self.mucous.w+40+2:])
 						
-			line = self.mucous.dlang(line)
+			#line = self.mucous.dlang(line)
 			line += ((self.mucous.w-2 - len(line)) * " ")
 			return line, status
 		except Exception, e:
