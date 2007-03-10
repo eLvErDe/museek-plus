@@ -388,9 +388,9 @@ class Transfers:
 			elif self.sort == 'all':
 				status_list = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
 			elif self.sort == 'finished':
-				status_list = (0, 99999)
+				status_list = (0,)
 			elif self.sort == 'queued':
-				status_list = (7, 99999)
+				status_list = (7,)
 			elif self.sort == 'failed':
 				status_list = ( 10, 11, 12, 13)
 			if list == "downloads":
@@ -788,6 +788,8 @@ class Transfers:
 					line = "%s| %s%%|%s|%s|%s|%s|%s" % (str(n), percent[:5] , filefrmt , u, cut_status, cut_place, path[-self.mucous.w+45+2:])
 				else:
 					line = "%s| %s%%|%s|%s|%s|%s" % (str(n), percent[:5] , filefrmt , u, cut_status,  path[-self.mucous.w+40+2:])
+						
+			line = self.mucous.dlang(line)
 			line += ((self.mucous.w-2 - len(line)) * " ")
 			return line, status
 		except Exception, e:
