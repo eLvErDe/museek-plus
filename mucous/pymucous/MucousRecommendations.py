@@ -134,12 +134,12 @@ class Recommendations:
 					if x >= w["left"]+2 and x <= w["left"]+7:
 						
 						if self.input == "add_likes":
-							self.InterestLikedAdd(self.mucous.line)
+							self.LikedAdd(self.mucous.line)
 						else:
 							self.input = "add_likes"
 					elif x >= w["left"]+9 and x <= w["left"]+w["width"]:
 						if self.input == "del_likes":
-							self.InterestLikedRemove(self.mucous.line)
+							self.LikedRemove(self.mucous.line)
 						else:
 							self.input = "del_likes"
 						
@@ -161,13 +161,13 @@ class Recommendations:
 				if y == w["top"] + w["height"]:
 					if x >= 2 and x <= 7:
 						if self.input == "add_hates":
-							self.InterestHatedAdd(self.mucous.line)
+							self.HatedAdd(self.mucous.line)
 						else:
 							self.input = "add_hates"
 						
 					elif x >= w["left"]+9 and x <= w["left"]+w["width"]:
 						if self.input == "del_hates":
-							self.InterestHatedRemove(self.mucous.line)
+							self.HatedRemove(self.mucous.line)
 						else:
 							self.input = "del_hates"
 				if y >= w["top"] and y < w["top"] + w["height"] and x >= w["left"] and x < w["left"] +w["width"]:
@@ -323,7 +323,9 @@ class Recommendations:
 			self.logs[mode] = []
 			sup = self.scrolling[ mode ]
 			if self.mucous.config.has_key("interests.hate"):
-				for item in self.mucous.config["interests.hate"]:
+				hates = self.mucous.config["interests.hate"].keys()
+				hates.sort(key=str.lower)
+				for item in hates:
 					self.logs[mode].append( item)
 	
 			count = 0
@@ -356,8 +358,10 @@ class Recommendations:
 			sup = self.scrolling[ mode ]
 
 			if self.mucous.config.has_key("interests.like"):
-				for item in self.mucous.config["interests.like"]:
-
+				likes = self.mucous.config["interests.like"].keys()
+				likes.sort(key=str.lower)
+				for item in likes:
+			
 					self.logs[mode].append( item)
 	
 			count = 0
