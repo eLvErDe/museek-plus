@@ -235,6 +235,11 @@ void ServerConnection::process_message(uint32 code) {
 		mMuseek->cb_server_get_global_recommendations(s.recommendations);
 		break;
 	}
+	case 57: {
+		PARSE(SUserInterests);
+		DEBUG("User interests recieved for %s, liked: %d, hated: %d", s.user.c_str(), s.likes.size(), s.hates.size());
+		break;
+	}
 	case 64: {
 		PARSE(SRoomList)
 		DEBUG("got room list, <...> (%d)", s.roomlist.size());
@@ -626,6 +631,13 @@ void ServerConnection::get_peer_privileged(const std::string& _u) {
 	CT("get_peer_privileged %s", _u.c_str());
 	
 	SUserPrivileges s(_u);
+	send(s);
+}
+
+void ServerConnection::get_peer_interests(const std::string& _u) {
+	CT("get_peer_interests %s", _u.c_str());
+	
+	SUserInterests s(_u);
 	send(s);
 }
 

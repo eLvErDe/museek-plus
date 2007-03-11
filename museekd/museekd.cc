@@ -593,8 +593,10 @@ void Museekd::cb_iface_peer_address(IfaceConnection* conn, const string& user) {
 void Museekd::cb_iface_info(IfaceConnection* conn, const string& user) {
 	if(user == mUsername) {
 		mPeerManager->get_peer(user)->connection()->local_userinfo_request();
+		server_get_peer_interests(user);
 	} else {
 		mPeerManager->get_peer(user)->connection()->info();
+		server_get_peer_interests(user);
 	}
 }
 

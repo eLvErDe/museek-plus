@@ -373,7 +373,7 @@ for dir in subdirs:
 	SConscript(os.path.join(dir, 'SConscript'), build_dir = bd, duplicate = 1)
 
 
-
+ 
 # Save the options we want to have saved (basically, everything but DESTDIR)
 print env['DESTDIR']
 f = open("mulocal.py", "w")

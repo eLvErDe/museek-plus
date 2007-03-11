@@ -220,6 +220,10 @@ void Museek::server_get_peer_address(const string& user) {
 		mServer->get_peer_address(user);
 }
 
+void Museek::server_get_peer_interests(const string& user) {
+	if(mServer)
+		mServer->get_peer_interests(user);
+}
 void Museek::server_get_peer_status(const string& user) {
 	if(mServer)
 		mServer->get_peer_status(user);

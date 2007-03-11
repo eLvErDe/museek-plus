@@ -43,6 +43,7 @@ public:
 	void get_peer_status(const std::string& user);
 	void get_peer_stats(const std::string& user);
 	void get_peer_privileged(const std::string& user);
+	void get_peer_interests(const std::string& user);
 	void request_peer_connect(uint32 token, const std::string& user, const std::string& type);
 	void peer_cannot_connect(uint32 token, const std::string& user);
 	

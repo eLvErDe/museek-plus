@@ -135,6 +135,7 @@ public:
 	void server_get_peer_status(STR user);
 	void server_get_peer_stats(STR user);
 	void server_get_peer_privileged(STR user);
+	void server_get_peer_interests(STR user);
 	void server_request_peer_connect(uint32 token, STR user, STR type);
 	void server_peer_cannot_connect(uint32 token, STR user);
 	

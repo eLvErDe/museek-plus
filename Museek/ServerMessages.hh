@@ -424,6 +424,35 @@ SERVERMESSAGE(SGetGlobalRecommendations, 56)
 	std::map<std::string, uint32> recommendations;
 END
 
+
+SERVERMESSAGE(SUserInterests, 57)
+	SUserInterests() {};
+	SUserInterests(const std::string& _u) : user(_u) {};
+
+	MAKE
+		pack(user);
+	END_MAKE
+
+	PARSE
+		user = unpack_string();
+		uint32 n1 = unpack_int();
+		while(n1) {
+			likes.push_back(unpack_string());
+			n1--;
+		}
+		uint32 n2 = unpack_int();
+		while(n2) {
+			hates.push_back(unpack_string());
+			n2--;
+		}
+	END_PARSE
+
+	std::string user;
+	std::vector<std::string> hates, likes;
+
+END
+
+
 SERVERMESSAGE(SRoomList, 64)
 	SRoomList() {};
 
