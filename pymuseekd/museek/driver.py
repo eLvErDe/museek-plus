@@ -137,8 +137,6 @@ class Driver:
 			return
 		
 		if message.__class__ is messages.Challenge:
-			self.cb_status_message(0, message.challenge)
-			chresp = sha256Block(message.challenge + self.password).hexdigest()
 			self.send(messages.Login("SHA256", chresp, self.mask))
 		elif message.__class__ is messages.Login:
 			self.logged_in = message.result
