@@ -81,7 +81,7 @@
     </message>
     <message>
         <source>Haven&apos;t received shares</source>
-        <translation>Non ho ricevuto lo share</translation>
+        <translation>Non ho ricevuto i condivisi</translation>
     </message>
 </context>
 <context>
@@ -300,7 +300,7 @@
     </message>
     <message>
         <source>Select a Directory for current download(s)</source>
-        <translation>Seleziona una cartella per i download correnti</translation>
+        <translation>Seleziona una cartella per gli scaricamenti correnti</translation>
     </message>
 </context>
 <context>
@@ -520,7 +520,7 @@
     </message>
     <message>
         <source>&amp;Browse My Shares</source>
-        <translation>&amp;Mio share</translation>
+        <translation>&amp;Esplora miei condivisi</translation>
     </message>
     <message>
         <source>E&amp;xit</source>
@@ -580,7 +580,7 @@
     </message>
     <message>
         <source>&amp;Browse Shares</source>
-        <translation>&amp;Esplora share</translation>
+        <translation>&amp;Esplora condivisi</translation>
     </message>
     <message>
         <source>&amp;Modes</source>
@@ -728,7 +728,7 @@
     </message>
     <message>
         <source> Status: Online</source>
-        <translation> Stato: Online</translation>
+        <translation> Stato: In linea</translation>
     </message>
     <message>
         <source>Disconnected from soulseek</source>
@@ -748,7 +748,7 @@
     </message>
     <message>
         <source>Offline</source>
-        <translation>Offline</translation>
+        <translation>Non in linea</translation>
     </message>
     <message>
         <source>Error</source>
@@ -818,7 +818,7 @@
     </message>
     <message>
         <source>Shutdown Museeq</source>
-        <translation>Spegni Museeq</translation>
+        <translation>Chiudi Museeq</translation>
     </message>
     <message>
         <source>The Museek Daemon was launched by Museeq and is still running, and will be shut down if you close Museeq, are you sure you want to?</source>
@@ -908,7 +908,7 @@
     <name>OnlineAlert</name>
     <message>
         <source>Online alert</source>
-        <translation>Avvertimento online</translation>
+        <translation>Avvertimento in linea</translation>
     </message>
     <message>
         <source>&amp;Remove</source>
@@ -928,7 +928,7 @@
     </message>
     <message>
         <source>offline</source>
-        <translation>offline</translation>
+        <translation>non in linea</translation>
     </message>
     <message>
         <source>away</source>
@@ -936,7 +936,7 @@
     </message>
     <message>
         <source>online</source>
-        <translation>online</translation>
+        <translation>in linea</translation>
     </message>
     <message>
         <source>%1 user %2 is now %3</source>
@@ -947,7 +947,7 @@
     <name>PrivateChat</name>
     <message>
         <source>%1 is offline</source>
-        <translation>%1 è offline</translation>
+        <translation>%1 non è in linea</translation>
     </message>
     <message>
         <source>%1 is away</source>
@@ -955,7 +955,7 @@
     </message>
     <message>
         <source>%1 is online</source>
-        <translation>%1 è online</translation>
+        <translation>%1 è in linea</translation>
     </message>
 </context>
 <context>
@@ -1159,7 +1159,7 @@
     </message>
     <message>
         <source>Select a Directory for current download(s)</source>
-        <translation>Seleziona una cartella per i download correnti</translation>
+        <translation>Seleziona una cartella per gli scaricamenti correnti</translation>
     </message>
 </context>
 <context>
@@ -1277,7 +1277,7 @@
     </message>
     <message>
         <source>Reload Shares</source>
-        <translation>Ricarica share</translation>
+        <translation>Ricarica condivisi</translation>
     </message>
     <message>
         <source>Select..</source>
@@ -1285,7 +1285,7 @@
     </message>
     <message>
         <source>Download Dir:</source>
-        <translation>Cartella download:</translation>
+        <translation>Cartella scaricamenti:</translation>
     </message>
     <message>
         <source>Incomplete Dir:</source>
@@ -1313,7 +1313,7 @@
     </message>
     <message>
         <source>Seperate Shares list for Buddies</source>
-        <translation>Lista share separata per gli Amici</translation>
+        <translation>Lista condivisi separata per gli Amici</translation>
     </message>
     <message>
         <source>Send automatic warnings to users via Private Chat</source>
@@ -1325,7 +1325,7 @@
     </message>
     <message>
         <source>Select a Directory to store your downloaded files.</source>
-        <translation>Seleziona una cartella per i tuoi download.</translation>
+        <translation>Seleziona una cartella per i tuoi scaricamenti.</translation>
     </message>
     <message>
         <source>All files (*)</source>
@@ -1333,7 +1333,7 @@
     </message>
     <message>
         <source>Select a Directory to store your incomplete downloading files.</source>
-        <translation>Seleziona una cartella per i tuoi download incompleti.</translation>
+        <translation>Seleziona una cartella per i tuoi scaricamenti incompleti.</translation>
     </message>
     <message>
         <source>IP addresses in Log Window instead of popup</source>
@@ -1423,7 +1423,7 @@
     </message>
     <message>
         <source>User Offline</source>
-        <translation>Utente offline</translation>
+        <translation>Utente non in linea</translation>
     </message>
     <message>
         <source>Connection closed by peer</source>
@@ -1493,7 +1493,7 @@
     <name>Transfers</name>
     <message>
         <source>Downloads:</source>
-        <translation>Downloads:</translation>
+        <translation>Scaricamenti:</translation>
     </message>
     <message>
         <source>Group by user</source>
@@ -1525,7 +1525,7 @@
     </message>
     <message>
         <source>Offline</source>
-        <translation>Offline</translation>
+        <translation>Non in linea</translation>
     </message>
     <message>
         <source>Cruft</source>
@@ -1739,7 +1739,7 @@
     </message>
     <message>
         <source>Online alert</source>
-        <translation>Avvertimento online</translation>
+        <translation>Avvertimento in linea</translation>
     </message>
     <message>
         <source>Edit Comments</source>
