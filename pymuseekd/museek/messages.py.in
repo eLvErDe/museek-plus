@@ -26,6 +26,7 @@ EM_USERINFO	= 1 << 3
 EM_USERSHARES	= 1 << 4
 EM_INTERESTS	= 1 << 5
 EM_CONFIG	= 1 << 6
+EM_DEBUG	= 1 << 7
 
 # Transfer state
 TS_Finished	= 0

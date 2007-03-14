@@ -40,7 +40,7 @@ class Networking(driver.Driver):
 					self.mucous.NickTimer.cancel()
 					self.mucous.NickTimer = threading.Timer(10.0, self.mucous.ThreadNickCheck)
 					self.mucous.NickTimer.start()
-					driver.Driver.connect(self, self.mucous.Config["connection"]["interface"],  self.mucous.Config["connection"]["passw"], messages.EM_CHAT |  messages.EM_USERINFO| messages.EM_PRIVATE| messages.EM_TRANSFERS  | messages.EM_USERSHARES | messages.EM_CONFIG |  messages.EM_INTERESTS)
+					driver.Driver.connect(self, self.mucous.Config["connection"]["interface"],  self.mucous.Config["connection"]["passw"], messages.EM_CHAT |  messages.EM_USERINFO| messages.EM_PRIVATE| messages.EM_TRANSFERS  | messages.EM_USERSHARES | messages.EM_CONFIG |  messages.EM_INTERESTS | messages.EM_DEBUG)
 					
 					#break
 				else:
