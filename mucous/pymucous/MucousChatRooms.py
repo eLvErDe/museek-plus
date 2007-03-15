@@ -1168,7 +1168,7 @@ class ChatRooms:
 					tw.addstr(timestamp)
 					# Normal user chat
 					pre = " ["
-					tw.addstr(pre, curses.A_BOLD | self.mucous.colors["black"])
+					tw.addstr(pre)
 					length += len(timestamp) + len(pre)
 					
 					name = self.mucous.dlang(username)
@@ -1187,7 +1187,7 @@ class ChatRooms:
 			
 					suf = "] "
 					length += len(suf)
-					tw.addstr(suf, curses.A_BOLD | self.mucous.colors["black"])
+					tw.addstr(suf)
 					if mtype == "Mentioned":
 						x = message.split(" ")
 						for e in x:
