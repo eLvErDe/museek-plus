@@ -1279,6 +1279,21 @@ class ChatRooms:
 		except:
 			pass
 				
+	def WindowCycle(self):
+		_list = None
+		if self.shape == "chat-only":
+			self.selected = "chatroom"
+			return
+		elif self.shape == "nostatuslog":
+			_list = ["chatroom", "roombox"]
+		elif self.shape ==  "noroombox":
+			_list = ["chatroom", "roomstatus"]
+		else:
+			_list = ["chatroom", "roomstatus", "roombox"]
+		if _list != None:
+			self.selected = self.mucous.FormatData.RotateList("right", _list, self.selected, "no")
+			self.Mode()
+ 	
 	## Switch to another Chat Window Layout
 	# @param self is ChatRooms (class)
 	def ChatLayout(self):

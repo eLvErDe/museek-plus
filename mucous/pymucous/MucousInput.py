@@ -538,19 +538,7 @@ class CharacterParse:
 					
 			elif key  == "switch":
 				if self.mucous.mode == "chat":
-					_list = None
-					if self.mucous.ChatRooms.shape == "chat-only":
-						self.mucous.ChatRooms.selected = "chatroom"
-						return
-					elif self.mucous.ChatRooms.shape == "nostatuslog":
-						_list = ["chatroom", "roombox"]
-					elif self.mucous.ChatRooms.shape ==  "noroombox":
-						_list = ["chatroom", "roomstatus"]
-					else:
-						_list = ["chatroom", "roomstatus", "roombox"]
-					if _list != None:
-						self.mucous.ChatRooms.selected = self.mucous.FormatData.RotateList("right", _list, self.mucous.ChatRooms.selected, "no")
-						self.mucous.ChatRooms.Mode()
+					self.mucous.ChatRooms.WindowCycle()
 				
 				elif self.mucous.mode == "browse":	
 					_list = [ "files", "directories" ]
@@ -1688,7 +1676,8 @@ class CharacterParse:
 					
 			elif command == "/roombox":
 				self.mucous.ChatRooms.ChatLayout()
-				
+			elif command == "/roomwin":
+				self.mucous.ChatRooms.WindowCycle()
 			elif command == "/login":
 				self.mucous.D.ConnectServer()
 				

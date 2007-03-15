@@ -40,6 +40,7 @@ class Networking(driver.Driver):
 					self.mucous.NickTimer.cancel()
 					self.mucous.NickTimer = threading.Timer(10.0, self.mucous.ThreadNickCheck)
 					self.mucous.NickTimer.start()
+					
 					driver.Driver.connect(self, self.mucous.Config["connection"]["interface"],  self.mucous.Config["connection"]["passw"], messages.EM_CHAT |  messages.EM_USERINFO| messages.EM_PRIVATE| messages.EM_TRANSFERS  | messages.EM_USERSHARES | messages.EM_CONFIG |  messages.EM_INTERESTS | messages.EM_DEBUG)
 					
 					#break
@@ -249,7 +250,18 @@ class Networking(driver.Driver):
 			self.mucous.Help.Log("status", "%s Message: %s" % (stype, message))
 		except Exception,e:
 			self.mucous.Help.Log("debug", "cb_status_message: " +str( e) )
-				
+			
+	## Museekd sent us a debug message
+	# @param self Networking (Driver Class)
+	# @param domain is a string the value of which is a debug type
+	# @param message is the message string
+	def cb_debug_message(self, domain, message):
+		try:
+			if domain in ["museek.note", "museek.warn"] :
+				self.mucous.Help.Log("status", "%s Message: %s" % (domain, message))
+		except Exception,e:
+			self.mucous.Help.Log("debug", "cb_debug_message: " +str( e) )
+			
 	## Museekd sent us the server state and our username
 	# @param self Networking (Driver Class)
 	# @param state is a bool; False if disconnected from the server / True if connected

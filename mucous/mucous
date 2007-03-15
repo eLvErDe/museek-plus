@@ -86,7 +86,7 @@ except ImportError:
 config_dir = str(os.path.expanduser("~/.mucous/"))
 log_dir = None #str(os.path.expanduser("~/.mucous/logs/"))
 config_file = config_dir+"config"
-Version = "0.9.1"
+Version = "0.9.2"
 
 ## Command Options
 def usage():
