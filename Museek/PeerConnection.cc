@@ -124,8 +124,16 @@ void PeerConnection::process_message(uint32 code) {
 			}
 			DEBUG("sending user info to %s", mUser.c_str());
 			lock();
+			string newline = "\n";
 			
-			PInfoReply r(mMuseek->recoder()->encode_network(mMuseek->userinfo()),
+			string descr = mMuseek->recoder()->encode_network(mMuseek->userinfo());
+
+			std::string::size_type match = 0;
+			while  ((match = descr.find("\n", match)) != string::npos){
+				descr.insert(match, "\r");
+				match += 2;
+				}
+			PInfoReply r(descr,
 				mMuseek->userpic(),
 				mMuseek->upload_slots(),
 				mMuseek->transfer_manager()->queue_length(mUser),
@@ -475,7 +483,14 @@ void PeerConnection::local_shares_request() {
 
 void PeerConnection::local_userinfo_request() {
 	CT("local_userinfo_request %s", mUser.c_str());
-	PInfoReply r(mMuseek->recoder()->encode_network(mMuseek->userinfo()),
+	string descr = mMuseek->recoder()->encode_network(mMuseek->userinfo());
+	std::string::size_type match = 0;
+	while  ((match = descr.find("\n", match)) != string::npos){
+		descr.insert(match, "\r");
+		match += 2;
+		}
+
+	PInfoReply r(descr,
 		mMuseek->userpic(),
 		mMuseek->upload_slots(),
 		mMuseek->transfer_manager()->queue_length(mUser),
