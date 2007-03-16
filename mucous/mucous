@@ -38,11 +38,12 @@ except ImportError:
 		sys.exit()
 try:
 	import messages, driver
-except:
+except Exception, error:
 	try:
 		from museek import messages, driver
-	except:
-		print "WARNING: The Museek Message-Parsing modules, messages.py and/or driver.py  were not found. Please install them into your '/usr/lib/python2.X/site-packages/museek' directory, or place them in a 'museek' subdirectory of the directory that contains the mucous python script."
+	except Exception, error:
+		print "WARNING: The Museek Message-Parsing modules, messages.py and/or driver.py  were not found. Please install them into your '/usr/lib/python2.X/site-packages/museek' directory, or place them in a 'museek' subdirectory of the directory that contains the mucous python script.", error
+		
 		sys.exit()
 	
 import signal, time, os, commands, getopt, threading, select, string, re, ConfigParser
@@ -254,7 +255,7 @@ class ConfigManager:
 				
 		else:
 			os.mkdir(config_dir, 0700)
-			create_config()
+			self.create_config()
 			
 	
 

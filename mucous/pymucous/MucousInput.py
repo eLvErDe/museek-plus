@@ -1577,9 +1577,10 @@ class CharacterParse:
 				for rooms12 in self.mucous.ChatRooms.tickers:
 					alpha_list[rooms12] = self.mucous.ChatRooms.tickers[rooms12]
 				#if self.mucous.Config["tickers"]["tickers_enabled"] == 'yes':
+				
 				for rooms13, ticks in alpha_list.items():
 					if rooms13 == woom:
-						ttickers =[]
+						
 						ttickers = ticks.keys()
 						if ttickers != []:
 							self.mucous.Help.Log("status", "Tickers in room: "+str(rooms13))
