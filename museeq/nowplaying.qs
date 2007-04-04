@@ -3,55 +3,55 @@
  Fields:
 
   %(file)        filename or URL
-                 [xmms, amarok, mpd]
+                 [xmms, amarok, mpd, audacious]
   
   %(artist)      artist
-                 [amarok, mp3blaster, mpd]
+                 [amarok, mp3blaster, mpd, audacious]
   %(track)       name of the track
-                 [amarok, mp3blaster, mpd]
+                 [amarok, mp3blaster, mpd, audacious]
   %(title)       %(artist) - %(track)
-                 [xmms, amarok, mp3blaster, mpd]
+                 [xmms, amarok, mp3blaster, mpd, audacious]
   %(album)       album the track is on
-                 [amarok, mp3blaster, mpd]
+                 [amarok, mp3blaster, mpd, audacious]
   %(trackno)     track number on the album
-                 [mpd]
+                 [mpd, audacious]
   %(tracks)      tracks on the album
                  []
   %(year)        year the track was released
-                 [amarok]
+                 [amarok, audacious]
   %(genre)       the genre the track belongs to
-                 [amarok]
+                 [amarok, audiacious]
   
   %(pos)         position in the current track (m:ss)
-                 [xmms, amarok, mpd]
+                 [xmms, amarok, mpd, audacious]
   %(pos_sec)     position in the current track(seconds)
-                 [amarok]
+                 [amarok, audacious]
   %(pos_usec)    position in the current track (useconds)
                  [xmms]
   %(pos_%)       position in the current track (percentage)
                  [mpd]
   
   %(length)      length of the current track (m:ss)
-                 [xmms, amarok]
+                 [xmms, amarok, audacious]
   %(length_sec)  length of the current track (seconds)
-                 [amarok, mp3blaster]
+                 [amarok, mp3blaster, audacious]
   %(length_usec) length of the current track (useconds)
                  [xmms]
   
   %(bitrate)     bitrate
-                 [xmms, amarok, mp3blaster]
+                 [xmms, amarok, mp3blaster, audacious]
   %(samplerate)  samplerate
-                 [xmms, mp3blaster]
+                 [xmms, mp3blaster, audacious]
   %(channels)    channels of the media file (number)
-                 [xmms]
+                 [xmms, audacious]
   
   %(status)      status of the player
-                 [xmms, mp3blaster, mpd]
+                 [xmms, mp3blaster, mpd, audacious]
   
   %(pl_length)   length of the playlist
-                 [xmms, mpd]
+                 [xmms, mpd, audacious]
   %(pl_current)  current position in playlist
-                 [xmms, mpd]
+                 [xmms, mpd, audacious]
 
 */
   
@@ -63,6 +63,7 @@ var nowPlayingPlayer = "xmms";
 var nowPlayingInfoPipe = "/tmp/xmms-info";
 var nowPlayingAmarok = "amarok";
 var nowPlayingMP3Blaster = "~/.mp3blaster-status";
+var nowPlayingAudtool = "audtool";
 
 function nowPlayingExpandHome(p)
 {
@@ -194,6 +195,77 @@ function nowPlayingBuildAmarok(format)
 	return s;
 }
 
+function nowPlayingGetAudacious(field, subfield)
+{
+	Process.execute([ nowPlayingAudtool, field, subfield ], '');
+	return Process.stdout.substring(0, Process.stdout.length - 1);
+}
+
+function nowPlayingBuildAudacious(format)
+{
+	var s = format;
+	
+	if(s.find("%(title)") >= 0)
+		s = s.replace("%(title)", "%(artist) - %(track)");
+	
+	if(s.find("%(file)") >= 0)
+	{
+		base = nowPlayingGetAudacious("current-song-tuple-data", "file_path");
+		ext = nowPlayingGetAudacious("current-song-tuple-data", "file_ext");
+		s = s.replace("%(file)", base + ext);
+	}
+	
+	if(s.find("%(artist)") >= 0)
+		s = s.replace("%(artist)", nowPlayingGetAudacious("current-song-tuple-data", "performer"));
+	
+	if(s.find("%(track)") >= 0)
+		s = s.replace("%(track)", nowPlayingGetAudacious("current-song-tuple-data", "track_name"));
+	
+	if(s.find("%(album)") >= 0)
+		s = s.replace("%(album)", nowPlayingGetAudacious("current-song-tuple-data", "album_name"));
+	
+	if(s.find("%(trackno)") >= 0)
+		s = s.replace("%(trackno)", nowPlayingGetAudacious("current-song-tuple-data", "track_number"));
+	
+	if(s.find("%(year)") >= 0)
+		s = s.replace("%(year)", nowPlayingGetAudacious("current-song-tuple-data", "year"));
+	
+	if(s.find("%(genre)") >= 0)
+		s = s.replace("%(genre)", nowPlayingGetAudacious("current-song-tuple-data", "genre"));
+	
+	if(s.find("%(pos)") >= 0)
+		s = s.replace("%(pos)", nowPlayingGetAudacious("current-song-output-length"));
+	
+	if(s.find("%(pos_sec") >= 0)
+		s = s.replace("%(pos_sec)", nowPlayingGetAudacious("current-song-output-length-seconds"));
+	
+	if(s.find("%(length)") >= 0)
+		s = s.replace("%(length)", nowPlayingGetAudacious("current-song-length"));
+	
+	if(s.find("%(length_sec") >= 0)
+		s = s.replace("%(length_sec)", nowPlayingGetAudacious("current-song-length-seconds"));
+	
+	if(s.find("%(bitrate)") >= 0)
+		s = s.replace("%(bitrate)", nowPlayingGetAudacious("current-song-bitrate"));
+	
+	if(s.find("%(samplerate)") >= 0)
+		s = s.replace("%(samplerate)", nowPlayingGetAudacious("current-song-frequency"));
+	
+	if(s.find("%(channels)") >= 0)
+		s = s.replace("%(channels)", nowPlayingGetAudacious("current-song-channels"));
+	
+	if(s.find("%(status)") >= 0)
+		s = s.replace("%(status)", nowPlayingGetAudacious("playback-status"));
+	
+	if(s.find("%(pl_length)") >= 0)
+		s = s.replace("%(pl_length)", nowPlayingGetAudacious("playlist-length"));
+	
+	if(s.find("%(pl_current)") >= 0)
+		s = s.replace("%(pl_current)", nowPlayingGetAudacious("playlist-position"));
+	
+	return s;
+}
+
 function nowPlayingBuildMPD(format)
 {
 	format = format.replace ("%(artist)" , "%artist%");
@@ -279,6 +351,8 @@ function nowPlayingBuild(format)
 		return nowPlayingBuildMPD(format);
 	else if(nowPlayingPlayer == "mp3blaster")
 		return nowPlayingBuildMP3Blaster(format);
+	else if(nowPlayingPlayer == "audacious")
+		return nowPlayingBuildAudacious(format);
 	
 	return "";
 }
@@ -350,6 +424,8 @@ function nowPlayingConfigChanged(domain, key, value)
 			nowPlayingAmarok = value;
 		else if(key == "mp3blaster")
 			nowPlayingMP3Blaster = value;
+		else if(key == "audtool")
+			nowPlayingAudtool = value;
 	}
 }
 
@@ -382,6 +458,17 @@ function nowPlayingConfigure()
 	infopipe.label = "Path to infopipe:";
 	infopipe.text = nowPlayingInfoPipe;
 	group.add(infopipe);
+	
+	var audacious = new RadioButton;
+	audacious.text = "Audacious (using audtool)";
+	if(nowPlayingPlayer == "audacious")
+		audacious.checked = true;
+	group.add(audacious);
+	
+	var audtool_app = new LineEdit;
+	audtool_app.label = "Path to audtool:";
+	audtool_app.text = nowPlayingAudtool;
+	group.add(audtool_app);
 	
 	var amarok = new RadioButton;
 	amarok.text = "Amarok (using DCOP)";
@@ -422,10 +509,13 @@ function nowPlayingConfigure()
 			Museeq.setConfig("QSAnowPlaying", "player", "amarok");
 		else if(mpd.checked)
 			Museeq.setConfig("QSAnowPlaying", "player", "mpd");
+		else if(audacious.checked)
+			Museeq.setConfig("QSAnowPlaying", "player", "audacious");
 		else
 			Museeq.setConfig("QSAnowPlaying", "player", "mp3blaster");
 		
 		Museeq.setConfig("QSAnowPlaying", "infopipe", infopipe.text);
+		Museeq.setConfig("QSAnowPlaying", "audtool", audtool_app.text);
 		Museeq.setConfig("QSAnowPlaying", "amarok", amarok_app.text);
 		Museeq.setConfig("QSAnowPlaying", "mp3blaster", mp3blaster_path.text);
 	}
@@ -460,6 +550,10 @@ function init()
 	value = config("QSAnowPlaying", "infopipe");
 	if(value)
 		nowPlayingInfoPipe = value;
+	
+	value = config("QSAnowPlaying", "audtool");
+	if(value)
+		nowPlayingAudtool = value;
 	
 	value = config("QSAnowPlaying", "amarok");
 	if(value)
