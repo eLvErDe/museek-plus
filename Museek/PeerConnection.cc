@@ -344,6 +344,14 @@ void PeerConnection::process_message(uint32 code) {
 	case 46: {
 		PARSE(PUploadFailed);
 		DEBUG("got Upload Failed from %s, %s", mUser.c_str(), s.filename.c_str());
+		Transfer *transfer = mPeer->download(mMuseek->recoder()->decode_user(mUser, s.filename));
+		if(! transfer) {
+			DEBUG("couldn't find transfer %s, %s", mUser.c_str(), s.filename.c_str());
+			break;
+		} if((transfer->state() != TS_Queued) || (! transfer->auto_retry()))
+			transfer->set_error("Upload failed");
+		else
+			DEBUG("Retrying download");
 		break;
 	}
 	case 52: {

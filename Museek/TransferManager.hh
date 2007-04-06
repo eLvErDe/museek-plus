@@ -46,6 +46,7 @@ public:
 	inline Peer* peer() const { return mPeer; }
 	
 	void retry();
+	bool auto_retry();
 	
 	inline bool ticket_valid() const { return mTicketValid; };
 	inline uint32 ticket() const { return mTicket; }
@@ -114,6 +115,7 @@ private:
 	off_t mSize, mPos;
 	uint32 mRate, mPlaceInQueue;
 	std::vector<uint32> mRatePool;
+	int mAutoRetries;
 	
 	BaseConnection* mConnection;
 	

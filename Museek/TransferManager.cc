@@ -232,7 +232,7 @@ void TransferManager::set_place_in_queue(const string& user, const wstring& path
 
 Transfer::Transfer(TransferManager* manager, Direction direction, Peer* peer, const wstring& path, const wstring& local_path, const wstring& temp_path, off_t size)
          : mManager(manager), mDirection(direction), mTicketValid(false), mPeer(peer), mPath(path), mLocalPath(local_path), mTempPath(temp_path),
-           mState((direction == Download) ? TS_Offline : TS_Queued), mSize(size), mPos(0), mRate(0), mPlaceInQueue((uint32)-1),
+           mState((direction == Download) ? TS_Offline : TS_Queued), mSize(size), mPos(0), mRate(0), mPlaceInQueue((uint32)-1), mAutoRetries(0),
            mConnection(0), mFD(-1), mCollected(0) {
 	CT("transfer %s, %s", peer->user().c_str(), path.c_str());
 	
@@ -277,6 +277,14 @@ void Transfer::retry() {
 	
 	mPeer->remove_transfer(this);
 	mPeer->add_transfer(this);
+}
+
+bool Transfer::auto_retry() {
+	if(mAutoRetries > 3)
+		return false;
+	++mAutoRetries;
+	retry();
+	return true;
 }
 
 std::string Transfer::path_utf8() const {
@@ -342,12 +350,24 @@ void Transfer::set_state(TrState state) {
 
 		if(mPeer->uploading() == this)
 			mPeer->set_uploading(0);
-
+		
+		break;
+	
+	case TS_Transferring:
+		mAutoRetries = 0;
+		break;
+	
 	default: ;
 	}
 	
 	mState = state;
 	mManager->museek()->cb_transfer_update(this);
+
+	if(mDirection == Download && mState == TS_ConnectionClosed)
+	{
+		DEBUG("connection closed by peer, automatically retrying");
+		auto_retry();
+	}
 }
 
 void Transfer::set_status(uint32 status) {
