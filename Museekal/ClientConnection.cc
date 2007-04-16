@@ -229,11 +229,11 @@ void ClientConnection::return_poll_mask(int mask) {
 	}
 
 	if (mask & MASKIN) {
-		char *data = new char[1024 * 1024];
-		int i = 1, read = 0;
+		char data[16384];
+		int i = 1, read = 0, _errno = EAGAIN;
 
 		while(i > 0) {
-			i = recv(sock, data, 1024 * 1024, 0);
+			i = recv(sock, data, 16384, 0);
 			if (i > 0) {
 				TrafficTracker::instance()->collect(1, i);
 				for(int j = 0; j < i; j++)
@@ -241,12 +241,13 @@ void ClientConnection::return_poll_mask(int mask) {
 				read += i;
 			}
 		}
-		if ((i == 0) || (errno != EAGAIN))
-			disconnect();
-
-		delete [] data;
+		if (i < 0)
+			_errno = errno;
 
 		if (! inbuf.empty())
 			process();
+
+		if ((i == 0) || (_errno != EAGAIN))
+			disconnect();
 	}
 }
