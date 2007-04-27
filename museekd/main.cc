@@ -102,6 +102,7 @@ int main(int argc, char **argv) {
 	signal(SIGHUP, hangup);
 	signal(SIGINT, terminate);
 	signal(SIGTERM, terminate);
+	signal(SIGPIPE, SIG_IGN);
 	
 	std::fstream configfile;
 	configfile.open(config.c_str(), std::ios::in | std::ios::out);
