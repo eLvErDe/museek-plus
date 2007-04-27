@@ -126,6 +126,20 @@ bool PeerListener::accept() {
 	if(sock == -1)
 		return false;
 	
+	sockaddr_in addr;
+	socklen_t addrlen = sizeof(addr);
+	if(! getpeername(sock, (sockaddr*)&addr, &addrlen)) {
+		unsigned int ip = ntohl(addr.sin_addr.s_addr);
+		char ip_c_str[16];
+		snprintf(ip_c_str, 16, "%i.%i.%i.%i", (ip >> 24) & 0xff, (ip >> 16) & 0xff, (ip >> 8) & 0xff, ip & 0xff);
+		std::string ip_str(ip_c_str);
+		if(mMuseek->is_ip_blocked(ip_str)) {
+			DEBUG("Blocking incoming connection from %s\n", ip_c_str);
+			close(sock);
+			return true;
+		}
+	}
+	
 	new PreConnection(this, sock);
 	
 	return true;

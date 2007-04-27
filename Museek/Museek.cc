@@ -160,6 +160,10 @@ bool Museek::is_trusted(const string& user) const {
 		return (*it).second; }
 	return false;
 }
+bool Museek::is_ip_blocked(const std::string& ip) const {
+	return false;
+}
+
 void Museek::mu_set_user_warnings(bool uw) {
 	mUserWarnings = uw;
 }

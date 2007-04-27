@@ -109,6 +109,7 @@ public:
 	virtual bool is_buddied(const std::string& user)  const;
 	virtual bool is_banned(const std::string& user) const;
 	virtual bool is_trusted(const std::string& user) const;
+	virtual bool is_ip_blocked(const std::string& ip) const;
 
 	inline bool have_buddy_shares() const { return mBuddySharesHave; }
 	void set_have_buddy_shares(bool have) { mBuddySharesHave = have; }
