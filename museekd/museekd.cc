@@ -583,10 +583,10 @@ void Museekd::cb_iface_peer_stats(IfaceConnection* conn, const string& user) {
 
 void Museekd::cb_iface_peer_address(IfaceConnection* conn, const string& user) {
 	Peer* peer = mPeerManager->get_peer(user);
-	if(peer->have_address()) {
-		conn->peer_address(user, peer->ip(), peer->port());
-	} else {
-		server_get_peer_address(user);
+// 	if(peer->have_address()) {
+// 		conn->peer_address(user, peer->ip(), peer->port());
+// 	} else {
+	server_get_peer_address(user);
 	}
 }
 

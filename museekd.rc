@@ -5,15 +5,18 @@
 # general config
 . /etc/rc.conf
 . /etc/rc.d/functions
+# Change to the user you wish to run museekd
+USER=root
 
 MUSEEKD=/usr/bin/museekd
 MUSETUP=/usr/bin/musetup
 MUSCAN=/usr/bin/muscan
-MUSOCKET=/tmp/museekd.root
+MUSOCKET=/tmp/museekd.$USER
 PIDFILE=/var/run/museekd.pid
 DBDIR=/var/museek
 CONFIG=$DBDIR/museekd.xml
 CHOWNSOCKET=YES
+
 
 case "$1" in
   start)
@@ -28,7 +31,7 @@ case "$1" in
 		exit
 	fi
 	stat_busy "Starting Museek Daemon"
-	$MUSEEKD -c $CONFIG &>/dev/null &
+	$MUSEEKD -c $CONFIG &>/dev/null -- $USER &
 	PID="$!"
 	sleep 2
 	if kill -0 $PID # pid check
