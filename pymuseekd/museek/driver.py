@@ -99,7 +99,6 @@ class Driver:
 		while len(data) < 8:
 			buf = self.socket.recv(8 - len(data))
 			if not buf:
-				print "not"
 				self.cb_disconnected()
 				self.socket = None
 				return
