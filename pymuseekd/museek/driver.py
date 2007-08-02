@@ -95,11 +95,16 @@ class Driver:
 	# Fetch and parse a message from museekd, blocks until an entire message is read
 	def fetch(self):
 		## Unpack the first 8 bytes of the message
-		data = self.socket.recv(8, socket.MSG_WAITALL)
-		if not data:
-			self.cb_disconnected()
-			self.socket = None
-			return
+		data = ""
+		while len(data) < 8:
+			buf = self.socket.recv(8 - len(data))
+			if not buf:
+				print "not"
+				self.cb_disconnected()
+				self.socket = None
+				return
+			data += buf
+	
 		## First 4 bytes are the length
 		length = struct.unpack("<i", data[:4])[0]
 		
@@ -108,8 +113,19 @@ class Driver:
 		## Second 4 bytes are the message code
 		code = struct.unpack("<I", data[4:])[0]
 		## If message is longer than it's code, unpack all data
+
+		data = ''
 		if length > 4:
-			data = self.socket.recv(length - 4, socket.MSG_WAITALL)
+			length -= 4
+			while len(data) < length:
+				recv = self.socket.recv(length  - len(data))
+				if not recv:
+					self.cb_disconnected()
+					self.socket = None
+					return
+				
+				data += recv
+	
 		## If message doesn't match known messages, raise an error
 		if not code in MSGTAB:
 			raise UnknownMessageException, 'received unknown message tyoe 0x%04X' % code
@@ -156,6 +172,8 @@ class Driver:
 			self.cb_server_status_set(message.status)
 		elif message.__class__ is messages.StatusMessage:
 			self.cb_status_message(message.type, message.message)
+		elif message.__class__ is messages.DebugMessage:
+			self.cb_debug_message(message.domain, message.message)
 		elif message.__class__ is messages.ConfigState:
 			self.cb_config_state(message.config)
 		elif message.__class__ is messages.ConfigSet:
@@ -278,6 +296,10 @@ class Driver:
 #		print
 	def cb_status_message(self, type, message):
 		pass
+	
+	def cb_debug_message(self, domain, message):
+		pass
+	
 	# Seconds of privileges left
 	def cb_server_privileges(self, time_left):
 		pass
