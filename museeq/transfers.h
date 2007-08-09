@@ -49,6 +49,9 @@ protected:
 protected slots:
 	void dropSlsk(const QStringList&);
 	
+	void groupDownloadsSet(bool);
+	void groupUploadsSet(bool);
+
 	void popupUploads(QListViewItem*, const QPoint&, int);
 	void popupDownloads(QListViewItem*, const QPoint&, int);
 	
@@ -73,6 +76,7 @@ private:
 	                * mDownloads;
 	
 	bool mPoppedUpload;
+	bool mUploadSlotsChanging;
 	QPopupMenu* mTransferMenu, * mClearMenu, * mUsersMenu;
 	QCheckBox* mGroupDownloads, * mGroupUploads;
 	QSpinBox* mUpslots;

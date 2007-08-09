@@ -31,6 +31,7 @@ ConnectDialog::ConnectDialog(QWidget *parent, const char *name)
 	boxsd->setSpacing(5);
 	QVBox *boxconnect = new QVBox(boxsd, "boxconnect");
 	boxconnect->setSpacing(5);
+	// daemon socket selection widgets
 	QHBox *boxhost = new QHBox(boxconnect, "boxhostpath");
 	boxhost->setSpacing(5);
 	textLabel2 = new QLabel( boxhost, "textLabel2" );
@@ -38,6 +39,10 @@ ConnectDialog::ConnectDialog(QWidget *parent, const char *name)
 	mAddress = new QComboBox( FALSE, boxhost, "mAddress" );
 	mAddress->setEditable( TRUE );
 	mAddress->setSizePolicy (QSizePolicy::Expanding,QSizePolicy::Preferred);
+	
+	clearButton = new QPushButton( boxhost, "clearButton" );
+	clearButton->setText( tr( "Clear" ) );
+	// Password
 	QHBox *boxpass = new QHBox(boxconnect, "boxpassword");
 	boxpass->setSpacing(5);
 	textLabel1 = new QLabel( boxpass, "textLabel1" );
@@ -47,7 +52,7 @@ ConnectDialog::ConnectDialog(QWidget *parent, const char *name)
 	mSavePassword = new QCheckBox( boxpass, "mSavePassword" );
 	mSavePassword->setText( tr( "&Save Password" ) );
 	mSavePassword->setAccel( QKeySequence( tr( "Alt+S" ) ) );
-
+	// Connection method
 	buttonGroup4 = new QVButtonGroup( boxsd, "buttonGroup4" );	
 	buttonGroup4->setTitle( tr( "Connect to:" ) );
 	mTCP = new QRadioButton( buttonGroup4, "mTCP" );
@@ -119,7 +124,8 @@ ConnectDialog::ConnectDialog(QWidget *parent, const char *name)
 	connect( selectButton, SIGNAL( clicked() ), this, SLOT( selectConfig() ) );
 	connect( stopDaemonButton, SIGNAL( clicked() ), this, SLOT( stopDaemon() ) );
 	connect( saveButton, SIGNAL( clicked() ), this, SLOT( save() ) );
-
+	connect( clearButton, SIGNAL( clicked() ), this, SLOT( clearSockets() ) );
+	
 	setTabOrder( mPassword, mAutoStartDaemon );
 	setTabOrder( mAutoStartDaemon, connectButton );
 	setTabOrder( connectButton, cancelButton );
@@ -161,6 +167,11 @@ ConnectDialog::ConnectDialog(QWidget *parent, const char *name)
 void ConnectDialog::startDaemon()
 {
     museeq->startDaemon();
+}
+
+void ConnectDialog::clearSockets()
+{
+    mAddress->clear();
 }
 
 void ConnectDialog::extraOptions()

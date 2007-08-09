@@ -247,6 +247,10 @@
         <source>Alt+E</source>
         <translation>Alt+E</translation>
     </message>
+    <message>
+        <source>Clear</source>
+        <translation type="unfinished">Pulisci</translation>
+    </message>
 </context>
 <context>
     <name>FileListView</name>
@@ -330,59 +334,59 @@
     <name>FontsAndColorsDialog</name>
     <message>
         <source>Fonts &amp; Colors</source>
-        <translation>Font &amp; Colori</translation>
+        <translation type="obsolete">Font &amp; Colori</translation>
     </message>
     <message>
         <source>OK</source>
-        <translation>OK</translation>
+        <translation type="obsolete">OK</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Cancella</translation>
+        <translation type="obsolete">Cancella</translation>
     </message>
     <message>
         <source>Pick Color</source>
-        <translation>Scegli colore</translation>
+        <translation type="obsolete">Scegli colore</translation>
     </message>
     <message>
         <source>Pick Font</source>
-        <translation>Scegli font</translation>
+        <translation type="obsolete">Scegli font</translation>
     </message>
     <message>
         <source>Time &amp; Brackets Text Color</source>
-        <translation>Colore testo per Tempo &amp; Parentesi</translation>
+        <translation type="obsolete">Colore testo per Tempo &amp; Parentesi</translation>
     </message>
     <message>
         <source>Time &amp; Brackets Font</source>
-        <translation>Font per Tempo &amp; Parentesi</translation>
+        <translation type="obsolete">Font per Tempo &amp; Parentesi</translation>
     </message>
     <message>
         <source>/Me Text</source>
-        <translation>/Me Testo</translation>
+        <translation type="obsolete">/Me Testo</translation>
     </message>
     <message>
         <source>Trusted Users</source>
-        <translation>Utenti affidabili</translation>
+        <translation type="obsolete">Utenti affidabili</translation>
     </message>
     <message>
         <source>Remote Text</source>
-        <translation>Testo remoto</translation>
+        <translation type="obsolete">Testo remoto</translation>
     </message>
     <message>
         <source>Message Font</source>
-        <translation>Font messaggio</translation>
+        <translation type="obsolete">Font messaggio</translation>
     </message>
     <message>
         <source>Buddied Users</source>
-        <translation>Utenti Amici</translation>
+        <translation type="obsolete">Utenti Amici</translation>
     </message>
     <message>
         <source>My Text</source>
-        <translation>Mio testo</translation>
+        <translation type="obsolete">Mio testo</translation>
     </message>
     <message>
         <source>Banned Users</source>
-        <translation>Utenti Banditi</translation>
+        <translation type="obsolete">Utenti Banditi</translation>
     </message>
 </context>
 <context>
@@ -528,19 +532,19 @@
     </message>
     <message>
         <source>&amp;Protocol handlers...</source>
-        <translation>Controllo &amp;protocolli...</translation>
+        <translation type="obsolete">Controllo &amp;protocolli...</translation>
     </message>
     <message>
         <source>&amp;User info...</source>
-        <translation>Informazioni &amp;utente...</translation>
+        <translation type="obsolete">Informazioni &amp;utente...</translation>
     </message>
     <message>
         <source>&amp;Museek...</source>
-        <translation>&amp;Museek...</translation>
+        <translation type="obsolete">&amp;Museek...</translation>
     </message>
     <message>
         <source>&amp;Colors and Fonts...</source>
-        <translation>&amp;Colori e fonts...</translation>
+        <translation type="obsolete">&amp;Colori e fonts...</translation>
     </message>
     <message>
         <source>Pick &amp;Icon Theme... (Requires Restart)</source>
@@ -880,6 +884,10 @@
         <source>Show Exit Dialog</source>
         <translation>Mostra dialogo d&apos;uscita</translation>
     </message>
+    <message>
+        <source>&amp;Configure...</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Museeq</name>
@@ -962,27 +970,27 @@
     <name>ProtocolDialog</name>
     <message>
         <source>Protocol</source>
-        <translation>Protocollo</translation>
+        <translation type="obsolete">Protocollo</translation>
     </message>
     <message>
         <source>Handler</source>
-        <translation>Gestore</translation>
+        <translation type="obsolete">Gestore</translation>
     </message>
     <message>
         <source>Protocol handlers</source>
-        <translation>Gestori protocolli</translation>
+        <translation type="obsolete">Gestori protocolli</translation>
     </message>
     <message>
         <source>OK</source>
-        <translation>OK</translation>
+        <translation type="obsolete">OK</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Cancella</translation>
+        <translation type="obsolete">Cancella</translation>
     </message>
     <message>
         <source>New</source>
-        <translation>Nuovo</translation>
+        <translation type="obsolete">Nuovo</translation>
     </message>
 </context>
 <context>
@@ -1205,7 +1213,7 @@
     <name>SettingsDialog</name>
     <message>
         <source>Museek Settings</source>
-        <translation>Impostazioni di Museek</translation>
+        <translation type="obsolete">Impostazioni di Museek</translation>
     </message>
     <message>
         <source>Ok</source>
@@ -1261,7 +1269,7 @@
     </message>
     <message>
         <source>&lt;p&gt;Configure your shares with musetup, or run &lt;u&gt;muscan -r &lt;/u&gt;to rescan your shares and then press:&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Configura il tuo share con musetup, o esegui &lt;u&gt;muscan -r &lt;/u&gt;per aggiornare il tuo share e quindi premi:&lt;/p&gt;</translation>
+        <translation type="obsolete">&lt;p&gt;Configura il tuo share con musetup, o esegui &lt;u&gt;muscan -r &lt;/u&gt;per aggiornare il tuo share e quindi premi:&lt;/p&gt;</translation>
     </message>
     <message>
         <source>Connections</source>
@@ -1293,7 +1301,7 @@
     </message>
     <message>
         <source>Shares and Connections</source>
-        <translation>Condivisi e connessioni</translation>
+        <translation type="obsolete">Condivisi e connessioni</translation>
     </message>
     <message>
         <source>Buddies are Privileged</source>
@@ -1338,6 +1346,202 @@
     <message>
         <source>IP addresses in Log Window instead of popup</source>
         <translation>Indirizzi IP nella finestra di log invece che popup</translation>
+    </message>
+    <message>
+        <source>To configure your shares, use one of the following: musetup, musetup-gtk, muscan (in a terminal), or the buttons below. Press &lt;u&gt;Reload Shares&lt;/u&gt; to activate your changes.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Directories</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a Directory to add to your Buddy Shares.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a Directory to add to your Normal Shares.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select the museekd config file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>XML files (*.xml)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Museekd Config:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Update</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rescan</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove</source>
+        <translation type="unfinished">Rimuovi</translation>
+    </message>
+    <message>
+        <source>Shares</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Protocol</source>
+        <translation type="unfinished">Protocollo</translation>
+    </message>
+    <message>
+        <source>Handler</source>
+        <translation type="unfinished">Gestore</translation>
+    </message>
+    <message>
+        <source>Select a Directory to write Private Chat log files.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a Directory to write Chat Room log files.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Images (*.png *.gif *.jpg *.jpeg)</source>
+        <translation type="unfinished">Immagini (*.png *.gif *.jpg *.jpeg)</translation>
+    </message>
+    <message>
+        <source>Select an Image for you User info</source>
+        <translation type="unfinished">Seleziona un&apos;immagine per le tue Info utente</translation>
+    </message>
+    <message>
+        <source>Museeq Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Listen port range (the first available port will be used when museekd starts up)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>First port:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Last port:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Image</source>
+        <translation type="unfinished">Immagine</translation>
+    </message>
+    <message>
+        <source>Clear</source>
+        <translation type="unfinished">Pulisci</translation>
+    </message>
+    <message>
+        <source>Don&apos;t touch</source>
+        <translation type="unfinished">Non cambiare</translation>
+    </message>
+    <message>
+        <source>Upload:</source>
+        <translation type="unfinished">Upload:</translation>
+    </message>
+    <message>
+        <source>Log Private Chats</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Log Chat Rooms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New</source>
+        <translation type="unfinished">Nuovo</translation>
+    </message>
+    <message>
+        <source>Modify</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Museek Daemon</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>User Info</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Museeq</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Appearance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fonts and Colors</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Logging</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Protocol handlers</source>
+        <translation type="unfinished">Gestori protocolli</translation>
+    </message>
+    <message>
+        <source>Time &amp; Brackets Font</source>
+        <translation type="unfinished">Font per Tempo &amp; Parentesi</translation>
+    </message>
+    <message>
+        <source>Pick Font</source>
+        <translation type="unfinished">Scegli font</translation>
+    </message>
+    <message>
+        <source>Time &amp; Brackets Text Color</source>
+        <translation type="unfinished">Colore testo per Tempo &amp; Parentesi</translation>
+    </message>
+    <message>
+        <source>/Me Text</source>
+        <translation type="unfinished">/Me Testo</translation>
+    </message>
+    <message>
+        <source>Pick Color</source>
+        <translation type="unfinished">Scegli colore</translation>
+    </message>
+    <message>
+        <source>Message Font</source>
+        <translation type="unfinished">Font messaggio</translation>
+    </message>
+    <message>
+        <source>Buddied Users</source>
+        <translation type="unfinished">Utenti Amici</translation>
+    </message>
+    <message>
+        <source>My Text</source>
+        <translation type="unfinished">Mio testo</translation>
+    </message>
+    <message>
+        <source>Trusted Users</source>
+        <translation type="unfinished">Utenti affidabili</translation>
+    </message>
+    <message>
+        <source>Banned Users</source>
+        <translation type="unfinished">Utenti Banditi</translation>
+    </message>
+    <message>
+        <source>Remote Text</source>
+        <translation type="unfinished">Testo remoto</translation>
     </message>
 </context>
 <context>
@@ -1618,47 +1822,47 @@
     <name>UserInfoDialog</name>
     <message>
         <source>Change user info</source>
-        <translation>Cambia info utente</translation>
+        <translation type="obsolete">Cambia info utente</translation>
     </message>
     <message>
         <source>Image</source>
-        <translation>Immagine</translation>
+        <translation type="obsolete">Immagine</translation>
     </message>
     <message>
         <source>Clear</source>
-        <translation>Pulisci</translation>
+        <translation type="obsolete">Pulisci</translation>
     </message>
     <message>
         <source>Don&apos;t touch</source>
-        <translation>Non cambiare</translation>
+        <translation type="obsolete">Non cambiare</translation>
     </message>
     <message>
         <source>Upload:</source>
-        <translation>Upload:</translation>
+        <translation type="obsolete">Upload:</translation>
     </message>
     <message>
         <source>...</source>
-        <translation>...</translation>
+        <translation type="obsolete">...</translation>
     </message>
     <message>
         <source>OK</source>
-        <translation>OK</translation>
+        <translation type="obsolete">OK</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Cancella</translation>
+        <translation type="obsolete">Cancella</translation>
     </message>
     <message>
         <source>Images (*.png *.gif *.jpg *.jpeg)</source>
-        <translation>Immagini (*.png *.gif *.jpg *.jpeg)</translation>
+        <translation type="obsolete">Immagini (*.png *.gif *.jpg *.jpeg)</translation>
     </message>
     <message>
         <source>Select an Image for you User info</source>
-        <translation>Seleziona un&apos;immagine per le tue Info utente</translation>
+        <translation type="obsolete">Seleziona un&apos;immagine per le tue Info utente</translation>
     </message>
     <message>
         <source>All files (*)</source>
-        <translation>Tutti i file (*)</translation>
+        <translation type="obsolete">Tutti i file (*)</translation>
     </message>
 </context>
 <context>

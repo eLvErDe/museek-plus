@@ -1,0 +1,43 @@
+Museeq's Qmake compilation instructions
+
+Requirements:
+ * The Mucipher source should be in the subdirectory, ./Mucipher
+   If it is not, place it there or modify the museeq.pro to point at it.
+ * Install QT 3.x Development packages, if needed, which should include:
+   * qmake, lrelease, lupdate, moc, uic
+ * Other required utilities include:
+   * make
+   * g++ ( GCC for C++ )
+
+Qmake Options:
+
+ CONFIG OPTIONS
+ * QSA: Scripting Support
+ * BINRELOC: Binary Relocation
+ * TRAYICON: Compile Trayicon
+
+ OTHER OPTIONS
+ * PREFIX: If you do not use BINRELOC, you should set PREFIX to whatever
+   path museeq will be installed into. (Same path as make's INSTALL_ROOT)
+   PREFIX defaults to /usr
+
+Example Qmake commands:
+ * qmake "CONFIG += QSA BINRELOC TRAYICON"
+ * qmake "CONFIG += QSA BINRELOC"
+ * qmake "CONFIG += QSA" "PREFIX+=/usr"
+ * qmake "PREFIX=/usr/local"
+ * qmake
+
+Make Options:
+ * INSTALL_ROOT: the prefix of the path where museeq will be installed
+   INSTALL_ROOT must be set, or it'll be installed in /bin and /share
+
+# If you want translations, run updatetranslations.py
+  1) Example: ./updatetranslations.py $QTDIR fr de
+# Generate Makefile
+  2) qmake 
+# Compile
+  3) make
+# Installation
+  4) su -c "make install INSTALL_ROOT=/usr"
+  or sudo make install INSTALL_ROOT=/usr

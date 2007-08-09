@@ -27,6 +27,7 @@ public:
 	QPushButton *startDaemonButton;
 	QPushButton *stopDaemonButton;
 	QPushButton *connectButton;
+	QPushButton *clearButton;
 	QPushButton *saveButton;
 	QPushButton *cancelButton, *mExtra;
 	QPushButton *selectButton;
@@ -50,13 +51,14 @@ public slots:
 	virtual void stopDaemon();  
 	virtual void save();
 	virtual void extraOptions();
-
-private: 
-	QLabel *label; 
+	
+private:
+	QLabel *label;
 	QLineEdit *lineEdit; 
 	QCheckBox *caseCheckBox;
 	QCheckBox *backwardCheckBox;
-
+private slots:
+	void clearSockets();
 }; 
 #endif 
 

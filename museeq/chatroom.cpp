@@ -24,6 +24,8 @@
 #include <qcheckbox.h>
 #include <qdatetime.h>
 #include <qradiobutton.h>
+#include <qdir.h>
+#include <qfile.h>
 #include "chatpanel.h"
 #include "userlistview.h"
 #include "chatticker.h"
@@ -76,13 +78,15 @@ ChatRoom::ChatRoom(const char * _r, QWidget * parent, const char * name)
 	connect(museeq, SIGNAL(nicknameChanged(const QString&)), SLOT(setNickname(const QString&)));
 	connect(museeq, SIGNAL(autoJoin(const QString&, bool)), SLOT(setAutoJoin(const QString&, bool)));
 	connect(museeq, SIGNAL(disconnectedFromServer()), mUserList, SLOT(clear()));
-	connect(museeq, SIGNAL(hideAllTickers()), SLOT(hideThisTicker()));
-	connect(museeq, SIGNAL(showAllTickers()), SLOT(showThisTicker()));
+	connect(museeq->mainwin(), SIGNAL(hideAllTickers()), SLOT(hideThisTicker()));
+	connect(museeq->mainwin(), SIGNAL(showAllTickers()), SLOT(showThisTicker()));
 }
 
 QString ChatRoom::room() const {
 	return mRoom;
 }
+
+#define _TIMES QDateTime::currentDateTime().toTime_t ()
 
 void ChatRoom::sendMessage(const QString& line_) {
 	QString line = line_;
@@ -153,6 +157,8 @@ void ChatRoom::sendMessage(const QString& line_) {
 			museeq->addTrusted(s.join(" "), "");
 		else if(cmd == "distrust" && ! s.empty())
 			museeq->removeTrusted(s.join(" "));
+		else if(cmd == "setticker" && ! s.empty())
+			museeq->setTicker(mRoom, s.join(" "));
 		else if(cmd == "slap" && ! s.empty())
 			museeq->sayRoom(mRoom, "/me slaps "+s.join(" ")+" around with a large trout");
 		else if((cmd == "j" || cmd == "join") && ! s.empty())
@@ -185,6 +191,32 @@ void ChatRoom::append(const QString& _u, const QString& _l) {
 		emit highlight(1);
 	else
 		emit highlight(2);
+	logMessage(_u, _l);
+}
+
+/* Write add local timestamp to chat message before writing to disk */
+void ChatRoom::logMessage(const QString& user, const QString& _l) {
+
+	logMessage(_TIMES, user, _l);
+}
+/* Write chat message to disk */
+void ChatRoom::logMessage(uint ts, const QString& user, const QString& _l) {
+	if (! museeq->mLogRooms) {
+		return;
+	}
+	if (! museeq->mRoomLogDir.isEmpty() and QDir(museeq->mRoomLogDir).exists() ) {
+		QFile logfile ( museeq->mRoomLogDir+"/"+mRoom);
+		if (! logfile.open(IO_WriteOnly | IO_Append)) {
+			museeq->output(QString("Write Error: could not write to: " +museeq->mRoomLogDir+"/"+mRoom));
+			return;
+		}
+		QDateTime _t;
+		_t.setTime_t(ts);
+		QTextStream textstream( &logfile );
+		textstream << _t.toString() << " [" << user << "]\t" << _l << endl;
+		logfile.close();
+	}
+
 }
 
 #define escape QStyleSheet::escape

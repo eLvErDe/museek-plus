@@ -66,6 +66,8 @@ protected slots:
 	void setAutoJoin(const QString&, bool);
 	void sendMessage(const QString&);
 	void setTicker();
+	void logMessage(const QString& , const QString& );
+	void logMessage(uint, const QString&, const QString&);
 	
 private:
 	QString mRoom, mNickname;

@@ -33,9 +33,6 @@ class QProcess;
 class ConnectDialog;
 class IPDialog;
 class SettingsDialog;
-class UserInfoDialog;
-class ProtocolDialog;
-class FontsAndColorsDialog;
 class QMessageBox;
 class ChatRooms;
 class PrivateChats;
@@ -90,10 +87,9 @@ public slots:
 	void displayCommandsDialog();
 
 	void changeColors();
-	void changeUserInfo();
 	void changeSettings();
 	void changeTheme();
-	void protocolHandlers();
+
 	void givePrivileges(const QString&);
 	
 	void startSearch(const QString&);
@@ -103,7 +99,10 @@ public slots:
 	
 	void addScript(const QString&);
 	void removeScript(const QString&);
-	
+	void appendToLogWindow(const QString&);
+signals:
+	void showAllTickers();
+	void hideAllTickers();	
 private slots:
 	void loadScript();
 	void unloadScript(int);
@@ -146,10 +145,7 @@ private:
 	QProcess *daemon;
 	ConnectDialog* mConnectDialog;
 	IPDialog* mIPDialog;
-	UserInfoDialog* mUserInfoDialog;
 	SettingsDialog* mSettingsDialog;
-	FontsAndColorsDialog* mColorsDialog;
-	ProtocolDialog* mProtocolDialog;
 
 	ChatRooms* mChatRooms;
 	PrivateChats* mPrivateChats;

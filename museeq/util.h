@@ -20,7 +20,9 @@
 #ifndef UTIL_H
 #define UTIL_H
 
-#include <qt.h>
+#include <qpopupmenu.h>
+#include <qapplication.h>
+#include <qpainter.h>
 
 class Util {
 public:

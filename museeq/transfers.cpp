@@ -40,7 +40,7 @@ Transfers::Transfers(QWidget* _p, const char* _n)
 	QHBox *hbox = new QHBox(box);
 	(new QLabel(tr("Downloads:"), hbox))->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	mGroupDownloads = new QCheckBox(tr("Group by user"), hbox);
-	connect(mGroupDownloads, SIGNAL(toggled(bool)), SLOT(groupDownloads(bool)));
+	connect(mGroupDownloads, SIGNAL(toggled(bool)), SLOT(groupDownloadsSet(bool)));
 	
 	mDownloads = new TransferListView(true, box);
 	mDownloads->setAcceptDrops(true);
@@ -54,13 +54,14 @@ Transfers::Transfers(QWidget* _p, const char* _n)
 	(new QLabel(tr("Uploads:"), hbox))->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	
 	mGroupUploads = new QCheckBox(tr("Group by user"), hbox);
-	connect(mGroupUploads, SIGNAL(toggled(bool)), SLOT(groupUploads(bool)));
+	connect(mGroupUploads, SIGNAL(toggled(bool)), SLOT(groupUploadsSet(bool)));
 	
 	QFrame* frame = new QFrame(hbox);
 	frame->setFrameShape(QFrame::VLine);
 	frame->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
 	
 	mUpslots = new QSpinBox(0, 99, 1, hbox);
+	mUploadSlotsChanging = false;
 	new QLabel(mUpslots, tr("slots"), hbox);
 	connect(mUpslots, SIGNAL(valueChanged(const QString&)), SLOT(setUpslots(const QString&)));
 	connect(museeq, SIGNAL(configChanged(const QString&, const QString&, const QString&)), SLOT(slotConfigChanged(const QString&, const QString&, const QString&)));
@@ -102,20 +103,28 @@ TransferListView* Transfers::downloads() const {
 	return mDownloads;
 }
 
-void Transfers::groupDownloads(bool on) {
-	TransferListView::GroupMode m = on ? TransferListView::User : TransferListView::None;
-	if(mDownloads->groupMode() == m)
-		return;
-	
-	mDownloads->setGroupMode(m);
-	
+void Transfers::groupDownloadsSet(bool on) {
 	if(on)
 		museeq->setConfig("museeq.group", "downloads", "true");
 	else
 		museeq->setConfig("museeq.group", "downloads", "false");
-	
+
+}
+
+void Transfers::groupDownloads(bool on) {	
+	TransferListView::GroupMode m = on ? TransferListView::User : TransferListView::None;
+	if(mDownloads->groupMode() == m)
+		return;	
+	mDownloads->setGroupMode(m);
 	if(on != mGroupDownloads->isOn())
 		mGroupDownloads->toggle();
+}
+
+void Transfers::groupUploadsSet(bool on) {
+	if(on)
+		museeq->setConfig("museeq.group", "uploads", "true");
+	else
+		museeq->setConfig("museeq.group", "uploads", "false");
 }
 
 void Transfers::groupUploads(bool on) {
@@ -124,11 +133,6 @@ void Transfers::groupUploads(bool on) {
 		return;
 	
 	mUploads->setGroupMode(m);
-	
-	if(on)
-		museeq->setConfig("museeq.group", "uploads", "true");
-	else
-		museeq->setConfig("museeq.group", "uploads", "false");
 
 	if(on != mGroupUploads->isOn())
 		mGroupUploads->toggle();
@@ -332,11 +336,21 @@ void Transfers::clearQueued() {
 }
 
 void Transfers::slotConfigChanged(const QString& domain, const QString& key, const QString& value) {
-	if(domain == "transfers" && key == "upload_slots" && value != mUpslots->cleanText()) {
+	if(domain == "museeq.group") {
+		bool on = value == "true";
+		if(key == "downloads")
+			groupDownloads(on);
+		else if(key == "uploads")
+			groupUploads(on);
+	} else if(domain == "transfers" && key == "upload_slots" && value != mUpslots->cleanText()) {
+		mUploadSlotsChanging = true;
 		mUpslots->setValue(value.toUInt());
+		mUploadSlotsChanging = false;
 	}
 }
 
 void Transfers::setUpslots(const QString& upslots) {
+	if (mUploadSlotsChanging)
+		return;
 	museeq->setConfig("transfers", "upload_slots", upslots);
 }

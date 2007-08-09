@@ -73,7 +73,10 @@ void Marquee::timerTimeout() {
 		}
 
 		if(! mText.isEmpty()) {
-			mBuffer2 = new QPixmap(fontMetrics().size(Qt::SingleLine, mText).width(), height());
+			int width = fontMetrics().size(Qt::SingleLine, mText).width();
+			if (width >= 32000)
+				width = 31999;
+			mBuffer2 = new QPixmap(width, height());
 			p.begin(mBuffer2);
 			p.setBackgroundColor(colorGroup().background());
 			p.setFont(font());

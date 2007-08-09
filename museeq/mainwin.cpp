@@ -59,10 +59,7 @@
 #include "museekdriver.h"
 #include "connect.h"
 #include "ipdialog.h"
-#include "userinfodialog.h"
 #include "settingsdialog.h"
-#include "protocoldialog.h"
-#include "fontsandcolorsdialog.h"
 #include "prefix.h"
 #include "museeq.h"
 
@@ -106,33 +103,28 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 	menuBar()->insertItem(tr("&File"), mMenuFile);
 	
 	mMenuSettings = new QPopupMenu(this);
-	mMenuSettings->insertItem(IMG("protocol"), tr("&Protocol handlers..."), this, SLOT(protocolHandlers()), 0, 0);
+
+	mMenuSettings->insertItem(IMG("settings"),tr("&Configure..."), this, SLOT(changeSettings()), 0, 0);
 	mMenuSettings->insertSeparator();
-	mMenuSettings->insertItem( IMG("userinfo-small"), tr("&User info..."), this, SLOT(changeUserInfo()), 0, 1);
-	mMenuSettings->insertSeparator();
-	mMenuSettings->insertItem(IMG("settings"),tr("&Museek..."), this, SLOT(changeSettings()), 0, 2);
-	mMenuSettings->insertItem( IMG("colors"), tr("&Colors and Fonts..."), this, SLOT(changeColors()), 0, 3);
-	mMenuSettings->insertItem(tr("Pick &Icon Theme... (Requires Restart)"), this, SLOT(changeTheme()), 0, 4);
-	mMenuSettings->insertItem(tr("Show &Tickers"), this, SLOT(toggleTickers()), 0, 5);
-	mMenuSettings->insertItem(tr("Show &Log"), this, SLOT(toggleLog()), 0, 6);
-	mMenuSettings->insertItem(tr("Show T&imestamps"), this, SLOT(toggleTimestamps()), 0, 7);
-	mMenuSettings->insertItem(tr("Auto-Connect to Daemon"), this, SLOT(toggleAutoConnect()), 0, 8);
-	mMenuSettings->insertItem(tr("Show Exit Dialog"), this, SLOT(toggleExitDialog()), 0, 9);
+	mMenuSettings->insertItem(tr("Pick &Icon Theme... (Requires Restart)"), this, SLOT(changeTheme()), 0, 2);
+	mMenuSettings->insertItem(tr("Show &Tickers"), this, SLOT(toggleTickers()), 0, 3);
+	mMenuSettings->insertItem(tr("Show &Log"), this, SLOT(toggleLog()), 0, 4);
+	mMenuSettings->insertItem(tr("Show T&imestamps"), this, SLOT(toggleTimestamps()), 0, 5);
+	mMenuSettings->insertItem(tr("Auto-Connect to Daemon"), this, SLOT(toggleAutoConnect()), 0, 6);
+	mMenuSettings->insertItem(tr("Show Exit Dialog"), this, SLOT(toggleExitDialog()), 0, 7);
 #ifdef HAVE_TRAYICON
-	mMenuSettings->insertItem(tr("Enable &Trayicon"), this, SLOT(toggleTrayicon()), ALT + Key_T, 10); // ,
+	mMenuSettings->insertItem(tr("Enable &Trayicon"), this, SLOT(toggleTrayicon()), ALT + Key_T, 8); // ,
 #endif // HAVE_TRAYICON
 	mMenuSettings->insertSeparator();
-	mMenuSettings->setItemEnabled(1, false);
-	mMenuSettings->setItemEnabled(2, false);
-	mMenuSettings->setItemEnabled(3, false);
+	mMenuSettings->setItemEnabled(1, true);
 
-	mMenuSettings->setItemEnabled(5, false);
-	mMenuSettings->setItemChecked(5, museeq->mShowTickers);
-	mMenuSettings->setItemEnabled(6, false);
-	mMenuSettings->setItemChecked(6, museeq->mShowStatusLog);
-	mMenuSettings->setItemEnabled(7, false);
-	mMenuSettings->setItemChecked(7, museeq->mShowTimestamps);
+	mMenuSettings->setItemEnabled(3, false);
+	mMenuSettings->setItemChecked(3, museeq->mShowTickers);
+	mMenuSettings->setItemEnabled(4, false);
+	mMenuSettings->setItemChecked(4, museeq->mShowStatusLog);
+	mMenuSettings->setItemChecked(5, museeq->mShowTimestamps);
 	mMenuSettings->setItemEnabled(8, true);
+	mMenuSettings->setItemChecked(8, museeq->mUsetray);
 	
 	menuBar()->insertItem(tr("&Settings"), mMenuSettings);
 	mMenuModes = new QPopupMenu(this);
@@ -183,11 +175,8 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 	mIPDialog = new IPDialog(this, "ipDialog");
 	connect(mIPDialog->mIPListView, SIGNAL(contextMenuRequested(QListViewItem*,const QPoint&,int)), SLOT(ipDialogMenu(QListViewItem*, const QPoint&, int)));
 
-	mUserInfoDialog = new UserInfoDialog(this, "userInfoDialog");
 	mSettingsDialog = new SettingsDialog(this, "settingsDialog");
-	mProtocolDialog = new ProtocolDialog(this, "protocolDialog");
-	mColorsDialog = new FontsAndColorsDialog(this, "colorsDialog");
-	connect(mProtocolDialog->mProtocols, SIGNAL(contextMenuRequested(QListViewItem*,const QPoint&,int)), SLOT(protocolHandlerMenu(QListViewItem*, const QPoint&, int)));
+	connect(mSettingsDialog->mProtocols, SIGNAL(contextMenuRequested(QListViewItem*,const QPoint&,int)), SLOT(protocolHandlerMenu(QListViewItem*, const QPoint&, int)));
 	
 	QHBox *box = new QHBox(this, "centralWidget");
 	setCentralWidget(box);
@@ -270,16 +259,23 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 	mLog->setTextFormat(Qt::RichText);
 	mLog->setFocusPolicy(NoFocus);
 	mLog->resize(0, 100);	
-	if ( ! museeq->mShowStatusLog)
-		mLog->hide();
+	
 
 	connect(museeq->driver(), SIGNAL(userStatus(const QString&, uint)), SLOT(slotUserStatus(const QString&, uint)));
 	QSettings settings;
+	QString showStatusLog = settings.readEntry("/TheGraveyard.org/Museeq/showStatusLog");
+	if (! showStatusLog.isEmpty() and (showStatusLog == "true" || showStatusLog == true)) {
+		museeq->mShowStatusLog = true;
+	} else if (! showStatusLog.isEmpty() and (showStatusLog == "false" || showStatusLog == false)) {
+		museeq->mShowStatusLog = false;
+	}
+	if ( ! museeq->mShowStatusLog)
+		mLog->hide();
 	QString exitdialog = settings.readEntry("/TheGraveyard.org/Museeq/ShowExitDialog");
 	
 	if (exitdialog.isEmpty() || exitdialog == "yes") {
 		settings.writeEntry("/TheGraveyard.org/Museeq/ShowExitDialog", "yes");
-		mMenuSettings->setItemChecked(9, true);
+		mMenuSettings->setItemChecked(7, true);
 	}
 	mMoves = 0;
 	int w = settings.readNumEntry("/TheGraveyard.org/Museeq/Width", 600);
@@ -294,7 +290,95 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 		if(ok)
 			move(x, y);
 	}
+	museeq->mPrivateLogDir = settings.readEntry("/TheGraveyard.org/Museeq/PrivateLogDir");
+	if (museeq->mPrivateLogDir.isEmpty())
+ 		museeq->mPrivateLogDir = QDir::home().absPath() + "/.museeq/logs/private";
+	mSettingsDialog->LoggingPrivateDir->setText(museeq->mPrivateLogDir);
 	
+	museeq->mRoomLogDir = settings.readEntry("/TheGraveyard.org/Museeq/RoomLogDir");
+	if (museeq->mRoomLogDir.isEmpty())
+ 		museeq->mRoomLogDir = QDir::home().absPath() + "/.museeq/logs/rooms";
+	mSettingsDialog->LoggingRoomDir->setText(museeq->mRoomLogDir);
+	
+	QString LogRoomChat = settings.readEntry("/TheGraveyard.org/Museeq/LogRoomChat");
+	if (! LogRoomChat.isEmpty() and LogRoomChat == "yes") {
+		mSettingsDialog->LoggingRooms->setChecked(true);
+		museeq->mLogRooms = true;
+	} else {
+		mSettingsDialog->LoggingRooms->setChecked(false);
+		museeq->mLogRooms = false;
+	}
+	
+	QString LogPrivateChat = settings.readEntry("/TheGraveyard.org/Museeq/LogPrivateChat");
+	if (! LogPrivateChat.isEmpty() and LogPrivateChat == "yes") {
+		mSettingsDialog->LoggingPrivate->setChecked(true);
+		museeq->mLogPrivate = true;
+	} else {
+		mSettingsDialog->LoggingPrivate->setChecked(false);
+		museeq->mLogPrivate = false;
+	}
+	museeq->mFontTime = settings.readEntry("/TheGraveyard.org/Museeq/fontTime");
+	museeq->mFontMessage = settings.readEntry("/TheGraveyard.org/Museeq/fontMessage");
+	museeq->mColorBanned = settings.readEntry("/TheGraveyard.org/Museeq/colorBanned");
+	museeq->mColorBuddied = settings.readEntry("/TheGraveyard.org/Museeq/colorBuddied");
+	museeq->mColorMe = settings.readEntry("/TheGraveyard.org/Museeq/colorMe");
+	museeq->mColorNickname = settings.readEntry("/TheGraveyard.org/Museeq/colorNickname");
+	museeq->mColorTrusted = settings.readEntry("/TheGraveyard.org/Museeq/colorTrusted");
+	museeq->mColorRemote = settings.readEntry("/TheGraveyard.org/Museeq/colorRemote");
+	museeq->mColorTime = settings.readEntry("/TheGraveyard.org/Museeq/colorTime");
+	QString showTimestamps = settings.readEntry("/TheGraveyard.org/Museeq/showTimestamps");
+	QString showIPinLog = settings.readEntry("/TheGraveyard.org/Museeq/showIPinLog");
+	QString showAlertsInLog = settings.readEntry("/TheGraveyard.org/Museeq/showAlertsInLog");
+	
+	if (! museeq->mFontTime.isEmpty()) {
+		mSettingsDialog->STimeFont->setText(museeq->mFontTime);
+	}
+	if (! museeq->mFontMessage.isEmpty()) {
+		mSettingsDialog->SMessageFont->setText(museeq->mFontMessage);
+	}
+	if (! museeq->mColorBanned.isEmpty()) {
+		mSettingsDialog->SBannedText->setText(museeq->mColorBanned);
+	}
+	if (! museeq->mColorBuddied.isEmpty()) {
+		mSettingsDialog->SBuddiedText->setText(museeq->mColorBuddied);
+	}
+	if (! museeq->mColorMe.isEmpty()) {
+		mSettingsDialog->SMeText->setText(museeq->mColorMe);
+	}
+	if (! museeq->mColorNickname.isEmpty()) {
+		mSettingsDialog->SNicknameText->setText(museeq->mColorNickname);
+	}
+	if (! museeq->mColorTrusted.isEmpty()) {
+		mSettingsDialog->STrustedText->setText(museeq->mColorTrusted);
+	}
+	if (! museeq->mColorRemote.isEmpty()) {
+		mSettingsDialog->SRemoteText->setText(museeq->mColorRemote);
+	}
+	if (! museeq->mColorTime.isEmpty()) {
+		mSettingsDialog->STimeText->setText(museeq->mColorTime);
+	}
+	if (! showTimestamps.isEmpty() and (showTimestamps == "true" || showTimestamps == true)) {
+		museeq->mShowTimestamps = true;
+		mMenuSettings->setItemChecked(5, true);
+	} else if (! showTimestamps.isEmpty() and (showTimestamps == "false" || showTimestamps == false)) {
+		museeq->mShowTimestamps = false;
+		mMenuSettings->setItemChecked(5, false);
+	}
+	if (! showIPinLog.isEmpty() and (showIPinLog == "true" || showIPinLog == true)) {
+		mSettingsDialog->SIPLog->setChecked(true);
+		museeq->mIPLog = true;
+		
+	} else if (! showIPinLog.isEmpty() and (showIPinLog == "false" || showIPinLog == false)){
+		mSettingsDialog->SIPLog->setChecked(false);
+		museeq->mIPLog = false;
+	}
+	if (! showAlertsInLog.isEmpty() and (showAlertsInLog == "true" || showAlertsInLog == true)) {
+		mSettingsDialog->SOnlineAlerts->setChecked(true);
+		museeq->mOnlineAlert = true;
+	} else if (! showAlertsInLog.isEmpty() and (showAlertsInLog == "false" || showAlertsInLog == false)){
+		mSettingsDialog->SOnlineAlerts->setChecked(false);
+		museeq->mOnlineAlert = false;
+	}
 	box->setEnabled(false);
 	daemon = new QProcess(this);
 	connect( daemon, SIGNAL(readyReadStdout()), this,   SLOT(readFromStdout()) );
@@ -397,14 +481,15 @@ void MainWindow::saveConnectConfig() {
 		password = mConnectDialog->mPassword->text().utf8();
 	if(mConnectDialog->mAutoStartDaemon->isChecked()) {
 		settings.writeEntry("/TheGraveyard.org/Museeq/LaunchMuseekDaemon", "yes");
-		
 	} else {
 		settings.removeEntry("/TheGraveyard.org/Museeq/LaunchMuseekDaemon");
 	}
 	if(mConnectDialog->mAutoConnect->isChecked()) {
 		settings.writeEntry("/TheGraveyard.org/Museeq/AutoConnect", "yes");
+		mMenuSettings->setItemChecked(6, true);
 	} else {
-		settings.removeEntry("/TheGraveyard.org/Museeq/AutoConnect");
+		settings.writeEntry("/TheGraveyard.org/Museeq/AutoConnect", "no");
+		mMenuSettings->setItemChecked(6, false);
 	}
 	
 	if ( ! mConnectDialog->mMuseekConfig->text().isEmpty() )
@@ -423,18 +508,28 @@ void MainWindow::saveConnectConfig() {
 	} else {
 		settings.writeEntry("/TheGraveyard.org/Museeq/ShutDownDaemonOnExit", "no");
 	}
+	// Clear old servers
+	QStringList s_keys = settings.entryList("/TheGraveyard.org/Museeq/Servers");
+	if(! s_keys.isEmpty()) {
+		for(QStringList::Iterator it = s_keys.begin(); it != s_keys.end(); ++it)
+		{
+			settings.removeEntry("/TheGraveyard.org/Museeq/Servers/" + (*it));
+		}
+	}
+	// Add servers from mConnectDialog->mAddress
 	settings.beginGroup("/TheGraveyard.org/Museeq/Servers");
 	int ix = 1;
 	for(int i = 0; i < mConnectDialog->mAddress->count(); ++i)
 	{
 		QString s = mConnectDialog->mAddress->text(i);
-		if(s != server)
+		if(s != server && ! s.isEmpty())
 		{
 			settings.writeEntry(QString::number(ix), s);
 			++ix;
 		}
 	}
-	settings.writeEntry(QString::number(ix), server);
+	if ( ! server.isEmpty() )
+		settings.writeEntry(QString::number(ix), server);
 	settings.endGroup();
 		
 }
@@ -517,21 +612,23 @@ void MainWindow::connectToMuseek() {
 	slotAddressActivated(mConnectDialog->mAddress->currentText());
 	// Display Connect Dialog
 	QString autoConnect = settings.readEntry("/TheGraveyard.org/Museeq/AutoConnect");
-	if (! autoConnect.isEmpty())	 {
-		if ( autoConnect == "yes") {
-			mConnectDialog->mAutoConnect->setChecked(true);
-			if (savePassword == "yes" and ! password.isEmpty() ) {
-				connectToMuseekPS(cServer, password);
-				return;
-			}
-		} else {
-			mConnectDialog->mAutoConnect->setChecked(false);
+	if (! autoConnect.isEmpty() and autoConnect == "yes") {
+		mConnectDialog->mAutoConnect->setChecked(true);
+		
+		if (savePassword == "yes" and ! password.isEmpty() ) {
+			saveConnectConfig();
+			connectToMuseekPS(cServer, password);
+			return;
 		}
+	} else {
+		mConnectDialog->mAutoConnect->setChecked(false);
+		
 	}
+	
 	
 	if(mConnectDialog->exec() == QDialog::Accepted) {
 		QString server = mConnectDialog->mAddress->currentText(),
-			password = mConnectDialog->mPassword->text().utf8();
+		password = mConnectDialog->mPassword->text().utf8();
 		saveConnectConfig();
 		connectToMuseekPS(server, password);
 		
@@ -563,20 +660,18 @@ void MainWindow::slotConnected() {
 void MainWindow::slotDisconnected() {
 	centralWidget()->setEnabled(false);
 	statusBar()->message(tr("Disconnected from museek"));
-	
+	mSettingsDialog->mTabHolder->setTabEnabled(mSettingsDialog->mMuseekdTabs, false);
 	mMenuFile->setItemEnabled(0, true);
 	mMenuFile->setItemEnabled(1, false);
 	mMenuFile->setItemEnabled(2, false);
 	mMenuFile->setItemEnabled(3, false);
 	mMenuFile->setItemEnabled(4, false);
 
-	mMenuSettings->setItemEnabled(1, false);
 	mMenuSettings->setItemEnabled(2, false);
 	mMenuSettings->setItemEnabled(3, false);
-
+	mMenuSettings->setItemEnabled(4, false);
 	mMenuSettings->setItemEnabled(5, false);
-	mMenuSettings->setItemEnabled(6, false);
-	mMenuSettings->setItemEnabled(7, false);
+
 #ifdef HAVE_TRAYICON
 	museeq->trayicon_setIcon("disconnect");
 #endif // HAVE_TRAYICON
@@ -591,7 +686,8 @@ void MainWindow::slotError(int e) {
 		statusBar()->message(tr("Cannot connect to museek... Host not found"));
 		break;
 	}
-	doNotAutoConnect();	
+	doNotAutoConnect();
+	mSettingsDialog->mTabHolder->setTabEnabled(mSettingsDialog->mMuseekdTabs, false);
 	mMenuFile->setItemEnabled(0, true);
 	mMenuFile->setItemEnabled(1, false);
 	
@@ -602,23 +698,29 @@ void MainWindow::slotLoggedIn(bool success, const QString& msg) {
 		statusBar()->message(tr("Logged in to museek"));
 		
 		centralWidget()->setEnabled(true);
-
-		mMenuSettings->setItemEnabled(1, true);
+		mSettingsDialog->mTabHolder->setTabEnabled(mSettingsDialog->mMuseekdTabs, true);
 		mMenuSettings->setItemEnabled(2, true);
 		mMenuSettings->setItemEnabled(3, true);
 
+		mMenuSettings->setItemEnabled(3, true);
+		mMenuSettings->setItemChecked(3, museeq->mShowTickers);
+		mMenuSettings->setItemEnabled(4, true);
+		mMenuSettings->setItemChecked(4, museeq->mShowStatusLog);
 		mMenuSettings->setItemEnabled(5, true);
-		mMenuSettings->setItemChecked(5, museeq->mShowTickers);
-		mMenuSettings->setItemEnabled(6, true);
-		mMenuSettings->setItemChecked(6, museeq->mShowStatusLog);
-		mMenuSettings->setItemEnabled(7, true);
-		mMenuSettings->setItemChecked(7, museeq->mShowTimestamps);
+		mMenuSettings->setItemChecked(5, museeq->mShowTimestamps);
 	} else {
+		mSettingsDialog->mTabHolder->setTabEnabled(mSettingsDialog->mMuseekdTabs, false);
 		statusBar()->message(tr("Login error: ") + msg);
 		mMenuFile->setItemEnabled(0, true);
 		mMenuFile->setItemEnabled(1, false);
 		mMenuFile->setItemEnabled(2, false);
 		mMenuFile->setItemEnabled(3, false);
+		
+		mMenuSettings->setItemEnabled(2, false);
+		mMenuSettings->setItemEnabled(3, false);
+		mMenuSettings->setItemEnabled(4, false);
+		mMenuSettings->setItemEnabled(5, false);
+
 		doNotAutoConnect();
 #ifdef HAVE_TRAYICON
 		museeq->trayicon_setIcon("disconnect");
@@ -628,9 +730,9 @@ void MainWindow::slotLoggedIn(bool success, const QString& msg) {
 void MainWindow::doNotAutoConnect() {
 	if(mConnectDialog->mAutoConnect->isChecked()) {
 		QSettings settings;
-		settings.removeEntry("/TheGraveyard.org/Museeq/AutoConnect");
+		settings.writeEntry("/TheGraveyard.org/Museeq/AutoConnect", "no");
 		mConnectDialog->mAutoConnect->setChecked(false);
-		mMenuSettings->setItemChecked(8, false);
+		mMenuSettings->setItemChecked(6, false);
 	}
 }
 
@@ -638,7 +740,9 @@ void MainWindow::doNotAutoConnect() {
 
 #define _TIME QString("<span style='"+museeq->mFontTime+"'><font color='"+museeq->mColorTime+"'>") + QDateTime::currentDateTime().toString("hh:mm:ss") + "</font></span> "
 void MainWindow::slotStatusMessage(bool type, const QString& msg) {
-
+	appendToLogWindow(msg);
+}
+void MainWindow::appendToLogWindow(const QString& msg) {
 	QString Message = msg;
 	QStringList wm = QStringList::split("\n", msg, true);
 	QStringList::iterator it = wm.begin();
@@ -730,7 +834,7 @@ void MainWindow::slotAddressChanged(const QString& text) {
 void MainWindow::changeTheme() {
 
 	QSettings settings;
-	QString _path = QString(DATADIR) + "/museek/museeq";
+	QString _path = QString(DATADIR) + "/museek/museeq/icons";
 	QDir dir  (_path);
 	QFileDialog * fd = new QFileDialog(dir.path(), "", this);
 	fd->setCaption(tr("Enter a Museeq Icon Theme Directory"));
@@ -745,77 +849,9 @@ void MainWindow::changeTheme() {
 	delete fd;
 	
 }
-void MainWindow::slotConfigChanged(const QString& domain, const QString& key, const QString& value) {
-	if(domain == "museeq.group") {
-		bool on = value == "true";
-		if(key == "downloads")
-			mTransfers->groupDownloads(on);
-		else if(key == "uploads")
-			mTransfers->groupUploads(on);
-	} else if(domain == "museeq.text") {
 		
-		if (key == "fontTime") {
-			mColorsDialog->STimeFont->setText(value);}
-		else if (key == "fontMessage") {
-			mColorsDialog->SMessageFont->setText(value);}
-		else if (key == "colorBanned") {
-			mColorsDialog->SBannedText->setText(value);}
-		else if (key == "colorBuddied") {
-			mColorsDialog->SBuddiedText->setText(value);}
-		else if (key == "colorMe") {
-			mColorsDialog->SMeText->setText(value);}
-		else if (key == "colorNickname") {
-			mColorsDialog->SNicknameText->setText(value);}
-		else if (key == "colorTrusted") {
-			mColorsDialog->STrustedText->setText(value);}
-		else if (key == "colorRemote") {
-			mColorsDialog->SRemoteText->setText(value);}
-		else if (key == "colorTime") {
-			mColorsDialog->STimeText->setText(value);}
-	} else if (domain == "museeq.statuslog") {
-		if (key =="ip") {
-			if(value == "true")
-				mSettingsDialog->SIPLog->setChecked(true);
-			else if(value == "false")
-				mSettingsDialog->SIPLog->setChecked(false);
-		}
-	} else if(domain == "userinfo" && key == "text") {
-		mUserInfoDialog->mText->setText(value);
-	} else if(domain == "server" && key == "host") {
-		mSettingsDialog->SServerHost->setText(value);
-	} else if(domain == "server" && key == "username") {
-		mSettingsDialog->SSoulseekUsername->setText(value);
-	} else if(domain == "server" && key == "password") {
-		mSettingsDialog->SSoulseekPassword->setText(value);
-	} else if(domain == "server" && key == "port") {
-		mSettingsDialog->SServerPort->setValue(value.toInt());
-	} else if(domain == "transfers" && key == "have_buddy_shares") {
-		if  (value == "true")  { mSettingsDialog->SBuddiesShares->setChecked(true); }
-		else if (value == "false") { mSettingsDialog->SBuddiesShares->setChecked(false); }
+void MainWindow::slotConfigChanged(const QString& domain, const QString& key, const QString& value) {
 
-	} else if(domain == "transfers" && key == "only_buddies") {
-		if  (value == "true")  { mSettingsDialog->SShareBuddiesOnly->setChecked(true); }
-		else if (value == "false") { mSettingsDialog->SShareBuddiesOnly->setChecked(false); }
-	} else if(domain == "transfers" && key == "privilege_buddies") {
-		if (value == "true") mSettingsDialog->SBuddiesPrivileged->setChecked(true);
-		else if (value == "false") mSettingsDialog->SBuddiesPrivileged->setChecked(false);
-	} else if(domain == "transfers" && key == "trusting_uploads") {
-		if (value == "true") mSettingsDialog->STrustedUsers->setChecked(true);
-		else if ( value == "false") mSettingsDialog->STrustedUsers->setChecked(false);
-	} else if(domain == "transfers" && key == "user_warnings") {
-		if (value == "true") mSettingsDialog->SUserWarnings->setChecked(true);
-		else if ( value == "false") mSettingsDialog->SUserWarnings->setChecked(false);
-	} else if(domain == "transfers" && key == "download-dir") {
-		mSettingsDialog->SDownDir->setText(value);
-	} else if(domain == "transfers" && key == "incomplete-dir") {
-		mSettingsDialog->SIncompleteDir->setText(value);
-	} else if(domain == "museeq.alerts" && key == "log_window") {
-		if (value == "true") mSettingsDialog->SOnlineAlerts->setChecked(true);
-		else if ( value == "false") mSettingsDialog->SOnlineAlerts->setChecked(false);
-	} else if(domain == "clients" && key == "connectmode") {
-		if (value == "active") mSettingsDialog->SActive->setChecked(true);
-		else if (value == "passive") mSettingsDialog->SPassive->setChecked(true);
-	}
 }
 
 
@@ -842,113 +878,126 @@ void MainWindow::showBrowser(const QString& user) {
 
 void MainWindow::slotUserAddress(const QString& user, const QString& ip, uint port) {
 	QListViewItem* item = mIPDialog->mIPListView->findItem(user, 0);
-	if(item) {
-		if(ip == "0.0.0.0") {
-			item->setText(1, tr("Offline"));
-			item->setText(2, "");
-		} else {
-			item->setText(1, ip);
-			item->setText(2, QString::number(port));
-#ifdef HAVE_NETDB_H
-			struct hostent *addr = gethostbyname(ip);
-			if(addr && addr->h_length) {
-				struct hostent *addr2 = gethostbyaddr(addr->h_addr_list[0], 4, AF_INET);
-				if(addr2 && addr2->h_name)
-					item->setText(3, addr2->h_name);
-			}
-#endif // HAVE_NETDB_H
-		}
-
-		if (museeq->mIPLog) {
-			if (museeq->mShowTimestamps) {
-					mLog->append(QString(_TIME+"<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+tr("IP of ")+escape(user)+": "+ ip +" "+ tr("Port:")+" "+QString::number(port)+"</font></span>"));
-				} else {
-					mLog->append(QString("<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+tr("IP of ")+escape(user)+": "+ ip +" "+ tr("Port:")+" "+QString::number(port)+"</font></span>"));
-				}
-			}
+	if(! item) {
+		return;
 	}
+	if(ip == "0.0.0.0") {
+		item->setText(1, tr("Offline"));
+		item->setText(2, "");
+	} else {
+		item->setText(1, ip);
+		item->setText(2, QString::number(port));
+#ifdef HAVE_NETDB_H
+		struct hostent *addr = gethostbyname(ip);
+		if(addr && addr->h_length) {
+			struct hostent *addr2 = gethostbyaddr(addr->h_addr_list[0], 4, AF_INET);
+			if(addr2 && addr2->h_name)
+				item->setText(3, addr2->h_name);
+		}
+#endif // HAVE_NETDB_H
+	}
+
+	if (museeq->mIPLog) {
+		if (museeq->mShowTimestamps) {
+			mLog->append(QString(_TIME+"<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+tr("IP of ")+escape(user)+": "+ ip +" "+ tr("Port:")+" "+QString::number(port)+"</font></span>"));
+		} else {
+			mLog->append(QString("<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+tr("IP of ")+escape(user)+": "+ ip +" "+ tr("Port:")+" "+QString::number(port)+"</font></span>"));
+		}
+	}
+
 }
 void MainWindow::toggleTickers() {
-	if (museeq->mShowTickers == true)
-		museeq->setConfig("museeq.tickers", "show", "false");
-	else if (museeq->mShowTickers == false)
-		museeq->setConfig("museeq.tickers", "show", "true");
+	QSettings settings;
+	if (museeq->mShowTickers == true) {
+		settings.writeEntry("/TheGraveyard.org/Museeq/showTickers", "false");
+		museeq->mShowTickers = false;
+		mMenuSettings->setItemChecked(3, museeq->mShowTickers);
+		emit hideAllTickers();
+	} else if (museeq->mShowTickers == false) {
+		settings.writeEntry("/TheGraveyard.org/Museeq/showTickers", "true");
+		museeq->mShowTickers = true;
+		mMenuSettings->setItemChecked(3, museeq->mShowTickers);
+		emit showAllTickers();
+	}
 }
 void MainWindow::toggleTimestamps() {
-	if (museeq->mShowTimestamps == true)
-		museeq->setConfig("museeq.text", "showTimestamps", "false");
-	else if (museeq->mShowTimestamps == false)
-		museeq->setConfig("museeq.text", "showTimestamps", "true");
+	QSettings settings;
+	if (museeq->mShowTimestamps == true) {
+		settings.writeEntry("/TheGraveyard.org/Museeq/showTimestamps", "false");
+		museeq->mShowTimestamps = false;
+	} else if (museeq->mShowTimestamps == false) {
+		settings.writeEntry("/TheGraveyard.org/Museeq/showTimestamps", "true");
+		museeq->mShowTimestamps = true;
+	}
+	mMenuSettings->setItemChecked(5, museeq->mShowTimestamps);
 }
 void MainWindow::toggleLog() {
-	if (museeq->mShowStatusLog == true)
-		museeq->setConfig("museeq.statuslog", "show", "false");
-	else if (museeq->mShowStatusLog == false)
-		museeq->setConfig("museeq.statuslog", "show", "true");
+	QSettings settings;
+	if (museeq->mShowStatusLog == true) {
+		settings.writeEntry("/TheGraveyard.org/Museeq/showStatusLog", "false");
+		museeq->mShowStatusLog = false;
+		mLog->hide();
+	} else if (museeq->mShowStatusLog == false) {
+		settings.writeEntry("/TheGraveyard.org/Museeq/showStatusLog", "true");
+		museeq->mShowStatusLog = true;
+		mLog->show();
+	}
+	mMenuSettings->setItemChecked(4, museeq->mShowStatusLog);
 }
 void MainWindow::toggleAutoConnect() {
 	QSettings settings;
-	if(mConnectDialog->mAutoConnect->isChecked()) {
-		settings.removeEntry("/TheGraveyard.org/Museeq/AutoConnect");
-		mMenuSettings->setItemChecked(8, false);
+	QString autoConnect = settings.readEntry("/TheGraveyard.org/Museeq/AutoConnect");
+	if (! autoConnect.isEmpty() and autoConnect == "yes") {
+		settings.writeEntry("/TheGraveyard.org/Museeq/AutoConnect", "no");
+		mMenuSettings->setItemChecked(6, false);
+		mConnectDialog->mAutoConnect->setChecked(false);
 	} else {
 		settings.writeEntry("/TheGraveyard.org/Museeq/AutoConnect", "yes");
-		mMenuSettings->setItemChecked(8, true);
+		mConnectDialog->mAutoConnect->setChecked(true);
+		mMenuSettings->setItemChecked(6, true);
 	}
 }
 void MainWindow::toggleExitDialog() {
 	QSettings settings;
 	if(settings.readEntry("/TheGraveyard.org/Museeq/ShowExitDialog") == "yes") {
 		settings.writeEntry("/TheGraveyard.org/Museeq/ShowExitDialog", "no");
-		mMenuSettings->setItemChecked(9, false);
+		mMenuSettings->setItemChecked(7, false);
 	} else {
 		settings.writeEntry("/TheGraveyard.org/Museeq/ShowExitDialog", "yes");
-		mMenuSettings->setItemChecked(9, true);
+		mMenuSettings->setItemChecked(7, true);
 	}
 }
 void MainWindow::changeColors() {
-	if(mColorsDialog->exec() == QDialog::Accepted) {
-		if (! mColorsDialog->SMessageFont->text().isEmpty() )
-			museeq->setConfig("museeq.text", "fontMessage", mColorsDialog->SMessageFont->text());
-		if (! mColorsDialog->STimeFont->text().isEmpty() )
-			museeq->setConfig("museeq.text", "fontTime", mColorsDialog->STimeFont->text());
-		if (! mColorsDialog->STimeText->text().isEmpty() )
-			museeq->setConfig("museeq.text", "colorTime", mColorsDialog->STimeText->text());
-		if (! mColorsDialog->SRemoteText->text().isEmpty() )
-			museeq->setConfig("museeq.text", "colorRemote", mColorsDialog->SRemoteText->text());
-		if (! mColorsDialog->SMeText->text().isEmpty() )
-			museeq->setConfig("museeq.text", "colorMe", mColorsDialog->SMeText->text());
-		if (! mColorsDialog->SNicknameText->text().isEmpty() )
-			museeq->setConfig("museeq.text", "colorNickname", mColorsDialog->SNicknameText->text());
-		if (! mColorsDialog->SBuddiedText->text().isEmpty() )
-			museeq->setConfig("museeq.text", "colorBuddied", mColorsDialog->SBuddiedText->text());
-		if (! mColorsDialog->SBannedText->text().isEmpty() )
-			museeq->setConfig("museeq.text", "colorBanned", mColorsDialog->SBannedText->text());
-		if (! mColorsDialog->STrustedText->text().isEmpty() )
-			museeq->setConfig("museeq.text", "colorTrusted", mColorsDialog->STrustedText->text());
-	}
+
+	
+	mSettingsDialog->mTabHolder->showPage(mSettingsDialog->mMuseeqTabs);
+	mSettingsDialog->mMuseeqTabs->showPage(mSettingsDialog->ColorsAndFontsTab);
+	changeSettings();
 }
 
-void MainWindow::changeUserInfo() {
-	if(mUserInfoDialog->exec() == QDialog::Accepted) {
-		museeq->setConfig("userinfo", "text", mUserInfoDialog->mText->text());
-		if(mUserInfoDialog->mUpload->isChecked()) {
-			QFile f(mUserInfoDialog->mImage->text());
-			if(f.open(IO_ReadOnly)) {
-				QByteArray data = f.readAll();
-				f.close();
-				museeq->driver()->setUserImage(data);
-				mUserInfoDialog->mDontTouch->toggle();
-			} else
-				QMessageBox::warning(this, tr("Error"), tr("Couldn't open image file for reading"));
-		} else if(mUserInfoDialog->mClear->isChecked()) {
-			museeq->driver()->setUserImage(QByteArray());
-		}
-	}
-}
 
 void MainWindow::saveSettings() {
-
+	QSettings settings;
+	museeq->mRoomLogDir = mSettingsDialog->LoggingRoomDir->text();
+	settings.writeEntry("/TheGraveyard.org/Museeq/RoomLogDir", museeq->mRoomLogDir);
+	
+	museeq->mPrivateLogDir = mSettingsDialog->LoggingPrivateDir->text();
+	settings.writeEntry("/TheGraveyard.org/Museeq/PrivateLogDir", museeq->mPrivateLogDir);
+	
+	if (mSettingsDialog->LoggingPrivate->isChecked()) {
+		settings.writeEntry("/TheGraveyard.org/Museeq/LogPrivateChat", "yes");
+		museeq->mLogPrivate = true;
+	} else {
+		settings.writeEntry("/TheGraveyard.org/Museeq/LogPrivateChat", "no");
+		museeq->mLogPrivate = false;
+	}
+	if (mSettingsDialog->LoggingRooms->isChecked()) {
+		settings.writeEntry("/TheGraveyard.org/Museeq/LogRoomChat", "yes");
+		museeq->mLogRooms = true;
+	} else {
+		settings.writeEntry("/TheGraveyard.org/Museeq/LogRoomChat", "no");
+		museeq->mLogRooms = false;
+	}
 	if (! mSettingsDialog->SServerHost->text().isEmpty() )
 		museeq->setConfig("server", "host", mSettingsDialog->SServerHost->text());
 	QVariant p (mSettingsDialog->SServerPort->value());
@@ -959,14 +1008,21 @@ void MainWindow::saveSettings() {
 		museeq->setConfig("server", "password", mSettingsDialog->SSoulseekPassword->text());
 	if (! mSettingsDialog->SDownDir->text().isEmpty() )
 		museeq->setConfig("transfers", "download-dir", mSettingsDialog->SDownDir->text());
-	if (! mSettingsDialog->SIncompleteDir->text().isEmpty() )
-		museeq->setConfig("transfers", "incomplete-dir", mSettingsDialog->SIncompleteDir->text());
+	museeq->setConfig("transfers", "incomplete-dir", mSettingsDialog->SIncompleteDir->text());
 	if(mSettingsDialog->SOnlineAlerts->isChecked()) {
-		museeq->setConfig("museeq.alerts", "log_window", "true");
-	} else {  museeq->setConfig("museeq.alerts", "log_window", "false");  }
+		settings.writeEntry("/TheGraveyard.org/Museeq/showAlertsInLog", "true");
+		museeq->mOnlineAlert = true;
+	} else {
+		settings.writeEntry("/TheGraveyard.org/Museeq/showAlertsInLog", "false");
+		museeq->mOnlineAlert = false;
+	}
 	if (mSettingsDialog->SIPLog->isChecked()) {
-		museeq->setConfig("museeq.statuslog", "ip", "true");
-	} else { museeq->setConfig("museeq.statuslog", "ip", "false"); }
+		settings.writeEntry("/TheGraveyard.org/Museeq/showIPinLog", "true");
+		museeq->mIPLog = true;
+	} else {
+		settings.writeEntry("/TheGraveyard.org/Museeq/showIPinLog", "false");
+		museeq->mIPLog = false;
+	}
 
 	if(mSettingsDialog->SActive->isChecked()) {
 		museeq->setConfig("clients", "connectmode", "active");
@@ -995,12 +1051,74 @@ void MainWindow::saveSettings() {
 		museeq->setConfig("transfers", "user_warnings", "true");
 	}
 	else { museeq->setConfig("transfers", "user_warnings", "false"); }
+	// listen ports
+	QVariant ps (mSettingsDialog->CPortStart->value());
+	museeq->setConfig("clients.bind", "first", ps.toString());
+	QVariant pe (mSettingsDialog->CPortEnd->value());
+	museeq->setConfig("clients.bind", "last", pe.toString());
+	// userinfo
+	museeq->setConfig("userinfo", "text", mSettingsDialog->mInfoText->text());
+	if(mSettingsDialog->mUpload->isChecked()) {
+		QFile f(mSettingsDialog->mImage->text());
+		if(f.open(IO_ReadOnly)) {
+			QByteArray data = f.readAll();
+			f.close();
+			museeq->driver()->setUserImage(data);
+			mSettingsDialog->mDontTouch->toggle();
+		} else
+			QMessageBox::warning(this, tr("Error"), tr("Couldn't open image file for reading"));
+	} else if(mSettingsDialog->mClear->isChecked()) {
+		museeq->driver()->setUserImage(QByteArray());
+	}
+
+	if (! mSettingsDialog->SMessageFont->text().isEmpty() )
+		museeq->mFontMessage = mSettingsDialog->SMessageFont->text();
+	if (! mSettingsDialog->STimeFont->text().isEmpty() )
+		museeq->mFontTime = mSettingsDialog->STimeFont->text();
+	if (! mSettingsDialog->STimeText->text().isEmpty() )
+		museeq->mColorTime = mSettingsDialog->STimeText->text();
+	if (! mSettingsDialog->SRemoteText->text().isEmpty() )
+		museeq->mColorRemote = mSettingsDialog->SRemoteText->text();
+	if (! mSettingsDialog->SMeText->text().isEmpty() )
+		museeq->mColorMe = mSettingsDialog->SMeText->text();
+	if (! mSettingsDialog->SNicknameText->text().isEmpty() )
+		museeq->mColorNickname = mSettingsDialog->SNicknameText->text();
+	if (! mSettingsDialog->SBuddiedText->text().isEmpty() )
+		museeq->mColorBuddied = mSettingsDialog->SBuddiedText->text();
+	if (! mSettingsDialog->SBannedText->text().isEmpty() )
+		museeq->mColorBanned = mSettingsDialog->SBannedText->text();
+	if (! mSettingsDialog->STrustedText->text().isEmpty() )
+		museeq->mColorTrusted = mSettingsDialog->STrustedText->text();
+
+	settings.writeEntry("/TheGraveyard.org/Museeq/fontTime", museeq->mFontTime);
+	settings.writeEntry("/TheGraveyard.org/Museeq/fontMessage", museeq->mFontMessage);
+	settings.writeEntry("/TheGraveyard.org/Museeq/colorBanned", museeq->mColorBanned);
+	settings.writeEntry("/TheGraveyard.org/Museeq/colorBuddied", museeq->mColorBuddied);
+	settings.writeEntry("/TheGraveyard.org/Museeq/colorMe", museeq->mColorMe);
+	settings.writeEntry("/TheGraveyard.org/Museeq/colorNickname", museeq->mColorNickname);
+	settings.writeEntry("/TheGraveyard.org/Museeq/colorTrusted", museeq->mColorTrusted);
+	settings.writeEntry("/TheGraveyard.org/Museeq/colorRemote", museeq->mColorRemote);
+	settings.writeEntry("/TheGraveyard.org/Museeq/colorTime", museeq->mColorTime);
 
 }
 
 void MainWindow::changeSettings() {
+	mSettingsDialog->mProtocols->clear();
+	
+	QMap<QString, QString> handlers = museeq->protocolHandlers();
+	QMap<QString, QString>::ConstIterator it, end = handlers.end();
+	for(it = handlers.begin(); it != end; ++it)
+		new QListViewItem(mSettingsDialog->mProtocols, it.key(), it.data());
+
 	if(mSettingsDialog->exec() == QDialog::Accepted) {
 		saveSettings();
+		handlers.clear();
+		QListViewItemIterator it = QListViewItemIterator(mSettingsDialog->mProtocols);
+		while(it.current()) {
+			handlers[it.current()->text(0)] = it.current()->text(1);
+			++it;
+		}
+		museeq->setProtocolHandlers(handlers);
 	}
 }
 
@@ -1018,24 +1136,6 @@ void MainWindow::displayHelpDialog() {
 
 }
 
-void MainWindow::protocolHandlers() {
-	mProtocolDialog->mProtocols->clear();
-	
-	QMap<QString, QString> handlers = museeq->protocolHandlers();
-	QMap<QString, QString>::ConstIterator it, end = handlers.end();
-	for(it = handlers.begin(); it != end; ++it)
-		new QListViewItem(mProtocolDialog->mProtocols, it.key(), it.data());
-	
-	if(mProtocolDialog->exec() == QDialog::Accepted) {
-		handlers.clear();
-		QListViewItemIterator it = QListViewItemIterator(mProtocolDialog->mProtocols);
-		while(it.current()) {
-			handlers[it.current()->text(0)] = it.current()->text(1);
-			++it;
-		}
-		museeq->setProtocolHandlers(handlers);
-	}
-}
 
 void MainWindow::protocolHandlerMenu(QListViewItem *item, const QPoint& pos, int) {
 	if(! item)
@@ -1086,8 +1186,12 @@ void MainWindow::toggleTrayicon() {
 #ifdef HAVE_TRAYICON
 	if (museeq->mUsetray == true) {
 		museeq->trayicon_hide();
+		mMenuSettings->setItemChecked(8, false);
+		
 	} else if (museeq->mUsetray == false) {
 		museeq->trayicon_show();
+		mMenuSettings->setItemChecked(8, true);
+
 	}
 #endif // HAVE_TRAYICON
 }

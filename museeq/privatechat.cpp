@@ -22,6 +22,8 @@
 #include <qcheckbox.h>
 #include <qdatetime.h>
 #include <qtextedit.h>
+#include <qdir.h>
+#include <qfile.h>
 #include "codeccombo.h"
 #include "chatpanel.h"
 #include "museeq.h"
@@ -60,7 +62,7 @@ void PrivateChat::status(const QString& _u, uint _s) {
 			l += tr("%1 is online").arg(_u);
 		if (_s == 0 || _s == 1 || _s == 2)
 			mChatPanel->append(_TIMES,  l);
-// 		}	
+
 	}
 }
 
@@ -69,11 +71,34 @@ void PrivateChat::append(uint dir, uint ts, const QString& _u, const QString& _l
 	{
 		mChatPanel->append(ts, _u, _l);
 		emit highlight(1);
+		logMessage(_u, ts, _u, _l);
 	}
 	else if (dir == 1)
 	{
 		mChatPanel->append(ts, museeq->nickname(), _l);
-// 		emit highlight(1);
+		logMessage(_u, ts, museeq->nickname(), _l);
+	}
+}
+/* Write add local timestamp to chat message before writing to disk */
+void PrivateChat::logMessage(const QString& user, const QString& speaker, const QString& _l) {
+
+	logMessage(user, _TIMES, speaker, _l);
+}
+/* Write chat message to disk */
+void PrivateChat::logMessage(const QString& user, uint ts, const QString& speaker, const QString& _l) {
+	if (! museeq->mLogPrivate) {
+		return;
+	}
+	if (! museeq->mPrivateLogDir.isEmpty() and QDir(museeq->mPrivateLogDir).exists() ) {
+		QFile logfile ( museeq->mPrivateLogDir+"/"+user);
+		if (! logfile.open(IO_WriteOnly | IO_Append))
+			museeq->output(QString("Write Error: could not write to: " +museeq->mPrivateLogDir+"/"+user));
+			return;
+		QDateTime _t;
+		_t.setTime_t(ts);
+		QTextStream textstream( &logfile );
+		textstream << _t.toString() << " [" << speaker << "]\t" << _l << endl;
+		logfile.close();
 	}
 }
 
@@ -165,6 +190,7 @@ void PrivateChat::slotSend(const QString& line_) {
 			return;
 			}	
 		museeq->sayPrivate(user(), line);
+		logMessage(user(), museeq->nickname(), line);
 		mChatPanel->append(QString::null, line);
 	}
 }

@@ -23,9 +23,10 @@ ChatTicker::ChatTicker(QWidget* _p, const char* _n)
            : Marquee(QString::null, _p, _n) { };
 
 void ChatTicker::setText(const QString& _u, const QString& _m) {
-	if(! _m.isEmpty())
-		mTickers[_u] = QString(_m).replace((QChar)'\n', (QChar)' ');
-	else
+	if(! _m.isEmpty()) {
+		mTickers[_u] = QString(_m).replace("\n", " ");
+		mTickers[_u].truncate(50);
+	} else
 		mTickers.remove(_u);
 	updateText();
 }
@@ -34,7 +35,10 @@ void ChatTicker::setText(const NTickers& _t) {
 	mTickers.clear();
 	NTickers::const_iterator it = _t.begin();
 	for(; it != _t.end(); ++it)
+	{
 		mTickers[it.key()] = QString(it.data()).replace("\n", " ");
+		mTickers[it.key()].truncate(50);
+	}
 	updateText();
 }
 

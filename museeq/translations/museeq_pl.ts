@@ -1,1726 +1,1968 @@
-<!DOCTYPE TS>
-<TS>
-  <context>
+<!DOCTYPE TS><TS>
+<context>
     <name>@default</name>
     <message>
-      <source> Language: </source>
-      <translation> Język: </translation>
+        <source> Language: </source>
+        <translation> Język: </translation>
     </message>
     <message>
-      <source>Syntax: museeq [options]</source>
-      <translation>Składnia: museeq [opcje]</translation>
+        <source>Syntax: museeq [options]</source>
+        <translation>Składnia: museeq [opcje]</translation>
     </message>
     <message>
-      <source>Options:</source>
-      <translation>Opcje:</translation>
+        <source>Options:</source>
+        <translation>Opcje:</translation>
     </message>
     <message>
-      <source>-V --versionDisplay museeq version and quit</source>
-      <translation>-V --versionPokaż wersję museeq-a i zakończ</translation>
+        <source>-V --versionDisplay museeq version and quit</source>
+        <translation type="obsolete">-V --versionPokaż wersję museeq-a i zakończ</translation>
     </message>
     <message>
-      <source>-h --helpDisplay this message and quit</source>
-      <translation>-h --helpPokaż tę wiadomość i zakończ</translation>
+        <source>-h --helpDisplay this message and quit</source>
+        <translation type="obsolete">-h --helpPokaż tę wiadomość i zakończ</translation>
     </message>
     <message>
-      <source>--no-trayDon't load TrayIcon</source>
-      <translation>--no-trayNie ładuj ikony zasobnika</translation>
+        <source>--no-trayDon&apos;t load TrayIcon</source>
+        <translation type="obsolete">--no-trayNie ładuj ikony zasobnika</translation>
     </message>
     <message>
-      <source>Trayicon support was disabled at compile-time</source>
-      <translation>Wsparcie dla ikony zasobnika zosało wyłączone podczas kompilacji</translation>
+        <source>Trayicon support was disabled at compile-time</source>
+        <translation type="obsolete">Wsparcie dla ikony zasobnika zosało wyłączone podczas kompilacji</translation>
     </message>
-  </context>
-  <context>
+    <message>
+        <source>-V --version<byte value="x9"/><byte value="x9"/>Display museeq version and quit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>-h --help<byte value="x9"/><byte value="x9"/>Display this message and quit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>--no-tray<byte value="x9"/><byte value="x9"/>Don&apos;t load TrayIcon</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source><byte value="x9"/><byte value="x9"/><byte value="x9"/>Trayicon support was disabled at compile-time</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>BanList</name>
     <message>
-      <source>Add:</source>
-      <translation>Dodaj:</translation>
+        <source>Add:</source>
+        <translation>Dodaj:</translation>
     </message>
     <message>
-      <source>Comments</source>
-      <translation>Komentarze</translation>
+        <source>Comments</source>
+        <translation>Komentarze</translation>
     </message>
     <message>
-      <source>Comments for </source>
-      <translation>Komentarze dotyczące </translation>
+        <source>Comments for </source>
+        <translation>Komentarze dotyczące </translation>
     </message>
-  </context>
-  <context>
+</context>
+<context>
     <name>Browser</name>
     <message>
-      <source>Search files and folders</source>
-      <translation>Szukaj plików i katalogów</translation>
+        <source>Search files and folders</source>
+        <translation>Szukaj plików i katalogów</translation>
     </message>
     <message>
-      <source>Haven't received shares</source>
-      <translation>Nie otrzymałem udziałów</translation>
+        <source>Haven&apos;t received shares</source>
+        <translation>Nie otrzymałem udziałów</translation>
     </message>
     <message>
-      <source>Refresh</source>
-      <translation>Odśwież</translation>
+        <source>Refresh</source>
+        <translation>Odśwież</translation>
     </message>
     <message>
-      <source>directories</source>
-      <translation>katalogi</translation>
+        <source>directories</source>
+        <translation>katalogi</translation>
     </message>
     <message>
-      <source>Sharing nothing..</source>
-      <translation>Nic nie współdzieli..</translation>
+        <source>Sharing nothing..</source>
+        <translation>Nic nie współdzieli..</translation>
     </message>
-  </context>
-  <context>
+</context>
+<context>
     <name>BuddyList</name>
     <message>
-      <source>Add:</source>
-      <translation>Dodaj:</translation>
+        <source>Add:</source>
+        <translation>Dodaj:</translation>
     </message>
     <message>
-      <source>Comments</source>
-      <translation>Komentarze</translation>
+        <source>Comments</source>
+        <translation>Komentarze</translation>
     </message>
     <message>
-      <source>Comments for </source>
-      <translation>Komentarze dotyczące </translation>
+        <source>Comments for </source>
+        <translation>Komentarze dotyczące </translation>
     </message>
-  </context>
-  <context>
+</context>
+<context>
     <name>ChatRoom</name>
     <message>
-      <source>Auto-join</source>
-      <translation>Wejdź automatycznie</translation>
+        <source>Auto-join</source>
+        <translation>Wejdź automatycznie</translation>
     </message>
     <message>
-      <source>%1 joined the room</source>
-      <translation>%1 wszedł/weszła do pokoju</translation>
+        <source>%1 joined the room</source>
+        <translation>%1 wszedł/weszła do pokoju</translation>
     </message>
     <message>
-      <source>%1 left the room</source>
-      <translation>%1 wyszedł/wyszła z pokoju</translation>
+        <source>%1 left the room</source>
+        <translation>%1 wyszedł/wyszła z pokoju</translation>
     </message>
     <message>
-      <source>%1 has gone away</source>
-      <translation>%1 oddalił(a) się</translation>
+        <source>%1 has gone away</source>
+        <translation>%1 oddalił(a) się</translation>
     </message>
     <message>
-      <source>%1 has returned</source>
-      <translation>%1 wrócił(a)</translation>
+        <source>%1 has returned</source>
+        <translation>%1 wrócił(a)</translation>
     </message>
-  </context>
-  <context>
+</context>
+<context>
     <name>ChatRooms</name>
     <message>
-      <source>*Rooms*</source>
-      <translation>*Pokoje*</translation>
+        <source>*Rooms*</source>
+        <translation>*Pokoje*</translation>
     </message>
-  </context>
-  <context>
+</context>
+<context>
     <name>ConnectDialog</name>
     <message>
-      <source>Connect to Museekd...</source>
-      <translation>Podłącz do Museekd...</translation>
+        <source>Connect to Museekd...</source>
+        <translation>Podłącz do Museekd...</translation>
     </message>
     <message>
-      <source>Host / path:</source>
-      <translation>Host / ścieżka:</translation>
+        <source>Host / path:</source>
+        <translation>Host / ścieżka:</translation>
     </message>
     <message>
-      <source>Password:</source>
-      <translation>Hasło:</translation>
+        <source>Password:</source>
+        <translation>Hasło:</translation>
     </message>
     <message>
-      <source>&amp;Save Password</source>
-      <translation>&amp;Zapisz hasło</translation>
+        <source>&amp;Save Password</source>
+        <translation>&amp;Zapisz hasło</translation>
     </message>
     <message>
-      <source>Alt+S</source>
-      <translation>Alt+S</translation>
+        <source>Alt+S</source>
+        <translation>Alt+S</translation>
     </message>
     <message>
-      <source>Connect to:</source>
-      <translation>Podłącz do:</translation>
+        <source>Connect to:</source>
+        <translation>Podłącz do:</translation>
     </message>
     <message>
-      <source>&amp;TCP</source>
-      <translation>&amp;TCP</translation>
+        <source>&amp;TCP</source>
+        <translation>&amp;TCP</translation>
     </message>
     <message>
-      <source>Alt+T</source>
-      <translation>Alt+T</translation>
+        <source>Alt+T</source>
+        <translation>Alt+T</translation>
     </message>
     <message>
-      <source>&amp;Unix socket</source>
-      <translation>&amp;Gniazdo uniksowe</translation>
+        <source>&amp;Unix socket</source>
+        <translation>&amp;Gniazdo uniksowe</translation>
     </message>
     <message>
-      <source>Alt+U</source>
-      <translation>Alt+U</translation>
+        <source>Alt+U</source>
+        <translation>Alt+U</translation>
     </message>
     <message>
-      <source>Daemon O&amp;ptions...</source>
-      <translation>O&amp;pcje demona...</translation>
+        <source>Daemon O&amp;ptions...</source>
+        <translation>O&amp;pcje demona...</translation>
     </message>
     <message>
-      <source>Start &amp;Daemon</source>
-      <translation>Uruchom &amp;demona</translation>
+        <source>Start &amp;Daemon</source>
+        <translation>Uruchom &amp;demona</translation>
     </message>
     <message>
-      <source>Alt+D</source>
-      <translation>Alt+D</translation>
+        <source>Alt+D</source>
+        <translation>Alt+D</translation>
     </message>
     <message>
-      <source>St&amp;op Daemon</source>
-      <translation>Zatrzymaj dem&amp;ona</translation>
+        <source>St&amp;op Daemon</source>
+        <translation>Zatrzymaj dem&amp;ona</translation>
     </message>
     <message>
-      <source>Alt+O</source>
-      <translation>Alt+O</translation>
+        <source>Alt+O</source>
+        <translation>Alt+O</translation>
     </message>
     <message>
-      <source>Museek Daemon Config:</source>
-      <translation>Konfiguracja demona Museek-a:</translation>
+        <source>Museek Daemon Config:</source>
+        <translation>Konfiguracja demona Museek-a:</translation>
     </message>
     <message>
-      <source>Se&amp;lect...</source>
-      <translation>Wy&amp;bierz...</translation>
+        <source>Se&amp;lect...</source>
+        <translation>Wy&amp;bierz...</translation>
     </message>
     <message>
-      <source>Alt+L</source>
-      <translation>Alt+L</translation>
+        <source>Alt+L</source>
+        <translation>Alt+L</translation>
     </message>
     <message>
-      <source>Co&amp;nnect</source>
-      <translation>Po&amp;dłącz</translation>
+        <source>Co&amp;nnect</source>
+        <translation>Po&amp;dłącz</translation>
     </message>
     <message>
-      <source>Alt+N</source>
-      <translation>Alt+N</translation>
+        <source>Alt+N</source>
+        <translation>Alt+N</translation>
     </message>
     <message>
-      <source>Save</source>
-      <translation>Zapisz</translation>
+        <source>Save</source>
+        <translation>Zapisz</translation>
     </message>
     <message>
-      <source>&amp;Cancel</source>
-      <translation>A&amp;nuluj</translation>
+        <source>&amp;Cancel</source>
+        <translation>A&amp;nuluj</translation>
     </message>
     <message>
-      <source>Alt+C</source>
-      <translation>Alt+C</translation>
+        <source>Alt+C</source>
+        <translation>Alt+C</translation>
     </message>
     <message>
-      <source>&amp;AutoStart Museek Daemon</source>
-      <translation>Uruchom &amp;automatycznie demona Museek-a</translation>
+        <source>&amp;AutoStart Museek Daemon</source>
+        <translation>Uruchom &amp;automatycznie demona Museek-a</translation>
     </message>
     <message>
-      <source>Alt+A</source>
-      <translation>Alt+A</translation>
+        <source>Alt+A</source>
+        <translation>Alt+A</translation>
     </message>
     <message>
-      <source>S&amp;hutDown Daemon on Exit</source>
-      <translation>Wyłącz demona podczas wyjścia</translation>
+        <source>S&amp;hutDown Daemon on Exit</source>
+        <translation>Wyłącz demona podczas wyjścia</translation>
     </message>
     <message>
-      <source>Alt+H</source>
-      <translation>Alt+H</translation>
+        <source>Alt+H</source>
+        <translation>Alt+H</translation>
     </message>
     <message>
-      <source>Auto-Conn&amp;ect to Daemon</source>
-      <translation>Połącz z demon&amp;em automatycznie</translation>
+        <source>Auto-Conn&amp;ect to Daemon</source>
+        <translation>Połącz z demon&amp;em automatycznie</translation>
     </message>
     <message>
-      <source>Alt+E</source>
-      <translation>Alt+E</translation>
+        <source>Alt+E</source>
+        <translation>Alt+E</translation>
     </message>
-  </context>
-  <context>
+    <message>
+        <source>Clear</source>
+        <translation type="unfinished">Wyczyść</translation>
+    </message>
+</context>
+<context>
     <name>FileListView</name>
     <message>
-      <source>Filename</source>
-      <translation>Nazwa pliku</translation>
+        <source>Filename</source>
+        <translation>Nazwa pliku</translation>
     </message>
     <message>
-      <source>Size</source>
-      <translation>Rozmiar</translation>
+        <source>Size</source>
+        <translation>Rozmiar</translation>
     </message>
     <message>
-      <source>Length</source>
-      <translation>Długość</translation>
+        <source>Length</source>
+        <translation>Długość</translation>
     </message>
     <message>
-      <source>Bitrate</source>
-      <translation>Próbkowanie</translation>
+        <source>Bitrate</source>
+        <translation>Próbkowanie</translation>
     </message>
     <message>
-      <source>Download files</source>
-      <translation>Pobierz pliki</translation>
+        <source>Download files</source>
+        <translation>Pobierz pliki</translation>
     </message>
     <message>
-      <source>Upload files</source>
-      <translation>Wyślij pliki</translation>
+        <source>Upload files</source>
+        <translation>Wyślij pliki</translation>
     </message>
     <message>
-      <source>Copy URL</source>
-      <translation>Skopiuj URL</translation>
+        <source>Copy URL</source>
+        <translation>Skopiuj URL</translation>
     </message>
     <message>
-      <source>1 file</source>
-      <translation>1 plik</translation>
+        <source>1 file</source>
+        <translation>1 plik</translation>
     </message>
     <message>
-      <source>%1 files</source>
-      <translation>%2 plików</translation>
+        <source>%1 files</source>
+        <translation>%2 plików</translation>
     </message>
     <message>
-      <source>Upload File(s)</source>
-      <translation>Wyślij plik(i)</translation>
+        <source>Upload File(s)</source>
+        <translation>Wyślij plik(i)</translation>
     </message>
     <message>
-      <source>Which user do you wish to upload these to?</source>
-      <translation>Do któredo użytkownika chcesz je wysłać?</translation>
+        <source>Which user do you wish to upload these to?</source>
+        <translation>Do któredo użytkownika chcesz je wysłać?</translation>
     </message>
     <message>
-      <source>Download files to..</source>
-      <translation>Pobierz pliki do..</translation>
+        <source>Download files to..</source>
+        <translation>Pobierz pliki do..</translation>
     </message>
     <message>
-      <source>Select a Directory for current download(s)</source>
-      <translation>Wybierz katalog dla bierzącego pobierania</translation>
+        <source>Select a Directory for current download(s)</source>
+        <translation>Wybierz katalog dla bierzącego pobierania</translation>
     </message>
-  </context>
-  <context>
+</context>
+<context>
     <name>FolderListView</name>
     <message>
-      <source>Folder</source>
-      <translation>Katalog</translation>
+        <source>Folder</source>
+        <translation>Katalog</translation>
     </message>
     <message>
-      <source>Download folder</source>
-      <translation>Pobierz katalog</translation>
+        <source>Download folder</source>
+        <translation>Pobierz katalog</translation>
     </message>
     <message>
-      <source>Copy URL</source>
-      <translation>Skopiuj URL</translation>
+        <source>Copy URL</source>
+        <translation>Skopiuj URL</translation>
     </message>
     <message>
-      <source>1 folder</source>
-      <translation>1 katalog</translation>
+        <source>1 folder</source>
+        <translation>1 katalog</translation>
     </message>
     <message>
-      <source>%1 folders</source>
-      <translation>%1 katalogów</translation>
+        <source>%1 folders</source>
+        <translation>%1 katalogów</translation>
     </message>
-  </context>
-  <context>
+</context>
+<context>
     <name>FontsAndColorsDialog</name>
     <message>
-      <source>Fonts &amp; Colors</source>
-      <translation>Czcionki i kolory</translation>
+        <source>Fonts &amp; Colors</source>
+        <translation type="obsolete">Czcionki i kolory</translation>
     </message>
     <message>
-      <source>OK</source>
-      <translation>OK</translation>
+        <source>OK</source>
+        <translation type="obsolete">OK</translation>
     </message>
     <message>
-      <source>Cancel</source>
-      <translation>Anuluj</translation>
+        <source>Cancel</source>
+        <translation type="obsolete">Anuluj</translation>
     </message>
     <message>
-      <source>Pick Color</source>
-      <translation>Wybierz kolor</translation>
+        <source>Pick Color</source>
+        <translation type="obsolete">Wybierz kolor</translation>
     </message>
     <message>
-      <source>Pick Font</source>
-      <translation>Wybierz czcionkę</translation>
+        <source>Pick Font</source>
+        <translation type="obsolete">Wybierz czcionkę</translation>
     </message>
     <message>
-      <source>Time &amp; Brackets Text Color</source>
-      <translation>Kolor tekstu czasu i nawiasów</translation>
+        <source>Time &amp; Brackets Text Color</source>
+        <translation type="obsolete">Kolor tekstu czasu i nawiasów</translation>
     </message>
     <message>
-      <source>Time &amp; Brackets Font</source>
-      <translation>Czcionka czasu i nawiasów</translation>
+        <source>Time &amp; Brackets Font</source>
+        <translation type="obsolete">Czcionka czasu i nawiasów</translation>
     </message>
     <message>
-      <source>/Me Text</source>
-      <translation>Tekst /me</translation>
+        <source>/Me Text</source>
+        <translation type="obsolete">Tekst /me</translation>
     </message>
     <message>
-      <source>Trusted Users</source>
-      <translation>Zaufani użytkownicy</translation>
+        <source>Trusted Users</source>
+        <translation type="obsolete">Zaufani użytkownicy</translation>
     </message>
     <message>
-      <source>Remote Text</source>
-      <translation>Tekst zdalny</translation>
+        <source>Remote Text</source>
+        <translation type="obsolete">Tekst zdalny</translation>
     </message>
     <message>
-      <source>Message Font</source>
-      <translation>Czcionka wiadomości</translation>
+        <source>Message Font</source>
+        <translation type="obsolete">Czcionka wiadomości</translation>
     </message>
     <message>
-      <source>Buddied Users</source>
-      <translation>Kumple</translation>
+        <source>Buddied Users</source>
+        <translation type="obsolete">Kumple</translation>
     </message>
     <message>
-      <source>My Text</source>
-      <translation>Mój tekst</translation>
+        <source>My Text</source>
+        <translation type="obsolete">Mój tekst</translation>
     </message>
     <message>
-      <source>Banned Users</source>
-      <translation>Zbanowani użytkownicy</translation>
+        <source>Banned Users</source>
+        <translation type="obsolete">Zbanowani użytkownicy</translation>
     </message>
-  </context>
-  <context>
+</context>
+<context>
     <name>IPDialog</name>
     <message>
-      <source>User</source>
-      <translation>Użytkownik</translation>
+        <source>User</source>
+        <translation>Użytkownik</translation>
     </message>
     <message>
-      <source>IP</source>
-      <translation>IP</translation>
+        <source>IP</source>
+        <translation>IP</translation>
     </message>
     <message>
-      <source>Port</source>
-      <translation>Port</translation>
+        <source>Port</source>
+        <translation>Port</translation>
     </message>
     <message>
-      <source>Hostname</source>
-      <translation>Nazwa hosta</translation>
+        <source>Hostname</source>
+        <translation>Nazwa hosta</translation>
     </message>
     <message>
-      <source>IP Addresses</source>
-      <translation>Adresy IP</translation>
+        <source>IP Addresses</source>
+        <translation>Adresy IP</translation>
     </message>
     <message>
-      <source>&amp;Close</source>
-      <translation>&amp;Zamknij</translation>
+        <source>&amp;Close</source>
+        <translation>&amp;Zamknij</translation>
     </message>
     <message>
-      <source>Alt+C</source>
-      <translation>Alt+C</translation>
+        <source>Alt+C</source>
+        <translation>Alt+C</translation>
     </message>
     <message>
-      <source>Clear</source>
-      <translation>Wyczyść</translation>
+        <source>Clear</source>
+        <translation>Wyczyść</translation>
     </message>
-  </context>
-  <context>
+</context>
+<context>
     <name>IgnoreList</name>
     <message>
-      <source>Add:</source>
-      <translation>Dodaj:</translation>
+        <source>Add:</source>
+        <translation>Dodaj:</translation>
     </message>
     <message>
-      <source>Comments</source>
-      <translation>Komentarze</translation>
+        <source>Comments</source>
+        <translation>Komentarze</translation>
     </message>
     <message>
-      <source>Comments for </source>
-      <translation>Komentarze dotyczące </translation>
+        <source>Comments for </source>
+        <translation>Komentarze dotyczące </translation>
     </message>
-  </context>
-  <context>
+</context>
+<context>
     <name>InterestList</name>
     <message>
-      <source>Add:</source>
-      <translation>Dodaj:</translation>
+        <source>Add:</source>
+        <translation>Dodaj:</translation>
     </message>
     <message>
-      <source>I like:</source>
-      <translation>Lubię:</translation>
+        <source>I like:</source>
+        <translation>Lubię:</translation>
     </message>
     <message>
-      <source>I hate:</source>
-      <translation>Nie znoszę:</translation>
+        <source>I hate:</source>
+        <translation>Nie znoszę:</translation>
     </message>
-  </context>
-  <context>
+</context>
+<context>
     <name>InterestListView</name>
     <message>
-      <source>I like:</source>
-      <translation>Lubię:</translation>
+        <source>I like:</source>
+        <translation>Lubię:</translation>
     </message>
     <message>
-      <source>Remove</source>
-      <translation>Usuń</translation>
+        <source>Remove</source>
+        <translation>Usuń</translation>
     </message>
     <message>
-      <source>I hate:</source>
-      <translation>Nie znoszę:</translation>
+        <source>I hate:</source>
+        <translation>Nie znoszę:</translation>
     </message>
     <message>
-      <source>Recommendations for this Item</source>
-      <translation>Rekomendacje dla tego obiektu</translation>
+        <source>Recommendations for this Item</source>
+        <translation>Rekomendacje dla tego obiektu</translation>
     </message>
     <message>
-      <source>Similar Users for this Item</source>
-      <translation>Użytkownicy podobni dal tego obiektu</translation>
+        <source>Similar Users for this Item</source>
+        <translation>Użytkownicy podobni dal tego obiektu</translation>
     </message>
-  </context>
-  <context>
+</context>
+<context>
     <name>Interests</name>
     <message>
-      <source>Interests</source>
-      <translation>Zainteresowania</translation>
+        <source>Interests</source>
+        <translation>Zainteresowania</translation>
     </message>
     <message>
-      <source>Global</source>
-      <translation>Globalne</translation>
+        <source>Global</source>
+        <translation>Globalne</translation>
     </message>
     <message>
-      <source>Recommend</source>
-      <translation>Rekomendowane</translation>
+        <source>Recommend</source>
+        <translation>Rekomendowane</translation>
     </message>
     <message>
-      <source>Similar</source>
-      <translation>Podobne</translation>
+        <source>Similar</source>
+        <translation>Podobne</translation>
     </message>
     <message>
-      <source>I like:</source>
-      <translation>Lubię:</translation>
+        <source>I like:</source>
+        <translation>Lubię:</translation>
     </message>
     <message>
-      <source>I hate:</source>
-      <translation>Nie znoszę:</translation>
+        <source>I hate:</source>
+        <translation>Nie znoszę:</translation>
     </message>
-  </context>
-  <context>
+</context>
+<context>
     <name>MainWindow</name>
     <message>
-      <source>museeq </source>
-      <translation>museeq </translation>
+        <source>museeq </source>
+        <translation>museeq </translation>
     </message>
     <message>
-      <source>&amp;Connect...</source>
-      <translation>Podłącz...</translation>
+        <source>&amp;Connect...</source>
+        <translation>Podłącz...</translation>
     </message>
     <message>
-      <source>&amp;Disconnect</source>
-      <translation>Rozłącz...</translation>
+        <source>&amp;Disconnect</source>
+        <translation>Rozłącz...</translation>
     </message>
     <message>
-      <source>Check &amp;privileges</source>
-      <translation>Sprawdź &amp;przywileje</translation>
+        <source>Check &amp;privileges</source>
+        <translation>Sprawdź &amp;przywileje</translation>
     </message>
     <message>
-      <source>&amp;Browse My Shares</source>
-      <translation>Przeglądaj moje udziały</translation>
+        <source>&amp;Browse My Shares</source>
+        <translation>Przeglądaj moje udziały</translation>
     </message>
     <message>
-      <source>E&amp;xit</source>
-      <translation>Wyjdź</translation>
+        <source>E&amp;xit</source>
+        <translation>Wyjdź</translation>
     </message>
     <message>
-      <source>&amp;File</source>
-      <translation>Plik</translation>
+        <source>&amp;File</source>
+        <translation>Plik</translation>
     </message>
     <message>
-      <source>&amp;Protocol handlers...</source>
-      <translation>&amp;Programy obsługujące protokoły...</translation>
+        <source>&amp;Protocol handlers...</source>
+        <translation type="obsolete">&amp;Programy obsługujące protokoły...</translation>
     </message>
     <message>
-      <source>&amp;User info...</source>
-      <translation>Informacje o użytkowniku...</translation>
+        <source>&amp;User info...</source>
+        <translation type="obsolete">Informacje o użytkowniku...</translation>
     </message>
     <message>
-      <source>&amp;Museek...</source>
-      <translation>&amp;Museek...</translation>
+        <source>&amp;Museek...</source>
+        <translation type="obsolete">&amp;Museek...</translation>
     </message>
     <message>
-      <source>&amp;Colors and Fonts...</source>
-      <translation>Kolory i &amp;czcionki...</translation>
+        <source>&amp;Colors and Fonts...</source>
+        <translation type="obsolete">Kolory i &amp;czcionki...</translation>
     </message>
     <message>
-      <source>Pick &amp;Icon Theme... (Requires Restart)</source>
-      <translation>Wybierz motyw ikon... (wymagany restart)</translation>
+        <source>Pick &amp;Icon Theme... (Requires Restart)</source>
+        <translation>Wybierz motyw ikon... (wymagany restart)</translation>
     </message>
     <message>
-      <source>Show &amp;Tickers</source>
-      <translation>Pokaż brzęczykii</translation>
+        <source>Show &amp;Tickers</source>
+        <translation>Pokaż brzęczykii</translation>
     </message>
     <message>
-      <source>Show &amp;Log</source>
-      <translation>Pokaż dziennik</translation>
+        <source>Show &amp;Log</source>
+        <translation>Pokaż dziennik</translation>
     </message>
     <message>
-      <source>&amp;Settings</source>
-      <translation>U&amp;stawienia</translation>
+        <source>&amp;Settings</source>
+        <translation>U&amp;stawienia</translation>
     </message>
     <message>
-      <source>&amp;Chat Rooms</source>
-      <translation>Pokoje czatu</translation>
+        <source>&amp;Chat Rooms</source>
+        <translation>Pokoje czatu</translation>
     </message>
     <message>
-      <source>&amp;Private Chat</source>
-      <translation>&amp;Prywatna rozmowa</translation>
+        <source>&amp;Private Chat</source>
+        <translation>&amp;Prywatna rozmowa</translation>
     </message>
     <message>
-      <source>&amp;Transfers</source>
-      <translation>&amp;Transfery</translation>
+        <source>&amp;Transfers</source>
+        <translation>&amp;Transfery</translation>
     </message>
     <message>
-      <source>&amp;Search</source>
-      <translation>&amp;Szukaj</translation>
+        <source>&amp;Search</source>
+        <translation>&amp;Szukaj</translation>
     </message>
     <message>
-      <source>&amp;User Info</source>
-      <translation>Informacje o &amp;użytkowniku</translation>
+        <source>&amp;User Info</source>
+        <translation>Informacje o &amp;użytkowniku</translation>
     </message>
     <message>
-      <source>&amp;Browse Shares</source>
-      <translation>&amp;Przeglądaj udziały</translation>
+        <source>&amp;Browse Shares</source>
+        <translation>&amp;Przeglądaj udziały</translation>
     </message>
     <message>
-      <source>&amp;Modes</source>
-      <translation>Tryby</translation>
+        <source>&amp;Modes</source>
+        <translation>Tryby</translation>
     </message>
     <message>
-      <source>&amp;About...</source>
-      <translation>O programie...</translation>
+        <source>&amp;About...</source>
+        <translation>O programie...</translation>
     </message>
     <message>
-      <source>&amp;Commands...</source>
-      <translation>Komendy...</translation>
+        <source>&amp;Commands...</source>
+        <translation>Komendy...</translation>
     </message>
     <message>
-      <source>&amp;Help...</source>
-      <translation>Pomoc...</translation>
+        <source>&amp;Help...</source>
+        <translation>Pomoc...</translation>
     </message>
     <message>
-      <source>&amp;Help</source>
-      <translation>Pomoc</translation>
+        <source>&amp;Help</source>
+        <translation>Pomoc</translation>
     </message>
     <message>
-      <source>&amp;Load script...</source>
-      <translation>Załaduj skrypt...</translation>
+        <source>&amp;Load script...</source>
+        <translation>Załaduj skrypt...</translation>
     </message>
     <message>
-      <source>&amp;Unload script</source>
-      <translation>Wyładuj skrypt...</translation>
+        <source>&amp;Unload script</source>
+        <translation>Wyładuj skrypt...</translation>
     </message>
     <message>
-      <source>Sc&amp;ripts</source>
-      <translation>Skrypty</translation>
+        <source>Sc&amp;ripts</source>
+        <translation>Skrypty</translation>
     </message>
     <message>
-      <source>Welcome to Museeq</source>
-      <translation>Witamy w Museeq-u</translation>
+        <source>Welcome to Museeq</source>
+        <translation>Witamy w Museeq-u</translation>
     </message>
     <message>
-      <source>Chat rooms</source>
-      <translation>Pokoje czatu</translation>
+        <source>Chat rooms</source>
+        <translation>Pokoje czatu</translation>
     </message>
     <message>
-      <source>Private chat</source>
-      <translation>Prywatna rozmowa</translation>
+        <source>Private chat</source>
+        <translation>Prywatna rozmowa</translation>
     </message>
     <message>
-      <source>Transfers</source>
-      <translation>Transfery</translation>
+        <source>Transfers</source>
+        <translation>Transfery</translation>
     </message>
     <message>
-      <source>Search</source>
-      <translation>Szukaj</translation>
+        <source>Search</source>
+        <translation>Szukaj</translation>
     </message>
     <message>
-      <source>User info</source>
-      <translation>Informacje o użytkowniku</translation>
+        <source>User info</source>
+        <translation>Informacje o użytkowniku</translation>
     </message>
     <message>
-      <source>Browse</source>
-      <translation>Przeglądaj</translation>
+        <source>Browse</source>
+        <translation>Przeglądaj</translation>
     </message>
     <message>
-      <source>Launched Museek Daemon...</source>
-      <translation>Uruchomiono demona Museek-a...</translation>
+        <source>Launched Museek Daemon...</source>
+        <translation>Uruchomiono demona Museek-a...</translation>
     </message>
     <message>
-      <source>Failed Launching Museek Daemon...</source>
-      <translation>Nie udało się uruchomić demona Museek-a...</translation>
+        <source>Failed Launching Museek Daemon...</source>
+        <translation>Nie udało się uruchomić demona Museek-a...</translation>
     </message>
     <message>
-      <source>No Config for Museek Daemon selected, giving up...</source>
-      <translation>Nie wybrano konfiguracji demona Museek-a, poddaję się...</translation>
+        <source>No Config for Museek Daemon selected, giving up...</source>
+        <translation>Nie wybrano konfiguracji demona Museek-a, poddaję się...</translation>
     </message>
     <message>
-      <source>Museek Daemon is already running...</source>
-      <translation>Demon Museek-a jest już uruchomiony...</translation>
+        <source>Museek Daemon is already running...</source>
+        <translation>Demon Museek-a jest już uruchomiony...</translation>
     </message>
     <message>
-      <source>Terminating Museek Daemon...</source>
-      <translation>Zatrzymywanie demona Mussek-a...</translation>
+        <source>Terminating Museek Daemon...</source>
+        <translation>Zatrzymywanie demona Mussek-a...</translation>
     </message>
     <message>
-      <source>Museek Daemon not running, no need to stop it...</source>
-      <translation>Demon Museek-a nie jest uruchomiony, nie ma potrzeby zatrzymywania go...</translation>
+        <source>Museek Daemon not running, no need to stop it...</source>
+        <translation>Demon Museek-a nie jest uruchomiony, nie ma potrzeby zatrzymywania go...</translation>
     </message>
     <message>
-      <source>Museek Daemon has Shut Down...</source>
-      <translation>Zatrzymano demona Museek-a...</translation>
+        <source>Museek Daemon has Shut Down...</source>
+        <translation>Zatrzymano demona Museek-a...</translation>
     </message>
     <message>
-      <source>Connecting to museek... Looking up host</source>
-      <translation>Podłączanie do museek-a... Poszukiwanie hosta</translation>
+        <source>Connecting to museek... Looking up host</source>
+        <translation>Podłączanie do museek-a... Poszukiwanie hosta</translation>
     </message>
     <message>
-      <source>Connecting to museek...</source>
-      <translation>Podłączanie do museek-a...</translation>
+        <source>Connecting to museek...</source>
+        <translation>Podłączanie do museek-a...</translation>
     </message>
     <message>
-      <source>Connecting to museek... Connecting</source>
-      <translation>Podłączanie do museek-a... Podłączanie</translation>
+        <source>Connecting to museek... Connecting</source>
+        <translation>Podłączanie do museek-a... Podłączanie</translation>
     </message>
     <message>
-      <source>Connecting to museek... Logging in</source>
-      <translation>Podłączanie do museel-a... Logowanie</translation>
+        <source>Connecting to museek... Logging in</source>
+        <translation>Podłączanie do museel-a... Logowanie</translation>
     </message>
     <message>
-      <source>Disconnected from museek</source>
-      <translation>Rozłączono z museek-iem</translation>
+        <source>Disconnected from museek</source>
+        <translation>Rozłączono z museek-iem</translation>
     </message>
     <message>
-      <source>Cannot connect to museek... Connection refused</source>
-      <translation>Nie można połączyć z museek-iem... Odmówiono połączenia</translation>
+        <source>Cannot connect to museek... Connection refused</source>
+        <translation>Nie można połączyć z museek-iem... Odmówiono połączenia</translation>
     </message>
     <message>
-      <source>Cannot connect to museek... Host not found</source>
-      <translation>Nie można podłączyć do museek-a... Nie znaleziono hosta</translation>
+        <source>Cannot connect to museek... Host not found</source>
+        <translation>Nie można podłączyć do museek-a... Nie znaleziono hosta</translation>
     </message>
     <message>
-      <source>Logged in to museek</source>
-      <translation>Zalogowano do museek-a</translation>
+        <source>Logged in to museek</source>
+        <translation>Zalogowano do museek-a</translation>
     </message>
     <message>
-      <source>Login error: </source>
-      <translation>Błąd logowania: </translation>
+        <source>Login error: </source>
+        <translation>Błąd logowania: </translation>
     </message>
     <message>
-      <source>Connected to soulseek, your nickname: </source>
-      <translation>Połączono z soulseekiem, twoja ksywka: </translation>
+        <source>Connected to soulseek, your nickname: </source>
+        <translation>Połączono z soulseekiem, twoja ksywka: </translation>
     </message>
     <message>
-      <source> Status: Away</source>
-      <translation> Status: Oddalony</translation>
+        <source> Status: Away</source>
+        <translation> Status: Oddalony</translation>
     </message>
     <message>
-      <source> Status: Online</source>
-      <translation> Status: W sieci</translation>
+        <source> Status: Online</source>
+        <translation> Status: W sieci</translation>
     </message>
     <message>
-      <source>Disconnected from soulseek</source>
-      <translation>Rozłączono z soulseekiem</translation>
+        <source>Disconnected from soulseek</source>
+        <translation>Rozłączono z soulseekiem</translation>
     </message>
     <message>
-      <source>waiting</source>
-      <translation>czekam</translation>
+        <source>waiting</source>
+        <translation>czekam</translation>
     </message>
     <message>
-      <source>Enter a Museeq Icon Theme Directory</source>
-      <translation>Podaj katalog motywu ikon Museeq-a</translation>
+        <source>Enter a Museeq Icon Theme Directory</source>
+        <translation>Podaj katalog motywu ikon Museeq-a</translation>
     </message>
     <message>
-      <source>Museeq's Icon Theme (*.png)</source>
-      <translation>Motyw ikon Museeq-a (*.png)</translation>
+        <source>Museeq&apos;s Icon Theme (*.png)</source>
+        <translation>Motyw ikon Museeq-a (*.png)</translation>
     </message>
     <message>
-      <source>Offline</source>
-      <translation>Poza siecią</translation>
+        <source>Offline</source>
+        <translation>Poza siecią</translation>
     </message>
     <message>
-      <source>Error</source>
-      <translation>Błąd</translation>
+        <source>Error</source>
+        <translation>Błąd</translation>
     </message>
     <message>
-      <source>Couldn't open image file for reading</source>
-      <translation>Nie można otworzyć pliku obrazka do odczytu</translation>
+        <source>Couldn&apos;t open image file for reading</source>
+        <translation>Nie można otworzyć pliku obrazka do odczytu</translation>
     </message>
     <message>
-      <source>About Museeq</source>
-      <translation>O Museeq-u</translation>
+        <source>About Museeq</source>
+        <translation>O Museeq-u</translation>
     </message>
     <message>
-      <source>&lt;p align=&quot;center&quot;>Museeq </source>
-      <translation>&lt;p align=&quot;center&quot;>Museeq </translation>
+        <source>&lt;p align=&quot;center&quot;&gt;Museeq </source>
+        <translation>&lt;p align=&quot;center&quot;&gt;Museeq </translation>
     </message>
     <message>
-      <source> is a GUI for the Museek Daemon&lt;/p>The programs, museeq and museekd and muscan, were created by Hyriand 2003-2005&lt;br>&lt;br>Additions by Daelstorm and SeeSchloss in 2006&lt;br>This project is released under the GPL license.&lt;br>Code and ideas taken from other opensource projects and people are mentioned in the CREDITS file included in the source tarball.</source>
-      <translation> jest graficznym interfejsem dla demona Museeka&lt;/p>Programy, museeq i museekd i muscan, zostały stworzone przez Hyrianda w latach 2003-2005&lt;br>&lt;br>Dodatki przez Daelstorma i SeeSchlossa w 2006&lt;br>Ten projekt jest wypuszczony pod licencją GPL.&lt;br>Kod i pomysły wzięto z innych opensource'owych projektów oraz od ludzi wspomnianych w pliku CREDITS załączonym w archiwum źródłowym.</translation>
+        <source> is a GUI for the Museek Daemon&lt;/p&gt;The programs, museeq and museekd and muscan, were created by Hyriand 2003-2005&lt;br&gt;&lt;br&gt;Additions by Daelstorm and SeeSchloss in 2006&lt;br&gt;This project is released under the GPL license.&lt;br&gt;Code and ideas taken from other opensource projects and people are mentioned in the CREDITS file included in the source tarball.</source>
+        <translation> jest graficznym interfejsem dla demona Museeka&lt;/p&gt;Programy, museeq i museekd i muscan, zostały stworzone przez Hyrianda w latach 2003-2005&lt;br&gt;&lt;br&gt;Dodatki przez Daelstorma i SeeSchlossa w 2006&lt;br&gt;Ten projekt jest wypuszczony pod licencją GPL.&lt;br&gt;Kod i pomysły wzięto z innych opensource&apos;owych projektów oraz od ludzi wspomnianych w pliku CREDITS załączonym w archiwum źródłowym.</translation>
     </message>
     <message>
-      <source>Museeq Commands</source>
-      <translation>Komendy Museeq-a</translation>
+        <source>Museeq Commands</source>
+        <translation>Komendy Museeq-a</translation>
     </message>
     <message>
-      <source>&lt;h3>While in a chat window, such as a Chat Room, or a Private Chat, there are a number of commands available for use.&lt;/h3>&lt;b>/c /chat&lt;/b>   &lt;i>(Switch to Chat Rooms)&lt;/i>&lt;br>&lt;b>/pm /private&lt;/b> &amp;lt;nothing | username&amp;gt;  &lt;i>(Switch to Private Chat and start chatting with a user, if inputed)&lt;/i>&lt;br>&lt;b>/transfers&lt;/b>   &lt;i>(Switch to Transfers)&lt;/i>&lt;br>&lt;b>/s /search&lt;/b> &amp;lt;nothing | query>   &lt;i>(Switch to Searchs and start a Search with &amp;lt;query&amp;gt; if inputed)&lt;/i>&lt;br>&lt;b>/u /userinfo&lt;/b> &amp;lt;username&amp;gt;   &lt;i>(Switch to userinfo, and attempt to get a user's info, if inputed)&lt;/i>&lt;br>&lt;b>/b /browse&lt;/b> &amp;lt;username&amp;gt;    &lt;i>(Switch to Browse and initate browsing a user, if inputed)&lt;/i>&lt;br>&lt;b>/ip&lt;/b> &amp;lt;username&amp;gt;   &lt;i>(Get the IP of a user)&lt;/i>&lt;br>&lt;b>/log&lt;/b>    &lt;i>(Toggle displaying the Special Message Log)&lt;/i>&lt;br>&lt;b>/t /ticker /tickers&lt;/b>   &lt;i>(Toggle the showing of Tickers)&lt;/i> &lt;br>&lt;b>/f /fonts /c /colors&lt;/b>   &lt;i>(Open the Fonts and Colors settings dialog)&lt;/i>&lt;br>&lt;b>/ban /unban&lt;/b> &amp;lt;username&amp;gt;   &lt;i>(Disallow/Allow a user to recieve your shares and download from you)&lt;/i>&lt;br>&lt;b>/ignore /unignore&lt;/b> &amp;lt;username&amp;gt;    &lt;i>(Block/Unblock chat messages from a user)&lt;/i>&lt;br>&lt;b>/buddy /unbuddy&lt;/b> &amp;lt;username&amp;gt;   &lt;i>(Add/Remove a user to keep track of it and add comments about it)&lt;/i>&lt;br>&lt;b>/trust /distrust&lt;/b> &amp;lt;username&amp;gt;    &lt;i>(Add/Remove a user to the optional list of users who can send files to you)&lt;/i>&lt;br>&lt;b>/me&lt;/b> &lt;does something>    &lt;i>(Say something in the Third-Person)&lt;/i>&lt;br>&lt;b>/slap&lt;/b> &amp;lt;username&amp;gt;   &lt;i>(Typical Trout-slapping)&lt;/i>&lt;br>&lt;b>/j /join&lt;/b> &amp;lt;room&amp;gt;    &lt;i>(Join a Chat Room)&lt;/i>&lt;br>&lt;b>/l /p /leave /part&lt;/b> &amp;lt;nothing | room&amp;gt;    &lt;i>(Leave the current room or inputed room)&lt;/i>&lt;br>&lt;b>/about /help /commands&lt;/b>    &lt;i>(Display information)&lt;/i>&lt;br>&lt;br>Do not type the brackets, they are there only to make clear that something (or nothing) can be typed after the /command.</source>
-      <translation>&lt;h3>Kiedy jesteś w oknie czatu, takim jak pokój lub prywatna rozmowa, istnieją komendy dostępne do użytku&lt;/h3>&lt;b>/c /chat&lt;/b>   &lt;i>(Przełącz do pokoi czatu)&lt;/i>&lt;br>&lt;b>/pm /private&lt;/b> &amp;lt;nic | nazwa użytkownika&amp;gt;  &lt;i>(Przełącz na prywatną rozmowę i zacznij rozmawiać z użytkownikiem, jeśli wpisana)&lt;/i>&lt;br>&lt;b>/transfers&lt;/b>   &lt;i>(Przełącz na transfery)&lt;/i>&lt;br>&lt;b>/s /search&lt;/b> &amp;lt;nic | zapytanie>   &lt;i>(Przełącz na szukanie i rozpocznij szukanie &amp;lt;zapytania&amp;gt; jeśli wpisana)&lt;/i>&lt;br>&lt;b>/u /userinfo&lt;/b> &amp;lt;nazwa użytkownika&amp;gt;   &lt;i>(Przełącz na informacje o użytkowniku, i spróbuj uzyskać informacje, jeśli wpisana)&lt;/i>&lt;br>&lt;b>/b /browse&lt;/b> &amp;lt;nazwa użytkownika&amp;gt;    &lt;i>(Przełącz na przeglądanie i zacznij przeglądanie plików użytkownika, jeśli wpisana)&lt;/i>&lt;br>&lt;b>/ip&lt;/b> &amp;lt;nazwa użytkownika&amp;gt;   &lt;i>(Pobierz IP użytkownika)&lt;/i>&lt;br>&lt;b>/log&lt;/b>    &lt;i>(Przełącz wyświetlanie dziennika specjalnych wiadomości)&lt;/i>&lt;br>&lt;b>/t /ticker /tickers&lt;/b>   &lt;i>(Przełącz pokazywanie brzęczyków)&lt;/i> &lt;br>&lt;b>/f /fonts /c /colors&lt;/b>   &lt;i>(Otwórz okno ustawień kolorów i czcionek)&lt;/i>&lt;br>&lt;b>/ban /unban&lt;/b> &amp;lt;nazwa użytkownika&amp;gt;   &lt;i>(Zabroń/Pozwól użytkownikowi zobaczyć twoje udziały i pobierać od ciebie pliki)&lt;/i>&lt;br>&lt;b>/ignore /unignore&lt;/b> &amp;lt;nazwa użytkownika&amp;gt;    &lt;i>(Blokuj/Odblokuj odbieranie wiadomości od użytkownika)&lt;/i>&lt;br>&lt;b>/buddy /unbuddy&lt;/b> &amp;lt;nazwa użytkownika&amp;gt;   &lt;i>(Dodaj/Usuń użytkownika aby śledzić jego i komentarze o nim)&lt;/i>&lt;br>&lt;b>/trust /distrust&lt;/b> &amp;lt;nazwa użytkownika&amp;gt;    &lt;i>(Dodaj/Usuń użytkownika do opcjonalnej listy użytkowników mogących wysyłać ci pliki)&lt;/i>&lt;br>&lt;b>/me&lt;/b> &lt;robi coś>    &lt;i>(Powiedz coś w trzeciej osobie&lt;/i>&lt;br>&lt;b>/slap&lt;/b> &amp;lt;nazwa użytkownika&amp;gt;   &lt;i>(Typowe slapowanie)&lt;/i>&lt;br>&lt;b>/j /join&lt;/b> &amp;lt;pokój&amp;gt;    &lt;i>(Wejdź do pokoju czatu)&lt;/i>&lt;br>&lt;b>/l /p /leave /part&lt;/b> &amp;lt;nic | pokój&amp;gt;    &lt;i>(Wyjdź z bieżącego lub wpisanego pokoju)&lt;/i>&lt;br>&lt;b>/about /help /commands&lt;/b>    &lt;i>(Pokaż informacje)&lt;/i>&lt;br>&lt;br>Nie wpisuj nawiasów, one są tylko po to aby pokazać że coś (albo nic) może być wpisane po /komendzie</translation>
+        <source>&lt;h3&gt;While in a chat window, such as a Chat Room, or a Private Chat, there are a number of commands available for use.&lt;/h3&gt;&lt;b&gt;/c /chat&lt;/b&gt;   &lt;i&gt;(Switch to Chat Rooms)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/pm /private&lt;/b&gt; &amp;lt;nothing | username&amp;gt;  &lt;i&gt;(Switch to Private Chat and start chatting with a user, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/transfers&lt;/b&gt;   &lt;i&gt;(Switch to Transfers)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/s /search&lt;/b&gt; &amp;lt;nothing | query&gt;   &lt;i&gt;(Switch to Searchs and start a Search with &amp;lt;query&amp;gt; if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/u /userinfo&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Switch to userinfo, and attempt to get a user&apos;s info, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/b /browse&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Switch to Browse and initate browsing a user, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ip&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Get the IP of a user)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/log&lt;/b&gt;    &lt;i&gt;(Toggle displaying the Special Message Log)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/t /ticker /tickers&lt;/b&gt;   &lt;i&gt;(Toggle the showing of Tickers)&lt;/i&gt; &lt;br&gt;&lt;b&gt;/f /fonts /c /colors&lt;/b&gt;   &lt;i&gt;(Open the Fonts and Colors settings dialog)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ban /unban&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Disallow/Allow a user to recieve your shares and download from you)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ignore /unignore&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Block/Unblock chat messages from a user)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/buddy /unbuddy&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Add/Remove a user to keep track of it and add comments about it)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/trust /distrust&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Add/Remove a user to the optional list of users who can send files to you)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/me&lt;/b&gt; &lt;does something&gt;    &lt;i&gt;(Say something in the Third-Person)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/slap&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Typical Trout-slapping)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/j /join&lt;/b&gt; &amp;lt;room&amp;gt;    &lt;i&gt;(Join a Chat Room)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/l /p /leave /part&lt;/b&gt; &amp;lt;nothing | room&amp;gt;    &lt;i&gt;(Leave the current room or inputed room)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/about /help /commands&lt;/b&gt;    &lt;i&gt;(Display information)&lt;/i&gt;&lt;br&gt;&lt;br&gt;Do not type the brackets, they are there only to make clear that something (or nothing) can be typed after the /command.</source>
+        <translation>&lt;h3&gt;Kiedy jesteś w oknie czatu, takim jak pokój lub prywatna rozmowa, istnieją komendy dostępne do użytku&lt;/h3&gt;&lt;b&gt;/c /chat&lt;/b&gt;   &lt;i&gt;(Przełącz do pokoi czatu)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/pm /private&lt;/b&gt; &amp;lt;nic | nazwa użytkownika&amp;gt;  &lt;i&gt;(Przełącz na prywatną rozmowę i zacznij rozmawiać z użytkownikiem, jeśli wpisana)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/transfers&lt;/b&gt;   &lt;i&gt;(Przełącz na transfery)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/s /search&lt;/b&gt; &amp;lt;nic | zapytanie&gt;   &lt;i&gt;(Przełącz na szukanie i rozpocznij szukanie &amp;lt;zapytania&amp;gt; jeśli wpisana)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/u /userinfo&lt;/b&gt; &amp;lt;nazwa użytkownika&amp;gt;   &lt;i&gt;(Przełącz na informacje o użytkowniku, i spróbuj uzyskać informacje, jeśli wpisana)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/b /browse&lt;/b&gt; &amp;lt;nazwa użytkownika&amp;gt;    &lt;i&gt;(Przełącz na przeglądanie i zacznij przeglądanie plików użytkownika, jeśli wpisana)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ip&lt;/b&gt; &amp;lt;nazwa użytkownika&amp;gt;   &lt;i&gt;(Pobierz IP użytkownika)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/log&lt;/b&gt;    &lt;i&gt;(Przełącz wyświetlanie dziennika specjalnych wiadomości)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/t /ticker /tickers&lt;/b&gt;   &lt;i&gt;(Przełącz pokazywanie brzęczyków)&lt;/i&gt; &lt;br&gt;&lt;b&gt;/f /fonts /c /colors&lt;/b&gt;   &lt;i&gt;(Otwórz okno ustawień kolorów i czcionek)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ban /unban&lt;/b&gt; &amp;lt;nazwa użytkownika&amp;gt;   &lt;i&gt;(Zabroń/Pozwól użytkownikowi zobaczyć twoje udziały i pobierać od ciebie pliki)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ignore /unignore&lt;/b&gt; &amp;lt;nazwa użytkownika&amp;gt;    &lt;i&gt;(Blokuj/Odblokuj odbieranie wiadomości od użytkownika)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/buddy /unbuddy&lt;/b&gt; &amp;lt;nazwa użytkownika&amp;gt;   &lt;i&gt;(Dodaj/Usuń użytkownika aby śledzić jego i komentarze o nim)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/trust /distrust&lt;/b&gt; &amp;lt;nazwa użytkownika&amp;gt;    &lt;i&gt;(Dodaj/Usuń użytkownika do opcjonalnej listy użytkowników mogących wysyłać ci pliki)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/me&lt;/b&gt; &lt;robi coś&gt;    &lt;i&gt;(Powiedz coś w trzeciej osobie&lt;/i&gt;&lt;br&gt;&lt;b&gt;/slap&lt;/b&gt; &amp;lt;nazwa użytkownika&amp;gt;   &lt;i&gt;(Typowe slapowanie)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/j /join&lt;/b&gt; &amp;lt;pokój&amp;gt;    &lt;i&gt;(Wejdź do pokoju czatu)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/l /p /leave /part&lt;/b&gt; &amp;lt;nic | pokój&amp;gt;    &lt;i&gt;(Wyjdź z bieżącego lub wpisanego pokoju)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/about /help /commands&lt;/b&gt;    &lt;i&gt;(Pokaż informacje)&lt;/i&gt;&lt;br&gt;&lt;br&gt;Nie wpisuj nawiasów, one są tylko po to aby pokazać że coś (albo nic) może być wpisane po /komendzie</translation>
     </message>
     <message>
-      <source>Museeq Help</source>
-      <translation>Pomoc Museeq-a</translation>
+        <source>Museeq Help</source>
+        <translation>Pomoc Museeq-a</translation>
     </message>
     <message>
-      <source>&lt;h3>What's going on? I can't connect to a Soulseek Server with museeq!&lt;/h3> You connect to museekd with museeq, so you need to have &lt;b>museekd&lt;/b> configured, running &lt;u>and&lt;/u> connected to a &lt;b>Soulseek&lt;/b> or Soulfind server. &lt;br> &lt;h3>Running for the first time?&lt;/h3> Before you start museekd for the first time, you need to configure &lt;b>museekd&lt;/b> with &lt;b>musetup&lt;/b>,  a command-line configuration script.&lt;br>&lt;br> In musetup you &lt;b>MUST&lt;/b> configure the following items: Server, Username, Password, Interface Password, Download Dir&lt;br> Also, take note of your interfaces, if you change them from the default localhost:2240 and /tmp/museek.&lt;tt>USERNAME&lt;/tt>, you'll need to know them for logging in with museeq. &lt;br>&lt;br> When you start museeq or choose File->Connect from the menu, you are asked to input the host and port, or Unix Socket of museekd, &lt;b>not&lt;/b> the Server.&lt;br> &lt;h3>Want to send someone a file?&lt;/h3> Browse yourself, select file(s), and right-click->Upload. Input their name in the dialog box, and the upload should start, but it depends on if the user has place you on their &quot;trusted&quot; or &quot;uploads&quot; users list .&lt;br>Once you're connected to museekd, change museekd options via Settings->Museek</source>
-      <translation>&lt;h3>Co się dzieje? Nie mogę podłączyć się do serwera Soulseek przy pomocy museeq-a!&lt;/h3> Museeq łączy się z programem &lt;b>museekd&lt;/b>, więc musi on być skonfigurowany, uruchomiony &lt;u>oraz&lt;/u> podłączony do serwera &lt;b>Soulseek&lt;/b> albo Soulfind. &lt;br> &lt;h3>Uruchamiasz po raz pierwszy?&lt;/h3> Zanim uruchomisz &lt;b>museekd&lt;/b> po raz pierwszy, musisz go skonfigurować przy pomocy &lt;b>musetup-a&lt;/b>, skryptu konfiguracyjnego pracującego w wierszu poleceń.&lt;br>&lt;br> W musetup-ie &lt;b>MUSISZ&lt;/b> ustawić następujące rzeczy: serwer, nazwę użytkownika, hasło, hasło interfejsu, katalog pobierania&lt;br> Ponadto, jeśli zmienisz swoje interfejsy z domyślnych localhost:2240 i /tmp/museek.&lt;tt>NAZWA_UŻYTKOWNIKA&lt;/tt>, będziesz musiał je znać żeby zalogować się museeq-iem. &lt;br>&lt;br> Kiedy uruchomisz museeq-a albo wybierzesz Plik->Podłącz z menu, będziesz poproszony o wprowadzenie hosta i portu, albo gniazda uniksowego  museekd, &lt;b>a nie&lt;/b> serwer.&lt;br> &lt;h3>Chcesz wysłać komuś plik?&lt;/h3> Przeglądaj swoje pliki, wybierz plik(i), następnie kliknij prwaym przyciskiem i wybierz Wyślij. Wprowadź jego imię w okienku dialogowym, a pobieranie powinno się rozpocząć, jednakże zależy to od tego, czy ma on ciebie na swojej liście zaufanych lub wysyłających.&lt;br>Kiedy jesteś podłączony do museekd, możesz zmieniać jego opcje poprzez Ustawienia->Museek</translation>
+        <source>&lt;h3&gt;What&apos;s going on? I can&apos;t connect to a Soulseek Server with museeq!&lt;/h3&gt; You connect to museekd with museeq, so you need to have &lt;b&gt;museekd&lt;/b&gt; configured, running &lt;u&gt;and&lt;/u&gt; connected to a &lt;b&gt;Soulseek&lt;/b&gt; or Soulfind server. &lt;br&gt; &lt;h3&gt;Running for the first time?&lt;/h3&gt; Before you start museekd for the first time, you need to configure &lt;b&gt;museekd&lt;/b&gt; with &lt;b&gt;musetup&lt;/b&gt;,  a command-line configuration script.&lt;br&gt;&lt;br&gt; In musetup you &lt;b&gt;MUST&lt;/b&gt; configure the following items: Server, Username, Password, Interface Password, Download Dir&lt;br&gt; Also, take note of your interfaces, if you change them from the default localhost:2240 and /tmp/museek.&lt;tt&gt;USERNAME&lt;/tt&gt;, you&apos;ll need to know them for logging in with museeq. &lt;br&gt;&lt;br&gt; When you start museeq or choose File-&gt;Connect from the menu, you are asked to input the host and port, or Unix Socket of museekd, &lt;b&gt;not&lt;/b&gt; the Server.&lt;br&gt; &lt;h3&gt;Want to send someone a file?&lt;/h3&gt; Browse yourself, select file(s), and right-click-&gt;Upload. Input their name in the dialog box, and the upload should start, but it depends on if the user has place you on their &quot;trusted&quot; or &quot;uploads&quot; users list .&lt;br&gt;Once you&apos;re connected to museekd, change museekd options via Settings-&gt;Museek</source>
+        <translation>&lt;h3&gt;Co się dzieje? Nie mogę podłączyć się do serwera Soulseek przy pomocy museeq-a!&lt;/h3&gt; Museeq łączy się z programem &lt;b&gt;museekd&lt;/b&gt;, więc musi on być skonfigurowany, uruchomiony &lt;u&gt;oraz&lt;/u&gt; podłączony do serwera &lt;b&gt;Soulseek&lt;/b&gt; albo Soulfind. &lt;br&gt; &lt;h3&gt;Uruchamiasz po raz pierwszy?&lt;/h3&gt; Zanim uruchomisz &lt;b&gt;museekd&lt;/b&gt; po raz pierwszy, musisz go skonfigurować przy pomocy &lt;b&gt;musetup-a&lt;/b&gt;, skryptu konfiguracyjnego pracującego w wierszu poleceń.&lt;br&gt;&lt;br&gt; W musetup-ie &lt;b&gt;MUSISZ&lt;/b&gt; ustawić następujące rzeczy: serwer, nazwę użytkownika, hasło, hasło interfejsu, katalog pobierania&lt;br&gt; Ponadto, jeśli zmienisz swoje interfejsy z domyślnych localhost:2240 i /tmp/museek.&lt;tt&gt;NAZWA_UŻYTKOWNIKA&lt;/tt&gt;, będziesz musiał je znać żeby zalogować się museeq-iem. &lt;br&gt;&lt;br&gt; Kiedy uruchomisz museeq-a albo wybierzesz Plik-&gt;Podłącz z menu, będziesz poproszony o wprowadzenie hosta i portu, albo gniazda uniksowego  museekd, &lt;b&gt;a nie&lt;/b&gt; serwer.&lt;br&gt; &lt;h3&gt;Chcesz wysłać komuś plik?&lt;/h3&gt; Przeglądaj swoje pliki, wybierz plik(i), następnie kliknij prwaym przyciskiem i wybierz Wyślij. Wprowadź jego imię w okienku dialogowym, a pobieranie powinno się rozpocząć, jednakże zależy to od tego, czy ma on ciebie na swojej liście zaufanych lub wysyłających.&lt;br&gt;Kiedy jesteś podłączony do museekd, możesz zmieniać jego opcje poprzez Ustawienia-&gt;Museek</translation>
     </message>
     <message>
-      <source>Delete handler</source>
-      <translation>Usuń program obsługujący</translation>
+        <source>Delete handler</source>
+        <translation>Usuń program obsługujący</translation>
     </message>
     <message>
-      <source>Delete</source>
-      <translation>Usuń</translation>
+        <source>Delete</source>
+        <translation>Usuń</translation>
     </message>
     <message>
-      <source>Give privileges</source>
-      <translation>Daj przywileje</translation>
+        <source>Give privileges</source>
+        <translation>Daj przywileje</translation>
     </message>
     <message>
-      <source>How many days worth of privileges 
+        <source>How many days worth of privileges 
 </source>
-      <translation>Ile dni przywilejów 
+        <translation>Ile dni przywilejów 
 </translation>
     </message>
     <message>
-      <source>do you wish to give to user </source>
-      <translation>chcesz dać użytkownikowi </translation>
+        <source>do you wish to give to user </source>
+        <translation>chcesz dać użytkownikowi </translation>
     </message>
     <message>
-      <source>Museeq - Soulseek Privileges</source>
-      <translation>Museeq - przywileje Soulseeka</translation>
+        <source>Museeq - Soulseek Privileges</source>
+        <translation>Museeq - przywileje Soulseeka</translation>
     </message>
     <message>
-      <source>You have %1 days, %2 hours, %3 minutes and %4 seconds of privileges left</source>
-      <translation>Masz jeszcze %1 dni, %2 godzin(y), %3 minut(y) i %4 sekund(y) przywilejów</translation>
+        <source>You have %1 days, %2 hours, %3 minutes and %4 seconds of privileges left</source>
+        <translation>Masz jeszcze %1 dni, %2 godzin(y), %3 minut(y) i %4 sekund(y) przywilejów</translation>
     </message>
     <message>
-      <source>Shutdown Museeq</source>
-      <translation>Wyłącz Museeq-a</translation>
+        <source>Shutdown Museeq</source>
+        <translation>Wyłącz Museeq-a</translation>
     </message>
     <message>
-      <source>The Museek Daemon was launched by Museeq and is still running, and will be shut down if you close Museeq, are you sure you want to?</source>
-      <translation>Demon Museeka został uruchomiony przez Museeq-a i ciągle działa, zostanie wyłaczony jeśli zamkniesz Museeq-a, na pewno chcesz to zrobić?</translation>
+        <source>The Museek Daemon was launched by Museeq and is still running, and will be shut down if you close Museeq, are you sure you want to?</source>
+        <translation>Demon Museeka został uruchomiony przez Museeq-a i ciągle działa, zostanie wyłaczony jeśli zamkniesz Museeq-a, na pewno chcesz to zrobić?</translation>
     </message>
     <message>
-      <source>&amp;Yes</source>
-      <translation>&amp;Tak</translation>
+        <source>&amp;Yes</source>
+        <translation>&amp;Tak</translation>
     </message>
     <message>
-      <source>&amp;No</source>
-      <translation>&amp;Nie</translation>
+        <source>&amp;No</source>
+        <translation>&amp;Nie</translation>
     </message>
     <message>
-      <source>The Museek Daemon was launched by Museeq and is still running, but will &lt;b>not&lt;/b> be shut down if you close Museeq. Are you sure you want to?</source>
-      <translation>Demon Museeka został uruchomiony przez Museeq-a i ciągle działa, ale &lt;b>nie&lt;/b> zostanie wyłaczony jeśli zamkniesz Museeq-a, na pewno chcesz to zrobić?</translation>
+        <source>The Museek Daemon was launched by Museeq and is still running, but will &lt;b&gt;not&lt;/b&gt; be shut down if you close Museeq. Are you sure you want to?</source>
+        <translation>Demon Museeka został uruchomiony przez Museeq-a i ciągle działa, ale &lt;b&gt;nie&lt;/b&gt; zostanie wyłaczony jeśli zamkniesz Museeq-a, na pewno chcesz to zrobić?</translation>
     </message>
     <message>
-      <source>It's safe to close Museeq, but are you sure you want to?</source>
-      <translation>Można bezpiecznie zamknąć Museeq-a, ale czy na pewno chcesz to zrobić?</translation>
+        <source>It&apos;s safe to close Museeq, but are you sure you want to?</source>
+        <translation>Można bezpiecznie zamknąć Museeq-a, ale czy na pewno chcesz to zrobić?</translation>
     </message>
     <message>
-      <source>Load Script</source>
-      <translation>Załaduj Skrypt</translation>
+        <source>Load Script</source>
+        <translation>Załaduj Skrypt</translation>
     </message>
     <message>
-      <source>Show T&amp;imestamps</source>
-      <translation>Pokaż stemple czasowe</translation>
+        <source>Show T&amp;imestamps</source>
+        <translation>Pokaż stemple czasowe</translation>
     </message>
     <message>
-      <source>IP of </source>
-      <translation>IP </translation>
+        <source>IP of </source>
+        <translation>IP </translation>
     </message>
     <message>
-      <source>Port:</source>
-      <translation>Port:</translation>
+        <source>Port:</source>
+        <translation>Port:</translation>
     </message>
     <message>
-      <source>Enable &amp;Trayicon</source>
-      <translation>Włącz &amp;ikonę zasobnika</translation>
+        <source>Enable &amp;Trayicon</source>
+        <translation>Włącz &amp;ikonę zasobnika</translation>
     </message>
     <message>
-      <source>Auto-Connect to Daemon</source>
-      <translation>Podłącz do demona automatycznie</translation>
+        <source>Auto-Connect to Daemon</source>
+        <translation>Podłącz do demona automatycznie</translation>
     </message>
     <message>
-      <source>Toggle &amp;away</source>
-      <translation>Przełącz odd&amp;alenie</translation>
+        <source>Toggle &amp;away</source>
+        <translation>Przełącz odd&amp;alenie</translation>
     </message>
     <message>
-      <source>Show Exit Dialog</source>
-      <translation>Pokaż okienko dialogowe przy wyjściu</translation>
+        <source>Show Exit Dialog</source>
+        <translation>Pokaż okienko dialogowe przy wyjściu</translation>
     </message>
-  </context>
-  <context>
+    <message>
+        <source>&amp;Configure...</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Museeq</name>
     <message>
-      <source>&amp;Restore</source>
-      <translation>P&amp;rzywróć</translation>
+        <source>&amp;Restore</source>
+        <translation>P&amp;rzywróć</translation>
     </message>
     <message>
-      <source>&amp;Hide</source>
-      <translation>&amp;Ukryj</translation>
+        <source>&amp;Hide</source>
+        <translation>&amp;Ukryj</translation>
     </message>
     <message>
-      <source>&amp;Quit</source>
-      <translation>Za&amp;kończ</translation>
+        <source>&amp;Quit</source>
+        <translation>Za&amp;kończ</translation>
     </message>
     <message>
-      <source>MuseeqTray</source>
-      <translation>Zasobnik systemowy museek-a</translation>
+        <source>MuseeqTray</source>
+        <translation>Zasobnik systemowy museek-a</translation>
     </message>
-  </context>
-  <context>
+    <message>
+        <source>&amp;Museek Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>OnlineAlert</name>
     <message>
-      <source>Online alert</source>
-      <translation>Alert online</translation>
+        <source>Online alert</source>
+        <translation>Alert online</translation>
     </message>
     <message>
-      <source>&amp;Remove</source>
-      <translation>&amp;Usuń</translation>
+        <source>&amp;Remove</source>
+        <translation>&amp;Usuń</translation>
     </message>
     <message>
-      <source>Alt+R</source>
-      <translation>Alt+R</translation>
+        <source>Alt+R</source>
+        <translation>Alt+R</translation>
     </message>
     <message>
-      <source>&amp;OK</source>
-      <translation>&amp;OK</translation>
+        <source>&amp;OK</source>
+        <translation>&amp;OK</translation>
     </message>
     <message>
-      <source>Alt+O</source>
-      <translation>Alt+O</translation>
+        <source>Alt+O</source>
+        <translation>Alt+O</translation>
     </message>
     <message>
-      <source>offline</source>
-      <translation>poza siecią</translation>
+        <source>offline</source>
+        <translation>poza siecią</translation>
     </message>
     <message>
-      <source>away</source>
-      <translation>oddalony</translation>
+        <source>away</source>
+        <translation>oddalony</translation>
     </message>
     <message>
-      <source>online</source>
-      <translation>w sieci</translation>
+        <source>online</source>
+        <translation>w sieci</translation>
     </message>
     <message>
-      <source>%1 user %2 is now %3</source>
-      <translation>%1 użytkownik %2 jest teraz %3</translation>
+        <source>%1 user %2 is now %3</source>
+        <translation>%1 użytkownik %2 jest teraz %3</translation>
     </message>
-  </context>
-  <context>
+</context>
+<context>
     <name>PrivateChat</name>
     <message>
-      <source>%1 is offline</source>
-      <translation>%1 jest poza siecią</translation>
+        <source>%1 is offline</source>
+        <translation>%1 jest poza siecią</translation>
     </message>
     <message>
-      <source>%1 is away</source>
-      <translation>%1 jest daleko</translation>
+        <source>%1 is away</source>
+        <translation>%1 jest daleko</translation>
     </message>
     <message>
-      <source>%1 is online</source>
-      <translation>%1 jest w sieci</translation>
+        <source>%1 is online</source>
+        <translation>%1 jest w sieci</translation>
     </message>
-  </context>
-  <context>
+</context>
+<context>
     <name>ProtocolDialog</name>
     <message>
-      <source>Protocol</source>
-      <translation>Proktokół</translation>
+        <source>Protocol</source>
+        <translation type="obsolete">Proktokół</translation>
     </message>
     <message>
-      <source>Handler</source>
-      <translation>Program obsługujący</translation>
+        <source>Handler</source>
+        <translation type="obsolete">Program obsługujący</translation>
     </message>
     <message>
-      <source>Protocol handlers</source>
-      <translation>Programy obsługujące protokoły</translation>
+        <source>Protocol handlers</source>
+        <translation type="obsolete">Programy obsługujące protokoły</translation>
     </message>
     <message>
-      <source>OK</source>
-      <translation>OK</translation>
+        <source>OK</source>
+        <translation type="obsolete">OK</translation>
     </message>
     <message>
-      <source>Cancel</source>
-      <translation>Anuluj</translation>
+        <source>Cancel</source>
+        <translation type="obsolete">Anuluj</translation>
     </message>
     <message>
-      <source>New</source>
-      <translation>Nowy</translation>
+        <source>New</source>
+        <translation type="obsolete">Nowy</translation>
     </message>
-  </context>
-  <context>
+</context>
+<context>
     <name>RoomList</name>
     <message>
-      <source>Create:</source>
-      <translation>Utwórz:</translation>
+        <source>Create:</source>
+        <translation>Utwórz:</translation>
     </message>
-  </context>
-  <context>
+</context>
+<context>
     <name>RoomListView</name>
     <message>
-      <source>Room</source>
-      <translation>Pokój</translation>
+        <source>Room</source>
+        <translation>Pokój</translation>
     </message>
     <message>
-      <source>Users</source>
-      <translation>Użytkownicy</translation>
+        <source>Users</source>
+        <translation>Użytkownicy</translation>
     </message>
     <message>
-      <source>Join room</source>
-      <translation>Wejdź do pokoju</translation>
+        <source>Join room</source>
+        <translation>Wejdź do pokoju</translation>
     </message>
     <message>
-      <source>Leave room</source>
-      <translation>Wyjdź z pokoju</translation>
+        <source>Leave room</source>
+        <translation>Wyjdź z pokoju</translation>
     </message>
     <message>
-      <source>Refresh</source>
-      <translation>Odśwież</translation>
+        <source>Refresh</source>
+        <translation>Odśwież</translation>
     </message>
-  </context>
-  <context>
+</context>
+<context>
     <name>ScrollImage</name>
     <message>
-      <source>Save picture...</source>
-      <translation>Zapisz obrazek...</translation>
+        <source>Save picture...</source>
+        <translation>Zapisz obrazek...</translation>
     </message>
-  </context>
-  <context>
+</context>
+<context>
     <name>Search</name>
     <message>
-      <source>Enable filters</source>
-      <translation>Włącz filtry</translation>
+        <source>Enable filters</source>
+        <translation>Włącz filtry</translation>
     </message>
     <message>
-      <source>Ignore</source>
-      <translation>Ignoruj</translation>
+        <source>Ignore</source>
+        <translation>Ignoruj</translation>
     </message>
-  </context>
-  <context>
+</context>
+<context>
     <name>SearchFilter</name>
     <message>
-      <source>Size:</source>
-      <translation>Rozmiar:</translation>
+        <source>Size:</source>
+        <translation>Rozmiar:</translation>
     </message>
     <message>
-      <source>Bitrate:</source>
-      <translation>Próbkowanie:</translation>
+        <source>Bitrate:</source>
+        <translation>Próbkowanie:</translation>
     </message>
     <message>
-      <source>Free slot</source>
-      <translation>Wolny slot</translation>
+        <source>Free slot</source>
+        <translation>Wolny slot</translation>
     </message>
     <message>
-      <source>Warning - Museeq</source>
-      <translation>Ostrzeżenie - Museeq</translation>
+        <source>Warning - Museeq</source>
+        <translation>Ostrzeżenie - Museeq</translation>
     </message>
     <message>
-      <source>Invalid regular expression, disabling it</source>
-      <translation>Nieprawidłowe wyrażenie regularne, wyłączam je</translation>
+        <source>Invalid regular expression, disabling it</source>
+        <translation>Nieprawidłowe wyrażenie regularne, wyłączam je</translation>
     </message>
     <message>
-      <source>k</source>
-      <translation>k</translation>
+        <source>k</source>
+        <translation>k</translation>
     </message>
     <message>
-      <source>m</source>
-      <translation>m</translation>
+        <source>m</source>
+        <translation>m</translation>
     </message>
     <message>
-      <source>g</source>
-      <translation>g</translation>
+        <source>g</source>
+        <translation>g</translation>
     </message>
     <message>
-      <source>Invalid size filter, disabling it</source>
-      <translation>Nieprawidłowy filtr rozmiaru, wyłączam go</translation>
+        <source>Invalid size filter, disabling it</source>
+        <translation>Nieprawidłowy filtr rozmiaru, wyłączam go</translation>
     </message>
     <message>
-      <source>Invalid bitrate filter, disabling it</source>
-      <translation>Nieprawidłowy filtr próbkowania, wyłączam go</translation>
+        <source>Invalid bitrate filter, disabling it</source>
+        <translation>Nieprawidłowy filtr próbkowania, wyłączam go</translation>
     </message>
-  </context>
-  <context>
+</context>
+<context>
     <name>SearchListItem</name>
     <message>
-      <source>/s</source>
-      <translation>/s</translation>
+        <source>/s</source>
+        <translation>/s</translation>
     </message>
     <message>
-      <source>Y</source>
-      <translation>T</translation>
+        <source>Y</source>
+        <translation>T</translation>
     </message>
     <message>
-      <source>N</source>
-      <translation>N</translation>
+        <source>N</source>
+        <translation>N</translation>
     </message>
-  </context>
-  <context>
+</context>
+<context>
     <name>SearchListView</name>
     <message>
-      <source>User</source>
-      <translation>Użytkownik</translation>
+        <source>User</source>
+        <translation>Użytkownik</translation>
     </message>
     <message>
-      <source>Filename</source>
-      <translation>Nazwa pliku</translation>
+        <source>Filename</source>
+        <translation>Nazwa pliku</translation>
     </message>
     <message>
-      <source>Size</source>
-      <translation>Rozmiar</translation>
+        <source>Size</source>
+        <translation>Rozmiar</translation>
     </message>
     <message>
-      <source>Speed</source>
-      <translation>Prędkość</translation>
+        <source>Speed</source>
+        <translation>Prędkość</translation>
     </message>
     <message>
-      <source>Queued</source>
-      <translation>Zakolejkowane</translation>
+        <source>Queued</source>
+        <translation>Zakolejkowane</translation>
     </message>
     <message>
-      <source>Imm.</source>
-      <translation>Nat.</translation>
+        <source>Imm.</source>
+        <translation>Nat.</translation>
     </message>
     <message>
-      <source>Length</source>
-      <translation>Długość</translation>
+        <source>Length</source>
+        <translation>Długość</translation>
     </message>
     <message>
-      <source>Bitrate</source>
-      <translation>Próbkowanie</translation>
+        <source>Bitrate</source>
+        <translation>Próbkowanie</translation>
     </message>
     <message>
-      <source>Path</source>
-      <translation>Ścieżka</translation>
+        <source>Path</source>
+        <translation>Ścieżka</translation>
     </message>
     <message>
-      <source>Download file(s)</source>
-      <translation>Pobierz plik(i)</translation>
+        <source>Download file(s)</source>
+        <translation>Pobierz plik(i)</translation>
     </message>
     <message>
-      <source>Download selected folder(s)</source>
-      <translation>Pobierz wybrany/-e katalog(i)</translation>
+        <source>Download selected folder(s)</source>
+        <translation>Pobierz wybrany/-e katalog(i)</translation>
     </message>
     <message>
-      <source>Users</source>
-      <translation>Użytkownicy</translation>
+        <source>Users</source>
+        <translation>Użytkownicy</translation>
     </message>
     <message>
-      <source>1 search result (1 user)</source>
-      <translation>1 wynik wyszukiwania (1 uzytkownik)</translation>
+        <source>1 search result (1 user)</source>
+        <translation>1 wynik wyszukiwania (1 uzytkownik)</translation>
     </message>
     <message>
-      <source>%1 search results (1 user)</source>
-      <translation>%1 wyniki/-ów wyszukiwania (1 użytkownik)</translation>
+        <source>%1 search results (1 user)</source>
+        <translation>%1 wyniki/-ów wyszukiwania (1 użytkownik)</translation>
     </message>
     <message>
-      <source>%1 search results (%2 users)</source>
-      <translation>%1 wyniki/-ów wyszukiwania (%2 użytkowników)</translation>
+        <source>%1 search results (%2 users)</source>
+        <translation>%1 wyniki/-ów wyszukiwania (%2 użytkowników)</translation>
     </message>
     <message>
-      <source>Download file(s) to..</source>
-      <translation>Pobierz plik(i) do..</translation>
+        <source>Download file(s) to..</source>
+        <translation>Pobierz plik(i) do..</translation>
     </message>
     <message>
-      <source>Select a Directory for current download(s)</source>
-      <translation>Wybierz katalog dla bieżącego pobierania</translation>
+        <source>Select a Directory for current download(s)</source>
+        <translation>Wybierz katalog dla bieżącego pobierania</translation>
     </message>
-  </context>
-  <context>
+</context>
+<context>
     <name>Searches</name>
     <message>
-      <source>User:</source>
-      <translation>Użytkownik:</translation>
+        <source>User:</source>
+        <translation>Użytkownik:</translation>
     </message>
     <message>
-      <source>Search</source>
-      <translation>Szukaj</translation>
+        <source>Search</source>
+        <translation>Szukaj</translation>
     </message>
     <message>
-      <source>Method</source>
-      <translation>Metoda</translation>
+        <source>Method</source>
+        <translation>Metoda</translation>
     </message>
     <message>
-      <source>Global</source>
-      <translation>Globalnie</translation>
+        <source>Global</source>
+        <translation>Globalnie</translation>
     </message>
     <message>
-      <source>Rooms</source>
-      <translation>Pokoje</translation>
+        <source>Rooms</source>
+        <translation>Pokoje</translation>
     </message>
     <message>
-      <source>Buddies</source>
-      <translation>Kumple</translation>
+        <source>Buddies</source>
+        <translation>Kumple</translation>
     </message>
     <message>
-      <source>WishList</source>
-      <translation>Lista życzeń</translation>
+        <source>WishList</source>
+        <translation>Lista życzeń</translation>
     </message>
     <message>
-      <source>User</source>
-      <translation>Użytkownik</translation>
+        <source>User</source>
+        <translation>Użytkownik</translation>
     </message>
     <message>
-      <source>*Search*</source>
-      <translation>*Szukaj*</translation>
+        <source>*Search*</source>
+        <translation>*Szukaj*</translation>
     </message>
-  </context>
-  <context>
+</context>
+<context>
     <name>SettingsDialog</name>
     <message>
-      <source>Museek Settings</source>
-      <translation>Ustawienia Museek-a</translation>
+        <source>Museek Settings</source>
+        <translation type="obsolete">Ustawienia Museek-a</translation>
     </message>
     <message>
-      <source>Ok</source>
-      <translation>Ok</translation>
+        <source>Ok</source>
+        <translation>Ok</translation>
     </message>
     <message>
-      <source>Save</source>
-      <translation>Zapisz</translation>
+        <source>Save</source>
+        <translation>Zapisz</translation>
     </message>
     <message>
-      <source>Cancel</source>
-      <translation>Anuluj</translation>
+        <source>Cancel</source>
+        <translation>Anuluj</translation>
     </message>
     <message>
-      <source>Default Encoding:</source>
-      <translation>Domyślne kodowanie:</translation>
+        <source>Default Encoding:</source>
+        <translation type="obsolete">Domyślne kodowanie:</translation>
     </message>
     <message>
-      <source>Filesystem Encoding:</source>
-      <translation>Kodowanie systemu plików:</translation>
+        <source>Filesystem Encoding:</source>
+        <translation>Kodowanie systemu plików:</translation>
     </message>
     <message>
-      <source>Network Encoding:</source>
-      <translation>Kodowanie sieci:</translation>
+        <source>Network Encoding:</source>
+        <translation>Kodowanie sieci:</translation>
     </message>
     <message>
-      <source>Connect</source>
-      <translation>Połacz</translation>
+        <source>Connect</source>
+        <translation>Połacz</translation>
     </message>
     <message>
-      <source>Disconnect</source>
-      <translation>Rozłącz</translation>
+        <source>Disconnect</source>
+        <translation>Rozłącz</translation>
     </message>
     <message>
-      <source>Server Port:</source>
-      <translation>Port serwera:</translation>
+        <source>Server Port:</source>
+        <translation>Port serwera:</translation>
     </message>
     <message>
-      <source>Server Host:</source>
-      <translation>Host serwera:</translation>
+        <source>Server Host:</source>
+        <translation>Host serwera:</translation>
     </message>
     <message>
-      <source>Soulseek Username:</source>
-      <translation>Nazwa użytkownika Soulseeka:</translation>
+        <source>Soulseek Username:</source>
+        <translation>Nazwa użytkownika Soulseeka:</translation>
     </message>
     <message>
-      <source>Soulseek Password:</source>
-      <translation>Hasło Soulseeka:</translation>
+        <source>Soulseek Password:</source>
+        <translation>Hasło Soulseeka:</translation>
     </message>
     <message>
-      <source>Server</source>
-      <translation>Serwer</translation>
+        <source>Server</source>
+        <translation>Serwer</translation>
     </message>
     <message>
-      <source>&lt;p>Configure your shares with musetup, or run &lt;u>muscan -r &lt;/u>to rescan your shares and then press:&lt;/p></source>
-      <translation>&lt;p>Skonfiguruj swoje udziały musetupem, albo uruchom &lt;u>muscan -r &lt;/u> aby zreskanować swoje udziały i naciśnij:&lt;/p></translation>
+        <source>&lt;p&gt;Configure your shares with musetup, or run &lt;u&gt;muscan -r &lt;/u&gt;to rescan your shares and then press:&lt;/p&gt;</source>
+        <translation type="obsolete">&lt;p&gt;Skonfiguruj swoje udziały musetupem, albo uruchom &lt;u&gt;muscan -r &lt;/u&gt; aby zreskanować swoje udziały i naciśnij:&lt;/p&gt;</translation>
     </message>
     <message>
-      <source>Connections</source>
-      <translation>Połączenia</translation>
+        <source>Connections</source>
+        <translation>Połączenia</translation>
     </message>
     <message>
-      <source>Active Connections</source>
-      <translation>Aktywne połączenia</translation>
+        <source>Active Connections</source>
+        <translation>Aktywne połączenia</translation>
     </message>
     <message>
-      <source>Passive Connections</source>
-      <translation>Pasywne połączenia</translation>
+        <source>Passive Connections</source>
+        <translation>Pasywne połączenia</translation>
     </message>
     <message>
-      <source>Reload Shares</source>
-      <translation>Przeładuj udziały</translation>
+        <source>Reload Shares</source>
+        <translation>Przeładuj udziały</translation>
     </message>
     <message>
-      <source>Select..</source>
-      <translation>Wybierz..</translation>
+        <source>Select..</source>
+        <translation>Wybierz..</translation>
     </message>
     <message>
-      <source>Download Dir:</source>
-      <translation>Katalog pobierania:</translation>
+        <source>Download Dir:</source>
+        <translation>Katalog pobierania:</translation>
     </message>
     <message>
-      <source>Incomplete Dir:</source>
-      <translation>Katalog niekompletnych:</translation>
+        <source>Incomplete Dir:</source>
+        <translation>Katalog niekompletnych:</translation>
     </message>
     <message>
-      <source>Shares and Connections</source>
-      <translation>Udziały i połączenia</translation>
+        <source>Shares and Connections</source>
+        <translation type="obsolete">Udziały i połączenia</translation>
     </message>
     <message>
-      <source>Buddies are Privileged</source>
-      <translation>Kumple są uprzywilejowani</translation>
+        <source>Buddies are Privileged</source>
+        <translation>Kumple są uprzywilejowani</translation>
     </message>
     <message>
-      <source>Online Alerts in Log Window instead of popup</source>
-      <translation>Alerty online w oknie dziennika zamiast wyskakiwania</translation>
+        <source>Online Alerts in Log Window instead of popup</source>
+        <translation>Alerty online w oknie dziennika zamiast wyskakiwania</translation>
     </message>
     <message>
-      <source>Share to Buddies Only</source>
-      <translation>Współdziel tylko z kumplami</translation>
+        <source>Share to Buddies Only</source>
+        <translation>Współdziel tylko z kumplami</translation>
     </message>
     <message>
-      <source>Trusted users can Send you Files</source>
-      <translation>Zaufani użytkownicy mogą wysyłać Ci pliki</translation>
+        <source>Trusted users can Send you Files</source>
+        <translation>Zaufani użytkownicy mogą wysyłać Ci pliki</translation>
     </message>
     <message>
-      <source>Seperate Shares list for Buddies</source>
-      <translation>Oddzielna lista udziałów dla kumpli</translation>
+        <source>Seperate Shares list for Buddies</source>
+        <translation>Oddzielna lista udziałów dla kumpli</translation>
     </message>
     <message>
-      <source>Send automatic warnings to users via Private Chat</source>
-      <translation>Wysyłaj użytkownikom automatyczne ostrzeżenia poprzez prywatną rozmowę</translation>
+        <source>Send automatic warnings to users via Private Chat</source>
+        <translation>Wysyłaj użytkownikom automatyczne ostrzeżenia poprzez prywatną rozmowę</translation>
     </message>
     <message>
-      <source>User Options</source>
-      <translation>Opcje użytkownika</translation>
+        <source>User Options</source>
+        <translation>Opcje użytkownika</translation>
     </message>
     <message>
-      <source>Select a Directory to store your downloaded files.</source>
-      <translation>Wybierz katalog do przechowywania swoich pobranych plików.</translation>
+        <source>Select a Directory to store your downloaded files.</source>
+        <translation>Wybierz katalog do przechowywania swoich pobranych plików.</translation>
     </message>
     <message>
-      <source>All files (*)</source>
-      <translation>Wszystkie pliki (*)</translation>
+        <source>All files (*)</source>
+        <translation>Wszystkie pliki (*)</translation>
     </message>
     <message>
-      <source>Select a Directory to store your incomplete downloading files.</source>
-      <translation>Wybierz katalog do przechowywania swoich niekompletnych pobieranych plików.</translation>
+        <source>Select a Directory to store your incomplete downloading files.</source>
+        <translation>Wybierz katalog do przechowywania swoich niekompletnych pobieranych plików.</translation>
     </message>
     <message>
-      <source>IP addresses in Log Window instead of popup</source>
-      <translation>Adresy IP w oknie dziennika zamiast wyskakiwania</translation>
+        <source>IP addresses in Log Window instead of popup</source>
+        <translation>Adresy IP w oknie dziennika zamiast wyskakiwania</translation>
     </message>
-  </context>
-  <context>
+    <message>
+        <source>To configure your shares, use one of the following: musetup, musetup-gtk, muscan (in a terminal), or the buttons below. Press &lt;u&gt;Reload Shares&lt;/u&gt; to activate your changes.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Directories</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a Directory to add to your Buddy Shares.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a Directory to add to your Normal Shares.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select the museekd config file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>XML files (*.xml)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Museekd Config:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Update</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rescan</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove</source>
+        <translation type="unfinished">Usuń</translation>
+    </message>
+    <message>
+        <source>Shares</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Protocol</source>
+        <translation type="unfinished">Proktokół</translation>
+    </message>
+    <message>
+        <source>Handler</source>
+        <translation type="unfinished">Program obsługujący</translation>
+    </message>
+    <message>
+        <source>Select a Directory to write Private Chat log files.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a Directory to write Chat Room log files.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Images (*.png *.gif *.jpg *.jpeg)</source>
+        <translation type="unfinished">Obrazki (*.png *.gif *.jpg *.jpeg)</translation>
+    </message>
+    <message>
+        <source>Select an Image for you User info</source>
+        <translation type="unfinished">Wybierz obrazek dla informacji o sobie</translation>
+    </message>
+    <message>
+        <source>Museeq Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Listen port range (the first available port will be used when museekd starts up)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>First port:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Last port:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Image</source>
+        <translation type="unfinished">Obrazek</translation>
+    </message>
+    <message>
+        <source>Clear</source>
+        <translation type="unfinished">Wyczyść</translation>
+    </message>
+    <message>
+        <source>Don&apos;t touch</source>
+        <translation type="unfinished">Nie dotykaj</translation>
+    </message>
+    <message>
+        <source>Upload:</source>
+        <translation type="unfinished">Wyślij:</translation>
+    </message>
+    <message>
+        <source>Log Private Chats</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Log Chat Rooms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New</source>
+        <translation type="unfinished">Nowy</translation>
+    </message>
+    <message>
+        <source>Modify</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Museek Daemon</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>User Info</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Museeq</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Appearance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fonts and Colors</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Logging</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Protocol handlers</source>
+        <translation type="unfinished">Programy obsługujące protokoły</translation>
+    </message>
+    <message>
+        <source>Time &amp; Brackets Font</source>
+        <translation type="unfinished">Czcionka czasu i nawiasów</translation>
+    </message>
+    <message>
+        <source>Pick Font</source>
+        <translation type="unfinished">Wybierz czcionkę</translation>
+    </message>
+    <message>
+        <source>Time &amp; Brackets Text Color</source>
+        <translation type="unfinished">Kolor tekstu czasu i nawiasów</translation>
+    </message>
+    <message>
+        <source>/Me Text</source>
+        <translation type="unfinished">Tekst /me</translation>
+    </message>
+    <message>
+        <source>Pick Color</source>
+        <translation type="unfinished">Wybierz kolor</translation>
+    </message>
+    <message>
+        <source>Message Font</source>
+        <translation type="unfinished">Czcionka wiadomości</translation>
+    </message>
+    <message>
+        <source>Buddied Users</source>
+        <translation type="unfinished">Kumple</translation>
+    </message>
+    <message>
+        <source>My Text</source>
+        <translation type="unfinished">Mój tekst</translation>
+    </message>
+    <message>
+        <source>Trusted Users</source>
+        <translation type="unfinished">Zaufani użytkownicy</translation>
+    </message>
+    <message>
+        <source>Banned Users</source>
+        <translation type="unfinished">Zbanowani użytkownicy</translation>
+    </message>
+    <message>
+        <source>Remote Text</source>
+        <translation type="unfinished">Tekst zdalny</translation>
+    </message>
+</context>
+<context>
     <name>TickerDialog</name>
     <message>
-      <source>Set ticker...</source>
-      <translation>Ustaw brzęczyk...</translation>
+        <source>Set ticker...</source>
+        <translation>Ustaw brzęczyk...</translation>
     </message>
     <message>
-      <source>Set ticker to:</source>
-      <translation>Ustaw brzęczyk na:</translation>
+        <source>Set ticker to:</source>
+        <translation>Ustaw brzęczyk na:</translation>
     </message>
     <message>
-      <source>Just this time</source>
-      <translation>Tylko tym razem</translation>
+        <source>Just this time</source>
+        <translation>Tylko tym razem</translation>
     </message>
     <message>
-      <source>Always for this room</source>
-      <translation>Zawsze dla tego pokoju</translation>
+        <source>Always for this room</source>
+        <translation>Zawsze dla tego pokoju</translation>
     </message>
     <message>
-      <source>Default for all rooms</source>
-      <translation>Domyślnie dal wszytkich pokoi</translation>
+        <source>Default for all rooms</source>
+        <translation>Domyślnie dal wszytkich pokoi</translation>
     </message>
     <message>
-      <source>&amp;Cancel</source>
-      <translation>&amp;Anuluj</translation>
+        <source>&amp;Cancel</source>
+        <translation>&amp;Anuluj</translation>
     </message>
     <message>
-      <source>Alt+C</source>
-      <translation>Alt+C</translation>
+        <source>Alt+C</source>
+        <translation>Alt+C</translation>
     </message>
     <message>
-      <source>&amp;OK</source>
-      <translation>&amp;OK</translation>
+        <source>&amp;OK</source>
+        <translation>&amp;OK</translation>
     </message>
     <message>
-      <source>Alt+O</source>
-      <translation>Alt+O</translation>
+        <source>Alt+O</source>
+        <translation>Alt+O</translation>
     </message>
-  </context>
-  <context>
+</context>
+<context>
     <name>TransferListItem</name>
     <message>
-      <source>Finished</source>
-      <translation>Skończony</translation>
+        <source>Finished</source>
+        <translation>Skończony</translation>
     </message>
     <message>
-      <source>Transferring</source>
-      <translation>Pobieranie</translation>
+        <source>Transferring</source>
+        <translation>Pobieranie</translation>
     </message>
     <message>
-      <source>Negotiating</source>
-      <translation>Negocjowanie</translation>
+        <source>Negotiating</source>
+        <translation>Negocjowanie</translation>
     </message>
     <message>
-      <source>Waiting</source>
-      <translation>Czemanie</translation>
+        <source>Waiting</source>
+        <translation>Czemanie</translation>
     </message>
     <message>
-      <source>Establishing</source>
-      <translation>Ustalanie</translation>
+        <source>Establishing</source>
+        <translation>Ustalanie</translation>
     </message>
     <message>
-      <source>Initiating</source>
-      <translation>Inicjalizacja</translation>
+        <source>Initiating</source>
+        <translation>Inicjalizacja</translation>
     </message>
     <message>
-      <source>Connecting</source>
-      <translation>Łączenie</translation>
+        <source>Connecting</source>
+        <translation>Łączenie</translation>
     </message>
     <message>
-      <source>Queued</source>
-      <translation>Zakolejkowany</translation>
+        <source>Queued</source>
+        <translation>Zakolejkowany</translation>
     </message>
     <message>
-      <source>Getting address</source>
-      <translation>Pobieranie adresu</translation>
+        <source>Getting address</source>
+        <translation>Pobieranie adresu</translation>
     </message>
     <message>
-      <source>Getting status</source>
-      <translation>Pobieranie statusu</translation>
+        <source>Getting status</source>
+        <translation>Pobieranie statusu</translation>
     </message>
     <message>
-      <source>User Offline</source>
-      <translation>Użytkownik poza siecią</translation>
+        <source>User Offline</source>
+        <translation>Użytkownik poza siecią</translation>
     </message>
     <message>
-      <source>Connection closed by peer</source>
-      <translation>Połączenie zamknięte przez peera</translation>
+        <source>Connection closed by peer</source>
+        <translation>Połączenie zamknięte przez peera</translation>
     </message>
     <message>
-      <source>Cannot connect</source>
-      <translation>Nie można połączyć</translation>
+        <source>Cannot connect</source>
+        <translation>Nie można połączyć</translation>
     </message>
     <message>
-      <source>Aborted</source>
-      <translation>Anulowane</translation>
+        <source>Aborted</source>
+        <translation>Anulowane</translation>
     </message>
     <message>
-      <source>/s</source>
-      <translation>/s</translation>
+        <source>/s</source>
+        <translation>/s</translation>
     </message>
-  </context>
-  <context>
+</context>
+<context>
     <name>TransferListView</name>
     <message>
-      <source>User</source>
-      <translation>Użytkownik</translation>
+        <source>User</source>
+        <translation>Użytkownik</translation>
     </message>
     <message>
-      <source>File</source>
-      <translation>Plik</translation>
+        <source>File</source>
+        <translation>Plik</translation>
     </message>
     <message>
-      <source>Status</source>
-      <translation>Status</translation>
+        <source>Status</source>
+        <translation>Status</translation>
     </message>
     <message>
-      <source>Place</source>
-      <translation>Miejsce</translation>
+        <source>Place</source>
+        <translation>Miejsce</translation>
     </message>
     <message>
-      <source>Position</source>
-      <translation>Pozycja</translation>
+        <source>Position</source>
+        <translation>Pozycja</translation>
     </message>
     <message>
-      <source>Size</source>
-      <translation>Rozmiar</translation>
+        <source>Size</source>
+        <translation>Rozmiar</translation>
     </message>
     <message>
-      <source>Speed</source>
-      <translation>Prędkość</translation>
+        <source>Speed</source>
+        <translation>Prędkość</translation>
     </message>
     <message>
-      <source>Path</source>
-      <translation>Ścieżka</translation>
+        <source>Path</source>
+        <translation>Ścieżka</translation>
     </message>
     <message>
-      <source>1 transfer (1 user)</source>
-      <translation>1 transfer (1 uzytkownik)</translation>
+        <source>1 transfer (1 user)</source>
+        <translation>1 transfer (1 uzytkownik)</translation>
     </message>
     <message>
-      <source>%1 transfers (1 user)</source>
-      <translation>%1 transfery/-ów (1 użytkownik)</translation>
+        <source>%1 transfers (1 user)</source>
+        <translation>%1 transfery/-ów (1 użytkownik)</translation>
     </message>
     <message>
-      <source>%1 transfers (%2 users)</source>
-      <translation>%1 transfery/-ów (%2 użytkowników)</translation>
+        <source>%1 transfers (%2 users)</source>
+        <translation>%1 transfery/-ów (%2 użytkowników)</translation>
     </message>
-  </context>
-  <context>
+</context>
+<context>
     <name>Transfers</name>
     <message>
-      <source>Downloads:</source>
-      <translation>Pobierania:</translation>
+        <source>Downloads:</source>
+        <translation>Pobierania:</translation>
     </message>
     <message>
-      <source>Group by user</source>
-      <translation>Grupuj wg użytkowników</translation>
+        <source>Group by user</source>
+        <translation>Grupuj wg użytkowników</translation>
     </message>
     <message>
-      <source>Uploads:</source>
-      <translation>Wysyłania:</translation>
+        <source>Uploads:</source>
+        <translation>Wysyłania:</translation>
     </message>
     <message>
-      <source>slots</source>
-      <translation>sloty</translation>
+        <source>slots</source>
+        <translation>sloty</translation>
     </message>
     <message>
-      <source>Retry</source>
-      <translation>Ponów próbę</translation>
+        <source>Retry</source>
+        <translation>Ponów próbę</translation>
     </message>
     <message>
-      <source>Abort</source>
-      <translation>Anuluj</translation>
+        <source>Abort</source>
+        <translation>Anuluj</translation>
     </message>
     <message>
-      <source>Check Position</source>
-      <translation>Sprawdź pozycję</translation>
+        <source>Check Position</source>
+        <translation>Sprawdź pozycję</translation>
     </message>
     <message>
-      <source>Selected</source>
-      <translation>Wybrane</translation>
+        <source>Selected</source>
+        <translation>Wybrane</translation>
     </message>
     <message>
-      <source>Finished</source>
-      <translation>Skończone</translation>
+        <source>Finished</source>
+        <translation>Skończone</translation>
     </message>
     <message>
-      <source>Aborted</source>
-      <translation>Anulowane</translation>
+        <source>Aborted</source>
+        <translation>Anulowane</translation>
     </message>
     <message>
-      <source>Offline</source>
-      <translation>Poza siecią</translation>
+        <source>Offline</source>
+        <translation>Poza siecią</translation>
     </message>
     <message>
-      <source>Cruft</source>
-      <translation>Szmelc</translation>
+        <source>Cruft</source>
+        <translation>Szmelc</translation>
     </message>
     <message>
-      <source>Finished / aborted</source>
-      <translation>Skończonie / anulowane</translation>
+        <source>Finished / aborted</source>
+        <translation>Skończonie / anulowane</translation>
     </message>
     <message>
-      <source>Queued</source>
-      <translation>Zakolejkowane</translation>
+        <source>Queued</source>
+        <translation>Zakolejkowane</translation>
     </message>
     <message>
-      <source>Clear</source>
-      <translation>Wyczyść</translation>
+        <source>Clear</source>
+        <translation>Wyczyść</translation>
     </message>
     <message>
-      <source>Users</source>
-      <translation>Użytkownicy</translation>
+        <source>Users</source>
+        <translation>Użytkownicy</translation>
     </message>
-  </context>
-  <context>
+</context>
+<context>
+    <name>TrustList</name>
+    <message>
+        <source>Add:</source>
+        <translation type="unfinished">Dodaj:</translation>
+    </message>
+    <message>
+        <source>Comments</source>
+        <translation type="unfinished">Komentarze</translation>
+    </message>
+    <message>
+        <source>Comments for </source>
+        <translation type="unfinished">Komentarze dotyczące </translation>
+    </message>
+</context>
+<context>
     <name>UserInfo</name>
     <message>
-      <source>Description</source>
-      <translation>Opis</translation>
+        <source>Description</source>
+        <translation>Opis</translation>
     </message>
     <message>
-      <source>Information</source>
-      <translation>Informacja</translation>
+        <source>Information</source>
+        <translation>Informacja</translation>
     </message>
     <message>
-      <source>Uploads allowed</source>
-      <translation>Pozwolenie na wysyłanie</translation>
+        <source>Uploads allowed</source>
+        <translation>Pozwolenie na wysyłanie</translation>
     </message>
     <message>
-      <source>unknown</source>
-      <translation>nieznany</translation>
+        <source>unknown</source>
+        <translation>nieznany</translation>
     </message>
     <message>
-      <source>Queue size</source>
-      <translation>Długość kolejki</translation>
+        <source>Queue size</source>
+        <translation>Długość kolejki</translation>
     </message>
     <message>
-      <source>Slots available</source>
-      <translation>Dostępne sloty</translation>
+        <source>Slots available</source>
+        <translation>Dostępne sloty</translation>
     </message>
     <message>
-      <source>Refresh</source>
-      <translation>Odśwież</translation>
+        <source>Refresh</source>
+        <translation>Odśwież</translation>
     </message>
     <message>
-      <source>Picture</source>
-      <translation>Obrazek</translation>
+        <source>Picture</source>
+        <translation>Obrazek</translation>
     </message>
     <message>
-      <source>yes</source>
-      <translation>tak</translation>
+        <source>yes</source>
+        <translation>tak</translation>
     </message>
     <message>
-      <source>no</source>
-      <translation>nie</translation>
+        <source>no</source>
+        <translation>nie</translation>
     </message>
-  </context>
-  <context>
+</context>
+<context>
     <name>UserInfoDialog</name>
     <message>
-      <source>Change user info</source>
-      <translation>Zmień informacje o użytkowniku</translation>
+        <source>Change user info</source>
+        <translation type="obsolete">Zmień informacje o użytkowniku</translation>
     </message>
     <message>
-      <source>Image</source>
-      <translation>Obrazek</translation>
+        <source>Image</source>
+        <translation type="obsolete">Obrazek</translation>
     </message>
     <message>
-      <source>Clear</source>
-      <translation>Wyczyść</translation>
+        <source>Clear</source>
+        <translation type="obsolete">Wyczyść</translation>
     </message>
     <message>
-      <source>Don't touch</source>
-      <translation>Nie dotykaj</translation>
+        <source>Don&apos;t touch</source>
+        <translation type="obsolete">Nie dotykaj</translation>
     </message>
     <message>
-      <source>Upload:</source>
-      <translation>Wyślij:</translation>
+        <source>Upload:</source>
+        <translation type="obsolete">Wyślij:</translation>
     </message>
     <message>
-      <source>...</source>
-      <translation>...</translation>
+        <source>...</source>
+        <translation type="obsolete">...</translation>
     </message>
     <message>
-      <source>OK</source>
-      <translation>OK</translation>
+        <source>OK</source>
+        <translation type="obsolete">OK</translation>
     </message>
     <message>
-      <source>Cancel</source>
-      <translation>Anuluj</translation>
+        <source>Cancel</source>
+        <translation type="obsolete">Anuluj</translation>
     </message>
     <message>
-      <source>Images (*.png *.gif *.jpg *.jpeg)</source>
-      <translation>Obrazki (*.png *.gif *.jpg *.jpeg)</translation>
+        <source>Images (*.png *.gif *.jpg *.jpeg)</source>
+        <translation type="obsolete">Obrazki (*.png *.gif *.jpg *.jpeg)</translation>
     </message>
     <message>
-      <source>Select an Image for you User info</source>
-      <translation>Wybierz obrazek dla informacji o sobie</translation>
+        <source>Select an Image for you User info</source>
+        <translation type="obsolete">Wybierz obrazek dla informacji o sobie</translation>
     </message>
     <message>
-      <source>All files (*)</source>
-      <translation>Wszystkie pliki (*)</translation>
+        <source>All files (*)</source>
+        <translation type="obsolete">Wszystkie pliki (*)</translation>
     </message>
-  </context>
-  <context>
+</context>
+<context>
     <name>UserListView</name>
     <message>
-      <source>User</source>
-      <translation>Użytkownik</translation>
+        <source>User</source>
+        <translation>Użytkownik</translation>
     </message>
     <message>
-      <source>Speed</source>
-      <translation>Prędkość</translation>
+        <source>Speed</source>
+        <translation>Prędkość</translation>
     </message>
     <message>
-      <source>Files</source>
-      <translation>Pliki</translation>
+        <source>Files</source>
+        <translation>Pliki</translation>
     </message>
     <message>
-      <source>Comments</source>
-      <translation>Komentarze</translation>
+        <source>Comments</source>
+        <translation>Komentarze</translation>
     </message>
-  </context>
-  <context>
+</context>
+<context>
     <name>UserTabWidget</name>
     <message>
-      <source>*Buddies*</source>
-      <translation>*Kumple*</translation>
+        <source>*Buddies*</source>
+        <translation>*Kumple*</translation>
     </message>
     <message>
-      <source>*Ignored*</source>
-      <translation>*Ignorowani*</translation>
+        <source>*Ignored*</source>
+        <translation>*Ignorowani*</translation>
     </message>
     <message>
-      <source>*Banned*</source>
-      <translation>*Zbanowani*</translation>
+        <source>*Banned*</source>
+        <translation>*Zbanowani*</translation>
     </message>
-  </context>
-  <context>
+    <message>
+        <source>*Trusted*</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Usermenu</name>
     <message>
-      <source>Private chat</source>
-      <translation>Prywatna rozmowa</translation>
+        <source>Private chat</source>
+        <translation>Prywatna rozmowa</translation>
     </message>
     <message>
-      <source>Get user info</source>
-      <translation>Pobierz informacje o użytkowniku</translation>
+        <source>Get user info</source>
+        <translation>Pobierz informacje o użytkowniku</translation>
     </message>
     <message>
-      <source>Get user shares</source>
-      <translation>Pobierz udziały użytkownika</translation>
+        <source>Get user shares</source>
+        <translation>Pobierz udziały użytkownika</translation>
     </message>
     <message>
-      <source>Give Soulseek privileges</source>
-      <translation>Daj przywileje Soulseeka</translation>
+        <source>Give Soulseek privileges</source>
+        <translation>Daj przywileje Soulseeka</translation>
     </message>
     <message>
-      <source>Buddy</source>
-      <translation>Kumpel</translation>
+        <source>Buddy</source>
+        <translation>Kumpel</translation>
     </message>
     <message>
-      <source>Trusted</source>
-      <translation>Zaufany</translation>
+        <source>Trusted</source>
+        <translation>Zaufany</translation>
     </message>
     <message>
-      <source>Banned</source>
-      <translation>Zbanowany</translation>
+        <source>Banned</source>
+        <translation>Zbanowany</translation>
     </message>
     <message>
-      <source>Ignored</source>
-      <translation>Ignorowany</translation>
+        <source>Ignored</source>
+        <translation>Ignorowany</translation>
     </message>
     <message>
-      <source>Show IP</source>
-      <translation>Pokaż IP</translation>
+        <source>Show IP</source>
+        <translation>Pokaż IP</translation>
     </message>
     <message>
-      <source>Online alert</source>
-      <translation>Alert online</translation>
+        <source>Online alert</source>
+        <translation>Alert online</translation>
     </message>
     <message>
-      <source>Edit Comments</source>
-      <translation>Edytuj komentarze</translation>
+        <source>Edit Comments</source>
+        <translation>Edytuj komentarze</translation>
     </message>
-  </context>
-  <context>
+</context>
+<context>
     <name>Util</name>
     <message>
-      <source>%.2f B</source>
-      <translation>%.2f B</translation>
+        <source>%.2f B</source>
+        <translation>%.2f B</translation>
     </message>
     <message>
-      <source>%.2f KiB</source>
-      <translation>%.2f KiB</translation>
+        <source>%.2f KiB</source>
+        <translation>%.2f KiB</translation>
     </message>
     <message>
-      <source>%.2f MiB</source>
-      <translation>%.2f MiB</translation>
+        <source>%.2f MiB</source>
+        <translation>%.2f MiB</translation>
     </message>
     <message>
-      <source>%.2f GiB</source>
-      <translation>%.2f GiB</translation>
+        <source>%.2f GiB</source>
+        <translation>%.2f GiB</translation>
     </message>
     <message>
-      <source>%.2f TiB</source>
-      <translation>%.2f TiB</translation>
+        <source>%.2f TiB</source>
+        <translation>%.2f TiB</translation>
     </message>
     <message>
-      <source>%.2f PB</source>
-      <translation>%.2f PB</translation>
+        <source>%.2f PB</source>
+        <translation>%.2f PB</translation>
     </message>
     <message>
-      <source>(vbr) %1</source>
-      <translation>(vbr) %1</translation>
+        <source>(vbr) %1</source>
+        <translation>(vbr) %1</translation>
     </message>
-  </context>
+</context>
 </TS>

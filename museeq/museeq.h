@@ -46,7 +46,9 @@ class Museeq : public QObject {
 	
 public:
 	Museeq(QApplication *);
-	bool mShowTickers, mShowStatusLog, mOnlineAlert, mShowTimestamps, mIPLog, mUsetray;
+	bool mShowTickers, mShowStatusLog, mOnlineAlert, mShowTimestamps, mIPLog, mUsetray, mLogRooms, mLogPrivate;
+	inline const QString& privateLogDir() const { return mPrivateLogDir; }
+	inline const QString& roomLogDir() const { return mRoomLogDir; }
 	inline MuseekDriver* driver() const { return mDriver; }
 	inline bool isConnected() const { return mConnected; }
 	QPopupMenu *menutray;
@@ -66,12 +68,12 @@ public:
 	
 	inline const QStringList& autoJoined() const { return mAutoJoin; }
 	inline bool isAutoJoined(const QString& r) const { return mAutoJoin.find(r) != mAutoJoin.end(); }
-	
+	void output(const QString& message);
 	inline const QStringList& joinedRooms() const { return mJoinedRooms; }
 	inline bool isJoined(const QString& r) const { return mJoinedRooms.find(r) != mJoinedRooms.end(); }
 	
 	const QMap<QString, QString>& protocolHandlers() const { return mProtocolHandlers; }
-	QString mColorBanned, mColorBuddied, mColorTime, mColorMe, mColorNickname, mColorTrusted, mColorRemote, mFontTime, mFontMessage, mIconTheme;
+	QString mColorBanned, mColorBuddied, mColorTime, mColorMe, mColorNickname, mColorTrusted, mColorRemote, mFontTime, mFontMessage, mIconTheme, mPrivateLogDir, mRoomLogDir;
 	bool isAway() const { return mAway; }
 #ifdef HAVE_TRAYICON
 	inline TrayIcon* trayicon() {return mTray;}
@@ -214,8 +216,7 @@ signals:
 	void autoJoin(const QString&, bool);
 	void roomTickers(const QString&, const NTickers&);
 	void roomTickerSet(const QString&, const QString&, const QString&);
-	void showAllTickers();
-	void hideAllTickers();
+	
 	void privateMessage(uint, uint, const QString&, const QString&);
 
 	// Interests & Recommendations

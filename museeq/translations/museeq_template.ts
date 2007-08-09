@@ -26,19 +26,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Restore</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Hide</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Quit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MuseeqTray</source>
+        <source><byte value="x9"/><byte value="x9"/><byte value="x9"/>Trayicon support was disabled at compile-time</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -235,6 +223,18 @@
         <source>Alt+H</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Auto-Conn&amp;ect to Daemon</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Alt+E</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Clear</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>FileListView</name>
@@ -282,6 +282,14 @@
         <source>Which user do you wish to upload these to?</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Download files to..</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a Directory for current download(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>FolderListView</name>
@@ -308,62 +316,6 @@
 </context>
 <context>
     <name>FontsAndColorsDialog</name>
-    <message>
-        <source>Fonts &amp; Colors</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Pick Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Pick Font</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Time &amp; Brackets Text Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Time &amp; Brackets Font</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>/Me Text</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Trusted Users</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Remote Text</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Message Font</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Buddied Users</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>My Text</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Banned Users</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>IPDialog</name>
@@ -495,10 +447,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Toggled &amp;away</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Check &amp;privileges</source>
         <translation type="unfinished"></translation>
     </message>
@@ -512,22 +460,6 @@
     </message>
     <message>
         <source>&amp;File</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Protocol handlers...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;User info...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Museek...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Colors and Fonts...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -600,18 +532,6 @@
     </message>
     <message>
         <source>Sc&amp;ripts</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>File</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Scripts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -843,6 +763,49 @@
         <source>Port:</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Toggle &amp;away</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Auto-Connect to Daemon</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show Exit Dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable &amp;Trayicon</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Configure...</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Museeq</name>
+    <message>
+        <source>&amp;Restore</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Museek Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Hide</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Quit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MuseeqTray</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>OnlineAlert</name>
@@ -900,30 +863,6 @@
 </context>
 <context>
     <name>ProtocolDialog</name>
-    <message>
-        <source>Protocol</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Handler</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Protocol handlers</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>New</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>RoomList</name>
@@ -1093,6 +1032,14 @@
         <source>%1 search results (%2 users)</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Download file(s) to..</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a Directory for current download(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Searches</name>
@@ -1136,10 +1083,6 @@
 <context>
     <name>SettingsDialog</name>
     <message>
-        <source>Museek Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Ok</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1149,10 +1092,6 @@
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Default Encoding:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1192,10 +1131,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&lt;p&gt;Configure your shares with musetup, or run &lt;u&gt;muscan -r &lt;/u&gt;to rescan your shares and then press:&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Connections</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1221,10 +1156,6 @@
     </message>
     <message>
         <source>Incomplete Dir:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Shares and Connections</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1269,6 +1200,202 @@
     </message>
     <message>
         <source>IP addresses in Log Window instead of popup</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>To configure your shares, use one of the following: musetup, musetup-gtk, muscan (in a terminal), or the buttons below. Press &lt;u&gt;Reload Shares&lt;/u&gt; to activate your changes.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Directories</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a Directory to add to your Buddy Shares.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a Directory to add to your Normal Shares.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select the museekd config file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>XML files (*.xml)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Museekd Config:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Update</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rescan</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Shares</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Protocol</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Handler</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a Directory to write Private Chat log files.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a Directory to write Chat Room log files.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Images (*.png *.gif *.jpg *.jpeg)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select an Image for you User info</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Museeq Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Listen port range (the first available port will be used when museekd starts up)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>First port:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Last port:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Image</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Clear</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Don&apos;t touch</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Upload:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Log Private Chats</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Log Chat Rooms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Modify</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Museek Daemon</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>User Info</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Museeq</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Appearance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fonts and Colors</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Logging</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Protocol handlers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Time &amp; Brackets Font</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pick Font</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Time &amp; Brackets Text Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>/Me Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pick Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Message Font</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Buddied Users</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>My Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Trusted Users</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Banned Users</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remote Text</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1489,6 +1616,21 @@
     </message>
 </context>
 <context>
+    <name>TrustList</name>
+    <message>
+        <source>Add:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Comments</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Comments for </source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>UserInfo</name>
     <message>
         <source>Description</source>
@@ -1533,50 +1675,6 @@
 </context>
 <context>
     <name>UserInfoDialog</name>
-    <message>
-        <source>Change user info</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Image</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Clear</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Don&apos;t touch</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Upload:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Images (*.png *.gif *.jpg *.jpeg)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select an Image for you User info</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>All files (*)</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>UserListView</name>
@@ -1609,6 +1707,10 @@
     </message>
     <message>
         <source>*Banned*</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>*Trusted*</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

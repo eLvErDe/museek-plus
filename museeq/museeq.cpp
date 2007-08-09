@@ -72,9 +72,10 @@ Museeq::Museeq(QApplication * app)
 	mUsetray = false;
 	mShowTickers = true;
 	mShowStatusLog = false;
+	mLogRooms = mLogPrivate = false;
 	mFontTime = "font-family:fixed-width";
-	mFontMessage =  "";
-	mOnlineAlert =  false;
+	mRoomLogDir = mPrivateLogDir = mFontMessage =  "";
+	mOnlineAlert = false;
 	mColorBanned = mColorBuddied = mColorTime = mColorNickname = mColorTrusted = mColorRemote = mColorMe = "";
 	mShowTimestamps = true;
 	mIPLog = true;
@@ -149,7 +150,26 @@ Museeq::Museeq(QApplication * app)
 
 	emit disconnectedFromServer();
 	emit connectedToServer(false);
-
+	
+	QDir homedir = QDir::home();
+	if(! homedir.exists(".museeq")) {
+		// Create ~/.museeq directory
+		homedir.mkdir (".museeq", true);
+	}
+	if(homedir.cd(".museeq")) {
+		// Create ~/.museeq/logs directory
+		if(! homedir.exists("logs")) {
+			homedir.mkdir("logs", true);
+		}
+		if(homedir.cd("logs")) {
+			if(! homedir.exists("rooms")) {
+				homedir.mkdir("rooms", true);
+			}
+			if(! homedir.exists("private")) {
+				homedir.mkdir("private", true);
+			}
+		}
+	}
 #ifdef HAVE_QSA
 	if(libqsa_is_present)
 	{
@@ -165,7 +185,7 @@ Museeq::Museeq(QApplication * app)
 					f.close();
 				}
 			}
-		}
+  }
 	}
 #endif // HAVE_QSA
 #ifdef HAVE_TRAYICON
@@ -179,6 +199,8 @@ Museeq::Museeq(QApplication * app)
 	mTray =  new TrayIcon( QPixmap( (char**)icon_xpm),  QT_TR_NOOP("MuseeqTray"), menutray );
 	QObject::connect( mTray, SIGNAL(clicked(const QPoint&, int )),  mMainWin, SLOT(toggleVisibility() ) );
 #endif // HAVE_TRAYICON
+
+
 }
 
 void Museeq::slotConnectionClosed() {
@@ -281,73 +303,8 @@ void Museeq::slotConfigSet(const QString& domain, const QString& key, const QStr
 			connect(dlg, SIGNAL(removeAlert(const QString&)), SLOT(removeAlert(const QString&)));
 			mAlerts[key] = dlg;
 		}
-	} else if(domain == "museeq.tickers" && key =="show") {
-		if(value == "true" || value == true) {
-			mShowTickers = true;
-			mMainWin->mMenuSettings->setItemChecked(5, museeq->mShowTickers);
-			emit showAllTickers();
-			}
-		else if(value == "false" || value == false)
-			{
-			mShowTickers = false;
-			mMainWin->mMenuSettings->setItemChecked(5, museeq->mShowTickers);
-			emit hideAllTickers();
-			}
-	} else if(domain == "museeq.statuslog") {
-		if (key =="show") {
-			if(value == "true" || value == true) {
-				mShowStatusLog = true;
-				mMainWin->mMenuSettings->setItemChecked(6, museeq->mShowStatusLog);
-				mMainWin->mLog->show();
-				}
-			else if(value == "false" || value == false)
-				{
-				mShowStatusLog = false;
-				mMainWin->mMenuSettings->setItemChecked(6, museeq->mShowStatusLog);
-				mMainWin->mLog->hide();
-				}
-		} else if (key =="ip") {
-			if(value == "true" || value == true)
-				mIPLog = true;
-			else if(value == "false" || value == false)
-				mIPLog = false;
-		}
-	} else if(domain == "museeq.alerts") {
-		if (key == "log_window") {
-			if(value == "true" || value == true) {
-				mOnlineAlert = true;
-			} else if(value == "false" || value == false) {
-				mOnlineAlert = false;
-			}
-		}
-	} else if(domain == "museeq.text") {
-		if (key == "fontTime") {
-			mFontTime = value;}
-		else if (key == "fontMessage") {
-			mFontMessage = value;}
-		else if (key == "showTimestamps") {
-			if(value == "true" || value == true) {
-				mShowTimestamps = true;
-				mMainWin->mMenuSettings->setItemChecked(7, true);
-			} else if(value == "false" || value == false) {
-				mShowTimestamps = false;
-				mMainWin->mMenuSettings->setItemChecked(7, false);
-			}
-		} else if (key == "colorBanned") {
-			mColorBanned = value;
-		} else if (key == "colorBuddied") {
-			mColorBuddied = value;
-		} else if (key == "colorTrusted") {
-			mColorTrusted = value;
-		} else if (key == "colorMe") {
-			mColorMe = value;
-		} else if (key == "colorNickname") {
-			mColorNickname = value;
-		} else if (key == "colorRemote") {
-			mColorRemote = value;
-		} else if (key == "colorTime") {
-			mColorTime = value;
-		}
+
+
 	} else if(domain == "banned") {
 		mBanned += key;
 		emit addedBanned(key, value);
@@ -929,7 +886,7 @@ void Museeq::trayicon_hide() {
 	if (mTray) {
 		trayicon()->hide();
 		mUsetray = false;
-		mMainWin->mMenuSettings->setItemChecked(10, mUsetray);
+		mMainWin->mMenuSettings->setItemChecked(8, mUsetray);
 	}
 #endif // HAVE_TRAYICON
 }
@@ -938,7 +895,7 @@ void Museeq::trayicon_show() {
 	if (mTray) {
 		trayicon()->show();
 		mUsetray = true;
-		mMainWin->mMenuSettings->setItemChecked(10, mUsetray);
+		mMainWin->mMenuSettings->setItemChecked(8, mUsetray);
 	}
 #endif // HAVE_TRAYICON
 }
@@ -957,14 +914,19 @@ void Museeq::trayicon_load() {
 	if (mUsetray == true)
 		mTray->show();
 	menutray->show();
-	mMainWin->mMenuSettings->setItemChecked(10, mUsetray);
+	mMainWin->mMenuSettings->setItemChecked(8, mUsetray);
 #endif // HAVE_TRAYICON
 }
 
+void Museeq::output(const QString& message) {
+	std::cout << message << std::endl;
+	mMainWin->appendToLogWindow(message);
+}
+		
 Museeq* museeq = 0;
 
 int main(int argc, char **argv) {
-	QApplication a(argc, argv);
+	QApplication app(argc, argv);
 
 	
         // translation file for application strings
@@ -981,16 +943,19 @@ int main(int argc, char **argv) {
 		QFileInfo fi( lang2 );
 		if ( fi.exists() ) {
 			translation.load( lang2);
-			a.installTranslator( &translation );
+			app.installTranslator( &translation );
+		} else {
+			std::cout << "Translation doesn't exist at: " << lang2 << std::endl;
 		}
+		
 	} else {
 		translation.load( lang2);
-		a.installTranslator( &translation );
+		app.installTranslator( &translation );
 	}
 	
 	
-	new Museeq(&a);
-	a.setMainWidget(museeq->mainwin());
+	new Museeq(&app);
+	app.setMainWidget(museeq->mainwin());
 	
 	std::string usetray = string("yes");
 	std::string version = string("museeq ") + museeq->mainwin()->mVersion + string( QT_TR_NOOP(" Language: ") )+ lang; 
@@ -1030,6 +995,6 @@ int main(int argc, char **argv) {
 	museeq->mainwin()->show();
 	museeq->mainwin()->connectToMuseek();
 
-	return a.exec();
+	return app.exec();
 	
 }

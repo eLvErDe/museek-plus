@@ -233,7 +233,7 @@ public: \
 #define PARSE protected: virtual void parse() {
 #define CPARSE protected: virtual void parse(CipherContext* context) {
 
-MESSAGE(NPing, @@IPing@@)
+MESSAGE(NPing, 0x0000)
 	uint id;
 	
 	NPing(uint _id) {
@@ -245,7 +245,7 @@ MESSAGE(NPing, @@IPing@@)
 	END
 END
 
-MESSAGE(NChallenge, @@IChallenge@@)
+MESSAGE(NChallenge, 0x0001)
 	uint version;
 	QString challenge;
 	
@@ -255,7 +255,7 @@ MESSAGE(NChallenge, @@IChallenge@@)
 	END
 END
 
-MESSAGE(NLogin, @@ILogin@@)
+MESSAGE(NLogin, 0x0002)
 	bool ok;
 	QString msg, challenge;
 	
@@ -272,7 +272,7 @@ MESSAGE(NLogin, @@ILogin@@)
 	END
 END
 
-MESSAGE(NServerState, @@IServerState@@)
+MESSAGE(NServerState, 0x0003)
 	bool connected;
 	QString username;
 	
@@ -283,7 +283,7 @@ MESSAGE(NServerState, @@IServerState@@)
 END
 
 
-MESSAGE(NStatusMessage, @@IStatusMessage@@)
+MESSAGE(NStatusMessage, 0x0010)
 	bool type;
 	QString message;
 	
@@ -293,7 +293,7 @@ MESSAGE(NStatusMessage, @@IStatusMessage@@)
 	END
 END
 
-MESSAGE(NCheckPrivileges, @@ICheckPrivileges@@)
+MESSAGE(NCheckPrivileges, 0x0004)
 	uint secondsleft;
 	
 	PARSE
@@ -301,7 +301,7 @@ MESSAGE(NCheckPrivileges, @@ICheckPrivileges@@)
 	END
 END
 
-MESSAGE(NSetStatus, @@ISetStatus@@)
+MESSAGE(NSetStatus, 0x0005)
 	uint status;
 	
 	NSetStatus(uint _s) {
@@ -313,7 +313,7 @@ MESSAGE(NSetStatus, @@ISetStatus@@)
 	END
 END
 
-MESSAGE(NRoomState, @@IRoomState@@)
+MESSAGE(NRoomState, 0x0300)
 	NRoomList roomlist;
 	NRooms rooms;
 	NTickerMap tickers;
@@ -335,7 +335,7 @@ MESSAGE(NRoomState, @@IRoomState@@)
 	END
 END
 
-MESSAGE(NGetRoomList, @@IRoomList@@)
+MESSAGE(NGetRoomList, 0x0301)
 	NRoomList roomlist;
 	
 	PARSE
@@ -348,7 +348,7 @@ MESSAGE(NGetRoomList, @@IRoomList@@)
 	END
 END
 
-MESSAGE(NGetGlobalRecommendations, @@IGetGlobalRecommendations@@)
+MESSAGE(NGetGlobalRecommendations, 0x0601)
 	NGlobalRecommendations recommendations;
 	
 	PARSE
@@ -361,7 +361,7 @@ MESSAGE(NGetGlobalRecommendations, @@IGetGlobalRecommendations@@)
 	END
 END
 
-MESSAGE(NGetRecommendations, @@IGetRecommendations@@)
+MESSAGE(NGetRecommendations, 0x0600)
 	NRecommendations recommendations;
 	
 	PARSE
@@ -374,7 +374,7 @@ MESSAGE(NGetRecommendations, @@IGetRecommendations@@)
 	END
 END
 
-MESSAGE(NGetSimilarUsers, @@IGetSimilarUsers@@)
+MESSAGE(NGetSimilarUsers, 0x0602)
 	NSimilarUsers users;
 	
 	PARSE
@@ -388,7 +388,7 @@ MESSAGE(NGetSimilarUsers, @@IGetSimilarUsers@@)
 END
 
 
-MESSAGE(NGetItemRecommendations, @@IGetItemRecommendations@@)
+MESSAGE(NGetItemRecommendations, 0x0603)
 	NItemRecommendations recommendations;
 	QString item;
 	
@@ -407,7 +407,7 @@ MESSAGE(NGetItemRecommendations, @@IGetItemRecommendations@@)
 	END
 END
 
-MESSAGE(NGetItemSimilarUsers, @@IGetItemSimilarUsers@@)
+MESSAGE(NGetItemSimilarUsers, 0x0604)
 	NItemSimilarUsers users;
 	QString item;
 
@@ -427,7 +427,7 @@ MESSAGE(NGetItemSimilarUsers, @@IGetItemSimilarUsers@@)
 END
 
 
-MESSAGE(NAddInterest, @@IAddInterest@@)
+MESSAGE(NAddInterest, 0x0610)
 	QString interest;
 	
 	NAddInterest(const QString& _interest) {
@@ -439,7 +439,7 @@ MESSAGE(NAddInterest, @@IAddInterest@@)
 	END
 END
 
-MESSAGE(NAddHatedInterest, @@IAddHatedInterest@@)
+MESSAGE(NAddHatedInterest, 0x0612)
 	QString interest;
 	
 	NAddHatedInterest(const QString& _interest) {
@@ -451,7 +451,7 @@ MESSAGE(NAddHatedInterest, @@IAddHatedInterest@@)
 	END
 END
 
-MESSAGE(NRemoveInterest, @@IRemoveInterest@@)
+MESSAGE(NRemoveInterest, 0x0611)
 	QString interest;
 	
 	NRemoveInterest(const QString& _interest) {
@@ -463,7 +463,7 @@ MESSAGE(NRemoveInterest, @@IRemoveInterest@@)
 	END
 END
 
-MESSAGE(NRemoveHatedInterest, @@IRemoveHatedInterest@@)
+MESSAGE(NRemoveHatedInterest, 0x0613)
 	QString interest;
 	
 	NRemoveHatedInterest(const QString& _interest) {
@@ -475,7 +475,7 @@ MESSAGE(NRemoveHatedInterest, @@IRemoveHatedInterest@@)
 	END
 END
 
-MESSAGE(NSearchRequest, @@ISearch@@)
+MESSAGE(NSearchRequest, 0x0401)
 	QString query;
 	uint token;
 	
@@ -490,7 +490,7 @@ MESSAGE(NSearchRequest, @@ISearch@@)
 	END
 END
 
-MESSAGE(NSearchResults, @@ISearchReply@@)
+MESSAGE(NSearchResults, 0x0402)
 	uint token;
 	QString username;
 	bool slotsfree;
@@ -512,7 +512,7 @@ MESSAGE(NSearchResults, @@ISearchReply@@)
 	END
 END
 
-MESSAGE(NUserSearchRequest, @@IUserSearch@@)
+MESSAGE(NUserSearchRequest, 0x0403)
 	
 	NUserSearchRequest(QString _user, QString _query) {
 		pack(_user);
@@ -520,7 +520,7 @@ MESSAGE(NUserSearchRequest, @@IUserSearch@@)
 	}
 END
 
-MESSAGE(NWishListSearchRequest, @@IWishListSearch@@)
+MESSAGE(NWishListSearchRequest, 0x0405)
 	QString query;
 	
 	NWishListSearchRequest(QString _query) {
@@ -528,7 +528,7 @@ MESSAGE(NWishListSearchRequest, @@IWishListSearch@@)
 	}
 END
 
-MESSAGE(NSayChatroom, @@ISayRoom@@)
+MESSAGE(NSayChatroom, 0x0307)
 	QString room, user;
 	QString line;
 	
@@ -544,7 +544,7 @@ MESSAGE(NSayChatroom, @@ISayRoom@@)
 	END
 END
 
-MESSAGE(NJoinRoom, @@IJoinRoom@@)
+MESSAGE(NJoinRoom, 0x0303)
 	QString room;
 	NRoom users;
 	
@@ -558,7 +558,7 @@ MESSAGE(NJoinRoom, @@IJoinRoom@@)
 	END
 END
 
-MESSAGE(NLeaveRoom, @@ILeaveRoom@@)
+MESSAGE(NLeaveRoom, 0x0304)
 	QString room;
 	
 	NLeaveRoom(const QString& _room) {
@@ -570,7 +570,7 @@ MESSAGE(NLeaveRoom, @@ILeaveRoom@@)
 	END
 END
 
-MESSAGE(NUserJoined, @@IUserJoinedRoom@@)
+MESSAGE(NUserJoined, 0x0305)
 	QString room, username;
 	NUserData userdata;
 	
@@ -581,7 +581,7 @@ MESSAGE(NUserJoined, @@IUserJoinedRoom@@)
 	END
 END
 
-MESSAGE(NUserLeft, @@IUserLeftRoom@@)
+MESSAGE(NUserLeft, 0x0306)
 	QString room, username;
 	
 	PARSE
@@ -590,7 +590,7 @@ MESSAGE(NUserLeft, @@IUserLeftRoom@@)
 	END
 END
 
-MESSAGE(NRoomTickers, @@IRoomTickers@@)
+MESSAGE(NRoomTickers, 0x0308)
 	QString room;
 	NTickers tickers;
 	
@@ -600,7 +600,7 @@ MESSAGE(NRoomTickers, @@IRoomTickers@@)
 	END
 END
 
-MESSAGE(NRoomTickerSet, @@IRoomTickerSet@@)
+MESSAGE(NRoomTickerSet, 0x0309)
 	QString room, user, message;
 	
 	NRoomTickerSet(const QString& _room, const QString& _message) {
@@ -615,7 +615,7 @@ MESSAGE(NRoomTickerSet, @@IRoomTickerSet@@)
 	END
 END
 
-MESSAGE(NPrivateMessage, @@IPrivateMessage@@)
+MESSAGE(NPrivateMessage, 0x0302)
 	uint direction, timestamp;
 	QString username, message;
 	
@@ -632,7 +632,7 @@ MESSAGE(NPrivateMessage, @@IPrivateMessage@@)
 	END
 END
 
-MESSAGE(NUserInfo, @@IUserInfo@@)
+MESSAGE(NUserInfo, 0x0204)
 	QString username, info;
 	QByteArray picture;
 	uint upslots;
@@ -653,7 +653,7 @@ MESSAGE(NUserInfo, @@IUserInfo@@)
 	END
 END
 
-MESSAGE(NUserShares, @@IUserShares@@)
+MESSAGE(NUserShares, 0x0205)
 	QString username;
 	NShares shares;
 	
@@ -672,7 +672,7 @@ MESSAGE(NUserShares, @@IUserShares@@)
 	END
 END
 
-MESSAGE(NTransferState, @@ITransferState@@)
+MESSAGE(NTransferState, 0x0500)
 	NTransfers downloads, uploads;
 	
 	PARSE
@@ -689,7 +689,7 @@ MESSAGE(NTransferState, @@ITransferState@@)
 	END
 END
 
-MESSAGE(NTransferUpdate, @@ITransferUpdate@@)
+MESSAGE(NTransferUpdate, 0x0501)
 	bool isUpload;
 	NTransfer transfer;
 	
@@ -704,7 +704,7 @@ MESSAGE(NTransferUpdate, @@ITransferUpdate@@)
 	END
 END
 
-MESSAGE(NTransferRemove, @@ITransferRemove@@)
+MESSAGE(NTransferRemove, 0x0502)
 	bool isUpload;
 	QString user, path;
 	
@@ -721,7 +721,7 @@ MESSAGE(NTransferRemove, @@ITransferRemove@@)
 	END
 END
 		
-MESSAGE(NDownloadFile, @@IDownloadFile@@)
+MESSAGE(NDownloadFile, 0x0503)
 	NDownloadFile(const QString& _user, const QString& _path, const QString& _local, Q_INT64 _size) {
 		pack(_user);
 		pack(_path);
@@ -730,7 +730,7 @@ MESSAGE(NDownloadFile, @@IDownloadFile@@)
 	}
 END
 
-MESSAGE(NDownloadFileTo, @@IDownloadFileTo@@)
+MESSAGE(NDownloadFileTo, 0x0507)
 	NDownloadFileTo(const QString& _user, const QString& _path, const QString& _local, Q_INT64 _size) {
 		pack(_user);
 		pack(_path);
@@ -739,21 +739,21 @@ MESSAGE(NDownloadFileTo, @@IDownloadFileTo@@)
 	}
 END
 
-MESSAGE(NFolderContents, @@IDownloadFolder@@)
+MESSAGE(NFolderContents, 0x0504)
 	NFolderContents(const QString& _user, const QString& _path) {
 		pack(_user);
 		pack(_path);
 	}
 END
 
-MESSAGE(NUploadFile, @@IUploadFile@@)
+MESSAGE(NUploadFile, 0x0506)
 	NUploadFile(const QString& _user, const QString& _path) {
 		pack(_user);
 		pack(_path);
 	}
 END
 
-MESSAGE(NTransferAbort, @@ITransferAbort@@)
+MESSAGE(NTransferAbort, 0x0505)
 	NTransferAbort(bool _upload, const QString& _user, const QString& _path) {
 		pack((unsigned char)_upload);
 		pack(_user);
@@ -761,7 +761,7 @@ MESSAGE(NTransferAbort, @@ITransferAbort@@)
 	}
 END
 
-MESSAGE(NUserExists, @@IPeerExists@@)
+MESSAGE(NUserExists, 0x0201)
 	QString user;
 	bool exists;
 	
@@ -775,7 +775,7 @@ MESSAGE(NUserExists, @@IPeerExists@@)
 	END
 END
 
-MESSAGE(NUserStatus, @@IPeerStatus@@)
+MESSAGE(NUserStatus, 0x0202)
 	QString user;
 	uint status;
 	
@@ -789,7 +789,7 @@ MESSAGE(NUserStatus, @@IPeerStatus@@)
 	END
 END
 
-MESSAGE(NUserStats, @@IPeerStats@@)
+MESSAGE(NUserStats, 0x0203)
 	QString user;
 	uint speed, downloads, files, dirs;
 	
@@ -806,7 +806,7 @@ MESSAGE(NUserStats, @@IPeerStats@@)
 	END
 END
 
-MESSAGE(NUserAddress, @@IPeerAddress@@)
+MESSAGE(NUserAddress, 0x0206)
 	QString user, ip;
 	uint port;
 	
@@ -821,7 +821,7 @@ MESSAGE(NUserAddress, @@IPeerAddress@@)
 	END
 END
 
-CMESSAGE(NConfigState, @@IConfigState@@)
+CMESSAGE(NConfigState, 0x0100)
 	QMap<QString, QMap<QString, QString> > config;
 	
 	CPARSE
@@ -841,7 +841,7 @@ CMESSAGE(NConfigState, @@IConfigState@@)
 	END
 END
 
-CMESSAGE(NConfigSet, @@IConfigSet@@)
+CMESSAGE(NConfigSet, 0x0101)
 	QString domain, key, value;
 	
 	NConfigSet(CipherContext* context, const QString& _domain, const QString& _key, const QString& _value) {
@@ -857,7 +857,7 @@ CMESSAGE(NConfigSet, @@IConfigSet@@)
 	END
 END
 
-CMESSAGE(NConfigRemove, @@IConfigRemove@@)
+CMESSAGE(NConfigRemove, 0x0102)
 	QString domain, key;
 	
 	NConfigRemove(CipherContext* context, const QString& _domain, const QString& _key) {
@@ -871,26 +871,27 @@ CMESSAGE(NConfigRemove, @@IConfigRemove@@)
 	END
 END
 
-MESSAGE(NConfigSetUserImage, @@IConfigSetUserImage@@)
+MESSAGE(NConfigSetUserImage, 0x103)
 	NConfigSetUserImage(const QByteArray& d) {
 		pack(d);
 	}
 END
 
-MESSAGE(NGivePrivileges, @@IGivePrivileges@@)
+MESSAGE(NGivePrivileges, 0x0207)
 	NGivePrivileges(const QString& _user, uint _days) {
 		pack(_user);
 		pack(_days);
 	}
 END
 
-MESSAGE(NConnectServer, @@IConnectServer@@)
+MESSAGE(NConnectServer, 0x0700)
 END
 
-MESSAGE(NDisconnectServer, @@IDisconnectServer@@)
+MESSAGE(NDisconnectServer, 0x0701)
 END
 
-MESSAGE(NReloadShares, @@IReloadShares@@)
+MESSAGE(NReloadShares, 0x0703)
 END
 
 #endif // MUSEEKMESSAGES_H
+

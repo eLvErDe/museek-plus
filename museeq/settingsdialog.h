@@ -22,11 +22,16 @@ class QTabWidget;
 class QWidget;
 class QLabel;
 class QComboBox;
+class QTextEdit;
 class QLineEdit;
+class QListView;
+class QListViewItem;
+class QListView;
 class QSpinBox;
 class QButtonGroup;
 class QRadioButton;
 class QCheckBox;
+class QProcess;
 
 class SettingsDialog : public QDialog
 {
@@ -36,25 +41,45 @@ public:
 	SettingsDialog( QWidget* parent = 0, const char* name = 0, bool modal = FALSE, WFlags fl = 0 );
 	~SettingsDialog();
 	
-	QTabWidget* mTabHolder;
+	QTabWidget* mTabHolder, * mMuseeqTabs, * mMuseekdTabs;
 	QPushButton* mOK, * mSave, * mCancel;
 	QPushButton* SConnect;
 	QPushButton* SDisconnect;
 	QPushButton* SReloadShares;
 	QPushButton* SIncompleteButton;
 	QPushButton* SDownloadButton;
-	QWidget* sharesTab;
-	QWidget* usersTab;
-	QWidget* serverTab;
+	QPushButton* SConfigButton;
+	
+	QPushButton* NSharesRefresh, * NSharesRescan, * NSharesAdd, * NSharesRemove, * NSharesUpdate;
+
+	QPushButton* BSharesRefresh, * BSharesRescan, * BSharesAdd, * BSharesRemove, * BSharesUpdate;
+	
+	QWidget* sharesTab, * usersTab, * serverTab, * ColorsAndFontsTab, * AppearanceTab;
+	QWidget* connectionsTab, * LoggingTab, * UserInfoTab, * ProtocolTab;
+	
 	QComboBox* SFileSystemEncoding, * SNetworkEncoding;
 	QLabel* fEncodingLabel, * nEncodingLabel;
 	QLabel* serverPortLabel;
 	QLabel* serverHostLabel;
-	QLabel* usernamelabel;
+	QLabel* usernamelabel, *configLabel;
 	QLabel* passwordLabel;
 	QLabel* instructionsLabel;
 	QLabel* downloadLabel;
 	QLabel* incompleteLabel;
+	
+	QLabel* listenPortsLabel, * listenPortsStartLabel, * listenPortsEndLabel;
+
+	QPushButton* LoggingPrivateButton, * LoggingRoomButton;
+	QLineEdit* LoggingPrivateDir, * LoggingRoomDir;
+	
+	QTextEdit* mInfoText;
+	QButtonGroup* buttonGroup1;
+	QRadioButton* mClear;
+	QRadioButton* mDontTouch;
+	QLineEdit* mImage;
+	QRadioButton* mUpload;
+	QPushButton* mBrowse;
+
 	QSpinBox* SServerPort;
 	QButtonGroup* buttonGroup2;
 	QRadioButton* SActive;
@@ -63,9 +88,20 @@ public:
 	QLineEdit* SSoulseekUsername;
 	QLineEdit* SServerHost;
 	QLineEdit* SDownDir;
-	QLineEdit* SIncompleteDir;
-	QCheckBox* SBuddiesPrivileged, * SOnlineAlerts,* SShareBuddiesOnly, * STrustedUsers, * SBuddiesShares, * SUserWarnings, * SIPLog;
+	QLineEdit* SIncompleteDir, * SConfigFile;
 
+	QPushButton* mNewHandler;
+	QPushButton* mModifyHandler;
+	QListView* mProtocols;
+	
+	QLabel * TimeFontLabel, * TimeColorLabel, * MeColorLabel, * MessageFontLabel, * BuddiedColorLabel, * LocalTextLabel, * TrustColorLabel, * BannedColorLabel, * RemoteColorLabel;
+	QPushButton * MeColorButton, * TimeFontButton, * NicknameColorButton, * MessageFontButton, * BuddiedColorButton, * TrustColorButton, * BannedColorButton, * RemoteColorButton, * TimeColorButton;
+	QLineEdit* SRemoteText, * SNicknameText, * STrustedText, * SBannedText, * STimeText, * SMessageFont, * SMeText, * STimeFont, * SBuddiedText;
+	
+	QSpinBox* CPortStart, * CPortEnd;
+	QCheckBox* SBuddiesPrivileged, * SOnlineAlerts,* SShareBuddiesOnly, * STrustedUsers, * SBuddiesShares, * SUserWarnings, * SIPLog, * LoggingPrivate, * LoggingRooms;
+	QListView* ListNormalShares, * ListBuddyShares;
+	
 public slots:
 	void SConnect_clicked();
 	void SDisconnect_clicked();
@@ -73,16 +109,59 @@ public slots:
 	void save();
 	virtual void SDownload_clicked();
 	virtual void SIncomplete_clicked();
+	
+	void BuddySharesAdd();
+	void BuddySharesRefresh();
+	void BuddySharesRemove();
+	void BuddySharesRescan();
+	void BuddySharesUpdate();
 
+	void NormalSharesAdd();
+	void NormalSharesRefresh();
+	void NormalSharesRemove();
+	void NormalSharesRescan();
+	void NormalSharesUpdate();
+	
+	void UserImageBrowse_clicked();
+
+	void mNewHandler_clicked();
+	void mModifyHandler_clicked();
+	void mProtocols_itemRenamed( QListViewItem * item, int col );
+	 
+	void slotConfigChanged(const QString&, const QString&, const QString&);
+	void SBuddiesSharesToggled(bool);
+	void readNormal();
+	void readBuddy();
+	void PrivateDirSelect();
+	void RoomDirSelect();
+
+	virtual void color_text_me();
+	virtual void color_text_buddied();
+	virtual void color_text_nickname();
+	virtual void color_text_banned();
+	virtual void color_text_remote();
+	virtual void color_text_time();
+	virtual void color_text_trusted();
+	virtual void font_text_time();
+	virtual void font_text_message();
 protected:
 	QHBoxLayout* buttonsLayout;
-	QSpacerItem* spacer14, * spacer16, * spacer15, * spacer13, * spacer5;
-
-
+	QSpacerItem* spacer14, * spacer16, * spacer15, * spacer13, * spacer5, * protocolSpacer;
+	QGridLayout* ServerGrid, * SharesGrid, *ConnectionsGrid, *UsersGrid,
+	*LoggingGrid, * UserInfoGrid, * buttonGroup1Layout, * ProtocolGrid,
+	* ColorsGrid, * AppearanceGrid;
+	
 
 protected slots:
-    virtual void languageChange();
+	virtual void languageChange();
 
+	void SConfig_clicked();
+	void MuscanBuddyDone();
+	void MuscanNormalDone();
+	void EnableNormalButtons(bool);
+	void EnableBuddyButtons(bool);
+	QProcess* proc1;
+	QProcess * proc2;
 };
 
 #endif // SETTINGSDIALOG_H

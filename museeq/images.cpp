@@ -30,21 +30,37 @@ QPixmap& IMG(const QString& icon) {
 		iconcache = new QMap<QString, QPixmap>();
 	
 	if(iconcache->find(icon) == iconcache->end()) {
-		
+		// Try the theme directory
 		if (museeq->mIconTheme != "default") {
 			QString file (QString(museeq->mIconTheme) + "/" + QString(icon) + ".png");
  			if (QFile::exists(file)) {
 				QPixmap p = QPixmap(file);
 				(*iconcache)[icon] = p;
 				return (*iconcache)[icon];
+			}
+		}
+		// Try the DATADIR path
+		QString file (QString(DATADIR) + "/museek/museeq/icons/default/" + icon + ".png");
+
+		if (QFile::exists(file)) {
+			QPixmap p = QPixmap(file);
+			(*iconcache)[icon] = p;
+			return (*iconcache)[icon];
+		} else {
+			// Try /usr/share/
+			file = ("/usr/share/museek/museeq/icons/default/" + icon + ".png");
+
+			if (QFile::exists(file)) {
+				QPixmap p = QPixmap(file);
+				(*iconcache)[icon] = p;
 			} else {
-				QPixmap p = QPixmap(QString(DATADIR) + "/museek/museeq/default/" + icon + ".png");
+				// Give up
+				QPixmap p = QPixmap();
 				(*iconcache)[icon] = p;
 				}
-		} else {
-				QPixmap p = QPixmap(QString(DATADIR) + "/museek/museeq/default/" + icon + ".png");
-				(*iconcache)[icon] = p;
-		}
+			}
+
+		
 	}
 	return (*iconcache)[icon];
 }
