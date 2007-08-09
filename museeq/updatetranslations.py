@@ -75,11 +75,9 @@ if __name__ == '__main__' :
 	if not os.path.exists(destdir):
 		os.mkdir(destdir)
 	if len(trs) == 0:
-		trs = ['fr','de','es','it','pl','ru','ro','pt_BR','ja','zh','sk','he', 'ar', 'cs' ]
+		trs = ['fr','de','es','it','pl','ru','ro','pt_BR','ja','zh','sk','he', 'ar', 'cs', 'nl' ]
 		
 	for translation in trs:
 		ts_templates.append(translation)
 		
 	UpdateTranslations()
-
-	
