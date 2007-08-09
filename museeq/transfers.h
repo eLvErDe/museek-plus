@@ -77,6 +77,8 @@ private:
 	
 	bool mPoppedUpload;
 	bool mUploadSlotsChanging;
+	bool mUpGroupingChanging;
+	bool mDownGroupingChanging;
 	QPopupMenu* mTransferMenu, * mClearMenu, * mUsersMenu;
 	QCheckBox* mGroupDownloads, * mGroupUploads;
 	QSpinBox* mUpslots;

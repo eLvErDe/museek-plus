@@ -6,11 +6,8 @@ sources = Split("""
   prefix.c
   ipdialog.cpp
   tickerdialog.cpp
-  userinfodialog.cpp
-  protocoldialog.cpp
   settingsdialog.cpp
   onlinealert.cpp
-  fontsandcolorsdialog.cpp
   aclineedit.cpp
   browser.cpp
   browsers.cpp
@@ -123,7 +120,10 @@ scripts = Split("""
   nowplaying.qs
 """)
 
-from relaytool import Relay
+try:
+	from relaytool import Relay
+except:
+	from muscons import Relay
 
 Import('env')
 QTDIR = env['QTDIR']

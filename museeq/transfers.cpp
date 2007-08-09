@@ -93,6 +93,7 @@ Transfers::Transfers(QWidget* _p, const char* _n)
 	
 	connect(mUploads, SIGNAL(contextMenuRequested(QListViewItem*, const QPoint&, int)), SLOT(popupUploads(QListViewItem*, const QPoint&, int)));
 	connect(mDownloads, SIGNAL(contextMenuRequested(QListViewItem*, const QPoint&, int)), SLOT(popupDownloads(QListViewItem*, const QPoint&, int)));
+	mUpGroupingChanging = mDownGroupingChanging = false;
 }
 
 TransferListView* Transfers::uploads() const {
@@ -104,6 +105,8 @@ TransferListView* Transfers::downloads() const {
 }
 
 void Transfers::groupDownloadsSet(bool on) {
+	if (mDownGroupingChanging)
+		return;
 	if(on)
 		museeq->setConfig("museeq.group", "downloads", "true");
 	else
@@ -121,6 +124,8 @@ void Transfers::groupDownloads(bool on) {
 }
 
 void Transfers::groupUploadsSet(bool on) {
+	if (mUpGroupingChanging)
+		return;
 	if(on)
 		museeq->setConfig("museeq.group", "uploads", "true");
 	else
@@ -338,10 +343,15 @@ void Transfers::clearQueued() {
 void Transfers::slotConfigChanged(const QString& domain, const QString& key, const QString& value) {
 	if(domain == "museeq.group") {
 		bool on = value == "true";
-		if(key == "downloads")
+		if(key == "downloads") {
+			mDownGroupingChanging = true;
 			groupDownloads(on);
-		else if(key == "uploads")
+			mDownGroupingChanging = false;
+		} else if(key == "uploads") {
+			mUpGroupingChanging = true;
 			groupUploads(on);
+			mUpGroupingChanging = false;
+		}
 	} else if(domain == "transfers" && key == "upload_slots" && value != mUpslots->cleanText()) {
 		mUploadSlotsChanging = true;
 		mUpslots->setValue(value.toUInt());

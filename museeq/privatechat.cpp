@@ -89,11 +89,14 @@ void PrivateChat::logMessage(const QString& user, uint ts, const QString& speake
 	if (! museeq->mLogPrivate) {
 		return;
 	}
-	if (! museeq->mPrivateLogDir.isEmpty() and QDir(museeq->mPrivateLogDir).exists() ) {
+	if (! museeq->mPrivateLogDir.isEmpty() and QDir(museeq->mPrivateLogDir).exists() )
+	{
 		QFile logfile ( museeq->mPrivateLogDir+"/"+user);
 		if (! logfile.open(IO_WriteOnly | IO_Append))
+		{
 			museeq->output(QString("Write Error: could not write to: " +museeq->mPrivateLogDir+"/"+user));
 			return;
+		}
 		QDateTime _t;
 		_t.setTime_t(ts);
 		QTextStream textstream( &logfile );
