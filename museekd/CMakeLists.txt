@@ -54,6 +54,6 @@ install(
 
 install(
   FILES "museekd.1"
-  DESTINATION "man/man1"
+  DESTINATION ${MANUAL_DIRECTORY}
 )
 MESSAGE("--> Museek Daemon (museekd) will be installed..")

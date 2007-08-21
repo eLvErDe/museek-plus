@@ -15,11 +15,12 @@ CMake
 INSTALLS:
 museekd, muscan and muscand, mucous, python-bindings, python-clients
 ---------------
-DECLARATIONS: PREFIX, BINDINGS, MUCOUS, MURMUR, CLIENTS (prefix with -D)
+PREFIX, MANDIR, EVERYTHING, BINDINGS, MURMUR, MUCOUS, CLIENTS, SETUP
+NO_MUSEEKD, NO_MUSCAN, NO_SETUP, NO_PYMUCIPHER, (prefix with -D)
 # mkdir workdir
 # cd workdir/
 # cmake -DPREFIX=/usr ..
-# (or) cmake -DMUCOUS=0 -DPREFIX=/usr/local ..
+# (or) cmake -DMUCOUS=0 -DPREFIX=/usr/local -DMANDIR=share/man/man1.
 # make
 # (or) make VERBOSE=1
 # make install

@@ -30,6 +30,6 @@ if (NOT version OR error)
 endif (NOT version OR error)
 install(
   FILES ${PYMUCIPHER_LIBS}
-  DESTINATION ${PREFIX}/${version}
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/${version}
 )
 MESSAGE("--> PyMucipher will be installed.. [NO_PYMUCIPHER=1]")

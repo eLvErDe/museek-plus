@@ -13,6 +13,6 @@ endif (NOT version OR error)
 
 install(
   FILES ${PYTHON_BINDINGS_SOURCES}
-  DESTINATION ${PREFIX}/${version}
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/${version}
 )
 message("--> Python Bindings will be installed..")

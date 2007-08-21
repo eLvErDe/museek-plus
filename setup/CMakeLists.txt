@@ -21,7 +21,7 @@ set(MANPAGES
 
 install(
   FILES ${MANPAGES}
-  DESTINATION "man/man1"
+  DESTINATION ${MANUAL_DIRECTORY}
 )
 
 set(ICONS

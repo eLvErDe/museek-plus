@@ -22,6 +22,6 @@ set(MANPAGES
 
 install(
   FILES ${MANPAGES}
-  DESTINATION "man/man1"
+  DESTINATION ${MANUAL_DIRECTORY}
 )
 message("--> mulog, museekchat, museekcontrol, musirc.py will be installed..")

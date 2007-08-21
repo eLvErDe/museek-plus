@@ -19,7 +19,7 @@ if (NOT version OR error)
 endif (NOT version OR error)
 install(
   FILES ${PYMUCOUS_SOURCES}
-  DESTINATION ${PREFIX}/${version}
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/${version}
 )
 
 
@@ -36,6 +36,6 @@ set(MANPAGES
 
 install(
   FILES ${MANPAGES}
-  DESTINATION "man/man1"
+  DESTINATION ${MANUAL_DIRECTORY}
 )
 MESSAGE("--> Mucous will be installed..")

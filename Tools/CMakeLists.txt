@@ -80,6 +80,6 @@ target_link_libraries(
 
 install(
   FILES ${MANPAGES}
-  DESTINATION "man/man1"
+  DESTINATION ${MANUAL_DIRECTORY}
 )
 endif  (C_MUSCAN)
