@@ -15,7 +15,7 @@ CMake
 INSTALLS:
 museekd, muscan and muscand, mucous, python-bindings, python-clients
 ---------------
-DECLARATIONS: PREFIX, BINDINGS, MUCOUS, CLIENTS (prefix with -D)
+DECLARATIONS: PREFIX, BINDINGS, MUCOUS, MURMUR, CLIENTS (prefix with -D)
 # mkdir workdir
 # cd workdir/
 # cmake -DPREFIX=/usr ..
