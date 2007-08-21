@@ -90,6 +90,11 @@ class PrivateChat:
 			self.mucous.Help.Log("debug", "PrivateChat.Mode: " +str(e))
 		curses.doupdate()
 		
+	def ClearLog(self):
+		if self.current is None:
+			return
+		self.logs[self.current] = []
+		
 	## Close a user's chat
 	# @param self PrivateChat (class)
 	# @param user username

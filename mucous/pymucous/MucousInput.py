@@ -76,6 +76,7 @@ class CharacterParse:
 			#pos = self.scroll
 			#self.length + 
 			self.length = len(self.line)
+			line = self.line
 			# debugging: display keypress
 			#try:self.mucous.Help.Log("debug", str(c)+" "+str(chr(c)) )
 			#except:pass
@@ -86,23 +87,29 @@ class CharacterParse:
 				self.mucous.timedout = False
 			if self.mucous.Spl["status"] == 0 and self.mucous.Config["mucous"]["autoaway"] == "yes":
 				# Restart inactivity timeout for every key or mousepress if not away, currently
-				self.mucous.timeout_timer.cancel()
-				self.mucous.timeout_timer = threading.Timer(self.mucous.timeout_time, self.mucous.AwayTimeout)
-				self.mucous.timeout_timer.start()
+				self.mucous.timers["timeout"].cancel()
+				self.mucous.timers["timeout"] = threading.Timer(self.mucous.timeout_time, self.mucous.AwayTimeout)
+				self.mucous.timers["timeout"].start()
 			else:
-				self.mucous.timeout_timer.cancel()
+				self.mucous.timers["timeout"].cancel()
 
-			if c == "r" and self.escape:
-				self.mucous.Build()
-				return False	
 			if c != chr(9) and c !="KEY_MOUSE":  # Clear self.word if tab wasn't pressed
 				self.word = None
 				self.firsttab = 0
 				self.listline = []
 			elif c not in ("KEY_UP", "KEY_DOWN"):
 				self.mucous.Spl["history_count"] = -1
-
-			if c == "KEY_MOUSE":
+				
+			if c == "KEY_RESIZE":
+				self.mucous.stdscr.keypad(1)
+				self.mucous.Build()
+				self.line = line
+				
+			elif c == "r" and self.escape:
+				self.mucous.Build()
+				self.line = line
+				
+			elif c == "KEY_MOUSE":
 				error = 'mouse'
 				if not self.escape:
 					line = self.InputFunctions(c, self.line)
@@ -398,12 +405,9 @@ class CharacterParse:
 	# @param line edit bar's contents
 	def InputFunctions(self, key, line):
 		try:
-			if key == "KEY_RESIZE":
-				self.mucous.line = line 
-				self.mucous.stdscr.keypad(1)
-				self.mucous.Build()
+			
 				
-			elif key == "KEY_MOUSE":
+			if key == "KEY_MOUSE":
 				line = self.MouseXY(line)
 					
 			
@@ -2028,7 +2032,12 @@ class CharacterParse:
 				
 			elif command == "/cleardown":
 				self.mucous.Transfers.ClearAllDownloads()
-					
+			elif command == "/clear":
+				if self.mucous.mode == "chat":
+					self.mucous.ChatRooms.ClearLog()
+				elif self.mucous.mode == "private":
+					self.mucous.PrivateChat.ClearLog()
+						
 			elif command == "/clearroom":
 				if args == '':
 					

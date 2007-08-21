@@ -42,6 +42,7 @@ class ChatRooms:
 		# position of ticker
 		self.numticker = 0
 		self.tickersize = 150
+		self.drawing_ticker = False
 		## @var tickers
 		# dict of rooms containing lists of tickers 
 		self.tickers = {}
@@ -129,6 +130,25 @@ class ChatRooms:
 		except Exception, e:
 			self.mucous.Help.Log("debug", "ChatRooms.Mode: " + str(e))
 			
+	def ClearLog(self):
+		if self.current is None or self.current not in self.logs["rooms"]:
+			return
+		
+		self.logs["rooms"][self.current] = []
+		if self.mucous.mode == "chat":
+			self.Change(self.current)
+			
+	## Joined a room
+	# @param self ChatRooms (class)
+	# @param tickers dictionary (users: tickets)
+	def CleanTickers(self, tickers):
+		if tickers is None:
+			return {}
+		CleanedTickers = {}
+		for user, ticket in tickers.items():
+			CleanedTickers[user] = ticket.strip()
+		return CleanedTickers
+		
 	## Joined a room
 	# @param self ChatRooms (class)
 	def Joined(self, name, users, tickers=None):
@@ -145,8 +165,10 @@ class ChatRooms:
 					
 			self.rooms[name] = users.keys()
 
+			
+			CleanedTickers = self.CleanTickers(tickers)
 			if tickers:
-				self.tickers[name] = tickers
+				self.tickers[name] = CleanedTickers
 			else:
 				self.tickers[name] = {}
 		except Exception, e:
@@ -384,16 +406,106 @@ class ChatRooms:
 		except Exception, e:
 			self.mucous.Help.Log("debug", "ChatRooms.UserJoined: " + str(e))
 			
+	def DrawTickerScroll(self, tickers):
+		longstring = ""
+		for user in tickers:
+			if self.mucous.config.has_key("ignored") and self.mucous.config["ignored"].has_key(user):
+				continue
+			if not self.tickers[self.current].has_key(user):
+				continue
+			message = self.mucous.dlang(self.tickers[self.current][user])[:self.tickersize]
+			if len(message) == self.tickersize:
+				message += "..."
+			longstring += "[%s] %s " % (user, message)
+		if self.shape in ("nostatuslog", "chat-only"):
+			bw = self.windows["border"]["chat"]
+			s = self.dimensions["chat"]
+			padd = -3; posy = 0; posx = 2
+		else:
+
+			bw = self.windows["border"]["roomstatus"]
+			s = self.dimensions["roomstatus"]
+			padd = 0; posy = 5; posx = 1
+
+		if self.numticker >= len(longstring):
+			self.numticker = 0
+		part = longstring[self.numticker:self.numticker+s["width"]-2+padd]
+		while len(part) < s["width"]-2 +padd:
+			part += longstring[:(s["width"]-2+padd - len(part))]
+		fill = (s["width"]-2 - len(part) +padd) * " "
+		try:
+			fullmessage = ""
+			for m in part:
+				fullmessage += curses.unctrl(m)
+			bw.addstr(posy, posx, "<%s%s>" %(fullmessage[:s["width"]-3], fill))
+			bw.refresh()
+			
+		except Exception, error:
+			self.Help.Log("debug", error)
+		self.numticker += 1
+		#if self.numticker >= len(tickers):
+			#self.numticker = 0
+		self.ticker_timer.cancel()
+		self.ticker_timer = threading.Timer(float(self.mucous.Config["tickers"]["scrolltime"]), self.DrawTicker)
+		self.ticker_timer.start()
+	
+		
+	def DrawTickerCycle(self, tickers):
+		if self.numticker >= len(tickers):
+			self.numticker = 0
+		names = tickers[self.numticker]
+		n = len(names)
+		try:
+			if self.mucous.PopupMenu.show == True: raise Exception,  "Noticker"
+			if self.shape not in ("nostatuslog", "chat-only"):
+				if "roomstatus" not in self.windows["border"]:
+					return
+				bw = self.windows["border"]["roomstatus"]
+				s = self.dimensions["roomstatus"]
+				tick = str(self.tickers[self.current][names][:s["width"]-7-n])
+				fill = (s["width"]-6-len(tick)-len(names)) * " "
+				string = "< [%s] %s%s>" % (names, tick, fill)
+				bw.addstr(5, 1, self.mucous.dlang( string ))
+				bw.refresh()
+
+			elif self.shape in ("nostatuslog", "chat-only"):
+				mw = self.windows["border"]["chat"]
+				s = self.dimensions["chat"]
+				tick = str(self.tickers[self.current][names][:s["width"]-25-n])
+				fill = (s["width"]-25-len(tick)-len(names)) * " "
+				string = "< [%s] %s%s>" %(names, tick, fill)
+				mw.addstr(0, 18, self.mucous.dlang( string ))
+				mw.refresh()
+		except Exception, error:
+			self.Help.Log("debug", error)
+
+
+		self.numticker += 1
+
+		self.ticker_timer.cancel()
+		self.ticker_timer = threading.Timer(float(self.mucous.Config["tickers"]["cycletime"]), self.DrawTicker)
+		self.ticker_timer.start()
+		
 	## Loop and Draw the tickers in one of two ways (scrolling, cycling)
 	# :: Scrolling shows the entire ticker, while Cycling shows only the part that fits in the viewable area
 	# @param self is ChatRooms (Class)
 	def DrawTicker(self):
+		if self.mucous.mode != "chat" or self.current not in self.tickers or self.mucous.Config["tickers"]["tickers_enabled"] != 'yes':
+			self.drawing_ticker = False
+			self.ticker_timer.cancel()
+			return
+		if self.drawing_ticker:
+			return
+		
+		if self.mucous.PopupMenu.show:
+			self.ticker_timer.cancel()
+			self.ticker_timer = threading.Timer(float(self.mucous.Config["tickers"]["scrolltime"]), self.DrawTicker)
+			self.ticker_timer.start()
+			return
+		self.drawing_ticker = True
 		try:
-			if self.mucous.mode != "chat" or self.current not in self.tickers or self.mucous.Config["tickers"]["tickers_enabled"] != 'yes':
-				return
-
-			ttickers = self.tickers[self.current].keys()
-			if ttickers == []:
+			sorted_tickers = self.tickers[self.current].keys()
+			if sorted_tickers == []:
 				self.ticker_timer.cancel()
 				try:
 					self.DrawStatusWin()
@@ -402,93 +514,16 @@ class ChatRooms:
 				except:
 					pass
 			else:
-				ttickers.sort(key=str.lower)
+				sorted_tickers.sort(key=str.lower)
 				if self.mucous.Config["tickers"]["ticker_scroll"] == "yes":
-					if self.mucous.PopupMenu.show == True:
-						self.ticker_timer.cancel()
-						self.ticker_timer = threading.Timer(float(self.mucous.Config["tickers"]["scrolltime"]), self.DrawTicker)
-						self.ticker_timer.start()
-						return
-					longstring = ""
-					for user in ttickers:
-						if self.mucous.config.has_key("ignored") and self.mucous.config["ignored"].has_key(user):
-							continue
-						if not self.tickers[self.current].has_key(user):
-							continue
-						message = self.mucous.dlang(self.tickers[self.current][user])[:self.tickersize]
-						if len(message) == self.tickersize:
-							message += "..."
-						longstring += "[%s] %s " % (user, message)
-					if self.shape in ("nostatuslog", "chat-only"):
-						bw = self.windows["border"]["chat"]
-						s = self.dimensions["chat"]
-						padd = -3; posy = 0; posx = 2
-					else:
-						 
-						bw = self.windows["border"]["roomstatus"]
-						s = self.dimensions["roomstatus"]
-						padd = 0; posy = 5; posx = 1
-					
-					if self.numticker >= len(longstring):
-						self.numticker = 0
-					part = longstring[self.numticker:self.numticker+s["width"]-2+padd]
-					while len(part) < s["width"]-2 +padd:
-						part += longstring[:(s["width"]-2+padd - len(part))] 
-					fill = (s["width"]-2 - len(part) +padd) * " "
-					
-					fullmessage = ""
-					for m in part:
-						fullmessage += curses.unctrl(m)
-					bw.addstr(posy, posx, "<%s%s>" %(fullmessage, fill))
-					bw.refresh()
-					self.numticker += 1
-					#if self.numticker >= len(ttickers):
-						#self.numticker = 0
-					self.ticker_timer.cancel()
-					self.ticker_timer = threading.Timer(float(self.mucous.Config["tickers"]["scrolltime"]), self.DrawTicker)
-					self.ticker_timer.start()
-					return
-			
-				
-				if self.numticker >= len(ttickers):
-					self.numticker = 0
-				names = ttickers[self.numticker]
-				n = len(names)
-				try:
-					if self.mucous.PopupMenu.show == True: raise Exception,  "Noticker"
-					if self.shape not in ("nostatuslog", "chat-only"):
-						if "roomstatus" not in self.windows["border"]:
-							return
-						bw = self.windows["border"]["roomstatus"]
-						s = self.dimensions["roomstatus"]
-						tick = str(self.tickers[self.current][names][:s["width"]-7-n])
-						fill = (s["width"]-6-len(tick)-len(names)) * " "
-						string = "< [%s] %s%s>" % (names, tick, fill)
-						bw.addstr(5, 1, self.mucous.dlang( string ))
-						bw.refresh()
-						
-					elif self.shape in ("nostatuslog", "chat-only"):
-						mw = self.windows["border"]["chat"]
-						s = self.dimensions["chat"]
-						tick = str(self.tickers[self.current][names][:s["width"]-25-n])
-						fill = (s["width"]-25-len(tick)-len(names)) * " "
-						string = "< [%s] %s%s>" %(names, tick, fill)
-						mw.addstr(0, 18, self.mucous.dlang( string ))
-						mw.refresh()
-				except:
-					pass
-				
-
-				self.numticker += 1
-
-				self.ticker_timer.cancel()
-				self.ticker_timer = threading.Timer(float(self.mucous.Config["tickers"]["cycletime"]), self.DrawTicker)
-				self.ticker_timer.start()
-				
-				
+					self.DrawTickerScroll(sorted_tickers)
+				else:
+					self.DrawTickerCycle(sorted_tickers)
+				curses.doupdate()
 		except Exception,e:
 			self.mucous.Help.Log("debug", "ChatRooms.DrawTicker: " + str(e))
-			
+		self.drawing_ticker = False
+		
 	## Draw the chat window's border
 	# @param self is ChatRooms (Class)
 	def DrawChatWin(self):

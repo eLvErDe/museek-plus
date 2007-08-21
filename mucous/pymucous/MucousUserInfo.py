@@ -61,13 +61,15 @@ class UserInfo:
 			return
 		self.requests.remove(user)
 		self.scrolling[user] = 0
-		message = info.split('\n')
+		message = info.replace('\r', "").split('\n')
 		pic = False
 		if picture != '':
-			r = file(self.mucous.config_dir+str(user)+".image", 'w')
-			print >> r, str(picture)
+			import imghdr
+			format = imghdr.what(None, picture)
+			r = file("%s.%s" % (self.mucous.config_dir+str(user), format), 'wb')
+			r.write(picture)
 			r.close()
-			self.StatsLog( "Saved UserImage as: "+ str(user)+".image")
+			self.StatsLog( "Saved UserImage as: %s.%s" % (str(user), format))
 			pic = True
 		self.Log(user, message, uploads, queue, slotsfree, pic)
 		
@@ -76,6 +78,7 @@ class UserInfo:
 			#self.mucous.Alerts.alert["INFO"].append(user)
 			self.mucous.Alerts.Add(user, "INFO")
 			self.mucous.HotKeyBar()
+			
 	## Draw windows
 	# @param self UserInfo (class)
 	def Mode(self):

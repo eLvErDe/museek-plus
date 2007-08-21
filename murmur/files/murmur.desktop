@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Murmur
+Comment=Museek client for the SoulSeek filesharing network
+Exec=murmur
+Icon=murmur-64px.png
+Terminal=false
+Type=Application
+Categories=Application;Network;
+StartupNotify=true

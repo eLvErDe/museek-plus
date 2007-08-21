@@ -1,7 +1,54 @@
 # This is part of the Mucous Museek Client, and distributed under the GPLv2
 # Copyright (c) 2006 daelstorm. 
-
+from UserDict import UserDict
 import curses.wrapper, curses.ascii
+
+		
+
+
+## Dictionary that's sorted alphabetically
+# @param UserDict dictionary to be alphabetized	
+class SortedDict(UserDict):
+	## Constructor
+	# @param self SortedDict
+	def __init__(self):
+		self.__keys__ = []
+		self.__sorted__ = True
+		UserDict.__init__(self)
+		
+	## Set key
+	# @param self SortedDict
+	# @param key dict key
+	# @param value dict value
+	def __setitem__(self, key, value):
+		if not self.__dict__.has_key(key):
+			self.__keys__.append(key) 
+			self.__sorted__ = False   
+		UserDict.__setitem__(self, key, value)
+	## Delete key
+	# @param self SortedDict
+	# @param key dict key
+	def __delitem__(self, key):
+		self.__keys__.remove(key)
+		UserDict.__delitem__(self, key)
+	## Get keys
+	# @param self SortedDict
+	# @return __keys__ 
+	def keys(self):
+		if not self.__sorted__:
+			self.__keys__.sort()
+			self.__sorted__ = True
+		return self.__keys__
+	## Get items
+	# @param self SortedDict
+	# @return list of keys and items
+	def items(self):
+		if not self.__sorted__:
+			self.__keys__.sort()
+			self.__sorted__ = True
+		for key in self.__keys__:
+			yield key, self[key]
+
 ## Parse data and reformat it to fit inside the constraints of its window
 #
 class FormatData:

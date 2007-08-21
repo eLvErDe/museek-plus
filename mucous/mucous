@@ -36,30 +36,53 @@ except ImportError:
 	except:
 		print "WARNING: The Mucipher Module for Python wasn't found and neither was PyCrypto. One of these is necessary to allow Mucous to connect to the Museek Daemon.\nDownload mucipher here: http://thegraveyard.org/files/pymucipher-0.0.1.tar.gz\nExtract the tarball, and as Root or sudo, run:\npython setup.py install\nYou'll need GCC, Python and SWIG.\nOr download PyCrypto from here: http://www.amk.ca/python/code/crypto.html"
 		sys.exit()
+		
+REQUIRE_PYMUSEEK = '0.2.0'
+
+def versionCheck(version):
+	build = 255
+	def _required():
+		global REQUIRE_PYMUSEEK
+		r = REQUIRE_PYMUSEEK.split(".")
+		r_major, r_minor, r_micro = [int(i) for i in r[:3]]
+		return (r_major << 24) + (r_minor << 16) + (r_micro << 8) + build
+	
+	s = version.split(".")
+	major, minor, micro = [int(i) for i in s[:3]]
+
+	if (major << 24) + (minor << 16) + (micro << 8) + build >= _required():
+		return True
+	return False
+
 try:
 	import messages, driver
 except Exception, error:
 	try:
+		import museek
 		from museek import messages, driver
+		if not hasattr(museek, 'VERSION'):
+			raise Exception, "Cannot use unknown museek python bindings version."
+		elif hasattr(museek, 'VERSION') and not versionCheck(museek.VERSION):
+			raise Exception, "Cannot use museek python bindings version: %s" % (museek.VERSION)
 	except Exception, error:
-		print "WARNING: The Museek Message-Parsing modules, messages.py and/or driver.py  were not found. Please install them into your '/usr/lib/python2.X/site-packages/museek' directory, or place them in a 'museek' subdirectory of the directory that contains the mucous python script.", error
+		print "WARNING: The Museek Message-Parsing modules, messages.py and/or driver.py were not found, or are an old version. Please install them into your '/usr/lib/python2.X/site-packages/museek' directory, or place them in a 'museek' subdirectory of the directory that contains the mucous python script."
+		print error
 		
 		sys.exit()
-	
-import signal, time, os, commands, getopt, threading, select, string, re, ConfigParser
+
+import signal, time, os, commands, getopt, thread, threading, select, string, re
+from pymucous import ConfigParser
 import curses.wrapper, curses.ascii
 import traceback
 from time import sleep
 
-from UserDict import UserDict
 
 
-geoip_fail=0
-
+pcg = 0
 try:
 	from pymucous.MucousTransfers import Transfers
 	from pymucous.MucousUserInfo import UserInfo
-	from pymucous.MucousFormat import FormatData
+	from pymucous.MucousFormat import FormatData, SortedDict
 	from pymucous.MucousMuscan import Muscan
 	from pymucous.MucousPrivateChat import PrivateChat
 	from pymucous.MucousPopup import PopupMenu 
@@ -77,7 +100,9 @@ try:
 except ImportError, e:
 	print "Failed loading Mucous modules:", e
 
+
 try:
+	geoip_fail=0
 	import GeoIP
 	gi = GeoIP.new(GeoIP.GEOIP_MEMORY_CACHE)
 except ImportError:
@@ -87,7 +112,7 @@ except ImportError:
 config_dir = str(os.path.expanduser("~/.mucous/"))
 log_dir = None #str(os.path.expanduser("~/.mucous/logs/"))
 config_file = config_dir+"config"
-Version = "0.9.2"
+Version = "0.9.3"
 
 ## Command Options
 def usage():
@@ -100,12 +125,14 @@ Version: %s
 	-l,	--log <dir>	Use a different logging directory
 	-v,	--version	Display version and quit
 
+	-p,	--profile	Use the python profiler
+	-g,	--pycallgraph	Use pycallgraph
 	-h,	--help		Display this help and exit
 	""" %Version)
 	sys.exit(2)
 	
 try:
-	opts, args = getopt.getopt(sys.argv[1:], "hc:vl:p", ["profile", "help", "config=", "version", "log="])
+	opts, args = getopt.getopt(sys.argv[1:], "hc:vl:pg", ["profile", "pycallgraph", "help", "config=", "version", "log="])
 except getopt.GetoptError:
 	usage()
 	sys.exit(2)
@@ -114,6 +141,8 @@ for opts, args in opts:
 
 	if opts in ("-p", "--profile"):
 		profile = 1
+	elif opts in ("-g", "--pycallgraph"):
+		pcg = 1
 	elif opts in ("-h", "--help"):
 		usage()
 		sys.exit()
@@ -124,52 +153,7 @@ for opts, args in opts:
 	if opts in ("-v", "--version"):
 		print "Mucous version: %s" % Version
 		sys.exit(2)
-		
 
-
-## Dictionary that's sorted alphabetically
-# @param UserDict dictionary to be alphabetized	
-class SortedDict(UserDict):
-	## Constructor
-	# @param self SortedDict
-	def __init__(self):
-		self.__keys__ = []
-		self.__sorted__ = True
-		UserDict.__init__(self)
-		
-	## Set key
-	# @param self SortedDict
-	# @param key dict key
-	# @param value dict value
-	def __setitem__(self, key, value):
-		if not self.__dict__.has_key(key):
-			self.__keys__.append(key) 
-			self.__sorted__ = False   
-		UserDict.__setitem__(self, key, value)
-	## Delete key
-	# @param self SortedDict
-	# @param key dict key
-	def __delitem__(self, key):
-		self.__keys__.remove(key)
-		UserDict.__delitem__(self, key)
-	## Get keys
-	# @param self SortedDict
-	# @return __keys__ 
-	def keys(self):
-		if not self.__sorted__:
-			self.__keys__.sort()
-			self.__sorted__ = True
-		return self.__keys__
-	## Get items
-	# @param self SortedDict
-	# @return list of keys and items
-	def items(self):
-		if not self.__sorted__:
-			self.__keys__.sort()     
-			self.__sorted__ = True
-		for key in self.__keys__:
-			yield key, self[key]		
-alpha_list  = SortedDict()
 
 ## Modify and read the Mucous Config
 #
@@ -443,21 +427,25 @@ class Mucous:
 				self.Config["mucous"]["language"] = "iso-8859-1"
 		else:
 			self.Config["mucous"]["language"] = "iso-8859-1"
-		## @var retry_timer
-		# Retry failed transfers :: Calls: ThreadTransfersRetry
-		self.retry_timer = threading.Timer(30.0, self.ThreadTransfersRetry)
-		## @var clear_timer
+
+		## @var timers
+		# Dictionary of timers
+		self.timers = {}
+		
+		#transfers :: Calls: ThreadTransfersRetry
+		self.timers["retry"] = threading.Timer(30.0, self.ThreadTransfersRetry)
+		## @var timers["clear"]
 		# Clear tramsfers timer :: Calls: Mucous.ThreadTransfersClear
-		self.clear_timer = threading.Timer(30.0, self.ThreadTransfersClear)
-		## @var NickTimer
+		self.timers["clear"] = threading.Timer(30.0, self.ThreadTransfersClear)
+		## @var timers["nick"]
 		# Clear tramsfers timer :: Calls: Mucous.ThreadTransfersClear
-		self.NickTimer = threading.Timer(10.0, self.ThreadNickCheck)
+		self.timers["nick"] = threading.Timer(10.0, self.ThreadNickCheck)
 		## @var timeout_time
 		# How long before away timer starts (900 seconds)
 		self.timeout_time =  900 * 1.0
-		## @var timeout_timer
+		## @var timers["timeout"]
 		# AutoAway time instance 
-		self.timeout_timer = threading.Timer(self.timeout_time, self.AwayTimeout)
+		self.timers["timeout"] = threading.Timer(self.timeout_time, self.AwayTimeout)
 		
 		
 		
@@ -574,7 +562,14 @@ class Mucous:
 			curses.curs_set(1)
 		# Enable Function Keys
 		self.stdscr.keypad(1)
-		while 1:
+		self.Spl["input_horizontal"] = self.Spl["input_vertical"] = 0
+			
+		self._run = True
+		thread.start_new_thread(self.InputThread, ())
+		self.run()
+		
+	def run(self):
+		while self._run:
 			curses.noecho()
 			curses.cbreak()
 			try:
@@ -592,7 +587,7 @@ class Mucous:
 					# Ctrl-C
 					self.shutdown(error)
 			try:
-				self.D.process()
+				self.D.processWrap()
 			except select.error, e:
 				# Terminal resized
 				self.line = self.Build()
@@ -600,7 +595,67 @@ class Mucous:
 			except KeyboardInterrupt, error:
 				# Ctrl-C
 				self.shutdown(error)
-				
+				break
+			
+		curses.nocbreak()
+		curses.echo()
+		curses.endwin()
+		
+	def InputThread(self):
+
+		keys = []
+		try:
+			while 1:
+				# Place Cursor
+				c = self.GetKey()
+				if c != None:
+					keys.append(c)
+
+				while keys:
+					# process each key, one at a time
+					c, keys = keys[0], keys[1:]
+					if self.edit.process(c):
+						self.line = self.edit.line
+						feedback = self.edit.InputCommands(self.line)
+
+						if feedback == 0:
+							break
+						elif feedback == 2:
+							# Exit
+							self.Help.Mode()
+							self._run = False
+							return
+						else:
+							self.edit.reset()
+				sleep(0.001)
+		except Exception, e:
+			self.Help.Mode()
+			self.Help.Log("debug", "Processing... " + str(e))
+
+	## Find the current Cursor Position and get a keypress
+	# @param self Networking (Driver Class)
+	def GetKey(self):
+		#try:
+		# Find Cursor Position
+		y = self.Spl["input_vertical"]
+		x = self.Spl["input_horizontal"] + self.edit.x
+
+		if self.edit.wrap:
+
+			ScrollLine = self.edit.scroll/self.edit.w
+			y = self.Spl["input_vertical"] + ScrollLine
+			ScrollRemainder = self.edit.scroll % self.edit.w
+			x = ScrollRemainder + self.Spl["input_horizontal"]
+
+		try:
+			c = self.stdscr.getkey( y, x)
+
+			return c
+		except curses.error, e:
+			pass
+		return None
+
+		
 	## Create curses input window
 	def UseAnotherEntryBox(self, window=None, height=None, width=None, top=None, left=None, contents=None, wrap=None):
 		if window:
@@ -723,21 +778,26 @@ class Mucous:
 			self.Help.Log("status", "Shutting Down Mucous.. " +str(error) )
 			sleep(1)
 		try:
-			self.disconnect()
-			# Quit		
-			self.NickTimer.cancel()
+			self.timers["timeout"].cancel()
+			self.timers["nick"].cancel()
 			self.ChatRooms.ticker_timer.cancel()
 			self.Muscan.timer.cancel()
-			self.retry_timer.cancel()
-			self.clear_timer.cancel()
+			self.timers["retry"].cancel()
+			self.timers["clear"].cancel()
 		except Exception, e:
 			self.Help.Log("debug", "shutdown: " + str(e))
+		try:
+			self.disconnect()
+			# Quit
+		except Exception, e:
+			self.Help.Log("debug", "shutdown: " + str(e))
+		
 		self.stdscr.keypad(0)
 		curses.nocbreak()
 		curses.echo()
 		curses.endwin()
 	
-		os._exit(0)
+		#os._exit(0)
 	
 	## Disconnect from museekd
 	# @param self Mucous (class)
@@ -1600,14 +1660,14 @@ class Mucous:
 	def ThreadTransfersRetry(self):
 		try:
 			if self.Config["mucous"]["auto-retry"] != "yes":
-				self.retry_timer.cancel()
+				self.timers["retry"].cancel()
 			else:
 				for user_path, transfer  in self.Transfers.transfers["downloads"].items():
 					if int(transfer[3]) in (11, 12, 13, 14):
 						self.D.DownloadFile(transfer[1], transfer[2])
-				self.retry_timer.cancel()
-				self.retry_timer = threading.Timer(30.0, self.ThreadTransfersRetry)
-				self.retry_timer.start()
+				self.timers["retry"].cancel()
+				self.timers["retry"] = threading.Timer(30.0, self.ThreadTransfersRetry)
+				self.timers["retry"].start()
 		except Exception,e:
 			self.Help.Log("debug", "ThreadTransfersRetry: " + str(e))
 			
@@ -1615,7 +1675,7 @@ class Mucous:
 	# @param self Mucous (class)
 	def AwayTimeout(self):
 		try:
-			self.timeout_timer.cancel()
+			self.timers["timeout"].cancel()
 			if self.Spl["status"] == 0:
 				self.timedout = True
 				self.ToggleAwayStatus()
@@ -1628,7 +1688,7 @@ class Mucous:
 	def ThreadTransfersClear(self):
 		try:
 			if self.Config["mucous"]["auto-clear"] != "yes":
-				self.clear_timer.cancel()
+				self.timers["clear"].cancel()
 			else:
 				for userpath, values in self.Transfers.transfers["uploads"].items():
 					if values[3] in (0, 10, 11, 12, 13, 14):
@@ -1637,16 +1697,18 @@ class Mucous:
 				for userpath, values in self.Transfers.transfers["downloads"].items():
 					if values[3] == 0:
 						self.D.TransferRemove(0, values[1], values[2])
-				self.clear_timer.cancel()
+				self.timers["clear"].cancel()
 				
-				self.clear_timer = threading.Timer(30.0, self.ThreadTransfersClear)
-				self.clear_timer.start()
+				self.timers["clear"] = threading.Timer(30.0, self.ThreadTransfersClear)
+				self.timers["clear"].start()
 		except Exception,e:
 			self.Help.Log("debug", "ThreadTransfersClear: " + str(e))
 
-	
 try:
-
+	if pcg:
+		import pycallgraph
+		pycallgraph.start_trace()
+	
 	if profile:
 		import hotshot
 		## @var log
@@ -1657,9 +1719,12 @@ try:
 		profiler = hotshot.Profile(log)
 		print ("Starting using the profiler (saving log to %s)") % log
 		sleep(1)
-		profiler.runcall(curses.wrapper(Mucous()))
+		profiler.runcall(Mucous)
 	else:
-		curses.wrapper(Mucous())
+		Mucous()
 except Exception, e:
 	print e
-	
+if pcg:
+	pycallgraph.make_dot_graph('calltrace.png')
+
+sys.exit()

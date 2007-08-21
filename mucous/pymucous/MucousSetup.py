@@ -705,14 +705,14 @@ class Setup:
 	def ToggleAutoClear(self):
 		if self.mucous.Config["mucous"]["auto-clear"] == "yes":
 			self.mucous.Config["mucous"]["auto-clear"] = "no"
-			self.mucous.clear_timer.cancel()
-			self.mucous.clear_timer = threading.Timer(30.0, self.mucous.ThreadTransfersClear)
+			self.mucous.timers["clear"].cancel()
+			self.mucous.timers["clear"] = threading.Timer(30.0, self.mucous.ThreadTransfersClear)
 			
 		else:
 			self.mucous.Config["mucous"]["auto-clear"] ="yes"
-			self.mucous.clear_timer.cancel()
-			self.mucous.clear_timer = threading.Timer(30.0, self.mucous.ThreadTransfersClear)
-			self.mucous.clear_timer.start()
+			self.mucous.timers["clear"].cancel()
+			self.mucous.timers["clear"] = threading.Timer(30.0, self.mucous.ThreadTransfersClear)
+			self.mucous.timers["clear"].start()
 		self.Mode()
 		
 	def ToggleAutoBuddy(self):
@@ -726,12 +726,12 @@ class Setup:
 	def ToggleAutoRetry(self):
 		if str(self.mucous.Config["mucous"]["auto-retry"]) == "yes":
 			self.mucous.Config["mucous"]["auto-retry"] = "no"
-			self.mucous.retry_timer.cancel()
+			self.mucous.timers["retry"].cancel()
 		else:
 			self.mucous.Config["mucous"]["auto-retry"] ="yes"
-			self.mucous.retry_timer.cancel()
-			self.mucous.retry_timer = threading.Timer(30.0, self.mucous.ThreadTransfersRetry)
-			self.mucous.retry_timer.start()
+			self.mucous.timers["retry"].cancel()
+			self.mucous.timers["retry"] = threading.Timer(30.0, self.mucous.ThreadTransfersRetry)
+			self.mucous.timers["retry"].start()
 		self.Mode()
 
 	## Create a Button

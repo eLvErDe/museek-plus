@@ -29,17 +29,14 @@ class Networking(driver.Driver):
 	# If mucous cannot connect, enter a loop which allows commands to be inputted
 	def connect(self):
 		try:
-			keys = []
-			
-			
-		
+
 		
 			if not self.mucous.invalidpass:
 				if self.mucous.Config["connection"]["passw"] != None:
 					
-					self.mucous.NickTimer.cancel()
-					self.mucous.NickTimer = threading.Timer(10.0, self.mucous.ThreadNickCheck)
-					self.mucous.NickTimer.start()
+					self.mucous.timers["nick"].cancel()
+					self.mucous.timers["nick"] = threading.Timer(10.0, self.mucous.ThreadNickCheck)
+					self.mucous.timers["nick"].start()
 					
 					driver.Driver.connect(self, self.mucous.Config["connection"]["interface"],  self.mucous.Config["connection"]["passw"], messages.EM_CHAT |  messages.EM_USERINFO| messages.EM_PRIVATE| messages.EM_TRANSFERS  | messages.EM_USERSHARES | messages.EM_CONFIG |  messages.EM_INTERESTS | messages.EM_DEBUG)
 					
@@ -65,93 +62,26 @@ class Networking(driver.Driver):
 				self.mucous.Help.Log("status", e[1] +", make sure the daemon is running, or change the interface.")
 			else:
 				self.mucous.Help.Log("status", "Connection Error "+str( e) )
-			if self.mucous.NickTimer != None:
-				self.mucous.NickTimer.cancel()
-			
-	## Find the current Cursor Position and get a keypress
-	# @param self Networking (Driver Class)
-	def GetKey(self):
-		try:
-			# Find Cursor Position
-			y = self.mucous.Spl["input_vertical"]
-			x = self.mucous.Spl["input_horizontal"] + self.mucous.edit.x
-			
-			if self.mucous.edit.wrap:
-				# More complicated for wrapped input boxes
-				#num = 0 
-				#lines = 0
-				#num = len(self.mucous.edit.line)
-				#lines = num/self.mucous.edit.w
-				#a = num
-				#s = lines
-				#s = lines -1 
-				
-				#scroll = self.mucous.edit.scroll
-				ScrollLine = self.mucous.edit.scroll/self.mucous.edit.w
-				y = self.mucous.Spl["input_vertical"] + ScrollLine
-				ScrollRemainder = self.mucous.edit.scroll % self.mucous.edit.w
-				x = ScrollRemainder + self.mucous.Spl["input_horizontal"]
-				
+			if self.mucous.timers["nick"] != None:
+				self.mucous.timers["nick"].cancel()
 
-			c = self.mucous.stdscr.getkey( y, x)
-
-			return c
-		except Exception, e:
-			#pass
-			#self.mucous.Help.Mode()
-			#self.mucous.Help.Log("debug", e)
-			return None
 		
 	## Recieve Messages from Museekd and collect new key presses
 	# @param self Networking (Driver Class)
-	def process(self):
+	def processWrap(self):
 
-		keys = []
+		while self.mucous._run:
+
+			if self.socket is None:
+				time.sleep(0.5)
+				continue
+			
+			read, write, exception = select.select([self.socket], [], [self.socket], 0)
+			if self.socket in read:
+				self.process()
 		
-		while 1:
-			# Place Cursor
-			c = self.GetKey()
-			if c != None:
-				keys.append(c)
+			time.sleep(0.001)
 
-
-			if not keys:
-				d = 1000
-			else:
-				d = 0
-			if self.socket != None:
-				read, write, exception = select.select([self.socket, sys.stdin], [], [self.socket], d)
-				if self.socket in read:
-					driver.Driver.process(self)
-			else:
-				time.sleep(0.001)
-				read, write, exception = select.select([sys.stdin], [], [], d)
-
-			if sys.stdin in read:
-				# Get a key
-				c = self.GetKey()
-				if c != None:
-					keys.append(c)
-			while keys:
-				
-				c, keys = keys[0], keys[1:]
-				try:
-					
-					if self.mucous.edit.process(c):
-						self.mucous.line = self.mucous.edit.line
-						yes = self.mucous.edit.InputCommands(self.mucous.line)
-						
-						if yes == 0:
-							break
-						elif yes == 2:
-							# Exit
-							return
-						else:
-							self.mucous.edit.reset()
-							
-				except Exception, e:
-					self.mucous.Help.Log("debug", "Processing... " + str(e))
- 		
 	## Recieved Ping from museekd
 	# @param self Networking (Driver Class)
 	def cb_ping(self):
@@ -162,7 +92,7 @@ class Networking(driver.Driver):
 	# @param reason is a string containing the reason for login failure
 	def cb_login_error(self, reason):
 		try:
-			self.mucous.NickTimer.cancel()
+			self.mucous.timers["nick"].cancel()
 			self.mucous.Spl["connected"] = 0
 			self.close()
 			if reason == "INVPASS":
@@ -184,8 +114,8 @@ class Networking(driver.Driver):
 			self.mucous.invalidpass = False
 			self.mucous.Spl["connected"] = 1
 			self.mucous.Help.Log("status", "Logging into Museek at "+ self.mucous.Config["connection"]["interface"])
-			self.mucous.timeout_timer = threading.Timer(self.mucous.timeout_time, self.mucous.AwayTimeout)
-			self.mucous.timeout_timer.start()
+			self.mucous.timers["timeout"] = threading.Timer(self.mucous.timeout_time, self.mucous.AwayTimeout)
+			self.mucous.timers["timeout"].start()
 		except Exception,e:
 			self.mucous.Help.Log("debug", "cb_login_ok: " + str(e))
 		
@@ -202,11 +132,11 @@ class Networking(driver.Driver):
 				self.mucous.Spl["connected"] = 0
 			self.mucous.logs["onlinestatus"]="Closed"
 			self.mucous.Muscan.timer.cancel()
-			self.mucous.NickTimer.cancel()
+			self.mucous.timers["nick"].cancel()
 			self.mucous.ChatRooms.ticker_timer.cancel()
-			self.mucous.retry_timer.cancel()
-			self.mucous.clear_timer.cancel()
-			self.mucous.timeout_timer.cancel()
+			self.mucous.timers["retry"].cancel()
+			self.mucous.timers["clear"].cancel()
+			self.mucous.timers["timeout"].cancel()
 			self.mucous.username = None
 			self.mucous.DrawOnlineStatus()
 
@@ -774,13 +704,13 @@ class Networking(driver.Driver):
 						self.mucous.Transfers.DownloadManager()
 						curses.doupdate()
 			if self.mucous.Config["mucous"]["auto-retry"] == "yes":
-				self.mucous.retry_timer.cancel()
-				self.mucous.retry_timer = threading.Timer(30.0, self.mucous.ThreadTransfersRetry)
-				self.mucous.retry_timer.start()
+				self.mucous.timers["retry"].cancel()
+				self.mucous.timers["retry"] = threading.Timer(30.0, self.mucous.ThreadTransfersRetry)
+				self.mucous.timers["retry"].start()
 			if self.mucous.Config["mucous"]["auto-clear"] == "yes":
-				self.mucous.clear_timer.cancel()
-				self.mucous.clear_timer = threading.Timer(30.0, self.mucous.ThreadTransfersClear)
-				self.mucous.clear_timer.start()
+				self.mucous.timers["clear"].cancel()
+				self.mucous.timers["clear"] = threading.Timer(30.0, self.mucous.ThreadTransfersClear)
+				self.mucous.timers["clear"].start()
 		except Exception, e:
 			self.mucous.Help.Log("debug", "cb_transfer_state: " + str(e))
 		

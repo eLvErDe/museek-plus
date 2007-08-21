@@ -427,11 +427,10 @@ class UsersLists:
 			if not self.mucous.config.has_key("buddies"):
 				return
 			self.logs["buddied"] = []
-			alpha_list = self.mucous.SortedDict()
-			for keyname, keyvalue in self.mucous.config["buddies"].items():
-				alpha_list[keyname] = keyvalue
-			
-			for user, note in alpha_list.items():
+			alpha_list = self.mucous.config["buddies"].keys()
+			alpha_list.sort(key=str.lower)
+			for user in alpha_list:
+				note = self.mucous.config["buddies"][user]
 				attributes = []
 				if self.mucous.config.has_key("trusted") and self.mucous.config["trusted"].has_key(user):
 					attributes.append("trusted")
@@ -450,11 +449,10 @@ class UsersLists:
 			if not self.mucous.config.has_key("trusted"):
 				return
 			self.logs["trusted"] = []
-			alpha_list = self.mucous.SortedDict()
-			for keyname, keyvalue in self.mucous.config["trusted"].items():
-				alpha_list[keyname] = keyvalue
-			
-			for user, note in alpha_list.items():
+			alpha_list = self.mucous.config["trusted"].keys()
+			alpha_list.sort(key=str.lower)
+			for user in alpha_list:
+				note = self.mucous.config["trusted"][user]
 				attributes = []
 				if self.mucous.config.has_key("ignored") and self.mucous.config["ignored"].has_key(user):
 					attributes.append("ignored")
@@ -474,11 +472,10 @@ class UsersLists:
 			if not self.mucous.config.has_key("banned"):
 				return
 			self.logs["banned"] = []
-			alpha_list = self.mucous.SortedDict()
-			for keyname, keyvalue in self.mucous.config["banned"].items():
-				alpha_list[keyname] = keyvalue
-			
-			for user, note in alpha_list.items():
+			alpha_list = self.mucous.config["banned"].keys()
+			alpha_list.sort(key=str.lower)
+			for user in alpha_list:
+				note = self.mucous.config["banned"][user]
 				attributes = []
 				if self.mucous.config.has_key("ignored") and self.mucous.config["ignored"].has_key(user):
 					attributes.append("ignored")
@@ -497,11 +494,10 @@ class UsersLists:
 			if not self.mucous.config.has_key("ignored"):
 				return
 			self.logs["ignored"] = []
-			alpha_list = self.mucous.SortedDict()
-			for keyname, keyvalue in self.mucous.config["ignored"].items():
-				alpha_list[keyname] = keyvalue
-			
-			for user, note in alpha_list.items():
+			alpha_list = self.mucous.config["ignored"].keys()
+			alpha_list.sort(key=str.lower)
+			for user in alpha_list:
+				note = self.mucous.config["ignored"][user]
 				attributes = []
 				if self.mucous.config.has_key("banned") and self.mucous.config["banned"].has_key(user):
 					attributes.append("banned")
