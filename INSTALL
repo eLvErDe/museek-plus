@@ -20,7 +20,7 @@ NO_MUSEEKD, NO_MUSCAN, NO_SETUP, NO_PYMUCIPHER, (prefix with -D)
 # mkdir workdir
 # cd workdir/
 # cmake -DPREFIX=/usr ..
-# (or) cmake -DMUCOUS=0 -DPREFIX=/usr/local -DMANDIR=share/man/man1.
+# (or) cmake -DMUCOUS=0 -DPREFIX=/usr/local -DMANDIR=share/man.
 # make
 # (or) make VERBOSE=1
 # make install
