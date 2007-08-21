@@ -13,8 +13,10 @@ file(GLOB_RECURSE PYMUCOUS_FILES pymucous *.py)
 set(PYMUCOUS_SOURCES
   ${PYMUCOUS_FILES}
 )
-EXECUTE_PROCESS(COMMAND python ../python-site-packages.py pymucous OUTPUT_VARIABLE version OUTPUT_STRIP_TRAILING_WHITESPACE)
-
+EXECUTE_PROCESS(COMMAND python ../python-site-packages.py museek OUTPUT_VARIABLE version OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_VARIABLE error)
+if (NOT version OR error)
+	EXECUTE_PROCESS(COMMAND python python-site-packages.py museek OUTPUT_VARIABLE version OUTPUT_STRIP_TRAILING_WHITESPACE)
+endif (NOT version OR error)
 install(
   FILES ${PYMUCOUS_SOURCES}
   DESTINATION ${PREFIX}/${version}

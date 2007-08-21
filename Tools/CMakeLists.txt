@@ -8,6 +8,11 @@ set(TOOLS_SOURCES
   scandir.cc
   scanner.cc
 )
+
+add_library(Tools STATIC ${TOOLS_SOURCES})
+
+if (C_MUSCAN)
+
 set(MUSCAN_SOURCES
   muscan.cc
   ${TOOLS_SOURCES}
@@ -16,7 +21,6 @@ set(MUSCAND_SOURCES
   muscand.cc
   ${TOOLS_SOURCES}
 )
-add_library(Tools STATIC ${TOOLS_SOURCES})
 
 add_executable(muscan ${MUSCAN_SOURCES})
 
@@ -78,3 +82,4 @@ install(
   FILES ${MANPAGES}
   DESTINATION "man/man1"
 )
+endif  (C_MUSCAN)

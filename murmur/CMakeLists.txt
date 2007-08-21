@@ -11,8 +11,10 @@ file(GLOB_RECURSE PYMURMUR_FILES pymurmur *.py)
 set(PYMURMUR_SOURCES
   ${PYMURMUR_FILES}
 )
-EXECUTE_PROCESS(COMMAND python ../python-site-packages.py pymurmur OUTPUT_VARIABLE version OUTPUT_STRIP_TRAILING_WHITESPACE)
-
+EXECUTE_PROCESS(COMMAND python ../python-site-packages.py museek OUTPUT_VARIABLE version OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_VARIABLE error)
+if (NOT version OR error)
+	EXECUTE_PROCESS(COMMAND python python-site-packages.py museek OUTPUT_VARIABLE version OUTPUT_STRIP_TRAILING_WHITESPACE)
+endif (NOT version OR error)
 install(
   FILES ${PYMURMUR_SOURCES}
   DESTINATION ${PREFIX}/${version}

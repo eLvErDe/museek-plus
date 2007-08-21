@@ -1,5 +1,7 @@
-project(museekd)
-
+project(museek-plus)
+set(MUSEEK_PLUS "
+python-site-packages.py
+")
 # Include some cmake checks.
 include(CheckIncludeFiles)
 include(CheckTypeSize)
@@ -7,8 +9,9 @@ include(CheckFunctionExists)
 include(CheckLibraryExists)
 include(CheckCXXSourceCompiles)
 SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-MESSAGE("DECLARATIONS: PREFIX, BINDINGS, MURMUR, MUCOUS, CLIENTS
-Prefix declarations with -D and set them with either 1, 0 or a path")
+MESSAGE("DECLARATIONS: PREFIX, EVERYTHING, NO_MUSEEKD, NO_MUSCAN, NO_SETUP, BINDINGS, MURMUR, MUCOUS, CLIENTS, SETUP
+Prefix declarations with -D and set them with either 1, 0 or a path.
+Set -DEVERYTHING=1 if you want it all")
 IF(PREFIX)
   SET(CMAKE_INSTALL_PREFIX ${PREFIX})
 ENDIF(PREFIX)
@@ -32,6 +35,37 @@ set(PYBIND 1)
 IF (NOT BINDINGS)
   set(PYBIND 0)
 ENDIF (NOT BINDINGS)
+
+set(PYSETUP 1)
+IF (NO_SETUP)
+  set(PYSETUP 0)
+ENDIF (NO_SETUP)
+
+set(C_MUSEEKD 1)
+IF (NO_MUSEEKD)
+  set(C_MUSEEKD 0)
+ENDIF (NO_MUSEEKD)
+
+set(C_MUSCAN 1)
+IF (NO_MUSCAN)
+  set(C_MUSCAN 0)
+ENDIF (NO_MUSCAN)
+
+set(PYSETUP 1)
+IF (NO_SETUP)
+  set(PYSETUP 0)
+ENDIF (NO_SETUP)
+
+IF (EVERYTHING)
+  set(PYBIND 1)
+  set(PYCLIENTS 1)
+  set(PYMURMUR 1)
+  set(PYMUCOUS 1)
+  set(PYSETUP 1)
+  set(C_MUSEEKD 1)
+  set(C_MUSCAN 1)
+ENDIF (EVERYTHING)
+
 # # Enable NewNet's smart-pointer debugging capabilities.
 # add_definitions(-DNN_PTR_DEBUG -DNN_PTR_DEBUG_ASSERT)
 
@@ -229,13 +263,24 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 
 # Where the wild things are...
-add_subdirectory(Tools)
-add_subdirectory(Mucipher)
-add_subdirectory(Muhelp)
-add_subdirectory(Museekal)
-add_subdirectory(Museek)
-add_subdirectory(museekd)
 
+add_subdirectory(Mucipher)
+if (C_MUSCAN)
+  add_subdirectory(Muhelp)
+  add_subdirectory(Tools)
+else (C_MUSCAN)
+  message("!!! museekd will NOT be installed [NO_MUSEEKD=0]")
+endif (C_MUSCAN)
+if (C_MUSEEKD)
+  if (NOT C_MUSCAN)
+    add_subdirectory(Muhelp)
+  endif (NOT C_MUSCAN)
+  add_subdirectory(Museekal)
+  add_subdirectory(Museek)
+  add_subdirectory(museekd)
+else (C_MUSEEKD)
+  message("!!! museekd will NOT be installed [NO_MUSEEKD=0]")
+endif (C_MUSEEKD)
 if (PYBIND)
   add_subdirectory(python-bindings)
 else (PYBIND)
@@ -246,6 +291,11 @@ if (PYCLIENTS)
 else (PYCLIENTS)
   message("!!! mulog, museekchat, museekcontrol, musIRC will NOT be installed [CLIENTS=1]")
 endif (PYCLIENTS)
+if (PYSETUP)
+  add_subdirectory(setup)
+else (PYSETUP)
+  message("!!! musetup, musetup-gtk, musetup-qt will NOT be installed [NO_SETUP=0]")
+endif (PYSETUP)
 if (PYMUCOUS)
   add_subdirectory(mucous)
 else (PYMUCOUS)
