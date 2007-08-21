@@ -10,7 +10,7 @@ use this one instead of the included scons.
 
 For the impatient and/or people with AD(H)D:
 
-# scons/scons.py install
+# scons install
 
 or:
 

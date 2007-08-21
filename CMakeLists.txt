@@ -7,8 +7,13 @@ include(CheckFunctionExists)
 include(CheckLibraryExists)
 include(CheckCXXSourceCompiles)
 SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-# Enable NewNet's smart-pointer debugging capabilities.
-add_definitions(-DNN_PTR_DEBUG -DNN_PTR_DEBUG_ASSERT)
+
+IF(PREFIX)
+  SET(CMAKE_INSTALL_PREFIX ${PREFIX})
+ENDIF(PREFIX)
+
+# # Enable NewNet's smart-pointer debugging capabilities.
+# add_definitions(-DNN_PTR_DEBUG -DNN_PTR_DEBUG_ASSERT)
 
 # Add top source directory to the include path.
 include_directories(.)
