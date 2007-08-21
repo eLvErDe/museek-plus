@@ -8,16 +8,19 @@ def build_setup(target, source, env):
 
 targets = []
 manfile = []
-if 'swig' in env['TOOLS']:
-    targets.append('mucous')
-    manfile.append("mucous.1")
-    man_install = env.Install(env['DESTDIR'] + env['MANDIR'], manfile)
 
-    install = env.Install(env['DESTDIR'] + env['BINDIR'], targets)
-    env.Alias('install_mucous', man_install)
-    env.Alias('install_mucous', install)
-    env.Alias('install', 'install_mucous')
-    SConscript(os.path.join('pymucous', 'SConscript'))
-    print "SWIG found, mucous will be installed"
+targets.append('mucous')
+manfile.append("mucous.1")
+man_install = env.Install(env['DESTDIR'] + env['MANDIR'], manfile)
+
+install = env.Install(env['DESTDIR'] + env['BINDIR'], targets)
+env.Alias('install_mucous', man_install)
+env.Alias('install_mucous', install)
+env.Alias('install', 'install_mucous')
+SConscript(os.path.join('pymucous', 'SConscript'))
+    
+print "* mucous will be installed"
+if env['PYMUCIPHER'] and 'swig' in env['TOOLS']:
+	pass
 else:
-	print "WARNING: SWIG not found, mucous will NOT be installed"
+	print "WARNING: PyMucipher may not be available, so you should install either PyCrypto, or PyMucipher"

@@ -31,3 +31,4 @@ if not conf.CheckLibWithHeader('z', 'zlib.h', 'C++', 'inflate(0, Z_FINISH);'):
 conf.Finish()
 
 env.StaticLibrary(target = 'museek', source = sources)
+print

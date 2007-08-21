@@ -60,7 +60,7 @@ man_install = env.Install(env['DESTDIR'] + env['MANDIR'], manfile)
 env.Alias('install_muscan', man_install)
 env.Alias('install_muscan', install)
 env.Alias('install', 'install_muscan')
-
+print "* muscan will be installed"
 
 env_muscand = env_libmuscan.Copy()
 env_muscand.SConsignFile()
@@ -79,8 +79,9 @@ if conf.CheckLibWithHeader('fam', 'fam.h', 'C++', 'FAMOpen2(0,0);'):
 	env.Alias('install_muscand', man_install)
 	env.Alias('install_muscand', install)
 	env.Alias('install', 'install_muscand')
-
+	print "* muscand will be installed"
 	
 
 
 conf.Finish()
+print

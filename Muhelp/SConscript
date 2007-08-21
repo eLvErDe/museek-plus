@@ -43,3 +43,4 @@ conf.Finish()
 
 
 env.StaticLibrary(target = 'muhelp', source = sources)
+print

@@ -1,20 +1,15 @@
 Import('env')
 import os
 
-def build_setup(target, source, env):
-    open(str(target[0]), 'w').write( open(str(source[0]), 'r').read() )
-    os.chmod(str(target[0]), 0755)
-    return 0
-
 try:
 	import pyexpat
 	print "pyexpat found, musetup will run properly."
 except:
 	print "\nWARNING: pyexpat not found, musetup will NOT run, but will be installed."
 
-targets = [env.Command('musetup', ['musetup.in'], build_setup)]
+targets = ["musetup"]
 manfile = ["musetup.1"]
-
+print "* musetup will be installed"
 if env["MUSETUPGTK"]:
 	try:
 		import gtk
@@ -28,14 +23,14 @@ if env["MUSETUPGTK"]:
 	
 	targets.append('musetup-gtk')
 	manfile.append ("musetup-gtk.1")
-if 'swig' in env['TOOLS']:
-	targets.append('mulog')
-	targets.append('museekcontrol')
-	manfile.append("mulog.1")
- 	manfile.append("museekcontrol.1")
-	print "SWIG found, mulog and museekcontrol will be installed."
-else:
-	print "WARNING: SWIG not found, mulog and museekcontrol will NOT be installed."
+	print "* musetup-gtk will be installed"
+
+targets.append('mulog')
+targets.append('museekcontrol')
+manfile.append("mulog.1")
+manfile.append("museekcontrol.1")
+print "* mulog will be installed"
+print "* museekcontrol will be installed"
 
 man_install = env.Install(env['DESTDIR'] + env['MANDIR'], manfile)
 
@@ -44,5 +39,9 @@ env.Alias('install_pymuseekd', man_install)
 env.Alias('install_pymuseekd', install)
 env.Alias('install', 'install_pymuseekd')
 
-if 'swig' in env['TOOLS']:
-	SConscript(os.path.join('museek', 'SConscript'))
+if env['PYMUCIPHER'] and 'swig' in env['TOOLS']:
+	pass
+else:
+	print "WARNING: PyMucipher is not going to be installed, so you should install either PyCrypto, or PyMucipher"
+SConscript(os.path.join('museek', 'SConscript'))
+print

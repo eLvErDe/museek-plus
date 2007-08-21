@@ -1,10 +1,4 @@
-def iface_build(target, source, env):
-    from muscons import IfaceGen
-    IfaceGen(str(target[0]), str(source[0]), str(source[1]))
-    return 0
-
 Import('env')
-env.Command('messages.py', ['messages.py.in', '../../museekd/IfaceMessages.hh'], iface_build)
 
 files = Split("""
 	__init__.py

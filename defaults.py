@@ -25,6 +25,9 @@ MANDIR=os.path.join('${PREFIX}','man', "man1")
 # Debugging verbosity (debug, cycle, calltrace)
 MULOG='debug'
 
+# Compile PyMucipher module with SWIG
+PYMUCIPHER=1
+
 # Do Not allow SCons to modify your CFLAGS, keep them as inputted
 LOCKFLAGS=0
 

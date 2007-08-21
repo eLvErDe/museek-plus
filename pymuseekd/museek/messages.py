@@ -108,7 +108,7 @@ class BaseMessage:
 		return self.pack_uint(len(s)) + self.cipher.cipher(s)
 	
 class Ping(BaseMessage):
-	code = @@IPing@@
+	code = 0x0000
 	def __init__(self, id = None):
 		self.id = id
 	
@@ -120,7 +120,7 @@ class Ping(BaseMessage):
 		return self
 	
 class Challenge(BaseMessage):
-	code = @@IChallenge@@
+	code = 0x0001
 	
 	def __init__(self):
 		self.version = None
@@ -132,7 +132,7 @@ class Challenge(BaseMessage):
 		return self
 
 class Login(BaseMessage):
-	code = @@ILogin@@
+	code = 0x0002
 	
 	def __init__(self, algorithm = None, chresponse = None, mask = None):
 		self.algorithm = algorithm
@@ -155,7 +155,7 @@ class Login(BaseMessage):
 		return self
 
 class ServerState(BaseMessage):
-	code = @@IServerState@@
+	code = 0x0003
 	
 	def __init__(self):
 		self.state = None
@@ -167,7 +167,7 @@ class ServerState(BaseMessage):
 		return self
 
 class CheckPrivileges(BaseMessage):
-	code = @@ICheckPrivileges@@
+	code = 0x0004
 	
 	def __init__(self):
 		self.time_left = None
@@ -180,7 +180,7 @@ class CheckPrivileges(BaseMessage):
 		return self
 	
 class SetStatus(BaseMessage):
-	code = @@ISetStatus@@
+	code = 0x0005
 	
 	def __init__(self, status = None):
 		self.status = status
@@ -194,7 +194,7 @@ class SetStatus(BaseMessage):
 		return self
 
 class StatusMessage(BaseMessage):
-	code = @@IStatusMessage@@
+	code = 0x0010
 	
 	def __init__(self):
 		self.type = None
@@ -205,8 +205,20 @@ class StatusMessage(BaseMessage):
 		self.message, data = self.unpack_string(data)
 		return self
 
+class DebugMessage(BaseMessage):
+	code = 0x0011
+	
+	def __init__(self):
+		self.domain = None
+		self.message = None
+
+	def parse(self, data):
+		self.domain, data = self.unpack_string(data)
+		self.message, data = self.unpack_string(data)
+		return self
+	
 class PeerExists(BaseMessage):
-	code = @@IPeerExists@@
+	code = 0x0201
 	
 	def __init__(self, user = None):
 		self.user = user
@@ -222,7 +234,7 @@ class PeerExists(BaseMessage):
 		return self
 
 class PeerAddress(BaseMessage):
-	code = @@IPeerAddress@@
+	code = 0x0206
 	
 	def __init__(self, user = None):
 		self.user = user
@@ -240,7 +252,7 @@ class PeerAddress(BaseMessage):
 		return self
 	
 class PeerStatus(BaseMessage):
-	code = @@IPeerStatus@@
+	code = 0x0202
 	
 	def __init__(self, user = None):
 		self.user = user
@@ -256,7 +268,7 @@ class PeerStatus(BaseMessage):
 		return self
 		
 class PeerStats(BaseMessage):
-	code = @@IPeerStats@@
+	code = 0x0203
 	
 	def __init__(self, user = None):
 		self.user = user
@@ -278,7 +290,7 @@ class PeerStats(BaseMessage):
 		return self
 		
 class Search(BaseMessage):
-	code = @@ISearch@@
+	code = 0x0401
 	
 	def __init__(self, type = None, query = None):
 		self.type = type
@@ -296,7 +308,7 @@ class Search(BaseMessage):
 		return self
 
 class SearchReply(BaseMessage):
-	code = @@ISearchReply@@
+	code = 0x0402
 	
 	def __init__(self):
 		self.ticket = None
@@ -327,7 +339,7 @@ class SearchReply(BaseMessage):
 		return self
 
 class UserSearch(BaseMessage):
-	code = @@IUserSearch@@
+	code = 0x0403
 	
 	def __init__(self, user = None, query = None):
 		self.user = user
@@ -341,7 +353,7 @@ class UserSearch(BaseMessage):
 
 
 class WishListSearch(BaseMessage):
-	code = @@IWishListSearch@@
+	code = 0x0405
 	
 	def __init__(self,  query = None):
 		self.query = query
@@ -353,7 +365,7 @@ class WishListSearch(BaseMessage):
 
 
 class RoomState(BaseMessage):
-	code = @@IRoomState@@
+	code = 0x0300
 	
 	def __init__(self):
 		self.roomlist = None
@@ -397,7 +409,7 @@ class RoomState(BaseMessage):
 		return self
 
 class RoomList(BaseMessage):
-	code = @@IRoomList@@
+	code = 0x0301
 	
 	def __init__(self):
 		self.roomlist = None
@@ -415,7 +427,7 @@ class RoomList(BaseMessage):
 		return self
 	
 class SayRoom(BaseMessage):
-	code = @@ISayRoom@@
+	code = 0x0307
 	
 	def __init__(self, room = None, line = None):
 		self.room = room
@@ -434,7 +446,7 @@ class SayRoom(BaseMessage):
 		return self
 
 class JoinRoom(BaseMessage):
-	code = @@IJoinRoom@@
+	code = 0x0303
 	
 	def __init__(self, room = None):
 		self.room = room
@@ -462,7 +474,7 @@ class JoinRoom(BaseMessage):
 		return self
 
 class LeaveRoom(BaseMessage):
-	code = @@ILeaveRoom@@
+	code = 0x0304
 	
 	def __init__(self, room = None):
 		self.room = room
@@ -476,7 +488,7 @@ class LeaveRoom(BaseMessage):
 		return self
 
 class UserJoinedRoom(BaseMessage):
-	code = @@IUserJoinedRoom@@
+	code = 0x0305
 	
 	def __init__(self):
 		self.room = None
@@ -496,7 +508,7 @@ class UserJoinedRoom(BaseMessage):
 		return self
 
 class UserLeftRoom(BaseMessage):
-	code = @@IUserLeftRoom@@
+	code = 0x0306
 	
 	def __init__(self):
 		self.room = None
@@ -508,7 +520,7 @@ class UserLeftRoom(BaseMessage):
 		return self
 
 class RoomTickers(BaseMessage):
-	code = @@IRoomTickers@@
+	code = 0x0308
 	
 	def __init__(self, room = None, tickers = None):
 		self.room = room
@@ -527,7 +539,7 @@ class RoomTickers(BaseMessage):
 		return self
 
 class RoomTickerSet(BaseMessage):
-	code = @@IRoomTickerSet@@
+	code = 0x0309
 	
 	def __init__(self, room = None, message = None):
 		self.room = room
@@ -546,7 +558,7 @@ class RoomTickerSet(BaseMessage):
 		return self
 
 class PrivateMessage(BaseMessage):
-	code = @@IPrivateMessage@@
+	code = 0x0302
 	
 	def __init__(self, direction = None, user = None, message = None):
 		self.direction = direction
@@ -567,7 +579,7 @@ class PrivateMessage(BaseMessage):
 		return self
 
 class UserInfo(BaseMessage):
-	code = @@IUserInfo@@
+	code = 0x0204
 	
 	def __init__(self, user = None):
 		self.user = user
@@ -591,7 +603,7 @@ class UserInfo(BaseMessage):
 		return self
 
 class UserShares(BaseMessage):
-	code = @@IUserShares@@
+	code = 0x0205
 	
 	def __init__(self, user = None):
 		self.user = user
@@ -629,7 +641,7 @@ class UserShares(BaseMessage):
 
 
 class GivePrivileges(BaseMessage):
-	code = @@IGivePrivileges@@
+	code = 0x0207
 
 	def __init__(self, user = None, days=None):
 		self.user = user
@@ -653,7 +665,7 @@ class Transfer:
 		self.place = place
 
 class TransferState(BaseMessage):
-	code = @@ITransferState@@
+	code = 0x0500
 	
 	def __init__(self):
 		self.downloads = None
@@ -684,7 +696,7 @@ class TransferState(BaseMessage):
 		return self
 
 class TransferUpdate(TransferState):
-	code = @@ITransferUpdate@@
+	code = 0x0501
 	
 	def __init__(self, user = None, path = None):
 		self.user = user
@@ -701,7 +713,7 @@ class TransferUpdate(TransferState):
 		return self
 		
 class TransferRemove(BaseMessage):
-	code = @@ITransferRemove@@
+	code = 0x0502
 
 	def __init__(self, upload = None, user = None, path = None):
 		self.upload = upload
@@ -726,7 +738,7 @@ class TransferRemove(BaseMessage):
 		return self
 
 class TransferAbort(BaseMessage):
-	code = @@ITransferAbort@@
+	code = 0x0505
 
 	def __init__(self, upload = None, user = None, path = None):
 		self.upload = upload
@@ -751,7 +763,7 @@ class TransferAbort(BaseMessage):
 		return self
 
 class DownloadFile(BaseMessage):
-	code = @@IDownloadFile@@
+	code = 0x0503
 	
 	def __init__(self, user = None, path = None):
 		self.user = user
@@ -763,7 +775,7 @@ class DownloadFile(BaseMessage):
 			self.pack_string(self.path)
 
 class DownloadFileTo(BaseMessage):
-	code = @@IDownloadFileTo@@
+	code = 0x0507
 	
 	def __init__(self, user = None, path = None, dpath = None):
 		self.user = user
@@ -776,7 +788,7 @@ class DownloadFileTo(BaseMessage):
 			self.pack_string(self.path) + self.pack_string(self.dpath)
 
 class GetFolderContents(BaseMessage):
-	code = @@IDownloadFolder@@
+	code = 0x0504
 	
 	def __init__(self, user = None, folder = None):
 		self.user = user
@@ -788,7 +800,7 @@ class GetFolderContents(BaseMessage):
 			self.pack_string(self.folder)
 
 class UploadFile(BaseMessage):
-	code = @@IUploadFile@@
+	code = 0x0506
 	
 	def __init__(self, user = None, path = None):
 		self.user = user
@@ -800,7 +812,7 @@ class UploadFile(BaseMessage):
 			self.pack_string(self.path)
 
 class ConfigState(BaseMessage):
-	code = @@IConfigState@@
+	code = 0x0100
 	
 	def __init__(self):
 		self.config = None
@@ -820,7 +832,7 @@ class ConfigState(BaseMessage):
 		return self
 
 class ConfigSet(BaseMessage):
-	code = @@IConfigSet@@
+	code = 0x0101
 	
 	def __init__(self, domain = None, key = None, value = None):
 		self.domain = domain
@@ -840,7 +852,7 @@ class ConfigSet(BaseMessage):
 		return self
 
 class ConfigRemove(BaseMessage):
-	code = @@IConfigRemove@@
+	code = 0x0102
 	
 	def __init__(self, domain = None, key = None):
 		self.domain = domain
@@ -856,8 +868,19 @@ class ConfigRemove(BaseMessage):
 		self.key, data = self.unpack_cipher(data)
 		return self
 
+class ConfigSetUserImage(BaseMessage):
+	code = 0x0103
+	
+	def __init__(self, image = ""):
+		self.image = image
+	
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.image)
+
+	
 class GetRecommendations(BaseMessage):
-	code = @@IGetRecommendations@@
+	code = 0x0600
 	
 	def __init__(self):
 		self.recommendations = None
@@ -876,7 +899,7 @@ class GetRecommendations(BaseMessage):
 
 
 class GetGlobalRecommendations(BaseMessage):
-	code = @@IGetGlobalRecommendations@@
+	code = 0x0601
 	
 	def __init__(self):
 		self.recommendations = None
@@ -894,7 +917,7 @@ class GetGlobalRecommendations(BaseMessage):
 		return self
 
 class GetSimilarUsers(BaseMessage):
-	code = @@IGetSimilarUsers@@
+	code = 0x0602
 	
 	def __init__(self):
 		self.users = None
@@ -912,7 +935,7 @@ class GetSimilarUsers(BaseMessage):
 		return self
 
 class GetItemRecommendations(BaseMessage):
-	code = @@IGetItemRecommendations@@
+	code = 0x0603
 	
 	def __init__(self, item = None):
 		self.item = item
@@ -934,7 +957,7 @@ class GetItemRecommendations(BaseMessage):
 
 
 class GetItemSimilarUsers(BaseMessage):
-	code = @@IGetItemSimilarUsers@@
+	code = 0x0604
 	
 	def __init__(self, item = None):
 		self.item = item
@@ -956,7 +979,7 @@ class GetItemSimilarUsers(BaseMessage):
 
 
 class AddInterest(BaseMessage):
-	code = @@IAddInterest@@
+	code = 0x0610
 	
 	def __init__(self, interest = None):
 		self.interest = interest
@@ -970,7 +993,7 @@ class AddInterest(BaseMessage):
 		return self
 
 class RemoveInterest(BaseMessage):
-	code = @@IRemoveInterest@@
+	code = 0x0611
 	
 	def __init__(self, interest = None):
 		self.interest = interest
@@ -984,7 +1007,7 @@ class RemoveInterest(BaseMessage):
 		return self
 
 class AddHatedInterest(BaseMessage):
-	code = @@IAddHatedInterest@@
+	code = 0x0612
 	
 	def __init__(self, interest = None):
 		self.interest = interest
@@ -998,7 +1021,7 @@ class AddHatedInterest(BaseMessage):
 		return self
 
 class RemoveHatedInterest(BaseMessage):
-	code = @@IRemoveHatedInterest@@
+	code = 0x0613
 	
 	def __init__(self, interest = None):
 		self.interest = interest
@@ -1013,20 +1036,21 @@ class RemoveHatedInterest(BaseMessage):
 
 
 class ConnectServer(BaseMessage):
-	code = @@IConnectServer@@
+	code = 0x0700
 	
 	def make(self):
 		return self.pack_uint(self.code)
 	
 class DisconnectServer(BaseMessage):
-	code = @@IDisconnectServer@@
+	code = 0x0701
 	
 	def make(self):
 		return self.pack_uint(self.code)
 
 class ReloadShares(BaseMessage):
-	code = @@IReloadShares@@
+	code = 0x0703
 	
 	def make(self):
 		return self.pack_uint(self.code)
+
 

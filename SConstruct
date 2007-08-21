@@ -32,6 +32,7 @@ opts.Add(BoolOption('BUILDDIR', 'Build to build-*-* directory', ''))
 opts.Add(BoolOption('PROFILE', 'Build for profiling (gcc only)', ''))
 opts.Add(BoolOption('RELEASE', 'Build for release', ''))
 opts.Add(ListOption('MULOG', 'Set debug output', '', ['debug', 'cycle', 'calltrace', 'traffictime']))
+opts.Add(BoolOption('PYMUCIPHER', 'Compile PyMucipher module with SWIG', '')) 
 opts.Add('MUSEEQTRANSLATIONS', 'Build translations for', '', )
 #['fr','de','es','it','pl','ru','pt_BR','ja','zh','sk','he', 'ar', 'cs' ]
 print "Reading FLAGS from defaults.py and Command Line arguments"
@@ -384,6 +385,7 @@ f.write('MANDIR = %s\n' % (`env['MANDIR']`))
 f.write('BUILDDIR = %s\n' % (`env['BUILDDIR']`))
 f.write('RELEASE = %s\n' % (`env['RELEASE']`))
 f.write('MULOG = %s\n' % (`string.join(env['MULOG'], ',')`))
+f.write('PYMUCIPHER = %s\n' % (`env['PYMUCIPHER']`))
 f.write('LOCKFLAGS = %s\n' % (`env['LOCKFLAGS']`))
 
 if type(env['FLAGS']) == list:

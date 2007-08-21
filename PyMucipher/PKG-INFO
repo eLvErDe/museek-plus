@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: pymucipher
+Version: 0.0.1
+Summary: Mucipher for python
+Home-page: http://museek-plus.org/
+Author: Hyriand
+Author-email: hyriand@thegraveyard.org
+License: GPL
+Description: PyMucipher (encryption for museek python clients) stand-alone package
+Platform: UNKNOWN

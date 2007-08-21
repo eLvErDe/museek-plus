@@ -34,3 +34,19 @@ museeq
 # (or) qmake "CONFIG += BINRELOC TRAYICON" PREFIX=/usr
 # make
 # make install
+
+---------------
+distutils (Python's built-in installation tool)
+---------------
+PyMucipher (requires SWIG, Python)
+# cd PyMucipher/
+# python setup.py build
+# python setup.py install
+# (or) python setup.py install --prefix=/usr/local
+...............
+PyMuseekd, Python Tools and Clients (requires PyCrypto or PyMucipher)
+# cd pymuseekd/
+# python setup.py build
+# python setup.py install
+# (or) python setup.py install --prefix=/usr/local
+---------------
