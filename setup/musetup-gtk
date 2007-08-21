@@ -2862,13 +2862,15 @@ class MuseekSetupGTK:
 		
 		try:
 			os.makedirs(os.path.split(self.CONFIG_PATH)[0])
-		except OSError:
+		except OSError, error:
+			print error
 			pass
 		
 		f = open(self.CONFIG_PATH, 'w')
 		doc.writexml(f)
 		f.close()
 		os.chmod(self.CONFIG_PATH, stat.S_IRUSR | stat.S_IWUSR)
+		
  	def window_quit(self, w=None, event=None):
  		self.MuseekSetupGTK.hide()
  		self.MuseekSetupGTK.destroy()

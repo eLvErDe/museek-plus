@@ -1,0 +1,20 @@
+Import('env')
+import os
+
+targets = ['mulog', 'museekcontrol']
+manfile = ["mulog.1", "museekcontrol.1"]
+print "* mulog will be installed"
+print "* museekcontrol will be installed"
+
+man_install = env.Install(env['DESTDIR'] + env['MANDIR'], manfile)
+install = env.Install(env['DESTDIR'] + env['BINDIR'], targets)
+
+env.Alias('install_python_clients', man_install)
+env.Alias('install_python_clients', install)
+env.Alias('install', 'install_python_clients')
+
+if env['PYMUCIPHER'] and 'swig' in env['TOOLS']:
+	pass
+else:
+	print "WARNING: PyMucipher is not going to be installed, so you should install either PyCrypto, or PyMucipher"
+print

@@ -351,8 +351,8 @@ if env['ONLYMUSEEQ']:
 		print "Whoops, Compiling only Mucipher, not Museeq!"
 else:
 
-	subdirs = ['Muhelp', 'Mucipher', 'Museekal', 'Museek', 'Tools', 'museekd', 'doc', 'pymuseekd']
-	print "Compiling Muhelp, Mucipher, Museekal, Museek, museekd, Tools, doc, pymuseekd..."
+	subdirs = ['Muhelp', 'Mucipher', 'Museekal', 'Museek', 'Tools', 'museekd', 'doc', 'pymuseekd', 'setup', 'python-clients']
+	print "Compiling %s" ", ".join(subdirs)
 	if env['MUCOUS']:
 		subdirs.append('mucous')
 		print "and Mucous..."
@@ -365,7 +365,7 @@ else:
 		print "Without Museeq."
 
 for dir in subdirs:
-	if dir in ['Muhelp', 'Museekal', 'Museek', 'Mucipher',  'Tools', 'museeq', "mucous", "pymuseekd"]:
+	if dir in ['Muhelp', 'Museekal', 'Museek', 'Mucipher',  'Tools', 'museeq', "mucous", "pymuseekd", 'setup', 'python-clients']:
 		print "Headers for %s..." % dir
 	if buildDir is None:
 		bd = None

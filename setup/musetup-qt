@@ -1,0 +1,400 @@
+#!/usr/bin/env python
+
+# Museek Qt Setup
+# Requires: Python, PyQt
+
+import os, sys, getopt #, subprocess
+import locale, gettext
+from xml.dom import minidom
+from qt import *
+
+DATADIR = os.path.realpath(sys.argv[0])
+for i in range(2):
+  DATADIR = os.path.split(DATADIR)[0]
+DEFAULT_TEMPLATE = os.path.join(DATADIR, 'share', 'museek', 'museekd', 'config.xml.tmpl')
+if not os.path.exists(DEFAULT_TEMPLATE):
+  t_path = os.path.join('/usr', 'share', 'museek', 'museekd', 'config.xml.tmpl')
+  if os.path.exists(t_path):
+    DEFAULT_TEMPLATE = t_path
+
+DEFAULT_CONFIG = os.path.join('~', '.museekd', 'config.xml')
+
+CONFIG_PATH = (os.path.expanduser(DEFAULT_CONFIG))
+
+version = "0.1.0"
+
+def usage():
+  print ("""MuSetup Qt  %s
+Author: Hyriand
+
+  Option: musetup-qt [OPTION]...
+  Shutdown the Museek Daemon before you run this tool.
+  Default options: --config ~/.museekd/config.xml
+  -c,	--config <config.xml> Use another config file
+
+  -v,	--version             Display Version and Exit
+  -h,	--help                Display this help and exit
+""" % version)
+  sys.exit(2)
+	
+
+tr_cache = {}
+def _(s):
+  global tr_cache
+  if not tr_cache.has_key(s):
+    tr_cache[s] = gettext.gettext(s)
+  return tr_cache[s]
+
+class MusetupWindow(QMainWindow):
+  def __init__(self, parent = None, name = None, flags = QMainWindow.WType_TopLevel):
+    QMainWindow.__init__(self, parent, name, flags)
+    
+    self.generalPage = QHBox()
+    self.generalPage.setSpacing(10)
+    self.settingsList = QListBox(self.generalPage)
+    self.settingsList.setSizePolicy(QSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding))
+    self.settingsStack = QWidgetStack(self.generalPage)
+    self.settingsStack.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding))
+    
+    def createSettingsPage(title):
+      vbox = QVBox()
+      vbox.setSpacing(5)
+      label = QLabel("<b>" + title + "</b>", vbox)
+      self.settingsStack.addWidget(vbox)
+      self.settingsList.insertItem(title)
+      return vbox
+    
+    def PortSpinBox(parent):
+      w = QSpinBox(parent)
+      w.setMinValue(1)
+      w.setMaxValue(65535)
+      return w
+      
+    def Spacer(parent):
+      QFrame(parent).setSizePolicy(QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Expanding))
+    
+    page = createSettingsPage(_("Server"))
+    group = QGroupBox(2, QGroupBox.Horizontal, _("Server settings"), page)
+    QLabel(_("Server Host:"), group)
+    self.server_host = QLineEdit(group)
+    QLabel(_("Server Port:"), group)
+    self.server_port = PortSpinBox(group)
+    QLabel(_("Server Username:"), group)
+    self.server_username = QLineEdit(group)
+    QLabel(_("Server Password:"), group)
+    self.server_password = QLineEdit(group)
+    self.server_password.setEchoMode(QLineEdit.Password)
+    
+    group = QGroupBox(2, QGroupBox.Horizontal, _("Encodings"), page)
+    QLabel(_("Default:"), group)
+    self.encoding_default = QComboBox(True, group)
+    QLabel(_("Filesystem:"), group)
+    self.encoding_filesystem = QComboBox(True, group)
+    QLabel(_("Network:"), group)
+    self.encoding_network = QComboBox(True, group)
+    
+    group = QGroupBox(4, QGroupBox.Horizontal, _("Soulseek port"), page)
+    QLabel(_("First Soulseek Port:"), group)
+    self.clients_bind_first = PortSpinBox(group)
+    QLabel(_("Last Soulseek Port:"), group)
+    self.clients_bind_last = PortSpinBox(group)
+    
+    Spacer(page)
+    
+    page = createSettingsPage(_("Museek Clients"))
+    group = QGroupBox(2, QGroupBox.Horizontal, _("Security"), page)
+    QLabel(_("Client Interfaces Password:"), group)
+    self.interfaces_password =  QLineEdit(group)
+    self.interfaces_password.setEchoMode(QLineEdit.Password)
+    
+    group = QGroupBox(2, QGroupBox.Horizontal, _("Client Interface Ports && Sockets"), page)
+    self.interfaces_bind_list = QListBox(group)
+    bbox = QVBox(group)
+    QPushButton(_("Add Interface"), bbox)
+    QPushButton(_("Edit Interface"), bbox)
+    QPushButton(_("Remove Interface"), bbox)
+    Spacer(bbox)
+    
+    page = createSettingsPage(_("Transfers"))
+    group = QGroupBox(1, QGroupBox.Horizontal, _("Buddies and warnings"), page)
+    hbox = QHBox(group)
+    self.transfers_privilege_buddies = QCheckBox(_("Privilege Buddies"), hbox)
+    self.transfers_have_buddy_shares = QCheckBox(_("Enable Buddy Shares"), hbox)
+    self.transfers_only_buddies = QCheckBox(_("Only Share to Buddies"), hbox)
+    self.transfers_trusting_uploads = QCheckBox(_("Allow Buddies to send you files"), group)
+    self.transfers_user_warnings = QCheckBox(_("Send Automatic Warnings via Private Chat"), group)
+    
+    group = QGroupBox(5, QGroupBox.Horizontal, _("Uploads"), page)
+    QLabel(_("Upload Slots:"), group)
+    self.transfers_upload_slots = QSpinBox(group)
+    QLabel(_("Connection Mode:"), group)
+    self.clients_connectmode_passive = QRadioButton(_("passive"), group)
+    self.clients_connectmode_active = QRadioButton(_("active"), group)
+    
+    group = QGroupBox(3, QGroupBox.Horizontal, _("Directories"), page)
+    QLabel(_("Download Directory:"), group)
+    self.transfers_download_dir = QLineEdit(group)
+    QPushButton("...", group)
+    QLabel(_("Incomplete Directory:"), group)
+    self.transfers_incomplete_dir = QLineEdit(group)
+    QPushButton("...", group)
+    QLabel(_("Downloads Database:"), group)
+    self.transfers_downloads = QLineEdit(group)
+    QPushButton("...", group)
+    
+    Spacer(page)
+    
+    page = createSettingsPage(_("Chat Rooms"))
+    tabs = QTabWidget(page)
+    tab = QHBox()
+    self.autojoin_list = QListBox(tab)
+    bbox = QVBox(tab)
+    QPushButton(_("Add"), bbox)
+    QPushButton(_("Edit"), bbox)
+    QPushButton(_("Remove"), bbox)
+    Spacer(bbox)
+    tabs.addTab(tab, _("Auto-join"))
+    
+    tab = QHBox()
+    self.encoding_rooms_map = lv = QListView(tab)
+    lv.addColumn(_("Room"))
+    lv.addColumn(_("Encoding"))
+    bbox = QVBox(tab)
+    QPushButton(_("Add"), bbox)
+    QPushButton(_("Edit"), bbox)
+    QPushButton(_("Remove"), bbox)
+    Spacer(bbox)
+    tabs.addTab(tab, _("Encodings"))
+    
+    tab = QVBox()
+    group = QGroupBox(2, QGroupBox.Horizontal, _("Default Ticker"), tab)
+    QLabel(_("Default Ticker:"), group)
+    self.default_ticker_ticker = QLineEdit(group)
+    box = QHBox(tab)
+    self.tickers_map = lv = QListView(box)
+    lv.addColumn(_("Room"))
+    lv.addColumn(_("Ticker"))
+    bbox = QVBox(box)
+    QPushButton(_("Add"), bbox)
+    QPushButton(_("Edit"), bbox)
+    QPushButton(_("Remove"), bbox)
+    Spacer(bbox)
+    tabs.addTab(tab, _("Tickers"))
+    
+    page = createSettingsPage(_("Users"))
+    tabs = QTabWidget(page)
+    def createUserPage(parent, title, comments = True):
+      tab = QHBox()
+      lv = QListView(tab)
+      lv.addColumn(_("User"))
+      if comments:
+        lv.addColumn(_("Comment"))
+      bbox = QVBox(tab)
+      QPushButton(_("Add"), bbox)
+      QPushButton(_("Edit"), bbox)
+      QPushButton(_("Remove"), bbox)
+      Spacer(bbox)
+      parent.addTab(tab, title)
+      return lv
+    self.buddies_map = createUserPage(tabs, _("Buddies"))
+    self.banned_map = createUserPage(tabs, _("Banned"))
+    self.ignored_map = createUserPage(tabs, _("Ignored"))
+    self.trusted_map = createUserPage(tabs, _("Trusted"))
+    self.alerts_map = createUserPage(tabs, _("Alerts"), False)
+    
+    page = createSettingsPage(_("My Userinfo"))
+    splitter = QSplitter(QSplitter.Horizontal, page)
+    splitter.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding))
+    box = QVBox(splitter)
+    self.userinfo_text = QTextEdit(box)
+    bbox = QHBox(box)
+    QPushButton(_("Clear"), bbox)
+    QPushButton(_("Import"), bbox)
+    box = QVBox(splitter)
+    self.userinfo_preview = QLabel(box)
+    self.userinfo_preview.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding))
+    bbox = QHBox(box)
+    QPushButton(_("Clear image"), bbox)
+    self.userinfo_image = QLineEdit(bbox)
+    QPushButton(_("Select image"), bbox)
+    
+    page = self.createSettingsPage(_("Shares"))
+    def createSharesPanel(parent, title):
+      group = QGroupBox(2, QGroupBox.Horizontal, title, parent)
+      db = QLineEdit(group)
+      QPushButton(_("Select DB"), group)
+      lb = QListBox(group)
+      bbox = QVBox(group)
+      QPushButton(_("Refresh list"), bbox)
+      QPushButton(_("Rescan shares"), bbox)
+      QPushButton(_("Add directory"), bbox)
+      QFrame(bbox).setMinimumSize(QSize(1, 10))
+      QPushButton(_("Remove directory"), bbox)
+      Spacer(bbox)
+      return (db, lb)
+    (self.shares_database, self.shares_list) = createSharesPanel(page, _("Normal Shares"))
+    (self.buddy_shares_database, self.buddy_shares_list) = createSharesPanel(page, _("Buddy-Only Shares"))
+    
+    self.treePage = QFrame()
+    
+    self.mainTabWidget = QTabWidget(self)
+    self.mainTabWidget.addTab(self.generalPage, _("General Settings"))
+    self.mainTabWidget.addTab(self.treePage, _("Settings Tree"))
+
+    self.settingsList.connect(self.settingsList, SIGNAL("highlighted(int)"), self.showSettingsPage)
+    
+    self.setCentralWidget(self.mainTabWidget)
+
+  def createSettingsPage(self, title):
+    vbox = QVBox()
+    vbox.setSpacing(5)
+    label = QLabel("<b>" + title + "</b>", vbox)
+    self.settingsStack.addWidget(vbox)
+    self.settingsList.insertItem(title)
+    return vbox
+
+  def showSettingsPage(self, index):
+    if index != -1:
+      self.settingsStack.raiseWidget(index)
+
+  def populateConfiguration(self, config):
+    def fixname(*parts):
+      return '.'.join(parts).replace('.', '_').replace('-', '_')
+    
+    def populateValue(domain, key):
+      value = config[domain][key]
+      widget = getattr(self, fixname(domain, key))
+      if hasattr(widget, 'setChecked'):
+        widget.setChecked(value == 'true')
+      elif hasattr(widget, 'setText'):
+        widget.setText(value)
+      elif hasattr(widget, 'setCurrentText'):
+        widget.setCurrentText(value)
+      elif hasattr(widget, 'setValue'):
+        widget.setValue(int(value))
+    
+    def populateList(domain):
+      widget = getattr(self, fixname(domain, 'list'))
+      widget.clear()
+      for key in config[domain]:
+        widget.insertItem(key)
+    
+    def populateMap(domain):
+      widget = getattr(self, fixname(domain, 'map'))
+      widget.clear()
+      for (key, val) in config[domain].items():
+        QListViewItem(widget, key, val)
+    
+    def populateChoice(domain, key):
+      value = config[domain][key]
+      widget = getattr(self, fixname(domain, key, value))
+      widget.setChecked(True)
+    
+    # Server settings
+    populateValue("server", "host")
+    populateValue("server", "username")
+    populateValue("server", "port")
+    populateValue("server", "password")
+    
+    if "default" in config["encoding"]:
+      populateValue("encoding", "default")
+    if "filesystem" in config["encoding"]:
+      populateValue("encoding", "filesystem")
+    if "network" in config["encoding"]:
+      populateValue("encoding", "network")
+    populateValue("clients.bind", "first")
+    populateValue('clients.bind', 'last')
+    
+    # Interface settings
+    populateValue('interfaces', 'password')
+    populateList('interfaces.bind')
+    
+    # Transfer settings
+    populateValue('transfers', 'privilege_buddies')
+    populateValue('transfers', 'have_buddy_shares')
+    populateValue('transfers', 'only_buddies')
+    populateValue('transfers', 'trusting_uploads')
+    populateValue('transfers', 'user_warnings')
+    populateValue('transfers', 'upload_slots')
+    populateChoice('clients', 'connectmode')
+    populateValue('transfers', 'download-dir')
+    populateValue('transfers', 'incomplete-dir')
+    populateValue('transfers', 'downloads')
+    
+    # Chat room settings
+    populateList('autojoin')
+    populateMap('encoding.rooms')
+    if 'default-ticker' in config:
+      populateValue('default-ticker', 'ticker')
+    populateMap('tickers')
+    
+    # User settings
+    populateMap('buddies')
+    populateMap('banned')
+    populateMap('ignored')
+    populateMap('trusted')
+    populateMap('alerts')
+    populateValue('userinfo', 'text')
+    populateValue('userinfo', 'image')
+    
+    # Shares settings
+    populateValue('shares', 'database')
+    populateValue('buddy.shares', 'database')
+    
+  def loadConfiguration(self, path):
+    try:
+      config = self.parseConfiguration(path)
+    except Exception, e:
+      print 'Error while parsing configuration (%s)' % e
+      return False
+    self.populateConfiguration(config)
+    return True
+
+  def parseConfiguration(self, path):
+    def readDomain(node):
+      domain = {}
+      child = node.firstChild
+      while child:
+        if child.nodeName == u'key':
+          id = child.getAttribute('id')
+          if child.firstChild:
+            domain[id] = child.firstChild.nodeValue
+          else:
+            domain[id] = ''
+        child = child.nextSibling
+      return domain
+
+    config = {}
+    doc = minidom.parse(path)
+    root = doc.firstChild
+    node = root.firstChild
+    while node:
+      if node.nodeName == u'domain':
+        id = node.getAttribute('id')
+        config[id] = readDomain(node)
+      node = node.nextSibling	
+    return config
+
+if __name__ == "__main__":
+  try:
+    opts, args = getopt.getopt(sys.argv[1:], "hvc:", ["help", "version", "config"])
+  except getopt.GetoptError:
+    # print help information and exit:
+    usage()
+    sys.exit(2)
+  for opts, args in opts:
+    if opts in ("-h", "--help"):
+      usage()
+      sys.exit()
+    if opts in ("-c", "--config"):
+      CONFIG_PATH=str(os.path.expanduser(args))
+    if opts in ("-v", "--version"):
+      print "MuSetup Qt version: %s" % version
+      sys.exit(2)
+
+  app = QApplication([sys.argv[0]])
+  app.connect(app, SIGNAL("lastWindowClosed()"), app.quit)
+  mainwin = MusetupWindow()
+  mainwin.loadConfiguration(CONFIG_PATH)
+  mainwin.show()
+  app.exec_loop()
