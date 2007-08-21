@@ -2,7 +2,7 @@
 SCons
 ---------------
 INSTALLS:
-mucous, museeq, museekd, pymucipher, pymuseekd (python client drivers),
+mucous, museeq, museekd, pymucipher, python-bindings (python client drivers),
 mulog, musetup, musetup-gtk
 ---------------
 # scons install PREFIX=/usr
@@ -13,12 +13,13 @@ read the INSTALL.scons file for more information
 CMake
 ---------------
 INSTALLS:
-museekd, muscan and muscand
+museekd, muscan and muscand, murmur, python-bindings, python-clients
 ---------------
+DECLARATIONS: PREFIX, BINDINGS, MURMUR, CLIENTS (prefix with -D)
 # mkdir workdir
 # cd workdir/
 # cmake -DPREFIX=/usr ..
-# (or) cmake -DPREFIX=/usr/local ..
+# (or) cmake -DMURMUR=0 -DPREFIX=/usr/local ..
 # make
 # (or) make VERBOSE=1
 # make install

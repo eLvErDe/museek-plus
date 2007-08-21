@@ -20,23 +20,18 @@ include_directories(${MUSEEKAL_SOURCE_DIR})
 include_directories(${MUHELP_SOURCE_DIR})
 include_directories(${MUCIPHER_SOURCE_DIR})
 
-
-
 # Check for some OS specific libraries
 set(OS_LIBRARIES "")
 
 # Select some source files.
 set(MUSEEKD_SOURCES
    Buddies.cc IfaceConnection.cc main.cc museekd.cc
-
 )
 
 # Build the museekd binary.
 add_executable(museekd ${MUSEEKD_SOURCES})
 
 # Link the museekd binary to some libraries.
-
-
 target_link_libraries(
   museekd
 
@@ -57,3 +52,8 @@ install(
   DESTINATION bin
 )
 
+install(
+  FILES "museekd.1"
+  DESTINATION "man/man1"
+)
+MESSAGE("--> Museek Daemon (museekd) will be installed..")

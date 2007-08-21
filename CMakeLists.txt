@@ -7,11 +7,25 @@ include(CheckFunctionExists)
 include(CheckLibraryExists)
 include(CheckCXXSourceCompiles)
 SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-
+MESSAGE("DECLARATIONS: PREFIX, BINDINGS, MURMUR, CLIENTS (prefix with -D)")
 IF(PREFIX)
   SET(CMAKE_INSTALL_PREFIX ${PREFIX})
 ENDIF(PREFIX)
 
+set(PYMUCOUS 1)
+IF (NOT MUCOUS)
+  set(PYMUCOUS 0)
+ENDIF (NOT MUCOUS)
+
+set(PYCLIENTS 1)
+IF (NOT CLIENTS)
+  set(PYCLIENTS 0)
+ENDIF (NOT CLIENTS)
+
+set(PYBIND 1)
+IF (NOT BINDINGS)
+  set(PYBIND 0)
+ENDIF (NOT BINDINGS)
 # # Enable NewNet's smart-pointer debugging capabilities.
 # add_definitions(-DNN_PTR_DEBUG -DNN_PTR_DEBUG_ASSERT)
 
@@ -209,10 +223,26 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 
 # Where the wild things are...
-add_subdirectory(Mucipher)
-add_subdirectory(Museekal)
 add_subdirectory(Tools)
+add_subdirectory(Mucipher)
 add_subdirectory(Muhelp)
+add_subdirectory(Museekal)
 add_subdirectory(Museek)
-
 add_subdirectory(museekd)
+
+if (PYBIND)
+  add_subdirectory(python-bindings)
+else (PYBIND)
+  message("!!! Python Bindings will NOT be installed..")
+endif (PYBIND)
+if (PYCLIENTS)
+  add_subdirectory(python-clients)
+else (PYCLIENTS)
+  message("!!! mulog, museekchat, museekcontrol and musirc.py will NOT be installed..")
+endif (PYCLIENTS)
+if (PYMUCOUS)
+  add_subdirectory(mucous)
+else (PYMUCOUS)
+  message("!!! Mucous will NOT be installed..")
+endif (PYMUCOUS)
+

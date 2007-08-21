@@ -59,7 +59,7 @@ MUSEEQ=1
 ONLYMUSEEQ=0
 
 # Build translations for Museeq
-MUSEEQTRANSLATIONS='fr,de,it,es,pl,pt_BR'
+MUSEEQTRANSLATIONS='fr,de,it,es,pl,pt_BR,nl'
 
 # Build Museeq's Trayicon
 MUSEEQTRAYICON=1

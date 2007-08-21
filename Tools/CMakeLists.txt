@@ -20,6 +20,17 @@ add_library(Tools STATIC ${TOOLS_SOURCES})
 
 add_executable(muscan ${MUSCAN_SOURCES})
 
+# Install the muscan binary to the 'bin' directory.
+install(
+  TARGETS muscan
+  DESTINATION bin
+)
+
+
+set(MANPAGES
+  muscan.1
+)
+MESSAGE("--> muscan (file scanner) will be installed..")
 # To build, or not build muscand
 if (FAM_LIBRARIES AND FAM_H)
 
@@ -36,11 +47,19 @@ target_link_libraries(
   ${ICONV_LIBRARIES}
   ${OS_LIBRARIES}
 )
+set(MANPAGES
+  ${MANPAGES}
+  muscand.1
+)
+
 
 install(
   TARGETS muscand
   DESTINATION bin
 )
+  MESSAGE("--> muscand (FAM-based file scanning daemon) will be installed..")
+else(FAM_LIBRARIES AND FAM_H)
+  MESSAGE("!!! muscand will NOT be installed..")
 endif(FAM_LIBRARIES AND FAM_H)
 
 target_link_libraries(
@@ -55,8 +74,7 @@ target_link_libraries(
 )
 
 
-# Install the museekd binary to the 'bin' directory.
 install(
-  TARGETS muscan
-  DESTINATION bin
+  FILES ${MANPAGES}
+  DESTINATION "man/man1"
 )
