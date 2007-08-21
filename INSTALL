@@ -37,16 +37,27 @@ museeq
 
 ---------------
 distutils (Python's built-in installation tool)
+distutils doesn't provide for uninstalls, so be cautious with it.
+---------------
+Enter a directory and issue these commands
+# python setup.py build
+# python setup.py install
+# (or) python setup.py install --prefix=/usr/local
 ---------------
 PyMucipher (requires SWIG, Python)
 # cd PyMucipher/
-# python setup.py build
-# python setup.py install
-# (or) python setup.py install --prefix=/usr/local
 ...............
-PyMuseekd, Python Tools and Clients (requires PyCrypto or PyMucipher)
-# cd pymuseekd/
-# python setup.py build
-# python setup.py install
-# (or) python setup.py install --prefix=/usr/local
----------------
+Python Bindings
+# cd python-bindings/
+...............
+Python Clients (mulog, museekchat, museekcontrol, musirc.py)
+Requires: PyMucipher or PyCrypto, Python Bindings
+# cd python-clients/
+...............
+Setup tools (musetup, musetup-gtk, musetup-qt)
+# cd setup/
+...............
+Mucous
+Requires: PyMucipher or PyCrypto, Python Bindings
+# cd mucous/
+
