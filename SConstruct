@@ -351,8 +351,8 @@ if env['ONLYMUSEEQ']:
 		print "Whoops, Compiling only Mucipher, not Museeq!"
 else:
 
-	subdirs = ['Muhelp', 'Mucipher', 'Museekal', 'Museek', 'Tools', 'museekd', 'doc', 'pymuseekd', 'setup', 'python-clients']
-	print "Compiling %s" ", ".join(subdirs)
+	subdirs = ['Muhelp', 'Mucipher', 'Museekal', 'Museek', 'Tools', 'museekd', 'doc', 'python-bindings', 'setup', 'python-clients']
+	print "Compiling %s" % ", ".join(subdirs)
 	if env['MUCOUS']:
 		subdirs.append('mucous')
 		print "and Mucous..."
@@ -365,8 +365,8 @@ else:
 		print "Without Museeq."
 
 for dir in subdirs:
-	if dir in ['Muhelp', 'Museekal', 'Museek', 'Mucipher',  'Tools', 'museeq', "mucous", "pymuseekd", 'setup', 'python-clients']:
-		print "Headers for %s..." % dir
+	if dir in ['Muhelp', 'Museekal', 'Museek', 'Mucipher',  'Tools', 'museeq', "mucous",  'setup', 'python-clients']:
+		print "Headers/Dependencies for %s..." % dir
 	if buildDir is None:
 		bd = None
 	else:
@@ -376,7 +376,7 @@ for dir in subdirs:
 
  
 # Save the options we want to have saved (basically, everything but DESTDIR)
-print env['DESTDIR']
+print "Destination directory:", env['DESTDIR']
 f = open("mulocal.py", "w")
 f.write('PREFIX = %s\n' % (`env['PREFIX']`))
 f.write('BINDIR = %s\n' % (`env['BINDIR']`))

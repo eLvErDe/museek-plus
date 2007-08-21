@@ -5,4 +5,3 @@ if env['PYMUCIPHER'] and 'swig' in env['TOOLS']:
 else:
 	print "WARNING: PyMucipher is not going to be installed, so you should install either PyCrypto, or PyMucipher"
 SConscript(os.path.join('museek', 'SConscript'))
-print
