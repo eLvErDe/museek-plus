@@ -9,7 +9,7 @@ include(CheckFunctionExists)
 include(CheckLibraryExists)
 include(CheckCXXSourceCompiles)
 SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-MESSAGE("DECLARATIONS: PREFIX, EVERYTHING, NO_MUSEEKD, NO_MUSCAN, NO_SETUP, BINDINGS, MURMUR, MUCOUS, CLIENTS, SETUP
+MESSAGE("DECLARATIONS: PREFIX, EVERYTHING, NO_MUSEEKD, NO_MUSCAN, NO_SETUP, NO_PYMUCIPHER, BINDINGS, MURMUR, MUCOUS, CLIENTS, SETUP
 Prefix declarations with -D and set them with either 1, 0 or a path.
 Set -DEVERYTHING=1 if you want it all")
 IF(PREFIX)
@@ -51,12 +51,18 @@ IF (NO_MUSCAN)
   set(C_MUSCAN 0)
 ENDIF (NO_MUSCAN)
 
+set(PYMUCIPHER 1)
+IF (NO_PYMUCIPHER)
+  set(PYMUCIPHER 0)
+ENDIF (NO_PYMUCIPHER)
+	
 set(PYSETUP 1)
 IF (NO_SETUP)
   set(PYSETUP 0)
 ENDIF (NO_SETUP)
 
 IF (EVERYTHING)
+  set(PYMUCIPHER 1)
   set(PYBIND 1)
   set(PYCLIENTS 1)
   set(PYMURMUR 1)
@@ -265,6 +271,11 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 # Where the wild things are...
 
 add_subdirectory(Mucipher)
+if (PYMUCIPHER)
+  add_subdirectory(PyMucipher)
+else (PYMUCIPHER)
+  MESSAGE("!!! PyMucipher will NOT be installed.. [NO_PYMUCIPHER=0]")
+endif (PYMUCIPHER)
 if (C_MUSCAN)
   add_subdirectory(Muhelp)
   add_subdirectory(Tools)
