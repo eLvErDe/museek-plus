@@ -20,6 +20,7 @@ files = Split("""
 	MucousChatRooms.py
 	MucousShares.py
 	MucousAlerts.py
+	ConfigParser.py
 """)
 
 import sys, os

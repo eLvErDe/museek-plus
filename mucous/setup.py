@@ -27,7 +27,7 @@ if __name__ == '__main__' :
           description           = "Curses Interface for the SoulSeek Museek Daemon.",
           author                = "daelstorm",
           author_email          = "daelstorm@gmail.com",
-          url                   = "http://thegraveyard.org/daelstorm/mucous.php",
+          url                   = "http://www.museek-plus.org/wiki/mucous",
           packages              = [ 'museek', 'pymucous' ],
           scripts               = [ 'mucous' ],
 	  data_files            = [('man/man1', ['mucous.1'])],
