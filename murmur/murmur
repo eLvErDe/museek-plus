@@ -260,7 +260,10 @@ class ConfigManager:
 					try:
 						self.murmur.Config[i][j] = eval(val, {})
 					except:
-						self.murmur.Config[i][j] = None
+						try:
+							self.murmur.Config[i][j] = None
+						except:
+							pass
 	
 	## Write config file to disk
 	# @param self ConfigManager

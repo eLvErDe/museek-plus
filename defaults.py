@@ -2,7 +2,7 @@
 import os
 
 # Build to build-arch-os dir
-BUILDDIR=1
+BUILDDIR=0
 
 # Use optimizations (GCC only)
 RELEASE=0
@@ -48,6 +48,9 @@ BINRELOC=os.path.exists('/proc/self/maps')
 
 # Install Mucous
 MUCOUS=1
+
+# Install Murmur
+MURMUR=1
 
 # Install Musetup-GTK
 MUSETUPGTK=1

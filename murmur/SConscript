@@ -1,0 +1,21 @@
+Import('env')
+import os
+import glob
+targets = []
+#manfile = []
+
+targets.append('murmur')
+#manfile.append("murmur.1")
+#man_install = env.Install(env['DESTDIR'] + env['MANDIR'], manfile)
+
+install = env.Install(env['DESTDIR'] + env['BINDIR'], targets)
+#env.Alias('install_murmur', man_install)
+env.Alias('install_murmur', install)
+env.Alias('install', 'install_murmur')
+SConscript(os.path.join('pymurmur', 'SConscript'))
+    
+print "* murmur will be installed"
+if env['PYMUCIPHER'] and 'swig' in env['TOOLS']:
+	pass
+else:
+	print "WARNING: PyMucipher may not be available, so you should install either PyCrypto, or PyMucipher"

@@ -12,12 +12,6 @@ For the impatient and/or people with AD(H)D:
 
 # scons install
 
-or:
-
-# python scons/scons.py install
-
-
-
 Dependencies:
 
 Museek depends on:
@@ -28,15 +22,15 @@ Museeq (the Qt GUI) depends on:
  - Qt translation tools, lrelease and lupdate
  - QSA 1.1 or newer (optional) for scripting support
 
-Musetup-GTK depends on:
+Murmur and Musetup-GTK depends on:
  - PyGTK2
 
 Mucous depends on:
 - Python-Curses (included with Python)
 
-The build system depends on:
+The SCons build system depends on:
  - Python (including pyexpat for musetup)
- - SConstruct (included with release tarballs)
+ - SCons itself is at http://scons.org
  - A C compiler
  - A C++ compiler with access to an STL implementation that has wstring
    support (no MacOSX, Cygwin or FreeBSD4) such as GCC.
@@ -53,7 +47,9 @@ or:
 
 $ python scons/scons.py [options]... [targets]...
 
+For a list of options (and what they're currently set to):
 
+$ scons -h
 
 Available options (options marked with [*] are remembered between scons
 runs):

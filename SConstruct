@@ -16,18 +16,18 @@ tmp = Environment()
 
 opts = Options('defaults.py')
 
-opts.Add('CC', ['C compiler to use'], tmp['CC'])
-opts.Add('CXX', ['C++ compiler to use'], tmp['CXX'])
-opts.Add('LINK', ['Linker to use'], tmp['LINK'])
-opts.Add('PREFIX', ['Target prefix'])
-opts.Add('BINDIR', ['Where binaries go to'])
-opts.Add('DATADIR', ['Where data files go to'])
-opts.Add('MANDIR', ['Where Man Pages are installed'])
-opts.Add('DESTDIR', ['Physical installation prefix', ''])
-opts.Add('QTDIR', ['Where Qt is installed', ''])
-opts.Add('QT_LIB', ['Specify qt library to use', ''])
-opts.Add('QT_MOC', ['Specify meta object compiler to use', ''])
-opts.Add('QT_UIC', ['Specify user interface compiler to user', ''])
+opts.Add('CC', 'C compiler to use', tmp['CC'])
+opts.Add('CXX', 'C++ compiler to use', tmp['CXX'])
+opts.Add('LINK', 'Linker to use', tmp['LINK'])
+opts.Add('PREFIX', 'Target prefix')
+opts.Add('BINDIR', 'Where binaries go to')
+opts.Add('DATADIR', 'Where data files go to')
+opts.Add('MANDIR', 'Where Man Pages are installed')
+opts.Add('DESTDIR', 'Physical installation prefix', '')
+opts.Add('QTDIR', 'Where Qt is installed', '')
+opts.Add('QT_LIB', 'Specify qt library to use', '')
+opts.Add('QT_MOC', 'Specify meta object compiler to use', '')
+opts.Add('QT_UIC', 'Specify user interface compiler to user', '')
 opts.Add(BoolOption('BUILDDIR', 'Build to build-*-* directory', ''))
 opts.Add(BoolOption('PROFILE', 'Build for profiling (gcc only)', ''))
 opts.Add(BoolOption('RELEASE', 'Build for release', ''))
@@ -40,7 +40,8 @@ opts.Add(BoolOption('LOCKFLAGS', 'Don\'t modify FLAGS, use only those selected',
 opts.Add('FLAGS', 'Set your CCFLAGS here', '')
 # CFLAGS are now a string, if you have a mulocal.py from 0.1.11, please remove it.
 opts.Add(BoolOption('EPOLL', 'Use epoll when available', ''))
-opts.Add(BoolOption('MUCOUS', 'Install Mucous (when SWIG can be found', ''))
+opts.Add(BoolOption('MUCOUS', 'Install Mucous', ''))
+opts.Add(BoolOption('MURMUR', 'Install Murmur', ''))
 opts.Add(BoolOption('MUSETUPGTK', 'Install Musetup-GTK', ''))
 opts.Add(BoolOption('MUSEEQ', 'Build the Qt gui (when Qt can be found', ''))
 opts.Add(BoolOption('ONLYMUSEEQ', 'Build the Qt gui (when Qt can be found', ''))
@@ -53,6 +54,7 @@ opts.Add(BoolOption('BINRELOC', 'Support binary relocation', ''))
 opts.Add(BoolOption('LIBXMLPP_STATIC', 'Horrible hack to statically link against libxml++', ''))
 
 
+Help(opts.GenerateHelpText(Environment(options = opts)))
 
 # Set up our environment
 
@@ -358,6 +360,11 @@ else:
 		print "and Mucous..."
 	else:
 		print "Without Mucous."
+	if env['MURMUR']:
+		subdirs.append('murmur')
+		print "and Murmur..."
+	else:
+		print "Without Murmur."
 	if env['MUSEEQ']:
 		subdirs.append('museeq')
 		print "and Museeq..."
