@@ -1,7 +1,17 @@
 find ./ -name "*.o" -exec rm {} \;
+find ./ -name "*.so" -exec rm {} \;
+find ./ -name "*.a" -exec rm {} \;
 find ./ -name "*.pyc"  -exec rm {} \;
 find ./ -name "*.pyo"  -exec rm {} \;
 find ./ -name "*~"  -exec rm {} \;
-rm -rf workdir/
+find ./ -name "*.qm"  -exec rm {} \;
+find ./ -name "cmake_install.cmake"  -exec rm {} \;
+find ./ -name "mulocal.py"  -exec rm {} \;
+find ./ -name "moc_*.cpp"  -exec rm {} \;
+find ./ -name "CMakeFiles"  -exec rm -r {} \;
+find ./ -name "workdir"  -exec rm -r {} \;
+find ./ -name "config.log"  -exec rm {} \;
+find ./ -name "Makefile"  -exec rm {} \;
+rm system.h
 rm -rf .sconf_temp/
-rm -f .sconsign* config.log system.h mulocal.py
+rm -f .sconsign* 
