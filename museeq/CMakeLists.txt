@@ -1,5 +1,11 @@
 project(museeq) # the name of your project
 
+MESSAGE("DECLARATIONS: PREFIX (/usr), MANDIR (PREFIX/man), DATADIR (PREFIX/share), BINRELOC, TRAYICON
+Prefix declarations with -D and set them with either 1, 0 or a path.
+QSA is detected automatically
+")
+
+
 cmake_minimum_required(VERSION 2.4.0)
 include(CheckIncludeFiles)
 include(CheckTypeSize)
@@ -49,15 +55,16 @@ MACRO(ADD_TRANSLATION_FILES _sources )
    ENDFOREACH (_current_FILE)
 ENDMACRO(ADD_TRANSLATION_FILES)
 
-
 IF(PREFIX)
   SET(CMAKE_INSTALL_PREFIX ${PREFIX})
 ELSE(PREFIX)
   SET(CMAKE_INSTALL_PREFIX "/usr")
 ENDIF(PREFIX)
+
 IF (NOT DATADIR)
-  set(DATADIR ${CMAKE_INSTALL_PREFIX}/share/museek)
+  set(DATADIR ${CMAKE_INSTALL_PREFIX}/share)
 ENDIF (NOT DATADIR)
+ADD_DEFINITIONS(-DDATADIR=\\\"${DATADIR}\\\")
 
 if (MANDIR)
   set(MANUAL_DIRECTORY ${MANDIR}/man1)
@@ -65,7 +72,11 @@ else (MANDIR)
   set(MANUAL_DIRECTORY "man/man1")
 endif (MANDIR)
 
-ADD_DEFINITIONS(-DDATADIR=\\\"${DATADIR}\\\")
+if (BINRELOC)
+ ADD_DEFINITIONS(-DENABLE_BINRELOC=1)
+endif (BINRELOC)
+
+
 check_include_files(stdlib.h HAVE_STDLIB_H)
 check_include_files(stdio.h HAVE_STDIO_H)
 check_include_files(stdarg.h HAVE_STDARG_H)
@@ -107,7 +118,6 @@ elseif(UNSIGNED_LONG_LONG EQUAL 4)
 else(UNSIGNED_LONG_LONG EQUAL 4)
   message(FATAL_ERROR "Couldn't determine 32bit unsigned interger type.")
 endif(HAVE_UINT32)
-
 
 set(MUSEEQ_SOURCES
   aclineedit.cpp
@@ -249,17 +259,17 @@ ADD_TRANSLATION_FILES (QM_FILES ${TRANSLATIONS})
 ADD_CUSTOM_TARGET (translations ALL DEPENDS ${QM_FILES})
 install(
   FILES ${QM_FILES}
-  DESTINATION ${DATADIR}/museeq/translations
+  DESTINATION ${DATADIR}/museek/museeq/translations
 )
 
 file(GLOB_RECURSE THEME_DEFAULT default/*.png)
-install(FILES ${THEME_DEFAULT} DESTINATION ${DATADIR}/museeq/default)
+install(FILES ${THEME_DEFAULT} DESTINATION ${DATADIR}/museek/museeq/default)
 file(GLOB_RECURSE THEME_BLUEBOX bluebox/*.png)
-install(FILES ${THEME_BLUEBOX} DESTINATION ${DATADIR}/museeq/bluebox)
+install(FILES ${THEME_BLUEBOX} DESTINATION ${DATADIR}/museek/museeq/bluebox)
 file(GLOB_RECURSE THEME_SILK mikelabo-silk/*.png)
-install(FILES ${THEME_SILK} DESTINATION ${DATADIR}/museeq/mikelabo-silk)
+install(FILES ${THEME_SILK} DESTINATION ${DATADIR}/museek/museeq/mikelabo-silk)
 file(GLOB_RECURSE THEME_TRI mikelabo-tri/*.png)
-install(FILES ${THEME_TRI} DESTINATION ${DATADIR}/museeq/mikelabo-tri)
+install(FILES ${THEME_TRI} DESTINATION ${DATADIR}/museek/museeq/mikelabo-tri)
 
 set(ICONS
   museeq.png
@@ -282,3 +292,13 @@ install(
   DESTINATION ${MANUAL_DIRECTORY}
 )
 MESSAGE("--> Museeq will be installed.. [NO_MUSEEQ=1]")
+if (NOT BINRELOC)
+  MESSAGE(" * without Binary Relocation.. [BINRELOC=1]")
+else (NOT BINRELOC)
+  MESSAGE(" * with Binary Relocation.. [BINRELOC=0]")
+endif (NOT BINRELOC)
+if (NOT TRAYICON)
+  MESSAGE(" * without a Trayicon.. [TRAYICON=1]")
+else (NOT TRAYICON)
+  MESSAGE(" * with a Trayicon.. [TRAYICON=0]")
+endif (NOT TRAYICON)

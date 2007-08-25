@@ -33,6 +33,7 @@
 #cmakedefine HAVE_SYS_NDIR_H 1
 #cmakedefine HAVE_FAM_H 1
 #cmakedefine HAVE_VORBIS 1
+#cmakedefine MULOG 1
 #ifdef HAVE_SYS_POLL_H
  #include <sys/poll.h>
 #endif
@@ -51,7 +52,6 @@
  #define HAVE_SCANDIR 1
  #define SCANDIR_ENTRY dirent
 #endif
-
 #ifndef HAVE_DIRENT_H
 
 #endif // ! HAVE_DIRENT_H
@@ -59,6 +59,10 @@
 #ifdef HAVE_PWD_H
  #include <pwd.h>
 #endif
+
+#ifdef MULOG
+ #define MULOG_DEBUG 1
+#endif // MULOG
 
 #ifdef HAVE_SYSLOG_H
  #include <syslog.h>

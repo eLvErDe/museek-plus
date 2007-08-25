@@ -13,14 +13,19 @@ read the INSTALL.scons file for more information
 CMake
 ---------------
 INSTALLS:
-museekd, muscan and muscand, mucous, murmur, museeq, python-bindings, python-clients
+museekd, muscan, muscand, mucous, murmur, museeq, python-bindings, python-clients
 ---------------
-PREFIX, MANDIR, EVERYTHING, BINDINGS, MURMUR, MUCOUS, CLIENTS, SETUP
-NO_MUSEEKD, NO_MUSCAN, NO_SETUP, NO_PYMUCIPHER, (prefix with -D)
+DECLARATIONS (prefix with -D, set bool options on with 1; off with 0)
+PREFIX, MANDIR, EVERYTHING, BINDINGS, MURMUR, MUCOUS, CLIENTS
+NO_MUSEEKD, NO_MUSCAN, NO_SETUP, NO_PYMUCIPHER
+Museeq options: NO_MUSEEQ, BINRELOC, DATADIR, TRAYICON
+Museekd options MULOG (debug messages) MULOG_CALLTRACE MULOG_TT MULOG_CYCLE
+
 # mkdir workdir
 # cd workdir/
 # cmake -DPREFIX=/usr ..
-# (or) cmake -DMUCOUS=0 -DPREFIX=/usr/local -DMANDIR=share/man.
+# (or) cmake -DEVERYTHING=1 -DPREFIX=/usr ..
+# (or) cmake -DMUCOUS=0 -DPREFIX=/usr/local -DMANDIR=share/man
 # make
 # (or) make VERBOSE=1
 # make install

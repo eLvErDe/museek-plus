@@ -1,3 +1,17 @@
+---------------
+CMake
+---------------
+DECLARATIONS (prefix with -D, set bool options on with 1; off with 0)
+PREFIX, MANDIR, BINRELOC, DATADIR, TRAYICON
+NO_MUSEEKD, NO_MUSCAN, NO_SETUP, NO_PYMUCIPHER, (prefix with -D)
+# mkdir workdir
+# cd workdir/
+# cmake -DPREFIX=/usr ..
+# (or) cmake -DPREFIX=/usr -DTRAYICON=1 -DBINRELOC=1 -DMANDIR=share/man -DDATADIR=/usr/share
+# make
+# (or) make VERBOSE=1
+# make install
+
 Museeq's Qmake compilation instructions
 
 Requirements:

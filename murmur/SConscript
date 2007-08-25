@@ -2,7 +2,7 @@ Import('env')
 import os
 import glob
 targets = []
-#manfile = []
+manfile = []
 
 targets.append('murmur')
 manfile.append("murmur.1")
