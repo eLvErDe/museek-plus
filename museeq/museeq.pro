@@ -12,8 +12,10 @@ OBJECTS_DIR = workdir
 DESTDIR     = workdir
 translations.path = $${MUSEEQDATA}/translations
 translations.files = workdir/translations/museeq_*.qm
-museeq.path = /bin
-museeq.files = workdir/museeq
+# museeq.target = museeq
+TARGET.path = /bin
+# museeq.commands = touch $$museeq.target
+TARGET.files = museeq
 # Icons
 ICONS_birdies.path = $${MUSEEQDATA}/icons/birdies
 ICONS_birdies.files = birdies/*.png
@@ -27,7 +29,7 @@ ICONS_mikelabo_triangles.path = $${MUSEEQDATA}/icons/mikelabo-tri
 ICONS_mikelabo_triangles.files = mikelabo-tri/*.png
 INSTALLS += ICONS_mikelabo_triangles  ICONS_mikelabo_silk ICONS_bluebox ICONS_default ICONS_birdies
 INSTALLS += translations
-INSTALLS += museeq
+INSTALLS += TARGET
 # Comment the next two lines out, if they cause problems
 UNAME = $$system(uname -s)
 message( You appear to be running $$UNAME $$system(uname -r) )

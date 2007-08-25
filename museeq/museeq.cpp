@@ -17,9 +17,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "system.h"
 #include "museeq.h"
+
 #include "prefix.h"
-#include <system.h>
+
 
 #include "museekdriver.h"
 #include "mainwin.h"

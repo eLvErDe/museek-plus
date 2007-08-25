@@ -1,5 +1,18 @@
 project(Murmur)
 
+IF(PREFIX)
+  SET(CMAKE_INSTALL_PREFIX ${PREFIX})
+ELSE(PREFIX)
+  SET(CMAKE_INSTALL_PREFIX "/usr")
+ENDIF(PREFIX)
+
+
+if (NOT MANDIR)
+  set(MANUAL_DIRECTORY "man/man1")
+else (NOT MANDIR)
+  set(MANUAL_DIRECTORY ${MANDIR}/man1)
+endif (NOT MANDIR)
+
 set(MURMUR_SOURCES
   murmur
 )
@@ -11,13 +24,16 @@ file(GLOB_RECURSE PYMURMUR_FILES pymurmur *.py)
 set(PYMURMUR_SOURCES
   ${PYMURMUR_FILES}
 )
-EXECUTE_PROCESS(COMMAND python ../python-site-packages.py museek OUTPUT_VARIABLE version OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_VARIABLE error)
-if (NOT version OR error)
-	EXECUTE_PROCESS(COMMAND python python-site-packages.py museek OUTPUT_VARIABLE version OUTPUT_STRIP_TRAILING_WHITESPACE)
-endif (NOT version OR error)
+
+EXECUTE_PROCESS(COMMAND python -c "import sys; import os; print os.path.join('lib', 'python' + str(sys.version_info[0]) + '.' + str(sys.version_info[1]), 'site-packages')" museek OUTPUT_VARIABLE sitepackages OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_VARIABLE error)
+
+if (NOT sitepackages OR error)
+	MESSAGE(FATAL_ERROR "Failed to find Python's site-packages directory" ${sitepackages} ${error})
+endif (NOT sitepackages OR error)
+
 install(
   FILES ${PYMURMUR_SOURCES}
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/${version}
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/${sitepackages}
 )
 
 

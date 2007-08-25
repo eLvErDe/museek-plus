@@ -23,13 +23,14 @@ set(PYMUCIPHER_LIBS
   ${CMAKE_CURRENT_BINARY_DIR}/mucipherc.py
   ${CMAKE_CURRENT_BINARY_DIR}/_mucipherc.so
 )
+EXECUTE_PROCESS(COMMAND python -c "import sys; import os; print os.path.join('lib', 'python' + str(sys.version_info[0]) + '.' + str(sys.version_info[1]), 'site-packages')" museek OUTPUT_VARIABLE sitepackages OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_VARIABLE error)
 
-EXECUTE_PROCESS(COMMAND python ../python-site-packages.py  OUTPUT_VARIABLE version OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_VARIABLE error)
-if (NOT version OR error)
-	EXECUTE_PROCESS(COMMAND python python-site-packages.py  OUTPUT_VARIABLE version OUTPUT_STRIP_TRAILING_WHITESPACE)
-endif (NOT version OR error)
+if (NOT sitepackages OR error)
+	MESSAGE(FATAL_ERROR "Failed to find Python's site-packages directory" ${sitepackages} ${error})
+endif (NOT sitepackages OR error)
+
 install(
   FILES ${PYMUCIPHER_LIBS}
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/${version}
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/${sitepackages}
 )
 MESSAGE("--> PyMucipher will be installed.. [NO_PYMUCIPHER=1]")

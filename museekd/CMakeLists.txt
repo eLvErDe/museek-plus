@@ -56,4 +56,8 @@ install(
   FILES "museekd.1"
   DESTINATION ${MANUAL_DIRECTORY}
 )
+install(
+  FILES "config.xml.tmpl"
+  DESTINATION ${DATADIR}
+)
 MESSAGE("--> Museek Daemon (museekd) will be installed..")

@@ -1,7 +1,5 @@
 project(museek-plus)
-set(MUSEEK_PLUS "
-python-site-packages.py
-")
+
 # Include some cmake checks.
 include(CheckIncludeFiles)
 include(CheckTypeSize)
@@ -12,9 +10,16 @@ SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 MESSAGE("DECLARATIONS: PREFIX, MANDIR, EVERYTHING, NO_MUSEEKD, NO_MUSCAN, NO_SETUP, NO_PYMUCIPHER, BINDINGS, MURMUR, MUCOUS, CLIENTS, SETUP
 Prefix declarations with -D and set them with either 1, 0 or a path.
 Set -DEVERYTHING=1 if you want it all")
+
 IF(PREFIX)
   SET(CMAKE_INSTALL_PREFIX ${PREFIX})
+ELSE(PREFIX)
+  SET(CMAKE_INSTALL_PREFIX "/usr")
 ENDIF(PREFIX)
+
+IF (NOT DATADIR)
+  set(DATADIR ${CMAKE_INSTALL_PREFIX}/share/museek)
+ENDIF (NOT DATADIR)
 
 set(MANUAL_DIRECTORY "man/man1")
 if (MANDIR)
@@ -60,7 +65,12 @@ set(PYMUCIPHER 1)
 IF (NO_PYMUCIPHER)
   set(PYMUCIPHER 0)
 ENDIF (NO_PYMUCIPHER)
-	
+
+set(C_MUSEEQ 1)
+IF (NO_MUSEEQ)
+  set(C_MUSEEQ 0)
+ENDIF (NO_MUSEEQ)
+
 set(PYSETUP 1)
 IF (NO_SETUP)
   set(PYSETUP 0)
@@ -75,6 +85,7 @@ IF (EVERYTHING)
   set(PYSETUP 1)
   set(C_MUSEEKD 1)
   set(C_MUSCAN 1)
+  set(C_MUSEEQ 1)
 ENDIF (EVERYTHING)
 
 # # Enable NewNet's smart-pointer debugging capabilities.
@@ -322,3 +333,8 @@ if (PYMURMUR)
 else (PYMURMUR)
   message("!!! Murmur (PyGTK2 Client) will NOT be installed.. [MURMUR=1]")
 endif (PYMURMUR)
+if (C_MUSEEQ)
+  add_subdirectory(museeq)
+else (C_MUSEEQ)
+  message("!!! museeq will NOT be installed [NO_MUSEEQ=0]")
+endif (C_MUSEEQ)
