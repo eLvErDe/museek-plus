@@ -936,25 +936,27 @@ int main(int argc, char **argv) {
 	QString lang, lang2, langpath;
 	lang = QString(QTextCodec::locale());
 	langpath = lang.mid(0,5); // to fix \ shorten long locales like from "fr_FR.utf8" to "fr_FR"
-	lang2 =  (QString(DATADIR) + QString("/museek/museeq/translations/museeq_") + langpath + QString(".qm") );
-	QFileInfo fi( lang2 );
-	if ( !fi.exists() ) {
-		// if longer locale isn't found, try two-character locale such as "fr"
-		langpath = lang.mid(0,2);
+	if (lang.mid(0,2) != "en" and lang.mid(0,5) != "en")
+	{
 		lang2 =  (QString(DATADIR) + QString("/museek/museeq/translations/museeq_") + langpath + QString(".qm") );
 		QFileInfo fi( lang2 );
-		if ( fi.exists() ) {
+		if ( !fi.exists() ) {
+			// if longer locale isn't found, try two-character locale such as "fr"
+			langpath = lang.mid(0,2);
+			lang2 =  (QString(DATADIR) + QString("/museek/museeq/translations/museeq_") + langpath + QString(".qm") );
+			QFileInfo fi( lang2 );
+			if ( fi.exists() ) {
+				translation.load( lang2);
+				app.installTranslator( &translation );
+			} else {
+				std::cout << "Translation doesn't exist at: " << lang2 << std::endl;
+			}
+			
+		} else {
 			translation.load( lang2);
 			app.installTranslator( &translation );
-		} else {
-			std::cout << "Translation doesn't exist at: " << lang2 << std::endl;
 		}
-		
-	} else {
-		translation.load( lang2);
-		app.installTranslator( &translation );
 	}
-	
 	
 	new Museeq(&app);
 	app.setMainWidget(museeq->mainwin());

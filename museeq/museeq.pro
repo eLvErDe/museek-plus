@@ -3,39 +3,9 @@
 
 CONFIG += qt 
 TARGET = museeq
+
 QMAKE_COPY = cp -pf
 TEMPLATE = app
-DEPENDPATH += Mucipher
-INCLUDEPATH += Mucipher
-MUSEEQDATA = /share/museek/museeq
-OBJECTS_DIR = workdir
-DESTDIR     = workdir
-translations.path = $${MUSEEQDATA}/translations
-translations.files = workdir/translations/museeq_*.qm
-# museeq.target = museeq
-TARGET.path = /bin
-# museeq.commands = touch $$museeq.target
-TARGET.files = museeq
-# Icons
-ICONS_birdies.path = $${MUSEEQDATA}/icons/birdies
-ICONS_birdies.files = birdies/*.png
-ICONS_default.path = $${MUSEEQDATA}/icons/default
-ICONS_default.files = default/*.png
-ICONS_bluebox.path = $${MUSEEQDATA}/icons/bluebox
-ICONS_bluebox.files = bluebox/*.png
-ICONS_mikelabo_silk.path = $${MUSEEQDATA}/icons/mikelabo-silk
-ICONS_mikelabo_silk.files = mikelabo-silk/*.png
-ICONS_mikelabo_triangles.path = $${MUSEEQDATA}/icons/mikelabo-tri
-ICONS_mikelabo_triangles.files = mikelabo-tri/*.png
-INSTALLS += ICONS_mikelabo_triangles  ICONS_mikelabo_silk ICONS_bluebox ICONS_default ICONS_birdies
-INSTALLS += translations
-INSTALLS += TARGET
-# Comment the next two lines out, if they cause problems
-UNAME = $$system(uname -s)
-message( You appear to be running $$UNAME $$system(uname -r) )
-# HELP
-message('qmake build options are: "CONFIG+=QSA BINRELOC TRAYICON" PREFIX="/path"')
-message('Read the INSTALL file more more information.')
 ###############################################################################
 # DEFINES                                                                     #
 ###############################################################################
@@ -43,6 +13,9 @@ isEmpty(PREFIX) {
 	PREFIX = /usr
 }
 
+isEmpty(DESTDIR) {
+	DESTDIR = workdir
+}
 BINRELOC {
 	DEFINES += ENABLE_BINRELOC=1
 }
@@ -65,7 +38,48 @@ unix {
 }
 ###############################################################################
 
+DEPENDPATH += Mucipher
+INCLUDEPATH += Mucipher
+MUSEEQDATA = /share/museek/museeq
+OBJECTS_DIR = workdir
+TARGET.path = bin
+museeq.path = bin
+museeq.files = workdir/museeq
+INSTALLS += museeq
 
+# Icons
+ICONS_birdies.path = $${MUSEEQDATA}/icons/birdies
+ICONS_birdies.files = birdies/*.png
+ICONS_default.path = $${MUSEEQDATA}/icons/default
+ICONS_default.files = default/*.png
+ICONS_bluebox.path = $${MUSEEQDATA}/icons/bluebox
+ICONS_bluebox.files = bluebox/*.png
+ICONS_mikelabo_silk.path = $${MUSEEQDATA}/icons/mikelabo-silk
+ICONS_mikelabo_silk.files = mikelabo-silk/*.png
+ICONS_mikelabo_triangles.path = $${MUSEEQDATA}/icons/mikelabo-tri
+ICONS_mikelabo_triangles.files = mikelabo-tri/*.png
+INSTALLS += ICONS_mikelabo_triangles  ICONS_mikelabo_silk ICONS_bluebox ICONS_default ICONS_birdies
+
+
+# Comment the next two lines out, if they cause problems
+UNAME = $$system(uname -s)
+message( You appear to be running $$UNAME $$system(uname -r) )
+# HELP
+message('qmake build options are: "CONFIG+=QSA BINRELOC TRAYICON" PREFIX="/path"')
+message('Read the INSTALL file more more information.')
+
+
+TRANSLATIONS = \
+  translations/museeq_fr.ts \
+  translations/museeq_pl.ts \
+  translations/museeq_it.ts \
+  translations/museeq_de.ts \
+  translations/museeq_pt_BR.ts \
+  translations/museeq_es.ts \
+  translations/museeq_ro.ts \
+  translations/museeq_nl.ts
+TRANSLATIONS.path = $${MUSEEQDATA}/translations
+INSTALLS += TRANSLATIONS
 # Input
 HEADERS += aclineedit.h \
            banlist.h \

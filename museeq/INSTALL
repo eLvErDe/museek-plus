@@ -20,20 +20,31 @@ Qmake Options:
  * PREFIX: If you do not use BINRELOC, you should set PREFIX to whatever
    path museeq will be installed into. (Same path as make's INSTALL_ROOT)
    PREFIX defaults to /usr
+ * DESTDIR: where the museeq binary is placed (on make and make install)
+   DESTDIR defaults to the workdir/ subdirectory
+# NOTE: there's a quirk with qmake, in that the binary wants to be moved to
+# DESTDIR during the "make". If you don't set DESTDIR, you'll need to do the
+# following: qmake; make; qmake; make install
 
 Example Qmake commands:
  * qmake "CONFIG += QSA BINRELOC TRAYICON"
  * qmake "CONFIG += QSA BINRELOC"
- * qmake "CONFIG += QSA" "PREFIX+=/usr"
- * qmake "PREFIX=/usr/local"
+ * qmake "CONFIG += BINRELOC" PREFIX=/usr
+ * qmake PREFIX=/usr/local DESTDIR=/usr/local/bin
+ * qmake PREFIX=/home/username/build/usr DESTDIR=/home/username/build/usr/bin
  * qmake
 
 Make Options:
  * INSTALL_ROOT: the prefix of the path where museeq will be installed
-   INSTALL_ROOT must be set, or it'll be installed in /bin and /share
+
+# INSTALL_ROOT must be set, or it'll be installed in /bin and /share
 
 # If you want translations, run updatetranslations.py
-  1) Example: ./updatetranslations.py $QTDIR fr de
+# The updatetranslations script uses lupdate to merge qt_??.ts and museeq_??.ts
+# into museeq_??.qm
+  1a) Example: ./updatetranslations.py $QTDIR fr de
+# Run lupdate to do the same, without the qt_??.ts files
+  1b) lupdate museeq.pro
 # Generate Makefile
   2) qmake 
 # Compile
@@ -41,3 +52,4 @@ Make Options:
 # Installation
   4) su -c "make install INSTALL_ROOT=/usr"
   or sudo make install INSTALL_ROOT=/usr
+  or make install INSTALL_ROOT=/home/username/build/usr
