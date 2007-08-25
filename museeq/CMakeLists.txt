@@ -9,6 +9,9 @@ QSA is detected automatically
 cmake_minimum_required(VERSION 2.4.0)
 include(CheckIncludeFiles)
 include(CheckTypeSize)
+
+include(CheckCXXSourceCompiles)
+
 add_subdirectory(Mucipher)
 find_package(Qt3 REQUIRED) # find and setup Qt3 for this project
 
@@ -35,7 +38,7 @@ MACRO(ADD_MOC_FILES _sources)
 
    ENDFOREACH (_current_FILE)
 ENDMACRO(ADD_MOC_FILES)
-message(STATUS ${QT_MOC_EXECUTABLE})
+
 MACRO(ADD_TRANSLATION_FILES _sources )
 
     FOREACH (_current_FILE ${ARGN})
@@ -54,6 +57,40 @@ MACRO(ADD_TRANSLATION_FILES _sources )
       SET(${_sources} ${${_sources}} ${_out} )
    ENDFOREACH (_current_FILE)
 ENDMACRO(ADD_TRANSLATION_FILES)
+
+FIND_PROGRAM(QT_LRELEASE_EXECUTABLE
+  NAMES lrelease lrelease-qt3
+  PATHS
+  "[HKEY_CURRENT_USER\\Software\\Trolltech\\Qt3Versions\\3.2.1;InstallDir]/include/Qt"
+  "[HKEY_CURRENT_USER\\Software\\Trolltech\\Qt3Versions\\3.2.0;InstallDir]/include/Qt"
+  "[HKEY_CURRENT_USER\\Software\\Trolltech\\Qt3Versions\\3.1.0;InstallDir]/include/Qt"
+  $ENV{QTDIR}/bin
+  ${GLOB_PATHS_BIN}
+  /usr/local/qt/bin
+  /usr/lib/qt/bin
+  /usr/lib/qt3/bin
+  /usr/share/qt3/bin
+  C:/Progra~1/qt/bin
+  /usr/X11R6/bin
+)
+
+FIND_LIBRARY(QSA_LIBRARY
+    NAMES
+    qsa
+    PATHS
+    "[HKEY_CURRENT_USER\\Software\\Trolltech\\Qt3Versions\\3.2.1;InstallDir]/lib"
+    "[HKEY_CURRENT_USER\\Software\\Trolltech\\Qt3Versions\\3.2.0;InstallDir]/lib"
+    "[HKEY_CURRENT_USER\\Software\\Trolltech\\Qt3Versions\\3.1.0;InstallDir]/lib"
+    $ENV{QTDIR}/lib
+    ${GLOB_PATHS_LIB}
+    /usr/local/qt/lib
+    /usr/lib/qt/lib
+    /usr/lib/qt3/lib
+    /usr/lib/qt3/lib64
+    /usr/share/qt3/lib
+    C:/Progra~1/qt/lib
+    /usr/X11R6/lib
+)
 
 IF(PREFIX)
   SET(CMAKE_INSTALL_PREFIX ${PREFIX})
@@ -91,8 +128,6 @@ check_include_files(sys/poll.h HAVE_SYS_POLL_H)
 check_include_files(sys/epoll.h HAVE_EPOLL_CTL)
 check_include_files(sys/signal.h HAVE_SIGNAL_H)
 check_include_files(sys/un.h HAVE_SYS_UN_H)
-check_include_files(qsproject.h HAVE_QSA)
-
 # Check for some standard types and type sizes
 check_type_size("unsigned char" UNSIGNED_CHAR)
 check_type_size("unsigned short" UNSIGNED_SHORT)
@@ -118,6 +153,39 @@ elseif(UNSIGNED_LONG_LONG EQUAL 4)
 else(UNSIGNED_LONG_LONG EQUAL 4)
   message(FATAL_ERROR "Couldn't determine 32bit unsigned interger type.")
 endif(HAVE_UINT32)
+
+
+# 
+# message(STATUS ${QT_INCLUDE_DIR})
+# message(STATUS ${QT_DEFINITIONS})
+# message(STATUS ${QT_LIBRARIES})
+# message(STATUS ${CMAKE_REQUIRED_INCLUDES})
+
+# set(CMAKE_REQUIRED_DEFINITIONS ${QT_DEFINITIONS}  )
+set(CMAKE_REQUIRED_LIBRARIES ${QT_LIBRARIES} ${QSA_LIBRARY})
+set(CMAKE_REQUIRED_INCLUDES . ${QT_INCLUDE_DIR})
+
+
+# Check if signal type.
+#   #include <qt.h>
+check_cxx_source_compiles("
+
+  #include \"qsproject.h\"
+  #include \"qsinterpreter.h\"
+  int main() {
+     QSInterpreter::defaultInterpreter()->hasFunction(\"\");
+  }
+" QSA)
+
+if (QSA)
+MESSAGE(STATUS "QSA available")
+ add_definitions(-DHAVE_QSA=1 -DHAVE_QSA_DIALOG=1 )
+else (QSA)
+MESSAGE("!!! QSA NOT available")
+endif (QSA)
+
+message(STATUS "moc binary:" ${QT_MOC_EXECUTABLE})
+message(STATUS "lrelease binary:" ${QT_LRELEASE_EXECUTABLE})
 
 set(MUSEEQ_SOURCES
   aclineedit.cpp
@@ -237,7 +305,7 @@ ADD_MOC_FILES(MUSEEQ_SOURCES ${MUSEEQ_MOC_HEADERS})
 
 add_executable(museeq ${MUSEEQ_SOURCES} ${MUSEEQ_MOC_HEADERS})
 
-target_link_libraries(museeq Mucipher ${QT_LIBRARIES} )
+target_link_libraries(museeq Mucipher ${QT_LIBRARIES} ${QSA_LIBRARY})
 
 install(
   TARGETS museeq
