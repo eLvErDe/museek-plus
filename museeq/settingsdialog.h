@@ -150,7 +150,8 @@ protected:
 	QGridLayout* ServerGrid, * SharesGrid, *ConnectionsGrid, *UsersGrid,
 	*LoggingGrid, * UserInfoGrid, * buttonGroup1Layout, * ProtocolGrid,
 	* ColorsGrid, * AppearanceGrid;
-	
+	QProcess * proc1;
+	QProcess * proc2;	
 
 protected slots:
 	virtual void languageChange();
@@ -160,8 +161,6 @@ protected slots:
 	void MuscanNormalDone();
 	void EnableNormalButtons(bool);
 	void EnableBuddyButtons(bool);
-	QProcess* proc1;
-	QProcess * proc2;
 };
 
 #endif // SETTINGSDIALOG_H
