@@ -33,7 +33,7 @@ endif (NOT sitepackages OR error)
 
 install(
   FILES ${PYMURMUR_SOURCES}
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/${sitepackages}
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/${sitepackages}/pymurmur
 )
 
 

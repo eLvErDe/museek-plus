@@ -15,6 +15,6 @@ endif (NOT sitepackages OR error)
 
 install(
   FILES ${PYTHON_BINDINGS_SOURCES}
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/${sitepackages}
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/${sitepackages}/museek
 )
 message("--> Python Bindings will be installed..")

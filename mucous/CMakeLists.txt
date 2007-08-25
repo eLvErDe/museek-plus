@@ -36,7 +36,7 @@ endif (NOT sitepackages OR error)
 
 install(
   FILES ${PYMUCOUS_SOURCES}
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/${sitepackages}
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/${sitepackages}/pymucous
 )
 
 
