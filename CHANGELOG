@@ -1,5 +1,31 @@
 Museek Plus Changelog
 
+0.1.13:  August 25th 2007
+
+MUSEEK DAEMON
+ * Ignore SIGPIPE (to prevent crashes on BSDs)
+ * Catch std::bad_alloc when unpacking a network message.
+ * Always get IP from server, when requested
+ * Autoretry downloads
+ * Syslog support
+ * Watch trusted users' status
+
+MUSEEQ
+ * Settings revamped
+ * Shares configuration added to Settings
+ * Added Audacioous to NowPlaying QSA script
+ * Added colors to transfers' status column
+
+MUCOUS
+ * Setup revamped
+ * Many, many bugfixes
+
+MUSEEKCONTROL
+ * Implemented a few more unfinished options
+
+MURMUR
+ * The basic features are here, enough for inclusion in this release.
+
 0.1.12:  October 21th 2006
 
 MUSEEK DAEMON

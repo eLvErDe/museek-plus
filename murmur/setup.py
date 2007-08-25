@@ -32,7 +32,7 @@ if __name__ == '__main__' :
           packages              = [ 'pymurmur' ],
           scripts               = [ 'murmur' ],
 	  data_files            = [('share/pixmaps/', ['images/murmur-64px.png']), ('share/applications/', ['files/murmur.desktop'])],
-#	  data_files            = [('man/man1', ['murmur.1'])],
+	  data_files            = [('man/man1', ['murmur.1'])],
           long_description      = LONG_DESCRIPTION
          )
 

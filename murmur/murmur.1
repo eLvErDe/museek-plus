@@ -1,0 +1,70 @@
+.TH "MURMUR" "1" "Release 0.3.1" "daelstorm" "Museek Daemon Plus"
+.SH "NAME"
+.LP 
+\fBMurmur\fR \- PyGTK2 client for museek
+.SH "SYNOPSIS"
+.B murmur
+[\-c \-\-config <\fIfilename\fP>]
+[\-l \-\-log <\fIdirectory\fP>] 
+[\-v] [\-\-version]
+[\-d]
+[\-h] [\-\-help]
+.SH "DESCRIPTION"
+.LP 
+Murmur provides a GTK2 interface for the Museek Daemon for chatting, transferring files, managing users, viewing user info and browsing shares on the Soulseek P2P network and Soulfind Servers.
+.LP 
+You will need a configured and running \fImuseekd\fP(1).
+.SH "OPTIONS"
+.LP 
+Murmur accepts the following options:
+.TP 
+.B \-c <\fIfilename\fP>, \-\-config <\fIfilename\fP>
+Use a different config file.
+.TP 
+.B \-l <\fIdirectory\fP>, \-\-log <\fIdirectory\fP> 
+Use a different chat log directory.
+.TP 
+.B \-v, \-\-version
+Display Version and exit.
+.TP 
+.B \-d
+Display debug messages while running.
+.TP 
+.B \-h, \-\-help
+Display Help and exit.
+
+.SH "EXAMPLE"
+.LP 
+To run this program the standard way type:
+.LP 
+murmur
+.LP 
+Alternativly you use a different config file with:
+.LP 
+murmur \-\-config config
+.LP 
+Or a different chat logging directory with:
+.LP 
+murmur \-\-log logdir
+.SH "FILES"
+.TP 
+ \fI~/.murmur/config\fR
+The default location for the \fBmucous\fP config file.
+.TP 
+ \fI~/.murmur/logs/\fR
+The default directory for chat logs.
+.TP 
+ \fI~/.murmur/logs/room/\fR
+The directory where chat room logs are stored.
+.TP 
+ \fI~/.murmur/logs/private/\fR
+The directory where private chat logs are stored.
+.TP 
+ \fI~/.murmur/$USER.$EXT\fR
+The file where a user's userinfo image is saved.
+.SH "AUTHORS"
+.LP 
+daelstorm <daelstorm@gmail.com>
+.SH "SEE ALSO"
+.LP 
+\fImulog\fP(1) \fImuscan\fP(1) \fImuscand\fP(1) \fImuseekcontrol\fP(1) \fImuseekd\fP(1) \fImuseeq\fP(1) \fImusetup\fP(1) \fImusetup\-gtk\fP(1)

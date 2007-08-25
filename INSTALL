@@ -13,7 +13,7 @@ read the INSTALL.scons file for more information
 CMake
 ---------------
 INSTALLS:
-museekd, muscan and muscand, mucous, python-bindings, python-clients
+museekd, muscan and muscand, mucous, murmur, museeq, python-bindings, python-clients
 ---------------
 PREFIX, MANDIR, EVERYTHING, BINDINGS, MURMUR, MUCOUS, CLIENTS, SETUP
 NO_MUSEEKD, NO_MUSCAN, NO_SETUP, NO_PYMUCIPHER, (prefix with -D)
@@ -36,6 +36,8 @@ museeq
 # (or) qmake "CONFIG += BINRELOC TRAYICON" PREFIX=/usr
 # make
 # make install
+
+Read the INSTALL file in the museeq directory for more information
 
 ---------------
 distutils (Python's built-in installation tool)

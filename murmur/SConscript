@@ -5,11 +5,11 @@ targets = []
 #manfile = []
 
 targets.append('murmur')
-#manfile.append("murmur.1")
-#man_install = env.Install(env['DESTDIR'] + env['MANDIR'], manfile)
+manfile.append("murmur.1")
+man_install = env.Install(env['DESTDIR'] + env['MANDIR'], manfile)
 
 install = env.Install(env['DESTDIR'] + env['BINDIR'], targets)
-#env.Alias('install_murmur', man_install)
+env.Alias('install_murmur', man_install)
 env.Alias('install_murmur', install)
 env.Alias('install', 'install_murmur')
 SConscript(os.path.join('pymurmur', 'SConscript'))

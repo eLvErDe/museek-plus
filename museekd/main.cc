@@ -68,7 +68,7 @@ RETSIGTYPE hangup(int signal) {
 
 int main(int argc, char **argv) {
 	std::string config = string(getenv("HOME")) + "/.museekd/config.xml";
-	std::string version = string("0.1.12");
+	std::string version = string("0.1.13");
 	std::string version2 = string("museekd :: Version "+ version +" :: Museek Daemon Plus");
 	for(int i = 1; i < argc; i++) {
 		string arg = argv[i];
