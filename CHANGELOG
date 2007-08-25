@@ -2,6 +2,15 @@ Museek Plus Changelog
 
 0.1.13:  August 25th 2007
 
+BUILD SYSTEMS
+CMake, qmake, SCons and Python's distutils
+ * RECOMMENDED: cmake
+ * CMake compiles and installs everything. Read the INSTALL files for details.
+ * qmake compiles just museeq. Read museeq/INSTALL
+ * You can install the python bindings, apps, and clients with distutils.
+   Run "python setup.py install" in each python sub-directory
+ * SCons is still available, but not recommended. Read INSTALL.scons
+
 MUSEEK DAEMON
  * Ignore SIGPIPE (to prevent crashes on BSDs)
  * Catch std::bad_alloc when unpacking a network message.
