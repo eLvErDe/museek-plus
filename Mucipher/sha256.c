@@ -17,7 +17,7 @@
  *
  */
  
-#include <system.h>
+#include "system.h"
 #include "mucipher.h"
 
 #define SHA256_DIGEST_SIZE	32

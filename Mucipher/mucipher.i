@@ -20,7 +20,7 @@
 %module mucipherc
 
 %{
-#include <system.h>
+#include "system.h"
 #include <Mucipher/mucipher.h>
 %}
 

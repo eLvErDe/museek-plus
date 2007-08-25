@@ -58,7 +58,7 @@
 */
 
 
-#include <system.h>
+#include "system.h"
 #include "mucipher.h"
 
 typedef uint32 u32;
