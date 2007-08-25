@@ -19,7 +19,7 @@ set(MURMUR_SOURCES
 
 project(Pymurmur)
 
-file(GLOB_RECURSE PYMURMUR_FILES pymurmur *.py)
+file(GLOB_RECURSE PYMURMUR_FILES pymurmur/*.py)
 
 set(PYMURMUR_SOURCES
   ${PYMURMUR_FILES}

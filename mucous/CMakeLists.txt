@@ -22,7 +22,7 @@ set(MUCOUS_SOURCES
 
 project(Pymucous)
 
-file(GLOB_RECURSE PYMUCOUS_FILES pymucous *.py)
+file(GLOB_RECURSE PYMUCOUS_FILES pymucous/*.py)
 
 set(PYMUCOUS_SOURCES
   ${PYMUCOUS_FILES}
