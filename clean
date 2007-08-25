@@ -13,5 +13,5 @@ find ./ -name "workdir"  -exec rm -r {} \;
 find ./ -name "config.log"  -exec rm {} \;
 find ./ -name "Makefile"  -exec rm {} \;
 rm system.h
-rm -rf .sconf_temp/
-rm -f .sconsign* 
+find ./ -name ".sconf_temp" -exec rm -r {} \;
+find ./ -name ".sconsign*" -exec rm -r {} \;

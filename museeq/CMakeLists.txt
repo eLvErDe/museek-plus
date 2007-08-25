@@ -26,7 +26,7 @@ MACRO(ADD_MOC_FILES _sources)
       SET(_moc ${CMAKE_CURRENT_BINARY_DIR}/${_basename}.moc.cpp)
 
       ADD_CUSTOM_COMMAND(OUTPUT ${_moc}
-         COMMAND ${QT_MOC_EXECUTABLE}
+         COMMAND moc #${QT_MOC_EXECUTABLE} 
          ARGS ${_tmp_FILE} -o ${_moc}
          DEPENDS ${_tmp_FILE}
       )
@@ -35,7 +35,7 @@ MACRO(ADD_MOC_FILES _sources)
 
    ENDFOREACH (_current_FILE)
 ENDMACRO(ADD_MOC_FILES)
-
+message(STATUS ${QT_MOC_EXECUTABLE})
 MACRO(ADD_TRANSLATION_FILES _sources )
 
     FOREACH (_current_FILE ${ARGN})
