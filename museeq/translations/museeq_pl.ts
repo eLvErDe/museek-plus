@@ -14,36 +14,20 @@
         <translation>Opcje:</translation>
     </message>
     <message>
-        <source>-V --versionDisplay museeq version and quit</source>
-        <translation type="obsolete">-V --versionPokaż wersję museeq-a i zakończ</translation>
-    </message>
-    <message>
-        <source>-h --helpDisplay this message and quit</source>
-        <translation type="obsolete">-h --helpPokaż tę wiadomość i zakończ</translation>
-    </message>
-    <message>
-        <source>--no-trayDon&apos;t load TrayIcon</source>
-        <translation type="obsolete">--no-trayNie ładuj ikony zasobnika</translation>
-    </message>
-    <message>
-        <source>Trayicon support was disabled at compile-time</source>
-        <translation type="obsolete">Wsparcie dla ikony zasobnika zosało wyłączone podczas kompilacji</translation>
-    </message>
-    <message>
         <source>-V --version<byte value="x9"/><byte value="x9"/>Display museeq version and quit</source>
-        <translation type="unfinished"></translation>
+        <translation>-V --version<byte value="x9"/><byte value="x9"/>Pokaż wersję museeqa i zakończ</translation>
     </message>
     <message>
         <source>-h --help<byte value="x9"/><byte value="x9"/>Display this message and quit</source>
-        <translation type="unfinished"></translation>
+        <translation>-h --help<byte value="x9"/><byte value="x9"/>Pokaż tę wiadomość i zakończ</translation>
     </message>
     <message>
         <source>--no-tray<byte value="x9"/><byte value="x9"/>Don&apos;t load TrayIcon</source>
-        <translation type="unfinished"></translation>
+        <translation>--no-tray<byte value="x9"/><byte value="x9"/>Nie ładuj ikony zasobnika</translation>
     </message>
     <message>
         <source><byte value="x9"/><byte value="x9"/><byte value="x9"/>Trayicon support was disabled at compile-time</source>
-        <translation type="unfinished"></translation>
+        <translation><byte value="x9"/><byte value="x9"/><byte value="x9"/>Wsparcie dla ikony zasobnika zostało wyłączone podczas kompilacji</translation>
     </message>
 </context>
 <context>
@@ -193,7 +177,7 @@
     </message>
     <message>
         <source>Museek Daemon Config:</source>
-        <translation>Konfiguracja demona Museek-a:</translation>
+        <translation>Konfiguracja demona museeka:</translation>
     </message>
     <message>
         <source>Se&amp;lect...</source>
@@ -225,7 +209,7 @@
     </message>
     <message>
         <source>&amp;AutoStart Museek Daemon</source>
-        <translation>Uruchom &amp;automatycznie demona Museek-a</translation>
+        <translation>Uruchom &amp;automatycznie demona Museeka</translation>
     </message>
     <message>
         <source>Alt+A</source>
@@ -233,7 +217,7 @@
     </message>
     <message>
         <source>S&amp;hutDown Daemon on Exit</source>
-        <translation>Wyłącz demona podczas wyjścia</translation>
+        <translation>W&amp;yłącz demona podczas wyjścia</translation>
     </message>
     <message>
         <source>Alt+H</source>
@@ -249,7 +233,7 @@
     </message>
     <message>
         <source>Clear</source>
-        <translation type="unfinished">Wyczyść</translation>
+        <translation>Wyczyść</translation>
     </message>
 </context>
 <context>
@@ -268,7 +252,7 @@
     </message>
     <message>
         <source>Bitrate</source>
-        <translation>Próbkowanie</translation>
+        <translation>Przepływność</translation>
     </message>
     <message>
         <source>Download files</source>
@@ -304,7 +288,7 @@
     </message>
     <message>
         <source>Select a Directory for current download(s)</source>
-        <translation>Wybierz katalog dla bierzącego pobierania</translation>
+        <translation>Wybierz katalog dla bieżącego pobierania</translation>
     </message>
 </context>
 <context>
@@ -328,65 +312,6 @@
     <message>
         <source>%1 folders</source>
         <translation>%1 katalogów</translation>
-    </message>
-</context>
-<context>
-    <name>FontsAndColorsDialog</name>
-    <message>
-        <source>Fonts &amp; Colors</source>
-        <translation type="obsolete">Czcionki i kolory</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation type="obsolete">OK</translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation type="obsolete">Anuluj</translation>
-    </message>
-    <message>
-        <source>Pick Color</source>
-        <translation type="obsolete">Wybierz kolor</translation>
-    </message>
-    <message>
-        <source>Pick Font</source>
-        <translation type="obsolete">Wybierz czcionkę</translation>
-    </message>
-    <message>
-        <source>Time &amp; Brackets Text Color</source>
-        <translation type="obsolete">Kolor tekstu czasu i nawiasów</translation>
-    </message>
-    <message>
-        <source>Time &amp; Brackets Font</source>
-        <translation type="obsolete">Czcionka czasu i nawiasów</translation>
-    </message>
-    <message>
-        <source>/Me Text</source>
-        <translation type="obsolete">Tekst /me</translation>
-    </message>
-    <message>
-        <source>Trusted Users</source>
-        <translation type="obsolete">Zaufani użytkownicy</translation>
-    </message>
-    <message>
-        <source>Remote Text</source>
-        <translation type="obsolete">Tekst zdalny</translation>
-    </message>
-    <message>
-        <source>Message Font</source>
-        <translation type="obsolete">Czcionka wiadomości</translation>
-    </message>
-    <message>
-        <source>Buddied Users</source>
-        <translation type="obsolete">Kumple</translation>
-    </message>
-    <message>
-        <source>My Text</source>
-        <translation type="obsolete">Mój tekst</translation>
-    </message>
-    <message>
-        <source>Banned Users</source>
-        <translation type="obsolete">Zbanowani użytkownicy</translation>
     </message>
 </context>
 <context>
@@ -474,7 +399,7 @@
     </message>
     <message>
         <source>Similar Users for this Item</source>
-        <translation>Użytkownicy podobni dal tego obiektu</translation>
+        <translation>Użytkownicy podobni dla tego obiektu</translation>
     </message>
 </context>
 <context>
@@ -512,67 +437,51 @@
     </message>
     <message>
         <source>&amp;Connect...</source>
-        <translation>Podłącz...</translation>
+        <translation>&amp;Podłącz...</translation>
     </message>
     <message>
         <source>&amp;Disconnect</source>
-        <translation>Rozłącz...</translation>
+        <translation>&amp;Rozłącz</translation>
     </message>
     <message>
         <source>Check &amp;privileges</source>
-        <translation>Sprawdź &amp;przywileje</translation>
+        <translation>&amp;Sprawdź przywileje</translation>
     </message>
     <message>
         <source>&amp;Browse My Shares</source>
-        <translation>Przeglądaj moje udziały</translation>
+        <translation>Przeglądaj moje &amp;udziały</translation>
     </message>
     <message>
         <source>E&amp;xit</source>
-        <translation>Wyjdź</translation>
+        <translation>&amp;Wyjdź</translation>
     </message>
     <message>
         <source>&amp;File</source>
-        <translation>Plik</translation>
-    </message>
-    <message>
-        <source>&amp;Protocol handlers...</source>
-        <translation type="obsolete">&amp;Programy obsługujące protokoły...</translation>
-    </message>
-    <message>
-        <source>&amp;User info...</source>
-        <translation type="obsolete">Informacje o użytkowniku...</translation>
-    </message>
-    <message>
-        <source>&amp;Museek...</source>
-        <translation type="obsolete">&amp;Museek...</translation>
-    </message>
-    <message>
-        <source>&amp;Colors and Fonts...</source>
-        <translation type="obsolete">Kolory i &amp;czcionki...</translation>
+        <translation>&amp;Plik</translation>
     </message>
     <message>
         <source>Pick &amp;Icon Theme... (Requires Restart)</source>
-        <translation>Wybierz motyw ikon... (wymagany restart)</translation>
+        <translation>Wybierz motyw &amp;ikon... (wymagany restart)</translation>
     </message>
     <message>
         <source>Show &amp;Tickers</source>
-        <translation>Pokaż brzęczykii</translation>
+        <translation>Pokaż &amp;brzęczyki</translation>
     </message>
     <message>
         <source>Show &amp;Log</source>
-        <translation>Pokaż dziennik</translation>
+        <translation>Pokaż &amp;dziennik</translation>
     </message>
     <message>
         <source>&amp;Settings</source>
-        <translation>U&amp;stawienia</translation>
+        <translation>&amp;Ustawienia</translation>
     </message>
     <message>
         <source>&amp;Chat Rooms</source>
-        <translation>Pokoje czatu</translation>
+        <translation>Pokoje &amp;czatu</translation>
     </message>
     <message>
         <source>&amp;Private Chat</source>
-        <translation>&amp;Prywatna rozmowa</translation>
+        <translation>Prywatna &amp;rozmowa</translation>
     </message>
     <message>
         <source>&amp;Transfers</source>
@@ -592,39 +501,39 @@
     </message>
     <message>
         <source>&amp;Modes</source>
-        <translation>Tryby</translation>
+        <translation>&amp;Tryby</translation>
     </message>
     <message>
         <source>&amp;About...</source>
-        <translation>O programie...</translation>
+        <translation>&amp;O programie...</translation>
     </message>
     <message>
         <source>&amp;Commands...</source>
-        <translation>Komendy...</translation>
+        <translation>&amp;Komendy...</translation>
     </message>
     <message>
         <source>&amp;Help...</source>
-        <translation>Pomoc...</translation>
+        <translation>&amp;Pomoc...</translation>
     </message>
     <message>
         <source>&amp;Help</source>
-        <translation>Pomoc</translation>
+        <translation>&amp;Pomoc</translation>
     </message>
     <message>
         <source>&amp;Load script...</source>
-        <translation>Załaduj skrypt...</translation>
+        <translation>&amp;Załaduj skrypt...</translation>
     </message>
     <message>
         <source>&amp;Unload script</source>
-        <translation>Wyładuj skrypt...</translation>
+        <translation>&amp;Wyładuj skrypt</translation>
     </message>
     <message>
         <source>Sc&amp;ripts</source>
-        <translation>Skrypty</translation>
+        <translation>&amp;Skrypty</translation>
     </message>
     <message>
         <source>Welcome to Museeq</source>
-        <translation>Witamy w Museeq-u</translation>
+        <translation>Witamy w Museequ</translation>
     </message>
     <message>
         <source>Chat rooms</source>
@@ -652,63 +561,63 @@
     </message>
     <message>
         <source>Launched Museek Daemon...</source>
-        <translation>Uruchomiono demona Museek-a...</translation>
+        <translation>Uruchomiono demona Museeka...</translation>
     </message>
     <message>
         <source>Failed Launching Museek Daemon...</source>
-        <translation>Nie udało się uruchomić demona Museek-a...</translation>
+        <translation>Nie udało się uruchomić demona Museeka...</translation>
     </message>
     <message>
         <source>No Config for Museek Daemon selected, giving up...</source>
-        <translation>Nie wybrano konfiguracji demona Museek-a, poddaję się...</translation>
+        <translation>Nie wybrano konfiguracji demona Museeka, poddaję się...</translation>
     </message>
     <message>
         <source>Museek Daemon is already running...</source>
-        <translation>Demon Museek-a jest już uruchomiony...</translation>
+        <translation>Demon Museeka jest już uruchomiony...</translation>
     </message>
     <message>
         <source>Terminating Museek Daemon...</source>
-        <translation>Zatrzymywanie demona Mussek-a...</translation>
+        <translation>Zatrzymywanie demona Musseka...</translation>
     </message>
     <message>
         <source>Museek Daemon not running, no need to stop it...</source>
-        <translation>Demon Museek-a nie jest uruchomiony, nie ma potrzeby zatrzymywania go...</translation>
+        <translation>Demon Museeka nie jest uruchomiony, nie ma potrzeby zatrzymywania go...</translation>
     </message>
     <message>
         <source>Museek Daemon has Shut Down...</source>
-        <translation>Zatrzymano demona Museek-a...</translation>
+        <translation>Zatrzymano demona Museeka...</translation>
     </message>
     <message>
         <source>Connecting to museek... Looking up host</source>
-        <translation>Podłączanie do museek-a... Poszukiwanie hosta</translation>
+        <translation>Podłączanie do museeka... Poszukiwanie hosta</translation>
     </message>
     <message>
         <source>Connecting to museek...</source>
-        <translation>Podłączanie do museek-a...</translation>
+        <translation>Podłączanie do museeka...</translation>
     </message>
     <message>
         <source>Connecting to museek... Connecting</source>
-        <translation>Podłączanie do museek-a... Podłączanie</translation>
+        <translation>Podłączanie do museeka... Podłączanie</translation>
     </message>
     <message>
         <source>Connecting to museek... Logging in</source>
-        <translation>Podłączanie do museel-a... Logowanie</translation>
+        <translation>Podłączanie do museela... Logowanie</translation>
     </message>
     <message>
         <source>Disconnected from museek</source>
-        <translation>Rozłączono z museek-iem</translation>
+        <translation>Rozłączono z museekiem</translation>
     </message>
     <message>
         <source>Cannot connect to museek... Connection refused</source>
-        <translation>Nie można połączyć z museek-iem... Odmówiono połączenia</translation>
+        <translation>Nie można połączyć z museekiem... Odmówiono połączenia</translation>
     </message>
     <message>
         <source>Cannot connect to museek... Host not found</source>
-        <translation>Nie można podłączyć do museek-a... Nie znaleziono hosta</translation>
+        <translation>Nie można podłączyć do museeka... Nie znaleziono hosta</translation>
     </message>
     <message>
         <source>Logged in to museek</source>
-        <translation>Zalogowano do museek-a</translation>
+        <translation>Zalogowano do museeka</translation>
     </message>
     <message>
         <source>Login error: </source>
@@ -736,11 +645,11 @@
     </message>
     <message>
         <source>Enter a Museeq Icon Theme Directory</source>
-        <translation>Podaj katalog motywu ikon Museeq-a</translation>
+        <translation>Podaj katalog motywu ikon Museeqa</translation>
     </message>
     <message>
         <source>Museeq&apos;s Icon Theme (*.png)</source>
-        <translation>Motyw ikon Museeq-a (*.png)</translation>
+        <translation>Motyw ikon Museeqa (*.png)</translation>
     </message>
     <message>
         <source>Offline</source>
@@ -752,11 +661,11 @@
     </message>
     <message>
         <source>Couldn&apos;t open image file for reading</source>
-        <translation>Nie można otworzyć pliku obrazka do odczytu</translation>
+        <translation>Nie można otworzyć pliku obrazu do odczytu</translation>
     </message>
     <message>
         <source>About Museeq</source>
-        <translation>O Museeq-u</translation>
+        <translation>O Museequ</translation>
     </message>
     <message>
         <source>&lt;p align=&quot;center&quot;&gt;Museeq </source>
@@ -764,11 +673,11 @@
     </message>
     <message>
         <source> is a GUI for the Museek Daemon&lt;/p&gt;The programs, museeq and museekd and muscan, were created by Hyriand 2003-2005&lt;br&gt;&lt;br&gt;Additions by Daelstorm and SeeSchloss in 2006&lt;br&gt;This project is released under the GPL license.&lt;br&gt;Code and ideas taken from other opensource projects and people are mentioned in the CREDITS file included in the source tarball.</source>
-        <translation> jest graficznym interfejsem dla demona Museeka&lt;/p&gt;Programy, museeq i museekd i muscan, zostały stworzone przez Hyrianda w latach 2003-2005&lt;br&gt;&lt;br&gt;Dodatki przez Daelstorma i SeeSchlossa w 2006&lt;br&gt;Ten projekt jest wypuszczony pod licencją GPL.&lt;br&gt;Kod i pomysły wzięto z innych opensource&apos;owych projektów oraz od ludzi wspomnianych w pliku CREDITS załączonym w archiwum źródłowym.</translation>
+        <translation> jest graficznym interfejsem dla demona Museeka&lt;/p&gt;Programy, museeq i museekd i muscan, zostały stworzone przez Hyrianda w latach 2003-2005&lt;br&gt;&lt;br&gt;Dodatki przez Daelstorma i SeeSchlossa w 2006&lt;br&gt;Ten projekt jest wydany na licencji GPL.&lt;br&gt;Kod i pomysły wzięto z innych opensource&apos;owych projektów oraz od ludzi wspomnianych w pliku CREDITS, załączonym w archiwum źródłowym.</translation>
     </message>
     <message>
         <source>Museeq Commands</source>
-        <translation>Komendy Museeq-a</translation>
+        <translation>Komendy Museeqa</translation>
     </message>
     <message>
         <source>&lt;h3&gt;While in a chat window, such as a Chat Room, or a Private Chat, there are a number of commands available for use.&lt;/h3&gt;&lt;b&gt;/c /chat&lt;/b&gt;   &lt;i&gt;(Switch to Chat Rooms)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/pm /private&lt;/b&gt; &amp;lt;nothing | username&amp;gt;  &lt;i&gt;(Switch to Private Chat and start chatting with a user, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/transfers&lt;/b&gt;   &lt;i&gt;(Switch to Transfers)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/s /search&lt;/b&gt; &amp;lt;nothing | query&gt;   &lt;i&gt;(Switch to Searchs and start a Search with &amp;lt;query&amp;gt; if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/u /userinfo&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Switch to userinfo, and attempt to get a user&apos;s info, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/b /browse&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Switch to Browse and initate browsing a user, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ip&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Get the IP of a user)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/log&lt;/b&gt;    &lt;i&gt;(Toggle displaying the Special Message Log)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/t /ticker /tickers&lt;/b&gt;   &lt;i&gt;(Toggle the showing of Tickers)&lt;/i&gt; &lt;br&gt;&lt;b&gt;/f /fonts /c /colors&lt;/b&gt;   &lt;i&gt;(Open the Fonts and Colors settings dialog)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ban /unban&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Disallow/Allow a user to recieve your shares and download from you)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ignore /unignore&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Block/Unblock chat messages from a user)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/buddy /unbuddy&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Add/Remove a user to keep track of it and add comments about it)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/trust /distrust&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Add/Remove a user to the optional list of users who can send files to you)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/me&lt;/b&gt; &lt;does something&gt;    &lt;i&gt;(Say something in the Third-Person)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/slap&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Typical Trout-slapping)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/j /join&lt;/b&gt; &amp;lt;room&amp;gt;    &lt;i&gt;(Join a Chat Room)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/l /p /leave /part&lt;/b&gt; &amp;lt;nothing | room&amp;gt;    &lt;i&gt;(Leave the current room or inputed room)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/about /help /commands&lt;/b&gt;    &lt;i&gt;(Display information)&lt;/i&gt;&lt;br&gt;&lt;br&gt;Do not type the brackets, they are there only to make clear that something (or nothing) can be typed after the /command.</source>
@@ -776,11 +685,11 @@
     </message>
     <message>
         <source>Museeq Help</source>
-        <translation>Pomoc Museeq-a</translation>
+        <translation>Pomoc Museeqa</translation>
     </message>
     <message>
         <source>&lt;h3&gt;What&apos;s going on? I can&apos;t connect to a Soulseek Server with museeq!&lt;/h3&gt; You connect to museekd with museeq, so you need to have &lt;b&gt;museekd&lt;/b&gt; configured, running &lt;u&gt;and&lt;/u&gt; connected to a &lt;b&gt;Soulseek&lt;/b&gt; or Soulfind server. &lt;br&gt; &lt;h3&gt;Running for the first time?&lt;/h3&gt; Before you start museekd for the first time, you need to configure &lt;b&gt;museekd&lt;/b&gt; with &lt;b&gt;musetup&lt;/b&gt;,  a command-line configuration script.&lt;br&gt;&lt;br&gt; In musetup you &lt;b&gt;MUST&lt;/b&gt; configure the following items: Server, Username, Password, Interface Password, Download Dir&lt;br&gt; Also, take note of your interfaces, if you change them from the default localhost:2240 and /tmp/museek.&lt;tt&gt;USERNAME&lt;/tt&gt;, you&apos;ll need to know them for logging in with museeq. &lt;br&gt;&lt;br&gt; When you start museeq or choose File-&gt;Connect from the menu, you are asked to input the host and port, or Unix Socket of museekd, &lt;b&gt;not&lt;/b&gt; the Server.&lt;br&gt; &lt;h3&gt;Want to send someone a file?&lt;/h3&gt; Browse yourself, select file(s), and right-click-&gt;Upload. Input their name in the dialog box, and the upload should start, but it depends on if the user has place you on their &quot;trusted&quot; or &quot;uploads&quot; users list .&lt;br&gt;Once you&apos;re connected to museekd, change museekd options via Settings-&gt;Museek</source>
-        <translation>&lt;h3&gt;Co się dzieje? Nie mogę podłączyć się do serwera Soulseek przy pomocy museeq-a!&lt;/h3&gt; Museeq łączy się z programem &lt;b&gt;museekd&lt;/b&gt;, więc musi on być skonfigurowany, uruchomiony &lt;u&gt;oraz&lt;/u&gt; podłączony do serwera &lt;b&gt;Soulseek&lt;/b&gt; albo Soulfind. &lt;br&gt; &lt;h3&gt;Uruchamiasz po raz pierwszy?&lt;/h3&gt; Zanim uruchomisz &lt;b&gt;museekd&lt;/b&gt; po raz pierwszy, musisz go skonfigurować przy pomocy &lt;b&gt;musetup-a&lt;/b&gt;, skryptu konfiguracyjnego pracującego w wierszu poleceń.&lt;br&gt;&lt;br&gt; W musetup-ie &lt;b&gt;MUSISZ&lt;/b&gt; ustawić następujące rzeczy: serwer, nazwę użytkownika, hasło, hasło interfejsu, katalog pobierania&lt;br&gt; Ponadto, jeśli zmienisz swoje interfejsy z domyślnych localhost:2240 i /tmp/museek.&lt;tt&gt;NAZWA_UŻYTKOWNIKA&lt;/tt&gt;, będziesz musiał je znać żeby zalogować się museeq-iem. &lt;br&gt;&lt;br&gt; Kiedy uruchomisz museeq-a albo wybierzesz Plik-&gt;Podłącz z menu, będziesz poproszony o wprowadzenie hosta i portu, albo gniazda uniksowego  museekd, &lt;b&gt;a nie&lt;/b&gt; serwer.&lt;br&gt; &lt;h3&gt;Chcesz wysłać komuś plik?&lt;/h3&gt; Przeglądaj swoje pliki, wybierz plik(i), następnie kliknij prwaym przyciskiem i wybierz Wyślij. Wprowadź jego imię w okienku dialogowym, a pobieranie powinno się rozpocząć, jednakże zależy to od tego, czy ma on ciebie na swojej liście zaufanych lub wysyłających.&lt;br&gt;Kiedy jesteś podłączony do museekd, możesz zmieniać jego opcje poprzez Ustawienia-&gt;Museek</translation>
+        <translation>&lt;h3&gt;Co się dzieje? Nie mogę podłączyć się do serwera Soulseek przy pomocy museeqa!&lt;/h3&gt; Museeq łączy się z programem &lt;b&gt;museekd&lt;/b&gt;, więc musi on być skonfigurowany, uruchomiony &lt;u&gt;oraz&lt;/u&gt; podłączony do serwera &lt;b&gt;Soulseek&lt;/b&gt; albo Soulfind. &lt;br&gt; &lt;h3&gt;Uruchamiasz po raz pierwszy?&lt;/h3&gt; Zanim uruchomisz &lt;b&gt;museekd&lt;/b&gt; po raz pierwszy, musisz go skonfigurować przy pomocy &lt;b&gt;musetupa&lt;/b&gt;, skryptu konfiguracyjnego pracującego w wierszu poleceń.&lt;br&gt;&lt;br&gt; W musetup-ie &lt;b&gt;MUSISZ&lt;/b&gt; ustawić następujące rzeczy: serwer, nazwę użytkownika, hasło, hasło interfejsu, katalog pobierania&lt;br&gt; Ponadto, jeśli zmienisz swoje interfejsy z domyślnych localhost:2240 i /tmp/museek.&lt;tt&gt;NAZWA_UŻYTKOWNIKA&lt;/tt&gt;, będziesz musiał je znać żeby zalogować się museeq-iem. &lt;br&gt;&lt;br&gt; Kiedy uruchomisz museeq-a albo wybierzesz Plik-&gt;Podłącz z menu, będziesz poproszony o wprowadzenie hosta i portu, albo gniazda uniksowego  museekd, &lt;b&gt;a nie&lt;/b&gt; serwer.&lt;br&gt; &lt;h3&gt;Chcesz wysłać komuś plik?&lt;/h3&gt; Przeglądaj swoje pliki, wybierz plik(i), następnie kliknij prwaym przyciskiem i wybierz Wyślij. Wprowadź jego imię w okienku dialogowym, a pobieranie powinno się rozpocząć, jednakże zależy to od tego, czy ma on ciebie na swojej liście zaufanych lub wysyłających.&lt;br&gt;Kiedy jesteś podłączony do museekd, możesz zmieniać jego opcje poprzez Ustawienia-&gt;Museek</translation>
     </message>
     <message>
         <source>Delete handler</source>
@@ -814,7 +723,7 @@
     </message>
     <message>
         <source>Shutdown Museeq</source>
-        <translation>Wyłącz Museeq-a</translation>
+        <translation>Wyłącz Museeqa</translation>
     </message>
     <message>
         <source>The Museek Daemon was launched by Museeq and is still running, and will be shut down if you close Museeq, are you sure you want to?</source>
@@ -830,11 +739,11 @@
     </message>
     <message>
         <source>The Museek Daemon was launched by Museeq and is still running, but will &lt;b&gt;not&lt;/b&gt; be shut down if you close Museeq. Are you sure you want to?</source>
-        <translation>Demon Museeka został uruchomiony przez Museeq-a i ciągle działa, ale &lt;b&gt;nie&lt;/b&gt; zostanie wyłaczony jeśli zamkniesz Museeq-a, na pewno chcesz to zrobić?</translation>
+        <translation>Demon Museeka został uruchomiony przez Museeqa i ciągle działa, ale &lt;b&gt;nie&lt;/b&gt; zostanie wyłaczony jeśli zamkniesz Museeqa, na pewno chcesz to zrobić?</translation>
     </message>
     <message>
         <source>It&apos;s safe to close Museeq, but are you sure you want to?</source>
-        <translation>Można bezpiecznie zamknąć Museeq-a, ale czy na pewno chcesz to zrobić?</translation>
+        <translation>Można bezpiecznie zamknąć Museeqa, ale czy na pewno chcesz to zrobić?</translation>
     </message>
     <message>
         <source>Load Script</source>
@@ -842,7 +751,7 @@
     </message>
     <message>
         <source>Show T&amp;imestamps</source>
-        <translation>Pokaż stemple czasowe</translation>
+        <translation>Pokaż &amp;stemple czasowe</translation>
     </message>
     <message>
         <source>IP of </source>
@@ -858,11 +767,11 @@
     </message>
     <message>
         <source>Auto-Connect to Daemon</source>
-        <translation>Podłącz do demona automatycznie</translation>
+        <translation>Połącz z demonem automatycznie</translation>
     </message>
     <message>
         <source>Toggle &amp;away</source>
-        <translation>Przełącz odd&amp;alenie</translation>
+        <translation>Przełącz &amp;oddalenie</translation>
     </message>
     <message>
         <source>Show Exit Dialog</source>
@@ -870,14 +779,14 @@
     </message>
     <message>
         <source>&amp;Configure...</source>
-        <translation type="unfinished"></translation>
+        <translation>S&amp;konfiguruj...</translation>
     </message>
 </context>
 <context>
     <name>Museeq</name>
     <message>
         <source>&amp;Restore</source>
-        <translation>P&amp;rzywróć</translation>
+        <translation>&amp;Przywróć</translation>
     </message>
     <message>
         <source>&amp;Hide</source>
@@ -885,15 +794,15 @@
     </message>
     <message>
         <source>&amp;Quit</source>
-        <translation>Za&amp;kończ</translation>
+        <translation>&amp;Zakończ</translation>
     </message>
     <message>
         <source>MuseeqTray</source>
-        <translation>Zasobnik systemowy museek-a</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>&amp;Museek Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ustawienia Museeka</translation>
     </message>
 </context>
 <context>
@@ -943,38 +852,11 @@
     </message>
     <message>
         <source>%1 is away</source>
-        <translation>%1 jest daleko</translation>
+        <translation>%1 jest oddalony</translation>
     </message>
     <message>
         <source>%1 is online</source>
         <translation>%1 jest w sieci</translation>
-    </message>
-</context>
-<context>
-    <name>ProtocolDialog</name>
-    <message>
-        <source>Protocol</source>
-        <translation type="obsolete">Proktokół</translation>
-    </message>
-    <message>
-        <source>Handler</source>
-        <translation type="obsolete">Program obsługujący</translation>
-    </message>
-    <message>
-        <source>Protocol handlers</source>
-        <translation type="obsolete">Programy obsługujące protokoły</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation type="obsolete">OK</translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation type="obsolete">Anuluj</translation>
-    </message>
-    <message>
-        <source>New</source>
-        <translation type="obsolete">Nowy</translation>
     </message>
 </context>
 <context>
@@ -1033,7 +915,7 @@
     </message>
     <message>
         <source>Bitrate:</source>
-        <translation>Próbkowanie:</translation>
+        <translation>Przepływność:</translation>
     </message>
     <message>
         <source>Free slot</source>
@@ -1065,7 +947,7 @@
     </message>
     <message>
         <source>Invalid bitrate filter, disabling it</source>
-        <translation>Nieprawidłowy filtr próbkowania, wyłączam go</translation>
+        <translation>Nieprawidłowy filtr przepływności, wyłączam go</translation>
     </message>
 </context>
 <context>
@@ -1115,7 +997,7 @@
     </message>
     <message>
         <source>Bitrate</source>
-        <translation>Próbkowanie</translation>
+        <translation>Przepływność</translation>
     </message>
     <message>
         <source>Path</source>
@@ -1135,7 +1017,7 @@
     </message>
     <message>
         <source>1 search result (1 user)</source>
-        <translation>1 wynik wyszukiwania (1 uzytkownik)</translation>
+        <translation>1 wynik wyszukiwania (1 użytkownik)</translation>
     </message>
     <message>
         <source>%1 search results (1 user)</source>
@@ -1196,10 +1078,6 @@
 <context>
     <name>SettingsDialog</name>
     <message>
-        <source>Museek Settings</source>
-        <translation type="obsolete">Ustawienia Museek-a</translation>
-    </message>
-    <message>
         <source>Ok</source>
         <translation>Ok</translation>
     </message>
@@ -1212,10 +1090,6 @@
         <translation>Anuluj</translation>
     </message>
     <message>
-        <source>Default Encoding:</source>
-        <translation type="obsolete">Domyślne kodowanie:</translation>
-    </message>
-    <message>
         <source>Filesystem Encoding:</source>
         <translation>Kodowanie systemu plików:</translation>
     </message>
@@ -1225,7 +1099,7 @@
     </message>
     <message>
         <source>Connect</source>
-        <translation>Połacz</translation>
+        <translation>Połącz</translation>
     </message>
     <message>
         <source>Disconnect</source>
@@ -1250,10 +1124,6 @@
     <message>
         <source>Server</source>
         <translation>Serwer</translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;Configure your shares with musetup, or run &lt;u&gt;muscan -r &lt;/u&gt;to rescan your shares and then press:&lt;/p&gt;</source>
-        <translation type="obsolete">&lt;p&gt;Skonfiguruj swoje udziały musetupem, albo uruchom &lt;u&gt;muscan -r &lt;/u&gt; aby zreskanować swoje udziały i naciśnij:&lt;/p&gt;</translation>
     </message>
     <message>
         <source>Connections</source>
@@ -1282,10 +1152,6 @@
     <message>
         <source>Incomplete Dir:</source>
         <translation>Katalog niekompletnych:</translation>
-    </message>
-    <message>
-        <source>Shares and Connections</source>
-        <translation type="obsolete">Udziały i połączenia</translation>
     </message>
     <message>
         <source>Buddies are Privileged</source>
@@ -1333,155 +1199,155 @@
     </message>
     <message>
         <source>To configure your shares, use one of the following: musetup, musetup-gtk, muscan (in a terminal), or the buttons below. Press &lt;u&gt;Reload Shares&lt;/u&gt; to activate your changes.</source>
-        <translation type="unfinished"></translation>
+        <translation>Aby skonfigurować swoje udziały, użyj jednego z: musetup, musetup-gtk, muscan (w terminalu), albo przycisków poniżej. Naciśnij &lt;u&gt;Przeładuj udziały&lt;/u&gt;, aby aktywować swoje zmiany.</translation>
     </message>
     <message>
         <source>Directories</source>
-        <translation type="unfinished"></translation>
+        <translation>Katalogi</translation>
     </message>
     <message>
         <source>Select a Directory to add to your Buddy Shares.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wybierz katalog do dodania do swoich udziałów dla kumpli.</translation>
     </message>
     <message>
         <source>Select a Directory to add to your Normal Shares.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wybierz katalog do dodania do swoich normalnych udziałów.</translation>
     </message>
     <message>
         <source>Select the museekd config file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wybierz plik konfiguracyjny programu museekd.</translation>
     </message>
     <message>
         <source>XML files (*.xml)</source>
-        <translation type="unfinished"></translation>
+        <translation>Pliki XML (*.xml)</translation>
     </message>
     <message>
         <source>Museekd Config:</source>
-        <translation type="unfinished"></translation>
+        <translation>Konfiguracja programu museekd:</translation>
     </message>
     <message>
         <source>Refresh list</source>
-        <translation type="unfinished"></translation>
+        <translation>Odśwież listę</translation>
     </message>
     <message>
         <source>Update</source>
-        <translation type="unfinished"></translation>
+        <translation>Uaktualnij</translation>
     </message>
     <message>
         <source>Rescan</source>
-        <translation type="unfinished"></translation>
+        <translation>Przeskanuj</translation>
     </message>
     <message>
         <source>Add</source>
-        <translation type="unfinished"></translation>
+        <translation>Dodaj</translation>
     </message>
     <message>
         <source>Remove</source>
-        <translation type="unfinished">Usuń</translation>
+        <translation>Usuń</translation>
     </message>
     <message>
         <source>Shares</source>
-        <translation type="unfinished"></translation>
+        <translation>Udziały</translation>
     </message>
     <message>
         <source>Protocol</source>
-        <translation type="unfinished">Proktokół</translation>
+        <translation>Protokół</translation>
     </message>
     <message>
         <source>Handler</source>
-        <translation type="unfinished">Program obsługujący</translation>
+        <translation>Program obsługujący</translation>
     </message>
     <message>
         <source>Select a Directory to write Private Chat log files.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wybierz katalog do zapisu plików dziennika prywatnej rozmowy.</translation>
     </message>
     <message>
         <source>Select a Directory to write Chat Room log files.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wybierz katalog do zapisu plików dziennika pokojów czatu.</translation>
     </message>
     <message>
         <source>Images (*.png *.gif *.jpg *.jpeg)</source>
-        <translation type="unfinished">Obrazki (*.png *.gif *.jpg *.jpeg)</translation>
+        <translation>Obrazy (*.png *.gif *.jpg *.jpeg)</translation>
     </message>
     <message>
         <source>Select an Image for you User info</source>
-        <translation type="unfinished">Wybierz obrazek dla informacji o sobie</translation>
+        <translation>Wybierz obraz dla informacji o sobie</translation>
     </message>
     <message>
         <source>Museeq Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Ustawienia museeqa</translation>
     </message>
     <message>
         <source>Listen port range (the first available port will be used when museekd starts up)</source>
-        <translation type="unfinished"></translation>
+        <translation>Zakres portów nasłuchu (pierwszy dostępny port będzie używany kiedy museekd się uruchomi)</translation>
     </message>
     <message>
         <source>First port:</source>
-        <translation type="unfinished"></translation>
+        <translation>Pierwszy port:</translation>
     </message>
     <message>
         <source>Last port:</source>
-        <translation type="unfinished"></translation>
+        <translation>Ostatni port:</translation>
     </message>
     <message>
         <source>Image</source>
-        <translation type="unfinished">Obrazek</translation>
+        <translation>Obraz</translation>
     </message>
     <message>
         <source>Clear</source>
-        <translation type="unfinished">Wyczyść</translation>
+        <translation>Wyczyść</translation>
     </message>
     <message>
         <source>Don&apos;t touch</source>
-        <translation type="unfinished">Nie dotykaj</translation>
+        <translation>Nie dotykaj</translation>
     </message>
     <message>
         <source>Upload:</source>
-        <translation type="unfinished">Wyślij:</translation>
+        <translation>Wyślij:</translation>
     </message>
     <message>
         <source>Log Private Chats</source>
-        <translation type="unfinished"></translation>
+        <translation>Loguj prywatne rozmowy</translation>
     </message>
     <message>
         <source>Log Chat Rooms</source>
-        <translation type="unfinished"></translation>
+        <translation>Loguj pokoje czatu</translation>
     </message>
     <message>
         <source>New</source>
-        <translation type="unfinished">Nowy</translation>
+        <translation>Nowy</translation>
     </message>
     <message>
         <source>Modify</source>
-        <translation type="unfinished"></translation>
+        <translation>Zmodyfikuj</translation>
     </message>
     <message>
         <source>Museek Daemon</source>
-        <translation type="unfinished"></translation>
+        <translation>Demon museeka</translation>
     </message>
     <message>
         <source>User Info</source>
-        <translation type="unfinished"></translation>
+        <translation>Informacje o użytkowniku</translation>
     </message>
     <message>
         <source>Museeq</source>
-        <translation type="unfinished"></translation>
+        <translation>Museeq</translation>
     </message>
     <message>
         <source>Appearance</source>
-        <translation type="unfinished"></translation>
+        <translation>Wygląd</translation>
     </message>
     <message>
         <source>Fonts and Colors</source>
-        <translation type="unfinished"></translation>
+        <translation>Czcionki i kolory</translation>
     </message>
     <message>
         <source>Logging</source>
-        <translation type="unfinished"></translation>
+        <translation>Logowanie</translation>
     </message>
     <message>
         <source>Protocol handlers</source>
-        <translation type="unfinished">Programy obsługujące protokoły</translation>
+        <translation>Programy obsługujące protokoły</translation>
     </message>
     <message>
         <source>Time &amp; Brackets Font</source>
@@ -1489,7 +1355,7 @@
     </message>
     <message>
         <source>Pick Font</source>
-        <translation type="unfinished">Wybierz czcionkę</translation>
+        <translation>Wybierz czcionkę</translation>
     </message>
     <message>
         <source>Time &amp; Brackets Text Color</source>
@@ -1497,35 +1363,35 @@
     </message>
     <message>
         <source>/Me Text</source>
-        <translation type="unfinished">Tekst /me</translation>
+        <translation>Tekst /me</translation>
     </message>
     <message>
         <source>Pick Color</source>
-        <translation type="unfinished">Wybierz kolor</translation>
+        <translation>Wybierz kolor</translation>
     </message>
     <message>
         <source>Message Font</source>
-        <translation type="unfinished">Czcionka wiadomości</translation>
+        <translation>Czcionka wiadomości</translation>
     </message>
     <message>
         <source>Buddied Users</source>
-        <translation type="unfinished">Kumple</translation>
+        <translation>Zaprzyjaźnieni użytkownicy</translation>
     </message>
     <message>
         <source>My Text</source>
-        <translation type="unfinished">Mój tekst</translation>
+        <translation>Mój tekst</translation>
     </message>
     <message>
         <source>Trusted Users</source>
-        <translation type="unfinished">Zaufani użytkownicy</translation>
+        <translation>Zaufani użytkownicy</translation>
     </message>
     <message>
         <source>Banned Users</source>
-        <translation type="unfinished">Zbanowani użytkownicy</translation>
+        <translation>Zbanowani użytkownicy</translation>
     </message>
     <message>
         <source>Remote Text</source>
-        <translation type="unfinished">Tekst zdalny</translation>
+        <translation>Tekst zdalny</translation>
     </message>
 </context>
 <context>
@@ -1548,7 +1414,7 @@
     </message>
     <message>
         <source>Default for all rooms</source>
-        <translation>Domyślnie dal wszytkich pokoi</translation>
+        <translation>Domyślnie dla wszytkich pokoi</translation>
     </message>
     <message>
         <source>&amp;Cancel</source>
@@ -1583,7 +1449,7 @@
     </message>
     <message>
         <source>Waiting</source>
-        <translation>Czemanie</translation>
+        <translation>Czekanie</translation>
     </message>
     <message>
         <source>Establishing</source>
@@ -1729,7 +1595,7 @@
     </message>
     <message>
         <source>Finished / aborted</source>
-        <translation>Skończonie / anulowane</translation>
+        <translation>Skończone / anulowane</translation>
     </message>
     <message>
         <source>Queued</source>
@@ -1748,15 +1614,15 @@
     <name>TrustList</name>
     <message>
         <source>Add:</source>
-        <translation type="unfinished">Dodaj:</translation>
+        <translation>Dodaj:</translation>
     </message>
     <message>
         <source>Comments</source>
-        <translation type="unfinished">Komentarze</translation>
+        <translation>Komentarze</translation>
     </message>
     <message>
         <source>Comments for </source>
-        <translation type="unfinished">Komentarze dotyczące </translation>
+        <translation>Komentarze dotyczące </translation>
     </message>
 </context>
 <context>
@@ -1791,7 +1657,7 @@
     </message>
     <message>
         <source>Picture</source>
-        <translation>Obrazek</translation>
+        <translation>Obraz</translation>
     </message>
     <message>
         <source>yes</source>
@@ -1800,53 +1666,6 @@
     <message>
         <source>no</source>
         <translation>nie</translation>
-    </message>
-</context>
-<context>
-    <name>UserInfoDialog</name>
-    <message>
-        <source>Change user info</source>
-        <translation type="obsolete">Zmień informacje o użytkowniku</translation>
-    </message>
-    <message>
-        <source>Image</source>
-        <translation type="obsolete">Obrazek</translation>
-    </message>
-    <message>
-        <source>Clear</source>
-        <translation type="obsolete">Wyczyść</translation>
-    </message>
-    <message>
-        <source>Don&apos;t touch</source>
-        <translation type="obsolete">Nie dotykaj</translation>
-    </message>
-    <message>
-        <source>Upload:</source>
-        <translation type="obsolete">Wyślij:</translation>
-    </message>
-    <message>
-        <source>...</source>
-        <translation type="obsolete">...</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation type="obsolete">OK</translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation type="obsolete">Anuluj</translation>
-    </message>
-    <message>
-        <source>Images (*.png *.gif *.jpg *.jpeg)</source>
-        <translation type="obsolete">Obrazki (*.png *.gif *.jpg *.jpeg)</translation>
-    </message>
-    <message>
-        <source>Select an Image for you User info</source>
-        <translation type="obsolete">Wybierz obrazek dla informacji o sobie</translation>
-    </message>
-    <message>
-        <source>All files (*)</source>
-        <translation type="obsolete">Wszystkie pliki (*)</translation>
     </message>
 </context>
 <context>
@@ -1884,7 +1703,7 @@
     </message>
     <message>
         <source>*Trusted*</source>
-        <translation type="unfinished"></translation>
+        <translation>*Zaufani*</translation>
     </message>
 </context>
 <context>
