@@ -306,7 +306,7 @@ env.Alias('install_museeq', translations_install)
 for theme in theme_lists:
 	if theme_lists[theme] != []:
 		print "Museeq theme, %s to be installed. %d Icons" % ( theme, len(theme_lists[theme]) )
-		env.Alias('install_museeq', env_qt.Install(env['DESTDIR'] + os.path.join(env_qt['DATADIR'], 'museek', 'museeq', theme), theme_lists[theme]))
+		env.Alias('install_museeq', env_qt.Install(env['DESTDIR'] + os.path.join(env_qt['DATADIR'], 'museek', 'museeq', 'icons', theme), theme_lists[theme]))
 
 
 env.Alias('install_museeq', script_install)

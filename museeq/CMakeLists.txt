@@ -331,13 +331,13 @@ install(
 )
 
 file(GLOB_RECURSE THEME_DEFAULT default/*.png)
-install(FILES ${THEME_DEFAULT} DESTINATION ${DATADIR}/museek/museeq/default)
+install(FILES ${THEME_DEFAULT} DESTINATION ${DATADIR}/museek/museeq/icons/default)
 file(GLOB_RECURSE THEME_BLUEBOX bluebox/*.png)
-install(FILES ${THEME_BLUEBOX} DESTINATION ${DATADIR}/museek/museeq/bluebox)
+install(FILES ${THEME_BLUEBOX} DESTINATION ${DATADIR}/museek/museeq/icons/bluebox)
 file(GLOB_RECURSE THEME_SILK mikelabo-silk/*.png)
-install(FILES ${THEME_SILK} DESTINATION ${DATADIR}/museek/museeq/mikelabo-silk)
+install(FILES ${THEME_SILK} DESTINATION ${DATADIR}/museek/museeq/icons/mikelabo-silk)
 file(GLOB_RECURSE THEME_TRI mikelabo-tri/*.png)
-install(FILES ${THEME_TRI} DESTINATION ${DATADIR}/museek/museeq/mikelabo-tri)
+install(FILES ${THEME_TRI} DESTINATION ${DATADIR}/museek/museeq/icons/mikelabo-tri)
 
 set(ICONS
   museeq.png
