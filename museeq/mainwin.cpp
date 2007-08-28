@@ -119,12 +119,7 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 	mMenuSettings->setItemEnabled(1, true);
 
 	mMenuSettings->setItemEnabled(3, false);
-	mMenuSettings->setItemChecked(3, museeq->mShowTickers);
-	mMenuSettings->setItemEnabled(4, false);
-	mMenuSettings->setItemChecked(4, museeq->mShowStatusLog);
-	mMenuSettings->setItemChecked(5, museeq->mShowTimestamps);
-	mMenuSettings->setItemEnabled(8, true);
-	mMenuSettings->setItemChecked(8, museeq->mUsetray);
+	
 	
 	menuBar()->insertItem(tr("&Settings"), mMenuSettings);
 	mMenuModes = new QPopupMenu(this);
@@ -263,12 +258,8 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 
 	connect(museeq->driver(), SIGNAL(userStatus(const QString&, uint)), SLOT(slotUserStatus(const QString&, uint)));
 	QSettings settings;
-	QString showStatusLog = settings.readEntry("/TheGraveyard.org/Museeq/showStatusLog");
-	if (! showStatusLog.isEmpty() and (showStatusLog == "true" || showStatusLog == true)) {
-		museeq->mShowStatusLog = true;
-	} else if (! showStatusLog.isEmpty() and (showStatusLog == "false" || showStatusLog == false)) {
-		museeq->mShowStatusLog = false;
-	}
+	museeq->mShowStatusLog = settings.readBoolEntry("/TheGraveyard.org/Museeq/showStatusLog", FALSE);
+
 	if ( ! museeq->mShowStatusLog)
 		mLog->hide();
 	QString exitdialog = settings.readEntry("/TheGraveyard.org/Museeq/ShowExitDialog");
@@ -326,9 +317,10 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 	museeq->mColorTrusted = settings.readEntry("/TheGraveyard.org/Museeq/colorTrusted");
 	museeq->mColorRemote = settings.readEntry("/TheGraveyard.org/Museeq/colorRemote");
 	museeq->mColorTime = settings.readEntry("/TheGraveyard.org/Museeq/colorTime");
-	QString showTimestamps = settings.readEntry("/TheGraveyard.org/Museeq/showTimestamps");
-	QString showIPinLog = settings.readEntry("/TheGraveyard.org/Museeq/showIPinLog");
-	QString showAlertsInLog = settings.readEntry("/TheGraveyard.org/Museeq/showAlertsInLog");
+	museeq->mShowTickers = settings.readBoolEntry("/TheGraveyard.org/Museeq/showTickers", FALSE);
+	museeq->mShowTimestamps = settings.readBoolEntry("/TheGraveyard.org/Museeq/showTimestamps", FALSE);
+	museeq->mIPLog = settings.readBoolEntry("/TheGraveyard.org/Museeq/showIPinLog", FALSE);
+	museeq->mOnlineAlert = settings.readBoolEntry("/TheGraveyard.org/Museeq/showAlertsInLog", FALSE);
 	
 	if (! museeq->mFontTime.isEmpty()) {
 		mSettingsDialog->STimeFont->setText(museeq->mFontTime);
@@ -357,28 +349,14 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(parent, 
 	if (! museeq->mColorTime.isEmpty()) {
 		mSettingsDialog->STimeText->setText(museeq->mColorTime);
 	}
-	if (! showTimestamps.isEmpty() and (showTimestamps == "true" || showTimestamps == true)) {
-		museeq->mShowTimestamps = true;
-		mMenuSettings->setItemChecked(5, true);
-	} else if (! showTimestamps.isEmpty() and (showTimestamps == "false" || showTimestamps == false)) {
-		museeq->mShowTimestamps = false;
-		mMenuSettings->setItemChecked(5, false);
-	}
-	if (! showIPinLog.isEmpty() and (showIPinLog == "true" || showIPinLog == true)) {
-		mSettingsDialog->SIPLog->setChecked(true);
-		museeq->mIPLog = true;
-		
-	} else if (! showIPinLog.isEmpty() and (showIPinLog == "false" || showIPinLog == false)){
-		mSettingsDialog->SIPLog->setChecked(false);
-		museeq->mIPLog = false;
-	}
-	if (! showAlertsInLog.isEmpty() and (showAlertsInLog == "true" || showAlertsInLog == true)) {
-		mSettingsDialog->SOnlineAlerts->setChecked(true);
-		museeq->mOnlineAlert = true;
-	} else if (! showAlertsInLog.isEmpty() and (showAlertsInLog == "false" || showAlertsInLog == false)){
-		mSettingsDialog->SOnlineAlerts->setChecked(false);
-		museeq->mOnlineAlert = false;
-	}
+
+	
+	mMenuSettings->setItemChecked(3, museeq->mShowTickers);
+	mMenuSettings->setItemChecked(4, museeq->mShowStatusLog);
+	mMenuSettings->setItemChecked(5, museeq->mShowTimestamps);
+	mMenuSettings->setItemChecked(8, museeq->mUsetray);
+	mSettingsDialog->SOnlineAlerts->setChecked(museeq->mOnlineAlert);
+	mSettingsDialog->SIPLog->setChecked(museeq->mIPLog);
 	box->setEnabled(false);
 	daemon = new QProcess(this);
 	connect( daemon, SIGNAL(readyReadStdout()), this,   SLOT(readFromStdout()) );
