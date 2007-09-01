@@ -90,6 +90,7 @@ FIND_LIBRARY(QSA_LIBRARY
     /usr/share/qt3/lib
     C:/Progra~1/qt/lib
     /usr/X11R6/lib
+    /opt/qt/lib
 )
 
 IF(PREFIX)
@@ -304,8 +305,12 @@ ADD_MOC_FILES(MUSEEQ_SOURCES ${MUSEEQ_MOC_HEADERS})
 
 
 add_executable(museeq ${MUSEEQ_SOURCES} ${MUSEEQ_MOC_HEADERS})
+set(LINK_LIBRARIES  Mucipher ${QT_LIBRARIES})
+if (QSA)
+  set(LINK_LIBRARIES ${LINK_LIBRARIES} ${QSA_LIBRARY})
+endif (QSA)
 
-target_link_libraries(museeq Mucipher ${QT_LIBRARIES} ${QSA_LIBRARY})
+target_link_libraries(museeq ${LINK_LIBRARIES})
 
 install(
   TARGETS museeq
