@@ -19,6 +19,7 @@
 
 #include <system.h>
 
+#include <stdlib.h>
 #include "mp3.h"
 
 #define ENDIAN(head) ((head >> 24) | ((head & 0x00ff0000) >> 8) | ((head & 0x0000ff00) << 8) | (head << 24))
