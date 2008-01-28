@@ -2856,15 +2856,15 @@ class MuseekSetupGTK:
 				key.setAttribute('id', j)
 				v = self.config[i][j]
 				if v:
-					key.appendChild(doc.createTextNode(v))
+					key.appendChild(doc.createTextNode(str(v)))
 			domain.appendChild(doc.createTextNode('\n  '))
 		root.appendChild(doc.createTextNode('\n'))
-		
-		try:
-			os.makedirs(os.path.split(self.CONFIG_PATH)[0])
-		except OSError, error:
-			print error
-			pass
+		if not os.path.exists(os.path.split(self.CONFIG_PATH)[0]):
+			try:
+				os.makedirs(os.path.split(self.CONFIG_PATH)[0])
+			except OSError, error:
+				print error
+			
 		
 		f = open(self.CONFIG_PATH, 'w')
 		doc.writexml(f)
