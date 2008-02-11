@@ -19,6 +19,8 @@
 
 #include <system.h>
 
+#include <cstdlib>
+
 extern "C" {
 # include "mp3.h"
 }

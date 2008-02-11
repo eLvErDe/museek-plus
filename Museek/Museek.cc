@@ -36,6 +36,7 @@
 #include <string>
 #include <queue>
 #include <vector>
+#include <cstdlib>
 
 using std::string;
 using std::wstring;

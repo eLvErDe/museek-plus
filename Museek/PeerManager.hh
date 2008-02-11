@@ -95,7 +95,7 @@ public:
 	inline Transfer* uploading() const { return mUploading; }
 	inline void set_uploading(Transfer* uploading) { mUploading = uploading; }
 	
-	void push_download(uint path, const std::wstring& path);
+	void push_download(uint path1, const std::wstring& path);
 	void flush_downloads();
 	
 private:

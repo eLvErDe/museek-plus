@@ -50,6 +50,7 @@ Hyriand (2004-02-20): added str_replace
 #include <cctype>
 #include <vector>
 #include <list>
+#include <cstdlib>
 
 // Split a string into a list of strings
 inline unsigned int split(const std::string &src, 

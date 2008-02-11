@@ -27,6 +27,8 @@
 #define MULOG_DOMAIN "Museek.DM"
 #include <Muhelp/Mulog.hh>
 
+#include <algorithm>
+
 using std::vector;
 
 DistribManager::DistribManager(Museek *museek)

@@ -26,6 +26,7 @@
 #include <Muhelp/Mulog.hh>
 
 #include <iostream>
+#include <cstdlib>
 
 using std::vector;
 using std::string;

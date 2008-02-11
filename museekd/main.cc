@@ -25,6 +25,7 @@
 #define MULOG_DOMAIN "museekd.MA"
 #include <Muhelp/Mulog.hh>
 #include <fstream>
+#include <cstdlib>
 
 using std::string;
 

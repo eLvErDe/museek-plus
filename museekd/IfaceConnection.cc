@@ -28,6 +28,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <cstdlib>
 
 #define MULOG_DOMAIN "museekd.IL"
 #include <Muhelp/Mulog.hh>

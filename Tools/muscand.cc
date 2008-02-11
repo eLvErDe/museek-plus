@@ -8,6 +8,8 @@
 #include <Muhelp/Mulog.hh>
 
 #include <iostream>
+#include <cstdlib>
+#include <algorithm>
 
 using std::string;
 using std::map;

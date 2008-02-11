@@ -20,6 +20,8 @@
 #include <system.h>
 #include <syslog.h>
 
+#include <cstdlib>
+
 #include <Muhelp/Mulog.hh>
 
 void Mulog::operator() (const std::string& _class, const char* fmt, ...) {

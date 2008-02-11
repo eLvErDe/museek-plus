@@ -32,6 +32,7 @@
 #include <map>
 #include <queue>
 #include <vector>
+#include <algorithm>
 
 using std::string;
 using std::wstring;
