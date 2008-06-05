@@ -318,8 +318,11 @@ void PeerConnection::process_message(uint32 code) {
 		if(mMuseek->is_banned(mUser)) {
 			PQueueFailed r(s.filename, "Banned or Sharing Only to List");
 			send(r);
-		} else if(! mMuseek->shares()->is_shared(s.filename)) {
+		} else if(! mMuseek->shares()->is_shared(s.filename) && ! mMuseek->buddyshares()->is_shared(s.filename)) {
 			PQueueFailed r(s.filename, "File not shared");
+			send(r);
+		} else if(! mMuseek->shares()->is_shared(s.filename) && ((mMuseek->buddyshares()->is_shared(s.filename) && mMuseek->mBuddySharesHave) && ! mMuseek->is_buddied(mUser) ) ) {
+			PQueueFailed r(s.filename, "File not shared (Buddies only)");
 			send(r);
 		} else {
 			mMuseek->transfer_manager()->new_upload(mUser, mMuseek->recoder()->decode_network(s.filename));
