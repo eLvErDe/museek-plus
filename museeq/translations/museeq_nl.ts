@@ -1410,27 +1410,27 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="850"/>
+        <location filename="../museeq.cpp" line="868"/>
         <source>Syntax: museeq [options]</source>
         <translation type="unfinished">Syntax: museeq [opties]</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="851"/>
+        <location filename="../museeq.cpp" line="869"/>
         <source>Options:</source>
         <translation type="unfinished">Opties:</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="852"/>
+        <location filename="../museeq.cpp" line="870"/>
         <source>-V --version<byte value="x9"/><byte value="x9"/>Display museeq version and quit</source>
         <translation type="unfinished">-V --version<byte value="x9"/><byte value="x9"/>Museeq versie weergeven en afsluiten</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="853"/>
+        <location filename="../museeq.cpp" line="871"/>
         <source>-h --help<byte value="x9"/><byte value="x9"/>Display this message and quit</source>
         <translation type="unfinished">-h --help<byte value="x9"/><byte value="x9"/>Deze melding weergeven en afsluiten</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="854"/>
+        <location filename="../museeq.cpp" line="872"/>
         <source>--no-tray<byte value="x9"/><byte value="x9"/>Don&apos;t load TrayIcon</source>
         <translation type="unfinished">--no-tray<byte value="x9"/><byte value="x9"/>Geen systeemvakpictogram laden</translation>
     </message>

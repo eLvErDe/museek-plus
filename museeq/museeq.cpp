@@ -808,28 +808,46 @@ Museeq* museeq = 0;
 int main(int argc, char **argv) {
 	QApplication app(argc, argv);
 
-	QLocale locale;
     // translation file for application strings
-	QTranslator translation( 0 );
-	QString lang, lang2, langpath;
-	lang = QString(locale.name());
-	langpath = lang.mid(0,5); // to fix \ shorten long locales like from "fr_FR.utf8" to "fr_FR"
-	lang2 =  (QString(DATADIR) + QString("/museek/museeq/translations/museeq_") + langpath + QString(".qm") );
-	QFileInfo fi( lang2 );
+	QTranslator muTranslation(0);
+	QString language, muLocalePath, muTransFile;
+	language = QLocale::system().name();
+    muLocalePath = QString(DATADIR) + QString("/museek/museeq/translations/");
+
+	// mid to fix \ shorten long locales like from "fr_FR.utf8" to "fr_FR"
+	muTransFile = QString("museeq_") + language.mid(0,5) + QString(".qm");
+	QFileInfo fi( muLocalePath + muTransFile );
 	if ( !fi.exists() ) {
 		// if longer locale isn't found, try two-character locale such as "fr"
-		langpath = lang.mid(0,2);
-		lang2 =  (QString(DATADIR) + QString("/museek/museeq/translations/museeq_") + langpath + QString(".qm") );
-		QFileInfo fi( lang2 );
+		muTransFile = QString("museeq_") + language.mid(0,2) + QString(".qm");
+		QFileInfo fi( muLocalePath + muTransFile );
 		if ( fi.exists() ) {
-			translation.load( lang2);
-			app.installTranslator( &translation );
+			muTranslation.load( muTransFile, muLocalePath );
+            app.installTranslator( &muTranslation );
 		}
 	} else {
-		translation.load( lang2);
-		app.installTranslator( &translation );
+		muTranslation.load( muTransFile, muLocalePath );
+        app.installTranslator( &muTranslation );
 	}
 
+	QTranslator qtTranslation(0);
+    QString qtLocalePath = QString(DATADIR) + QString("/qt4/");
+    QString qtTransFile = QString( "qt_%1.qm").arg( language );
+
+	QFileInfo fiqt( qtLocalePath + qtTransFile );
+	if ( !fiqt.exists() ) {
+        // try fallback
+        qtTransFile = QString( "qt_%1.qm").arg( language.toLower().left(2) );
+        QFileInfo fiqt( qtLocalePath + qtTransFile );
+		if ( fiqt.exists() ) {
+            qtTranslation.load( qtTransFile, qtLocalePath );
+            app.installTranslator( &qtTranslation );
+		}
+	}
+	else {
+        qtTranslation.load( qtTransFile, qtLocalePath );
+        app.installTranslator( &qtTranslation );
+	}
 
 	new Museeq(&app);
 
