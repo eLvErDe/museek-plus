@@ -19,7 +19,6 @@
 static const char rcsid[] = "$Id: md5.c,v 1.4 2003/12/17 07:39:14 wcc Exp $";
 #endif
 
-#include <system.h>
 #include "mucipher.h"
 
 /* Any 32-bit or wider integer data type will do */

@@ -23,6 +23,7 @@
 #include "usertabwidget.h"
 
 class ChatPanel;
+class QVBoxLayout;
 
 class PrivateChat : public UserWidget {
 	Q_OBJECT
@@ -30,16 +31,17 @@ public:
 	PrivateChat(const QString&, QWidget* = 0, const char* = 0);
 public slots:
 	void append(uint, uint, const QString&, const QString&);
+	void status(const QString&, uint);
 	void logMessage(const QString&, const QString&, const QString&);
 	void logMessage(const QString&, uint, const QString&, const QString&);
-	void status(const QString&, uint);
 
 protected slots:
 	void slotSend(const QString&);
-	
+
 private:
 	uint mStatus;
 	ChatPanel* mChatPanel;
+	QVBoxLayout* MainLayout;
 };
 
 #endif // PRIVATECHAT_H

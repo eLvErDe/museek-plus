@@ -20,18 +20,18 @@
 #ifndef ROOMLISTITEM_H
 #define ROOMLISTITEM_H
 
-#include <qlistview.h>
+#include <QTreeWidget>
 
 class RoomListView;
 
-class RoomListItem : public QListViewItem {
+class RoomListItem : public QTreeWidgetItem {
 public:
 	RoomListItem(RoomListView*, const QString&, unsigned int);
-	
-	int compare(QListViewItem*, int, bool) const;
-	
+
+	int compare(QTreeWidgetItem*, int, bool) const;
+
 	QString room() const;
-	
+	bool operator<(const QTreeWidgetItem & other) const;
 private:
 	QString mRoom;
 	unsigned int mUsers;

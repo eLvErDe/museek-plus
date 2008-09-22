@@ -30,12 +30,6 @@ set(MANPAGES
   musetup-gtk.1  
 )
 
-
-install(
-  FILES ${MANPAGES}
-  DESTINATION ${MANUAL_DIRECTORY}
-)
-
 set(ICONS
   museek_alt2.png
 )
@@ -44,6 +38,12 @@ install(
   FILES ${ICONS}
   DESTINATION "share/pixmaps"
 )
+
+install(
+  FILES ${MANPAGES}
+  DESTINATION ${MANUAL_DIRECTORY}
+)
+
 set(DESKTOP
   musetup-gtk.desktop
 )

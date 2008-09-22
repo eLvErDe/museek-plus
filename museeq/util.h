@@ -20,16 +20,17 @@
 #ifndef UTIL_H
 #define UTIL_H
 
-#include <qpopupmenu.h>
-#include <qapplication.h>
-#include <qpainter.h>
+#include <QApplication>
+
+class QDropEvent;
 
 class Util {
 public:
-	static int cmp(Q_INT64, Q_INT64);
-	static QString makeSize(Q_INT64);
+	static int cmp(qint64, qint64);
+	static QString makeSize(qint64);
 	static QString makeTime(uint);
 	static QString makeBitrate(uint bitrate, bool vbr);
+	static bool hasSlskUrls(const QDropEvent* e, bool needPath = false);
 };
 
 #endif // UTIL_H

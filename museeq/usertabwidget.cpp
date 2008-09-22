@@ -18,65 +18,68 @@
  */
 
 #include "usertabwidget.h"
-
-#include <qcheckbox.h>
-#include <qtoolbutton.h>
-#include <qaccel.h>
-#include <qurl.h>
-
 #include "codeccombo.h"
 #include "buddylist.h"
 #include "banlist.h"
 #include "ignorelist.h"
 #include "trustlist.h"
+#include "images.h"
 #include "museeq.h"
+
+#include <QUrl>
 
 UserTabWidget::UserTabWidget(QWidget* _p, const char* _n)
               : TabWidget(_p, _n, true) {
-	
+
 	setCanDrop(false);
 
 	const QString& Name = _n ;
-	mBuddyList = new BuddyList(0, "buddyList");
+	mBuddyList = new BuddyList(this, "buddyList");
+	// No popup
 	connect(mBuddyList, SIGNAL(activated(const QString&)), SLOT(setPage(const QString&)));
+	connect(mTabBar, SIGNAL(dropSlsk(const QList<QUrl>&)), SLOT(dropSlsk(const QList<QUrl>&)));
 	addTab(mBuddyList, tr("*Buddies*"));
+	tabBar()->setTabData(0, QVariant("1"));
 	if (Name == "userInfo") {
-		mBanList = new BanList(0, "banList");
-		mIgnoreList = new IgnoreList(0, "ignoreList");	
-		mTrustList = new TrustList(0, "trustList");	
-		connect(mBanList, SIGNAL(activated(const QString&)), SLOT(setPage(const QString&)));	
-		connect(mIgnoreList, SIGNAL(activated(const QString&)), SLOT(setPage(const QString&)));	
-		connect(mTrustList, SIGNAL(activated(const QString&)), SLOT(setPage(const QString&)));	
+		mBanList = new BanList(this, "banList");
+		mIgnoreList = new IgnoreList(this, "ignoreList");
+		mTrustList = new TrustList(this, "trustList");
+		connect(mBanList, SIGNAL(activated(const QString&)), SLOT(setPage(const QString&)));
+		connect(mIgnoreList, SIGNAL(activated(const QString&)), SLOT(setPage(const QString&)));
+		connect(mTrustList, SIGNAL(activated(const QString&)), SLOT(setPage(const QString&)));
 		addTab(mIgnoreList, tr("*Ignored*"));
 		addTab(mBanList, tr("*Banned*"));
 		addTab(mTrustList, tr("*Trusted*"));
+		tabBar()->setTabData(1, QVariant("1"));
+		tabBar()->setTabData(2, QVariant("1"));
+		tabBar()->setTabData(3, QVariant("1"));
 	}
 
-	
-	
+
+	connect(this, SIGNAL(currentChanged(QWidget*)), SLOT(doCurrentChanged(QWidget*)));
 	connect(museeq, SIGNAL(connectedToServer(bool)), SLOT(setCanDrop(bool)));
 }
 
 UserWidget* UserTabWidget::page(const QString& _u, bool _m) {
 	for(int i = 1; i < count(); ++i) {
-		UserWidget* frame = static_cast<UserWidget*>(QTabWidget::page(i));
+		UserWidget* frame = static_cast<UserWidget*>(QTabWidget::widget(i));
 		if(frame->user() == _u) {
 			return frame;
 		}
 	}
-	
+
 	if(! _m)
 		return 0;
-		
+
 	UserWidget* frame = makeNewPage(_u);
 	connect(frame, SIGNAL(highlight(int)), SIGNAL(highlight(int)));
 	emit(highlight(2));
-	
-	Tab* new_tab = new Tab(this, _u);
-	connect(frame, SIGNAL(highlight(int)), new_tab, SLOT(setHighlight(int)));
-	addTab(frame, new_tab);
+
+	int new_tab_position = addTab(frame, _u);
+	connect(frame, SIGNAL(highlight(int)), widget(new_tab_position), SLOT(setHighlight(int)));
+
 	emit newPage(_u);
-	
+
 	return frame;
 }
 
@@ -84,19 +87,61 @@ UserWidget* UserTabWidget::makeNewPage(const QString& _u) {
 	return new UserWidget(_u);
 }
 
-void UserTabWidget::setPage(const QString& _u) {
-	if(canDrop())
-		showPage(page(_u, true));
+void UserTabWidget::doCurrentChanged(QWidget* userwidget) {
+	UserWidget* uw = dynamic_cast<UserWidget*>(userwidget);
+	if (uw)
+        uw->selected();
 }
 
-void UserTabWidget::dropSlsk(const QStringList& l) {
-	QStringList::const_iterator it = l.begin();
+void UserWidget::selected() {
+	if(highlighted() != 0) {
+		setHighlight(0);
+		setHighlighted(0);
+	}
+}
+
+void UserWidget::setHighlight(int i) {
+	UserTabWidget* p = static_cast<UserTabWidget*>(parentWidget()->parentWidget());
+	p->setHighlight(p->indexOf(this), i);
+}
+
+void UserTabWidget::setHighlight(int pos, int highlight) {
+	UserWidget * uw = static_cast<UserWidget*>(widget(pos));
+
+	if(( currentIndex() != pos) && highlight > uw->highlighted() )
+	{
+		uw->setHighlighted(highlight);
+
+		if (uw->highlighted() > 0) {
+			// Icon on tab
+			tabBar()->setTabIcon(pos, QIcon(IMG("online")));
+		}
+		if (uw->highlighted() > 1) {
+			// Red tab
+			tabBar()->setTabTextColor(pos, QColor(255, 0, 0));
+		}
+	} else {
+		tabBar()->setTabTextColor(pos, tabBar()->palette().buttonText().color());
+		tabBar()->setTabIcon(pos, QIcon());
+	}
+}
+
+void UserTabWidget::setPage(const QString& _u) {
+	if(canDrop())
+ 	// Create page and switch to it
+		setCurrentIndex(indexOf(page(_u, true)));
+}
+
+void UserTabWidget::dropSlsk(const QList<QUrl>& l) {
+	QList<QUrl>::const_iterator it = l.begin();
 	for(; it != l.end(); ++it) {
 		QUrl url = QUrl(*it);
-		if(url.protocol() == "slsk" && url.hasHost()) {
-			QString user = url.host();
-			QUrl::decode(user);
-			setPage(user);
+		if(url.scheme() == "slsk" && !url.host().isEmpty()) {
+			QString user = url.userName();
+			if (user.isEmpty())
+                user = url.host();
+
+            setPage(user);
 		}
 	}
 }

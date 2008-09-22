@@ -18,16 +18,18 @@
  */
 
 #include "transferlistitem.h"
+#include "transferlistview.h"
 #include "util.h"
 #include "museeq.h"
-TransferListItem::TransferListItem(QListView* p, const QString& _u, const QString& _p)
-                 : QListViewItem(p), mUser(_u), mPath(_p), separation(10) {
-	
-	setSelectable(! mPath.isNull());
-	setDragEnabled(true);
+
+TransferListItem::TransferListItem(QTreeWidget* p, const QString& _u, const QString& _p)
+                 : QTreeWidgetItem(p), mUser(_u), mPath(_p), separation(10) {
+
 	setText(0, mUser);
+	setTextAlignment(3, Qt::AlignRight|Qt::AlignVCenter);
+	setTextAlignment(4, Qt::AlignRight|Qt::AlignVCenter);
+	setTextAlignment(5, Qt::AlignRight|Qt::AlignVCenter);
 	updatePath();
-	
 	NTransfer t;
 	t.state = 15;
 	t.error = QString::null;
@@ -38,13 +40,15 @@ TransferListItem::TransferListItem(QListView* p, const QString& _u, const QStrin
 	update(t, true);
 }
 
-TransferListItem::TransferListItem(QListViewItem* p, const QString& _u, const QString& _p)
-                : QListViewItem(p), mUser(_u), mPath(_p), separation(10) {
-	
-	setDragEnabled(true);
+TransferListItem::TransferListItem(QTreeWidgetItem* p, const QString& _u, const QString& _p)
+                : QTreeWidgetItem(p), mUser(_u), mPath(_p), separation(10) {
+
 	setText(0, mUser);
+	setTextAlignment(3, Qt::AlignRight|Qt::AlignVCenter);
+	setTextAlignment(4, Qt::AlignRight|Qt::AlignVCenter);
+	setTextAlignment(5, Qt::AlignRight|Qt::AlignVCenter);
 	updatePath();
-	
+
 	NTransfer t;
 	t.state = 15;
 	t.error = QString::null;
@@ -56,7 +60,7 @@ TransferListItem::TransferListItem(QListViewItem* p, const QString& _u, const QS
 
 void TransferListItem::updatePath() {
 	if(! mPath.isNull()) {
-		int ix = mPath.findRev('\\');
+		int ix = mPath.lastIndexOf('\\');
 		if(ix != -1) {
 			setText(1, mPath.mid(ix + 1));
 			setText(7, mPath.left(ix + 1));
@@ -68,54 +72,88 @@ void TransferListItem::updatePath() {
 void TransferListItem::update(const NTransfer& transfer, bool force) {
 	if(transfer.state != mState || force) {
 		mState = transfer.state;
+
 		switch(mState) {
 		case 0:
-			setText(2, QT_TR_NOOP("Finished"));
+			setText(2, TransferListView::tr("Finished"));
+			setBackground(2, QBrush(QColor(25,108,0)));
+			setForeground(2, QBrush(QColor(255,255,255)));
 			break;
 		case 1:
-			setText(2, QT_TR_NOOP("Transferring"));
+			setText(2, TransferListView::tr("Transferring"));
+			setBackground(2, QBrush(QColor(54,232,96)));
+			setForeground(2, QBrush(QColor(15,15,15)));
 			break;
 		case 2:
-			setText(2, QT_TR_NOOP("Negotiating"));
+			setText(2, TransferListView::tr("Negotiating"));
+			setForeground(2, QBrush(QColor(15,15,15)));
+			setBackground(2, QBrush(QColor(4,197,245)));
 			break;
 		case 3:
-			setText(2, QT_TR_NOOP("Waiting"));
+			setText(2, TransferListView::tr("Waiting"));
+			setForeground(2, QBrush(QColor(15,15,15)));
+			setBackground(2, QBrush(QColor(4,197,245)));
 			break;
 		case 4:
-			setText(2, QT_TR_NOOP("Establishing"));
+			setText(2, TransferListView::tr("Establishing"));
+			setForeground(2, QBrush(QColor(15,15,15)));
+			setBackground(2, QBrush(QColor(4,197,245)));
 			break;
 		case 5:
-			setText(2, QT_TR_NOOP("Initiating"));
+			setText(2, TransferListView::tr("Initiating"));
+			setForeground(2, QBrush(QColor(15,15,15)));
+			setBackground(2, QBrush(QColor(4,197,245)));
 			break;
 		case 6:
-			setText(2, QT_TR_NOOP("Connecting"));
+			setText(2, TransferListView::tr("Connecting"));
+			setForeground(2, QBrush(QColor(15,15,15)));
+			setBackground(2, QBrush(QColor(4,197,245)));
 			break;
 		case 7:
-			setText(2, QT_TR_NOOP("Queued"));
+			setText(2, TransferListView::tr("Queued"));
+			setBackground(2, QBrush(QColor(233,232,135)));
+			setForeground(2, QBrush(QColor(15,15,15)));
 			break;
 		case 8:
-			setText(2, QT_TR_NOOP("Getting address"));
+			setText(2, TransferListView::tr("Getting address"));
 			break;
 		case 9:
-			setText(2, QT_TR_NOOP("Getting status"));
+			setText(2, TransferListView::tr("Getting status"));
+			setBackground(2, QBrush(QColor(230,255,114)));
+			setForeground(2, QBrush(QColor(15,15,15)));
 			break;
 		case 10:
-			setText(2, QT_TR_NOOP("User Offline"));
+			setText(2, TransferListView::tr("User Offline"));
+			setBackground(2, QBrush(QColor(200,200,200)));
+			setForeground(2, QBrush(QColor(15,15,15)));
 			break;
 		case 11:
-			setText(2, QT_TR_NOOP("Connection closed by peer"));
+			setText(2, TransferListView::tr("Connection closed by peer"));
+			setBackground(2, QBrush(QColor(255,138,166)));
+			setForeground(2, QBrush(QColor(15,15,15)));
 			break;
 		case 12:
-			setText(2, QT_TR_NOOP("Cannot connect"));
+			setText(2, TransferListView::tr("Cannot connect"));
+			setBackground(2, QBrush(QColor(255,155,135)));
+			setForeground(2, QBrush(QColor(15,15,15)));
 			break;
 		case 13:
-			setText(2, QT_TR_NOOP("Aborted"));
+			setText(2, TransferListView::tr("Aborted"));
+			setBackground(2, QBrush(QColor(230,255,0)));
+			setForeground(2, QBrush(QColor(15,15,15)));
 			break;
 		case 14:
 			mError = QString::null;
+			setBackground(2, QBrush(QColor(179,29,29)));
+			setForeground(2, QBrush(QColor(255,255,255)));
 			break;
 		case 15:
 			setText(2, QString::null);
+			break;
+		case 16:
+			setText(2, TransferListView::tr("Queued"));
+			setBackground(2, QBrush(QColor(233,232,135)));
+			setForeground(2, QBrush(QColor(15,15,15)));
 			break;
 		}
 	}
@@ -143,7 +181,7 @@ void TransferListItem::update(const NTransfer& transfer, bool force) {
 	}
 	if(transfer.rate != mRate || force) {
 		mRate = transfer.rate;
-		setText(6, Util::makeSize(mRate) + QT_TR_NOOP("/s"));
+		setText(6, Util::makeSize(mRate) + TransferListView::tr("/s"));
 	}
 }
 
@@ -165,12 +203,12 @@ QString TransferListItem::error() const {
 }
 
 
-Q_INT64 TransferListItem::position() const {
+qint64 TransferListItem::position() const {
 	return mPosition;
 }
 
 
-Q_INT64 TransferListItem::size() const {
+qint64 TransferListItem::size() const {
 	return mSize;
 }
 
@@ -179,58 +217,48 @@ uint TransferListItem::rate() const {
 }
 
 void TransferListItem::updateStats() {
-	Q_INT64 __f = 0, __t = 0;
+	qint64 __f = 0, __t = 0;
 	uint __r = 0;
-	TransferListItem* file = static_cast<TransferListItem*>(firstChild());
-	for(; file != 0; file = static_cast<TransferListItem*>(file->nextSibling())) {
-		__f += file->mPosition;
-		if(file->mSize == 0)
-			__t = -1;
-		else if(__t > -1)
-			__t += file->mSize;
-		if(file->mState == 1)
-			__r = file->mRate;
-	}
 	setText(3, "");
+	if (! childCount())
+		return;
+	TransferListItem* file;
+	int pos = 0;
+	for(; pos < childCount(); pos++) {
+		file = static_cast<TransferListItem*>(child(pos));
+		if (file) {
+			__f += file->mPosition;
+			if(file->mSize == 0)
+				__t = -1;
+			else if(__t > -1)
+				__t += file->mSize;
+			if(file->mState == 1)
+				__r = file->mRate;
+		}
+	}
+
 	setText(4, Util::makeSize(__f));
 	if(__t == -1)
 		setText(5, "?");
 	else
 		setText(5, Util::makeSize(__t));
-	
-	setText(6, Util::makeSize(__r) + QT_TR_NOOP("/s"));
+
+	setText(6, Util::makeSize(__r) + TransferListView::tr("/s"));
+
 }
 
 void TransferListItem::update(const NTransfer& transfer) {
-	if(mPath.isNull()) {
-		TransferListItem* file;
-		if(! transfer.filename.isNull()) {
-			file = static_cast<TransferListItem*>(firstChild());
-			for(; file != 0; file = static_cast<TransferListItem*>(file->nextSibling()))
-				if(file->mPath == transfer.filename)
-					break;
-			if(! file)
-				file = new TransferListItem(this, mUser, transfer.filename);
-		
-			file->update(transfer, true);
-		}
+	if(mPath.isNull())
 		updateStats();
-	} else
+    else {
 		update(transfer, false);
-}
-
-void TransferListItem::remove(const QString& _p) {
-	TransferListItem* file = static_cast<TransferListItem*>(firstChild());
-	for(; file != 0; file = static_cast<TransferListItem*>(file->nextSibling())) {
-		if(file->path() == _p) {
-			delete file;
-			updateStats();
+		if((static_cast<TransferListView *>(treeWidget()))->groupMode() == (static_cast<TransferListView *>(treeWidget()))->None)
 			return;
-		}
+		static_cast<TransferListItem*>(parent())->updateStats();
 	}
 }
 
-int TransferListItem::compare(QListViewItem* i, int col, bool) const {
+int TransferListItem::compare(QTreeWidgetItem* i, int col, bool) const {
 	TransferListItem* item = static_cast<TransferListItem*>(i);
 	switch(col) {
 	case 0: return mUser.localeAwareCompare(item->mUser);
@@ -244,116 +272,47 @@ int TransferListItem::compare(QListViewItem* i, int col, bool) const {
 	}
 	return 0;
 }
+bool TransferListItem::operator<(const QTreeWidgetItem & other_) const {
+	const TransferListItem * other = static_cast<const TransferListItem *>(&other_);
+	int col = 0;
+	if(treeWidget())
+	col = treeWidget()->sortColumn();
 
-// stolen from qt's qlistview.cpp
-static QString qEllipsisText( const QString &org, const QFontMetrics &fm, int width, int align ) {
-	int ellWidth = fm.width( "..." );
-	QString text = QString::fromLatin1("");
-	int i = 0;
-	int len = org.length();
-	int offset = (align & Qt::AlignRight) ? (len-1) - i : i;
-	while ( i < len && fm.width( text + org[ offset ] ) + ellWidth < width ) {
-		if ( align & Qt::AlignRight )
-			text.prepend( org[ offset ] );
-		else
-			text += org[ offset ];
-			offset = (align & Qt::AlignRight) ? (len-1) - ++i : ++i;
-	}
-	if ( text.isEmpty() )
-		text = ( align & Qt::AlignRight ) ? org.right( 1 ) : text = org.left( 1 );
-	if ( align & Qt::AlignRight )
-		text.prepend( "..." );
-	else
-		text += "...";
-	return text;
-}
-
-
-void TransferListItem::paintCell(QPainter * p, const QColorGroup & cg, int column, int width, int align) {
-	// colour based on status
-	QColor base(cg.base());
-	// Text color
-	QColor textcolor(cg.text());
-	
-	if (column == 2) {
-	textcolor.setRgb(0,0,0);
-	switch(state()) {
+	switch(col) {
 	case 0:
-		// 0 Transfer Finished
-		base.setRgb(30,30,30);
-		textcolor.setRgb(255,255,255);
-		break;
+		return user() < other->user();
 	case 1:
-		// 1 Transfering
-		base.setRgb(54,232,96);
-		break;
+		return text(1) < other->text(1);
 	case 2:
+
+		if(text(2) == other->text(2))
+			return user() < other->user();
+		return text(2) < other->text(2);
+
 	case 3:
+		if(mPlaceInQueue == other->mPlaceInQueue)
+			return user() < other->user();
+		return mPlaceInQueue < other->mPlaceInQueue;
+
 	case 4:
+		if(position() == other->position())
+			return user() < other->user();
+		return position() < other->position();
 	case 5:
+		if(size() == other->size())
+			return user() < other->user();
+		return size() < other->size();
 	case 6:
-	case 8:
-	case 9:
-		// 2-6, 8-9 Transfer is not transferring yet and is not queued
-		base.setRgb(230,255,114);
-		break;
+		if(rate() == other->rate())
+			return user() < other->user();
+		return rate() < other->rate();
+
 	case 7:
-		// Queued
-		base.setRgb(233,232,197);
-		break;
-	case 10:
-		// User offline
-		base.setRgb(200,200,200);
-		break;
-	case 11:
-	case 12:
-		// 11-12 Transfer failed
-		base.setRgb(255,155,135);
-		break;
-	case 13:
-		// 13 Aborted by you
-		base.setRgb(205,177,45);
-		break;
-	case 14:
-		// 14 Error 
-		base.setRgb(179,29,29);
-		textcolor.setRgb(255,255,255);
-		break;
-	case 15:
-		break;
-		// Group row
-		
-  	}
-	p->setPen(textcolor);
+		if(path() == other->path())
+			return user() < other->user();
+		return path() < other->path();
+
 	}
-	if(isSelected()) {
-		int r = base.red();
-		int g = base.green();
-		int b = base.blue();
-		if(r==255&&g==255&b==255)
-			base.setRgb(cg.highlight().rgb());
-		else {
-			r = (r + cg.highlight().red())/2;
-			g = (g + cg.highlight().green())/2;
-			b = (b + cg.highlight().blue())/2;
-			base.setRgb(r,g,b);
-		}
-	}
-	
-	p->fillRect(0, 0, width, height(), base);
-	
-	if (column == 2 && state() != 15) {
-		p->setPen(cg.highlight());
-		p->drawRect(0, 0, width, height());
-		p->setPen(textcolor);
-	}
-	// draw the text of the column, indented byb separation
-	QString t = text(column);
-	QFontMetrics fm(p->fontMetrics());
-	
-	
-	if( (fm.width(t) + 10) > width)
-		t = qEllipsisText(t,fm,(width-10),align);
-	
-	p->drawText(separation, 0, width - separation, height(), align,t );
+
+  return false;
 }

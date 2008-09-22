@@ -20,30 +20,29 @@
 #ifndef USERLISTITEM_H
 #define USERLISTITEM_H
 
-#include <qlistview.h>
+#include <QTreeWidget>
 
 class UserListView;
 
-class UserListItem : public QListViewItem {
+class UserListItem : public QTreeWidgetItem {
 public:
 	UserListItem(UserListView *, const QString&, uint, uint, uint, const QString&);
-	
-	int compare(QListViewItem *, int, bool) const;
-	
-	const QPixmap* pixmap() const;
+
+	int compare(QTreeWidgetItem *, int, bool) const;
+
 	uint status() const;
 	void updateUserStatus();
 	QString user() const;
 	uint speed() const;
 	uint files() const;
 	QString comments() const;
-	
+
 	void setStatus(uint);
 	void setSpeed(uint);
 	void setFiles(uint);
 	void setComments(const QString&);
 	void setAll(uint, uint, uint, const QString&);
-	
+	bool operator<(const QTreeWidgetItem & other) const;
 private:
 	uint mStatus;
 	QString mUser, mComments;

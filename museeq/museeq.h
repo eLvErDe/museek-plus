@@ -22,82 +22,84 @@
 
 #include "museeqtypes.h"
 
-#include <qobject.h>
-#include <qstringlist.h>
-#ifdef HAVE_TRAYICON
-#include "trayicon.h"
-#endif // HAVE_TRAYICON
-#ifdef HAVE_QSA
-#include <qptrstack.h>
-#include <qsproject.h>
-#endif // HAVE_QSA
+#include <QObject>
+#include <QList>
+#include <QSystemTrayIcon>
+#include <QtNetwork/QTcpSocket>
 
 class MuseekDriver;
-class MainWindow;
-class QPopupMenu;
-class QApplication;
 class OnlineAlert;
+class MainWindow;
+
+class QMenu;
+class QApplication;
+class QSettings;
+class QUrl;
+class QStringList;
+#ifdef HAVE_QTSCRIPT
+class Script;
+#endif //HAVE_QTSCRIPT
 
 class Museeq : public QObject {
 	Q_OBJECT
 	Q_PROPERTY(QString nickname READ nickname)
 	Q_PROPERTY(bool connected READ isConnected)
 	Q_PROPERTY(bool away READ isAway WRITE setAway)
-	
+
 public:
 	Museeq(QApplication *);
 	bool mShowTickers, mShowStatusLog, mOnlineAlert, mShowTimestamps, mIPLog, mUsetray, mLogRooms, mLogPrivate;
-	inline const QString& privateLogDir() const { return mPrivateLogDir; }
-	inline const QString& roomLogDir() const { return mRoomLogDir; }
+	uint mTickerLength;
 	inline MuseekDriver* driver() const { return mDriver; }
 	inline bool isConnected() const { return mConnected; }
-	QPopupMenu *menutray;
+	QMenu *mTrayMenu;
 	inline MainWindow* mainwin() const { return mMainWin; }
-	
+
 	inline const QString& nickname() const { return mNickname; }
-	
+
 	inline const QStringList& buddies() const { return mBuddies; }
-	inline bool isBuddy(const QString& u) const { return mBuddies.find(u) != mBuddies.end(); }
-	
-	inline bool hasAlert(const QString& u) const { return isBuddy(u) && mAlerts.find(u) != mAlerts.end(); }
-	
-	inline bool isBanned(const QString& u) const { return mBanned.find(u) != mBanned.end(); }
-	inline bool isTrusted(const QString& u) const { return mTrusted.find(u) != mTrusted.end(); }	
+	inline bool isBuddy(const QString& u) const { return mBuddies.contains(u); }
+
+	inline bool hasAlert(const QString& u) const { return isBuddy(u) && mAlerts.contains(u); }
+
+	inline bool isBanned(const QString& u) const { return mBanned.contains(u); }
+	inline bool isTrusted(const QString& u) const { return mTrusted.contains(u); }
 	inline const QStringList& ignored() const { return mIgnored; }
-	inline bool isIgnored(const QString& u) const { return mIgnored.find(u) != mIgnored.end(); }
-	
+	inline bool isIgnored(const QString& u) const { return mIgnored.contains(u); }
+
 	inline const QStringList& autoJoined() const { return mAutoJoin; }
-	inline bool isAutoJoined(const QString& r) const { return mAutoJoin.find(r) != mAutoJoin.end(); }
+	inline bool isAutoJoined(const QString& r) const { return mAutoJoin.contains(r); }
 	void output(const QString& message);
 	inline const QStringList& joinedRooms() const { return mJoinedRooms; }
-	inline bool isJoined(const QString& r) const { return mJoinedRooms.find(r) != mJoinedRooms.end(); }
-	
+	inline bool isJoined(const QString& r) const { return mJoinedRooms.contains(r); }
+
 	const QMap<QString, QString>& protocolHandlers() const { return mProtocolHandlers; }
 	QString mColorBanned, mColorBuddied, mColorTime, mColorMe, mColorNickname, mColorTrusted, mColorRemote, mFontTime, mFontMessage, mIconTheme, mPrivateLogDir, mRoomLogDir;
 	bool isAway() const { return mAway; }
-#ifdef HAVE_TRAYICON
-	inline TrayIcon* trayicon() {return mTray;}
-#endif // HAVE_TRAYICON
+	QSystemTrayIcon* trayicon() { return mTray; }
+
+	int scriptCallbackId();
+	bool hasScript(const QString&);
+
+	QSettings* settings() {return mSettings;};
 
 public slots:
-	
+
 	inline const QStringList& banned() const { return mBanned; }
 	inline const QStringList& trusted() const { return mTrusted; }
-	
+
 	const QString& config(const QString& domain, const QString& key);
-	
-	void registerMenu(const QString&, QPopupMenu *);
-	void addMenu(const QString&, const QString&, const QString&);
-	void addInputHandler(const QString&);
+
+	void registerMenu(const QString&, QMenu *);
 	void loadScript(const QString&);
 	void unloadScript(const QString&);
-	
-	void showURL(const QString&);
+
+	void showURL(const QUrl&);
 	void startDaemon();
 	void stopDaemon();
 	void saveConnectConfig();
 	void setAway(bool);
-	
+
 	void addBuddy(const QString&, const QString& = QString::null);
 	void removeBuddy(const QString&);
 	void addAlert(const QString&);
@@ -131,37 +133,39 @@ public slots:
 	void sayPrivate(const QString&, const QString&);
 	void setTicker(const QString&, const QString&);
 	void slotUserExists(const QString&);
-	
+
 	void updateTransfer(const QString&, const QString&);
-	void downloadFile(const QString&, const QString&, Q_INT64);
-	void downloadFileTo(const QString&, const QString&, const QString&,Q_INT64);
+	void downloadFile(const QString&, const QString&, qint64);
+	void downloadFileTo(const QString&, const QString&, const QString&,qint64);
 	void downloadFolder(const QString&, const QString&);
+	void downloadFolderTo(const QString&, const QString&, const QString&);
+	void uploadFolder(const QString&, const QString&);
 	void uploadFile(const QString&, const QString&);
-	
+
 	void removeDownload(const QString&, const QString&);
-	void removeDownloads(const QValueList<QPair<QString, QString> >&);
+	void removeDownloads(const QList<QPair<QString, QString> >&);
 	void abortDownload(const QString&, const QString&);
-	void abortDownloads(const QValueList<QPair<QString, QString> >&);
-	
+	void abortDownloads(const QList<QPair<QString, QString> >&);
+
 	void removeUpload(const QString&, const QString&);
-	void removeUploads(const QValueList<QPair<QString, QString> >&);
+	void removeUploads(const QList<QPair<QString, QString> >&);
 	void abortUpload(const QString&, const QString&);
-	void abortUploads(const QValueList<QPair<QString, QString> >&);
-	
+	void abortUploads(const QList<QPair<QString, QString> >&);
+
 	void search(const QString&);
 	void buddySearch(const QString&);
 	void roomSearch(const QString&);
 	void userSearch(const QString&, const QString&);
 	void wishListSearch(const QString&);
 	void terminateSearch(uint);
-	
+
 	void getUserInfo(const QString&);
 	void getUserShares(const QString&);
-	
+
 	void setConfig(const QString&, const QString&, const QString&);
 	void removeConfig(const QString&, const QString&);
 	void setProtocolHandlers(const QMap<QString, QString>&);
-	
+
 	void flush();
 
 	void disconnectServer();
@@ -172,38 +176,39 @@ public slots:
 	void trayicon_setIcon(const QString&);
 	void trayicon_show();
 	void trayicon_hide();
- 
+
 signals:
 	// Museekd related signals
 	void connected();
 	void disconnected();
-	
+
 	void configChanged(const QString& domain, const QString& key, const QString& value);
-	
+
 	// Server related signals
 	void connectedToServer();
 	void disconnectedFromServer();
 	void connectedToServer(bool);
 	void nicknameChanged(const QString&);
-	
+
 	// User status and statistics
 	void userStatus(const QString&, uint);
 	void doUpdateStatus(const QString&);
 	void userData(const QString&, uint, uint);
-	
+
 	// Buddy list signals
+	void sortingEnabled(bool);
 	void addedBuddy(const QString&, const QString&);
 	void removedBuddy(const QString&);
 
 	void addedBanned(const QString&, const QString&);
 	void removedBanned(const QString&);
-	
+
 	void addedIgnored(const QString&, const QString&);
 	void removedIgnored(const QString&);
 
 	void addedTrusted(const QString&, const QString&);
 	void removedTrusted(const QString&);
-	
+
 	// Chat related signals
 	void roomList(const NRoomList&);
 	void joinedRoom(const QString&, const NRoom&);
@@ -216,7 +221,8 @@ signals:
 	void autoJoin(const QString&, bool);
 	void roomTickers(const QString&, const NTickers&);
 	void roomTickerSet(const QString&, const QString&, const QString&);
-	
+	void showAllTickers();
+	void hideAllTickers();
 	void privateMessage(uint, uint, const QString&, const QString&);
 
 	// Interests & Recommendations
@@ -233,28 +239,22 @@ signals:
 	// Transfer related signals
 	void downloadUpdated(const NTransfer&);
 	void uploadUpdated(const NTransfer&);
-	
+	void transfersSorting(bool);
 	void downloadRemoved(const QString&, const QString&);
 	void uploadRemoved(const QString&, const QString&);
-	
+
 	// Search related signals:
 	void searchResults(uint, const QString&, bool, uint, uint, const NFolder&);
 	void searchToken(const QString&, uint);
-	
+
 	// Peer stuff:
 	void userInfo(const QString&, const QString&, const QByteArray&, uint, uint, bool);
 	void userShares(const QString&, const NShares&);
 
-	
-
-
-
 protected slots:
-	void slotMenuActivated(int);
-	
 	void slotConnectionClosed();
-	void slotError(int);
-	
+	void slotError(QAbstractSocket::SocketError);
+
 	void slotLoggedIn(bool, const QString&);
 	void slotServerState(bool, const QString&);
 	void slotRoomState(const NRoomList&, const NRooms&, const NTickerMap&);
@@ -265,39 +265,36 @@ protected slots:
 	void slotConfigRemove(const QString&, const QString&);
 	void slotJoinedRoom(const QString&, const NRoom&);
 	void slotLeftRoom(const QString&);
-	
-
 
 	void slotTransferRemoved(bool, const QString&, const QString&);
 	void slotStatusSet(uint);
-	
+
+	void slotTrayIconActivated(QSystemTrayIcon::ActivationReason);
+
 protected:
-	QString handleInput(bool, const QString&, const QString&);
-	
+	QString handleInput(bool, const QString&, QString);
+
 private:
 	QApplication * mApplication;
 	QString mNickname;
 	MuseekDriver* mDriver;
-#ifdef HAVE_TRAYICON
-	TrayIcon* mTray;
-#endif // HAVE_TRAYICON
+	QSystemTrayIcon* mTray;
 	bool mConnected, mAway;
 	QStringList mBuddies, mBanned, mIgnored, mTrusted, mAutoJoin, mJoinedRooms, mLovedInterests, mHatedInterests;
 	QMap<QString, OnlineAlert *> mAlerts;
-	
+
 	MainWindow* mMainWin;
-	
-	QMap<QString, QMap<QString, QString> > mConfig;
-	QMap<QString, QString> mProtocolHandlers;
-	
-#ifdef HAVE_QSA
-	QMap<QString, QPopupMenu*> mMenus;
-	int mCallbackCount;
-	QMap<int, QPair<QSProject*, QString> > mCallbacks;
-	QMap<QString, QSProject*> mProjects;
-	QPtrStack<QSProject> mScriptContext;
-	QValueList<QPair<QSProject *, QString> > mInputHandlers;
-#endif
+
+	QMap<QString, QMap<QString, QString> > mConfig; // Copy of museekd config
+	QMap<QString, QString> mProtocolHandlers; // Protocol handlers (ex: http -> firefox)
+
+	QSettings* mSettings;
+
+#ifdef HAVE_QTSCRIPT
+    QList<Script*> mScripts; // List of all loaded scripts
+	QMap<QString, QMenu*> mMenus; // Menus that should be registered to any new script
+	int mCallbackCount; // Used to give an ID for callbacks
+#endif //HAVE_QTSCRIPT
 };
 
 extern Museeq* museeq;

@@ -1,494 +1,532 @@
+/* museeq - a Qt client to museekd
+ *
+ * Copyright (C) 2003-2004 Hyriand <hyriand@thegraveyard.org>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 
 #include "settingsdialog.h"
-
-#include <qvariant.h>
-#include <qpushbutton.h>
-#include <qtabwidget.h>
-#include <qwidget.h>
-#include <qvbox.h>
-#include <qhbox.h>
-#include <qlabel.h>
-#include <qcombobox.h>
-#include <qlineedit.h>
-#include <qtextedit.h>
-#include <qlistview.h>
-#include <qheader.h>
-#include <qspinbox.h>
-#include <qbuttongroup.h>
-#include <qhbuttongroup.h>
-#include <qradiobutton.h>
-#include <qcheckbox.h>
-#include <qcolordialog.h>
-#include <qcolor.h>
-#include <qfontdialog.h>
-#include <qlayout.h>
-#include <qtooltip.h>
-#include <qwhatsthis.h>
 #include "museeq.h"
-#include <qfiledialog.h>
-#include <qdir.h>
-#include <qsplitter.h>
 #include "codeccombo.h"
 #include "images.h"
 
-#include <qprocess.h>
-#include <qtooltip.h>
+#include <QMenu>
+#include <QPushButton>
+#include <QTabWidget>
+#include <QWidget>
+#include <QLabel>
+#include <QGroupBox>
+#include <QLineEdit>
+#include <QTextEdit>
+#include <QTreeWidget>
+#include <QSpinBox>
+#include <QRadioButton>
+#include <QCheckBox>
+#include <QColorDialog>
+#include <QColor>
+#include <QFontDialog>
+#include <QLayout>
+#include <QFileDialog>
+#include <QDir>
 
-SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, WFlags fl )
-    : QDialog( parent, name, modal, fl )
+SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Qt::WFlags fl )
+    : QDialog( parent ), mSharesDirty(false)
 {
-	if ( !name )
-		setName( "SettingsDialog" );
+// 	if ( !name )
+// 		setName( "SettingsDialog" );
 
-	// Layout Containing everything 
-	QVBoxLayout* vLayout= new QVBoxLayout( this, 11, 6, "vLayout"); 
+	// Layout Containing everything
+	QVBoxLayout* vLayout= new QVBoxLayout( this);
 	vLayout->setMargin(5);
 	vLayout->setSpacing(5);
-	
+
 	// Tabs, without geometry set will resize to fill the dialog
-	mTabHolder = new QTabWidget( this, "mTabHolder" );
+	mTabHolder = new QTabWidget( this );
 
 	// Add tabs to vLayout
 	vLayout->addWidget(mTabHolder);
 
-	QHBoxLayout* buttonsLayout= new QHBoxLayout; 
-	
+	QHBoxLayout* buttonsLayout= new QHBoxLayout;
+
 	// Ok, Save, Cancel buttons
 	QSpacerItem* spacer5 = new QSpacerItem( 200, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
 	buttonsLayout->addItem( spacer5 );
 
-	mOK = new QPushButton( this, "mOK" );
-	mOK->setIconSet(IMG("ok"));
+	mOK = new QPushButton( this );
+	mOK->setIcon(IMG("ok"));
 	buttonsLayout->addWidget(mOK);
 
-	mSave = new QPushButton( this, "mSave" );
-	mSave->setIconSet(IMG("save"));
+	mSave = new QPushButton( this );
+	mSave->setIcon(IMG("save"));
 	buttonsLayout->addWidget(mSave);
 
-	mCancel = new QPushButton( this , "mCancel" );
-	mCancel->setIconSet(IMG("cancel"));
+	mCancel = new QPushButton( this);
+	mCancel->setIcon(IMG("cancel"));
 	mCancel->setDefault( TRUE );
 	buttonsLayout->addWidget(mCancel);
 
 	// Add buttons to vLayout
 	vLayout->addLayout(buttonsLayout);
 
-	mTabHolder->setTabPosition( QTabWidget::Top );
-	mMuseekdTabs = new QTabWidget( mTabHolder, "mMuseekdTabs" );
-	
-	
-	mTabHolder->insertTab( mMuseekdTabs, QString::fromLatin1("") );
-	mMuseeqTabs = new QTabWidget( this, "mMuseeqTabs" );
-	mTabHolder->insertTab( mMuseeqTabs, QString::fromLatin1("") );
+	mTabHolder->setTabPosition( QTabWidget::North );
+	mMuseekdTabs = new QTabWidget( mTabHolder );
+
+
+	mTabHolder->addTab( mMuseekdTabs, QString::fromLatin1("") );
+	mMuseeqTabs = new QTabWidget( this);
+	mTabHolder->addTab( mMuseeqTabs, QString::fromLatin1("") );
 	// SERVER TAB
-	serverTab = new QWidget( mMuseekdTabs, "serverTab" );
-	mMuseekdTabs->insertTab( serverTab, QString::fromLatin1("") );
+	serverTab = new QWidget( mMuseekdTabs);
+	mMuseekdTabs->addTab( serverTab, QString::fromLatin1("") );
+	QVBoxLayout * ServerLayout = new QVBoxLayout( serverTab);
 
-	ServerGrid = new QGridLayout( serverTab, 1, 1, 11, 6, "ServerGrid");
-
+	QGroupBox * groupBox = new QGroupBox(tr("Host"), serverTab);
+	ServerLayout->addWidget(groupBox);
+	ServerGrid = new QGridLayout(groupBox);
 
 	// Server Host
-	serverHostLabel = new QLabel( serverTab, "serverHostLabel" );
+	serverHostLabel = new QLabel( serverTab);
 	ServerGrid->addWidget( serverHostLabel, 0, 0 );
 
 
-	SServerHost = new QLineEdit( serverTab, "SServerHost" );
+	SServerHost = new QLineEdit( serverTab);
 	SServerHost->setMaxLength( 50 );
-	ServerGrid->addMultiCellWidget( SServerHost, 0, 0, 1, 2 );
+	ServerGrid->addWidget( SServerHost, 0, 1, 1, 1 );
 
 	// Server Port
-	serverPortLabel = new QLabel( serverTab, "serverPortLabel" );
+	serverPortLabel = new QLabel( serverTab );
 	serverPortLabel->setMargin( 0 );
-	
+
 	ServerGrid->addWidget( serverPortLabel, 1, 0 );
-	SServerPort = new QSpinBox( serverTab, "SServerPort" );
-	SServerPort->setMaxValue( 65535 );
+	SServerPort = new QSpinBox( serverTab);
+	SServerPort->setMaximum( 65535 );
 	SServerPort->setValue( 0 );
-	
-	ServerGrid->addMultiCellWidget( SServerPort, 1, 1, 2, 2 );
+
+	ServerGrid->addWidget( SServerPort, 1, 1, 1, 1 );
 	// Server Username
-	usernamelabel = new QLabel( serverTab, "usernamelabel" );
+	usernamelabel = new QLabel( serverTab );
 	ServerGrid->addWidget( usernamelabel, 2, 0 );
-	
-	SSoulseekUsername = new QLineEdit( serverTab, "SSoulseekUsername" );
-	ServerGrid->addMultiCellWidget( SSoulseekUsername, 2, 2, 1, 2 );
-	// Server Password	
-	passwordLabel = new QLabel( serverTab, "passwordLabel"  );
+
+	SSoulseekUsername = new QLineEdit( serverTab);
+	ServerGrid->addWidget( SSoulseekUsername, 2, 1, 1, 1 );
+	// Server Password
+	passwordLabel = new QLabel( serverTab );
 	ServerGrid->addWidget( passwordLabel, 3, 0 );
 
-	SSoulseekPassword = new QLineEdit( serverTab, "SSoulseekPassword" );
+	SSoulseekPassword = new QLineEdit( serverTab );
 	SSoulseekPassword->setEchoMode(QLineEdit::Password);
-	ServerGrid->addMultiCellWidget( SSoulseekPassword, 3, 3, 1, 2 );
+	ServerGrid->addWidget( SSoulseekPassword, 3, 1, 1, 1 );
 
 	// Connect / Disconnect
-	SConnect = new QPushButton( serverTab, "SConnect" );
-	SConnect->setIconSet(IMG("connect"));
-	ServerGrid->addWidget( SConnect, 4, 2 );
+	QHBoxLayout * SideLayout = new QHBoxLayout;
+	ServerLayout->addLayout(SideLayout);
+	QGroupBox * groupBox2 = new QGroupBox(tr("Server status"), serverTab);
+	SideLayout->addWidget(groupBox2);
+	QVBoxLayout * DaemonCLayout = new QVBoxLayout;
+	groupBox2->setLayout(DaemonCLayout);
+	SConnect = new QPushButton( serverTab);
+	SConnect->setIcon(IMG("connect"));
+	DaemonCLayout->addWidget( SConnect );
 
-	SDisconnect = new QPushButton( serverTab, "SDisconnect" );
-	SDisconnect->setIconSet(IMG("disconnect"));
-	ServerGrid->addWidget( SDisconnect, 5, 2 );
+	SDisconnect = new QPushButton( serverTab);
+	SDisconnect->setIcon(IMG("disconnect"));
+
+	DaemonCLayout->addWidget( SDisconnect );
 	// Filesystem encoding
-	fEncodingLabel = new QLabel( serverTab, "fEncodingLabel" );
-	ServerGrid->addWidget( fEncodingLabel, 6, 0 );
+	QGridLayout * ServerGrid2 = new QGridLayout;
+	SideLayout->addLayout(ServerGrid2);
+	fEncodingLabel = new QLabel( serverTab );
+	ServerGrid2->addWidget( fEncodingLabel, 6, 0 );
 	SFileSystemEncoding =  new CodecCombo("encoding", "filesystem", serverTab, "encoding");
-	ServerGrid->addMultiCellWidget( SFileSystemEncoding, 6, 6 , 2, 2 );
+	ServerGrid2->addWidget( SFileSystemEncoding, 6, 1 , 1, 1 );
 	// Network Encoding
-	nEncodingLabel = new QLabel( serverTab, "nEncodingLabel" );
-	ServerGrid->addWidget( nEncodingLabel, 7, 0 );
+	nEncodingLabel = new QLabel( serverTab );
+	ServerGrid2->addWidget( nEncodingLabel, 7, 0 );
 	SNetworkEncoding =  new CodecCombo("encoding", "network", serverTab, "encoding");
-	ServerGrid->addMultiCellWidget( SNetworkEncoding, 7, 7, 2, 2 );
+	ServerGrid2->addWidget( SNetworkEncoding, 7, 1, 1, 1 );
 
 
-	configLabel = new QLabel( serverTab, "configLabel" );
-	ServerGrid->addWidget( configLabel, 8, 0 );
-	
-	SConfigFile = new QLineEdit( serverTab, "SConfigFile" );
-	ServerGrid->addWidget( SConfigFile, 8, 1);
-	
-	SConfigButton = new QPushButton( serverTab, "SConfigButton" );
-	SConfigButton->setIconSet(IMG("open"));
-	ServerGrid->addWidget( SConfigButton, 8, 2);
-	ServerGrid->setRowStretch(9, 10);
-		
-	
+	QHBoxLayout * SConfigLayout = new QHBoxLayout;
+	ServerLayout->addLayout(SConfigLayout);
+	configLabel = new QLabel( serverTab );
+	SConfigLayout->addWidget( configLabel);
+
+	SConfigFile = new QLineEdit( serverTab );
+	SConfigLayout->addWidget( SConfigFile);
+
+	SConfigButton = new QPushButton( serverTab );
+	SConfigButton->setIcon(IMG("open"));
+	SConfigLayout->addWidget( SConfigButton);
+	spacerServer = new QSpacerItem( 20, 20, QSizePolicy::Preferred, QSizePolicy::Expanding );
+	ServerLayout->addItem(spacerServer);
+
+
 
 	// SHARES TAB
-	sharesTab = new QWidget( mMuseekdTabs, "sharesTab" );
-	mMuseekdTabs->insertTab( sharesTab, QString::fromLatin1("") );
-	SharesGrid = new QGridLayout( sharesTab, 1, 1, 5, 5, "SharesGrid");
+	sharesTab = new QWidget( mMuseekdTabs);
+	mMuseekdTabs->addTab( sharesTab, QString::fromLatin1("") );
+	SharesGrid = new QGridLayout( sharesTab);
 
-	SReloadShares = new QPushButton( sharesTab, "SReloadShares" );
-	SReloadShares->setIconSet(IMG("rescan"));
-	QToolTip::add(  SReloadShares, tr("To configure your shares, use one of the following: musetup, musetup-gtk, muscan (in a terminal), or the buttons below. Press <u>Reload Shares</u> to activate your changes.") );
-	SharesGrid->addWidget( SReloadShares, 0, 2 );
-
-	downloadLabel = new QLabel( sharesTab, "downloadLabel"  , Qt::WordBreak);
+	downloadLabel = new QLabel( sharesTab);
 	downloadLabel->setTextFormat(Qt::RichText);
 	SharesGrid->addWidget( downloadLabel, 4, 0 );
-	
-	SDownDir = new QLineEdit( sharesTab, "SDownDir" );
+
+	SDownDir = new QLineEdit( sharesTab);
 	SharesGrid->addWidget( SDownDir, 4, 1);
-	
-	SDownloadButton = new QPushButton( sharesTab, "SDownloadButton" );
-	SDownloadButton->setIconSet(IMG("open"));
+
+	SDownloadButton = new QPushButton( sharesTab );
+	SDownloadButton->setIcon(IMG("open"));
 	SharesGrid->addWidget( SDownloadButton, 4, 2);
 
-	incompleteLabel = new QLabel( sharesTab, "incompleteLabel" , Qt::WordBreak);
+	incompleteLabel = new QLabel( sharesTab);
 	incompleteLabel->setTextFormat(Qt::RichText);
 	SharesGrid->addWidget( incompleteLabel, 5, 0);
-	
-	SIncompleteDir = new QLineEdit( sharesTab, "SIncompleteDir" );
+
+	SIncompleteDir = new QLineEdit( sharesTab);
 	SharesGrid->addWidget( SIncompleteDir, 5, 1);
-	
-	SIncompleteButton = new QPushButton( sharesTab, "SIncompleteButton" );
-	SIncompleteButton->setIconSet(IMG("open"));
+
+	SIncompleteButton = new QPushButton( sharesTab);
+	SIncompleteButton->setIcon(IMG("open"));
 	SharesGrid->addWidget( SIncompleteButton, 5, 2);
 
-	
-	// Shares List
-	ListNormalShares = new QListView(sharesTab, "ListNormalShares");
-	ListNormalShares->addColumn(tr("Directories"), -1);
-	SharesGrid->addMultiCellWidget( ListNormalShares, 7, 7, 0, 1);
-	// Shares List Buttons
-	QVBoxLayout* sharesListButtons = new QVBoxLayout( 0, 0, 0, "sharesListButtons" );
-	SharesGrid->addLayout(sharesListButtons, 7, 2);
 
-	NSharesRefresh = new QPushButton( sharesTab, "NSharesRefresh" );
-	NSharesRefresh->setIconSet( IMG("reload"));
+	// Shares List
+	ListNormalShares = new QTreeWidget(sharesTab);
+	ListNormalShares->setRootIsDecorated(false);
+	QStringList NormalSharesHeaders;
+	NormalSharesHeaders <<  tr("Directories");
+	ListNormalShares->setHeaderLabels(NormalSharesHeaders);
+	SharesGrid->addWidget( ListNormalShares, 6,  0,  1, 2);
+	// Shares List Buttons
+	QVBoxLayout* sharesListButtons = new QVBoxLayout;
+	SharesGrid->addLayout(sharesListButtons, 6, 2);
+
+	NSharesRefresh = new QPushButton( sharesTab );
+	NSharesRefresh->setIcon( IMG("reload"));
 	sharesListButtons->addWidget( NSharesRefresh);
-	NSharesUpdate = new QPushButton( sharesTab, "NSharesUpdate" );
-	NSharesUpdate->setIconSet(IMG("redo"));
+	NSharesUpdate = new QPushButton( sharesTab );
+	NSharesUpdate->setIcon(IMG("redo"));
 	sharesListButtons->addWidget( NSharesUpdate);
-	NSharesRescan = new QPushButton( sharesTab, "NSharesRescan" );
-	NSharesRescan->setIconSet(IMG("rescan"));
+	NSharesRescan = new QPushButton( sharesTab);
+	NSharesRescan->setIcon(IMG("rescan"));
 	sharesListButtons->addWidget( NSharesRescan);
-	NSharesAdd = new QPushButton( sharesTab, "NSharesAdd" );
-	NSharesAdd->setIconSet(IMG("add"));
+	NSharesAdd = new QPushButton( sharesTab);
+	NSharesAdd->setIcon(IMG("add"));
 	sharesListButtons->addWidget( NSharesAdd);
-	NSharesRemove = new QPushButton( sharesTab, "NSharesRemove" );
-	NSharesRemove->setIconSet(IMG("remove"));
+	NSharesRemove = new QPushButton( sharesTab);
+	NSharesRemove->setIcon(IMG("remove"));
 	sharesListButtons->addWidget( NSharesRemove);
-		
+
 	// Buddy Shares List
 
-	SBuddiesShares = new QCheckBox( sharesTab, "SBuddiesShares" );
-	SharesGrid->addMultiCellWidget( SBuddiesShares, 8, 8, 0, 2 );
-		
-	ListBuddyShares = new QListView(sharesTab, "ListBuddyShares");
-	ListBuddyShares->addColumn(tr("Directories"), -1);
-	SharesGrid->addMultiCellWidget( ListBuddyShares, 9, 9, 0, 1);
+	SBuddiesShares = new QCheckBox( sharesTab);
+	SharesGrid->addWidget( SBuddiesShares, 7, 0, 1, 2 );
+
+	ListBuddyShares = new QTreeWidget(sharesTab);
+	ListBuddyShares->setRootIsDecorated(false);
+	QStringList BuddySharesHeaders;
+	BuddySharesHeaders <<  tr("Directories");
+	ListBuddyShares->setHeaderLabels(BuddySharesHeaders);
+	SharesGrid->addWidget( ListBuddyShares, 8,  0, 1, 2);
 	// Buddy Shares List Buttons
-	QVBoxLayout* sharesBuddyListButtons = new QVBoxLayout( 0, 0, 0, "sharesListButtons" );
-	SharesGrid->addLayout(sharesBuddyListButtons, 9, 2);
-	SharesGrid->setRowStretch(7, 2);
-	SharesGrid->setRowStretch(9, 2);
+	QVBoxLayout* sharesBuddyListButtons = new QVBoxLayout;
+	SharesGrid->addLayout(sharesBuddyListButtons, 8, 2);
+	SharesGrid->setRowStretch(6, 2);
+	SharesGrid->setRowStretch(8, 2);
 // 	SharesGrid->setRowStretch(10, 1);
-	BSharesRefresh = new QPushButton( sharesTab, "NSharesRefresh" );
-	BSharesRefresh->setIconSet( IMG("reload"));
+	BSharesRefresh = new QPushButton( sharesTab);
+	BSharesRefresh->setIcon( IMG("reload"));
 	sharesBuddyListButtons->addWidget( BSharesRefresh);
-	BSharesUpdate = new QPushButton( sharesTab, "BSharesUpdate" );
-	BSharesUpdate->setIconSet(IMG("redo"));
+	BSharesUpdate = new QPushButton( sharesTab );
+	BSharesUpdate->setIcon(IMG("redo"));
 	sharesBuddyListButtons->addWidget( BSharesUpdate);
-	BSharesRescan = new QPushButton( sharesTab, "BSharesRescan" );
-	BSharesRescan->setIconSet(IMG("rescan"));
+	BSharesRescan = new QPushButton( sharesTab);
+	BSharesRescan->setIcon(IMG("rescan"));
 	sharesBuddyListButtons->addWidget( BSharesRescan);
-	BSharesAdd = new QPushButton( sharesTab, "BSharesAdd" );
-	BSharesAdd->setIconSet(IMG("add"));
+	BSharesAdd = new QPushButton( sharesTab);
+	BSharesAdd->setIcon(IMG("add"));
 	sharesBuddyListButtons->addWidget( BSharesAdd);
-	BSharesRemove = new QPushButton( sharesTab, "BSharesRemove" );
-	BSharesRemove->setIconSet(IMG("remove"));
+	BSharesRemove = new QPushButton( sharesTab);
+	BSharesRemove->setIcon(IMG("remove"));
 	sharesBuddyListButtons->addWidget( BSharesRemove);
-		
-	
+
+
 
 	// Connections Tab
-	connectionsTab = new QWidget( mMuseekdTabs, "connectionsTab" );
-	mMuseekdTabs->insertTab( connectionsTab, QString::fromLatin1("") );
-	ConnectionsGrid = new QGridLayout( connectionsTab, 1, 1, 5, 5, "ConnectionsGrid");
-	buttonGroup2 = new QHButtonGroup( connectionsTab, "buttonGroup2" );
-	
-	SActive = new QRadioButton( buttonGroup2, "SActive" );
-	SPassive = new QRadioButton( buttonGroup2, "SPassive" );
+	connectionsTab = new QWidget( mMuseekdTabs );
+	mMuseekdTabs->addTab( connectionsTab, QString::fromLatin1("") );
+	ConnectionsGrid = new QGridLayout( connectionsTab);
+// 	buttonGroup2 = new QHButtonGroup( connectionsTab );
+	QGroupBox * connectionsBox = new QGroupBox(tr("Peer Connections"), connectionsTab);
+	ConnectionsGrid->addWidget(connectionsBox, 0, 0, 1, 4);
+	QHBoxLayout * cboxLayout = new QHBoxLayout(connectionsBox);
+// 	connectionsBox->setLayout();
+	SActive = new QRadioButton( connectionsTab );
+	SPassive = new QRadioButton( SActive);
 
-	ConnectionsGrid->addMultiCellWidget(buttonGroup2, 0, 0, 0, 3);
+	cboxLayout->addWidget(SActive);
+	cboxLayout->addWidget(SPassive);
 
-	listenPortsLabel = new QLabel( connectionsTab, "listenPortsLabel" , Qt::WordBreak);
+	listenPortsLabel = new QLabel( connectionsTab);
 	listenPortsLabel->setTextFormat(Qt::RichText);
-	ConnectionsGrid->addMultiCellWidget( listenPortsLabel, 1, 1, 0, 3);
-	listenPortsStartLabel = new QLabel( connectionsTab, "listenPortsStartLabel" );
-	ConnectionsGrid->addWidget( listenPortsStartLabel, 2, 0, Qt::AlignTop);
+	ConnectionsGrid->addWidget( listenPortsLabel, 1, 0, 1, 4);
+	listenPortsStartLabel = new QLabel( connectionsTab);
+	ConnectionsGrid->addWidget( listenPortsStartLabel, 2, 0, Qt::AlignCenter);
 
-	CPortStart = new QSpinBox( connectionsTab, "CPortStart" );
-	CPortStart->setMaxValue( 65535 );
+	CPortStart = new QSpinBox( connectionsTab );
+	CPortStart->setMaximum( 65535 );
 	CPortStart->setValue( 0 );
-	ConnectionsGrid->addWidget( CPortStart, 2, 1, Qt::AlignTop);
+	ConnectionsGrid->addWidget( CPortStart, 2, 1, Qt::AlignCenter);
 
-	listenPortsEndLabel = new QLabel( connectionsTab, "listenPortsEndLabel" );
-	ConnectionsGrid->addWidget( listenPortsEndLabel, 2, 2, Qt::AlignTop);
+	listenPortsEndLabel = new QLabel( connectionsTab );
+	ConnectionsGrid->addWidget( listenPortsEndLabel, 2, 2, Qt::AlignCenter);
 
-	CPortEnd = new QSpinBox( connectionsTab, "CPortEnd" );
-	CPortEnd->setMaxValue( 65535 );
+	CPortEnd = new QSpinBox( connectionsTab);
+	CPortEnd->setMaximum( 65535 );
 	CPortEnd->setValue( 0 );
-		
-	ConnectionsGrid->addWidget( CPortEnd, 2, 3, Qt::AlignTop);
 
-	ConnectionsGrid->setRowStretch(2, 10);
-	
-		
-	// USERS Options Tab	
-	usersTab = new QWidget( mMuseekdTabs, "usersTab" );
-	mMuseekdTabs->insertTab( usersTab, QString::fromLatin1("") );
-	UsersGrid = new QGridLayout( usersTab, 1, 1, 5, 5, "UsersGrid");
+	ConnectionsGrid->addWidget( CPortEnd, 2, 3, Qt::AlignCenter);
+
+	ConnectionsGrid->setRowStretch(3, 10);
 
 
-	SBuddiesPrivileged = new QCheckBox( usersTab, "SBuddiesPrivileged" );
+	// USERS Options Tab
+	usersTab = new QWidget( mMuseekdTabs);
+	mMuseekdTabs->addTab( usersTab, QString::fromLatin1("") );
+	UsersGrid = new QGridLayout( usersTab);
+
+
+	SBuddiesPrivileged = new QCheckBox( usersTab);
 	UsersGrid->addWidget( SBuddiesPrivileged, 0, 0);
-	
-	SShareBuddiesOnly = new QCheckBox( usersTab, "SShareBuddiesOnly" );
+
+	SShareBuddiesOnly = new QCheckBox( usersTab );
 	UsersGrid->addWidget( SShareBuddiesOnly, 1, 0);
-	
-	STrustedUsers = new QCheckBox( usersTab, "STrustedUsers" );
+
+	STrustedUsers = new QCheckBox( usersTab);
 	UsersGrid->addWidget( STrustedUsers, 2, 0);
-		
-	SUserWarnings = new QCheckBox( usersTab, "SUserWarnings" );
+
+	SUserWarnings = new QCheckBox( usersTab );
 	UsersGrid->addWidget( SUserWarnings, 3, 0);
-		
+
 	UsersGrid->setRowStretch(4, 10);
 	// Museeq Appearance
-	AppearanceTab = new QWidget( mMuseeqTabs, "AppearanceTab" );
-	mMuseeqTabs->insertTab( AppearanceTab, QString::fromLatin1("") );
-	AppearanceGrid = new QGridLayout( AppearanceTab, 1, 1, 5, 5, "AppearanceGrid");
+	AppearanceTab = new QWidget( mMuseeqTabs);
+	mMuseeqTabs->addTab( AppearanceTab, QString::fromLatin1("") );
+	AppearanceGrid = new QGridLayout( AppearanceTab);
 
-	SOnlineAlerts = new QCheckBox( AppearanceTab, "SOnlineAlerts" );
-	AppearanceGrid->addWidget( SOnlineAlerts, 0, 0 );
+	SOnlineAlerts = new QCheckBox( AppearanceTab );
+	AppearanceGrid->addWidget( SOnlineAlerts, 0, 0, 1, 2  );
 
-	SIPLog = new QCheckBox( AppearanceTab, "SIPLog" );
-	AppearanceGrid->addWidget( SIPLog, 1, 0 );
-	AppearanceGrid->setRowStretch(2, 10);
-		
+	SIPLog = new QCheckBox( AppearanceTab);
+	AppearanceGrid->addWidget( SIPLog, 1, 0, 1, 2  );
+
+	IconsAlignment = new QCheckBox( AppearanceTab);
+	AppearanceGrid->addWidget( IconsAlignment, 2, 0, 1, 2  );
+
+	TickerLengthLabel = new QLabel(AppearanceTab);
+	AppearanceGrid->addWidget( TickerLengthLabel, 3, 0);
+
+	TickerLength = new QSpinBox( AppearanceTab);
+	TickerLength->setMaximum( 500 );
+	TickerLength->setMinimum( 20 );
+	TickerLength->setValue( 20 );
+	AppearanceGrid->addWidget( TickerLength, 3, 1 );
+	AppearanceGrid->setColumnStretch(0, 8);
+	AppearanceGrid->setRowStretch(4, 10);
+
 	// Logging
-	LoggingTab = new QWidget( mMuseeqTabs, "LoggingTab" );
-	mMuseeqTabs->insertTab( LoggingTab, QString::fromLatin1("") );
-	LoggingGrid = new QGridLayout( LoggingTab, 1, 1, 5, 5, "LoggingGrid");
+	LoggingTab = new QWidget( mMuseeqTabs);
+	mMuseeqTabs->addTab( LoggingTab, QString::fromLatin1("") );
+	LoggingGrid = new QGridLayout( LoggingTab);
 
-	LoggingPrivate = new QCheckBox( LoggingTab, "LoggingPrivate" );
+	LoggingPrivate = new QCheckBox( LoggingTab );
 	LoggingGrid->addWidget( LoggingPrivate, 0, 0);
 
-	
-	LoggingPrivateDir = new QLineEdit( LoggingTab, "LoggingPrivateDir" );
+
+	LoggingPrivateDir = new QLineEdit( LoggingTab);
 	LoggingGrid->addWidget( LoggingPrivateDir, 1, 0);
-	
-	LoggingPrivateButton = new QPushButton( LoggingTab, "LoggingPrivateButton" );
-	LoggingPrivateButton->setIconSet(IMG("open"));
+
+	LoggingPrivateButton = new QPushButton( LoggingTab);
+	LoggingPrivateButton->setIcon(IMG("open"));
 	LoggingGrid->addWidget( LoggingPrivateButton, 1, 1);
 
-	LoggingRooms = new QCheckBox( LoggingTab, "LoggingRooms" );
+	LoggingRooms = new QCheckBox( LoggingTab);
 	LoggingGrid->addWidget( LoggingRooms, 2, 0);
-	
-	LoggingRoomDir = new QLineEdit( LoggingTab, "LoggingRoomDir" );
+
+	LoggingRoomDir = new QLineEdit( LoggingTab);
 	LoggingGrid->addWidget( LoggingRoomDir, 3, 0);
-	
-	LoggingRoomButton = new QPushButton( LoggingTab, "LoggingRoomButton" );
-	LoggingRoomButton->setIconSet(IMG("open"));
+
+	LoggingRoomButton = new QPushButton( LoggingTab);
+	LoggingRoomButton->setIcon(IMG("open"));
 	LoggingGrid->addWidget( LoggingRoomButton, 3, 1);
 	LoggingGrid->setRowStretch(4, 10);
-	
+
 	// Userinfo
-	UserInfoTab = new QWidget( mMuseekdTabs, "UserInfoTab" );
-	mMuseekdTabs->insertTab( UserInfoTab, QString::fromLatin1("") );
-	UserInfoGrid = new QGridLayout( UserInfoTab, 1, 1, 11, 6, "UserInfoGrid");
+	UserInfoTab = new QWidget( mMuseekdTabs );
+	mMuseekdTabs->addTab( UserInfoTab, QString::fromLatin1("") );
+	UserInfoGrid = new QGridLayout( UserInfoTab);
 
-	mInfoText = new QTextEdit( UserInfoTab, "mText" );
+	mInfoText = new QTextEdit( UserInfoTab );
 
-	UserInfoGrid->addMultiCellWidget( mInfoText, 0, 0, 0, 2 );
+	UserInfoGrid->addWidget( mInfoText, 0, 0, 1, 2 );
 
-	buttonGroup1 = new QButtonGroup( UserInfoTab, "buttonGroup1" );
-	buttonGroup1->setColumnLayout(0, Qt::Vertical );
-	buttonGroup1->layout()->setSpacing( 6 );
-	buttonGroup1->layout()->setMargin( 11 );
-	buttonGroup1Layout = new QGridLayout( buttonGroup1->layout() );
-	buttonGroup1Layout->setAlignment( Qt::AlignTop );
+	mClear = new QRadioButton( UserInfoTab);
 
-	mClear = new QRadioButton( buttonGroup1, "mClear" );
+	UserInfoGrid->addWidget( mClear, 3, 0 );
 
-	buttonGroup1Layout->addWidget( mClear, 2, 0 );
-
-	mDontTouch = new QRadioButton( buttonGroup1, "mDontTouch" );
+	mDontTouch = new QRadioButton( mClear);
 	mDontTouch->setChecked( TRUE );
 
-	buttonGroup1Layout->addWidget( mDontTouch, 0, 0 );
+	UserInfoGrid->addWidget( mDontTouch, 1, 0 );
 
-	mImage = new QLineEdit( buttonGroup1, "mImage" );
+	mImage = new QLineEdit( UserInfoTab );
 
-	buttonGroup1Layout->addWidget( mImage, 1, 1 );
+	UserInfoGrid->addWidget( mImage, 2, 1 );
 
-	mUpload = new QRadioButton( buttonGroup1, "mUpload" );
+	mUpload = new QRadioButton( mClear );
 
-	buttonGroup1Layout->addWidget( mUpload, 1, 0 );
+	UserInfoGrid->addWidget( mUpload, 2, 0 );
 
-	mBrowse = new QPushButton( buttonGroup1, "mBrowse" );
-	mBrowse->setIconSet(IMG("open"));
-	buttonGroup1Layout->addWidget( mBrowse, 1, 2 );
+	mBrowse = new QPushButton( mClear );
+	mBrowse->setIcon(IMG("open"));
+	UserInfoGrid->addWidget( mBrowse, 2, 2 );
 	connect( mBrowse, SIGNAL( clicked() ), this, SLOT( UserImageBrowse_clicked() ) );
-		
-	UserInfoGrid->addMultiCellWidget( buttonGroup1, 1, 1, 0, 2 );
-	
+
+// 	UserInfoGrid->addWidget( buttonGroup1, 1, 1, 0, 2 );
+
 	// Protocol Handlers Tab
-	ProtocolTab = new QWidget( mMuseeqTabs, "UserInfoTab" );
-	mMuseeqTabs->insertTab( ProtocolTab, QString::fromLatin1("") );
+	ProtocolTab = new QWidget( mMuseeqTabs);
+	mMuseeqTabs->addTab( ProtocolTab, QString::fromLatin1("") );
 
-	ProtocolGrid = new QGridLayout( ProtocolTab, 1, 1, 5, 5, "ProtocolGrid");
+	ProtocolGrid = new QGridLayout( ProtocolTab);
 
-	mProtocols = new QListView( ProtocolTab, "mProtocols" );
-	mProtocols->addColumn( tr( "Protocol" ) );
-	mProtocols->addColumn( tr( "Handler" ) );
+	mProtocols = new QTreeWidget( ProtocolTab);
+
+	QStringList ProtocolsHeaders;
+	ProtocolsHeaders <<  tr("Protocol") << tr("Handler");
+	mProtocols->setHeaderLabels(ProtocolsHeaders);
+
+	mProtocols->sortItems(0, Qt::AscendingOrder);
+	mProtocols->setRootIsDecorated(false);
+	mProtocols->setEditTriggers(QAbstractItemView::DoubleClicked);
 	mProtocols->setAllColumnsShowFocus( TRUE );
 
-	ProtocolGrid->addMultiCellWidget( mProtocols, 0, 0, 0, 4 );
+	ProtocolGrid->addWidget( mProtocols, 0, 0, 1, 4 );
 
-	mNewHandler = new QPushButton( ProtocolTab, "mNew" );
-	mNewHandler->setIconSet(IMG("new"));
-	ProtocolGrid->addWidget( mNewHandler, 1, 2 );
+	mNewHandler = new QPushButton( ProtocolTab);
+	mNewHandler->setIcon(IMG("new"));
+	ProtocolGrid->addWidget( mNewHandler, 2, 2 );
 	protocolSpacer = new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
-	ProtocolGrid->addItem( protocolSpacer, 1, 0 );
-	mModifyHandler = new QPushButton( ProtocolTab, "mModify" );
-	mModifyHandler->setIconSet(IMG("comments"));
-	ProtocolGrid->addWidget( mModifyHandler, 1, 1 );
+	ProtocolGrid->addItem( protocolSpacer, 2, 0 );
+	mModifyHandler = new QPushButton( ProtocolTab);
+	mModifyHandler->setIcon(IMG("comments"));
+	ProtocolGrid->addWidget( mModifyHandler, 2, 1 );
 	// Colors And Fonts
-	ColorsAndFontsTab = new QWidget( mMuseeqTabs, "ColorsAndFontsTab" );
-	mMuseeqTabs->insertTab( ColorsAndFontsTab, QString::fromLatin1("") );
-	ColorsGrid = new QGridLayout( ColorsAndFontsTab, 1, 1, 5, 5, "ColorsGrid");
-	MeColorLabel = new QLabel( ColorsAndFontsTab, "MeColorLabel" );
+	ColorsAndFontsTab = new QWidget( mMuseeqTabs );
+	mMuseeqTabs->addTab( ColorsAndFontsTab, QString::fromLatin1("") );
+	ColorsGrid = new QGridLayout( ColorsAndFontsTab);
+	MeColorLabel = new QLabel( ColorsAndFontsTab);
 	ColorsGrid->addWidget( MeColorLabel, 0, 0 );
-	
-	SMeText = new QLineEdit( ColorsAndFontsTab, "SMeText" );
+
+	SMeText = new QLineEdit( ColorsAndFontsTab );
 	ColorsGrid->addWidget( SMeText, 0, 1 );
-	
-	MeColorButton = new QPushButton( ColorsAndFontsTab, "MeColorButton" );
-	MeColorButton->setIconSet(IMG("colorpicker"));
+
+	MeColorButton = new QPushButton( ColorsAndFontsTab);
+	MeColorButton->setIcon(IMG("colorpicker"));
 	ColorsGrid->addWidget( MeColorButton, 0, 2 );
 
-	RemoteColorLabel = new QLabel( ColorsAndFontsTab, "RemoteColorLabel" );
+	RemoteColorLabel = new QLabel( ColorsAndFontsTab );
 	ColorsGrid->addWidget( RemoteColorLabel, 1, 0 );
-	
-	SRemoteText = new QLineEdit( ColorsAndFontsTab, "SRemoteText" );
+
+	SRemoteText = new QLineEdit( ColorsAndFontsTab );
 	ColorsGrid->addWidget( SRemoteText, 1, 1 );
 
-	RemoteColorButton = new QPushButton( ColorsAndFontsTab, "RemoteColorButton" );
-	RemoteColorButton->setIconSet(IMG("colorpicker"));
+	RemoteColorButton = new QPushButton( ColorsAndFontsTab);
+	RemoteColorButton->setIcon(IMG("colorpicker"));
 	ColorsGrid->addWidget( RemoteColorButton, 1, 2 );
 
-	LocalTextLabel = new QLabel( ColorsAndFontsTab, "LocalTextLabel" );
+	LocalTextLabel = new QLabel( ColorsAndFontsTab );
 	ColorsGrid->addWidget( LocalTextLabel, 2, 0 );
-	
-	SNicknameText = new QLineEdit( ColorsAndFontsTab, "SNicknameText" );
+
+	SNicknameText = new QLineEdit( ColorsAndFontsTab );
 	ColorsGrid->addWidget( SNicknameText, 2, 1 );
 
-	NicknameColorButton = new QPushButton( ColorsAndFontsTab, "NicknameColorButton" );
-	NicknameColorButton->setIconSet(IMG("colorpicker"));
+	NicknameColorButton = new QPushButton( ColorsAndFontsTab );
+	NicknameColorButton->setIcon(IMG("colorpicker"));
 	ColorsGrid->addWidget( NicknameColorButton, 2, 2 );
-	
-	BuddiedColorLabel = new QLabel( ColorsAndFontsTab, "BuddiedColorLabel" );
+
+	BuddiedColorLabel = new QLabel( ColorsAndFontsTab );
 	ColorsGrid->addWidget( BuddiedColorLabel, 3, 0 );
-	
-	SBuddiedText = new QLineEdit( ColorsAndFontsTab, "SBuddiedText" );
+
+	SBuddiedText = new QLineEdit( ColorsAndFontsTab);
 	ColorsGrid->addWidget( SBuddiedText, 3, 1 );
 
-	BuddiedColorButton = new QPushButton( ColorsAndFontsTab, "BuddiedColorButton" );
-	BuddiedColorButton->setIconSet(IMG("colorpicker"));
+	BuddiedColorButton = new QPushButton( ColorsAndFontsTab );
+	BuddiedColorButton->setIcon(IMG("colorpicker"));
 	ColorsGrid->addWidget( BuddiedColorButton, 3, 2 );
-	
-	BannedColorLabel = new QLabel( ColorsAndFontsTab, "BannedColorLabel" );
+
+	BannedColorLabel = new QLabel( ColorsAndFontsTab );
 	ColorsGrid->addWidget( BannedColorLabel, 4, 0 );
-		
-	SBannedText = new QLineEdit( ColorsAndFontsTab, "SBannedText" );
+
+	SBannedText = new QLineEdit( ColorsAndFontsTab );
 	ColorsGrid->addWidget( SBannedText, 4, 1 );
-	
-	BannedColorButton = new QPushButton( ColorsAndFontsTab, "BannedColorButton" );
-	BannedColorButton->setIconSet(IMG("colorpicker"));
+
+	BannedColorButton = new QPushButton( ColorsAndFontsTab );
+	BannedColorButton->setIcon(IMG("colorpicker"));
 	ColorsGrid->addWidget( BannedColorButton, 4, 2 );
 
-	TrustColorLabel = new QLabel( ColorsAndFontsTab, "TrustColorLabel" );
+	TrustColorLabel = new QLabel( ColorsAndFontsTab );
 	ColorsGrid->addWidget( TrustColorLabel, 5, 0 );
-	
-	STrustedText = new QLineEdit( ColorsAndFontsTab, "STrustedText" );
+
+	STrustedText = new QLineEdit( ColorsAndFontsTab);
 	ColorsGrid->addWidget( STrustedText, 5, 1 );
 
-	TrustColorButton = new QPushButton( ColorsAndFontsTab, "TrustColorButton" );
-	TrustColorButton->setIconSet(IMG("colorpicker"));
+	TrustColorButton = new QPushButton( ColorsAndFontsTab);
+	TrustColorButton->setIcon(IMG("colorpicker"));
 	ColorsGrid->addWidget( TrustColorButton, 5, 2 );
 
-	TimeColorLabel = new QLabel( ColorsAndFontsTab, "TimeColorLabel" , Qt::WordBreak);
+	TimeColorLabel = new QLabel( ColorsAndFontsTab);
 	TimeColorLabel->setTextFormat(Qt::RichText);
 	ColorsGrid->addWidget( TimeColorLabel, 6, 0 );
 
-	STimeText = new QLineEdit( ColorsAndFontsTab, "STimeText" );
+	STimeText = new QLineEdit( ColorsAndFontsTab);
 	ColorsGrid->addWidget( STimeText, 6, 1 );
 
-	TimeColorButton = new QPushButton( ColorsAndFontsTab, "TimeColorButton" );
-	TimeColorButton->setIconSet(IMG("colorpicker"));
+	TimeColorButton = new QPushButton( ColorsAndFontsTab );
+	TimeColorButton->setIcon(IMG("colorpicker"));
 	ColorsGrid->addWidget( TimeColorButton, 6, 2 );
-	
-	TimeFontLabel = new QLabel( ColorsAndFontsTab, "TimeFontLabel" , Qt::WordBreak);
+
+	TimeFontLabel = new QLabel( ColorsAndFontsTab);
 	TimeFontLabel->setTextFormat(Qt::RichText);
 	ColorsGrid->addWidget( TimeFontLabel, 7, 0 );
 
-	STimeFont = new QLineEdit( ColorsAndFontsTab, "STimeFont" );
+	STimeFont = new QLineEdit( ColorsAndFontsTab );
 	ColorsGrid->addWidget( STimeFont, 7, 1 );
-	
-	TimeFontButton = new QPushButton( ColorsAndFontsTab, "TimeFontButton" );
-	TimeFontButton->setIconSet(IMG("font"));
+
+	TimeFontButton = new QPushButton( ColorsAndFontsTab);
+	TimeFontButton->setIcon(IMG("font"));
 	ColorsGrid->addWidget( TimeFontButton, 7, 2 );
 
-	MessageFontLabel = new QLabel( ColorsAndFontsTab, "MessageFontLabel" );
+	MessageFontLabel = new QLabel( ColorsAndFontsTab );
 	ColorsGrid->addWidget( MessageFontLabel, 8, 0 );
-	
-	SMessageFont = new QLineEdit( ColorsAndFontsTab, "SMessageFont" );
+
+	SMessageFont = new QLineEdit( ColorsAndFontsTab );
 	ColorsGrid->addWidget( SMessageFont, 8, 1 );
 
-	MessageFontButton = new QPushButton( ColorsAndFontsTab, "MessageFontButton" );
-	MessageFontButton->setIconSet(IMG("font"));
+	MessageFontButton = new QPushButton( ColorsAndFontsTab );
+	MessageFontButton->setIcon(IMG("font"));
 	ColorsGrid->addWidget( MessageFontButton, 8, 2 );
 
 	connect( MeColorButton, SIGNAL( clicked() ), this, SLOT( color_text_me() ) );
@@ -500,32 +538,31 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, W
 	connect( TimeColorButton, SIGNAL( clicked() ), this, SLOT( color_text_time() ) );
 	connect( TrustColorButton, SIGNAL( clicked() ), this, SLOT( color_text_trusted() ) );
 	connect( TimeFontButton, SIGNAL( clicked() ), this, SLOT( font_text_time() ) );
-	
+
 	// Translate
 	languageChange();
 	resize( QSize(450, 600).expandedTo(minimumSizeHint()) );
 
-	
+
 	// signals and slots connections
 	connect( mOK, SIGNAL( clicked() ), this, SLOT( accept() ) );
 	connect( mSave, SIGNAL( clicked() ), this, SLOT( save() ) );
 	connect( mCancel, SIGNAL( clicked() ), this, SLOT( reject() ) );
 	connect( SConnect, SIGNAL( clicked() ), this, SLOT( SConnect_clicked() ) );
 	connect( SDisconnect, SIGNAL( clicked() ), this, SLOT( SDisconnect_clicked() ) );
-	connect( SReloadShares, SIGNAL( clicked() ), this, SLOT( SReloadShares_clicked() ) );
 	connect( SDownloadButton, SIGNAL( clicked() ), this, SLOT( SDownload_clicked() ) );
 	connect( SIncompleteButton, SIGNAL( clicked() ), this, SLOT( SIncomplete_clicked() ) );
-		
+
 	connect( SConfigButton, SIGNAL( clicked() ), this, SLOT( SConfig_clicked() ) );
 	connect( SBuddiesShares, SIGNAL( toggled(bool) ), SLOT( SBuddiesSharesToggled(bool) ) );
-		
+
 	connect( NSharesRefresh, SIGNAL( clicked() ), this, SLOT( NormalSharesRefresh() ) );
 	connect( NSharesUpdate, SIGNAL( clicked() ), this, SLOT( NormalSharesUpdate() ) );
 	connect( NSharesRescan, SIGNAL( clicked() ), this, SLOT( NormalSharesRescan() ) );
 	connect( NSharesAdd, SIGNAL( clicked() ), this, SLOT( NormalSharesAdd() ) );
 	connect( NSharesRemove, SIGNAL( clicked() ), this, SLOT( NormalSharesRemove() ) );
-	
-		
+
+
 	connect( BSharesRefresh, SIGNAL( clicked() ), this, SLOT( BuddySharesRefresh() ) );
 	SBuddiesSharesToggled(false);
 	connect( BSharesUpdate, SIGNAL( clicked() ), this, SLOT( BuddySharesUpdate() ) );
@@ -535,14 +572,23 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, W
 
 	connect( LoggingPrivateButton, SIGNAL( clicked() ), this, SLOT( PrivateDirSelect() ) );
 	connect( LoggingRoomButton, SIGNAL( clicked() ), this, SLOT( RoomDirSelect() ) );
-		
+	// Protocol treewidget signals
+	mProtocols->setContextMenuPolicy(Qt::CustomContextMenu);
+	mProtocolsMenu = new QMenu(this);
+
+	ActionDeleteHandler = new QAction(IMG("remove"),tr("Delete handler"), this);
+	connect(ActionDeleteHandler, SIGNAL(triggered()), this, SLOT(mProtocols_itemDelete()));
+	mProtocolsMenu->addAction(ActionDeleteHandler);
+
+	connect(mProtocols, SIGNAL(customContextMenuRequested(const QPoint&)), SLOT(slotProtocolContextMenu(const QPoint&)));
 	connect( mNewHandler, SIGNAL( clicked() ), this, SLOT( mNewHandler_clicked() ) );
 	connect( mModifyHandler, SIGNAL( clicked() ), this, SLOT( mModifyHandler_clicked() ) );
-	connect( mProtocols, SIGNAL( itemRenamed(QListViewItem*,int) ), this, SLOT( mProtocols_itemRenamed(QListViewItem*,int) ) );
+// 	connect( mProtocols, SIGNAL( itemRenamed(QTreeWidgetItem*,int) ), this, SLOT( mProtocols_itemRenamed(QTreeWidgetItem*,int) ) );
+
 	connect(museeq, SIGNAL(configChanged(const QString&, const QString&, const QString&)), SLOT(slotConfigChanged(const QString&, const QString&, const QString&)));
 
 }
-		
+
 void SettingsDialog::slotConfigChanged(const QString& domain, const QString& key, const QString& value) {
 	if(domain == "server" && key == "host") {
 		SServerHost->setText(value);
@@ -590,172 +636,183 @@ void SettingsDialog::slotConfigChanged(const QString& domain, const QString& key
 		mInfoText->setText(value);
 
 	}
-	
+
 }
 
 void SettingsDialog::SBuddiesSharesToggled(bool on) {
 	ListBuddyShares->setEnabled(on);
 	EnableBuddyButtons(on);
-
+    mSharesDirty = true;
 }
+
 void SettingsDialog::NormalSharesRefresh() {
 	ListNormalShares->clear();
 	proc1 = new QProcess( this );
-	connect( proc1, SIGNAL(readyReadStdout()), this, SLOT(readNormal()) );
-	proc1->addArgument( "muscan" );
-	proc1->addArgument( "-c" );
-	proc1->addArgument( SConfigFile->text() );
-	proc1->addArgument( "-l" );
+	connect( proc1, SIGNAL(readyReadStandardOutput()), this, SLOT(readNormal()) );
+	connect( proc1, SIGNAL(finished( int, QProcess::ExitStatus )), this, SLOT(finishedListNormal( int, QProcess::ExitStatus)) );
+	QStringList arguments ;
+	arguments.append("-c");
+	arguments.append( SConfigFile->text() );
+	arguments.append("-l" );
 
-	if ( ! proc1->start() ) {
-		// error handling
-	}
+	proc1->start( "muscan", arguments );
+    mSharesDirty = true;
 }
+
 void SettingsDialog::BuddySharesRefresh() {
 	ListBuddyShares->clear();
 	proc2 = new QProcess( this );
-	connect( proc2, SIGNAL(readyReadStdout()), this, SLOT(readBuddy()) );
-	proc2->addArgument( "muscan" );
-	proc2->addArgument( "-c" );
-	proc2->addArgument( SConfigFile->text() );
-	proc2->addArgument( "-l" );
-	proc2->addArgument( "-b" );
+	connect( proc2, SIGNAL(readyReadStandardOutput()), this, SLOT(readBuddy()) );
+	connect( proc2, SIGNAL(finished( int, QProcess::ExitStatus )), this, SLOT(finishedListBuddy( int, QProcess::ExitStatus)) );
+	QStringList arguments ;
+	arguments.append("-c");
+	arguments.append( SConfigFile->text() );
+	arguments.append("-l" );
+	arguments.append("-b" );
 
-	if ( ! proc2->start() ) {
-		// error handling
-	}
+	proc2->start( "muscan", arguments );
+    mSharesDirty = true;
 }
 
 void SettingsDialog::BuddySharesAdd() {
-	QFileDialog * fd = new QFileDialog(QDir::homeDirPath(), "", this);
-	fd->setMode(QFileDialog::Directory);
-	fd->setCaption(tr("Select a Directory to add to your Buddy Shares."));
-	fd->addFilter(tr("All files (*)"));
-	if(fd->exec() == QDialog::Accepted && ! fd->dirPath().isEmpty())
+	QFileDialog * fd = new QFileDialog(this, QDir::homePath());
+	fd->setFileMode(QFileDialog::Directory);
+	fd->setWindowTitle(tr("Select a Directory to add to your Buddy Shares."));
+	fd->setFilter(tr("All files (*)"));
+	if(fd->exec() == QDialog::Accepted && ! fd->selectedFiles().isEmpty())
 	{
-		
+
 		EnableBuddyButtons(false);
 		proc2 = new QProcess( this );
-		connect( proc2, SIGNAL(processExited ()), this, SLOT(MuscanBuddyDone()) );
-		proc2->addArgument( "muscan" );
-		proc2->addArgument( "-c" );
-		proc2->addArgument( SConfigFile->text() );
-		proc2->addArgument( "-b" );
-		proc2->addArgument( "-s" );
-		proc2->addArgument( fd->dirPath());
-		
-		if ( ! proc2->start() ) {
-			EnableBuddyButtons(true);
-		}
+		connect( proc2, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(finishedBuddy( int, QProcess::ExitStatus)) );
+
+		QStringList arguments ;
+		arguments.append("-c");
+		arguments.append( SConfigFile->text() );
+		arguments.append("-b" );
+		arguments.append("-s" );
+		arguments.append(fd->selectedFiles().at(0) );
+		proc2->start( "muscan", arguments );
+
 	}
 	delete fd;
+    mSharesDirty = true;
 }
 
 
 void SettingsDialog::PrivateDirSelect() {
-	QFileDialog * fd = new QFileDialog(LoggingPrivateDir->text(), "", this);
-	fd->setMode(QFileDialog::Directory);
-	fd->setShowHiddenFiles(true);
-	fd->setCaption(tr("Select a Directory to write Private Chat log files."));
-	fd->addFilter(tr("All files (*)"));
-	if(fd->exec() == QDialog::Accepted && ! fd->dirPath().isEmpty())
+	QString path = LoggingPrivateDir->text();
+	if (path.isEmpty())
+		path = QDir::homePath();
+	QFileDialog * fd = new QFileDialog(this, tr("Select a Directory to write Private Chat log files."), path);
+	fd->setFileMode(QFileDialog::Directory);
+// 	fd->setShowHiddenFiles(true);
+	fd->setViewMode(QFileDialog::Detail);
+	fd->setFilter(tr("All files (*)"));
+	if(fd->exec() == QDialog::Accepted && ! fd->selectedFiles().isEmpty())
 	{
-		LoggingPrivateDir->setText(fd->dirPath());
-	
+		LoggingPrivateDir->setText(fd->selectedFiles().at(0));
+
 	}
 	delete fd;
 }
 
 void SettingsDialog::RoomDirSelect() {
-	QFileDialog * fd = new QFileDialog(LoggingRoomDir->text(), "", this);
-	fd->setMode(QFileDialog::Directory);
-	fd->setShowHiddenFiles(true);
-	fd->setCaption(tr("Select a Directory to write Chat Room log files."));
-	fd->addFilter(tr("All files (*)"));
-	if(fd->exec() == QDialog::Accepted && ! fd->dirPath().isEmpty())
+
+	QString  path = LoggingRoomDir->text();
+	if (path.isEmpty())
+		path = QDir::homePath();
+	QFileDialog * fd = new QFileDialog(this, tr("Select a Directory to write Chat Room log files."), path);
+	fd->setFileMode(QFileDialog::Directory);
+	fd->setViewMode(QFileDialog::Detail);
+// 	fd->setShowHiddenFiles(true);
+
+	fd->setFilter(tr("All files (*)"));
+	if(fd->exec() == QDialog::Accepted && ! fd->selectedFiles().isEmpty())
 	{
-		LoggingRoomDir->setText(fd->dirPath());
-	
+		LoggingRoomDir->setText(fd->selectedFiles().at(0));
+
 	}
 	delete fd;
 }
-		
+
 void SettingsDialog::BuddySharesRescan() {
 	EnableBuddyButtons(false);
 	proc2 = new QProcess( this );
-	connect( proc2, SIGNAL(processExited ()), this, SLOT(MuscanBuddyDone()) );
-	proc2->addArgument( "muscan" );
-	proc2->addArgument( "-c" );
-	proc2->addArgument( SConfigFile->text() );
-	proc2->addArgument( "-b" );
-	proc2->addArgument( "-r" );
+	connect( proc2, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(finishedBuddy(int, QProcess::ExitStatus)) );
 
-	if ( ! proc2->start() ) {
-		EnableBuddyButtons(true);
-	}
+	QStringList arguments ;
+	arguments.append("-c");
+	arguments.append( SConfigFile->text() );
+	arguments.append("-b");
+	arguments.append("-r");
+
+	proc2->start( "muscan", arguments );
+    mSharesDirty = true;
 }
 
 void SettingsDialog::BuddySharesUpdate() {
 	EnableBuddyButtons(false);
 	proc2 = new QProcess( this );
-	connect( proc2, SIGNAL(processExited ()), this, SLOT(MuscanBuddyDone()) );
-	proc2->addArgument( "muscan" );
-	proc2->addArgument( "-c" );
-	proc2->addArgument( SConfigFile->text() );
-	proc2->addArgument( "-b" );
+	connect( proc2, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(finishedBuddy(int, QProcess::ExitStatus)) );
 
-	if ( ! proc2->start() ) {
-		EnableBuddyButtons(true);
-	}
+	QStringList arguments ;
+	arguments.append("-c");
+	arguments.append( SConfigFile->text() );
+	arguments.append("-b" );
+
+	proc2->start( "muscan", arguments );
+    mSharesDirty = true;
 }
 
 void SettingsDialog::NormalSharesAdd() {
-	QFileDialog * fd = new QFileDialog(QDir::homeDirPath(), "", this);
-	fd->setMode(QFileDialog::Directory);
-	fd->setCaption(tr("Select a Directory to add to your Normal Shares."));
-	fd->addFilter(tr("All files (*)"));
-	if(fd->exec() == QDialog::Accepted && ! fd->dirPath().isEmpty())
+	QFileDialog * fd = new QFileDialog(this, QDir::homePath());
+	fd->setFileMode(QFileDialog::Directory);
+	fd->setWindowTitle(tr("Select a Directory to add to your Normal Shares."));
+	fd->setFilter(tr("All files (*)"));
+	if(fd->exec() == QDialog::Accepted && ! fd->selectedFiles().isEmpty())
 	{
 		EnableNormalButtons(false);
 		proc1 = new QProcess( this );
-		connect( proc1, SIGNAL(processExited ()), this, SLOT(MuscanNormalDone()) );
-		proc1->addArgument( "muscan" );
-		proc1->addArgument( "-c" );
-		proc1->addArgument( SConfigFile->text() );
-		proc1->addArgument( "-s" );
-		proc1->addArgument( fd->dirPath());
-		
-		if ( ! proc1->start() ) {
-			EnableNormalButtons(true);
-		}
+		connect( proc1, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(finishedNormal(int, QProcess::ExitStatus)) );
+
+		QStringList arguments ;
+		arguments.append("-c");
+		arguments.append( SConfigFile->text() );
+		arguments.append("-s" );
+		arguments.append(fd->selectedFiles().at(0) );
+		proc1->start( "muscan", arguments );
+
 	}
 	delete fd;
+    mSharesDirty = true;
 }
 
 void SettingsDialog::BuddySharesRemove() {
-	QListViewItem* item = ListBuddyShares->selectedItem();
+	QTreeWidgetItem* item = ListBuddyShares->currentItem();
 	if (! item ||  item->text(0).isEmpty())
 		return;
 	QString directory (item->text(0));
 
 	EnableBuddyButtons(false);
 	proc2 = new QProcess( this );
-	connect( proc2, SIGNAL(processExited ()), this, SLOT(MuscanBuddyDone()) );
-	proc2->addArgument( "muscan" );
-	proc2->addArgument( "-c" );
-	proc2->addArgument( SConfigFile->text() );
-	proc2->addArgument( "-b" );
-	proc2->addArgument( "-u" );
-	proc2->addArgument( directory);
+	connect( proc2, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(finishedBuddy(int, QProcess::ExitStatus)) );
 
-	if ( ! proc2->start() ) {
-		EnableBuddyButtons(true);
-	}
-	
+	QStringList arguments ;
+	arguments.append("-c");
+	arguments.append( SConfigFile->text() );
+	arguments.append("-b" );
+	arguments.append("-u" );
+	arguments.append(directory );
+	proc2->start( "muscan", arguments );
+
+// 		EnableBuddyButtons(true);
+    mSharesDirty = true;
+
 }
 
 void SettingsDialog::NormalSharesRemove() {
-	QListViewItem* item = ListNormalShares->selectedItem();
+	QTreeWidgetItem* item = ListNormalShares->currentItem();
 	if (! item ||  item->text(0).isEmpty())
 		return;
 
@@ -763,47 +820,49 @@ void SettingsDialog::NormalSharesRemove() {
 
 	EnableNormalButtons(false);
 	proc1 = new QProcess( this );
-	connect( proc1, SIGNAL(processExited ()), this, SLOT(MuscanNormalDone()) );
-	proc1->addArgument( "muscan" );
-	proc1->addArgument( "-c" );
-	proc1->addArgument( SConfigFile->text() );
-	proc1->addArgument( "-u" );
-	proc1->addArgument( directory);
+	connect( proc1, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(finishedNormal(int, QProcess::ExitStatus)) );
+	QStringList arguments ;
+	arguments.append("-c");
+	arguments.append( SConfigFile->text() );
+	arguments.append("-u" );
+	arguments.append(directory );
+	proc1->start( "muscan", arguments );
+// 		EnableNormalButtons(true);
 
-	if ( ! proc1->start() ) {
-		EnableNormalButtons(true);
-	}
-
+    mSharesDirty = true;
 }
 
 void SettingsDialog::NormalSharesRescan() {
 	EnableNormalButtons(false);
-	
-	proc1 = new QProcess( this );
-	connect( proc1, SIGNAL(processExited ()), this, SLOT(MuscanNormalDone()) );
-	proc1->addArgument( "muscan" );
-	proc1->addArgument( "-c" );
-	proc1->addArgument( SConfigFile->text() );
-	proc1->addArgument( "-r" );
 
-	if ( ! proc1->start() ) {
-		EnableNormalButtons(true);
-	}
+	proc1 = new QProcess( this );
+	connect( proc1, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(finishedNormal(int, QProcess::ExitStatus)) );
+	QStringList arguments ;
+	arguments.append("-c");
+	arguments.append( SConfigFile->text() );
+	arguments.append("-r" );
+
+	proc1->start( "muscan", arguments );
+
+// 		EnableNormalButtons(true);
+    mSharesDirty = true;
+
 }
 void SettingsDialog::NormalSharesUpdate() {
 	EnableNormalButtons(false);
-	
-	proc1 = new QProcess( this );
-	connect( proc1, SIGNAL(processExited ()), this, SLOT(MuscanNormalDone()) );
-	proc1->addArgument( "muscan" );
-	proc1->addArgument( "-c" );
-	proc1->addArgument( SConfigFile->text() );
 
-	if ( ! proc1->start() ) {
-		EnableNormalButtons(true);
-	}
+	proc1 = new QProcess( this );
+	connect( proc1, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(finishedNormal(int, QProcess::ExitStatus)) );
+	QStringList arguments ;
+	arguments.append("-c");
+	arguments.append( SConfigFile->text() );
+
+	proc1->start( "muscan", arguments );
+
+// 		EnableNormalButtons(true);
+    mSharesDirty = true;
 }
-	
+
 
 void SettingsDialog::EnableBuddyButtons(bool on) {
 	BSharesRefresh->setEnabled(on);
@@ -819,127 +878,140 @@ void SettingsDialog::EnableNormalButtons(bool on) {
 	NSharesRescan->setEnabled(on);
 	NSharesUpdate->setEnabled(on);
 }
-void SettingsDialog::SettingsDialog::MuscanBuddyDone() {
-	if (SBuddiesShares->isChecked ()) {
-		EnableBuddyButtons(true);
-		
+
+void SettingsDialog::readNormal() {
+	while (proc1->bytesAvailable()) {
+		QString output = proc1->readLine();
+		if (! output.isEmpty() ) {
+			QTreeWidgetItem * item = new QTreeWidgetItem(ListNormalShares);
+			item->setText(0, output.replace("\n", ""));
+		}
 	}
-	BuddySharesRefresh();
 }
-void SettingsDialog::MuscanNormalDone() {
+
+void SettingsDialog::readBuddy() {
+	while (proc2->bytesAvailable()) {
+		QString output = proc2->readLine();
+		if (! output.isEmpty() ) {
+			QTreeWidgetItem * item = new QTreeWidgetItem(ListBuddyShares);
+			item->setText(0, output.replace("\n", ""));
+		}
+	}
+}
+void SettingsDialog::finishedListNormal( int exitCode, QProcess::ExitStatus exitStatus) {
+	EnableNormalButtons(true);
+}
+void SettingsDialog::finishedListBuddy( int exitCode, QProcess::ExitStatus exitStatus) {
+	EnableBuddyButtons(SBuddiesShares->isChecked());
+}
+void SettingsDialog::finishedNormal( int exitCode, QProcess::ExitStatus exitStatus) {
 	EnableNormalButtons(true);
 	NormalSharesRefresh();
 }
-
-
-void SettingsDialog::readNormal()
-    {
-	
-        while (proc1->canReadLineStdout()) {
-		new QListViewItem(ListNormalShares, proc1->readLineStdout());
-	}
-    }
-void SettingsDialog::readBuddy()
-    {
-	
-        while (proc2->canReadLineStdout()) {
-		new QListViewItem(ListBuddyShares, proc2->readLineStdout());
-	}
-    }
-
+void SettingsDialog::finishedBuddy( int exitCode, QProcess::ExitStatus exitStatus) {
+	EnableBuddyButtons(SBuddiesShares->isChecked());
+	BuddySharesRefresh();
+}
 
 void SettingsDialog::SConnect_clicked()
-{  museeq->connectServer();
+{
+    museeq->connectServer();
 }
+
 void SettingsDialog::SDisconnect_clicked()
-{   museeq->disconnectServer();
-}
-void SettingsDialog::SReloadShares_clicked()
-{   museeq->reloadShares();
+{
+    museeq->disconnectServer();
 }
 
 void SettingsDialog::save()
-{   museeq->saveSettings();
+{
+    museeq->saveSettings();
 }
 
 void SettingsDialog::SDownload_clicked()
 {
-    QFileDialog * fd = new QFileDialog(QDir::homeDirPath(), "", this);
-    fd->setMode(QFileDialog::Directory);
-    fd->setCaption(tr("Select a Directory to store your downloaded files."));
-    fd->addFilter(tr("All files (*)"));
-    if(fd->exec() == QDialog::Accepted && ! fd->selectedFile().isEmpty())
+    QFileDialog * fd = new QFileDialog(this, QDir::homePath());
+    fd->setFileMode(QFileDialog::Directory);
+    fd->setWindowTitle(tr("Select a Directory to store your downloaded files."));
+    fd->setFilter(tr("All files (*)"));
+    if(fd->exec() == QDialog::Accepted && ! fd->selectedFiles().isEmpty())
     {
-	SDownDir->setText( fd->dirPath());
+        SDownDir->setText( fd->selectedFiles().at(0));
     }
-    
+
     delete fd;
 }
+
 void SettingsDialog::SConfig_clicked()
 {
-	QFileDialog * fd = new QFileDialog(QDir::homeDirPath(), "", this);
-	fd->setMode(QFileDialog::ExistingFile );
-	fd->setShowHiddenFiles(true);
-	fd->setCaption(tr("Select the museekd config file."));
-	fd->addFilter(tr("XML files (*.xml)"));
-	if(fd->exec() == QDialog::Accepted && ! fd->selectedFile().isEmpty())
+	QFileDialog * fd = new QFileDialog(this, QDir::homePath());
+	fd->setFileMode(QFileDialog::ExistingFile );
+// 	fd->setShowHiddenFiles(true);
+	fd->setWindowTitle(tr("Select the museekd config file."));
+	fd->setFilter(tr("XML files (*.xml)"));
+	if(fd->exec() == QDialog::Accepted && ! fd->selectedFiles().isEmpty())
 	{
-		SConfigFile->setText( fd->selectedFile());
+		SConfigFile->setText( fd->selectedFiles().at(0));
 	}
-	
+
 	delete fd;
 }
+
 void SettingsDialog::SIncomplete_clicked()
 {
-    QFileDialog * fd = new QFileDialog(QDir::homeDirPath(), "", this);
-    fd->setMode(QFileDialog::Directory);
-    fd->setCaption(tr("Select a Directory to store your incomplete downloading files."));
-    fd->addFilter(tr("All files (*)"));
-    if(fd->exec() == QDialog::Accepted && ! fd->selectedFile().isEmpty())
+    QFileDialog * fd = new QFileDialog(this, QDir::homePath());
+    fd->setFileMode(QFileDialog::Directory);
+    fd->setWindowTitle(tr("Select a Directory to store your incomplete downloading files."));
+    fd->setFilter(tr("All files (*)"));
+    if(fd->exec() == QDialog::Accepted && ! fd->selectedFiles().isEmpty())
     {
-	SIncompleteDir->setText( fd->dirPath());
+	SIncompleteDir->setText( fd->selectedFiles().at(0));
     }
-    
+
     delete fd;
 }
 
 void SettingsDialog::UserImageBrowse_clicked()
 {
-	QFileDialog * fd = new QFileDialog(QDir::homeDirPath(), tr("Images (*.png *.gif *.jpg *.jpeg)"), this);
-	fd->setMode(QFileDialog::ExistingFile);
-	fd->setCaption(tr("Select an Image for you User info"));
-	fd->addFilter(tr("All files (*)"));
-	if(fd->exec() == QDialog::Accepted && ! fd->selectedFile().isEmpty())
+	QFileDialog * fd = new QFileDialog(this, QDir::homePath(), tr("Images (*.png *.gif *.jpg *.jpeg)"));
+	fd->setFileMode(QFileDialog::ExistingFile);
+	fd->setWindowTitle(tr("Select an image for your User info"));
+	fd->setFilter(tr("All files (*)"));
+	if(fd->exec() == QDialog::Accepted && ! fd->selectedFiles().isEmpty())
 	{
-		mImage->setText(fd->selectedFile());
+		mImage->setText(fd->selectedFiles().at(0));
 		mUpload->setChecked(true);
 	}
-	
+
 	delete fd;
 }
 
 void SettingsDialog::mNewHandler_clicked()
 {
-	QListViewItem* item = new QListViewItem(mProtocols, "", "");
-	item->setRenameEnabled(0, true);
-	item->setRenameEnabled(1, true);
-	item->startRename(0);
-}
-			    
-void SettingsDialog::mModifyHandler_clicked()
-{
-	QListViewItem* item = mProtocols->selectedItem();
-	if (item) {
-		item->setRenameEnabled(0, true);
-		item->setRenameEnabled(1, true);
-		item->startRename(1);
-	}
+	QTreeWidgetItem* item = new QTreeWidgetItem(mProtocols);
+	item->setFlags(Qt::ItemIsEditable | Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled );
+	mProtocols->editItem(item, 0);
 }
 
-void SettingsDialog::mProtocols_itemRenamed( QListViewItem *item, int col)
+void SettingsDialog::mModifyHandler_clicked()
 {
-	if(col == 0)
-		item->startRename(1);
+	QTreeWidgetItem* item = mProtocols->currentItem();
+	if (item) {
+		mProtocols->editItem(item, 1);
+	}
+}
+void SettingsDialog::slotProtocolContextMenu(const QPoint& pos) {
+	QTreeWidgetItem * item = mProtocols->itemAt(pos);
+	if(! item)
+		return;
+	mProtocolsMenu->exec(mProtocols->mapToGlobal(pos));
+}
+
+void SettingsDialog::mProtocols_itemDelete() {
+	QTreeWidgetItem * item = mProtocols->currentItem();
+	if (! item)
+		return;
+	delete item;
 }
 
 
@@ -1009,7 +1081,7 @@ void SettingsDialog::font_text_time()
 		QString c = ("font-family:"+ font.family() +";weight:"+w.toString()+";font-size:"+ s.toString()+"pt");
 		STimeFont->setText(c);
 
-    } 
+    }
 }
 
 
@@ -1023,7 +1095,7 @@ void SettingsDialog::font_text_message()
 		QString c = ("font-family:"+ font.family() +";weight:"+w.toString()+";font-size:"+ s.toString()+"pt");
 		SMessageFont->setText(c);
 
-    } 
+    }
 }
 /*
  *  Destroys the object and frees any allocated resources
@@ -1039,7 +1111,7 @@ SettingsDialog::~SettingsDialog()
  */
 void SettingsDialog::languageChange()
 {
-	setCaption( tr( "Museeq Settings" ) );
+	setWindowTitle( tr( "Museeq Settings" ) );
 	mOK->setText( tr( "Ok" ) );
 	mSave->setText( tr( "Save" ) );
 	mCancel->setText( tr( "Cancel" ) );
@@ -1060,19 +1132,19 @@ void SettingsDialog::languageChange()
 	listenPortsStartLabel->setText( tr( "First port:" ) );
 	listenPortsEndLabel->setText( tr( "Last port:" ) );
 
-	
-	buttonGroup1->setTitle( tr( "Image" ) );
+
+// 	buttonGroup1->setTitle( tr( "Image" ) );
 	mClear->setText( tr( "Clear" ) );
 	mDontTouch->setText( tr( "Don't touch" ) );
 	mUpload->setText( tr( "Upload:" ) );
 	mBrowse->setText( tr( "Select.." ) );
-	    
-	
+
+
 	LoggingPrivate->setText( tr( "Log Private Chats" ) );
 	LoggingRooms->setText( tr( "Log Chat Rooms" ) );
 	LoggingPrivateButton->setText( tr( "Select.." ) );
 	LoggingRoomButton->setText( tr( "Select.." ) );
-	    
+
 	fEncodingLabel->setText( tr( "Filesystem Encoding:" ) );
 	nEncodingLabel->setText( tr( "Network Encoding:" ) );
 	SConnect->setText( tr( "Connect" ) );
@@ -1082,27 +1154,27 @@ void SettingsDialog::languageChange()
 	usernamelabel->setText( tr( "Soulseek Username:" ) );
 	passwordLabel->setText( tr( "Soulseek Password:" ) );
 	SSoulseekPassword->setInputMask( QString::null );
-	
 
-	mProtocols->header()->setLabel( 0, tr( "Protocol" ) );
-	mProtocols->header()->setLabel( 1, tr( "Handler" ) );
+
+// 	mProtocols->header()->setLabel( 0, tr( "Protocol" ) );
+// 	mProtocols->header()->setLabel( 1, tr( "Handler" ) );
 	mNewHandler->setText( tr( "New" ) );
 	mModifyHandler->setText( tr( "Modify" ) );
 	// Museekd Tabs
-	mTabHolder->changeTab( mMuseekdTabs, tr( "Museek Daemon" ) );
-	mMuseekdTabs->changeTab( serverTab, tr( "Server" ) );
-	mMuseekdTabs->changeTab( sharesTab, tr( "Shares" ) );
-	mMuseekdTabs->changeTab( connectionsTab, tr( "Connections" ) );
-	mMuseekdTabs->changeTab( usersTab, tr( "User Options" ) );
-	mMuseekdTabs->changeTab( UserInfoTab, tr( "User Info" ) );
+	mTabHolder->setTabText( mTabHolder->indexOf(mMuseekdTabs), tr( "Museek Daemon" ) );
+	mMuseekdTabs->setTabText( mMuseekdTabs->indexOf(serverTab), tr( "Server" ) );
+	mMuseekdTabs->setTabText( mMuseekdTabs->indexOf(sharesTab), tr( "Shares" ) );
+	mMuseekdTabs->setTabText( mMuseekdTabs->indexOf(connectionsTab), tr( "Connections" ) );
+	mMuseekdTabs->setTabText( mMuseekdTabs->indexOf(usersTab), tr( "User Options" ) );
+	mMuseekdTabs->setTabText( mMuseekdTabs->indexOf(UserInfoTab), tr( "User Info" ) );
 	// Museeq tabs
-	mTabHolder->changeTab( mMuseeqTabs, tr( "Museeq" ) );
-	mMuseeqTabs->changeTab( AppearanceTab, tr("Appearance") );
-	mMuseeqTabs->changeTab( ColorsAndFontsTab, tr("Fonts and Colors") );
-	mMuseeqTabs->changeTab( LoggingTab, tr( "Logging" ) );
-	mMuseeqTabs->changeTab( ProtocolTab, tr( "Protocol handlers" ) );
+	mTabHolder->setTabText( mTabHolder->indexOf(mMuseeqTabs), tr( "Museeq" ) );
+	mMuseeqTabs->setTabText( mMuseeqTabs->indexOf(AppearanceTab), tr("Appearance") );
+	mMuseeqTabs->setTabText( mMuseeqTabs->indexOf(ColorsAndFontsTab), tr("Fonts and Colors") );
+	mMuseeqTabs->setTabText( mMuseeqTabs->indexOf(LoggingTab), tr( "Logging" ) );
+	mMuseeqTabs->setTabText( mMuseeqTabs->indexOf(ProtocolTab), tr( "Protocol handlers" ) );
 	// Fonts and Colors
-	
+
 	TimeFontLabel->setText( tr( "Time & Brackets Font" ) );
 	TimeFontButton->setText( tr( "Pick Font" ) );
 	TimeColorLabel->setText( tr( "Time & Brackets Text Color" ) );
@@ -1122,19 +1194,18 @@ void SettingsDialog::languageChange()
 	RemoteColorLabel->setText( tr( "Remote Text" ) );
 	RemoteColorButton->setText( tr( "Pick Color" ) );
 
-	
-	
+
+
 	// Connections and Ports
-	buttonGroup2->setTitle( tr( "Connections" ) );
+// 	buttonGroup2->setTitle( tr( "Connections" ) );
 	SActive->setText( tr( "Active Connections" ) );
 	SPassive->setText( tr( "Passive Connections" ) );
-	SReloadShares->setText( tr( "Reload Shares" ) );
 	SDownloadButton->setText( tr( "Select.." ) );
 	downloadLabel->setText( tr( "Download Dir:" ) );
 	SIncompleteButton->setText( tr( "Select.." ) );
 	incompleteLabel->setText( tr( "Incomplete Dir:" ) );
-	
-	
+
+
 	SBuddiesPrivileged->setText( tr( "Buddies are Privileged" ) );
 	SOnlineAlerts->setText( tr( "Online Alerts in Log Window instead of popup" ) );
 	SShareBuddiesOnly->setText( tr( "Share to Buddies Only" ) );
@@ -1142,6 +1213,7 @@ void SettingsDialog::languageChange()
 	SBuddiesShares->setText( tr( "Seperate Shares list for Buddies" ) );
 	SUserWarnings->setText( tr( "Send automatic warnings to users via Private Chat" ) );
 	SIPLog->setText( tr( "IP addresses in Log Window instead of popup" ) );
-	
+	TickerLengthLabel->setText( tr( "Maximum length of ticker messages:" ) );
+	IconsAlignment->setText( tr( "Align Mode Icons Vertically" ) );
 }
 

@@ -20,27 +20,30 @@
 #include "util.h"
 #include "museeq.h"
 
-QString Util::makeSize(Q_INT64 i) {
+#include <QDropEvent>
+#include <QUrl>
+
+QString Util::makeSize(qint64 i) {
 	double d = i;
 	if(d < 1000)
-		return QString().sprintf(QT_TR_NOOP("%.2f B"), d);
+		return QString(QObject::tr("%1 B")).arg(d, 0, 'f', 2);
 	d /= 1024;
 	if(d < 1024)
-		return QString().sprintf(QT_TR_NOOP("%.2f KiB"), d);
+		return QString(QObject::tr("%1 KiB")).arg(d, 0, 'f', 2);
 	d /= 1024;
 	if(d < 1024)
-		return QString().sprintf(QT_TR_NOOP("%.2f MiB"), d);
+		return QString(QObject::tr("%1 MiB")).arg(d, 0, 'f', 2);
 	d /= 1024;
 	if(d < 1024)
-		return QString().sprintf(QT_TR_NOOP("%.2f GiB"), d);
+		return QString(QObject::tr("%1 GiB")).arg(d, 0, 'f', 2);
 	d /= 1024;
 	if(d < 1024)
-		return QString().sprintf(QT_TR_NOOP("%.2f TiB"), d);
+		return QString(QObject::tr("%1 TiB")).arg(d, 0, 'f', 2);
 	d /= 1024;
-	return QString().sprintf(QT_TR_NOOP("%.2f PB"), d);
+	return QString(QObject::tr("%1 PB")).arg(d, 0, 'f', 2);
 }
 
-int Util::cmp(Q_INT64 a, Q_INT64 b) {
+int Util::cmp(qint64 a, qint64 b) {
 	if(a > b)
 		return 1;
 	if(a == b)
@@ -53,9 +56,9 @@ QString Util::makeTime(uint length) {
 		return QString::null;
 	else
 		if(length < 3600)
-			return QString().sprintf("%i:%02i", length / 60, length % 60);
+			return QString(QObject::tr("%1:%2")).arg(length / 60).arg(length % 60, 2, 'f', 0, '0');
 		else
-			return QString().sprintf("%i:%02i:%02i", length / 3600, (length / 60) % 60, length % 60);
+			return QString(QObject::tr("%1:%2:%3")).arg(length / 3600).arg((length / 60) % 60, 2, 'f', 0, '0').arg(length % 60, 2, 'f', 0, '0');
 }
 
 QString Util::makeBitrate(uint bitrate, bool vbr) {
@@ -63,7 +66,25 @@ QString Util::makeBitrate(uint bitrate, bool vbr) {
 		return QString::null;
 	else
 		if(vbr)
-			return QString(QT_TR_NOOP("(vbr) %1")).arg(bitrate);
+			return QString(QObject::tr("(vbr) %1")).arg(bitrate);
 		else
 			return QString::number(bitrate);
+}
+
+/**
+  * Tells if the given QDropEvent transports some slsk:// urls (with or without path)
+  */
+bool Util::hasSlskUrls(const QDropEvent* e, bool needPath) {
+    if (!e->mimeData()->hasUrls())
+        return false;
+
+    QList<QUrl> urls = e->mimeData()->urls();
+
+	QList<QUrl>::iterator it = urls.begin();
+	for(; it != urls.end(); ++it) {
+		QUrl url(*it);
+		if(url.scheme() == "slsk" && !url.host().isEmpty() && (! needPath || !url.path().isEmpty()))
+			return true;
+	}
+	return false;
 }

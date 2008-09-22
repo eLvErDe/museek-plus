@@ -198,11 +198,6 @@ class Settings( gtk.Dialog):
 		if "server" in self.config:
 			self.config["server"]["password"] = self.EntryServerPassword.get_text()
 			
-	def EncodingDefaultChanged(self, widget):
-		if self.config == {}: return
-		if "encoding" in self.config:
-			self.config["encoding"]["default"] = self.defaultEncoding.child.get_text()
-			
 	def EncodingFSChanged(self, widget):
 		if self.config == {}: return
 		if "encoding" in self.config:
@@ -284,6 +279,18 @@ class Settings( gtk.Dialog):
 	def UploadSlotsChanged(self, widget):
 		if self.config != {}:
 			self.config["transfers"]["upload_slots"] = str(int( self.uploadSlots.get_value() ))
+			
+	def DownloadSlotsChanged(self, widget):
+		if self.config != {}:
+			self.config["transfers"]["download_slots"] = str(int( self.downloadSlots.get_value() ))
+		
+	def UploadRateChanged(self, widget):
+		if self.config != {}:
+			self.config["transfers"]["upload_rate"] = str(int( self.uploadRate.get_value() ))
+		
+	def DownloadRateChanged(self, widget):
+		if self.config != {}:
+			self.config["transfers"]["download_rate"] = str(int( self.downloadRate.get_value() ))
 		
 	def LoggingChanged(self, widget):
 		if self.config != {}:
@@ -953,29 +960,6 @@ class Settings( gtk.Dialog):
 		self.vbox3.show()
 		self.vbox3.set_spacing(5)
 		self.vbox3.set_border_width(5)
-	
-		self.hbox6 = gtk.HBox(False, 5)
-		self.hbox6.show()
-		self.hbox6.set_spacing(5)
-	
-		self.default___Label = gtk.Label(_("Default: "))
-		self.default___Label.set_padding(5, 0)
-		self.default___Label.show()
-		self.hbox6.pack_start(self.default___Label, False, False, 0)
-	
-		self.defaultEncoding_List = gtk.ListStore(gobject.TYPE_STRING)
-		self.defaultEncoding = gtk.ComboBoxEntry()
-		self.defaultEncoding.show()
-		for encoding in self.encodings:
-			self.defaultEncoding_List.append([encoding])
-	
-		self.defaultEncoding.set_model(self.defaultEncoding_List)
-		self.defaultEncoding.set_text_column(0)
-		self.defaultEncoding.connect("changed", self.EncodingDefaultChanged)
-		
-		self.hbox6.pack_end(self.defaultEncoding, False, True, 0)
-	
-		self.vbox3.pack_start(self.hbox6, False, False, 0)
 
 		self.hbox7 = gtk.HBox(False, 5)
 		self.hbox7.show()
@@ -1267,17 +1251,66 @@ class Settings( gtk.Dialog):
 		self.label34 = gtk.Label(_("Upload Slots:"))
 		self.label34.show()
 		self.hbox15.pack_start(self.label34, False, False, 0)
-		us = gtk.Adjustment(value=1, lower=0, upper=1000, step_incr=1, page_incr=0, page_size=0)
+		us = gtk.Adjustment(value=0, lower=0, upper=1000, step_incr=1, page_incr=0, page_size=0)
 		
 		self.uploadSlots = gtk.SpinButton(us)
 		self.uploadSlots.show()
-		self.uploadSlots.connect("changed", self.UploadSlotsChanged)
+		self.uploadSlots.connect("value-changed", self.UploadSlotsChanged)
 		
 		self.hbox15.pack_start(self.uploadSlots, False, True, 0)
+	
+		self.label37 = gtk.Label(_("Upload rate:"))
+		self.label37.show()
+		self.hbox15.pack_start(self.label37, False, False, 0)
+		us = gtk.Adjustment(value=0, lower=0, upper=1000, step_incr=1, page_incr=0, page_size=0)
+		
+		self.uploadRate = gtk.SpinButton(us)
+		self.uploadRate.show()
+		self.uploadRate.connect("value-changed", self.UploadRateChanged)
+		
+		self.hbox15.pack_start(self.uploadRate, False, True, 0)
+		
+		self.vbox6.pack_start(self.hbox15, False, True, 0)
+		
+		
+		self.hbox18 = gtk.HBox(False, 5)
+		self.hbox18.show()
+		self.hbox18.set_spacing(5)
+		self.hbox18.set_border_width(3)
+	
+		self.label36 = gtk.Label(_("Download Slots:"))
+		self.label36.show()
+		self.hbox18.pack_start(self.label36, False, False, 0)
+		us = gtk.Adjustment(value=0, lower=0, upper=1000, step_incr=1, page_incr=0, page_size=0)
+		
+		self.downloadSlots = gtk.SpinButton(us)
+		self.downloadSlots.show()
+		self.downloadSlots.connect("value-changed", self.DownloadSlotsChanged)
+		
+		self.hbox18.pack_start(self.downloadSlots, False, True, 0)
+	
+		self.label38 = gtk.Label(_("Download rate:"))
+		self.label38.show()
+		self.hbox18.pack_start(self.label38, False, False, 0)
+		us = gtk.Adjustment(value=0, lower=0, upper=1000, step_incr=1, page_incr=0, page_size=0)
+		
+		self.downloadRate = gtk.SpinButton(us)
+		self.downloadRate.show()
+		self.downloadRate.connect("value-changed", self.DownloadRateChanged)
+		
+		self.hbox18.pack_start(self.downloadRate, False, True, 0)
+		
+		self.vbox6.pack_start(self.hbox18, False, True, 0)		
+		
+		
+		self.hbox19 = gtk.HBox(False, 5)
+		self.hbox19.show()
+		self.hbox19.set_spacing(5)
+		self.hbox19.set_border_width(3)
 		
 		self.pabel= gtk.Label(_("Connection Mode:"))
 		self.pabel.show()
-		self.hbox15.pack_start(self.pabel, False, False, 0)
+		self.hbox19.pack_start(self.pabel, False, False, 0)
 		
 		self.connectMode_List = gtk.ListStore(gobject.TYPE_STRING)
 		self.connectMode = gtk.ComboBoxEntry()
@@ -1290,9 +1323,10 @@ class Settings( gtk.Dialog):
 		self.connectMode.set_model(self.connectMode_List)
 		self.connectMode.set_text_column(0)
 		self.connectMode.connect("changed", self.ConnectModeChanged)
-		self.hbox15.pack_start(self.connectMode, False, False, 0)
+		self.hbox19.pack_start(self.connectMode, False, False, 0)
 		
-		self.vbox6.pack_start(self.hbox15, False, True, 0)
+		self.vbox6.pack_start(self.hbox19, False, True, 0)
+		
 		
 		self.hbox16 = gtk.HBox(False, 5)
 		self.hbox16.show()
@@ -3332,7 +3366,6 @@ class Settings( gtk.Dialog):
 		self.ServerPort.set_value(0)
 		self.EntryServerPassword.set_text("")
 		self.EntryServerUsername.set_text("")
-		self.defaultEncoding.child.set_text("")
 		self.filesystemEncoding.child.set_text("")
 
 		self.networkEncoding.child.set_text("")
@@ -3352,6 +3385,9 @@ class Settings( gtk.Dialog):
 		self.only_buddies_Check.set_active(False)
 		self.user_warnings_Check.set_active(False)
 		self.uploadSlots.set_value(0)
+		self.uploadRate.set_value(0)
+		self.downloadSlots.set_value(0)
+		self.downloadRate.set_value(0)
 		self.EntryDownloadDIr.set_text("")
 		self.EntryIncompleteDir.set_text("")
 		self.EntryDownloadsDBase.set_text("")
@@ -3410,8 +3446,6 @@ class Settings( gtk.Dialog):
 			self.ServerPort.set_value(int(self.config["server"]["port"]))
 			self.EntryServerPassword.set_text(self.config["server"]["password"])
 			self.EntryServerUsername.set_text(self.config["server"]["username"])
-			if "default" in self.config["encoding"]:
-				self.defaultEncoding.child.set_text(str(self.config["encoding"]["default"]))
 			if "filesystem" in self.config["encoding"]:
 				self.filesystemEncoding.child.set_text(self.config["encoding"]["filesystem"])
 			if "network" in self.config["encoding"]:
@@ -3456,6 +3490,9 @@ class Settings( gtk.Dialog):
 			else:
 				self.user_warnings_Check.set_active(False)
 			self.uploadSlots.set_value(int(self.config["transfers"]["upload_slots"]))
+			self.uploadRate.set_value(int(self.config["transfers"]["upload_rate"]))
+			self.downloadSlots.set_value(int(self.config["transfers"]["download_slots"]))
+			self.downloadRate.set_value(int(self.config["transfers"]["download_rate"]))
 			self.EntryDownloadDIr.set_text(str(self.config["transfers"]["download-dir"]))
 			self.EntryIncompleteDir.set_text(str(self.config["transfers"]["incomplete-dir"]))
 			self.EntryDownloadsDBase.set_text(str(self.config["transfers"]["downloads"]))

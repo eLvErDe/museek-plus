@@ -20,20 +20,24 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <qmainwindow.h>
+#include <QMainWindow>
+#include <QProcess>
+#include <QtNetwork/QTcpSocket>
 
+class QListWidgetItem;
 class IconListBox;
 class QTextEdit;
-class QWidgetStack;
+class QStackedWidget;
 class QLabel;
-class QComboBox;
-class QPopupMenu;
-class QListViewItem;
-class QProcess;
+class QTreeWidgetItem;
+class QMenu;
+class QResizeEvent;
+class QCloseEvent;
+class QMoveEvent;
+
 class ConnectDialog;
 class IPDialog;
 class SettingsDialog;
-class QMessageBox;
 class ChatRooms;
 class PrivateChats;
 class Transfers;
@@ -45,12 +49,20 @@ class MainWindow : public QMainWindow {
 	Q_OBJECT
 public:
 	MainWindow(QWidget* parent = 0, const char* name = "");
-	
+
 	const QPoint & lastPos() const { return mLastPos; }
 	const QSize & lastSize() const { return mLastSize; }
-	QPopupMenu* mMenuFile, *  mMenuSettings, * mMenuModes;
+	ChatRooms* chatRooms() { return mChatRooms;}
+	QMenu* mMenuFile, *  mMenuSettings, * mMenuModes;
 	QString  mVersion;
 	QTextEdit *mLog;
+
+	QAction * ActionConnect, * ActionDisconnect, * ActionAway, * ActionCheckPrivileges, * ActionBrowseMyShares, * ActionExit;
+	QAction * ActionLoadScript;
+	QAction * ActionSettings, * ActionIconTheme, * ActionToggleTickers, * ActionToggleLog, * ActionToggleTimestamps, * ActionToggleAutoConnect, * ActionToggleExitDialog, * ActionToggleTrayicon;
+	QAction * ActionChatRooms, * ActionPrivateChat, * ActionTransfers, * ActionSearch, * ActionUserInfo, * ActionBrowseShares;
+	QAction * ActionAbout, * ActionCommands, * ActionHelp;
+	bool mVerticalIconBox;
 public slots:
 	void changeCMode();
 	void changePMode();
@@ -63,11 +75,13 @@ public slots:
 	void connectToMuseekPS(const QString&, const QString&);
 	void doNotAutoConnect();
 	void saveConnectConfig();
+	void readSettings();
 	void saveSettings();
 	void doDaemon();
 	void stopDaemon();
-	void daemonExited();
-	void readFromStdout();
+	void daemonExited(int, QProcess::ExitStatus);
+	void daemonError( QProcess::ProcessError);
+	void daemonStarted();
 	void toggleAway();
 	void toggleTrayicon();
 	void checkPrivileges();
@@ -83,31 +97,33 @@ public slots:
 	void showIPDialog(const QString&);
 
 	void displayAboutDialog();
+	void displayAboutQt();
 	void displayHelpDialog();
 	void displayCommandsDialog();
 
 	void changeColors();
+
 	void changeSettings();
 	void changeTheme();
 
 	void givePrivileges(const QString&);
-	
+
 	void startSearch(const QString&);
 	void showPrivateChat(const QString&);
 	void showUserInfo(const QString&);
 	void showBrowser(const QString&);
-	
+
 	void addScript(const QString&);
 	void removeScript(const QString&);
 	void appendToLogWindow(const QString&);
 signals:
 	void showAllTickers();
-	void hideAllTickers();	
+	void hideAllTickers();
 private slots:
 	void loadScript();
-	void unloadScript(int);
-	
-	void slotError(int);
+	void unloadScript(QAction*);
+
+	void slotError(QAbstractSocket::SocketError);
 	void slotConnected();
 	void slotHostFound();
 	void slotDisconnected();
@@ -119,32 +135,31 @@ private slots:
 	void slotConfigChanged(const QString&, const QString&, const QString&);
 	void slotUserAddress(const QString& user, const QString& ip, uint port);
 	void slotPrivilegesLeft(uint);
-	
+
 	void slotAddressActivated(const QString&);
 	void slotAddressChanged(const QString&);
-	
-	void protocolHandlerMenu(QListViewItem*, const QPoint&, int);
-	void ipDialogMenu(QListViewItem*, const QPoint&, int);
 
 protected slots:
-	void changePage();
-	
+	void changePage(QListWidgetItem*, QListWidgetItem*);
+
 protected:
 	void moveEvent(QMoveEvent *);
 	void resizeEvent(QResizeEvent *);
 	void closeEvent(QCloseEvent *);
-	
+
 private:
 	bool mWaitingPrivs;
-
+	bool DaemonRunning;
 	IconListBox* mIcons;
-	QWidgetStack* mStack;
+	QStackedWidget* mStack;
 	QLabel* mTitle;
-	QPopupMenu* mMenuScripts, * mMenuUnloadScripts,  * mMenuHelp;
+	QLabel* statusLabel, * messageLabel;
+	QMenu* mMenuScripts, * mMenuUnloadScripts,  * mMenuHelp;
 	QString museekConfig;
 	QProcess *daemon;
 	ConnectDialog* mConnectDialog;
 	IPDialog* mIPDialog;
+
 	SettingsDialog* mSettingsDialog;
 
 	ChatRooms* mChatRooms;

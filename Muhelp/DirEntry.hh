@@ -25,11 +25,11 @@
 #include <vector>
 #include <map>
 
-typedef struct FileEntry {
+typedef struct {
 	off_t size;
 	std::string ext;
 	std::vector<uint32>attrs;
-};
+} FileEntry;
 
 class DirEntry {
 public:

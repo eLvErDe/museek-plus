@@ -21,27 +21,34 @@
 #define USERTABWIDGET_H
 
 #include "tabwidget.h"
-#include <qvbox.h>
+
+#include <QWidget>
 
 class BuddyList;
 class IgnoreList;
 class BanList;
 class TrustList;
+class QUrl;
 
-class UserWidget : public QVBox {
+class UserWidget : public QWidget {
 	Q_OBJECT
 public:
 	UserWidget(const QString& _u, QWidget* _p = 0, const char* _n = 0)
-	         : QVBox(_p, _n), mUser(_u) { };
-	
-	QString user() const { return mUser; };
+	         : QWidget(_p), mUser(_u), mHighlight(0) { };
 
+	QString user() const { return mUser; };
+	int highlighted() const {return mHighlight;};
+public slots:
+	void setHighlight(int i);
+	void selected();
+	void setHighlighted(int newH) {mHighlight = newH;};
 signals:
 	void encodingChanged(const QString&, const QString&);
 	void highlight(int);
-	
+
 private:
 	QString mUser;
+	int mHighlight;
 };
 
 class UserTabWidget : public TabWidget {
@@ -50,20 +57,22 @@ public:
 	UserTabWidget(QWidget* = 0, const char* = 0);
 
 public slots:
-	void dropSlsk(const QStringList&);
+	void dropSlsk(const QList<QUrl>&);
 	void setPage(const QString&);
-	
+	void setHighlight(int pos, int highlight);
+
 signals:
 	void newPage(const QString&);
 	void encodingChanged(const QString&, const QString&);
 	void highlight(int);
-	
-	
+
 protected:
 	UserWidget* page(const QString&, bool = false);
 	virtual UserWidget* makeNewPage(const QString&);
-	
+protected slots:
+	void doCurrentChanged(QWidget *);
 private:
+
 	BuddyList* mBuddyList;
 	BanList* mBanList;
 	IgnoreList* mIgnoreList;

@@ -20,26 +20,28 @@
 #ifndef IGNORELIST_H
 #define IGNORELIST_H
 
-#include <qvbox.h>
+#include <QWidget>
 
 class UserListView;
 class QLineEdit;
+class QShowEvent;
+class QUrl;
 
-class IgnoreList : public QVBox {
+class IgnoreList : public QWidget {
 	Q_OBJECT
 public:
 	IgnoreList(QWidget* = 0, const char* = 0);
 
 signals:
 	void activated(const QString&);
-	
+
 protected:
 	void showEvent(QShowEvent*);
-	
+
 protected slots:
 	void addIgnored();
 	void editComments(const QString&);
-	void slotDropSlsk(const QStringList&);
+	void slotDropSlsk(const QList<QUrl>&);
 
 private:
 	UserListView* mUserList;

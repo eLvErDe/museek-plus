@@ -17,19 +17,18 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "system.h"
-#include <Mucipher/mucipher.h>
+#include "mucipher.h"
 
 void _blockCipher(CipherContext *ctx, char *str, int len, char **s, int *slen) {
 	*slen = CIPHER_BLOCK(len);
 	*s = (char*) malloc(*slen);
 	
-	blockCipher(ctx, (unsigned char*)str, len, *s);
+	blockCipher(ctx, (unsigned char*)str, len, (unsigned char *)*s);
 }
 
 void _blockDecipher(CipherContext *ctx, char *str, int len, char **s, int *slen) {
 	*slen = CIPHER_BLOCK(len);
 	*s = (char*) malloc(*slen);
 	
-	blockDecipher(ctx, (unsigned char*)str, len, *s);
+	blockDecipher(ctx, (unsigned char*)str, len, (unsigned char *)*s);
 }

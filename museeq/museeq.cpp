@@ -17,58 +17,40 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "system.h"
 #include "museeq.h"
-
 #include "prefix.h"
-
+#include <system.h>
+#include <string>
+#include <iostream>
 
 #include "museekdriver.h"
 #include "mainwin.h"
 #include "onlinealert.h"
-#include <qtranslator.h>
-#include <qtextcodec.h>
-#include <qapplication.h>
-#include <qprocess.h>
-#include <qmessagebox.h>
-#include <qsettings.h>
-#include <qinputdialog.h>
-#include <qpopupmenu.h>
-#include <qtextedit.h>
-#include <qdir.h>
-#include <qfile.h>
-#include "icon.xpm"
-#include <qcanvas.h>
-#include <qfileinfo.h>
 #include "images.h"
+#ifdef HAVE_QTSCRIPT
+#include "script.h"
+#endif // HAVE_QTSCRIPT
 
-#ifdef HAVE_QSA
-# include <qmenubar.h>
-# include <qsinterpreter.h>
-# include <qvaluestack.h>
-# ifdef HAVE_QSA_UTIL
-#  include <qsutilfactory.h>
-# endif // HAVE_QSA_UTIL
-# ifdef HAVE_QSA_DIALOG
-#  include <qsinputdialogfactory.h>
-# endif // HAVE_QSA_DIALOG
+#include <QTranslator>
+#include <QLocale>
+#include <QApplication>
+#include <QProcess>
+#include <QMessageBox>
+#include <QSettings>
+#include <QInputDialog>
+#include <QMenu>
+#include <QDir>
+#include <QFile>
+#include <QList>
+#include <QFileInfo>
 
-# ifdef RELAYED_LIBQSA
-extern int libqsa_is_present;
-# else
-int libqsa_is_present = 1;
-# endif
-
-#endif // HAVE_QSA
-#include <string>
-#include <iostream>
 using std::string;
 Museeq::Museeq(QApplication * app)
-      : QObject(0, "Museeq"), mApplication(app), mConnected(false) {
-#ifdef HAVE_QSA
+      : QObject(0), mApplication(app), mConnected(false) {
+#ifdef HAVE_QTSCRIPT
 	mCallbackCount = 1000;
-#endif // HAVE_QSA
-	
+#endif // HAVE_QTSCRIPT
+
 	museeq = this;
 	mDriver = new MuseekDriver(this, "driver");
 	mUsetray = false;
@@ -80,13 +62,16 @@ Museeq::Museeq(QApplication * app)
 	mOnlineAlert = false;
 	mColorBanned = mColorBuddied = mColorTime = mColorNickname = mColorTrusted = mColorRemote = mColorMe = "";
 	mShowTimestamps = true;
-	mIPLog = true;
+	mIPLog = false;
+	mTickerLength = 50;
+	mSettings = new QSettings("MuseekPlus.org","Museeq");
+
 	connect(mDriver, SIGNAL(connectionClosed()), SLOT(slotConnectionClosed()));
-	connect(mDriver, SIGNAL(error(int)), SLOT(slotError(int)));
+	connect(mDriver, SIGNAL(error(QAbstractSocket::SocketError)), SLOT(slotError(QAbstractSocket::SocketError)));
 	connect(mDriver, SIGNAL(loggedIn(bool, const QString&)), SLOT(slotLoggedIn(bool, const QString&)));
 	connect(mDriver, SIGNAL(serverState(bool, const QString&)), SLOT(slotServerState(bool, const QString&)));
 	connect(mDriver, SIGNAL(statusSet(uint)), SLOT(slotStatusSet(uint)));
-	
+
 	connect(mDriver, SIGNAL(roomState(const NRoomList&, const NRooms&, const NTickerMap&)), SLOT(slotRoomState(const NRoomList&, const NRooms&, const NTickerMap&)));
 	connect(mDriver, SIGNAL(transferState(const NTransfers&, const NTransfers&)), SLOT(slotTransferState(const NTransfers&, const NTransfers&)));
 	connect(mDriver, SIGNAL(transferUpdate(bool, const NTransfer&)), SLOT(slotTransferUpdate(bool, const NTransfer&)));
@@ -102,8 +87,6 @@ Museeq::Museeq(QApplication * app)
 	connect(mDriver, SIGNAL(userJoined(const QString&, const QString&, const NUserData&)), SIGNAL(userJoinedRoom(const QString&, const QString&, const NUserData&)));
 	connect(mDriver, SIGNAL(userLeft(const QString&, const QString&)), SIGNAL(userLeftRoom(const QString&, const QString&)));
 
-// 	connect(mDriver, SIGNAL(userExists(const QString&)), SIGNAL(slotUserExists(const QString&)));
-
 	connect(mDriver, SIGNAL(sayChatroom(const QString&, const QString&, const QString&)), SIGNAL(saidChatroom(const QString&, const QString&, const QString&)));
 	connect(mDriver, SIGNAL(privateMessage(uint, uint, const QString&, const QString&)), SIGNAL(privateMessage(uint, uint, const QString&, const QString&)));
 	connect(mDriver, SIGNAL(searchResults(uint, const QString&, bool, uint, uint, const NFolder&)), SIGNAL(searchResults(uint, const QString&, bool, uint, uint, const NFolder&)));
@@ -117,7 +100,7 @@ Museeq::Museeq(QApplication * app)
 	connect(mDriver, SIGNAL(itemSimilarUsers(const QString&, const NItemSimilarUsers&)), SIGNAL(itemSimilarUsers(const QString&, const NItemSimilarUsers&)));
 	connect(mDriver, SIGNAL(itemRecommendations(const QString&, const NItemRecommendations&)), SIGNAL(itemRecommendations(const QString&, const NItemRecommendations&)));
 	connect(mDriver, SIGNAL(similarUsers(const NSimilarUsers&)), SIGNAL(similarUsers(const NSimilarUsers&)));
-	
+
 	connect(mDriver, SIGNAL(addInterest(const QString&)), SIGNAL(addedInterest(const QString&)));
 	connect(mDriver, SIGNAL(addHatedInterest(const QString&)), SIGNAL(addedHatedInterest(const QString&)));
 	connect(mDriver, SIGNAL(removeInterest(const QString&)), SIGNAL(removedInterest(const QString&)));
@@ -125,84 +108,69 @@ Museeq::Museeq(QApplication * app)
 
 	connect(mDriver, SIGNAL(roomTickers(const QString&, const NTickers&)), SIGNAL(roomTickers(const QString&, const NTickers&)));
 	connect(mDriver, SIGNAL(roomTickerSet(const QString&, const QString&, const QString&)), SIGNAL(roomTickerSet(const QString&, const QString&, const QString&)));
-	
-
 
 	connect(mDriver, SIGNAL(transferRemove(bool, const QString&, const QString&)), SLOT(slotTransferRemoved(bool, const QString&, const QString&)));
 
-	QSettings settings;
-
-	QString s = settings.readEntry("/TheGraveyard.org/Museeq/IconTheme");
+	QString s = mSettings->value("IconTheme").toString();
 	if (s.isEmpty())
 		mIconTheme = "default";
 	else
 		mIconTheme = s;
 
-
-	QStringList handlers = settings.entryList("/TheGraveyard.org/Museeq/ProtocolHandlers");
+	mSettings->beginGroup("ProtocolHandlers");
+	QStringList handlers = mSettings->childKeys();
 	if(! handlers.empty()) {
-		settings.beginGroup("/TheGraveyard.org/Museeq/ProtocolHandlers");
+
 		QStringList::const_iterator it, end = handlers.end();
 		for(it = handlers.begin(); it != end; ++it)
-			mProtocolHandlers[*it] = settings.readEntry(*it);
+			mProtocolHandlers[*it] = mSettings->value(*it).toString();
 	} else
-		mProtocolHandlers["http"] = "firefox -a firefox --remote openURL($,new-tab)";
-
-	mMainWin = new MainWindow(0, "mainWin");
+		mProtocolHandlers["http"] = "firefox $";
+	mSettings->endGroup();
+	mMainWin = new MainWindow(0);
 
 	emit disconnectedFromServer();
 	emit connectedToServer(false);
-	
+
 	QDir homedir = QDir::home();
 	if(! homedir.exists(".museeq")) {
 		// Create ~/.museeq directory
-		homedir.mkdir (".museeq", true);
+		homedir.mkdir (".museeq");
 	}
-	if(homedir.cd(".museeq")) {
-		// Create ~/.museeq/logs directory
-		if(! homedir.exists("logs")) {
-			homedir.mkdir("logs", true);
-		}
-		if(homedir.cd("logs")) {
-			if(! homedir.exists("rooms")) {
-				homedir.mkdir("rooms", true);
-			}
-			if(! homedir.exists("private")) {
-				homedir.mkdir("private", true);
-			}
-		}
-	}
-#ifdef HAVE_QSA
-	if(libqsa_is_present)
-	{
-		QDir dir = QDir::home();
-		if(dir.cd(".museeq")) {
-			QStringList scripts = dir.entryList("*.qs");
-			QStringList::iterator it = scripts.begin();
-			for(; it != scripts.end(); ++it) {
-				QString fn = dir.absPath() + QDir::separator() + *it;
-				QFile f(fn);
-				if(f.open(IO_ReadOnly)) {
-					loadScript(f.readAll());
-					f.close();
-				}
-			}
-  }
-	}
-#endif // HAVE_QSA
-#ifdef HAVE_TRAYICON
-	menutray = new QPopupMenu();
-	menutray->insertItem(QT_TR_NOOP("&Restore"), mMainWin , SLOT( showNormal() ) );
-	menutray->insertItem(QT_TR_NOOP("&Museek Settings"),  mMainWin , SLOT( changeSettings()) );
-	menutray->insertItem(QT_TR_NOOP("&Hide"),  mMainWin , SLOT( hide()  ) );
-	menutray->insertSeparator();
-	menutray->insertItem( QT_TR_NOOP("&Quit"),  mMainWin , SLOT( close() ) );
-	
-	mTray =  new TrayIcon( QPixmap( (char**)icon_xpm),  QT_TR_NOOP("MuseeqTray"), menutray );
-	QObject::connect( mTray, SIGNAL(clicked(const QPoint&, int )),  mMainWin, SLOT(toggleVisibility() ) );
-#endif // HAVE_TRAYICON
 
+#ifdef HAVE_QTSCRIPT
+    // TODO add a dialog to load scripts in /usr/share/museekd/museeq/scripts
+    QDir dir = QDir::home();
+    if(dir.cd(".museeq")) {
+        QStringList filters;
+        filters << "*.qs";
+        QStringList scripts = dir.entryList(filters);
+        QStringList::iterator it = scripts.begin();
+        for(; it != scripts.end(); ++it) {
+            QString fn = dir.absolutePath() + QDir::separator() + *it;
+            loadScript(fn);
+        }
+    }
+#endif // HAVE_QTSCRIPT
 
+	mTrayMenu = new QMenu();
+	mTrayMenu->addAction(tr("&Restore"), mMainWin , SLOT( showNormal() ) );
+	mTrayMenu->addAction(tr("&Museek Settings"),  mMainWin , SLOT( changeSettings()) );
+	mTrayMenu->addAction(tr("&Hide"),  mMainWin , SLOT( hide()  ) );
+	mTrayMenu->addSeparator();
+	mTrayMenu->addAction( tr("&Quit"),  mMainWin , SLOT( close() ) );
+	mTray =  new QSystemTrayIcon( IMG("icon"), this);
+	mTray->setToolTip(tr("Museeq"));
+	mTray->setContextMenu(mTrayMenu);
+	QObject::connect( mTray, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),  this, SLOT(slotTrayIconActivated(QSystemTrayIcon::ActivationReason) ) );
+}
+
+/**
+  * The trayicon has been activated.
+  */
+void Museeq::slotTrayIconActivated(QSystemTrayIcon::ActivationReason reason) {
+	if(reason == QSystemTrayIcon::Trigger)
+		mMainWin->toggleVisibility();
 }
 
 void Museeq::slotConnectionClosed() {
@@ -210,12 +178,13 @@ void Museeq::slotConnectionClosed() {
 	mBanned.clear();
 	mIgnored.clear();
 	mTrusted.clear();
-	
+
 	emit disconnected();
 }
 
-void Museeq::slotError(int err) {
-	if(err == QSocket::ErrSocketRead)
+void Museeq::slotError(QAbstractSocket::SocketError err) {
+	if(err == QAbstractSocket::UnknownSocketError)
+// 		QSocket::ErrSocketRead
 		slotConnectionClosed();
 }
 
@@ -244,34 +213,36 @@ void Museeq::slotServerState(bool connected, const QString& nick) {
 
 void Museeq::slotRoomState(const NRoomList& list, const NRooms& rooms, const NTickerMap& tickers) {
 	emit roomList(list);
-	
+
 	mJoinedRooms.clear();
-	
+
 	NRooms::const_iterator it = rooms.begin();
 	for(; it != rooms.end(); ++it) {
 		mJoinedRooms << it.key();
-		emit joinedRoom(it.key(), it.data());
+		emit joinedRoom(it.key(), it.value());
 	}
-	
+
 	NTickerMap::const_iterator tit = tickers.begin();
 	for(; tit != tickers.end(); ++tit)
-		emit roomTickers(tit.key(), tit.data());
+		emit roomTickers(tit.key(), tit.value());
 }
 
 void Museeq::slotTransferState(const NTransfers& downloads, const NTransfers& uploads) {
+	emit transfersSorting(false);
 	NTransfers::const_iterator it = downloads.begin();
 	for(; it != downloads.end(); ++it)
 	{
 		emit downloadUpdated(*it);
 		flush();
 	}
-	
+
 	it = uploads.begin();
 	for(; it != uploads.end(); ++it)
 	{
 		emit uploadUpdated(*it);
 		flush();
 	}
+	emit transfersSorting(true);
 }
 
 void Museeq::slotTransferUpdate(bool isUpload, const NTransfer& transfer) {
@@ -283,13 +254,14 @@ void Museeq::slotTransferUpdate(bool isUpload, const NTransfer& transfer) {
 
 void Museeq::slotConfigState(const QMap<QString, QMap<QString, QString> >& _config) {
 	mConfig = _config;
-	
+	emit sortingEnabled(false);
 	QMap<QString, QMap<QString, QString> >::const_iterator it = _config.begin();
 	for(; it != _config.end(); ++it) {
 		QMap<QString, QString>::const_iterator it2 = (*it).begin();
 		for(; it2 != (*it).end(); ++it2)
 			slotConfigSet(it.key(), it2.key(), *it2);
 	}
+	emit sortingEnabled(true);
 }
 
 void Museeq::slotConfigSet(const QString& domain, const QString& key, const QString& value) {
@@ -305,8 +277,6 @@ void Museeq::slotConfigSet(const QString& domain, const QString& key, const QStr
 			connect(dlg, SIGNAL(removeAlert(const QString&)), SLOT(removeAlert(const QString&)));
 			mAlerts[key] = dlg;
 		}
-
-
 	} else if(domain == "banned") {
 		mBanned += key;
 		emit addedBanned(key, value);
@@ -335,7 +305,8 @@ void Museeq::slotConfigSet(const QString& domain, const QString& key, const QStr
 
 void Museeq::slotConfigRemove(const QString& domain, const QString& key) {
 	if(domain == "buddies") {
-		mBuddies.remove(key);
+		if (mBuddies.indexOf(key) != -1)
+			mBuddies.removeAt(mBuddies.indexOf(key));
 		emit removedBuddy(key);
 		emit doUpdateStatus(key);
 		if(mAlerts.find(key) != mAlerts.end())
@@ -347,25 +318,31 @@ void Museeq::slotConfigRemove(const QString& domain, const QString& key) {
 			mAlerts.remove(key);
 		}
 	} else if(domain == "banned") {
-		mBanned.remove(key);
+		if (mBanned.indexOf(key) != -1)
+			mBanned.removeAt(mBanned.indexOf(key));
 		emit removedBanned(key);
 		emit doUpdateStatus(key);
 	} else if(domain == "ignored") {
-		mIgnored.remove(key);
+		if (mIgnored.indexOf(key) != -1)
+			mIgnored.removeAt(mIgnored.indexOf(key));
 		emit removedIgnored(key);
 		emit doUpdateStatus(key);
 	} else if(domain == "trusted") {
-		mTrusted.remove(key);
+		if (mTrusted.indexOf(key) != -1)
+			mTrusted.removeAt(mTrusted.indexOf(key));
 		emit removedTrusted(key);
 		emit doUpdateStatus(key);
 	} else if(domain == "autojoin") {
-		mAutoJoin.remove(key);
+		if (mAutoJoin.indexOf(key) != -1)
+			mAutoJoin.removeAt(mAutoJoin.indexOf(key));
 		emit autoJoin(key, false);
 	} else if(domain == "interests.like") {
-		mLovedInterests.remove(key);
+		if (mLovedInterests.indexOf(key) != -1)
+			mLovedInterests.removeAt(mLovedInterests.indexOf(key));
 		emit removedInterest(key);
 	} else if(domain == "interests.hate") {
-		mHatedInterests.remove(key);
+		if (mHatedInterests.indexOf(key) != -1)
+			mHatedInterests.removeAt(mHatedInterests.indexOf(key));
 		emit removedHatedInterest(key);
 	}
 }
@@ -375,7 +352,8 @@ void Museeq::slotJoinedRoom(const QString& room, const NRoom&) {
 }
 
 void Museeq::slotLeftRoom(const QString& room) {
-	mJoinedRooms.remove(room);
+	if (mJoinedRooms.indexOf(room) != -1)
+		mJoinedRooms.removeAt(mJoinedRooms.indexOf(room));
 }
 void Museeq::startDaemon() {
 	mMainWin->doDaemon();
@@ -383,8 +361,8 @@ void Museeq::startDaemon() {
 void Museeq::stopDaemon() {
 	mMainWin->stopDaemon();
 }
-void Museeq::saveConnectConfig() { 
-	mMainWin->saveConnectConfig(); 
+void Museeq::saveConnectConfig() {
+	mMainWin->saveConnectConfig();
 }
 void Museeq::addInterest(const QString& interest) {
 	mDriver->doAddInterest(interest);
@@ -413,7 +391,7 @@ void Museeq::setAutoJoin(const QString& room, bool on) {
 void Museeq::editComments(const QString& user) {
 
 	if (museeq->isBuddy(user)) {
-		QString c = QInputDialog::getText("Comments", "Comments for " + user, QLineEdit::Normal, "");
+		QString c = QInputDialog::getText(0, "Comments", "Comments for " + user, QLineEdit::Normal, "");
 		if (c != "")
 			addBuddy(user, c);
 		}
@@ -490,32 +468,40 @@ void Museeq::updateItemSimilarUsers(const QString& item) {
 
 void Museeq::sayRoom(const QString& room, const QString& line) {
 	QString _line = line;
-#ifdef HAVE_QSA
+#ifdef HAVE_QTSCRIPT
 	_line = handleInput(false, room, _line);
-#endif
+#endif //HAVE_QTSCRIPT
 	if(! _line.isEmpty())
 		mDriver->doSayChatroom(room, _line);
 }
 
 void Museeq::sayPrivate(const QString& user, const QString& line) {
 	QString _line = line;
-#ifdef HAVE_QSA
+#ifdef HAVE_QTSCRIPT
 	_line = handleInput(true, user, _line);
-#endif
+#endif //HAVE_QTSCRIPT
 	if(! _line.isEmpty())
 		mDriver->doSendPrivateMessage(user, _line);
 }
 
-void Museeq::downloadFile(const QString& user, const QString& path, Q_INT64 size) {
+void Museeq::downloadFile(const QString& user, const QString& path, qint64 size) {
 	mDriver->doDownloadFile(user, path, size);
 }
 
-void Museeq::downloadFileTo(const QString& user, const QString& path, const QString& localpath, Q_INT64 size) {
+void Museeq::downloadFileTo(const QString& user, const QString& path, const QString& localpath, qint64 size) {
 	mDriver->doDownloadFileTo(user, path, localpath, size);
 }
 
 void Museeq::downloadFolder(const QString& user, const QString& path) {
 	mDriver->getFolderContents(user, path);
+}
+
+void Museeq::downloadFolderTo(const QString& user, const QString& path, const QString& localpath) {
+	mDriver->doDownloadFolderTo(user, path, localpath);
+}
+
+void Museeq::uploadFolder(const QString& user, const QString& path) {
+	mDriver->doUploadFolder(user, path);
 }
 
 void Museeq::uploadFile(const QString& user, const QString& path) {
@@ -559,8 +545,8 @@ void Museeq::removeDownload(const QString& user, const QString& path) {
 	mDriver->doRemoveTransfer(false, user, path);
 }
 
-void Museeq::removeDownloads(const QValueList<QPair<QString, QString> >& downloads) {
-	QValueList<QPair<QString, QString> >::const_iterator it = downloads.begin();
+void Museeq::removeDownloads(const QList<QPair<QString, QString> >& downloads) {
+	QList<QPair<QString, QString> >::const_iterator it = downloads.begin();
 	for(; it != downloads.end(); ++it)
 		removeDownload((*it).first, (*it).second);
 }
@@ -569,8 +555,8 @@ void Museeq::removeUpload(const QString& user, const QString& path) {
 	mDriver->doRemoveTransfer(true, user, path);
 }
 
-void Museeq::removeUploads(const QValueList<QPair<QString, QString> >& uploads) {
-	QValueList<QPair<QString, QString> >::const_iterator it = uploads.begin();
+void Museeq::removeUploads(const QList<QPair<QString, QString> >& uploads) {
+	QList<QPair<QString, QString> >::const_iterator it = uploads.begin();
 	for(; it != uploads.end(); ++it)
 		removeUpload((*it).first, (*it).second);
 }
@@ -579,8 +565,8 @@ void Museeq::abortDownload(const QString& user, const QString& path) {
 	mDriver->doAbortTransfer(false, user, path);
 }
 
-void Museeq::abortDownloads(const QValueList<QPair<QString, QString> >& downloads) {
-	QValueList<QPair<QString, QString> >::const_iterator it = downloads.begin();
+void Museeq::abortDownloads(const QList<QPair<QString, QString> >& downloads) {
+	QList<QPair<QString, QString> >::const_iterator it = downloads.begin();
 	for(; it != downloads.end(); ++it)
 		abortDownload((*it).first, (*it).second);
 }
@@ -589,8 +575,8 @@ void Museeq::abortUpload(const QString& user, const QString& path) {
 	mDriver->doAbortTransfer(true, user, path);
 }
 
-void Museeq::abortUploads(const QValueList<QPair<QString, QString> >& uploads) {
-	QValueList<QPair<QString, QString> >::const_iterator it = uploads.begin();
+void Museeq::abortUploads(const QList<QPair<QString, QString> >& uploads) {
+	QList<QPair<QString, QString> >::const_iterator it = uploads.begin();
 	for(; it != uploads.end(); ++it)
 		abortUpload((*it).first, (*it).second);
 }
@@ -611,15 +597,16 @@ void Museeq::removeConfig(const QString& domain, const QString& key) {
 }
 
 const QString& Museeq::config(const QString& domain, const QString& key) {
+	static const QString null;
 	QMap<QString, QMap<QString, QString> >::const_iterator dom_it = mConfig.find(domain);
 	if(dom_it == mConfig.end())
-		return QString::null;
-	
-	QMap<QString, QString>::const_iterator key_it = dom_it.data().find(key);
-	if(key_it == dom_it.data().end())
-		return QString::null;
-	
-	return key_it.data();
+		return null;
+
+	QMap<QString, QString>::const_iterator key_it = dom_it.value().find(key);
+	if(key_it == dom_it.value().end())
+		return null;
+
+	return key_it.value();
 }
 void Museeq::connectServer() {
 	mDriver->doConnectServer();
@@ -633,48 +620,48 @@ void Museeq::reloadShares() {
 void Museeq::saveSettings() {
 	mMainWin->saveSettings();
 }
-void Museeq::showURL(const QString& url) {
-	QString protocol = url.left(url.find(':'));
+void Museeq::showURL(const QUrl& rawUrl) {
+	QString protocol = rawUrl.scheme();
 	if(! mProtocolHandlers.contains(protocol) and protocol != "slsk") {
 		QMessageBox::warning(mMainWin, "Error", QString("No protocol handler defined for protocol %1").arg(protocol));
 		return;
 	}
 	if (protocol == "slsk") {
-		QString rest = url.mid(7);
-		uint num = rest.find("/");
-		QString user = rest.mid(0, num);
-		QString path = rest.mid(num);
+		QString user = rawUrl.authority();
+		QString path = rawUrl.path();
 		uint size  = 0;
 		path.replace("/", "\\");
  		mDriver->doDownloadFile(user, path, size);
-
 		return;
 		}
+
 	QString handler = mProtocolHandlers[protocol];
-	handler.replace("$", url);
-	QProcess p(QStringList::split(" ", handler));
-	if(! p.start())
-		QMessageBox::warning(mMainWin, "Error", QString("Couldn't launch:\n%1").arg(handler));
+	handler.replace("$", rawUrl.toString());
+	QStringList handlerargs = handler.split(" ", QString::KeepEmptyParts);
+	QString executable (handlerargs.value(0));
+	handlerargs.removeAt(0);
+	QProcess p;
+	p.startDetached(executable, handlerargs);
+// 	QMessageBox::warning(mMainWin, "Error", QString("Couldn't launch:\n%1").arg(handler));
 }
 
 void Museeq::setProtocolHandlers(const QMap<QString, QString>& h) {
 	mProtocolHandlers = h;
-	
-	QSettings settings;
-	QStringList old = settings.entryList("/TheGraveyard.org/Museeq/ProtocolHandlers");
-	
-	settings.beginGroup("/TheGraveyard.org/Museeq/ProtocolHandlers");
-	
+
+	QStringList old = mSettings->value("ProtocolHandlers").toStringList();
+
+	mSettings->beginGroup("ProtocolHandlers");
+
 	QStringList::const_iterator it, end = old.end();
 	for(it = old.begin(); it != end; ++it)
 		if(! h.contains(*it))
-			settings.removeEntry(*it);
-	
+			mSettings->remove(*it);
+
 	QMap<QString, QString>::ConstIterator hit, hend = h.end();
 	for(hit = h.begin(); hit != hend; ++hit)
-		settings.writeEntry(hit.key(), hit.data());
-	
-	settings.endGroup();
+		mSettings->setValue(hit.key(), hit.value());
+
+	mSettings->endGroup();
 }
 
 void Museeq::slotStatusSet(uint status) {
@@ -693,277 +680,162 @@ void Museeq::flush() {
 		mApplication->processEvents();
 }
 
+int Museeq::scriptCallbackId() {
+#ifdef HAVE_QTSCRIPT
+    mCallbackCount++;
+    return mCallbackCount;
+#endif // HAVE_QTSCRIPT
+
+    return 0;
+}
+
+bool Museeq::hasScript(const QString& name) {
+#ifdef HAVE_QTSCRIPT
+    QList<Script*>::const_iterator it = mScripts.begin();
+    for (; it != mScripts.end(); it++) {
+        if (name == (*it)->scriptName())
+            return true;
+    }
+#endif // HAVE_QTSCRIPT
+
+    return false;
+}
+
 void Museeq::loadScript(const QString& script)
 {
-#ifdef HAVE_QSA
-	if(! libqsa_is_present)
-		return;
-	
-	QSProject *proj = new QSProject(this);
+#ifdef HAVE_QTSCRIPT
+    QString code;
+    if (script.isEmpty())
+        return;
 
-# ifdef HAVE_QSA_UTIL
-	proj->interpreter()->addObjectFactory(new QSUtilFactory);
-# endif // HAVE_QSA_UTIL
+    QFile f(script);
+    if(f.open(QIODevice::ReadOnly))
+    {
+        code = f.readAll();
+        f.close();
+    }
 
-# ifdef HAVE_QSA_DIALOG
-	proj->interpreter()->addObjectFactory(new QSInputDialogFactory);
-# endif // HAVE_QSA_DIALOG
-	
-	proj->addObject(mMainWin);
-	proj->interpreter()->evaluate(script, this);
-	
-	QString scriptname;
-	
-	if(proj->interpreter()->hasFunction(QString("Museeq.init")))
-	{
-		mScriptContext.push(proj);
-		QSArgument result = proj->interpreter()->call("init", QSArgumentList(), this);
-		mScriptContext.pop();
-		if(result.type() == QSArgument::Variant)
-			scriptname = result.variant().toString();
-	}
-	
-	if(scriptname.isEmpty())
-		scriptname = QString("anonymous.%1").arg(mProjects.size());
-	
-	while(mProjects.find(scriptname) != mProjects.end())
-		scriptname += "~";
-	
-	mProjects[scriptname] = proj;
-	mMainWin->addScript(scriptname);
-#endif // HAVE_QSA
+    // Where is this script?
+    QDir path(script);
+    path.cdUp();
+
+    Script * newScript = new Script(code, path.absolutePath());
+
+    // Register known menus to this new script
+    QMap<QString, QMenu*>::const_iterator it;
+    for (it = mMenus.begin(); it != mMenus.end(); it++) {
+        newScript->registerMenu(it.key(), (*it));
+    }
+
+    // Store this script
+    mScripts.push_back(newScript);
+
+	newScript->init();
+
+	mMainWin->addScript(newScript->scriptName());
+#endif // HAVE_QTSCRIPT
 }
 
 void Museeq::unloadScript(const QString& scriptName)
 {
-#ifdef HAVE_QSA
-	if(! libqsa_is_present)
-		return;
-	
-	QMap<QString, QSProject *>::iterator it = mProjects.find(scriptName);
-	if(it == mProjects.end())
-		return;
-	
-	/* Call script destructor */
-	if(it.data()->interpreter()->hasFunction(QString("Museeq.destroy")))
-	{
-		mScriptContext.push(it.data());
-		QSArgument result = it.data()->interpreter()->call("destroy", QSArgumentList(), this);
-		mScriptContext.pop();
-		if(result.type() == QSArgument::Variant && result.variant().toBool())
-			return;
-	}
-	
-	/* Erase menu entries and empty menus */
-	QValueStack<int> erase;
-	QMap<int, QPair<QSProject*, QString> >::iterator it2 = mCallbacks.begin();
-	for(; it2 != mCallbacks.end(); ++it2)
-		if(it2.data().first == it.data())
-			erase.push(it2.key());
-	
-	while(! erase.isEmpty())
-	{
-		QValueStack<QString> eraseMenus;
-		int id = erase.top();
-		
-		mCallbacks.erase(id);
-		
-		QMap<QString, QPopupMenu*>::iterator it3 = mMenus.begin();
-		for(; it3 != mMenus.end(); ++it3)
-		{
-			it3.data()->removeItem(id);
-			if(it3.data()->count() == 0)
-				eraseMenus.push(it3.key());
-		}
-		
-		while(! eraseMenus.isEmpty())
-		{
-			it3 = mMenus.find(eraseMenus.top());
-			if(it3 != mMenus.end())
-			{
-				delete it3.data();
-				mMenus.erase(it3);
-			}
-			eraseMenus.pop();
-		}
-		
-		erase.pop();
-	}
-	
-	/* Erase input handlers */
-	QValueStack<QPair<QSProject *, QString> > herase;
-	QValueList<QPair<QSProject *, QString> >::iterator hit, hend = mInputHandlers.end();
-	for(hit = mInputHandlers.begin(); hit != hend; ++hit)
-		if((*hit).first == it.data())
-			herase.push_back(*hit);
-	while(! herase.isEmpty())
-		mInputHandlers.erase(mInputHandlers.find(herase.pop()));
-	
-	/* Destroy the script project */
-	delete it.data();
-	mProjects.erase(it);
-	
-	mMainWin->removeScript(scriptName);
-#endif // HAVE_QSA
+#ifdef HAVE_QTSCRIPT
+    QList<Script*>::iterator it;
+
+    for (it = mScripts.begin(); it != mScripts.end(); it++) {
+        if((*it)->scriptName() == scriptName) {
+            mMainWin->removeScript((*it)->scriptName());
+
+            delete (*it);
+            mScripts.erase(it);
+        }
+    }
+#endif // HAVE_QTSCRIPT
 }
 
-void Museeq::registerMenu(const QString& title, QPopupMenu* menu) {
-#ifdef HAVE_QSA
-	if(! libqsa_is_present)
-		return;
-	
-	mMenus[title] = menu;
-	connect(menu, SIGNAL(activated(int)), this, SLOT(slotMenuActivated(int)));
-#endif // HAVE_QSA
+void Museeq::registerMenu(const QString& title, QMenu* menu) {
+#ifdef HAVE_QTSCRIPT
+    QList<Script*>::iterator it;
+
+    for (it = mScripts.begin(); it != mScripts.end(); it++) {
+        (*it)->registerMenu(title, menu);
+    }
+
+    mMenus[title] = menu;
+#endif // HAVE_QTSCRIPT
 }
 
-void Museeq::addMenu(const QString& menu, const QString& item, const QString& callback) {
-#ifdef HAVE_QSA
-	if(! libqsa_is_present)
-		return;
-	
-	QPopupMenu * m;
-	QMap<QString, QPopupMenu*>::iterator it = mMenus.find(menu);
-	if(it == mMenus.end()) {
-		m = new QPopupMenu();
-		mMainWin->menuBar()->insertItem(menu, m, -1, 4);
-		registerMenu(menu, m);
-	} else
-		m = it.data();
-	mCallbacks[mCallbackCount] = QPair<QSProject*, QString>(mScriptContext.top(), callback);
-	m->insertItem(item, mCallbackCount);
-	mCallbackCount++;
-#endif // HAVE_QSA
-}
+QString Museeq::handleInput(bool privateMessage, const QString& target, QString line) {
+#ifdef HAVE_QTSCRIPT
+    QList<Script*>::iterator it;
 
-void Museeq::addInputHandler(const QString& callback) {
-#ifdef HAVE_QSA
-	if(! libqsa_is_present)
-		return;
-	
-	mInputHandlers.push_back(QPair<QSProject *, QString>(mScriptContext.top(), callback));
-#endif // HAVE_QSA
-	return;
-}
-
-void Museeq::slotMenuActivated(int callback) {
-#ifdef HAVE_QSA
-	if(! libqsa_is_present)
-		return;
-	
-	QMap<int, QPair<QSProject*, QString> >::iterator it = mCallbacks.find(callback);
-	if(it != mCallbacks.end())
-	{
-		mScriptContext.push(it.data().first);
-		it.data().first->interpreter()->call(it.data().second, QSArgumentList(), this);
-		mScriptContext.pop();
-	}
-#endif // HAVE_QSA
-}
-
-QString Museeq::handleInput(bool privateMessage, const QString& target, const QString& line) {
-#ifdef HAVE_QSA
-	if(libqsa_is_present)
-	{
-		QSArgumentList args(QValueList<QVariant>() << QVariant(privateMessage, 0) << QVariant(target) << QVariant(line));
-		QValueList<QPair<QSProject*, QString> >::iterator it, end = mInputHandlers.end();
-		for(it = mInputHandlers.begin(); it != end; ++it)
-		{
-			mScriptContext.push((*it).first);
-			QSArgument result = (*it).first->interpreter()->call((*it).second, args, this);
-			mScriptContext.pop();
-			if(result.type() == QSArgument::Variant)
-			{
-				QString sResult = result.variant().toString();
-				if(! sResult.isNull())
-					return sResult;
-			}
-		}
-	}
-#endif // HAVE_QSA
+    for (it = mScripts.begin(); it != mScripts.end(); it++) {
+        line = (*it)->handleInput(privateMessage, target, line);
+    }
+#endif // HAVE_QTSCRIPT
 	return line;
 }
 void Museeq::trayicon_hide() {
-#ifdef HAVE_TRAYICON
 	if (mTray) {
 		trayicon()->hide();
 		mUsetray = false;
-		mMainWin->mMenuSettings->setItemChecked(8, mUsetray);
+        mMainWin->ActionToggleTrayicon->setChecked(mUsetray);
 	}
-#endif // HAVE_TRAYICON
 }
 void Museeq::trayicon_show() {
-#ifdef HAVE_TRAYICON
 	if (mTray) {
 		trayicon()->show();
 		mUsetray = true;
-		mMainWin->mMenuSettings->setItemChecked(8, mUsetray);
+        mMainWin->ActionToggleTrayicon->setChecked(mUsetray);
 	}
-#endif // HAVE_TRAYICON
 }
 
 void Museeq::trayicon_setIcon(const QString& icon) {
-#ifdef HAVE_TRAYICON
-	if (mTray) {
+	if (mTray)
 		trayicon()->setIcon(IMG(icon));
-	}
-#endif // HAVE_TRAYICON
 }
 void Museeq::trayicon_load() {
-#ifdef HAVE_TRAYICON
-// 	QPopupMenu menutray;
-
-	if (mUsetray == true)
+	if (mUsetray)
 		mTray->show();
-	menutray->show();
-	mMainWin->mMenuSettings->setItemChecked(8, mUsetray);
-#endif // HAVE_TRAYICON
+	mTrayMenu->show();
+    mMainWin->ActionToggleTrayicon->setChecked(mUsetray);
 }
-
 void Museeq::output(const QString& message) {
-	std::cout << message << std::endl;
+	std::cout << message.toStdString() << std::endl;
 	mMainWin->appendToLogWindow(message);
 }
-		
 Museeq* museeq = 0;
 
 int main(int argc, char **argv) {
 	QApplication app(argc, argv);
 
-	
-        // translation file for application strings
+	QLocale locale;
+    // translation file for application strings
 	QTranslator translation( 0 );
 	QString lang, lang2, langpath;
-	lang = QString(QTextCodec::locale());
+	lang = QString(locale.name());
 	langpath = lang.mid(0,5); // to fix \ shorten long locales like from "fr_FR.utf8" to "fr_FR"
-	if (lang.mid(0,2) != "en" and lang.mid(0,5) != "en")
-	{
+	lang2 =  (QString(DATADIR) + QString("/museek/museeq/translations/museeq_") + langpath + QString(".qm") );
+	QFileInfo fi( lang2 );
+	if ( !fi.exists() ) {
+		// if longer locale isn't found, try two-character locale such as "fr"
+		langpath = lang.mid(0,2);
 		lang2 =  (QString(DATADIR) + QString("/museek/museeq/translations/museeq_") + langpath + QString(".qm") );
 		QFileInfo fi( lang2 );
-		if ( !fi.exists() ) {
-			// if longer locale isn't found, try two-character locale such as "fr"
-			langpath = lang.mid(0,2);
-			lang2 =  (QString(DATADIR) + QString("/museek/museeq/translations/museeq_") + langpath + QString(".qm") );
-			QFileInfo fi( lang2 );
-			if ( fi.exists() ) {
-				translation.load( lang2);
-				app.installTranslator( &translation );
-			} else {
-				std::cout << "Translation doesn't exist at: " << lang2 << std::endl;
-			}
-			
-		} else {
+		if ( fi.exists() ) {
 			translation.load( lang2);
 			app.installTranslator( &translation );
 		}
+	} else {
+		translation.load( lang2);
+		app.installTranslator( &translation );
 	}
-	
+
+
 	new Museeq(&app);
-	app.setMainWidget(museeq->mainwin());
-	
+
 	std::string usetray = string("yes");
-	std::string version = string("museeq ") + museeq->mainwin()->mVersion + string( QT_TR_NOOP(" Language: ") )+ lang; 
-	
+	std::string version = string("museeq ") + museeq->mainwin()->mVersion.toStdString();
+
 	for(int i = 1; i < argc; i++) {
 		string arg = argv[i];
 
@@ -972,33 +844,26 @@ int main(int argc, char **argv) {
 			return 0;
 		} else if(arg == "--no-tray" ) {
 			usetray = string("no");
-			
+
 		} else if(arg == "--help" || arg == "-h") {
 			std::cout << version << std::endl;
-			std::cout << QT_TR_NOOP("Syntax: museeq [options]") << std::endl << std::endl;
-			std::cout << QT_TR_NOOP("Options:") << std::endl;
-			std::cout << QT_TR_NOOP("-V --version\t\tDisplay museeq version and quit") << std::endl << std::endl; 
-			std::cout << QT_TR_NOOP("-h --help\t\tDisplay this message and quit") << std::endl;
-#ifdef HAVE_TRAYICON
-			std::cout << QT_TR_NOOP("--no-tray\t\tDon't load TrayIcon") << std::endl;
-#endif // HAVE_TRAYICON	
-#ifndef HAVE_TRAYICON
-			std::cout << QT_TR_NOOP("\t\t\tTrayicon support was disabled at compile-time") << std::endl;
-#endif // HAVE_TRAYICON
+			std::cout << QObject::tr("Syntax: museeq [options]").toStdString() << std::endl << std::endl;
+			std::cout << QObject::tr("Options:").toStdString() << std::endl;
+			std::cout << QObject::tr("-V --version\t\tDisplay museeq version and quit").toStdString() << std::endl << std::endl;
+			std::cout << QObject::tr("-h --help\t\tDisplay this message and quit").toStdString() << std::endl;
+			std::cout << QObject::tr("--no-tray\t\tDon't load TrayIcon").toStdString() << std::endl;
 			std::cout << std::endl;
 			return 0;
 		}
-			
+
 	}
 	if (usetray == "yes") {
 		museeq->mUsetray = true;
 	}
-#ifdef HAVE_TRAYICON
 	museeq->trayicon_load();
-#endif // HAVE_TRAYICON
 	museeq->mainwin()->show();
 	museeq->mainwin()->connectToMuseek();
 
 	return app.exec();
-	
+
 }

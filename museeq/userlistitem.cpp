@@ -18,31 +18,31 @@
  */
 
 #include "userlistitem.h"
-
-#include <qpixmapcache.h>
-
 #include "userlistview.h"
 #include "util.h"
 #include "images.h"
 #include "museeq.h"
-#include <iostream>
+
+#include <QIcon>
 
 UserListItem::UserListItem(UserListView *_parent, const QString& _u, uint _s, uint _sp, uint _f, const QString& _c)
-	     : QListViewItem(static_cast<QListView *>(_parent)), mUser(_u) {
+	     : QTreeWidgetItem(static_cast<QTreeWidget *>(_parent)), mUser(_u) {
 
 	setText(1, mUser);
+	setTextAlignment(2, Qt::AlignRight|Qt::AlignVCenter);
+	setTextAlignment(3, Qt::AlignRight|Qt::AlignVCenter);
 	setStatus(_s);
 	setSpeed(_sp);
 	setFiles(_f);
 	setComments(_c);
-	setDragEnabled(true);
+// 	setDragEnabled(true);
 }
 void UserListItem::updateUserStatus() {
 	setStatus(mStatus);
 }
 void UserListItem::setStatus(uint s) {
 	mStatus = s;
-	
+
 	QString icon;
 	switch(s) {
 	case 0:
@@ -81,18 +81,19 @@ void UserListItem::setStatus(uint s) {
 		else
 			icon = "online";
 	}
-	
-	setPixmap(0, IMG(icon));
+	QIcon newicon;
+	newicon.addPixmap(IMG(icon));
+	setIcon(0, newicon);
 }
 
 void UserListItem::setSpeed(uint s) {
 	mSpeed = s;
-	setText(2, QString().sprintf("%i", mSpeed));
+	setText(2, Util::makeSize(mSpeed) + UserListView::tr("/s"));
 }
 
 void UserListItem::setFiles(uint f) {
 	mFiles = f;
-	setText(3, QString().sprintf("%u", mFiles));
+	setText(3, QString("%1").arg(mFiles));
 }
 
 void UserListItem::setComments(const QString& _c) {
@@ -105,10 +106,6 @@ void UserListItem::setAll(uint st, uint sp, uint f, const QString& c) {
 	setSpeed(sp);
 	setFiles(f);
 	setComments(c);
-}
-
-const QPixmap* UserListItem::pixmap() const {
-	return QListViewItem::pixmap(0);
 }
 
 uint UserListItem::status() const {
@@ -131,9 +128,9 @@ QString UserListItem::comments() const {
 	return mComments;
 }
 
-int UserListItem::compare(QListViewItem* i, int col, bool) const {
+int UserListItem::compare(QTreeWidgetItem* i, int col, bool) const {
 	UserListItem* u = static_cast<UserListItem*>(i);
-	
+
 	if(col == 0)
 		return Util::cmp(mStatus, u->mStatus);
 	else if(col == 1)
@@ -144,4 +141,33 @@ int UserListItem::compare(QListViewItem* i, int col, bool) const {
 		return Util::cmp(mFiles, u->mFiles);
 	else
 		return mComments.localeAwareCompare(u->mComments);
+}
+
+bool UserListItem::operator<(const QTreeWidgetItem & other_) const {
+	const UserListItem * other = static_cast<const UserListItem *>(&other_);
+	int col = 0;
+	if(treeWidget())
+	col = treeWidget()->sortColumn();
+
+	switch(col) {
+	case 0:
+		if(status() == other->status())
+			return user().toLower() < other->user().toLower();
+		return status() < other->status();
+	case 1:
+		return user().toLower() < other->user().toLower();
+	case 2:
+		if(speed() == other->speed())
+			return user().toLower() < other->user().toLower();
+		return speed() < other->speed();
+	case 3:
+		if(files() == other->files())
+			return user() < other->user();
+		return files() < other->files();
+	case 4:
+		return comments().toLower() < other->comments().toLower();
+
+	}
+
+  return false;
 }

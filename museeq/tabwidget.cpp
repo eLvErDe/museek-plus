@@ -18,17 +18,17 @@
  */
 
 #include "tabwidget.h"
-
-#include <qtoolbutton.h>
-#include <qaccel.h>
-#include <qpainter.h>
-
-#include "slskdrag.h"
 #include "images.h"
 #include "usermenu.h"
+#include "util.h"
+
+#include <QToolButton>
+#include <QDropEvent>
+#include <QShortcut>
+#include <QUrl>
 
 TabWidget::TabWidget(QWidget* parent, const char* name, bool isUser)
-          : QTabWidget(parent, name), mProtectFirst(true), mProtectThird(false){
+          : QTabWidget(parent), mProtectFirst(true), mProtectThird(false){
 
 	const QString& Name = name ;
 	if ( Name == "userInfo")
@@ -36,33 +36,31 @@ TabWidget::TabWidget(QWidget* parent, const char* name, bool isUser)
 
 	mTabBar = new TabBar(isUser, this);
 	setTabBar(mTabBar);
-	connect(mTabBar, SIGNAL(dropSlsk(const QStringList&)), SLOT(dropSlsk(const QStringList&)));
-	
-	setTabPosition(QTabWidget::Bottom);
-	
-	QToolButton* b = new QToolButton(this, "closeButton");
-	b->setIconSet(IMG("tab_remove"));
+
+	setTabPosition(QTabWidget::North);
+
+	QToolButton* b = new QToolButton(this);
+	b->setIcon(IMG("tab_remove"));
 	b->adjustSize();
-	setCornerWidget(b, QTabWidget::BottomRight);
+	setCornerWidget(b, Qt::BottomRightCorner);
 	connect(b, SIGNAL(clicked()), SLOT(closeCurrent()));
-	
+
 	connect(this, SIGNAL(currentChanged(QWidget*)), SLOT(doCurrentChanged(QWidget*)));
-	
-	QAccel *accel = new QAccel(this);
-	accel->connectItem(accel->insertItem(ALT + Key_Left), this, SLOT(previousPage()));
-	accel->connectItem(accel->insertItem(ALT + Key_Right), this, SLOT(nextPage()));
-	accel->connectItem(accel->insertItem(CTRL + Key_W), this, SLOT(closeCurrent()));
+
+	new QShortcut(Qt::ALT + Qt::Key_Left, this, SLOT(previousPage()));
+	new QShortcut(Qt::ALT + Qt::Key_Right, this, SLOT(nextPage()));
+	new QShortcut(Qt::CTRL + Qt::Key_W, this, SLOT(closeCurrent()));
 }
 
 QString TabWidget::getCurrentPage() const {
-	int index = currentPageIndex();
+	int index = currentIndex();
 	if(mProtectFirst && index == 0)
 		return QString::null;
-	return label(index);
+	return tabText(index);
 }
 
 QWidget * TabWidget::getCurrentWidget() const {
-	return currentPage();
+	return currentWidget();
 }
 
 bool TabWidget::protectFirst() const {
@@ -72,17 +70,17 @@ bool TabWidget::protectThird() const {
 	return mProtectThird;
 }
 bool TabWidget::canDrop() const {
-	return mTabBar->canDrop();
+	return mTabBar->acceptDrops();
 }
 
 void TabWidget::setCanDrop(bool b) {
-	mTabBar->setCanDrop(b);
+	mTabBar->setAcceptDrops(b);
 }
 
 void TabWidget::setProtectThird(bool protectThird) {
 	mProtectThird = protectThird;
-	if(currentPageIndex() == 0 || currentPageIndex() == 1 || currentPageIndex() == 2 ) {
-		if(! mProtectThird && ! currentPageIndex() == 0)
+	if(currentIndex() >= 0 && currentIndex() <= 3 ) {
+		if(! mProtectThird && ! currentIndex() == 0)
 			cornerWidget()->setEnabled(true);
 		else
 			cornerWidget()->setEnabled(false);
@@ -91,127 +89,83 @@ void TabWidget::setProtectThird(bool protectThird) {
 
 void TabWidget::doCurrentChanged(QWidget*) {
 	if(mProtectFirst && ! mProtectThird)
-		cornerWidget()->setEnabled(currentPageIndex() != 0);
+		cornerWidget()->setEnabled(currentIndex() != 0);
 	if(mProtectThird)
-		cornerWidget()->setEnabled(currentPageIndex() != 0 && currentPageIndex() != 1 && currentPageIndex() != 2 );
-	if(Tab* tab = dynamic_cast<Tab*>(tabBar()->tab(tabBar()->currentTab())))
-		tab->selected();
+		cornerWidget()->setEnabled(currentIndex() > 3);
 }
 
 void TabWidget::closeCurrent() {
-	if(! mProtectFirst  ||  ! mProtectThird && mProtectFirst && currentPageIndex() > 0 || mProtectThird && currentPageIndex() > 2)
-		delete currentPage();
+	if(! mProtectFirst  ||  (! mProtectThird && mProtectFirst && currentIndex() > 0) || (mProtectThird && currentIndex() > 3))
+		delete currentWidget();
 }
 
 void TabWidget::previousPage() {
-	int ix = currentPageIndex() - 1;
+	int ix = currentIndex() - 1;
 	if(ix < 0)
 		ix = count() - 1;
-	setCurrentPage(ix);
+	setCurrentIndex(ix);
 }
 
 void TabWidget::nextPage() {
-	setCurrentPage((currentPageIndex() + 1) % count());
-}
-
-void TabWidget::dropSlsk(const QStringList&) {
-}
-
-bool TabWidget::isCurrent(Tab* tab) {
-	return tabBar()->tab(tabBar()->currentTab()) == tab;
+	setCurrentIndex((currentIndex() + 1) % count());
 }
 
 void TabWidget::repaintTabBar() {
 	tabBar()->update();
 }
 
+
 TabBar::TabBar(bool isUser, QWidget* parent, const char* name)
-       : QTabBar(parent, name), mCanDrop(false) {
-	
-	setAcceptDrops(true);
-	
-	if(isUser)
+       : QTabBar(parent) {
+
+ 	setAcceptDrops(true);
+	setContextMenuPolicy(Qt::CustomContextMenu);
+	if(isUser) {
 		mUsermenu = new Usermenu(this);
-	else
+		connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), SLOT(slotContextMenu(const QPoint&)));
+
+	} else
 		mUsermenu = 0;
+
 }
 
 void TabBar::dragMoveEvent(QDragMoveEvent* event) {
-	event->accept(mCanDrop && SlskDrag::canDecode(event));
-	
-	QTab* tab = selectTab(event->pos());
-	if(! tab)
-		return;
-	
-	setCurrentTab(tab);
+    // Find the tab
+ 	int tab = tabAt(event->pos());
+
+    // Switch to the tab if any found
+ 	if(tab >= 0)
+ 		setCurrentIndex(tab);
+
+    // We can drop urls directly on the icon: accept
+    if(Util::hasSlskUrls(event) && tab >= 0 && acceptDrops())
+        event->acceptProposedAction();
 }
 
-bool TabBar::canDrop() const {
-	return mCanDrop;
-}
-
-void TabBar::setCanDrop(bool b) {
-	mCanDrop = b;
+void TabBar::dragEnterEvent(QDragEnterEvent* event)
+{
+    event->acceptProposedAction();
 }
 
 void TabBar::dropEvent(QDropEvent* event) {
-	QStringList l;
-	if(SlskDrag::decode(event, l))
-		emit dropSlsk(l);
+    int item = currentIndex();
+
+    if (item >= 0 && Util::hasSlskUrls(event) && acceptDrops())
+        emit dropSlsk(event->mimeData()->urls());
+
+    event->acceptProposedAction();
 }
 
-void TabBar::paintLabel(QPainter* p, const QRect& br, QTab* t, bool has_focus) const {
-	QFont oldfont = p->font(), font = oldfont;
-	QPen oldpen = p->pen();
-	
-	p->setPen(colorGroup().buttonText());
-	
-	if(Tab* tab = dynamic_cast<Tab*>(t)) {
-		if(tab->highlighted() > 0)
-			font.setUnderline(true);
-		p->setFont(font);
-		
-		if(tab->highlighted() > 1)
-			p->setPen(QColor(255, 0, 0));
-	}
-	
-	p->drawText(br, Qt::AlignAuto | Qt::AlignVCenter, t->text());
-	
-	p->setFont(oldfont);
-	p->setPen(oldpen);
-}
-
-void TabBar::contextMenuEvent(QContextMenuEvent* e) {
+void TabBar::slotContextMenu(const QPoint& pos) {
+	QString username;
 	if(mUsermenu) {
-		QTab* _tab = selectTab(e->pos());
-		if(_tab && _tab != tab(0)) {
-			mUsermenu->exec(_tab->text(), e->globalPos());
+ 		int index = tabAt(pos);
+		if (tabData(index).toString() == "1")
 			return;
+		else {
+			username = tabText(index);
+			mUsermenu->exec(username, mapToGlobal(pos));
 		}
 	}
-	e->ignore();
+
 }
-
-Tab::Tab(TabWidget* parent, const QString& text)
-    : QObject(parent), QTab(text), mHighlight(0) {
-};
-
-void Tab::setHighlight(int i) {
-	TabWidget* p = static_cast<TabWidget*>(parent());
-	if(! p->isCurrent(this) && i > mHighlight) {
-		mHighlight = i;
-		p->repaintTabBar();
-	}
-}
-
-void Tab::selected() {
-	if(mHighlight != 0) {
-		mHighlight = 0;
-		static_cast<TabWidget*>(parent())->repaintTabBar();
-	}
-}
-
-int Tab::highlighted() const {
-	return mHighlight;
-}
-

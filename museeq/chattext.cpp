@@ -17,19 +17,19 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "museeq.h"
 #include "chattext.h"
 
-#include <qregexp.h>
-#include "museeq.h"
+#include <QRegExp>
+#include <QDateTime>
 
-ChatText::ChatText(const QString& _tf, QWidget* _p, const char* _n)
-         : QTextBrowser(_p, _n), mTimeFormat(_tf), mNickname(museeq->nickname()) {
-	
+ChatText::ChatText(const QString& _tf, QWidget* _p)
+         : QTextBrowser(_p), mTimeFormat(_tf), mNickname(museeq->nickname()) {
+
 	setReadOnly(true);
-	setTextFormat(Qt::RichText);
-// 	setFocusPolicy(NoFocus);
+	setOpenLinks(false);
 	connect(museeq, SIGNAL(nicknameChanged(const QString&)), SLOT(setNickname(const QString&)));
-	connect(this, SIGNAL(linkClicked(const QString&)), museeq, SLOT(showURL(const QString&)));
+	connect(this, SIGNAL(anchorClicked(const QUrl&)), museeq, SLOT(showURL(const QUrl&)));
 }
 
 void ChatText::append(const QString& _u, const QString& _l) {
@@ -41,18 +41,14 @@ void ChatText::append(uint ts,  const QString& _l) {
 	QDateTime _t;
 	_t.setTime_t(ts);
 	if (museeq->mShowTimestamps) {
-		if(mTimeFormat.isEmpty()) 
-		
-			line = QString("<span style='"+museeq->mFontTime+"'><font color='"+museeq->mColorTime+"'>%1</font></span>").arg(_t.toString());
+		if(mTimeFormat.isEmpty())
+			line = QString("<span style='"+museeq->mFontTime+";color:"+museeq->mColorTime+"'>%1</span>").arg(_t.toString());
 		else
-			line = QString("<span style='"+museeq->mFontTime+"'><font color='"+museeq->mColorTime+"'>%1</font></span>").arg(_t.toString(mTimeFormat));
+			line = QString("<span style='"+museeq->mFontTime+";color:"+museeq->mColorTime+"'>%1</span>").arg(_t.toString(mTimeFormat));
 	}
-	line +=  "<span style='" + museeq->mFontMessage +  "'><font color='"+museeq->mColorNickname+"'>  * " + _l +"</font></span>";
+	line +=  "<span style='" + museeq->mFontMessage +  ";color:"+museeq->mColorNickname+"'>  * " + _l +"</span>";
 	QTextBrowser::append(line);
 }
-
-#define escape QStyleSheet::escape
-static QRegExp url_rx("[a-zA-Z\\-]+:(//)?[0-9a-zA-Z:\\.]?[0-9a-zA-Z:\\.\\+/?,=%~_$&:#;{}@!\\\\|[\\]'-]+");
 
 void ChatText::append(uint ts, const QString& _u, const QString& _l) {
 	QString line,
@@ -72,41 +68,51 @@ void ChatText::append(uint ts, const QString& _u, const QString& _l) {
 	QString fontMessage = museeq->mFontMessage;
 	if (museeq->mShowTimestamps) {
 		if(mTimeFormat.isEmpty())
-			line = QString("<span style='"+fontTime+"'><font color='"+colorTime+"'>%1</font></span>").arg(_t.toString());
+			line = QString("<span style='"+fontTime+";color:"+colorTime+";'>%1</span>").arg(_t.toString());
 		else
-			line = QString("<span style='"+fontTime+"'><font color='"+colorTime+"'>%1</font></span>").arg(_t.toString(mTimeFormat));
-	} else 
+			line = QString("<span style='"+fontTime+";color:"+colorTime+";'>%1</span>").arg(_t.toString(mTimeFormat));
+	} else
 		line = "";
 
 	if(_l.startsWith("/me ")) {
-		line += "<span style='" + fontMessage + "'><font color='"+colorMe+"'> * " + escape(u) + " ";
+		line += "<span style='" + fontMessage + ";color:"+colorMe+";'> * " + Qt::escape(u) + " ";
 		l = _l.mid(4);
 	} else if(museeq->nickname() == _u) {
-		line += " <span style='"+fontTime+"'><font color='"+colorTime+"'>[</font></span><span style='" + fontMessage + "'><font color='"+colorNickname+"'>" + escape(u) + "</font></span><span style='"+fontTime+"'><font color='"+colorTime+"'>]</font></span> <span style='" + fontMessage +  "'><font color='"+colorNickname+"'> ";
+		line += " <span style='"+fontTime+";color:"+colorTime+";'>[</span><span style='" + fontMessage + ";color:"+colorNickname+";'>" + Qt::escape(u) + "</span><span style='"+fontTime+";color:"+colorTime+";'>]</span> <span style='" + fontMessage + ";color:"+colorNickname+";'> ";
 	} else {
-		line += " <span style='"+fontTime+"'><font color='"+colorTime+"'>[</font></span><span style='" + fontMessage + "'>";
+		line += " <span style='"+fontTime+";color:"+colorTime+";'>[</span><span style='" + fontMessage;
 		 if(museeq->isBanned(_u)) {
-			line += "<font color='"+colorBanned+"'>";
+			line += ";color:"+colorBanned+";'>";
 		} else if(museeq->isTrusted(_u)) {
-			line += "<font color='"+colorTrusted+"'>";
+			line += ";color:"+colorTrusted+";'>";
 		} else if(museeq->isBuddy(_u)) {
-			line += "<font color='"+colorBuddied+"'>";
+			line += ";color:"+colorBuddied+";'>";
 		} else
-			line += "<font color='"+colorRemote+"'>";
-		line +=  escape(u) + "</font></span><span style='"+fontTime+"'><font color='"+colorTime+"'>]</font></span><span style='" + fontMessage + "'><font color='"+colorRemote+"'> ";
+			line += ";color:"+colorRemote+";'>";
+		line +=  Qt::escape(u) + "</span><span style='"+fontTime+";color:"+colorTime+";'>]</span><span style='" + fontMessage + ";color:"+colorRemote+";'> ";
 	}
 	int ix;
-	while((ix = url_rx.match(l)) != -1) {
+
+	QMapIterator<QString, QString> i(museeq->protocolHandlers());
+	QString rx = "(slsk";
+	while (i.hasNext()) {
+		i.next();
+		rx += "|" + i.key();
+	}
+	rx += "):(//)?[0-9a-zA-Z:\\.]?[0-9a-zA-Z:\\.\\+/?,=%~_$&:#;{}@!\\\\|[\\]'-]+";
+
+	QRegExp url_rx(rx);
+	while((ix = url_rx.indexIn(l)) != -1) {
 		int len = url_rx.matchedLength();
 		QString url = l.mid(ix, len);
 
-		line += postProcess( l.left(ix), _l, _u); 
-		line += "<a href=\"" + url + "\">" + escape(url) + "</a>";
+		line += postProcess( l.left(ix), _l, _u);
+		line += "<a href=\"" + url + "\">" + Qt::escape(url) + "</a>";
 		l = l.mid(ix + len);
 	}
 
 	if(! l.isEmpty()) {
-		line += postProcess(l, _l, _u)+"</font></span>";
+		line += postProcess(l, _l, _u)+"</span>";
 	}
 
 	QTextBrowser::append(line);
@@ -115,13 +121,13 @@ void ChatText::append(uint ts, const QString& _u, const QString& _l) {
 QString ChatText::postProcess(const QString& _s, const QString& _l, const QString& _u) {
 	if(! mNickname.isNull()) {
 		if(_l.startsWith("/me ")) {
-			return escape(_s).replace(mNickname, "</font><font color='"+ museeq->mColorMe+"'>" + mNickname + "</font><font color='"+ museeq->mColorMe+"'>");
+			return Qt::escape(_s).replace(mNickname, "</span><span style='" + museeq->mFontMessage + ";color:"+museeq->mColorMe+";'>" + mNickname + "</span><span style='" + museeq->mFontMessage + ";color:"+museeq->mColorMe+";'>");
 		} else if(museeq->nickname() == _u) {
-			return escape(_s).replace(mNickname, "</font><font color='"+ museeq->mColorMe+"'>" + mNickname + "</font><font color='"+ museeq->mColorNickname+"'>");
+			return Qt::escape(_s).replace(mNickname, "</span><span style='" + museeq->mFontMessage + ";color:"+museeq->mColorMe+";'>" + mNickname + "</span><span style='" + museeq->mFontMessage + ";color:"+museeq->mColorNickname+";'>");
 		} else
-			return escape(_s).replace(mNickname, "</font><font color='"+ museeq->mColorMe+"'>" + mNickname + "</font><font color='"+ museeq->mColorRemote+"'>");
+			return Qt::escape(_s).replace(mNickname, "</span><span style='" + museeq->mFontMessage + ";color:"+museeq->mColorMe+";'>" + mNickname + "</span><span style='" + museeq->mFontMessage + ";color:"+museeq->mColorRemote+";'>");
 	} else
-		return escape(_s);
+		return Qt::escape(_s);
 }
 
 void ChatText::setNickname(const QString& nickname) {

@@ -20,7 +20,7 @@
 
 from museek import messages, driver
 import sys, time, os, getopt, ConfigParser
-Version = "0.1.13"
+Version = "0.2.0"
 class Mulog(driver.Driver):
 	def __init__(self, logger):
 		driver.Driver.__init__(self)

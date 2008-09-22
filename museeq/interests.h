@@ -20,15 +20,16 @@
 #ifndef INTERESTS_H
 #define INTERESTS_H
 
-#include <qvbox.h>
 #include "museeqtypes.h"
+
+#include <QWidget>
+
 class UserListView;
 class RecommendsView;
-class QListView;
 class QPushButton;
 class InterestList;
 
-class Interests : public QVBox {
+class Interests : public QWidget {
 	Q_OBJECT
 public:
 	Interests(QWidget* = 0, const char* = 0);
@@ -55,7 +56,7 @@ private:
 	RecommendsView* mRecommendsList ;
 
 	QPushButton* mGlobal,* mRecommend,* mSimilar;
-	
+
 };
 
 #endif // INTERESTS_H

@@ -4,6 +4,7 @@ import sys
 import os  
 import threading
 import curses.wrapper
+import re
 ## Input line 
 # :: Here we detect which keys have been pressed
 #class CharacterParse(threading.Thread):
@@ -1121,7 +1122,30 @@ class CharacterParse:
 			return line
 		except Exception, e:
 			self.mucous.Help.Log("debug", "MouseXY: "+str(e) )
-	
+
+	## Parse Integer set
+	# @param self is mucous
+	# @param s is a text string
+	# @return list of numbers
+	def ParseIntegerSet(self, s):
+		trim = re.compile('(^\s+|\s+$)')
+		sequence = re.compile('\s*,\s*')
+		interval = re.compile('(\d+)\s*-\s*(\d+)')
+
+		s = trim.sub('', s)
+		nums = set()
+	 
+		for i in sequence.split(s):
+			if i.isdigit():
+				nums.add(int(i))
+			elif interval.match(i):
+				a, b = interval.match(i).groups()
+				for j in range(int(a), int(b)+1):
+					nums.add(j)
+			else:
+				return
+		return nums
+
 	## Parse Entry box for commands
 	# @param self is mucous
 	# @param line is a text string
@@ -1818,33 +1842,32 @@ class CharacterParse:
 			elif command == "/searchroom" and args != '':
 				query = args
 				self.mucous.D.Search(2, query)
-					
 			elif command in ("/download", "/downdir") and args != "":
 				linput = args
+				nums = self.ParseIntegerSet(linput)
+				
+				if nums == None:
+				    self.mucous.Help.Log("status", "Enter an Integer or Range")
+				    return
+				    
 				if command == "/download":
 					dtype = "file"
 				elif command == "/downdir":
 					dtype = "dir"
-				if linput == None or not linput.isdigit():
-					self.mucous.Help.Log("status", "Enter an Integer")
 					
-				else:
+				for i in nums:
 					if self.mucous.mode == "search":
-						user, path = self.mucous.Search.GetDownloadFromNum(linput)
-						
-					elif self.mucous.mode == "browse":	
-						user, path = self.mucous.BrowseShares.GetDownloadFromNum(linput)
+						user, path = self.mucous.Search.GetDownloadFromNum(i)
+					elif self.mucous.mode == "browse":
+						user, path = self.mucous.BrowseShares.GetDownloadFromNum(i)
 					else:
 						return
-					
 					if dtype == "file":
 						self.mucous.Transfers.RetryDownload(user, path)
 					elif dtype == "dir":
 						self.mucous.Transfers.FolderDownload(user, path)
-						
-						
-			elif command == "/filter" and args != '':
-				
+
+			elif command == "/filter" and args != "":
 				self.mucous.Search.sfilter = args
 				if self.mucous.mode=='search':
 					self.mucous.Search.Mode()
@@ -1918,55 +1941,58 @@ class CharacterParse:
 				Manage Transfers
 				'''
 			elif command in ("/abortd", "/abortdown") and args != '':
-				transfer = None
-				if args.isdigit():
-					transfer = int(args)
-				else:
-					self.mucous.Help.Log("status", "Enter an Integer")
-				if transfer != None:
+				nums = self.ParseIntegerSet(args)
+
+				if nums == None:
+					self.mucous.Help.Log("status", "Enter an Integer or Range")
+					return
+
+				for transfer in nums:
 					user, path = self.mucous.Transfers.GetDownloadFromNum(transfer)
 					self.mucous.Transfers.AbortDownload(user, path)
 					
 			elif command in ("/abortu", "/abortup") and args != '':
-				transfer = None
-				try:
-					transfer = int(args)
-				except:
-					self.mucous.Help.Log("status", "Enter an Integer")
-				if transfer != None:
+				nums = self.ParseIntegerSet(args)
+
+				if nums == None: 
+					self.mucous.Help.Log("status", "Enter an Integer or Range")
+					return
+
+				for transfer in nums:
 					user, path = self.mucous.Transfers.GetUploadFromNum(transfer)
 					self.mucous.Transfers.AbortUpload(user, path)
 				
 			elif command in ("/removeu", "/removeup") and args != '':
-				transfer = None
-				try:
-					transfer = int(args)
-				except:
-					self.mucous.Help.Log("status", "Enter an Integer")
-				if transfer != None:
+				nums = self.ParseIntegerSet(args)
+
+				if nums == None:
+					self.mucous.Help.Log("status", "Enter an Integer or Range")
+					return
+
+				for transfer in nums:
 					user, path = self.mucous.Transfers.GetUploadFromNum(transfer)
 					self.mucous.Transfers.ClearUpload(user, path)
 				
-					
-		
 			elif command in ("/removed", "/removedown") and args != '':
-				transfer = None
-				try:
-					transfer = int(args)
-				except:
-					self.mucous.Help.Log("status", "Enter an Integer")
-				if transfer != None:
+				nums = self.ParseIntegerSet(args)
+
+				if nums == None:
+					self.mucous.Help.Log("status", "Enter an Integer or Range")
+					return
+
+				for transfer in nums:
 					user, path = self.mucous.Transfers.GetDownloadFromNum(transfer)
 					self.mucous.Transfers.ClearDownload(user, path)
 				
 
 			elif command == "/retry" and args != '':
-				transfer = None
-				try:
-					transfer = int(args)
-				except:
-					self.mucous.Help.Log("status", "Enter an Integer")
-				if transfer != None:
+				nums = self.ParseIntegerSet(args)
+
+				if nums == None:
+					self.mucous.Help.Log("status", "Enter an Integer or Range")
+					return
+
+				for transfer in nums:
 					user, path = self.mucous.Transfers.GetDownloadFromNum(transfer)
 					self.mucous.Transfers.RetryDownload(user, path)
 						

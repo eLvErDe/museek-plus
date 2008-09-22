@@ -17,35 +17,34 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "system.h"
+#include <system.h>
 
 #include "museekdriver.h"
 #include "museekmessages.h"
 
-#include <qsocket.h>
-#include <iostream>
+#include <QList>
 
 MuseekDriver::MuseekDriver(QObject* parent, const char* name)
-          : QObject(parent, name), mSocket(0), mHaveSize(false), mPassword(QString::null) {
+          : QObject(parent), mSocket(0), mHaveSize(false), mPassword(QString::null) {
 
 }
 
-void MuseekDriver::connectToHost(const QString& host, Q_UINT16 port, const QString& password) {
+void MuseekDriver::connectToHost(const QString& host, quint16 port, const QString& password) {
 	if(mSocket) {
 		mSocket->deleteLater();
 		mSocket = 0;
 	}
-	
+
 	mPassword = password;
-	
+
 	mHaveSize = false;
-	
-	mSocket = new QSocket(this);
+
+	mSocket = new QTcpSocket(this);
 	connect(mSocket, SIGNAL(hostFound()), this, SIGNAL(hostFound()));
 	connect(mSocket, SIGNAL(connected()), SIGNAL(connected()));
 	connect(mSocket, SIGNAL(connectionClosed()), SIGNAL(connectionClosed()));
 	connect(mSocket, SIGNAL(delayedCloseFinished()), SIGNAL(connectionClosed()));
-	connect(mSocket, SIGNAL(error(int)), SIGNAL(error(int)));
+	connect(mSocket, SIGNAL(error(QAbstractSocket::SocketError)), SIGNAL(error(QAbstractSocket::SocketError)));
 	connect(mSocket, SIGNAL(readyRead()), SLOT(dataReady()));
 	mSocket->connectToHost(host, port);
 }
@@ -55,36 +54,36 @@ void MuseekDriver::connectToUnix(const QString& path, const QString& password) {
 		mSocket->deleteLater();
 		mSocket = 0;
 	}
-	
+
 	mPassword = password;
-	
+
 	mHaveSize = false;
-	
+
 #ifdef HAVE_SYS_UN_H
 	int sock = ::socket(PF_UNIX, SOCK_STREAM, 0);
-	
+
 	struct sockaddr_un addr;
 	memset(&addr, 0, sizeof(struct sockaddr_un));
 	addr.sun_family = AF_UNIX;
-	
-	qstrncpy(addr.sun_path, (const char*)path.local8Bit(), sizeof(addr.sun_path));
+
+	qstrncpy(addr.sun_path, (const char*)path.toLocal8Bit(), sizeof(addr.sun_path));
 
 	if(::connect(sock, (struct sockaddr*)&addr, sizeof(struct sockaddr_un)) == -1) {
 		perror("connect: ");
-		emit error(QSocket::ErrConnectionRefused);
+		emit error(QAbstractSocket::ConnectionRefusedError);
 		return;
 	}
-	
-	mSocket = new QSocket(this);
+
+	mSocket = new QTcpSocket(this);
 	connect(mSocket, SIGNAL(hostFound()), this, SIGNAL(hostFound()));
 	connect(mSocket, SIGNAL(connected()), SIGNAL(connected()));
 	connect(mSocket, SIGNAL(connectionClosed()), SIGNAL(connectionClosed()));
 	connect(mSocket, SIGNAL(delayedCloseFinished()), SIGNAL(connectionClosed()));
-	connect(mSocket, SIGNAL(error(int)), SIGNAL(error(int)));
+	connect(mSocket, SIGNAL(error(QAbstractSocket::SocketError)), SIGNAL(error(QAbstractSocket::SocketError)));
 	connect(mSocket, SIGNAL(readyRead()), SLOT(dataReady()));
-	mSocket->setSocket(sock);
+    mSocket->setSocketDescriptor(sock);
 #else
-	emit error(QSocket::ErrConnectionRefused);
+	emit error(QAbstractSocket::ConnectionRefusedError);
 #endif
 }
 
@@ -95,47 +94,63 @@ void MuseekDriver::disconnect() {
 		mSocket = 0;
 		emit connectionClosed();
 	}
-	// Disconnecting while connecting causes a crash after 2-3 seconds
 }
 
 void MuseekDriver::dataReady() {
-	if(! mSocket) { return; } // Crashes even with this.
+
+	if(! mSocket) { return; }
 	if(! mHaveSize) {
 		if(mSocket->bytesAvailable() < 4)
 			return;
-		
+
+		unsigned char buf[4];
+		if(mSocket->read((char *)buf, 4) != 4)
+			printf("FAILURE TO READ MsgSize\n");
+
 		mHaveSize = true;
 		mMsgSize = 0;
+
 		for(int i = 0; i < 4; i++)
-			mMsgSize += mSocket->getch() << (i * 8);
+			mMsgSize += buf[i] << (i * 8);
+
 	}
-	
+
 	if(mSocket->bytesAvailable() < mMsgSize)
 		return;
-	
+
 	mHaveSize = false;
-	
+	unsigned char buf[4];
+	if(mSocket->read((char *)buf, 4) != 4)
+		printf("DEBUG: FAILURE TO READ MsgType\n");
+
 	unsigned int mtype = 0;
-	for(int i = 0; i < 4; i++)
-		mtype += mSocket->getch() << (i * 8);
-	
-	QValueList<unsigned char> data;
-	for(uint i = 4; i < mMsgSize; i++)
-		data.push_back(mSocket->getch());
-	
+	for(int i = 0; i < 4; i++) {
+		mtype += buf[i] << (i * 8);
+	}
+
+	unsigned char * buf2 = new unsigned char[mMsgSize - 4];
+	if(mSocket->read((char *)buf2, mMsgSize - 4) != (mMsgSize - 4))
+		printf("DEBUG: FAILURE TO READ MsgData\n");
+
+	QList<unsigned char> data;
+	for(uint i = 0; i < mMsgSize - 4; i++) {
+		data.push_back(buf2[i]);
+	}
+
 	switch(mtype) {
 	case 0x0001: {
 		NChallenge m(data);
-		
+
 		QString chresp = m.challenge + mPassword;
-		
+
 		unsigned char digest[20];
-		const char *_chresp = chresp;
+
+		const char *_chresp = chresp.toAscii();
 		shaBlock((unsigned char*)_chresp, chresp.length(), digest);
-		
+
 		char hexdigest[41];
 		hexDigest(digest, 20, hexdigest);
-		
+
 		NLogin n("SHA1", hexdigest, 1 | 2 | 4 | 8 | 16 | 32 | 64);
 		send(n);
 		break;
@@ -143,7 +158,7 @@ void MuseekDriver::dataReady() {
 	case 0x0002: {
 		NLogin m(data);
 		if(m.ok) {
-			const char* key = mPassword;
+			const char* key = mPassword.toAscii();
 			cipherKeySHA256(&mContext, (char*)key, mPassword.length());
 		}
 		emit loggedIn(m.ok, m.msg);
@@ -335,31 +350,37 @@ void MuseekDriver::dataReady() {
 		break;
 	}
 	default:
-		std::cerr << "Unknown message " << mtype << std::endl;
+		qDebug() << "Unknown message " << mtype;
 	}
- 
+
 	dataReady();
+
 }
 
 void MuseekDriver::send(const MuseekMessage& m) {
 	if(! mSocket) { return; }
-	const QValueList<unsigned char>& data = m.data();
-	
+	const QList<unsigned char>& data = m.data();
+
 	uint i = data.size() + 4;
+	// Message length
 	for(uint j = 0; j < 4; ++j) {
-		mSocket->putch(i & 0xff);
+		mSocket->putChar(i & 0xff);
 		i = i >> 8;
 	}
-	
+	// Message type
 	i = m.MType();
 	for(uint j = 0; j < 4; ++j) {
-		mSocket->putch(i & 0xff);
+		mSocket->putChar(i & 0xff);
 		i = i >> 8;
 	}
-	
-	QValueList<unsigned char>::ConstIterator it = data.begin();
-	for(; it != data.end(); ++it)
-		mSocket->putch(*it);
+
+    qDebug("Received message %i from daemon.", i);
+
+	// Message Data
+	QList<unsigned char>::ConstIterator it = data.begin();
+	for(; it != data.end(); ++it) {
+		mSocket->putChar(*it);
+	}
 }
 
 void MuseekDriver::doSayChatroom(const QString& room, const QString& line) {
@@ -398,16 +419,24 @@ void MuseekDriver::getUserInfo(const QString& user) {
 	send(NUserInfo(user));
 }
 
-void MuseekDriver::doDownloadFileTo(const QString& user, const QString& path, const QString& local, Q_INT64 size) {
+void MuseekDriver::doDownloadFileTo(const QString& user, const QString& path, const QString& local, qint64 size) {
 	send(NDownloadFileTo(user, path, local, size));
 }
 
-void MuseekDriver::doDownloadFile(const QString& user, const QString& path, Q_INT64 size) {
+void MuseekDriver::doDownloadFile(const QString& user, const QString& path, qint64 size) {
 	send(NDownloadFile(user, path, "", size));
 }
 
 void MuseekDriver::getFolderContents(const QString& user, const QString& path) {
 	send(NFolderContents(user, path));
+}
+
+void MuseekDriver::doDownloadFolderTo(const QString& user, const QString& path, const QString& local) {
+	send(NDownloadFolderTo(user, path, local));
+}
+
+void MuseekDriver::doUploadFolder(const QString& user, const QString& path) {
+	send(NUploadFolder(user, path));
 }
 
 void MuseekDriver::doUploadFile(const QString& user, const QString& path) {
@@ -479,7 +508,6 @@ void MuseekDriver::doRemoveInterest(const QString& interest) {
 void MuseekDriver::doRemoveHatedInterest(const QString& interest) {
 	send(NRemoveHatedInterest(interest));
 }
-
 
 void MuseekDriver::doStopSearch(uint token) {
 	send(NSearchResults(token));

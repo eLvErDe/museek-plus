@@ -20,36 +20,47 @@
 #ifndef TRANSFERLISTVIEW_H
 #define TRANSFERLISTVIEW_H
 
-#include <qlistview.h>
 #include "museeqtypes.h"
 
-class TransferListView : public QListView {
+#include <QTreeWidget>
+
+class QDropEvent;
+class QDragEnterEvent;
+class TransferListItem;
+
+class TransferListView : public QTreeWidget {
 	Q_OBJECT
 public:
 	typedef enum {
 		User,
 		None,
 	} GroupMode;
-	
+
 	TransferListView(bool place, QWidget* = 0, const char* = 0);
-	
+
 	GroupMode groupMode() const;
 
 signals:
-	void dropSlsk(const QStringList&);
-	
+	void dropSlsk(const QList<QUrl>&);
+
 public slots:
 	void update(const NTransfer&);
+	TransferListItem* findTransfer(const QString&, const QString&);
+	TransferListItem* findParent(const QString&);
 	void remove(const QString&, const QString&);
 	void setGroupMode(GroupMode);
+	void updateParentsStats();
 
 protected:
 	void dragEnterEvent(QDragEnterEvent*);
+	void dragMoveEvent(QDragMoveEvent* event);
+	void mousePressEvent(QMouseEvent *event);
+	void mouseMoveEvent(QMouseEvent *event);
 	void dropEvent(QDropEvent*);
-	QDragObject* dragObject();
-	
+
 private:
 	GroupMode mGroupMode;
+	QPoint mDragStartPosition;
 };
 
 

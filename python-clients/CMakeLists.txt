@@ -19,7 +19,7 @@ set(CLIENT_SOURCES
   museekcontrol
 )
 
-# Install the muscan binary to the 'bin' directory.
+# Install the scripts to the 'bin' directory.
 install(
   FILES ${CLIENT_SOURCES}
   DESTINATION bin

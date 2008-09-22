@@ -1,121 +1,188 @@
-#include <qcheckbox.h>
-#include <qlabel.h> 
-#include <qhbox.h> 
-#include <qvbox.h> 
-#include <qlayout.h> 
-#include <qlineedit.h> 
-#include <qpushbutton.h> 
-#include "connect.h" 
-#include <qdir.h>
+/* museeq - a Qt client to museekd
+ *
+ * Copyright (C) 2003-2004 Hyriand <hyriand@thegraveyard.org>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 #include "museeq.h"
-#include <qfiledialog.h>
+#include "connect.h"
 
-#include <qvariant.h>
-#include <qvbuttongroup.h>
-#include <qbuttongroup.h>
+#include <QCheckBox>
+#include <QLabel>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QLayout>
+#include <QGroupBox>
+#include <QFileDialog>
+#include <QComboBox>
+#include <QRadioButton>
+#include <QDir>
 
-#include <qcombobox.h>
-#include <qradiobutton.h>
-
-#include <qtooltip.h>
-#include <qwhatsthis.h>
-
-ConnectDialog::ConnectDialog(QWidget *parent, const char *name) 
-  : QDialog(parent, name) 
-{ 
-	setCaption( tr( "Connect to Museekd..." ) );
-	setMinimumSize( QSize( 430, 280 ) );
+ConnectDialog::ConnectDialog(QWidget *parent, const char *name)
+  : QDialog(parent)
+{
+	setWindowTitle( tr( "Connect to Museekd..." ) );
+	setMinimumSize( QSize( 500, 200 ) );
 	setModal( TRUE );
 
-	QHBox *boxsd = new QHBox(this, "boxsd");
-	boxsd->setSpacing(5);
-	QVBox *boxconnect = new QVBox(boxsd, "boxconnect");
-	boxconnect->setSpacing(5);
-	// daemon socket selection widgets
-	QHBox *boxhost = new QHBox(boxconnect, "boxhostpath");
-	boxhost->setSpacing(5);
-	textLabel2 = new QLabel( boxhost, "textLabel2" );
-	textLabel2->setText( tr( "Host / path:" ) );
-	mAddress = new QComboBox( FALSE, boxhost, "mAddress" );
+	QVBoxLayout *mainLayout = new QVBoxLayout(this);
+	mainLayout->setMargin(0);
+	mainLayout->setSpacing(0);
+
+	QHBoxLayout *LeftRight = new QHBoxLayout;
+	mainLayout->addLayout(LeftRight);
+	LeftRight->setSpacing(5);
+	LeftRight->setMargin(5);
+
+	QVBoxLayout *SocketPassLayout = new QVBoxLayout;
+	SocketPassLayout->setSpacing(5);
+	LeftRight->addLayout(SocketPassLayout);
+	// Host, path, clear button
+	QHBoxLayout *HostLayout = new QHBoxLayout;
+	SocketPassLayout->addLayout(HostLayout);
+
+	HostLayout->setSpacing(5);
+	HostLabel = new QLabel(this);
+	HostLayout->addWidget(HostLabel);
+	HostLabel->setText( tr( "Host / path:" ) );
+
+	mAddress = new QComboBox(this);
+	HostLayout->addWidget(mAddress);
 	mAddress->setEditable( TRUE );
 	mAddress->setSizePolicy (QSizePolicy::Expanding,QSizePolicy::Preferred);
-	
-	clearButton = new QPushButton( boxhost, "clearButton" );
+	clearButton = new QPushButton( this);
 	clearButton->setText( tr( "Clear" ) );
-	// Password
-	QHBox *boxpass = new QHBox(boxconnect, "boxpassword");
+
+	HostLayout->addWidget(clearButton);
+	QHBoxLayout *boxpass = new QHBoxLayout;
+	SocketPassLayout->addLayout(boxpass);
 	boxpass->setSpacing(5);
-	textLabel1 = new QLabel( boxpass, "textLabel1" );
-	textLabel1->setText( tr( "Password:" ) );
-	mPassword = new QLineEdit( boxpass, "mPassword" );
+
+	// museekd Password
+	PasswordLabel = new QLabel(this);
+	boxpass->addWidget(PasswordLabel);
+	PasswordLabel->setText( tr( "Password:" ) );
+	mPassword = new QLineEdit;
+	boxpass->addWidget(mPassword);
 	mPassword->setEchoMode( QLineEdit::Password );
-	mSavePassword = new QCheckBox( boxpass, "mSavePassword" );
+	mSavePassword = new QCheckBox(this);
 	mSavePassword->setText( tr( "&Save Password" ) );
-	mSavePassword->setAccel( QKeySequence( tr( "Alt+S" ) ) );
-	// Connection method
-	buttonGroup4 = new QVButtonGroup( boxsd, "buttonGroup4" );	
-	buttonGroup4->setTitle( tr( "Connect to:" ) );
-	mTCP = new QRadioButton( buttonGroup4, "mTCP" );
-	mTCP->setChecked( TRUE );
-	mUnix = new QRadioButton( buttonGroup4, "mUnix" );
-	mUnix->setEnabled( TRUE );
-	mTCP->setText( tr( "&TCP" ) );
-	mTCP->setAccel( QKeySequence( tr( "Alt+T" ) ) );
-	mUnix->setText( tr( "&Unix socket" ) );
-	mUnix->setAccel( QKeySequence( tr( "Alt+U" ) ) );
-	buttonGroup4->insert( mUnix, 1 );
+	boxpass->addWidget(mSavePassword);
 
-	mAutoConnect = new QCheckBox( boxconnect, "mAutoConnect" );
+	mAutoConnect = new QCheckBox(this);
+	SocketPassLayout->addWidget(mAutoConnect);
 	mAutoConnect->setText( tr( "Auto-Conn&ect to Daemon" ) );
-	mAutoConnect->setAccel( QKeySequence( tr( "Alt+E" ) ) );
 
+	// Connection method
+	QGroupBox * groupbox = new QGroupBox(tr( "Connect to:" ), this);
+	LeftRight->addWidget(groupbox);
+	QVBoxLayout * MethodLayout = new QVBoxLayout;
+	groupbox->setLayout(MethodLayout);
+
+	mTCP = new QRadioButton( groupbox );
+	mTCP->setChecked( TRUE );
+	MethodLayout->addWidget(mTCP);
+	mUnix = new QRadioButton( groupbox );
+	mUnix->setEnabled( TRUE );
+	MethodLayout->addWidget(mUnix);
+	mTCP->setText( tr( "&TCP" ) );
+	mUnix->setText( tr( "&Unix socket" ) );
+
+	// autoconnect
+	extraLayout = new QHBoxLayout;
+	mainLayout->addLayout(extraLayout);
+	extraLayout->setMargin(5);
 	spacer1 =  new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
-	mExtra = new QPushButton( this, "ExtraOptions" );
+	mExtra = new QPushButton( this);
 	mExtra->setText( tr( "Daemon O&ptions..." ) );
-	
-	startDaemonButton = new QPushButton( this, "startDaemonButton" );
-	startDaemonButton->setDefault( FALSE );
+	extraLayout->addItem(spacer1);
+	extraLayout->addWidget(mExtra);
+
+	DaemonItems = new QWidget(this);
+	mainLayout->addWidget(DaemonItems);
+	QVBoxLayout * DaemonBox = new QVBoxLayout(DaemonItems);
+	DaemonBox->setMargin(5);
+
+	controldLayout = new QHBoxLayout;
+	DaemonBox->addLayout(controldLayout);
 	spacer2 =  new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
-	stopDaemonButton = new QPushButton( this, "stopDaemonButton" );
-	stopDaemonButton->setDefault( FALSE );
+	controldLayout->addItem(spacer2);
+
+	startDaemonButton = new QPushButton( this);
+	startDaemonButton->setDefault( FALSE );
 	startDaemonButton->setText( tr( "Start &Daemon" ) );
-	startDaemonButton->setAccel( QKeySequence( tr( "Alt+D" ) ) );
+	controldLayout->addWidget(startDaemonButton);
+
+	stopDaemonButton = new QPushButton( this );
+	stopDaemonButton->setDefault( FALSE );
 	stopDaemonButton->setText( tr( "St&op Daemon" ) );
-	stopDaemonButton->setAccel( QKeySequence( tr( "Alt+O" ) ) );	
+	controldLayout->addWidget(stopDaemonButton);
 
-	box2 = new QHBox(this, "centralWidget");
-	box2->setSpacing(5);
-	configLabel = new QLabel( box2, "configLabel" );
-	configLabel->setText( tr( "Museek Daemon Config:" ) );
-	mMuseekConfig = new QLineEdit( box2, "mMuseekConfig" );
-	selectButton = new QPushButton( box2, "selectButton" );
-	selectButton->setText( tr( "Se&lect..." ) );
-	selectButton->setAccel( QKeySequence( tr( "Alt+L" ) ) );	
+	QHBoxLayout * DaemonButtonsLayout = new QHBoxLayout;
+	DaemonButtonsLayout->setSpacing(5);
+	DaemonBox->addLayout(DaemonButtonsLayout);
 
-	spacer3 =  new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
-	connectButton = new QPushButton( this, "connectButton" );
-	connectButton->setDefault( TRUE );
-	saveButton = new QPushButton( this, "saveButton" );
-	saveButton->setDefault( FALSE );
-	cancelButton = new QPushButton( this, "cancelButton" );
-	connectButton->setText( tr( "Co&nnect" ) );
-	connectButton->setAccel( QKeySequence( tr( "Alt+N" ) ) );
-	saveButton->setText( tr( "Save" ) );
-	saveButton->setAccel( QKeySequence( QString::null ) );
-	cancelButton->setText( tr( "&Cancel" ) );
-	cancelButton->setAccel( QKeySequence( tr( "Alt+C" ) ) );
-
-	box3 = new QHBox(this, "centralWidget");
-	box3->setSpacing(5);
-	mAutoStartDaemon = new QCheckBox( box3, "mAutoStartDaemon" );
-	mShutDownDaemonOnExit = new QCheckBox( box3, "mShutDownDaemonOnExit" );
+	mAutoStartDaemon = new QCheckBox( this);
 	mAutoStartDaemon->setText( tr( "&AutoStart Museek Daemon" ) );
-	mAutoStartDaemon->setAccel( QKeySequence( tr( "Alt+A" ) ) );
+	DaemonButtonsLayout->addWidget(mAutoStartDaemon);
+
+	mShutDownDaemonOnExit = new QCheckBox( this );
 	mShutDownDaemonOnExit->setText( tr( "S&hutDown Daemon on Exit" ) );
-	mShutDownDaemonOnExit->setAccel( QKeySequence( tr( "Alt+H" ) ) );
+	DaemonButtonsLayout->addWidget(mShutDownDaemonOnExit);
 
 
+	QHBoxLayout * ConfigLayout = new QHBoxLayout;
+	DaemonBox->addLayout(ConfigLayout);
+	ConfigLayout->setSpacing(5);
+	configLabel = new QLabel( this);
+	ConfigLayout->addWidget(configLabel);
+	configLabel->setText( tr( "Museek Daemon Config:\n(leave empty for default)" ) );
+	mMuseekConfig = new QLineEdit( this );
+	ConfigLayout->addWidget(mMuseekConfig);
+	selectButton = new QPushButton( this );
+	ConfigLayout->addWidget(selectButton);
+	selectButton->setText( tr( "Se&lect..." ) );
+
+	QSpacerItem * spacerFill =  new QSpacerItem( 0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding );
+	mainLayout->addItem(spacerFill);
 	extra = true;
+	connectLayout = new QHBoxLayout;
+	spacer3 =  new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
+	connectLayout->addItem(spacer3);
+	connectLayout->setSpacing(5);
+	connectLayout->setMargin(5);
+
+	mainLayout->addLayout(connectLayout);
+
+	connectButton = new QPushButton( this);
+	connectButton->setDefault( TRUE );
+	connectButton->setText( tr( "Co&nnect" ) );
+	connectLayout->addWidget(connectButton);
+
+	saveButton = new QPushButton( this );
+	saveButton->setText( tr( "Save" ) );
+	saveButton->setDefault( FALSE );
+	connectLayout->addWidget(saveButton);
+
+	cancelButton = new QPushButton( this );
+	cancelButton->setText( tr( "&Cancel" ) );
+	connectLayout->addWidget(cancelButton);
+
+
+	extraOptions();
 	// signals and slots connections
 	connect( connectButton, SIGNAL( clicked() ), this, SLOT( accept() ) );
 	connect( cancelButton, SIGNAL( clicked() ), this, SLOT( reject() ) );
@@ -125,43 +192,7 @@ ConnectDialog::ConnectDialog(QWidget *parent, const char *name)
 	connect( stopDaemonButton, SIGNAL( clicked() ), this, SLOT( stopDaemon() ) );
 	connect( saveButton, SIGNAL( clicked() ), this, SLOT( save() ) );
 	connect( clearButton, SIGNAL( clicked() ), this, SLOT( clearSockets() ) );
-	
-	setTabOrder( mPassword, mAutoStartDaemon );
-	setTabOrder( mAutoStartDaemon, connectButton );
-	setTabOrder( connectButton, cancelButton );
-	setTabOrder( cancelButton, mTCP );
-
-	extraLayout = new QHBoxLayout; 
-	extraLayout->addItem(spacer1); 
-	extraLayout->addWidget(mExtra); 
-
-	controldLayout = new QHBoxLayout; 
-	controldLayout->addWidget(startDaemonButton); 
-	controldLayout->addItem(spacer2); 
-	controldLayout->addWidget(stopDaemonButton); 
-
-	connectLayout = new QHBoxLayout; 
-	connectLayout->addItem(spacer3); 
-	connectLayout->addWidget(connectButton); 
-	connectLayout->addWidget(saveButton);
-	connectLayout->addWidget(cancelButton);
-
-	QVBoxLayout *leftLayout = new QVBoxLayout; 
-	leftLayout->addWidget(boxsd); 
-
-	leftLayout->addLayout(extraLayout);
-	leftLayout->addWidget(box3); 
-	leftLayout->addLayout(controldLayout);
-	leftLayout->addWidget(box2); 
-
-	leftLayout->addLayout(connectLayout); 
- 	QHBoxLayout *mainLayout = new QHBoxLayout(this); 
- 	mainLayout->setMargin(11); 
- 	mainLayout->setSpacing(6); 
- 	mainLayout->addLayout(leftLayout); 
-	extraOptions();
-
-} 
+}
 
 // below be dragons
 void ConnectDialog::startDaemon()
@@ -171,22 +202,22 @@ void ConnectDialog::startDaemon()
 
 void ConnectDialog::clearSockets()
 {
-    mAddress->clear();
+	mAddress->clear();
 }
 
 void ConnectDialog::extraOptions()
-{	
+{
 	if ( extra) {
-		box2->hide();
-		box3->hide();
-		startDaemonButton->hide();
-		stopDaemonButton->hide();
+
+		DaemonItems->hide();
+		mExtra->setDown(false);
+		resize( QSize( 500, 200 ) );
 		extra = false;
 	} else {
-		box2->show();
-		box3->show();
-		startDaemonButton->show();
-		stopDaemonButton->show();
+
+		DaemonItems->show();
+		mExtra->setDown(true);
+		resize( QSize( 500, 300 ) );
 		extra = true;
 	}
 }
@@ -194,14 +225,14 @@ void ConnectDialog::extraOptions()
 void ConnectDialog::selectConfig()
 {
     QDir dir = QDir::home();
-    QFileDialog * fd = new QFileDialog(dir.path()+"/.museekd", "Museek Daemon Config (*.xml)", this);
-    fd->setCaption("Select a Museek Daemon Config File");
-    fd->setMode(QFileDialog::ExistingFile);
-    if(fd->exec() == QDialog::Accepted && ! fd->selectedFile().isEmpty())
+    QFileDialog * fd = new QFileDialog(this, dir.path()+"/.museekd", "Museek Daemon Config (*.xml)");
+    fd->setWindowTitle("Select a Museek Daemon Config File");
+    fd->setFileMode(QFileDialog::ExistingFile);
+    if(fd->exec() == QDialog::Accepted && ! fd->selectedFiles().isEmpty())
     {
-	mMuseekConfig->setText(fd->selectedFile());
+	mMuseekConfig->setText(fd->selectedFiles().at(0));
     }
-    
+
     delete fd;
 }
 
@@ -210,8 +241,6 @@ void ConnectDialog::stopDaemon()
 {
   museeq->stopDaemon();
 }
-
-
 
 
 void ConnectDialog::save()

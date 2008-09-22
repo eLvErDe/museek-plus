@@ -20,7 +20,7 @@
 #ifndef IMAGES_H
 #define IMAGES_H
 
-#include <qpixmap.h>
+class QPixmap;
 
 QPixmap& IMG(const QString& icon);
 

@@ -22,43 +22,45 @@
 
 #include "museeqtypes.h"
 
-#include <qvbox.h>
+#include <QWidget>
 
 class UserListView;
 class ChatPanel;
 class QTextEdit;
 class ChatTicker;
-class QShowEvent;
 class QCheckBox;
 
-class ChatRoom : public QVBox {
+class ChatRoom : public QWidget {
 	Q_OBJECT
 public:
-	ChatRoom(const char *, QWidget * = 0, const char * = 0);
-	
+	ChatRoom(const QString, QWidget * = 0, const QString = "ChatRoom");
+
 	QString room() const;
-	
+	int highlighted() const {return mHighlight;};
+
 public slots:
 	// Somebody said something
 	void append(const QString&, const QString&);
-	
+
 	// Userlist slots
 	void setUsers(const NRoom&);
 	void userJoined(const QString&, int, unsigned int, unsigned int);
 	void userLeft(const QString&);
-	
+
 	// Tickers
 	void setUserTicker(const QString&, const QString&);
 	void setUserTicker(const NTickers&);
 	void showThisTicker();
 	void hideThisTicker();
-	
+	void updateTickers(uint);
+	void setHighlighted(int newH) {mHighlight = newH;};
+
 signals:
 	void encodingChanged(const QString&, const QString&);
 	void autoJoin(const QString&, bool);
-	
-	void highlight(int);
-	
+
+	void highlight(int, QWidget*);
+
 protected slots:
 	void setNickname(const QString&);
 	void slotAutoJoin(bool);
@@ -68,8 +70,8 @@ protected slots:
 	void setTicker();
 	void logMessage(const QString& , const QString& );
 	void logMessage(uint, const QString&, const QString&);
-	
 private:
+	int mHighlight;
 	QString mRoom, mNickname;
 	QTextEdit *mLog;
 	UserListView *mUserList;

@@ -4,20 +4,20 @@ file:     string_ext.hh
 version:  2003-09-30
 author:   Steffen Brinkmann <subcom AT users.sourceforge.net>
 license:  GPL
-contents: inline int split(const string &src, 
-                           list<string> &dest, 
+contents: inline int split(const string &src,
+                           list<string> &dest,
                            const string delims=" \t\n")
-          inline int split(const string &src, 
-                           vector<string> &dest, 
+          inline int split(const string &src,
+                           vector<string> &dest,
                            const string delims=" \t\n")
-          inline int split(const string &src, 
-                           vector<double> &dest, 
+          inline int split(const string &src,
+                           vector<double> &dest,
                            const string delims=" \t\n")
-          inline int split(const string &src, 
-                           vector<int> &dest, 
+          inline int split(const string &src,
+                           vector<int> &dest,
                            const string delims=" \t\n")
-          inline string toupper(const string& s) 
-          inline string tolower(const string& s) 
+          inline string toupper(const string& s)
+          inline string tolower(const string& s)
           inline string itos(const int i)
 
 comment:  The split funcions are inspired by the perl function of this name.
@@ -29,15 +29,15 @@ comment:  The split funcions are inspired by the perl function of this name.
 
           itos(..) replaces the function itoa() which is not implemented
           in all libraries.
-          It uses a stringstream to convert a int to a string as 
-          implemented by Bjarne Stroustrup in his C++ Style and Technique FAQ 
+          It uses a stringstream to convert a int to a string as
+          implemented by Bjarne Stroustrup in his C++ Style and Technique FAQ
           <http://www.research.att.com/~bs/bs_faq2.html>
-          
+
           All functions are inlined so you don't have to explicitely compile
           this file. Just include it into your application.
           Download the source from http://lsw.uni-heidelberg.de/users/sbrinkma/cpp/string_ext.hh
           Comments and suggestions are welcome!
-          
+
 Hyriand (2004-02-20): added str_replace
 
 ******************************************************************/
@@ -53,11 +53,12 @@ Hyriand (2004-02-20): added str_replace
 #include <cstdlib>
 
 // Split a string into a list of strings
-inline unsigned int split(const std::string &src, 
-		 std::list<std::string> &dest, 
+inline unsigned int split(const std::string &src,
+		 std::list<std::string> &dest,
 		 const std::string delims=" \t\n")
 {
-    unsigned int i=0,j=0,n=0;
+ 	unsigned int n=0;
+ 	size_t i=0,j=0;
 
     while(j!=std::string::npos)
     {
@@ -71,11 +72,12 @@ inline unsigned int split(const std::string &src,
 }
 
 // Split a string into a vector of strings
-inline unsigned int split(const std::string &src, 
-		 std::vector<std::string> &dest, 
+inline unsigned int split(const std::string &src,
+		 std::vector<std::string> &dest,
 		 const std::string delims=" \t\n")
 {
-    unsigned int i=0,j=0,n=0;
+ 	unsigned int n=0;
+ 	size_t i=0,j=0;
 
     while(j!=std::string::npos)
     {
@@ -89,11 +91,12 @@ inline unsigned int split(const std::string &src,
 }
 
 // Split a string into a vector of doubles
-inline unsigned int split(const std::string &src, 
-		 std::vector<double> &dest, const 
+inline unsigned int split(const std::string &src,
+		 std::vector<double> &dest, const
 		 std::string delims=" \t\n")
 {
-    unsigned int i=0,j=0,n=0;
+ 	unsigned int n=0;
+ 	size_t i=0,j=0;
 
     while(j!=std::string::npos)
     {
@@ -107,11 +110,13 @@ inline unsigned int split(const std::string &src,
 }
 
 // Split a string into a vector of ints
-inline unsigned int split(const std::string &src, 
-		 std::vector<int> &dest, 
+inline unsigned int split(const std::string &src,
+		 std::vector<int> &dest,
 		 const std::string delims=" \t\n")
 {
-    unsigned int i=0,j=0,n=0;
+ 	unsigned int n=0;
+ 	size_t i=0, j=0;
+
     while(j!=std::string::npos)
     {
 	i=src.find_first_not_of(delims,j);
@@ -124,7 +129,7 @@ inline unsigned int split(const std::string &src,
 }
 
 // Make an uppercase copy of s
-inline std::string toupper(const std::string& s) 
+inline std::string toupper(const std::string& s)
 {
   std::string upper(s);
   for(size_t i=0; i<s.length(); i++)
@@ -133,7 +138,7 @@ inline std::string toupper(const std::string& s)
 }
 
 // Make a lowercase copy of s
-inline std::string tolower(const std::string& s) 
+inline std::string tolower(const std::string& s)
 {
   std::string lower(s);
   for(size_t i=0; i<s.length(); i++)

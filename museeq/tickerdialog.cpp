@@ -1,14 +1,30 @@
+/* museeq - a Qt client to museekd
+ *
+ * Copyright (C) 2003-2004 Hyriand <hyriand@thegraveyard.org>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 
 #include "tickerdialog.h"
 
-#include <qvariant.h>
-#include <qbuttongroup.h>
-#include <qradiobutton.h>
-#include <qlineedit.h>
-#include <qpushbutton.h>
-#include <qlayout.h>
-#include <qtooltip.h>
-#include <qwhatsthis.h>
+#include <QRadioButton>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QGroupBox>
+#include <QLayout>
+
 
 /*
  *  Constructs a TickerDialog as a child of 'parent', with the
@@ -17,63 +33,60 @@
  *  The dialog will by default be modeless, unless you set 'modal' to
  *  TRUE to construct a modal dialog.
  */
-TickerDialog::TickerDialog( QWidget* parent, const char* name, bool modal, WFlags fl )
-    : QDialog( parent, name, modal, fl )
+TickerDialog::TickerDialog( QWidget* parent, const char* name, bool modal, Qt::WFlags fl )
+	: QDialog( parent )
 {
-    if ( !name )
-	setName( "TickerDialog" );
-    setSizePolicy( QSizePolicy( (QSizePolicy::SizeType)0, (QSizePolicy::SizeType)0, 0, 0, sizePolicy().hasHeightForWidth() ) );
-    setMinimumSize( QSize( 400, 0 ) );
-    TickerDialogLayout = new QVBoxLayout( this, 11, 6, "TickerDialogLayout"); 
 
-    buttonGroup1 = new QButtonGroup( this, "buttonGroup1" );
-    buttonGroup1->setColumnLayout(0, Qt::Vertical );
-    buttonGroup1->layout()->setSpacing( 6 );
-    buttonGroup1->layout()->setMargin( 11 );
-    buttonGroup1Layout = new QGridLayout( buttonGroup1->layout() );
-    buttonGroup1Layout->setAlignment( Qt::AlignTop );
+	setMinimumSize( QSize( 400, 150 ) );
+	TickerDialogLayout = new QVBoxLayout( this);
 
-    mThisTime = new QRadioButton( buttonGroup1, "mThisTime" );
-    mThisTime->setEnabled( TRUE );
-    mThisTime->setChecked( TRUE );
+	buttonGroup1 = new QGroupBox( this );
 
-    buttonGroup1Layout->addWidget( mThisTime, 0, 1 );
 
-    mAlways = new QRadioButton( buttonGroup1, "mAlways" );
-    mAlways->setEnabled( TRUE );
+	TickerDialogLayout->addWidget(buttonGroup1);
+	buttonGroup1Layout = new QGridLayout;
+	buttonGroup1->setLayout(buttonGroup1Layout);
+	buttonGroup1Layout->setAlignment( Qt::AlignTop );
 
-    buttonGroup1Layout->addWidget( mAlways, 1, 1 );
+	mMessage = new QLineEdit( this );
+	buttonGroup1Layout->addWidget( mMessage, 0, 0 );
 
-    mDefault = new QRadioButton( buttonGroup1, "mDefault" );
-    mDefault->setEnabled( TRUE );
+	mThisTime = new QRadioButton( this);
+	mThisTime->setEnabled( TRUE );
+	mThisTime->setChecked( TRUE );
 
-    buttonGroup1Layout->addWidget( mDefault, 2, 1 );
-    spacer1 = new QSpacerItem( 20, 51, QSizePolicy::Minimum, QSizePolicy::Expanding );
-    buttonGroup1Layout->addMultiCell( spacer1, 1, 2, 0, 0 );
+	buttonGroup1Layout->addWidget( mThisTime, 0, 1 );
 
-    mMessage = new QLineEdit( buttonGroup1, "mMessage" );
+	mAlways = new QRadioButton( mThisTime );
+	mAlways->setEnabled( TRUE );
 
-    buttonGroup1Layout->addWidget( mMessage, 0, 0 );
-    TickerDialogLayout->addWidget( buttonGroup1 );
+	buttonGroup1Layout->addWidget( mAlways, 1, 1 );
 
-    layout1 = new QHBoxLayout( 0, 0, 6, "layout1"); 
-    spacer2 = new QSpacerItem( 121, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
-    layout1->addItem( spacer2 );
+	mDefault = new QRadioButton( mThisTime );
+	mDefault->setEnabled( TRUE );
 
-    mCancel = new QPushButton( this, "mCancel" );
-    layout1->addWidget( mCancel );
+	buttonGroup1Layout->addWidget( mDefault, 2, 1 );
+	spacer1 = new QSpacerItem( 20, 51, QSizePolicy::Minimum, QSizePolicy::Expanding );
+	buttonGroup1Layout->addItem( spacer1, 1, 2, 1, 1 );
 
-    pushButton1 = new QPushButton( this, "pushButton1" );
-    pushButton1->setDefault( TRUE );
-    layout1->addWidget( pushButton1 );
-    TickerDialogLayout->addLayout( layout1 );
-    languageChange();
-    resize( QSize(400, 152).expandedTo(minimumSizeHint()) );
-    clearWState( WState_Polished );
 
-    // signals and slots connections
-    connect( pushButton1, SIGNAL( clicked() ), this, SLOT( accept() ) );
-    connect( mCancel, SIGNAL( clicked() ), this, SLOT( reject() ) );
+	layout1 = new QHBoxLayout;
+	spacer2 = new QSpacerItem( 121, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
+	layout1->addItem( spacer2 );
+
+	mCancel = new QPushButton( this );
+	layout1->addWidget( mCancel );
+
+	mOk = new QPushButton( this );
+	mOk->setDefault( TRUE );
+	layout1->addWidget( mOk );
+	TickerDialogLayout->addLayout( layout1 );
+	languageChange();
+	resize( QSize(400, 152).expandedTo(minimumSizeHint()) );
+
+	// signals and slots connections
+	connect( mOk, SIGNAL( clicked() ), this, SLOT( accept() ) );
+	connect( mCancel, SIGNAL( clicked() ), this, SLOT( reject() ) );
 }
 
 /*
@@ -81,7 +94,7 @@ TickerDialog::TickerDialog( QWidget* parent, const char* name, bool modal, WFlag
  */
 TickerDialog::~TickerDialog()
 {
-    // no need to delete child widgets, Qt does it all for us
+// no need to delete child widgets, Qt does it all for us
 }
 
 /*
@@ -90,14 +103,14 @@ TickerDialog::~TickerDialog()
  */
 void TickerDialog::languageChange()
 {
-    setCaption( tr( "Set ticker..." ) );
-    buttonGroup1->setTitle( tr( "Set ticker to:" ) );
-    mThisTime->setText( tr( "Just this time" ) );
-    mAlways->setText( tr( "Always for this room" ) );
-    mDefault->setText( tr( "Default for all rooms" ) );
-    mCancel->setText( tr( "&Cancel" ) );
-    mCancel->setAccel( QKeySequence( tr( "Alt+C" ) ) );
-    pushButton1->setText( tr( "&OK" ) );
-    pushButton1->setAccel( QKeySequence( tr( "Alt+O" ) ) );
+	setWindowTitle( tr( "Set ticker..." ) );
+	buttonGroup1->setTitle( tr( "Set ticker to:" ) );
+	mThisTime->setText( tr( "Just this time" ) );
+	mAlways->setText( tr( "Always for this room" ) );
+	mDefault->setText( tr( "Default for all rooms" ) );
+	mCancel->setText( tr( "&Cancel" ) );
+
+	mOk->setText( tr( "&OK" ) );
+
 }
 

@@ -17,34 +17,33 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "privatechat.h"
-#include "privatechats.h"
-#include <qcheckbox.h>
-#include <qdatetime.h>
-#include <qtextedit.h>
-#include <qdir.h>
-#include <qfile.h>
-#include "codeccombo.h"
-#include "chatpanel.h"
 #include "museeq.h"
 #include "mainwin.h"
 #include "aclineedit.h"
+#include "privatechat.h"
+#include "privatechats.h"
+#include "codeccombo.h"
+#include "chatpanel.h"
+
+#include <QDateTime>
+#include <QDir>
+#include <QFile>
+#include <QTextStream>
+
+#define _TIME QString("<span style='"+museeq->mFontTime+";color:"+museeq->mColorTime+"'>") + QDateTime::currentDateTime().toString("hh:mm:ss") + "</span> "
+
+#define _TIMES QDateTime::currentDateTime().toTime_t ()
 
 PrivateChat::PrivateChat(const QString& _t, QWidget* _p, const char* _n)
             : UserWidget(_t, _p, _n) {
-	
-	mChatPanel = new ChatPanel(QString::null, this, "panel");
+	MainLayout = new QVBoxLayout(this);
+	mChatPanel = new ChatPanel(QString::null, this);
+	MainLayout->addWidget(mChatPanel);
 	connect(mChatPanel, SIGNAL(send(const QString&)), this, SLOT(slotSend(const QString&)));
 	mStatus = 3;
-	new CodecCombo("encoding.users", user(), mChatPanel->box(), "encoding");
-	
+	mChatPanel->boxLayout()->addWidget(new CodecCombo("encoding.users", user(), mChatPanel->box(), "encoding"));
+
 }
-
-#define escape QStyleSheet::escape
-
-#define _TIME QString("<span style='"+museeq->mFontTime+"'><font color='"+museeq->mColorTime+"'>") + QDateTime::currentDateTime().toString("hh:mm:ss") + "</font></span> "
-
-#define _TIMES QDateTime::currentDateTime().toTime_t ()
 
 void PrivateChat::status(const QString& _u, uint _s) {
 	if (_s == mStatus)
@@ -52,7 +51,7 @@ void PrivateChat::status(const QString& _u, uint _s) {
 	else
 		mStatus = _s;
 	if (! museeq->isIgnored(_u)) {
-		QString l = ""; 
+		QString l = "";
 
 		if(_s == 0)
 			l += tr("%1 is offline").arg(_u);
@@ -60,9 +59,8 @@ void PrivateChat::status(const QString& _u, uint _s) {
 			l += tr("%1 is away").arg(_u);
 		else if(_s == 2)
 			l += tr("%1 is online").arg(_u);
-		if (_s == 0 || _s == 1 || _s == 2)
-			mChatPanel->append(_TIMES,  l);
 
+		mChatPanel->append(_TIMES,  l);
 	}
 }
 
@@ -70,7 +68,11 @@ void PrivateChat::append(uint dir, uint ts, const QString& _u, const QString& _l
 	if(dir == 0)
 	{
 		mChatPanel->append(ts, _u, _l);
-		emit highlight(1);
+
+		if (_l.contains(museeq->nickname()))
+			emit highlight(2);
+		else
+			emit highlight(1);
 		logMessage(_u, ts, _u, _l);
 	}
 	else if (dir == 1)
@@ -79,6 +81,7 @@ void PrivateChat::append(uint dir, uint ts, const QString& _u, const QString& _l
 		logMessage(_u, ts, museeq->nickname(), _l);
 	}
 }
+
 /* Write add local timestamp to chat message before writing to disk */
 void PrivateChat::logMessage(const QString& user, const QString& speaker, const QString& _l) {
 
@@ -89,26 +92,26 @@ void PrivateChat::logMessage(const QString& user, uint ts, const QString& speake
 	if (! museeq->mLogPrivate) {
 		return;
 	}
-	if (! museeq->mPrivateLogDir.isEmpty() and QDir(museeq->mPrivateLogDir).exists() )
-	{
+	if (! museeq->mPrivateLogDir.isEmpty() and QDir(museeq->mPrivateLogDir).exists() ) {
 		QFile logfile ( museeq->mPrivateLogDir+"/"+user);
-		if (! logfile.open(IO_WriteOnly | IO_Append))
-		{
+		if (! logfile.open(QIODevice::WriteOnly | QIODevice::Append)) {
 			museeq->output(QString("Write Error: could not write to: " +museeq->mPrivateLogDir+"/"+user));
 			return;
 		}
 		QDateTime _t;
 		_t.setTime_t(ts);
 		QTextStream textstream( &logfile );
-		textstream << _t.toString() << " [" << speaker << "]\t" << _l << endl;
+		textstream << _t.toString() << " [" << speaker << "]\t" << _l << "\n";
 		logfile.close();
+	} else {
+		museeq->output(QString("Write Error: directory doesn't exist: " +museeq->mPrivateLogDir+"/"));
 	}
 }
 
 void PrivateChat::slotSend(const QString& line_) {
 	QString line = line_;
 	if (! line.isEmpty()) {
-		
+
 		if(line.startsWith("//")) {
 			line = line.mid(1);
 		} else if(line[0] == '/') {
@@ -116,11 +119,11 @@ void PrivateChat::slotSend(const QString& line_) {
 			QString cmd("");
 			if(line.length() > 1)
 			{
-				s = QStringList::split(' ', line.mid(1));
-				cmd = s[0].lower();
+				s = line.mid(1).split(' ', QString::KeepEmptyParts);
+				cmd = s[0].toLower();
 				s.pop_front();
 			}
-			
+
 			if(cmd == "me") {
 				museeq->sayPrivate(user(), line);
 				mChatPanel->append(QString::null, line);
@@ -184,17 +187,16 @@ void PrivateChat::slotSend(const QString& line_) {
 				museeq->mainwin()->changeSettings();
 			else if(cmd == "log")
 				museeq->mainwin()->toggleLog();
-			else if(cmd == "ticker" || cmd == "tickers" || cmd == "t") 
+			else if(cmd == "ticker" || cmd == "tickers" || cmd == "t")
 				museeq->mainwin()->toggleTickers();
-			else if(cmd == "colors" || cmd == "fonts" || cmd == "c" || cmd == "f") 
+			else if(cmd == "colors" || cmd == "fonts" || cmd == "c" || cmd == "f")
 				museeq->mainwin()->changeColors();
 			else
 				mChatPanel->entry()->setText(line);
 			return;
-			}	
+			}
 		museeq->sayPrivate(user(), line);
 		logMessage(user(), museeq->nickname(), line);
 		mChatPanel->append(QString::null, line);
 	}
 }
-

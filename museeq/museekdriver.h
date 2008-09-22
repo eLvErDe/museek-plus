@@ -20,12 +20,11 @@
 #ifndef MUSEEKDRIVER_H
 #define MUSEEKDRIVER_H
 
-#include <qobject.h>
-#include <qsocket.h>
-
 #include "museeqtypes.h"
 
-typedef Q_UINT32 uint32;
+#include <QObject>
+#include <QtNetwork/QTcpSocket>
+
 #include <Mucipher/mucipher.h>
 
 class MuseekMessage;
@@ -34,16 +33,16 @@ class MuseekDriver : public QObject {
 	Q_OBJECT
 public:
 	MuseekDriver(QObject* = 0, const char* = 0);
-	
-	void connectToHost(const QString&, Q_UINT16, const QString&);
+
+	void connectToHost(const QString&, quint16, const QString&);
 	void connectToUnix(const QString& path, const QString& password);
-	
+
 signals:
 	void hostFound();
 	void connected();
 	void connectionClosed();
-	void error(int);
-	
+	void error(QAbstractSocket::SocketError);
+
 	void loggedIn(bool, const QString&);
 	void privilegesLeft(uint);
 	void statusSet(uint);
@@ -85,10 +84,10 @@ signals:
 	void configState(const QMap<QString, QMap<QString, QString> >&);
 	void configSet(const QString&, const QString&, const QString&);
 	void configRemove(const QString&, const QString&);
-	
+
 public slots:
 	void disconnect();
-	
+
 	void checkPrivileges();
 	void setStatus(uint);
 	void getRoomList();
@@ -117,9 +116,11 @@ public slots:
 	void getUserInfo(const QString&);
 	void getUserShares(const QString&);
 	void givePrivileges(const QString&, uint);
-	void doDownloadFile(const QString&, const QString&, Q_INT64);
-	void doDownloadFileTo(const QString&, const QString&, const QString&, Q_INT64);
+	void doDownloadFile(const QString&, const QString&, qint64);
+	void doDownloadFileTo(const QString&, const QString&, const QString&, qint64);
 	void getFolderContents(const QString&, const QString&);
+	void doDownloadFolderTo(const QString&, const QString&, const QString&);
+	void doUploadFolder(const QString&, const QString&);
 	void doUploadFile(const QString&, const QString&);
 	void getUserExists(const QString&);
 	void getUserStatus(const QString&);
@@ -132,7 +133,7 @@ public slots:
 	void setUserImage(const QByteArray&);
 	void updateTransfer(const QString&, const QString&);
 	void setTicker(const QString&, const QString&);
-	
+
 protected:
 	void send(const MuseekMessage&);
 
@@ -140,7 +141,7 @@ protected slots:
 	void dataReady();
 
 private:
-	QSocket* mSocket;
+	QTcpSocket* mSocket;
 	bool mHaveSize;
 	uint mMsgSize;
 	QString mPassword;

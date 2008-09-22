@@ -1,6 +1,9 @@
 project(Muhelp CXX)
 
-find_package(libxml++ REQUIRED)
+INCLUDE(FindPkgConfig REQUIRED)
+
+pkg_search_module(LIBXMLPP "libxml++-2.6")
+
 ADD_DEFINITIONS(${LIBXMLPP_CFLAGS})
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BUILD_DIR})

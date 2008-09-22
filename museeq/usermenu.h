@@ -20,22 +20,32 @@
 #ifndef USERMENU_H
 #define USERMENU_H
 
-#include <qpopupmenu.h>
+#include <QMenu>
 
-class Usermenu : public QPopupMenu {
+class Usermenu : public QMenu {
 	Q_OBJECT
 public:
 	Usermenu(QWidget* = 0, const char* = 0);
 	QString user() const;
 	void setup(const QString&);
-	
+	QAction * ActionPrivate, * ActionUserInfo, * ActionUserShares, * ActionGivePrivileges, * ActionBuddy, * ActionBan, * ActionTrust, * ActionIgnore, * ActionIp, * ActionAlert, * ActionComments;
 public slots:
 	void exec(const QString&);
 	void exec(const QString&, const QPoint&);
 
 protected slots:
-	void slotActivated(int id);
-	
+	void slotPrivateChat();
+	void slotUserInfo();
+	void slotBrowser();
+	void slotBuddy();
+	void slotTrusted();
+	void slotBanned();
+	void slotIgnored();
+	void slotIP();
+	void slotAlert();
+	void slotPrivileges();
+	void slotComments();
+
 private:
 	QString mUser;
 };

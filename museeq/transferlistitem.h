@@ -20,18 +20,18 @@
 #ifndef TRANSFERLISTITEM_H
 #define TRANSFERLISTITEM_H
 
-#include <qlistview.h>
 #include "museeqtypes.h"
 
-class TransferListItem : public QListViewItem {
+#include <QTreeWidget>
+
+class TransferListItem : public QTreeWidgetItem {
 public:
-	TransferListItem(QListView*, const QString&, const QString& = QString::null);
-	TransferListItem(QListViewItem*, const QString&, const QString&);
-	
-	int compare(QListViewItem *, int, bool) const;
-	
+	TransferListItem(QTreeWidget*, const QString&, const QString& = QString::null);
+	TransferListItem(QTreeWidgetItem*, const QString&, const QString&);
+
+	int compare(QTreeWidgetItem *, int, bool) const;
+
 	void update(const NTransfer&);
-	void remove(const QString&);
 	void updateStats();
 
 	const uint getSeparation() const { return separation; }
@@ -41,19 +41,19 @@ public:
 	QString path() const;
 	uint state() const;
 	QString error() const;
-	Q_INT64 position() const;
-	Q_INT64 size() const;
+	qint64 position() const;
+	qint64 size() const;
 	uint rate() const;
-	void paintCell(QPainter *, const QColorGroup &, int, int, int);
+	bool operator<(const QTreeWidgetItem & other) const;
 
 protected:
 	void updatePath();
 	void update(const NTransfer&, bool);
-	
+
 private:
 	uint mState, mRate, mPlaceInQueue;
 	QString mUser, mPath, mError;
-	Q_INT64 mPosition, mSize;
+	qint64 mPosition, mSize;
 	uint separation;
 };
 

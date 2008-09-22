@@ -1,18 +1,24 @@
 project(museek-plus)
 
+cmake_minimum_required(VERSION 2.6.0)
+
 # Include some cmake checks.
 include(CheckIncludeFiles)
 include(CheckTypeSize)
 include(CheckFunctionExists)
 include(CheckLibraryExists)
 include(CheckCXXSourceCompiles)
+
 SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 MESSAGE("DECLARATIONS: PREFIX (/usr), MANDIR (PREFIX/man)
 Package options: EVERYTHING, NO_MUSEEKD, NO_MUSCAN, NO_SETUP, NO_MUSEEQ, NO_PYMUCIPHER, BINDINGS, MURMUR, MUCOUS, CLIENTS
-Museeq options: BINRELOC, DATADIR (PREFIX/share), TRAYICON
+Museeq options: BINRELOC, DATADIR (PREFIX/share), RELOAD_TRANSLATIONS
 Museekd options MULOG (debug and status messages), MULOG_CALLTRACE MULOG_TT MULOG_CYCLE
 Prefix these declarations with -D and set them with either 1, 0 or a path.
 Set -DEVERYTHING=1 if you want it all")
+
+# Enable NewNet's smart-pointer debugging capabilities.
+add_definitions(-DNN_PTR_DEBUG -DNN_PTR_DEBUG_ASSERT)
 
 IF(PREFIX)
   SET(CMAKE_INSTALL_PREFIX ${PREFIX})
@@ -90,9 +96,6 @@ IF (EVERYTHING)
   set(C_MUSCAN 1)
   set(C_MUSEEQ 1)
 ENDIF (EVERYTHING)
-
-# # Enable NewNet's smart-pointer debugging capabilities.
-# add_definitions(-DNN_PTR_DEBUG -DNN_PTR_DEBUG_ASSERT)
 
 # Add top source directory to the include path.
 include_directories(.)
@@ -212,25 +215,6 @@ endif (NOT SIGNAL_TYPE)
 # Clean up after iconv tests.
 set(CMAKE_REQUIRED_LIBRARIES)
 
-# Check for FAM
-check_include_files(fam.h FAM_H)
-if(NOT FAM_H)
-  MESSAGE(STATUS "Could not find fam.h.")
-endif(NOT FAM_H)
-
-find_library(FAM_LIBRARIES NAMES fam PATHS /usr/lib /usr/local/lib)
-if(NOT FAM_LIBRARIES)
-  message(STATUS "Couldn't find fam library.")
-endif(NOT FAM_LIBRARIES)
-
-if (FAM_LIBRARIES AND FAM_H)
-  message(STATUS "FAM found at ${FAM_LIBRARIES}. muscand will be compiled")
-  set(HAVE_FAM_H 1)
-else (FAM_LIBRARIES AND FAM_H)
-  message(STATUS "FAM not supported. muscand will not be compiled")
-  set(HAVE_FAM_H 0)
-endif (FAM_LIBRARIES AND FAM_H)
-
 set(INCLUDE_HEAD "")
 if (HAVE_DIRENT_H)
    set(INCLUDE_HEAD  "${INCLUDE_HEAD}#include <dirent.h>\n")
@@ -283,30 +267,34 @@ endif (NOT HAVE_STDLIB_H)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/system.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/system.h)
 # Add -DHAVE_CONFIG_H.
 add_definitions(-DHAVE_SYSTEM_H)
+
+# Process config.h.cmake to config.h.
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+# Add -DHAVE_CONFIG_H.
+add_definitions(-DHAVE_CONFIG_H)
 # Make sure config.h can be found.
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
+# Set up new net libraries variable.
+set(NEWNET_LIBRARIES NewNet)
+if(WIN32 AND NOT CYGWIN)
+  set(NEWNET_LIBRARIES ${NEWNET_LIBRARIES} wsock32)
+endif(WIN32 AND NOT CYGWIN)
 
 # Where the wild things are...
 
+add_subdirectory(NewNet)
 add_subdirectory(Mucipher)
-if (PYMUCIPHER)
-  add_subdirectory(PyMucipher)
-else (PYMUCIPHER)
-  MESSAGE("!!! PyMucipher will NOT be installed.. [NO_PYMUCIPHER=0]")
-endif (PYMUCIPHER)
 if (C_MUSCAN)
   add_subdirectory(Muhelp)
-  add_subdirectory(Tools)
+  add_subdirectory(muscan)
 else (C_MUSCAN)
-  message("!!! museekd will NOT be installed [NO_MUSEEKD=0]")
+  message("!!! muscan will NOT be installed [NO_MUSCAN=0]")
 endif (C_MUSCAN)
 if (C_MUSEEKD)
   if (NOT C_MUSCAN)
     add_subdirectory(Muhelp)
   endif (NOT C_MUSCAN)
-  add_subdirectory(Museekal)
-  add_subdirectory(Museek)
   add_subdirectory(museekd)
 else (C_MUSEEKD)
   message("!!! museekd will NOT be installed [NO_MUSEEKD=0]")
@@ -341,3 +329,4 @@ if (C_MUSEEQ)
 else (C_MUSEEQ)
   message("!!! museeq will NOT be installed [NO_MUSEEQ=0]")
 endif (C_MUSEEQ)
+

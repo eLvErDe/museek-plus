@@ -21,111 +21,149 @@
 #include "museeq.h"
 #include "mainwin.h"
 #include "images.h"
-Usermenu::Usermenu(QWidget* parent, const char* name)
-         : QPopupMenu(parent, name) {
-	
-	setCheckable(true);
-	insertItem(IMG("privatechat-small"), tr("Private chat"), (int)0);
-	insertItem(IMG("userinfo-small"), tr("Get user info"), (int)1);
-	insertItem(IMG("browser-small"), tr("Get user shares"), (int)2);
-	insertItem(IMG("privileges"), tr("Give Soulseek privileges"), (int)9);
-	insertSeparator();
-	insertItem(tr("Buddy"), (int)3);
-	insertItem(tr("Trusted"), (int)4);
-	insertItem(tr("Banned"), (int)5);
-	insertItem(tr("Ignored"), (int)6);
-	insertSeparator();
-	insertItem(IMG("ip"), tr("Show IP"), (int)7);
-	insertSeparator();
-	insertItem(IMG("alert"), tr("Online alert"), (int)8);
-	insertItem(IMG("comments"), tr("Edit Comments"), (int) 10);
 
-	connect(this, SIGNAL(activated(int)), SLOT(slotActivated(int)));
+Usermenu::Usermenu(QWidget* parent, const char* name)
+         : QMenu(parent) {
+
+	ActionPrivate = new QAction(IMG("privatechat-small"), tr("Private chat"), this);
+	connect(ActionPrivate, SIGNAL(triggered()), this, SLOT(slotPrivateChat()));
+	addAction(ActionPrivate);
+
+	ActionUserInfo = new QAction(IMG("userinfo-small"), tr("Get user info"), this);
+	connect(ActionUserInfo, SIGNAL(triggered()), this, SLOT(slotUserInfo()));
+	addAction(ActionUserInfo);
+
+	ActionUserShares = new QAction(IMG("browser-small"), tr("Get user shares"), this);
+	connect(ActionUserShares, SIGNAL(triggered()), this, SLOT(slotBrowser()));
+	addAction(ActionUserShares);
+
+	ActionGivePrivileges = new QAction(IMG("privileges"), tr("Give Soulseek privileges"), this);
+	connect(ActionGivePrivileges, SIGNAL(triggered()), this, SLOT(slotPrivileges()));
+	addAction(ActionGivePrivileges);
+	addSeparator();
+	ActionBuddy = new QAction(tr("Buddy"), this);
+	ActionBuddy->setCheckable(true);
+	connect(ActionBuddy, SIGNAL(triggered()), this, SLOT(slotBuddy()));
+	addAction(ActionBuddy);
+
+	ActionTrust = new QAction(tr("Trusted"), this);
+	ActionTrust->setCheckable(true);
+	connect(ActionTrust, SIGNAL(triggered()), this, SLOT(slotTrusted()));
+	addAction(ActionTrust);
+
+	ActionBan = new QAction(tr("Banned"), this);
+	ActionBan->setCheckable(true);
+	connect(ActionBan, SIGNAL(triggered()), this, SLOT(slotBanned()));
+	addAction(ActionBan);
+
+	ActionIgnore = new QAction(tr("Ignored"), this);
+	ActionIgnore->setCheckable(true);
+	connect(ActionIgnore, SIGNAL(triggered()), this, SLOT(slotIgnored()));
+	addAction(ActionIgnore);
+	addSeparator();
+	ActionIp = new QAction(IMG("ip"), tr("Show IP"), this);
+	connect(ActionIp, SIGNAL(triggered()), this, SLOT(slotIP()));
+	addAction(ActionIp);
+	addSeparator();
+	ActionAlert = new QAction(IMG("alert"), tr("Online alert"), this);
+	ActionAlert->setCheckable(true);
+	connect(ActionAlert, SIGNAL(triggered()), this, SLOT(slotAlert()));
+	addAction(ActionAlert);
+
+	ActionComments = new QAction(IMG("comments"), tr("Edit Comments"), this);
+	connect(ActionComments, SIGNAL(triggered()), this, SLOT(slotComments()));
+	addAction(ActionComments);
 }
 
 void Usermenu::setup(const QString& user) {
 	mUser = user;
-	
+
 	bool connected = museeq->isConnected();
-	setItemEnabled(0, connected);
-	setItemEnabled(1, connected);
-	setItemEnabled(2, connected);
-	setItemEnabled(6, connected);
-	setItemEnabled(8, connected);
-	
-	setItemChecked(3, museeq->isBuddy(user));
-	setItemChecked(4, museeq->isTrusted(user));
-	setItemChecked(5, museeq->isBanned(user));
-	setItemChecked(6, museeq->isIgnored(user));
-	
-	setItemEnabled(8, museeq->isBuddy(user));
-	setItemChecked(8, museeq->hasAlert(user));
-	setItemEnabled(10, (museeq->isBuddy(user)  ));
+
+	ActionPrivate->setEnabled(connected);
+	ActionUserInfo->setEnabled(connected);
+	ActionUserShares->setEnabled(connected);
+	ActionGivePrivileges->setEnabled(connected);
+	ActionIgnore->setEnabled(connected);
+	ActionBuddy->setEnabled(connected);
+	ActionBan->setEnabled(connected);
+	ActionTrust->setEnabled(connected);
+	ActionIp->setEnabled(connected);
+	ActionAlert->setEnabled(museeq->isBuddy(user) && connected);
+	ActionComments->setEnabled((museeq->isBuddy(user)  ));
+
+	ActionBuddy->setChecked(museeq->isBuddy(user));
+	ActionTrust->setChecked(museeq->isTrusted(user));
+	ActionBan->setChecked(museeq->isBanned(user));
+	ActionIgnore->setChecked(museeq->isIgnored(user));
+	ActionAlert->setChecked(museeq->hasAlert(user));
+
+
 }
 
 void Usermenu::exec(const QString& user) {
 	setup(user);
-	QPopupMenu::exec();
+	QMenu::exec();
 }
 
 void Usermenu::exec(const QString& user, const QPoint& pos) {
 	setup(user);
-	QPopupMenu::exec(pos);
+	QMenu::exec(pos);
 }
 
 QString Usermenu::user() const {
 	return mUser;
 }
 
-void Usermenu::slotActivated(int id) {
-	switch(id) {
-	case 0:
-		museeq->mainwin()->showPrivateChat(mUser);
-		break;
-	case 1:
-		museeq->mainwin()->showUserInfo(mUser);
-		break;
-	case 2:
-		museeq->mainwin()->showBrowser(mUser);
-		break;
-	case 3:
-		if(! museeq->isBuddy(mUser))
-			museeq->addBuddy(mUser);
-		else
-			museeq->removeBuddy(mUser);
-		break;
-	case 4:
-		if(! museeq->isTrusted(mUser))
-			museeq->addTrusted(mUser);
-		else
-			museeq->removeTrusted(mUser);
-		break;
-	case 5:
-		if(! museeq->isBanned(mUser))
-			museeq->addBanned(mUser);
-		else
-			museeq->removeBanned(mUser);
-		break;
-	case 6:
-		if(! museeq->isIgnored(mUser))
-			museeq->addIgnored(mUser);
-		else
-			museeq->removeIgnored(mUser);
-		break;
-	case 7:
-		museeq->mainwin()->showIPDialog(mUser);
-		break;
-	case 8:
-		if(! museeq->hasAlert(mUser))
-			museeq->addAlert(mUser);
-		else
-			museeq->removeAlert(mUser);
-		break;
-	case 9:
-		museeq->mainwin()->givePrivileges(mUser);
-		break;
-	case 10:
-		museeq->editComments(mUser);
-		break;
-	}
+void Usermenu::slotPrivateChat() {
+	printf("open private chat\n");
+	museeq->mainwin()->showPrivateChat(mUser);
 }
+void Usermenu::slotUserInfo() {
+	museeq->mainwin()->showUserInfo(mUser);
+}
+void Usermenu::slotBrowser() {
+	museeq->mainwin()->showBrowser(mUser);
+}
+void Usermenu::slotBuddy() {
+	if(! museeq->isBuddy(mUser))
+		museeq->addBuddy(mUser);
+	else
+		museeq->removeBuddy(mUser);
+}
+void Usermenu::slotTrusted() {
+	if(! museeq->isTrusted(mUser))
+		museeq->addTrusted(mUser);
+	else
+		museeq->removeTrusted(mUser);
+}
+void Usermenu::slotBanned() {
+	if(! museeq->isBanned(mUser))
+		museeq->addBanned(mUser);
+	else
+		museeq->removeBanned(mUser);
+}
+void Usermenu::slotIgnored() {
+	if(! museeq->isIgnored(mUser))
+		museeq->addIgnored(mUser);
+	else
+		museeq->removeIgnored(mUser);
+}
+void Usermenu::slotIP() {
+	museeq->mainwin()->showIPDialog(mUser);
+
+
+}
+void Usermenu::slotAlert() {
+	if(! museeq->hasAlert(mUser))
+		museeq->addAlert(mUser);
+	else
+		museeq->removeAlert(mUser);
+}
+void Usermenu::slotPrivileges() {
+	museeq->mainwin()->givePrivileges(mUser);
+}
+void Usermenu::slotComments() {
+	museeq->editComments(mUser);
+}
+

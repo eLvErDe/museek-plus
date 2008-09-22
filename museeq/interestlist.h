@@ -20,19 +20,17 @@
 #ifndef INTERESTLIST_H
 #define INTERESTLIST_H
 
-#include <qvbox.h>
+#include <QWidget>
 
-class QListView;
 class InterestListView;
 class QLineEdit;
-class QPopupMenu;
+class QMenu;
 
-class InterestList : public QVBox {
+class InterestList : public QWidget {
 	Q_OBJECT
 public:
 	InterestList(const QString&, QWidget* = 0, const char* = 0);
-/*	QListView* mListView;*/
-	QLineEdit* mEntry;	
+	QLineEdit* mEntry;
 
 public slots:
 	void added(const QString&);
@@ -45,11 +43,11 @@ signals:
 	void add(const QString&);
 	void remove(const QString&);
 	void recommend(const QString&);
-	
+
 private:
 
 protected:
-	QPopupMenu *mPopup;
+	QMenu *mPopup;
 	QString mPopped;
 	InterestListView *mListView ;
 };

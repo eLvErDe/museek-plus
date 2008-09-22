@@ -20,12 +20,11 @@
 #ifndef INTERESTLISTVIEW_H
 #define INTERESTLISTVIEW_H
 
-#include <qlistview.h>
-#include "museeqtypes.h"
+#include <QTreeWidget>
 
-class QPopupMenu;
+class QMenu;
 
-class InterestListView : public QListView {
+class InterestListView : public QTreeWidget {
 	Q_OBJECT
 public:
 	InterestListView(const QString& = 0, QWidget* = 0, const char* = 0);
@@ -38,12 +37,13 @@ protected slots:
 	void slotRemoveInterest();
 	void slotItemRecommendations();
 	void slotItemSimilarUsers();
-	void slotPopupMenu(QListViewItem*, const QPoint&, int);
-	void slotDoubleClicked(QListViewItem*, const QPoint&, int);
-	void slotReturnPressed(QListViewItem*);
-	
+	void slotContextMenu(const QPoint&);
+	void slotActivate(QTreeWidgetItem*);
+	void slotActivate(QTreeWidgetItem*,  int);
+
 protected:
-	QPopupMenu *mPopup;
+	QAction * ActionRemove, * ActionRecommendations, * ActionItemSimilarUsers;
+	QMenu *mPopup;
 	QString mPopped;
 };
 

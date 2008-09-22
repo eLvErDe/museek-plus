@@ -17,63 +17,80 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "museeq.h"
 #include "chatroom.h"
-
-#include <qsplitter.h>
-#include <qtextedit.h>
-#include <qcheckbox.h>
-#include <qdatetime.h>
-#include <qradiobutton.h>
-#include <qdir.h>
-#include <qfile.h>
 #include "chatpanel.h"
 #include "userlistview.h"
 #include "chatticker.h"
 #include "codeccombo.h"
 #include "aclineedit.h"
 #include "tickerdialog.h"
-#include "museeq.h"
 #include "mainwin.h"
 
-ChatRoom::ChatRoom(const char * _r, QWidget * parent, const char * name) 
-        : QVBox(parent, name), mRoom(_r), mNickname(museeq->nickname()) {
-	
-	mTicker = new ChatTicker(this, "ticker");
+#include <QSplitter>
+#include <QTextEdit>
+#include <QCheckBox>
+#include <QRadioButton>
+#include <QLayout>
+#include <QDateTime>
+#include <QDir>
+#include <QFile>
+#include <QTextStream>
+
+#define _TIME QString("<span style='"+museeq->mFontTime+";color:"+museeq->mColorTime+"'>") + QDateTime::currentDateTime().toString("hh:mm:ss") + "</span> "
+
+#define _TIMES QDateTime::currentDateTime().toTime_t ()
+
+ChatRoom::ChatRoom(const QString _r, QWidget * parent, const QString name)
+        : QWidget(parent), mHighlight(0), mRoom(_r), mNickname(museeq->nickname()) {
+	QVBoxLayout * mainlayout = new QVBoxLayout(this);
+	mTicker = new ChatTicker(this, "ticker", museeq->mTickerLength);
 	connect(mTicker, SIGNAL(clicked()), SLOT(setTicker()));
-	if ( ! museeq->mShowTickers == true )
+	if ( ! museeq->mShowTickers )
 		mTicker->hide();
+	mainlayout->addWidget(mTicker);
+
+	mainlayout->setMargin(2);
+	mainlayout->setSpacing(5);
 	QSplitter *hsplit = new QSplitter(this);
-	
+
+	mainlayout->addWidget(hsplit, 10);
 	QSplitter *split = new QSplitter(hsplit);
-	hsplit->setCollapsible(split, false);
-	split->setOrientation(QSplitter::Vertical);
-	
-	mLog = new QTextEdit(split, "log");
-	split->setResizeMode(mLog, QSplitter::KeepSize);
+	hsplit->setCollapsible(hsplit->indexOf(split), false);
+	split->setOrientation(Qt::Vertical);
+
+	mLog = new QTextEdit(split);
+	split->setStretchFactor(split->indexOf(mLog), 0);
+
 	mLog->setReadOnly(true);
-	mLog->setTextFormat(Qt::RichText);
-	mLog->setFocusPolicy(NoFocus);
+	mLog->setAcceptRichText(true);
+	mLog->setFocusPolicy(Qt::NoFocus);
 	mLog->resize(0, 100);
-	
-	mChatPanel = new ChatPanel("hh:mm:ss", split, "panel");
-	split->setCollapsible(mChatPanel, false);
+
+	mChatPanel = new ChatPanel("hh:mm:ss", split);
+	split->setCollapsible(split->indexOf(mChatPanel), false);
+	split->setStretchFactor(0,1);
+	split->setStretchFactor(1,10);
 	connect(mChatPanel, SIGNAL(send(const QString&)), SLOT(sendMessage(const QString&)));
-	
-	QVBox* vbox = new QVBox(hsplit);
-	hsplit->setResizeMode(vbox, QSplitter::KeepSize);
+	QWidget* rightSide = new QWidget(hsplit);
+	QVBoxLayout* vbox = new QVBoxLayout(rightSide);
+
 	vbox->setSpacing(2);
-	
-	mUserList = new UserListView(false, vbox, "userlist");
+	vbox->setMargin(2);
+	mUserList = new UserListView(false, rightSide, "userlist");
+	vbox->addWidget(mUserList);
 	mUserList->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-	
-	QHBox* hbox = new QHBox(vbox);
-	mAutoJoin = new QCheckBox(tr("Auto-join"), hbox, "autojoin");
+
+	QHBoxLayout* hbox = new QHBoxLayout;
+	vbox->addLayout(hbox);
+	mAutoJoin = new QCheckBox(tr("Auto-join"), rightSide);
+	hbox->addWidget(mAutoJoin);
 	if(museeq->isAutoJoined(mRoom))
 		mAutoJoin->toggle();
 	connect(mAutoJoin, SIGNAL(toggled(bool)), SLOT(slotAutoJoin(bool)));
-	
-	new CodecCombo("encoding.rooms", mRoom, vbox, "encoding");
-	
+
+	vbox->addWidget(new CodecCombo("encoding.rooms", mRoom, rightSide, "encoding"));
+
 	connect(museeq, SIGNAL(userStatus(const QString&, uint)), SLOT(setUserStatus(const QString&, uint)));
 	connect(museeq, SIGNAL(nicknameChanged(const QString&)), SLOT(setNickname(const QString&)));
 	connect(museeq, SIGNAL(autoJoin(const QString&, bool)), SLOT(setAutoJoin(const QString&, bool)));
@@ -86,8 +103,6 @@ QString ChatRoom::room() const {
 	return mRoom;
 }
 
-#define _TIMES QDateTime::currentDateTime().toTime_t ()
-
 void ChatRoom::sendMessage(const QString& line_) {
 	QString line = line_;
 	if(line.isEmpty())
@@ -99,11 +114,11 @@ void ChatRoom::sendMessage(const QString& line_) {
 		QString cmd("");
 		if(line.length() > 1)
 		{
-			s = QStringList::split(' ', line.mid(1));
-			cmd = s[0].lower();
+			s = line.mid(1).split(' ', QString::KeepEmptyParts);
+			cmd = s[0].toLower();
 			s.pop_front();
 		}
-		
+
 		if(cmd == "me")
 			museeq->sayRoom(mRoom, line);
 		else if(cmd == "ip" && ! s.empty())
@@ -167,9 +182,9 @@ void ChatRoom::sendMessage(const QString& line_) {
 			museeq->mainwin()->changeSettings();
 		else if(cmd == "log")
 			museeq->mainwin()->toggleLog();
-		else if(cmd == "ticker" || cmd == "tickers" || cmd == "t") 
+		else if(cmd == "ticker" || cmd == "tickers" || cmd == "t")
 			museeq->mainwin()->toggleTickers();
-		else if(cmd == "colors" || cmd == "fonts" || cmd == "c" || cmd == "f") 
+		else if(cmd == "colors" || cmd == "fonts" || cmd == "c" || cmd == "f")
 			museeq->mainwin()->changeColors();
 		else if(cmd == "p" || cmd== "part" || cmd == "l" || cmd == "leave") {
 			if(! s.empty())
@@ -187,10 +202,11 @@ void ChatRoom::sendMessage(const QString& line_) {
 void ChatRoom::append(const QString& _u, const QString& _l) {
 	mChatPanel->append(_u, _l);
 	if (mNickname == _u);
-	else if(mNickname.isNull() || _l.find(mNickname) == -1)
-		emit highlight(1);
-	else
-		emit highlight(2);
+	else if(mNickname.isNull() || !_l.contains(mNickname) ) {
+		emit highlight(1, this);
+	} else {
+		emit highlight(2, this);
+    }
 	logMessage(_u, _l);
 }
 
@@ -199,6 +215,7 @@ void ChatRoom::logMessage(const QString& user, const QString& _l) {
 
 	logMessage(_TIMES, user, _l);
 }
+
 /* Write chat message to disk */
 void ChatRoom::logMessage(uint ts, const QString& user, const QString& _l) {
 	if (! museeq->mLogRooms) {
@@ -206,27 +223,28 @@ void ChatRoom::logMessage(uint ts, const QString& user, const QString& _l) {
 	}
 	if (! museeq->mRoomLogDir.isEmpty() and QDir(museeq->mRoomLogDir).exists() ) {
 		QFile logfile ( museeq->mRoomLogDir+"/"+mRoom);
-		if (! logfile.open(IO_WriteOnly | IO_Append)) {
+		if (! logfile.open(QIODevice::WriteOnly | QIODevice::Append)) {
 			museeq->output(QString("Write Error: could not write to: " +museeq->mRoomLogDir+"/"+mRoom));
 			return;
 		}
 		QDateTime _t;
 		_t.setTime_t(ts);
 		QTextStream textstream( &logfile );
-		textstream << _t.toString() << " [" << user << "]\t" << _l << endl;
+		textstream << _t.toString() << " [" << user << "]\t" << _l << "\n";
 		logfile.close();
+	} else {
+		museeq->output(QString("Write Error: directory doesn't exist: " +museeq->mRoomLogDir+"/"));
 	}
 
 }
 
-#define escape QStyleSheet::escape
 
 void ChatRoom::setUsers(const NRoom& r) {
 	mUserList->clear();
 	mStatus.clear();
-	
+
 	QStringList users;
-	
+	mUserList->sorting(false);
 	NRoom::const_iterator it = r.begin();
 	for(; it != r.end(); ++it) {
 		users << it.key();
@@ -234,19 +252,18 @@ void ChatRoom::setUsers(const NRoom& r) {
 		mUserList->add(it.key(), (*it).status, (*it).speed, (*it).files, "");
 		museeq->flush();
 	}
-	
+	mUserList->sorting(true);
 	mChatPanel->entry()->setCompletors(users);
 }
 
-#define _TIME QString("<span style='"+museeq->mFontTime+"'><font color='"+museeq->mColorTime+"'>") + QDateTime::currentDateTime().toString("hh:mm:ss") + "</font></span> "
 void ChatRoom::userJoined(const QString& _u, int _s, unsigned int _sp, unsigned int _f) {
 	if(mUserList->findItem(_u))
 		return;
 	if (! museeq->isIgnored(_u)) {
 		if (museeq->mShowTimestamps)
-			mLog->append(QString(_TIME+"<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+tr("%1 joined the room")+"</font></span>").arg(escape(_u)));
+			mLog->append(QString(_TIME+"<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+tr("%1 joined the room")+"</span>").arg(Qt::escape(_u)));
 		else
-			mLog->append( QString("<span style='"+museeq->mFontMessage+"'><font color='" + museeq->mColorRemote + "'>"+ tr("%1 joined the room")+"</font></span>" ).arg(escape(_u) ) ) ;
+			mLog->append( QString("<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+ tr("%1 joined the room")+"</span>" ).arg(Qt::escape(_u) ) ) ;
 	}
 	if(museeq->isBuddy(_u)) {
 		mUserList->add(_u , _s, _sp, _f);
@@ -255,10 +272,10 @@ void ChatRoom::userJoined(const QString& _u, int _s, unsigned int _sp, unsigned 
 	} else {
 		mUserList->add(_u, _s, _sp, _f);
 	}
-	
-	
+
+
 	mStatus[_u] = _s;
-	
+
 	mChatPanel->entry()->addCompletor(_u);
 }
 
@@ -267,13 +284,13 @@ void ChatRoom::userLeft(const QString& _u) {
 		return;
 	mStatus.remove(_u);
 	if (! museeq->isIgnored(_u))  {
-		if (museeq->mShowTimestamps) 
-			mLog->append(QString(_TIME+"</font></span><span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+tr("%1 left the room")+"</font></span>").arg(escape(_u)));
+		if (museeq->mShowTimestamps)
+			mLog->append(QString(_TIME+"</span><span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+tr("%1 left the room")+"</span>").arg(Qt::escape(_u)));
 		else
-			mLog->append(QString("</font></span><span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+tr("%1 left the room")+"</font></span>").arg(escape(_u)));
+			mLog->append(QString("</span><span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+tr("%1 left the room")+"</span>").arg(Qt::escape(_u)));
 	}
 	mUserList->remove(_u);
-	
+
 	mChatPanel->entry()->removeCompletor(_u);
 }
 
@@ -281,21 +298,21 @@ void ChatRoom::setUserStatus(const QString& _u, uint _s) {
 	QMap<QString, uint>::const_iterator it = mStatus.find(_u);
 	if(it == mStatus.end())
 		return;
-	
+
 	uint old_s = *it;
 	if (! museeq->isIgnored(_u)) {
 		if(old_s > 0 && _s != old_s) {
 			QString l = "";
 			if (museeq->mShowTimestamps)
 				l += _TIME;
-			
+
 			if(_s == 1)
-				l += QString("<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+tr("%1 has gone away")+"</font></span>").arg(escape(_u));
+				l += QString("<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+tr("%1 has gone away")+"</span>").arg(Qt::escape(_u));
 			else if(_s == 2)
-				l += QString("<span style='"+museeq->mFontMessage+"'><font color='"+museeq->mColorRemote+"'>"+tr("%1 has returned")+"</font></span>").arg(escape(_u));
+				l += QString("<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+tr("%1 has returned")+"</span>").arg(Qt::escape(_u));
 		mLog->append(l);
 		mStatus[_u] = _s;
-		}	
+		}
 	}
 }
 
@@ -307,6 +324,9 @@ void ChatRoom::setUserTicker(const NTickers& _t) {
 	mTicker->setText(_t);
 }
 
+void ChatRoom::updateTickers(uint size) {
+	mTicker->setSize(size);
+}
 void ChatRoom::setNickname(const QString& nickname) {
 	mNickname = nickname;
 }
@@ -323,12 +343,17 @@ void ChatRoom::hideThisTicker() {
 }
 
 void ChatRoom::setAutoJoin(const QString& room, bool on) {
-	if(mRoom == room && mAutoJoin->isOn() != on)
+	if(mRoom == room && mAutoJoin->isChecked() != on)
 		mAutoJoin->toggle();
 }
 
 void ChatRoom::setTicker() {
 	TickerDialog * dlg = new TickerDialog();
+	QString ticker;
+	if (mTicker->tickers().contains(museeq->nickname())) {
+		ticker = mTicker->tickers()[museeq->nickname()];
+		dlg->mMessage->setText(ticker);
+	}
 	if(dlg->exec() == QDialog::Accepted)
 	{
 		if (dlg->mThisTime->isChecked()) {
@@ -349,8 +374,10 @@ void ChatRoom::setTicker() {
 			else
 				museeq->setConfig("default-ticker", "ticker", msg);
 		}
-		
+
 	}
 	delete dlg;
-	
+
 }
+
+

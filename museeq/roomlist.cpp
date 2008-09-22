@@ -17,23 +17,31 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "roomlist.h"
-
-#include <qlabel.h>
-#include <qhbox.h>
-#include <qlineedit.h>
-#include "roomlistview.h"
 #include "museeq.h"
+#include "roomlist.h"
+#include "roomlistview.h"
+
+#include <QLayout>
+#include <QLabel>
+#include <QLineEdit>
 
 RoomList::RoomList(QWidget* _p, const char* _n)
-         : QVBox(_p, _n) {
-	
+         : QWidget(_p) {
+
 	mRoomList = new RoomListView(this);
-	
-	QHBox *box = new QHBox(this);
-	new QLabel(tr("Create:"), box);
-	
-	mEntry = new QLineEdit(box);
+
+	QVBoxLayout *MainLayout = new QVBoxLayout(this);
+	MainLayout->addWidget(mRoomList);
+
+	QHBoxLayout *layout = new QHBoxLayout;
+	MainLayout->addLayout(layout);
+
+	QLabel *label = new QLabel(tr("Create:"), this);
+	layout->addWidget(label);
+	mEntry = new QLineEdit(this);
+	layout->addWidget(mEntry);
+
+
 	connect(mEntry, SIGNAL(returnPressed()), SLOT(slotJoinRoom()));
 }
 

@@ -17,31 +17,39 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "recommendsview.h"
-
-#include <qpopupmenu.h>
-#include "recommendsitem.h"
 #include "museeq.h"
+#include "recommendsview.h"
+#include "recommendsitem.h"
+#include "images.h"
+
+#include <QMenu>
 
 RecommendsView::RecommendsView(QWidget* _p, const char* _n)
-             : QListView(_p, _n) {
+             : QTreeWidget(_p) {
+	QStringList headers;
+	headers << tr("Interests") << tr("Num");
+	setHeaderLabels(headers);
+	setSortingEnabled(true);
+	setRootIsDecorated(false);
 
-	addColumn("Interests");
-	addColumn("Num");
+ 	setAllColumnsShowFocus(true);
 
-	setColumnAlignment(1, Qt::AlignRight|Qt::AlignVCenter);
-	setSorting(1);
-	setShowSortIndicator(true);
-	setAllColumnsShowFocus(true);
-	
-	mPopup = new QPopupMenu(this);
-	mPopup->insertItem("Add item to Likes", this, SLOT(slotAddLike()), 0, 0);
-	mPopup->insertItem("Add item to Hates", this, SLOT(slotAddHate()), 0, 1);
-	
-	connect(this, SIGNAL(contextMenuRequested(QListViewItem*, const QPoint&, int)), SLOT(slotPopupMenu(QListViewItem*, const QPoint&, int)));
-	connect(this, SIGNAL(doubleClicked(QListViewItem*, const QPoint&, int)), SLOT(slotDoubleClicked(QListViewItem*, const QPoint&, int)));
-	connect(this, SIGNAL(returnPressed(QListViewItem*)), SLOT(slotReturnPressed(QListViewItem*)));
-	
+	mPopup = new QMenu(this);
+
+
+	ActionAddLike = new QAction(IMG("add"),tr("Add item to Likes"), this);
+	connect(ActionAddLike, SIGNAL(triggered()), this, SLOT(slotAddLike()));
+	mPopup->addAction(ActionAddLike);
+
+	ActionAddHate = new QAction(IMG("add"),tr("Add item to Hates"), this);
+	connect(ActionAddHate, SIGNAL(triggered()), this, SLOT(slotAddHate()));
+	mPopup->addAction(ActionAddHate);
+
+	setContextMenuPolicy(Qt::CustomContextMenu);
+	connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), SLOT(slotContextMenu(const QPoint&)));
+	connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), SLOT(slotActivate(QTreeWidgetItem*, int)));
+	connect(this, SIGNAL(itemActivated(QTreeWidgetItem*, int)), SLOT(slotActivate(QTreeWidgetItem*, int)));
+
 	connect(museeq, SIGNAL(Recommendations(const NGlobalRecommendations&)), SLOT(setGlobalRecs(const NGlobalRecommendations&)));
 
 	connect(museeq, SIGNAL(aRecommendations(const NRecommendations&)), SLOT(setRecs(const NRecommendations&)));
@@ -52,26 +60,26 @@ RecommendsView::RecommendsView(QWidget* _p, const char* _n)
 
 void RecommendsView::setGlobalRecs(const NGlobalRecommendations& _r) {
 	clear();
-	
+
 	QMap<QString, unsigned int>::const_iterator it = _r.begin();
 	for(; it != _r.end(); ++it)
-		new RecommendsItem(this, it.key(), it.data());
+		new RecommendsItem(this, it.key(), it.value());
 }
 
 void RecommendsView::setRecs(const NRecommendations& _r) {
 	clear();
-	
+
 	QMap<QString, unsigned int>::const_iterator rit = _r.begin();
 	for(; rit != _r.end(); ++rit)
-		new RecommendsItem(this, rit.key(), rit.data());
+		new RecommendsItem(this, rit.key(), rit.value());
 }
 
 void RecommendsView::setItemRecs(const QString& _i,  const NItemRecommendations& _r) {
 	clear();
-	
+
 	QMap<QString, unsigned int>::const_iterator iit = _r.begin();
 	for(; iit != _r.end(); ++iit)
-		new RecommendsItem(this, iit.key(), iit.data());
+		new RecommendsItem(this, iit.key(), iit.value());
 }
 
 void RecommendsView::slotAddLike() {
@@ -82,26 +90,29 @@ void RecommendsView::slotAddHate() {
 	museeq->addHatedInterest(mPopped);
 }
 
+void RecommendsView::slotContextMenu(const QPoint& pos) {
+	RecommendsItem* item = static_cast<RecommendsItem*>(itemAt(pos));
 
-void RecommendsView::slotPopupMenu(QListViewItem* item, const QPoint& pos, int) {
-	RecommendsItem* _item = static_cast<RecommendsItem*>(item);
-	if(item) {
-		mPopped = _item->interest();
-		mPopup->setItemEnabled(0, museeq->isConnected());
-		mPopup->setItemEnabled(1, museeq->isConnected());
+	if (item ) {
+		mPopped = item->interest();
+		ActionAddLike->setEnabled(museeq->isConnected());
+		ActionAddHate->setEnabled(museeq->isConnected());
+
 	} else {
 		mPopped = QString::null;
-		mPopup->setItemEnabled(0, false);
-		mPopup->setItemEnabled(1, false);
+		ActionAddLike->setEnabled(false);
+		ActionAddHate->setEnabled(false);
+
 	}
-	mPopup->exec(pos);
+
+	mPopup->exec(mapToGlobal(pos));
 }
 
-void RecommendsView::slotDoubleClicked(QListViewItem* item, const QPoint&, int) {
-	slotReturnPressed(item);
-}
 
-void RecommendsView::slotReturnPressed(QListViewItem* item) {
+void RecommendsView::slotActivate(QTreeWidgetItem* item, int column) {
+	slotActivate( item);
+}
+void RecommendsView::slotActivate(QTreeWidgetItem* item) {
 	RecommendsItem* _item = static_cast<RecommendsItem*>(item);
 	if(item)
 		museeq->joinRoom(_item->interest());

@@ -19,13 +19,15 @@
 
 #include "marquee.h"
 
-#include <qpixmap.h>
-#include <qpainter.h>
-#include <qtimer.h>
+#include <QPixmap>
+#include <QPainter>
+#include <QTimer>
+#include <QEvent>
+#include <QMouseEvent>
+#include <QPaintEvent>
 
 Marquee::Marquee(const QString& _t, QWidget* _p, const char* _n)
-        : QWidget(_p, _n), mBuffer(0), mBuffer2(0),
-          mPressed(false), mEntered(true) {
+        : QWidget(_p), mPressed(false), mEntered(true) {
 
 	setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
 	mScroll = 0;
@@ -47,88 +49,50 @@ void Marquee::setText(const QString& _t) {
 }
 
 void Marquee::timerTimeout() {
-	QPainter p;
-
-	if(mBuffer && mBuffer->size() != size()) {
-		delete mBuffer;
-		mBuffer = 0;
-	}
-	
-	if(! mBuffer) {
-		mBuffer = new QPixmap(width(), height());
-		p.begin(mBuffer);
-		p.setBackgroundColor(colorGroup().background());
-		p.eraseRect(0, 0, width(), height());
-		p.end();
-		
-		delete mBuffer2;
-		mBuffer2 = 0;
-		mScroll = 0;
-	}
-	
-	if(!mBuffer2 || (mScroll == 0 && mUpdate)) {
-		if(mBuffer2) {
-			delete mBuffer2;
-			mBuffer2 = 0;
-		}
-
-		if(! mText.isEmpty()) {
-			int width = fontMetrics().size(Qt::SingleLine, mText).width();
-			if (width >= 32000)
-				width = 31999;
-			mBuffer2 = new QPixmap(width, height());
-			p.begin(mBuffer2);
-			p.setBackgroundColor(colorGroup().background());
-			p.setFont(font());
-			p.setPen(colorGroup().foreground());
-			p.eraseRect(0, 0, mBuffer2->width(), height());
-			p.drawText(0, height() - p.fontMetrics().descent() - 2, mText);
-			p.end();
-		} else {
-			mBuffer2 = new QPixmap(1, height());
-			p.begin(mBuffer2);
-			p.setBackgroundColor(colorGroup().background());
-			p.eraseRect(0, 0, 1, height());
-			p.end();
-		}
-		mUpdate = false;
-		
-	}
-	
-	bitBlt(mBuffer, 0, 0, mBuffer, 1, 0, width() - 1, height());
-	bitBlt(mBuffer, width() - 1, 0, mBuffer2, mScroll, 0, 1, height());
-	
-	mScroll += 1;
-	
-	if(mScroll >= mBuffer2->width())
-		mScroll = 0;
-	
-	repaint(false);
+	mUpdate = true;
+	update();
 }
 
 void Marquee::paintEvent(QPaintEvent*) {
-	if(! mBuffer)
-		return;
+    QPainter p(this);
 
-	QPainter p(this);
-	p.drawPixmap(0, 0, *mBuffer);
+	if(mUpdate) {
+		if(! mText.isEmpty()) {
+			int textWidth = fontMetrics().size(Qt::TextSingleLine, mText).width();
+			if (textWidth >= 32000)
+				textWidth = 31999;
+ 			p.setBackground(palette().color(QPalette::Background));
+			p.setFont(font());
+			p.setPen(palette().color(QPalette::Foreground));
+			p.drawText(0 - mScroll, height() - p.fontMetrics().descent() - 2, mText);
+			p.end();
+
+            mScroll += 1;
+
+            if(mScroll >= textWidth)
+                mScroll = 0;
+		} else
+			p.end();
+
+		mUpdate = false;
+	}
 }
 
 void Marquee::updateHeight() {
 	if(mText.isEmpty()) {
 		setMinimumHeight(0);
+
 		mTimer->stop();
 	} else {
-		QSize s = QPainter(this).fontMetrics().size(Qt::SingleLine, QString::null);
+		QPainter p;
+		QSize s = p.fontMetrics().size(Qt::TextSingleLine, QString::null);
 		setMinimumHeight(s.height() + 2);
-		mTimer->start(25, false);
+
+		mTimer->start(25);
 	}
 }
 
 void Marquee::invalidate() {
-	delete mBuffer;
-	delete mBuffer2;
-	mBuffer = mBuffer2 = 0;
 	mUpdate = true;
 	updateHeight();
 }

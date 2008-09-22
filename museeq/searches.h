@@ -20,42 +20,59 @@
 #ifndef SEARCHES_H
 #define SEARCHES_H
 
-#include <qvbox.h>
 #include "museeqtypes.h"
+#include "tabwidget.h"
+
+#include <QWidget>
 
 class QComboBox;
 class QRadioButton;
 class QLabel;
-class TabWidget;
 class QPushButton;
+
+class TabWidget;
 class Interests;
 
-class Searches : public QVBox {
+class SearchTabWidget : public TabWidget {
+	Q_OBJECT
+public:
+	SearchTabWidget(QWidget* = 0, const char* = 0);
+
+signals:
+	void highlight(int);
+
+public slots:
+	void setHighlight(int, QWidget*);
+	void selected(QWidget*);
+
+};
+
+class Searches : public QWidget {
 	Q_OBJECT
 public:
 	Searches(QWidget* = 0, const char* = 0);
 
 signals:
 	void highlight(int);
-	
+
 public slots:
 	void setSearchText(const QString&);
 	void setUserSearchText(const QString&);
 	void searchModeSelected();
 	void doSearch(const QString&);
-	
+
 protected slots:
 	void doSearch();
 	void setToken(const QString&, uint);
 	void append(uint, const QString&, bool, uint, uint, const NFolder&);
-		
+
 private:
 	QComboBox* mEntry,* mUserEntry;
 	QPushButton* mSearch;
 	QRadioButton* mGlobal, * mRooms, * mBuddies, * mUser, * mWishList;
 	QLabel* mUserLabel;
-	TabWidget* mTabWidget;
 	Interests* mInterests;
+	SearchTabWidget* mSearchTabWidget;
 };
 
 #endif // SEARCHES_H

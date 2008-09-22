@@ -19,30 +19,42 @@
 
 #include "recommendsitem.h"
 #include "recommendsview.h"
+#include "util.h"
 
 RecommendsItem::RecommendsItem(RecommendsView* _p, const QString& _r, unsigned int _n)
-                 : QListViewItem(static_cast<QListView *>(_p)), mInterest(_r), mNum(_n) {
+                 : QTreeWidgetItem(static_cast<QTreeWidget *>(_p)), mInterest(_r), mNum(_n) {
 	setText(0, mInterest);
-	setText(1, QString().sprintf("%u", mNum));
+	setText(1, QString("%1").arg(mNum));
 }
 
-static int cmp(unsigned int a, unsigned int b) {
-	if(a > b)
-		return 1;
-	if(a == b)
-		return 0;
-	return -1;
-}
-
-int RecommendsItem::compare(QListViewItem * i, int col, bool) const {
+int RecommendsItem::compare(QTreeWidgetItem * i, int col, bool) const {
 	RecommendsItem *r = static_cast<RecommendsItem *>(i);
-	
+
 	if(col == 0)
 		return mInterest.localeAwareCompare(r->mInterest);
 	else
-		return cmp(r->mNum, mNum);
+		return Util::cmp(r->mNum, mNum);
 }
 
 QString RecommendsItem::interest() const {
 	return mInterest;
+}
+bool RecommendsItem::operator<(const QTreeWidgetItem & other_) const {
+  const RecommendsItem * other = static_cast<const RecommendsItem *>(&other_);
+  int col = 0;
+  if(treeWidget())
+    col = treeWidget()->sortColumn();
+
+  switch(col)
+  {
+    case 0:
+      return interest() < other->interest();
+    case 1:
+      if(mNum == other->mNum)
+        return interest() < other->interest();
+      return mNum < other->mNum;
+
+  }
+
+  return false;
 }

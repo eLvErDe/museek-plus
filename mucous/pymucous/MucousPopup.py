@@ -527,7 +527,14 @@ class PopupMenu:
 				number = self.mucous.BrowseShares.scrolling[mode]-self.mucous.BrowseShares.dimensions["directories"]["start"]
 				if self.position == 0:
 					# Download
-					self.mucous.Transfers.FolderDownload(user, path)
+                    # CHANGED 12/17/2007 Josh Leder 
+                    # Transfers.FolderDownload strips the end of the path for some reason 
+                    # so I am adding a trailing path delimiter (which will be discarded) 
+                    # to prevent going an extra level up in the folder hierarchy 
+                    # I'm also changing CurrentFile() to CurrentDir() which seems to make 
+                    # a lot more sense. :) 
+                    user, path = self.mucous.BrowseShares.CurrentDir() 
+                    self.mucous.Transfers.FolderDownload(user, path + "\\")
 					return 0
 				elif self.position == 1:
 					user, path = self.mucous.BrowseShares.CurrentDir()
@@ -545,7 +552,8 @@ class PopupMenu:
 					return 0
 				elif self.position == 1:
 					# Download Dir
-					self.mucous.Transfers.FolderDownload(user, path)
+                    user, path = self.mucous.BrowseShares.CurrentDir() 
+                    self.mucous.Transfers.FolderDownload(user, path + "\\") 
 					return 0
 			
 				elif self.position == 2:

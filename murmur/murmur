@@ -6066,16 +6066,17 @@ class Murmur( Networking):
 
 	def about(self, string):
 		try:
-			title=_('About Murmur')
+			title=_("About Murmur %s" % version)
 			win = ImageDialog(self, title=title,
 			message="<b>Murmur</b> is a PyGTK <b>Museek-Plus</b> client."\
 "\nCreator: daelstorm"\
+"\nVersion: %s"\
 "\n\nMuseek-Plus Website: http://www.museek-plus.source-forge.net/"\
 "\nMuseek-Plus Trac: http://www.museek-plus.org/"\
 
 "\nWebpage: http://thegraveyard.org/daelstorm/murmur.php"\
 "\nTrac: http://www.museek-plus.org/wiki/murmur"\
-, picture = self.images["logo"])
+ % version, picture = self.images["logo"])
 			win.set_title(title)
 			win.show()
 			gtk.main()

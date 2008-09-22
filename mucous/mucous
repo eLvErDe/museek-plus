@@ -286,7 +286,7 @@ class Mucous:
 			"auto-retry": "yes", "auto-clear": "no", "logging": "yes", "extra_requests": "Yes"}, \
 			"tickers":{'tickers_enabled': 'yes', "ticker_cycle": "no", "rooms":{}, "ticker_scroll": "yes", "scrolltime": "0.3", "cycletime": "3.0"}, \
 			"aliases": {"mucous":"Mucous is a Curses client for the Museek Soulseek Daemon. Website: http://thegraveyard.org/daelstorm/mucous.php", "museek":"Museek+ is a Soulseek Daemon/Client. The website is http://museek-plus.org/"},\
-			"rooms": {"default_room":"museek"}\
+			"rooms": {"default_room":None}\
 			}
 		## @var config_manager
 		# ConfigManager (Class)

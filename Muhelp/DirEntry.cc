@@ -143,7 +143,7 @@ queue<unsigned char> DirEntry::pack() {
 	
 	_pack(data, (uint32)files.size());
 	
-	map<string, struct FileEntry>::iterator fit = files.begin();
+	map<string, FileEntry>::iterator fit = files.begin();
 	for(; fit != files.end(); ++fit) {
 		_pack(data, (*fit).first);
 		_pack(data, (*fit).second.size);

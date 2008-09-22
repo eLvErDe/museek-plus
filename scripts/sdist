@@ -1,0 +1,209 @@
+#! /usr/bin/env python
+
+# This is a release script for museek+
+
+# ---- CONFIGURABLE OPTIONS ----
+
+PACKAGE = 'museek'
+VERSION = '0.2.0'
+
+
+# Files to include in the archive
+files = """
+  CMakeLists.txt
+  config.h.cmake
+  COPYING
+  CREDITS
+  FILES
+  INSTALL
+  LICENSE
+  README
+  system.h.cmake
+  TODO
+""".split()
+
+# Dirs to include in the archive
+sourcedirs = """
+  murmur
+  museeq
+  python-bindings
+  Mucipher
+  mucous
+  cmake
+  icons
+  Muhelp
+  muscan
+  museekd
+  NewNet
+  python-clients
+  scripts
+  setup
+""".split()
+
+# Files/dirs to exclude from archive
+excludes = """
+""".split()
+
+# Allowed file patterns
+exts = """
+  *.cc
+  *.hh
+  *.c
+  *.h
+  *.py
+  *.cpp
+  *.ui
+  *.in
+  *.i
+  *.png
+  *.xcf
+  *.txt
+  *.qs
+  *.ts
+  *.1
+  *.desktop
+  *.gif
+  *.cmake
+  *.rc
+  *.tmpl
+  *.old
+  *.cfg
+  *.dox
+  CHANGELOG
+  MAINTAINERS
+  MANIFEST
+  COPYING
+  CREDITS
+  FILES
+  INSTALL
+  LICENSE
+  README
+  TODO
+  mucous
+  murmur
+  mulog
+  museekchat
+  museekcontrol
+  sdist
+  musetup
+  musetup-gtk
+  musetup-qt
+""".split()
+
+
+
+# ---- NO NEED TO EDIT AFTER THIS ----
+
+import sys
+import os
+import glob
+
+def globber(excludes, path = ''):
+    tree = []
+    files = glob.glob("../" + path)
+
+    for f in files:
+        if [m for m in excludes if glob.fnmatch.fnmatch(f, m)]:
+            continue
+        if os.path.isdir(f):
+            tree += globber(excludes, f.replace("../", "", 1) + "/*")
+            dirwithext = addExts(f.replace("../", "", 1))
+            for d in dirwithext:
+                tree += globber(excludes, d)
+        elif not path.endswith("*"):
+            tree.append(f.replace("../", "", 1))
+    return tree
+
+def terminate(path):
+    files = glob.glob(os.path.join(path, '*'))
+    files += glob.glob(os.path.join(path, '.*'))
+    for f in files:
+        if f in ['.', '..']:
+            continue;
+        if os.path.isdir(f):
+            terminate(f)
+        else:
+            os.remove(f)
+    os.rmdir(path)
+
+def addExts(path):
+    files = []
+    for ext in exts:
+        files.append(path + "/" + ext)
+    return files
+
+DIST_VERSION = 1
+DIST_SNAPSHOT = 0
+DIST_PURGE = 1
+
+for arg in sys.argv[1:]:
+    if arg == "--no-version":
+        DIST_VERSION = 0
+    elif arg == "--snapshot":
+        DIST_SNAPSHOT = 1
+        DIST_VERSION = 0
+    elif arg == "--no-purge":
+        DIST_PURGE = 0
+    elif arg == "--help":
+        print """Help:
+sdist --no-version --no-purge --snapshot
+
+--no-version    don't touch version.h
+--no-purge      don't purge the dist tree after making tarball
+--snapshot      make snapshot tarball (implies --no-version)
+"""
+    else:
+        print "invalid argument", arg
+        sys.exit()
+
+if DIST_SNAPSHOT:
+    import time
+    VERSION = time.strftime("%Y%m%d")
+
+DISTDIR = os.path.join('../dist', PACKAGE + '-' + VERSION)
+
+print 'Making source dist tree list...',
+
+for dir in sourcedirs:
+    files.append(dir + "/*")
+    files += addExts(dir)
+
+tree = []
+for f in files:
+	tree += globber(excludes, f)
+tree.sort()
+
+print 'done'
+
+if os.path.exists(DISTDIR):
+    print 'Removing existing source dist tree...',
+    terminate(DISTDIR)
+    print 'done'
+
+print 'Populating source dist tree...',
+for fn in tree:
+    target = os.path.join(DISTDIR, fn)
+    target_dir = os.path.dirname(target)
+    if not os.path.exists(target_dir):
+        os.makedirs(target_dir)
+    open(target, 'w').write(open("../" + fn).read())
+print 'done'
+
+import tarfile
+
+print 'Generating compressed source tarball (bz2)...',
+tarball = tarfile.open(DISTDIR + '.tar.bz2', 'w:bz2')
+tarball.add(DISTDIR, PACKAGE + '-' + VERSION)
+tarball.close()
+print 'done'
+
+print 'Generating compressed source tarball (gz)...',
+tarball = tarfile.open(DISTDIR + '.tar.gz', 'w:gz')
+tarball.add(DISTDIR, PACKAGE + '-' + VERSION)
+tarball.close()
+print 'done'
+
+if DIST_PURGE:
+    print 'Removing source dist tree...',
+    terminate(DISTDIR)
+    print 'done'

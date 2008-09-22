@@ -20,17 +20,21 @@
 #ifndef SEARCHFILTER_H
 #define SEARCHFILTER_H
 
-#include <qhbox.h>
-#include <qlineedit.h>
 #include "museeqtypes.h"
-#include <qregexp.h>
+
+#include <QWidget>
+#include <QLineEdit>
+#include <QRegExp>
 
 class SearchListView;
 class SearchListItem;
 class QCheckBox;
 class QComboBox;
+class QShowEvent;
+class QHideEvent;
+class QKeyEvent;
 
-class SearchFilter : public QHBox {
+class SearchFilter : public QWidget {
 	Q_OBJECT
 public:
 	SearchFilter(QWidget* = 0, const char * = 0);
@@ -39,22 +43,22 @@ public:
 
 signals:
 	void filterChanged();
-		
+
 protected:
 	void showEvent(QShowEvent *);
 	void hideEvent(QHideEvent *);
 
 protected slots:
 	void updateFilter();
-	
+
 private:
-	
+
 	bool mEnabled;
 	QComboBox* mRegExp, * mSize, * mBitrate;
 	QCheckBox* mFreeSlot;
-	
+
 	QRegExp mFilterRegExp;
-	Q_INT64 mFilterSize;
+	qint64 mFilterSize;
 	int mFilterBitrate;
 	bool mFilterFreeSlot, mFilterSizeExact, mFilterBitrateExact;
 };
@@ -62,7 +66,7 @@ private:
 class MyLineEdit : public QLineEdit {
 	Q_OBJECT
 public:
-	MyLineEdit(QWidget* p = 0, const char* n = 0) : QLineEdit(p, n) { };
+	MyLineEdit(QWidget* p = 0, const char* n = 0) : QLineEdit(p) { };
 signals:
 	void enterPressed();
 protected:

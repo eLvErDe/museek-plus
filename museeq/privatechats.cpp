@@ -23,7 +23,7 @@
 
 PrivateChats::PrivateChats(QWidget* _p, const char* _n)
              : UserTabWidget(_p, _n) {
-	
+
 	connect(museeq, SIGNAL(privateMessage(uint, uint, const QString&, const QString&)), SLOT(append(uint, uint, const QString&, const QString&)));
 	connect(museeq, SIGNAL(userStatus(const QString&, uint)), SLOT(setUserStatus(const QString&, uint)));
 }
@@ -32,6 +32,7 @@ void PrivateChats::append(uint _dir, uint _ts, const QString& _u, const QString&
 	PrivateChat* tab = static_cast<PrivateChat*>(page(_u, true));
 	tab->append(_dir, _ts, _u, _m);
 }
+
 void PrivateChats::setUserStatus(const QString& _u, uint _s) {
 
 	PrivateChat* tab = static_cast<PrivateChat*>(page(_u, false));

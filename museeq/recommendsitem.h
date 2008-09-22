@@ -20,18 +20,19 @@
 #ifndef RECOMMENDSITEM_H
 #define RECOMMENDSITEM_H
 
-#include <qlistview.h>
+#include <QTreeWidget>
 
 class RecommendsView;
 
-class RecommendsItem : public QListViewItem {
+class RecommendsItem : public QTreeWidgetItem {
 public:
 	RecommendsItem(RecommendsView*, const QString&, unsigned int);
-	
-	int compare(QListViewItem*, int, bool) const;
-	
+
+	int compare(QTreeWidgetItem*, int, bool) const;
+
 	QString interest() const;
-	
+
+	bool operator<(const QTreeWidgetItem & other) const;
 private:
 	QString mInterest;
 	unsigned int mNum;

@@ -27,10 +27,10 @@ class Browsers : public UserTabWidget {
 	Q_OBJECT
 public:
 	Browsers(QWidget* = 0, const char* = 0);
-	
+
 public slots:
 	void setShares(const QString&, const NShares&);
-	
+
 protected:
 	UserWidget* makeNewPage(const QString&);
 };

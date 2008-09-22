@@ -20,29 +20,31 @@
 #ifndef MUSEEQTYPES_H
 #define MUSEEQTYPES_H
 
-#include <qobject.h>
+#include <QList>
+#include <QMap>
+#include <QString>
 
-typedef struct NFileData {
-	Q_INT64 size;
+typedef struct {
+	qint64 size;
 	uint length;
 	uint bitrate;
 	bool vbr;
-};
+} NFileData;
 
-typedef struct NUserData {
+typedef struct {
 	uint status;
 	uint speed;
 	uint files;
-};
+} NUserData;
 
-typedef struct NTransfer {
+typedef struct {
 	QString user;
 	QString filename;
 	uint placeInQueue, state;
 	QString error;
-	Q_INT64 filepos, filesize;
+	qint64 filepos, filesize;
 	uint rate;
-};
+} NTransfer;
 
 typedef QMap<QString, NFileData> NFolder;
 typedef QMap<QString, NFolder> NShares;
@@ -56,7 +58,7 @@ typedef QMap<QString, uint> NItemRecommendations;
 typedef QMap<QString, uint> NItemSimilarUsers;
 typedef QMap<QString, uint> NSimilarUsers;
 
-typedef QValueList<NTransfer> NTransfers;
+typedef QList<NTransfer> NTransfers;
 typedef QMap<QString, QString> NTickers;
 typedef QMap<QString, NTickers> NTickerMap;
 

@@ -30,30 +30,34 @@ class ChatRooms : public TabWidget {
 public:
 	ChatRooms(QWidget* = 0, const char* = 0);
 
-	
+
 signals:
 	void encodingChanged(const QString&, const QString&);
-	
+
 	void join(const QString&);
 	void leave(const QString&);
 	void refresh();
-	
-	void highlight(int);
 
+	void highlight(int);
+	void highlight(int, QWidget* );
+public slots:
+	void setHighlight(int highlight, QWidget*);
+	void selected(QWidget*);
+	void updateTickers();
 protected slots:
 	void clear();
 	void closeCurrent();
-	
+	void doCurrentChanged(QWidget *);
 	void joined(const QString&, const NRoom&);
 	void left(const QString&);
 	void append(const QString&, const QString&, const QString&);
-	
+
 	void setTickers(const QString&, const NTickers&);
 	void setTicker(const QString&, const QString&, const QString&);
-	
+
 	void userJoined(const QString&, const QString&, const NUserData&);
 	void userLeft(const QString&, const QString&);
-	
+
 private:
 	RoomList* mRoomList;
 	QString mNickname;

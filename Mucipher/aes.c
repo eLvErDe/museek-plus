@@ -57,8 +57,6 @@
     added block cipher code
 */
 
-
-#include "system.h"
 #include "mucipher.h"
 
 typedef uint32 u32;

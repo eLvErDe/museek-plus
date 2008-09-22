@@ -35,10 +35,10 @@
  * ***** END LICENSE BLOCK ***** */
 
 typedef struct {
-  unsigned long H[5];
-  unsigned long W[80];
+  unsigned int H[5];
+  unsigned int W[80];
   int lenW;
-  unsigned long sizeHi,sizeLo;
+  unsigned int sizeHi,sizeLo;
 } SHA_CTX;
 
 

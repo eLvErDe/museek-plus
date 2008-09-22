@@ -21,22 +21,24 @@
 #define ROOMLIST_H
 
 #include "museeqtypes.h"
-#include <qvbox.h>
+
+#include <QWidget>
 
 class QLineEdit;
 class RoomListView;
+class QShowEvent;
 
-class RoomList : public QVBox {
+class RoomList : public QWidget {
 	Q_OBJECT
 public:
 	RoomList(QWidget* = 0, const char* = 0);
-	
+
 protected:
 	void showEvent(QShowEvent*);
-	
+
 protected slots:
 	void slotJoinRoom();
-	
+
 private:
 	QLineEdit *mEntry;
 	RoomListView *mRoomList;

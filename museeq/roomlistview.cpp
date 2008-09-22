@@ -17,45 +17,59 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "roomlistview.h"
-
-#include <qpopupmenu.h>
-#include "roomlistitem.h"
 #include "museeq.h"
+#include "roomlistview.h"
+#include "roomlistitem.h"
+
+#include <QMenu>
 
 RoomListView::RoomListView(QWidget* _p, const char* _n)
-             : QListView(_p, _n) {
+             : QTreeWidget(_p) {
+	setColumnCount(2);
 
-	addColumn(tr("Room"));
-	addColumn(tr("Users"));
+	QStringList headers;
+	headers << tr("Room") << tr("Users");
+	setHeaderLabels(headers);
+	setSortingEnabled(true);
+	setRootIsDecorated(false);
+ 	setAllColumnsShowFocus(true);
 
-	setColumnAlignment(1, Qt::AlignRight|Qt::AlignVCenter);
-	setSorting(1);
-	setShowSortIndicator(true);
-	setAllColumnsShowFocus(true);
-	
-	mPopup = new QPopupMenu(this);
-	mPopup->insertItem(tr("Join room"), this, SLOT(slotJoin()), 0, 0);
-	mPopup->insertItem(tr("Leave room"), this, SLOT(slotLeave()), 0, 1);
-	mPopup->insertSeparator();
-	mPopup->insertItem(tr("Refresh"), this, SLOT(slotRefresh()), 0, 2);
-	
-	connect(this, SIGNAL(contextMenuRequested(QListViewItem*, const QPoint&, int)), SLOT(slotPopupMenu(QListViewItem*, const QPoint&, int)));
 
-	connect(this, SIGNAL(doubleClicked(QListViewItem*, const QPoint&, int)), SLOT(slotDoubleClicked(QListViewItem*, const QPoint&, int)));
+	mPopup = new QMenu(this);
 
-	connect(this, SIGNAL(returnPressed(QListViewItem*)), SLOT(slotReturnPressed(QListViewItem*)));
-	
+
+	ActionJoin = new QAction(tr("Join room"), this);
+	connect(ActionJoin, SIGNAL(triggered()), this, SLOT(slotJoin()));
+	mPopup->addAction(ActionJoin);
+
+	ActionLeave = new QAction(tr("Leave room"), this);
+	connect(ActionLeave, SIGNAL(triggered()), this, SLOT(slotLeave()));
+	mPopup->addAction(ActionLeave);
+
+	mPopup->addSeparator();
+
+	ActionRefresh = new QAction(tr("Refresh"), this);
+	connect(ActionRefresh, SIGNAL(triggered()), this, SLOT(slotRefresh()));
+	mPopup->addAction(ActionRefresh);
+
+
+	setContextMenuPolicy(Qt::CustomContextMenu);
+	connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), SLOT(slotActivate(QTreeWidgetItem*, int)));
+	connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), SLOT(slotContextMenu(const QPoint&)));
+	connect(this, SIGNAL(itemActivated(QTreeWidgetItem*, int)), SLOT(slotActivate(QTreeWidgetItem*, int)));
+
 	connect(museeq, SIGNAL(roomList(const NRoomList&)), SLOT(setRooms(const NRoomList&)));
 	connect(museeq, SIGNAL(disconnected()), SLOT(clear()));
 }
 
 void RoomListView::setRooms(const NRoomList& _r) {
 	clear();
-	
+
 	QMap<QString, unsigned int>::const_iterator it = _r.begin();
 	for(; it != _r.end(); ++it)
-		new RoomListItem(this, it.key(), it.data());
+		new RoomListItem(this, it.key(), it.value());
+	resizeColumnToContents(0);
+	sortItems(0, Qt::AscendingOrder);
 }
 
 void RoomListView::slotJoin() {
@@ -69,29 +83,30 @@ void RoomListView::slotLeave() {
 void RoomListView::slotRefresh() {
 	museeq->updateRoomList();
 }
+void RoomListView::slotActivate(QTreeWidgetItem* item, int column) {
 
-void RoomListView::slotPopupMenu(QListViewItem* item, const QPoint& pos, int) {
-	RoomListItem* _item = static_cast<RoomListItem*>(item);
-	if(item) {
-		mPopped = _item->room();
-		mPopup->setItemEnabled(0, ! museeq->isJoined(mPopped));
-		mPopup->setItemEnabled(1, museeq->isJoined(mPopped));
-		mPopup->setItemEnabled(2, museeq->isConnected());
-	} else {
-		mPopped = QString::null;
-		mPopup->setItemEnabled(0, false);
-		mPopup->setItemEnabled(1, false);
-		mPopup->setItemEnabled(2, museeq->isConnected());
-	}
-	mPopup->exec(pos);
-}
-
-void RoomListView::slotDoubleClicked(QListViewItem* item, const QPoint&, int) {
-	slotReturnPressed(item);
-}
-
-void RoomListView::slotReturnPressed(QListViewItem* item) {
 	RoomListItem* _item = static_cast<RoomListItem*>(item);
 	if(item)
 		museeq->joinRoom(_item->room());
 }
+
+void RoomListView::slotContextMenu(const QPoint& pos) {
+	RoomListItem* item = static_cast<RoomListItem*>(itemAt(pos));
+
+	if (! item ) {
+
+		mPopped = QString::null;
+		ActionJoin->setEnabled(false);
+		ActionLeave->setEnabled(false);
+		ActionRefresh->setEnabled(museeq->isConnected());
+
+	} else {
+		mPopped = item->room();
+		ActionJoin->setEnabled(! museeq->isJoined(mPopped));
+		ActionLeave->setEnabled(museeq->isJoined(mPopped));
+		ActionRefresh->setEnabled(museeq->isConnected());
+	}
+
+	mPopup->exec(mapToGlobal(pos));
+}
+

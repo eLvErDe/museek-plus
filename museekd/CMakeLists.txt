@@ -1,10 +1,19 @@
 project(museekd CXX)
 
-IF(PREFIX)
-  SET(CMAKE_INSTALL_PREFIX ${PREFIX})
-ELSE(PREFIX)
-  SET(CMAKE_INSTALL_PREFIX "/usr")
-ENDIF(PREFIX)
+# Find ZLib
+find_package(ZLIB REQUIRED)
+include_directories(${ZLIB_INCLUDE_DIR})
+
+# Find LibXml2
+find_package(LibXml2 REQUIRED)
+include_directories(${LIBXML2_INCLUDE_DIR})
+add_definitions(${LIBXML2_DEFINITIONS})
+
+# Check for some OS specific libraries
+set(OS_LIBRARIES "")
+if(WIN32 AND NOT CYGWIN)
+  set(OS_LIBRARIES ${OS_LIBRARIES} ole32 shell32)
+endif(WIN32 AND NOT CYGWIN)
 
 if (NOT MANDIR)
   set(MANUAL_DIRECTORY "man/man1")
@@ -12,36 +21,16 @@ else (NOT MANDIR)
   set(MANUAL_DIRECTORY ${MANDIR}/man1)
 endif (NOT MANDIR)
 
-if (MULOG)
-  set(MULOG_DEBUG 1)
-endif (MULOG)
-
-# Find ZLib
-find_package(ZLIB REQUIRED)
-# Find LibXml2
-find_package(LibXml2 REQUIRED)
-# Find libxml++
-find_package(libxml++ REQUIRED)
-
-include_directories(${LIBXML2_INCLUDE_DIR})
-add_definitions(${LIBXML2_DEFINITIONS})
-
-include_directories(${LIBXMLPP_INCLUDE_DIR})
-ADD_DEFINITIONS(${LIBXMLPP_CFLAGS})
-
-include_directories(${ZLIB_INCLUDE_DIR})
-include_directories(${TOOLS_SOURCE_DIR})
-include_directories(${MUSEEK_SOURCE_DIR})
-include_directories(${MUSEEKAL_SOURCE_DIR})
-include_directories(${MUHELP_SOURCE_DIR})
-include_directories(${MUCIPHER_SOURCE_DIR})
-
-# Check for some OS specific libraries
-set(OS_LIBRARIES "")
-
 # Select some source files.
 set(MUSEEKD_SOURCES
-   Buddies.cc IfaceConnection.cc main.cc museekd.cc
+  codesetmanager.cpp  ifacemanager.cpp     peermanager.cpp
+  configmanager.cpp   ifacesocket.cpp      peersocket.cpp
+  direntry.cpp        main.cpp             servermanager.cpp
+  downloadmanager.cpp messageprocessor.cpp sharesdatabase.cpp
+  downloadsocket.cpp  museekd.cpp          ticketsocket.cpp
+  handshakesocket.cpp networkmessage.cpp   usersocket.cpp
+  uploadmanager.cpp   uploadsocket.cpp     searchmanager.cpp
+  distributedsocket.cpp
 )
 
 # Build the museekd binary.
@@ -50,14 +39,10 @@ add_executable(museekd ${MUSEEKD_SOURCES})
 # Link the museekd binary to some libraries.
 target_link_libraries(
   museekd
-
-  Museek
-  Museekal
-  Muhelp
   Mucipher
+  ${NEWNET_LIBRARIES}
   ${ZLIB_LIBRARIES}
   ${LIBXML2_LIBRARIES}
-  ${LIBXMLPP_LIBRARY}
   ${ICONV_LIBRARIES}
   ${OS_LIBRARIES}
 )
@@ -74,6 +59,6 @@ install(
 )
 install(
   FILES "config.xml.tmpl"
-  DESTINATION ${DATADIR}
+  DESTINATION ${DATADIR}/museek/museekd
 )
 MESSAGE("--> Museek Daemon (museekd) will be installed..")

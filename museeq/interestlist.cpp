@@ -17,26 +17,29 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "interestlist.h"
-
-#include <qlistview.h>
-#include <qlineedit.h>
-#include <qhbox.h>
-#include <qlabel.h>
 #include "museeq.h"
-#include <qpopupmenu.h>
+#include "interestlist.h"
 #include "interestlistview.h"
+
+#include <QLineEdit>
+#include <QLayout>
+#include <QLabel>
+
 InterestList::InterestList(const QString& caption, QWidget* parent, const char* name)
-             : QVBox(parent, name) {
-	
+             : QWidget(parent) {
+	QVBoxLayout* vbox = new QVBoxLayout(this);
+	vbox->setSpacing(5);
+	vbox->setMargin(0);
 	mListView = new InterestListView(caption, this);
+	vbox->addWidget(mListView);
+	QHBoxLayout* hbox = new QHBoxLayout;
+	hbox->setSpacing(3);
+	hbox->setMargin(2);
+	vbox->addLayout(hbox);
+	hbox->addWidget(new QLabel(tr("Add:")));
+	mEntry = new QLineEdit(this);
+	hbox->addWidget(mEntry);
 
-	mListView->setResizeMode(QListView::LastColumn);
-	QHBox* box = new QHBox(this);
-	new QLabel(tr("Add:"), box);
-	mEntry = new QLineEdit(box);
-
-	
 	if ( caption == tr("I like:") ) {
 		connect(mEntry, SIGNAL(returnPressed()), SLOT(slotDoAddInterest()));
  	}
@@ -47,16 +50,24 @@ InterestList::InterestList(const QString& caption, QWidget* parent, const char* 
 }
 
 void InterestList::added(const QString& item) {
-	if(mListView->findItem(item, 0) != 0)
+
+	QList<QTreeWidgetItem *> InterestsMatch = mListView->findItems(item, Qt::MatchExactly, 0);
+	if (! InterestsMatch.isEmpty())
 		return;
-	new QListViewItem(mListView, item);
+	QTreeWidgetItem * listItem = new QTreeWidgetItem(mListView);
+	listItem->setText(0, item);
 }
 
 void InterestList::removed(const QString& item) {
-	QListViewItem* i = mListView->findItem(item, 0);
-	if(! i)
+
+	QList<QTreeWidgetItem *> InterestsMatch = mListView->findItems(item, Qt::MatchExactly, 0);
+	if (InterestsMatch.isEmpty())
+		return;
+	QTreeWidgetItem* i = InterestsMatch.at(0);
+	if (! i)
 		return;
 	delete i;
+
 }
 
 void InterestList::slotDoAddInterest() {

@@ -18,66 +18,101 @@
  */
 
 #include "transferlistview.h"
-
-#include <qpainter.h>
-
 #include "transferlistitem.h"
-#include "slskdrag.h"
 #include "museeq.h"
+#include "util.h"
+
+#include <QDropEvent>
+#include <QList>
+#include <QUrl>
+#include <QPainter>
 
 TransferListView::TransferListView(bool place, QWidget* _p, const char* _n)
-                 : QListView(_p, _n), mGroupMode(None) {
-	
-	setAllColumnsShowFocus(true);
-	setShowSortIndicator(true);
-	setSelectionMode(Extended);
-	
-	addColumn(tr("User"), 100);
-	addColumn(tr("File"), 250);
-	addColumn(tr("Status"));
-	addColumn(tr("Place"), 50);
+                 : QTreeWidget(_p), mGroupMode(None) {
+
+	QStringList headers;
+	headers << tr("User") << tr("File") << tr("Status") << tr("Place") << tr("Position") << tr("Size") << tr("Speed") << tr("Path") << QString::null;
+
+    setAllColumnsShowFocus(true);
+	setHeaderLabels(headers);
+	setSortingEnabled ( false );
+	setDragEnabled(true);
+	setSelectionMode(QAbstractItemView::ExtendedSelection);
+
+	setColumnWidth ( 0, 100 );
+	setColumnWidth ( 1, 250 );
+
 	if(! place)
-		setColumnWidth(3, 0);
-	addColumn(tr("Position"), 100);
-	addColumn(tr("Size"), 100);
-	addColumn(tr("Speed"), 100);
-	addColumn(tr("Path"));
-	
-	setColumnAlignment(3, Qt::AlignRight|Qt::AlignVCenter);
-	setColumnAlignment(4, Qt::AlignRight|Qt::AlignVCenter);
-	setColumnAlignment(5, Qt::AlignRight|Qt::AlignVCenter);
-	
+		setColumnHidden(3, true);
+	setColumnWidth(3, 50);
+	setColumnWidth ( 4, 100 );
+	setColumnWidth ( 5, 100 );
+	setColumnWidth ( 6, 100 );
+	setColumnWidth ( 7, 250 );
+	setColumnWidth ( 8, 0 );
+
+	setContextMenuPolicy(Qt::CustomContextMenu);
 	connect(museeq, SIGNAL(disconnected()), SLOT(clear()));
 }
 
-void TransferListView::update(const NTransfer& transfer) {
-	TransferListItem* file = static_cast<TransferListItem*>(firstChild());
-	
-	for(; file != 0; file = static_cast<TransferListItem*>(file->nextSibling()))
-		if(file->user() == transfer.user && (mGroupMode != None || file->path() == transfer.filename))
-			break;
-	
-	if(! file) {
-		file = new TransferListItem(this, transfer.user, (mGroupMode == None) ? transfer.filename : QString::null);
-		file->setOpen(false);
+TransferListItem* TransferListView::findTransfer(const QString& _u, const QString& _p) {
+	QTreeWidgetItemIterator it(this);
+	while (*it) {
+		if (((static_cast<TransferListItem *>(*it))->user() == _u) && ((static_cast<TransferListItem *>(*it))->path() == _p))
+ 			return static_cast<TransferListItem *>(*it);
+		++it;
 	}
-	
+
+	return static_cast<TransferListItem *>(0);
+}
+
+TransferListItem* TransferListView::findParent(const QString& user) {
+	if (mGroupMode == None)
+		return static_cast<TransferListItem *>(invisibleRootItem());
+
+	TransferListItem * parent = 0;
+	QList<QTreeWidgetItem *> Groups = TransferListView::findItems(user, Qt::MatchExactly, 0);
+	QList<QTreeWidgetItem *>::iterator transfers_it = Groups.begin();
+	for(; transfers_it != Groups.end();  ++transfers_it) {
+		if (static_cast<TransferListItem *>(*transfers_it)->path().isNull()) {
+			parent = static_cast<TransferListItem *>(*transfers_it);
+		}
+	}
+
+	if (! parent)
+		parent = new TransferListItem(this, user, QString::null);
+
+	addTopLevelItem(parent);
+	return parent;
+
+}
+
+void TransferListView::update(const NTransfer& transfer) {
+	TransferListItem* file = findTransfer(transfer.user, transfer.filename);
+	if (!file )
+		file = new TransferListItem(findParent(transfer.user), transfer.user, transfer.filename);
+
 	file->update(transfer);
 }
 
 void TransferListView::remove(const QString& _u, const QString& _p) {
-	TransferListItem* item = static_cast<TransferListItem*>(firstChild());
-	for(; item != 0; item = static_cast<TransferListItem*>(item->nextSibling()))
-		if(item->user() == _u && (mGroupMode != None || item->path() == _p)) {
-			if(mGroupMode == None)
-				delete item;
-			else {
-				item->remove(_p);
-				if(item->childCount() == 0)
-					delete item;
-			}
-			return;
+	TransferListItem* item = findTransfer(_u, _p);
+	if (! item )
+		return;
+
+	if(item->user() == _u && (mGroupMode != None || item->path() == _p)) {
+		if(mGroupMode == None) {
+			museeq->output("delete item");
+			delete static_cast<QTreeWidgetItem *>(item);
+		} else {
+            delete item;
+            TransferListItem* parent = findParent(_u);
+			if(parent->childCount() == 0)
+                delete parent;
 		}
+		return;
+	}
+
 }
 
 TransferListView::GroupMode TransferListView::groupMode() const {
@@ -89,117 +124,173 @@ void TransferListView::setGroupMode(GroupMode mode) {
 		return;
 
 	mGroupMode = mode;
-	
+
 	if(mGroupMode == None) {
-		QPtrList<QListViewItem> users;
-		
-		QListViewItem* user = firstChild();
-		for(; user != 0; user = user->nextSibling())
-			users.append(user);
-		
-		QPtrList<QListViewItem>::iterator it = users.begin();
-		for(; it != users.end(); ++it) {
-			QPtrList<QListViewItem> items;
-			
-			QListViewItem* item = (*it)->firstChild();
-			for(; item != 0; item = item->nextSibling())
-				items.append(item);
-			
-			QPtrList<QListViewItem>::iterator items_it = items.begin();
-			for(; items_it != items.end(); ++items_it) {
-				(*it)->takeItem(item);
-				insertItem(*items_it);
+
+		QList<QTreeWidgetItem *> items;
+		QList<QTreeWidgetItem *> subitems;
+		QList<QTreeWidgetItem *>::iterator sitx;
+		items = invisibleRootItem()->takeChildren ();
+		QList<QTreeWidgetItem *>::iterator itx = items.begin();
+		for(; itx != items.end(); ++itx) {
+
+			if ( ! ( static_cast<TransferListItem *>(*itx))->text(1).isNull()) {
+
+				invisibleRootItem()->addChild(*itx);
+			} else {
+				subitems = (*itx)->takeChildren();
+				sitx = subitems.begin();
+				for(; sitx != subitems.end(); ++sitx) {
+					invisibleRootItem()->addChild(*sitx);
+				}
 			}
-			delete (*it);
 		}
+
 		setRootIsDecorated(false);
 	} else {
-		QPtrList<TransferListItem> items;
-		
-		QListViewItem* item = firstChild();
-		for(; item != 0; item = item->nextSibling())
-			items.append(static_cast<TransferListItem*>(item));
-		
-		QMap<QString, TransferListItem*> users;
-		
-		QPtrList<TransferListItem>::iterator items_it = items.begin();
-		for(; items_it != items.end(); ++items_it) {
-			TransferListItem* user;
-			
-			QMap<QString, TransferListItem*>::iterator it = users.find((*items_it)->user());
-			if(it != users.end())
-				user = it.data();
-			else {
-				user = new TransferListItem(this, (*items_it)->user());
-				user->setOpen(false);
-				users[(*items_it)->user()] = user;
+
+		QList<QTreeWidgetItem *> items;
+
+		items = invisibleRootItem()->takeChildren ();
+
+		QList<QTreeWidgetItem *>::iterator itx = items.begin();
+		for(; itx != items.end(); ++itx) {
+
+			if ( (static_cast<TransferListItem *>(*itx))->text(1).isNull()) {
+				invisibleRootItem()->addChild(*itx);
 			}
-			takeItem(*items_it);
-			user->insertItem(*items_it);
 		}
-		
-		QMap<QString, TransferListItem*>::iterator user_it = users.begin();
-		for(; user_it != users.end(); ++user_it)
-			user_it.data()->updateStats();
-		
+		itx = items.begin();
+		for(; itx != items.end(); ++itx) {
+
+			if (! (static_cast<TransferListItem *>(*itx))->text(1).isNull()) {
+				findParent((static_cast<TransferListItem *>(*itx))->user())->addChild(*itx);
+			}
+		}
+
+		updateParentsStats();
+
 		setRootIsDecorated(true);
 	}
+
+}
+void TransferListView::updateParentsStats() {
+	if(mGroupMode == None)
+		return;
+
+	int topit = 0;
+
+	for(; topit < topLevelItemCount(); topit++) {
+		static_cast<TransferListItem *>(topLevelItem(topit))->updateStats();
+	}
+}
+
+void TransferListView::dragMoveEvent(QDragMoveEvent* event) {
+    event->acceptProposedAction();
 }
 
 void TransferListView::dragEnterEvent(QDragEnterEvent* event) {
-	event->accept(SlskDrag::canDecode(event, true));
+    event->acceptProposedAction();
 }
 
 void TransferListView::dropEvent(QDropEvent* event) {
-	QStringList l;
-	if(SlskDrag::decode(event, l))
-		emit dropSlsk(l);
+    event->acceptProposedAction();
+
+    if (Util::hasSlskUrls(event, true) && acceptDrops())
+        emit dropSlsk(event->mimeData()->urls());
 }
 
-QDragObject* TransferListView::dragObject() {
-	SlskDrag* drag = new SlskDrag(viewport());
-	
-	QValueList<TransferListItem*> items;
-	QStringList users;
-	
-	QListViewItemIterator it(this, QListViewItemIterator::Selected);
-	while(it.current())
-	{
-		TransferListItem* item = static_cast<TransferListItem*>(*it);
-		if(users.find(item->user()) == users.end())
-			users << item->user();
-		drag->append(item->user(), item->path());
-		items << item;
-		
-		it++;
+/**
+  * User have press mouse button in this widget
+  */
+void TransferListView::mousePressEvent(QMouseEvent *event)
+{
+    QList<QTreeWidgetItem *> oldItems = selectedItems();
+    event->accept();
+
+    if (event->button() == Qt::LeftButton)
+        mDragStartPosition = event->pos();
+
+    QTreeWidget::mousePressEvent(event);
+    setDragEnabled(oldItems == selectedItems());
+}
+
+/**
+  * User have moved his mouse in this widget
+  */
+void TransferListView::mouseMoveEvent(QMouseEvent *event)
+{
+    event->accept();
+
+    // Should we start dragging?
+    if (!dragEnabled()) {
+        // We change selection: don't stop dragging and restore extendedselection
+        setSelection(QRect(mDragStartPosition, event->pos()), QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+        return;
+    }
+    if (!(event->buttons() & Qt::LeftButton))
+        return;
+    if ((event->pos() - mDragStartPosition).manhattanLength() < QApplication::startDragDistance())
+        return;
+
+    // Create drag object
+    QDrag *drag = new QDrag(this);
+    QMimeData *mimeData = new QMimeData;
+
+    QList<QUrl> urls;
+    QStringList users;
+
+	QList<QTreeWidgetItem*> items = selectedItems();
+    QList<QTreeWidgetItem*>::const_iterator it = items.begin();
+	for(; it != items.end(); ++it) {
+	    TransferListItem * item = static_cast<TransferListItem*>(*it);
+
+        if(users.indexOf(item->user()) == -1)
+            users << item->user();
+
+	    // slsk protocol: in QUrl, hostname is always lower case.
+	    // So we put username as hostname for compatibility, and as username to have the correct case.
+	    // Ex: slsk://MuSeEk@museek/path/to/a/file
+	    // Code should first look at QUrl::userName() and if not present, try QUrl::host()
+	    QUrl url("slsk://" + item->user());
+	    url.setUserName(item->user());
+
+	    // There may be spaces in username so url may not be valid. It will work, but QUrl::isValid() should not be used
+	    urls.push_back(url);
 	}
-	
-	if(! items.count()) {
-		delete drag;
-		return 0;
-	}
-	
-	QString x;
-	if(items.count() == 1)
-		x = tr("1 transfer (1 user)");
-	else if(users.count() == 1)
-		x = QString(tr("%1 transfers (1 user)")).arg(items.count());
-	else
-		x = QString(tr("%1 transfers (%2 users)")).arg(items.count()).arg(users.count());
-	QSize s = viewport()->fontMetrics().size(Qt::SingleLine, x) + QSize(6, 4);
-	
+
+	if(urls.count() == 0)
+		return;
+
+	// Add the urls to the mimedata
+    mimeData->setUrls(urls);
+    // Add them too in text format if we want to paste it in a text area
+    QString textUrls;
+    QList<QUrl>::const_iterator uit;
+    for(uit = urls.begin(); uit != urls.end(); uit++)
+        textUrls += uit->toString() + "\n";
+    mimeData->setText(textUrls);
+
+    // And now set this mimedata into drag object
+    drag->setMimeData(mimeData);
+
+	QString x(tr("%n transfer(s)", "", items.count()) + tr(" (%n user(s))", "", users.count()));
+	QSize s = viewport()->fontMetrics().size(Qt::TextSingleLine, x) + QSize(6, 4);
+
 	QPixmap pix(s);
 	QPainter p(&pix);
 	p.setFont(viewport()->font());
-	p.setPen(viewport()->foregroundColor());
-	
-	p.fillRect(QRect(QPoint(0, 0), s), viewport()->eraseColor());
+ 	p.setPen(viewport()->palette().color(QPalette::WindowText));
+
+	p.fillRect(QRect(QPoint(0, 0), s), viewport()->palette().color(QPalette::Background));
 	p.drawRect(QRect(QPoint(0, 0), s));
-	p.drawText(QRect(QPoint(3, 3), s - QSize(3, 3)), AlignAuto | AlignVCenter, x);
-	
+	p.drawText(QRect(QPoint(3, 3), s - QSize(3, 3)), Qt::AlignLeft | Qt::AlignVCenter, x);
+
 	p.end();
-	
-	drag->setPixmap(pix, QPoint(-25, -25));
-	
-	return drag;
+
+    drag->setHotSpot(QPoint(20, 20));
+    drag->setPixmap(pix);
+
+    // Begin dragging
+    drag->exec();
 }

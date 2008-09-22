@@ -1,3 +1,4 @@
+
 /* museeq - a Qt client to museekd
  *
  * Copyright (C) 2003-2004 Hyriand <hyriand@thegraveyard.org>
@@ -20,19 +21,19 @@
 #ifndef MUSEEKMESSAGES_H
 #define MUSEEKMESSAGES_H
 
-typedef Q_UINT32 uint32;
-#include <Mucipher/mucipher.h>
-
 #include "museeqtypes.h"
-#include <iostream>
+
+#include <Mucipher/mucipher.h>
+#include <QByteArray>
+#include <QList>
 
 class MuseekMessage {
 public:
 	MuseekMessage() {}
-	MuseekMessage(const QValueList<unsigned char>& _data)
+	MuseekMessage(const QList<unsigned char>& _data)
 	                : mData(_data) { }
 	virtual ~MuseekMessage() { }
-	
+
 	void pack(unsigned char c) {
 		mData.push_back(c);
 	}
@@ -42,7 +43,7 @@ public:
 			i = i >> 8;
 		}
 	}
-	void pack(Q_INT64 i) {
+	void pack(qint64 i) {
 		for(int j = 0; j < 8; j++) {
 			pack((unsigned char)(i& 0xff));
 			i = i >> 8;
@@ -58,10 +59,10 @@ public:
 		if(s.isEmpty())
 			pack((uint)0);
 		else {
-			QCString utf8 = s.utf8();
-			pack(utf8.size() - 1);
-			QCString::ConstIterator it = utf8.begin();
-			for(; it+1 != utf8.end(); ++it)
+			QByteArray utf8 = s.toUtf8();
+			pack((uint)utf8.size() );
+			QByteArray::ConstIterator it = utf8.begin();
+			for(; it != utf8.end(); ++it)
 				pack((unsigned char)(*it));
 		}
 	}
@@ -69,8 +70,8 @@ public:
 		if(s.isEmpty())
 			pack((uint)0);
 		else {
-			QCString c = s.utf8();
-			uint i = c.size() - 1;
+			QByteArray c = s.toUtf8();
+			uint i = c.size();
 			pack(i);
 			unsigned char temp[CIPHER_BLOCK(i)];
 			const char* data = c;
@@ -79,7 +80,7 @@ public:
 				pack(temp[j]);
 		}
 	}
-	
+
 	unsigned char unpack() {
 		unsigned char r = mData.front();
 		mData.pop_front();
@@ -91,8 +92,8 @@ public:
 			r += unpack() << (j * 8);
 		return r;
 	}
-	Q_INT64 unpack_off() {
-		Q_INT64 r = 0;
+	qint64 unpack_off() {
+		qint64 r = 0;
 		for(int j = 0; j < 8; j++)
 			r += unpack() << (j * 8);
 		return r;
@@ -106,9 +107,9 @@ public:
 	}
 	QByteArray unpack_array() {
 		uint l = unpack_uint();
-		QByteArray r(l);
+		QByteArray r;
 		for(uint j = 0; j < l; ++j)
-			r[j] = unpack();
+			r.append(unpack());
 		return r;
 	}
 	NUserData unpack_user() {
@@ -121,7 +122,7 @@ public:
 		unpack();
 		return r;
 	}
-	
+
 	NRoom unpack_room() {
 		NRoom r;
 		uint n = unpack_uint();
@@ -132,18 +133,18 @@ public:
 		}
 		return r;
 	}
-	
+
 	NTickers unpack_tickers() {
 		NTickers r;
 		uint n = unpack_uint();
 		while(n) {
 			QString s = unpack_str();
-			r[s] = unpack_str();
+			r[s] = unpack_str().trimmed();
 			--n;
 		}
 		return r;
 	}
-	
+
 	NTransfer unpack_transfer() {
 		NTransfer r;
 		r.user = unpack_str();
@@ -156,13 +157,13 @@ public:
 		r.rate = unpack_uint();
 		return r;
 	}
-	
+
 	NFileData unpack_file() {
 		NFileData r;
 		r.size = unpack_off();
 		QString ext = unpack_str();
 		uint n = unpack_uint();
-		QValueList<uint> attrs;
+		QList<uint> attrs;
 		while(n) {
 			attrs.push_back(unpack_uint());
 			n--;
@@ -178,7 +179,7 @@ public:
 		}
 		return r;
 	}
-	
+
 	NFolder unpack_folder() {
 		NFolder r;
 		uint n = unpack_uint();
@@ -189,30 +190,30 @@ public:
 		}
 		return r;
 	}
-	
+
 	QString decipher(CipherContext* ctx) {
 		uint l = unpack_uint(),
 		     l_c = CIPHER_BLOCK(l);
 		unsigned char temp1[l_c], temp2[l_c];
-		
+
 		for(uint i = 0; i < l_c; i++)
 			temp1[i] = unpack();
 		blockDecipher(ctx, temp1, l_c, temp2);
-		
+
 		return QString::fromUtf8((char*)temp2, l);
 	}
-	
-	virtual const QValueList<unsigned char>& data() const {
+
+	virtual const QList<unsigned char>& data() const {
 		return mData;
 	}
-	
+
 	virtual uint MType() const { return 0; }
-	
+
 protected:
 	virtual void parse() { };
-	
+
 private:
-	QValueList<unsigned char> mData;
+	QList<unsigned char> mData;
 };
 
 #define MESSAGE(n, id) \
@@ -220,14 +221,14 @@ class n : public MuseekMessage { \
 public: \
 	virtual uint MType() const { return id; } \
 	n(): MuseekMessage() { } \
-	n(const QValueList<unsigned char>& _d) : MuseekMessage(_d) { parse(); }
+	n(const QList<unsigned char>& _d) : MuseekMessage(_d) { parse(); }
 
 #define CMESSAGE(n, id) \
 class n : public MuseekMessage { \
 public: \
 	virtual uint MType() const { return id; } \
 	n(): MuseekMessage() { } \
-	n(CipherContext* ctx, const QValueList<unsigned char>& _d) : MuseekMessage(_d) { parse(ctx); }
+	n(CipherContext* ctx, const QList<unsigned char>& _d) : MuseekMessage(_d) { parse(ctx); }
 
 #define END };
 #define PARSE protected: virtual void parse() {
@@ -235,11 +236,11 @@ public: \
 
 MESSAGE(NPing, 0x0000)
 	uint id;
-	
+
 	NPing(uint _id) {
 		pack(_id);
 	}
-	
+
 	PARSE
 		id = unpack_uint();
 	END
@@ -248,7 +249,7 @@ END
 MESSAGE(NChallenge, 0x0001)
 	uint version;
 	QString challenge;
-	
+
 	PARSE
 		version = unpack_uint();
 		challenge = unpack_str();
@@ -258,7 +259,7 @@ END
 MESSAGE(NLogin, 0x0002)
 	bool ok;
 	QString msg, challenge;
-	
+
 	NLogin(const QString& algorithm, const QString& chresponse, uint _m) {
 		pack(algorithm);
 		pack(chresponse);
@@ -275,7 +276,7 @@ END
 MESSAGE(NServerState, 0x0003)
 	bool connected;
 	QString username;
-	
+
 	PARSE
 		connected = unpack() != 0;
 		username = unpack_str();
@@ -286,7 +287,7 @@ END
 MESSAGE(NStatusMessage, 0x0010)
 	bool type;
 	QString message;
-	
+
 	PARSE
 		type = unpack() != 0;
 		message = unpack_str();
@@ -295,7 +296,7 @@ END
 
 MESSAGE(NCheckPrivileges, 0x0004)
 	uint secondsleft;
-	
+
 	PARSE
 		secondsleft = unpack_uint();
 	END
@@ -303,11 +304,11 @@ END
 
 MESSAGE(NSetStatus, 0x0005)
 	uint status;
-	
+
 	NSetStatus(uint _s) {
 		pack(_s);
 	}
-	
+
 	PARSE
 		status = unpack_uint();
 	END
@@ -317,7 +318,7 @@ MESSAGE(NRoomState, 0x0300)
 	NRoomList roomlist;
 	NRooms rooms;
 	NTickerMap tickers;
-	
+
 	PARSE
 		uint n = unpack_uint();
 		while(n) {
@@ -337,7 +338,7 @@ END
 
 MESSAGE(NGetRoomList, 0x0301)
 	NRoomList roomlist;
-	
+
 	PARSE
 		uint n = unpack_uint();
 		while(n) {
@@ -350,7 +351,7 @@ END
 
 MESSAGE(NGetGlobalRecommendations, 0x0601)
 	NGlobalRecommendations recommendations;
-	
+
 	PARSE
 		uint n = unpack_uint();
 		while(n) {
@@ -363,7 +364,7 @@ END
 
 MESSAGE(NGetRecommendations, 0x0600)
 	NRecommendations recommendations;
-	
+
 	PARSE
 		uint n = unpack_uint();
 		while(n) {
@@ -376,7 +377,7 @@ END
 
 MESSAGE(NGetSimilarUsers, 0x0602)
 	NSimilarUsers users;
-	
+
 	PARSE
 		uint n = unpack_uint();
 		while(n) {
@@ -391,7 +392,7 @@ END
 MESSAGE(NGetItemRecommendations, 0x0603)
 	NItemRecommendations recommendations;
 	QString item;
-	
+
 	NGetItemRecommendations(const QString& _item) {
 		pack(_item);
 	}
@@ -413,7 +414,7 @@ MESSAGE(NGetItemSimilarUsers, 0x0604)
 
 	NGetItemSimilarUsers(const QString& _item) {
 		pack(_item);
-	}	
+	}
 
 	PARSE
 		item = unpack_str();
@@ -429,11 +430,11 @@ END
 
 MESSAGE(NAddInterest, 0x0610)
 	QString interest;
-	
+
 	NAddInterest(const QString& _interest) {
 		pack(_interest);
 	}
-	
+
 	PARSE
 		interest = unpack_str();
 	END
@@ -441,11 +442,11 @@ END
 
 MESSAGE(NAddHatedInterest, 0x0612)
 	QString interest;
-	
+
 	NAddHatedInterest(const QString& _interest) {
 		pack(_interest);
 	}
-	
+
 	PARSE
 		interest = unpack_str();
 	END
@@ -453,11 +454,11 @@ END
 
 MESSAGE(NRemoveInterest, 0x0611)
 	QString interest;
-	
+
 	NRemoveInterest(const QString& _interest) {
 		pack(_interest);
 	}
-	
+
 	PARSE
 		interest = unpack_str();
 	END
@@ -465,11 +466,11 @@ END
 
 MESSAGE(NRemoveHatedInterest, 0x0613)
 	QString interest;
-	
+
 	NRemoveHatedInterest(const QString& _interest) {
 		pack(_interest);
 	}
-	
+
 	PARSE
 		interest = unpack_str();
 	END
@@ -478,12 +479,12 @@ END
 MESSAGE(NSearchRequest, 0x0401)
 	QString query;
 	uint token;
-	
+
 	NSearchRequest(uint _type, QString _query) {
 		pack(_type);
 		pack(_query);
 	}
-	
+
 	PARSE
 		query = unpack_str();
 		token = unpack_uint();
@@ -497,11 +498,11 @@ MESSAGE(NSearchResults, 0x0402)
 	uint speed;
 	uint queue;
 	NFolder results;
-	
+
 	NSearchResults(uint _token) {
 		pack(_token);
 	}
-	
+
 	PARSE
 		token = unpack_uint();
 		username = unpack_str();
@@ -513,7 +514,7 @@ MESSAGE(NSearchResults, 0x0402)
 END
 
 MESSAGE(NUserSearchRequest, 0x0403)
-	
+
 	NUserSearchRequest(QString _user, QString _query) {
 		pack(_user);
 		pack(_query);
@@ -522,7 +523,7 @@ END
 
 MESSAGE(NWishListSearchRequest, 0x0405)
 	QString query;
-	
+
 	NWishListSearchRequest(QString _query) {
 		pack(_query);
 	}
@@ -531,12 +532,12 @@ END
 MESSAGE(NSayChatroom, 0x0307)
 	QString room, user;
 	QString line;
-	
+
 	NSayChatroom(const QString& _room, const QString& _line) {
 		pack(_room);
 		pack(_line);
 	}
-	
+
 	PARSE
 		room = unpack_str();
 		user = unpack_str();
@@ -547,11 +548,11 @@ END
 MESSAGE(NJoinRoom, 0x0303)
 	QString room;
 	NRoom users;
-	
+
 	NJoinRoom(const QString& _room) {
 		pack(_room);
 	}
-	
+
 	PARSE
 		room = unpack_str();
 		users = unpack_room();
@@ -560,11 +561,11 @@ END
 
 MESSAGE(NLeaveRoom, 0x0304)
 	QString room;
-	
+
 	NLeaveRoom(const QString& _room) {
 		pack(_room);
 	}
-	
+
 	PARSE
 		room = unpack_str();
 	END
@@ -573,7 +574,7 @@ END
 MESSAGE(NUserJoined, 0x0305)
 	QString room, username;
 	NUserData userdata;
-	
+
 	PARSE
 		room = unpack_str();
 		username = unpack_str();
@@ -583,7 +584,7 @@ END
 
 MESSAGE(NUserLeft, 0x0306)
 	QString room, username;
-	
+
 	PARSE
 		room = unpack_str();
 		username = unpack_str();
@@ -593,7 +594,7 @@ END
 MESSAGE(NRoomTickers, 0x0308)
 	QString room;
 	NTickers tickers;
-	
+
 	PARSE
 		room = unpack_str();
 		tickers = unpack_tickers();
@@ -602,12 +603,12 @@ END
 
 MESSAGE(NRoomTickerSet, 0x0309)
 	QString room, user, message;
-	
+
 	NRoomTickerSet(const QString& _room, const QString& _message) {
 		pack(_room);
 		pack(_message);
 	}
-	
+
 	PARSE
 		room = unpack_str();
 		user = unpack_str();
@@ -618,12 +619,12 @@ END
 MESSAGE(NPrivateMessage, 0x0302)
 	uint direction, timestamp;
 	QString username, message;
-	
+
 	NPrivateMessage(const QString& _user, const QString& _message) {
 		pack(_user);
 		pack(_message);
 	}
-	
+
 	PARSE
 		direction = unpack_uint();
 		timestamp = unpack_uint();
@@ -638,11 +639,11 @@ MESSAGE(NUserInfo, 0x0204)
 	uint upslots;
 	uint queue;
 	bool slotsfree;
-	
+
 	NUserInfo(const QString& _user) {
 		pack(_user);
 	}
-	
+
 	PARSE
 		username = unpack_str();
 		info = unpack_str();
@@ -656,11 +657,11 @@ END
 MESSAGE(NUserShares, 0x0205)
 	QString username;
 	NShares shares;
-	
+
 	NUserShares(const QString& _user) {
 		pack(_user);
 	}
-	
+
 	PARSE
 		username = unpack_str();
 		uint n = unpack_uint();
@@ -674,7 +675,7 @@ END
 
 MESSAGE(NTransferState, 0x0500)
 	NTransfers downloads, uploads;
-	
+
 	PARSE
 		uint n = unpack_uint();
 		while(n) {
@@ -692,12 +693,12 @@ END
 MESSAGE(NTransferUpdate, 0x0501)
 	bool isUpload;
 	NTransfer transfer;
-	
+
 	NTransferUpdate(const QString& _user, const QString& _path) {
 		pack(_user);
 		pack(_path);
 	}
-	
+
 	PARSE
 		isUpload = unpack() != 0;
 		transfer = unpack_transfer();
@@ -707,22 +708,22 @@ END
 MESSAGE(NTransferRemove, 0x0502)
 	bool isUpload;
 	QString user, path;
-	
+
 	NTransferRemove(bool _upload, const QString& _user, const QString& _path) {
 		pack((unsigned char)_upload);
 		pack(_user);
 		pack(_path);
 	}
-	
+
 	PARSE
 		isUpload = unpack() != 0;
 		user = unpack_str();
 		path = unpack_str();
 	END
 END
-		
+
 MESSAGE(NDownloadFile, 0x0503)
-	NDownloadFile(const QString& _user, const QString& _path, const QString& _local, Q_INT64 _size) {
+	NDownloadFile(const QString& _user, const QString& _path, const QString& _local, qint64 _size) {
 		pack(_user);
 		pack(_path);
 		pack(_local);
@@ -731,7 +732,7 @@ MESSAGE(NDownloadFile, 0x0503)
 END
 
 MESSAGE(NDownloadFileTo, 0x0507)
-	NDownloadFileTo(const QString& _user, const QString& _path, const QString& _local, Q_INT64 _size) {
+	NDownloadFileTo(const QString& _user, const QString& _path, const QString& _local, qint64 _size) {
 		pack(_user);
 		pack(_path);
 		pack(_local);
@@ -741,6 +742,21 @@ END
 
 MESSAGE(NFolderContents, 0x0504)
 	NFolderContents(const QString& _user, const QString& _path) {
+		pack(_user);
+		pack(_path);
+	}
+END
+
+MESSAGE(NDownloadFolderTo, 0x0508)
+	NDownloadFolderTo(const QString& _user, const QString& _path, const QString& _local) {
+		pack(_user);
+		pack(_path);
+		pack(_local);
+	}
+END
+
+MESSAGE(NUploadFolder, 0x0509)
+	NUploadFolder(const QString& _user, const QString& _path) {
 		pack(_user);
 		pack(_path);
 	}
@@ -764,11 +780,11 @@ END
 MESSAGE(NUserExists, 0x0201)
 	QString user;
 	bool exists;
-	
+
 	NUserExists(const QString& _user) {
 		pack(_user);
 	}
-	
+
 	PARSE
 		user = unpack_str();
 		exists = unpack() != 0;
@@ -778,11 +794,11 @@ END
 MESSAGE(NUserStatus, 0x0202)
 	QString user;
 	uint status;
-	
+
 	NUserStatus(const QString& _user) {
 		pack(_user);
 	}
-	
+
 	PARSE
 		user = unpack_str();
 		status = unpack_uint();
@@ -792,11 +808,11 @@ END
 MESSAGE(NUserStats, 0x0203)
 	QString user;
 	uint speed, downloads, files, dirs;
-	
+
 	NUserStats(const QString& _user) {
 		pack(_user);
 	}
-	
+
 	PARSE
 		user = unpack_str();
 		speed = unpack_uint();
@@ -809,11 +825,11 @@ END
 MESSAGE(NUserAddress, 0x0206)
 	QString user, ip;
 	uint port;
-	
+
 	NUserAddress(const QString& _user) {
 		pack(_user);
 	}
-	
+
 	PARSE
 		user = unpack_str();
 		ip = unpack_str();
@@ -823,7 +839,7 @@ END
 
 CMESSAGE(NConfigState, 0x0100)
 	QMap<QString, QMap<QString, QString> > config;
-	
+
 	CPARSE
 		uint n = unpack_uint();
 		while(n) {
@@ -843,13 +859,13 @@ END
 
 CMESSAGE(NConfigSet, 0x0101)
 	QString domain, key, value;
-	
+
 	NConfigSet(CipherContext* context, const QString& _domain, const QString& _key, const QString& _value) {
 		cipher(context, _domain);
 		cipher(context, _key);
 		cipher(context, _value);
 	}
-	
+
 	CPARSE
 		domain = decipher(context);
 		key = decipher(context);
@@ -859,12 +875,12 @@ END
 
 CMESSAGE(NConfigRemove, 0x0102)
 	QString domain, key;
-	
+
 	NConfigRemove(CipherContext* context, const QString& _domain, const QString& _key) {
 		cipher(context, _domain);
 		cipher(context, _key);
 	}
-	
+
 	CPARSE
 		domain = decipher(context);
 		key = decipher(context);

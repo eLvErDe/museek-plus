@@ -20,26 +20,28 @@
 #ifndef BUDDYLIST_H
 #define BUDDYLIST_H
 
-#include <qvbox.h>
+#include <QWidget>
 
 class UserListView;
 class QLineEdit;
+class QShowEvent;
+class QUrl;
 
-class BuddyList : public QVBox {
+class BuddyList : public QWidget {
 	Q_OBJECT
 public:
 	BuddyList(QWidget* = 0, const char* = 0);
 
 signals:
 	void activated(const QString&);
-	
+
 protected:
 	void showEvent(QShowEvent*);
-	
+
 protected slots:
 	void addBuddy();
 	void editComments(const QString&);
-	void slotDropSlsk(const QStringList&);
+	void slotDropSlsk(const QList<QUrl>&);
 
 private:
 	UserListView* mUserList;

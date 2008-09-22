@@ -68,7 +68,7 @@ def writeConfig(path = 'newconfig.xml'):
 			key.setAttribute('id', j)
 			v = config[i][j]
 			if v:
-				key.appendChild(doc.createTextNode(v))
+				key.appendChild(doc.createTextNode(v.encode( "utf-8" )))
 		domain.appendChild(doc.createTextNode('\n  '))
 	root.appendChild(doc.createTextNode('\n'))
 	
@@ -132,7 +132,7 @@ def server():
 	if not config.has_key('server'):
 		config['server'] = {}
 	_server = config['server'].get('host', 'server.slsknet.org')
-	_port = config['server'].get('port', '2240')
+	_port = config['server'].get('port', '2242')
 	_username = config['server'].get('username', '')
 	_password = config['server'].get('password', '')
 	print
@@ -171,6 +171,8 @@ def connectmode():
 	print '2. Passive'
 	print '   (use this if you can receive direct connections on'
 	print '    your client port from the outside world)'
+	print
+	print ' Passive is usually a good choice.'
 	print
 	print '0. Don\'t change this setting'
 	c = choice(2)

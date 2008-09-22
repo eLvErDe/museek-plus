@@ -20,12 +20,13 @@
 #ifndef RECOMMENDSVIEW_H
 #define RECOMMENDSVIEW_H
 
-#include <qlistview.h>
 #include "museeqtypes.h"
 
-class QPopupMenu;
+#include <QTreeWidget>
 
-class RecommendsView : public QListView {
+class QMenu;
+
+class RecommendsView : public QTreeWidget {
 	Q_OBJECT
 public:
 	RecommendsView(QWidget* = 0, const char* = 0);
@@ -39,12 +40,14 @@ protected slots:
 	void setItemRecs(const QString&, const NItemRecommendations&);
 	void slotAddLike();
 	void slotAddHate();
-	void slotPopupMenu(QListViewItem*, const QPoint&, int);
-	void slotDoubleClicked(QListViewItem*, const QPoint&, int);
-	void slotReturnPressed(QListViewItem*);
-	
+	void slotContextMenu(const QPoint&);
+	void slotActivate(QTreeWidgetItem*);
+	void slotActivate(QTreeWidgetItem*,  int);
+
+
 protected:
-	QPopupMenu *mPopup;
+	QAction * ActionAddHate, * ActionAddLike;
+	QMenu *mPopup;
 	QString mPopped;
 };
 

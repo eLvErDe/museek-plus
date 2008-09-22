@@ -22,50 +22,62 @@
 
 #include "museeqtypes.h"
 
-#include <qlistview.h>
+#include <QTreeWidget>
 
 class UserListItem;
-class QDragObject;
 class Usermenu;
+class QDropEvent;
+class QDragEnterEvent;
+class QDragMoveEvent;
+class QMouseEvent;
 
-class UserListView : public QListView {
+class UserListView : public QTreeWidget {
 	Q_OBJECT
 public:
 	UserListView(bool, QWidget * = 0, const char * = 0);
-	
+
 	UserListItem* findItem(const QString&);
-	
+
 	uint status(const QString&);
 	uint speed(const QString&);
 	uint files(const QString&);
 	QString comments(const QString&);
-	
+
 public slots:
 	void setComments(const QString&, const QString&);
 	void add(const QString&, uint = 0, uint = 0, uint = 0, const QString& = QString::null);
 	void add(const QString&, const QString&);
 	void remove(const QString&);
-	
+	void sorting(bool);
 signals:
 	void activated(const QString&);
 	void activated(const QString&, const QString&);
-	void dropSlsk(const QStringList&);
-	
+	void dropSlsk(const QList<QUrl>&);
+
 protected:
-	QDragObject* dragObject();
 	void dragEnterEvent(QDragEnterEvent*);
 	void dropEvent(QDropEvent*);
-	
+    void dragMoveEvent(QDragMoveEvent*);
+	void mouseMoveEvent(QMouseEvent *event);
+	void mousePressEvent(QMouseEvent *event);
+	QStringList headers;
+
 protected slots:
+	void keyboardSearch(const QString&);
 	void updateStatus(const QString&);
 	void setStatus(const QString&, uint);
 	void setData(const QString&, uint, uint);
-	void slotActivate(QListViewItem*);
-	void slotActivate(QListViewItem*, const QPoint&, int);
-	void slotContextMenu(QListViewItem*, const QPoint&, int);
-	
+	void slotActivate(QTreeWidgetItem*);
+	void slotActivate(QTreeWidgetItem*,  int);
+	void slotContextMenu(const QPoint&);
+	void slotContextMenu(QTreeWidgetItem*, const QPoint&, int);
+
 private:
 	Usermenu* mUsermenu;
+	QString mLastSearch;
+
+	uint mSearchPosition;
+	QPoint mDragStartPosition;
 };
 
 #endif // USERLISTVIEW_H

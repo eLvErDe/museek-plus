@@ -20,26 +20,28 @@
 #ifndef TRUSTLIST_H
 #define TRUSTLIST_H
 
-#include <qvbox.h>
+#include <QWidget>
 
+class QShowEvent;
 class UserListView;
 class QLineEdit;
+class QUrl;
 
-class TrustList : public QVBox {
+class TrustList : public QWidget {
 	Q_OBJECT
 public:
 	TrustList(QWidget* = 0, const char* = 0);
 
 signals:
 	void activated(const QString&);
-	
+
 protected:
 	void showEvent(QShowEvent*);
-	
+
 protected slots:
 	void addTrusted();
 	void editComments(const QString&);
-	void slotDropSlsk(const QStringList&);
+	void slotDropSlsk(const QList<QUrl>&);
 
 private:
 	UserListView* mUserList;

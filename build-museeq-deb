@@ -1,1 +1,0 @@
-QTDIR=/usr/share/qt3 scons/scons.py PREFIX=/usr MUSEEQ=1

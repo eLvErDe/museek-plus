@@ -19,30 +19,43 @@
 
 #include "roomlistitem.h"
 #include "roomlistview.h"
+#include "util.h"
 
 RoomListItem::RoomListItem(RoomListView* _p, const QString& _r, unsigned int _n)
-                 : QListViewItem(static_cast<QListView *>(_p)), mRoom(_r), mUsers(_n) {
+                 : QTreeWidgetItem(_p), mRoom(_r), mUsers(_n) {
 	setText(0, mRoom);
-	setText(1, QString().sprintf("%u", mUsers));
+	setText(1, QString("%1").arg(mUsers));
 }
 
-static int cmp(unsigned int a, unsigned int b) {
-	if(a > b)
-		return 1;
-	if(a == b)
-		return 0;
-	return -1;
-}
-
-int RoomListItem::compare(QListViewItem * i, int col, bool) const {
+int RoomListItem::compare(QTreeWidgetItem * i, int col, bool) const {
 	RoomListItem *r = static_cast<RoomListItem *>(i);
-	
+
 	if(col == 0)
 		return mRoom.localeAwareCompare(r->mRoom);
 	else
-		return cmp(r->mUsers, mUsers);
+		return Util::cmp(r->mUsers, mUsers);
 }
 
 QString RoomListItem::room() const {
 	return mRoom;
+}
+
+bool RoomListItem::operator<(const QTreeWidgetItem & other_) const {
+  const RoomListItem * other = static_cast<const RoomListItem *>(&other_);
+  int col = 0;
+  if(treeWidget())
+    col = treeWidget()->sortColumn();
+
+  switch(col)
+  {
+    case 0:
+      return mRoom.toLower() < other->mRoom.toLower();
+    case 1:
+      if(mUsers == other->mUsers)
+        return mUsers < other->mUsers;
+      return mUsers < other->mUsers;
+
+  }
+
+  return false;
 }

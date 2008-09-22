@@ -22,20 +22,20 @@
 
 #include "marquee.h"
 #include "museeqtypes.h"
-#include <qmap.h>
 
 class ChatTicker : public Marquee {
 	Q_OBJECT
 public:
-	ChatTicker(QWidget* = 0, const char* = 0);
+	ChatTicker(QWidget* = 0, const char* = 0, uint = 0);
 
 public slots:
 	void setText(const QString&, const QString&);
 	void setText(const NTickers&);
-
+	void setSize(uint size);
+	inline NTickers tickers() const { return mTickers; };
 private:
 	void updateText();
-	
+	uint mSize;
 	NTickers mTickers;
 };
 

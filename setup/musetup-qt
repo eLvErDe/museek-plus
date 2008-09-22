@@ -86,8 +86,6 @@ class MusetupWindow(QMainWindow):
     self.server_password.setEchoMode(QLineEdit.Password)
     
     group = QGroupBox(2, QGroupBox.Horizontal, _("Encodings"), page)
-    QLabel(_("Default:"), group)
-    self.encoding_default = QComboBox(True, group)
     QLabel(_("Filesystem:"), group)
     self.encoding_filesystem = QComboBox(True, group)
     QLabel(_("Network:"), group)
@@ -127,6 +125,16 @@ class MusetupWindow(QMainWindow):
     group = QGroupBox(5, QGroupBox.Horizontal, _("Uploads"), page)
     QLabel(_("Upload Slots:"), group)
     self.transfers_upload_slots = QSpinBox(group)
+    QLabel(_("Upload Rate:"), group)
+    self.transfers_upload_rate = QSpinBox(group)
+    
+    group = QGroupBox(5, QGroupBox.Horizontal, _("Downloads"), page)
+    QLabel(_("Download Slots:"), group)
+    self.transfers_download_slots = QSpinBox(group)
+    QLabel(_("Download Rate:"), group)
+    self.transfers_download_rate = QSpinBox(group)
+    
+    group = QGroupBox(5, QGroupBox.Horizontal, _("Connexion"), page)
     QLabel(_("Connection Mode:"), group)
     self.clients_connectmode_passive = QRadioButton(_("passive"), group)
     self.clients_connectmode_active = QRadioButton(_("active"), group)
@@ -262,7 +270,11 @@ class MusetupWindow(QMainWindow):
       return '.'.join(parts).replace('.', '_').replace('-', '_')
     
     def populateValue(domain, key):
-      value = config[domain][key]
+      if domain in config:
+        if key in config[domain]:
+          value = config[domain][key]
+      else:
+        value = ""
       widget = getattr(self, fixname(domain, key))
       if hasattr(widget, 'setChecked'):
         widget.setChecked(value == 'true')
@@ -276,14 +288,16 @@ class MusetupWindow(QMainWindow):
     def populateList(domain):
       widget = getattr(self, fixname(domain, 'list'))
       widget.clear()
-      for key in config[domain]:
-        widget.insertItem(key)
+      if domain in config:
+        for key in config[domain]:
+          widget.insertItem(key)
     
     def populateMap(domain):
       widget = getattr(self, fixname(domain, 'map'))
       widget.clear()
-      for (key, val) in config[domain].items():
-        QListViewItem(widget, key, val)
+      if domain in config:
+        for (key, val) in config[domain].items():
+          QListViewItem(widget, key, val)
     
     def populateChoice(domain, key):
       value = config[domain][key]
@@ -296,8 +310,6 @@ class MusetupWindow(QMainWindow):
     populateValue("server", "port")
     populateValue("server", "password")
     
-    if "default" in config["encoding"]:
-      populateValue("encoding", "default")
     if "filesystem" in config["encoding"]:
       populateValue("encoding", "filesystem")
     if "network" in config["encoding"]:
@@ -316,6 +328,9 @@ class MusetupWindow(QMainWindow):
     populateValue('transfers', 'trusting_uploads')
     populateValue('transfers', 'user_warnings')
     populateValue('transfers', 'upload_slots')
+    populateValue('transfers', 'download_slots')
+    populateValue('transfers', 'upload_rate')
+    populateValue('transfers', 'download_rate')
     populateChoice('clients', 'connectmode')
     populateValue('transfers', 'download-dir')
     populateValue('transfers', 'incomplete-dir')

@@ -18,51 +18,56 @@
  */
 
 #include "userinfo.h"
-
-#include <qsplitter.h>
-#include <qvgroupbox.h>
-#include <qvbox.h>
-#include <qtextedit.h>
-#include <qlabel.h>
-#include <qcanvas.h>
-#include <qgrid.h>
-#include <qfile.h>
-#include <qtimer.h>
-#include <qfiledialog.h>
-#include <qiconset.h>
 #include "images.h"
-#include <qpopupmenu.h>
-#include <qpushbutton.h>
 #include "codeccombo.h"
 #include "museeq.h"
 
+#include <QSplitter>
+#include <QTextEdit>
+#include <QLabel>
+#include <QGroupBox>
+#include <QLayout>
+#include <QTimer>
+#include <QFileDialog>
+#include <QIcon>
+#include <QPixmap>
+#include <QResizeEvent>
+#include <QMouseEvent>
+#include <QMenu>
+#include <QPushButton>
+
 ScrollImage::ScrollImage(QWidget* parent, const char* name)
-	   : QScrollView(parent, name) {
-	
-	viewport()->setEraseColor(eraseColor());
+	   : QScrollArea(parent) {
+
 	setFrameStyle(NoFrame);
-	
+
 	mLabel = new QLabel((QWidget*)0);
-	addChild(mLabel, 0, 0);
-	
-	mPopupMenu = new QPopupMenu(this);
-	mPopupMenu->insertItem(tr("Save picture..."), this, SLOT(savePicture()));
+	setWidget(mLabel);
+
+ 	QPalette palet;
+    palet.setColor(backgroundRole(), palette().color(QPalette::Background));
+    widget()->setPalette(palet);
+	mPopupMenu = new QMenu(this);
+	QAction * ActionSave = new QAction(IMG("save"), tr("Save picture..."), this);
+	connect(ActionSave, SIGNAL(triggered()), this, SLOT(savePicture()));
+	mPopupMenu->addAction(ActionSave);
+
 }
 
 void ScrollImage::resizeEvent(QResizeEvent* event) {
-	QScrollView::resizeEvent(event);
+	QScrollArea::resizeEvent(event);
 	recenterImage();
 }
 
 void ScrollImage::recenterImage() {
-	if(visibleWidth() > mLabel->size().width())
-		moveChild(mLabel, (visibleWidth() - mLabel->width()) / 2, childY(mLabel));
-	else
-		moveChild(mLabel, 0, childY(mLabel));
-	if(visibleHeight() > mLabel->size().height())
-		moveChild(mLabel, childX(mLabel), (visibleHeight() - mLabel->height()) / 2);
-	else
-		moveChild(mLabel, childX(mLabel), 0);
+ 	if(width() > mLabel->size().width())
+ 		mLabel->move((width() - mLabel->width()) / 2, mLabel->pos().y());
+ 	else
+ 		mLabel->move(0, mLabel->pos().y());
+ 	if(height() > mLabel->size().height())
+ 		mLabel->move(mLabel->pos().x(), (height() - mLabel->height()) / 2);
+ 	else
+ 		mLabel->move(mLabel->pos().x(), 0);
 }
 
 void ScrollImage::setPixmap(const QPixmap& p, const QString& baseName) {
@@ -78,51 +83,63 @@ void ScrollImage::mouseReleaseEvent(QMouseEvent* e) {
 }
 
 void ScrollImage::savePicture() {
-	QString fn = QFileDialog::getSaveFileName(mBaseName + ".png");
+	QString fn = QFileDialog::getSaveFileName(this, mBaseName + ".png");
 	if(!fn.isEmpty())
 		mLabel->pixmap()->save(fn, "PNG");
-                            
+
 }
 
 UserInfo::UserInfo(const QString& user, QWidget* parent, const char* name)
          : UserWidget(user, parent, name) {
-	
+	QVBoxLayout* MainLayout = new QVBoxLayout(this);
 	QSplitter* split = new QSplitter(this);
+	MainLayout->addWidget(split);
 	mUser = user;
-	QVBox* vbox = new QVBox(split);
+	QWidget* statsWidget  = new QWidget(split);
+	QVBoxLayout* vbox = new QVBoxLayout(statsWidget);
 	vbox->setMargin(5);
 	vbox->setSpacing(5);
-	split->setResizeMode(vbox, QSplitter::KeepSize);
-	
-	QVGroupBox* frame = new QVGroupBox(tr("Description"), vbox);
-	
-	new CodecCombo("encoding.users", user, frame);
-	
+	split->setStretchFactor ( 0, 5 );
+	QGroupBox* frame = new QGroupBox(tr("Description"), statsWidget);
+	vbox->addWidget(frame);
+	QVBoxLayout* DescriptionLayout = new QVBoxLayout(frame);
+	DescriptionLayout->addWidget(new CodecCombo("encoding.users", user, frame));
+
 	mDescr = new QTextEdit(frame);
 	mDescr->setReadOnly(true);
-	
-	frame = new QVGroupBox(tr("Information"), vbox);
-	QGrid* grid = new QGrid(2, frame);
+	DescriptionLayout->addWidget(mDescr);
+
+	frame = new QGroupBox(tr("Information"), statsWidget);
+	vbox->addWidget(frame);
+	QGridLayout* grid = new QGridLayout(frame);
 	grid->setSpacing(5);
-	
-	new QLabel(tr("Uploads allowed"), grid);
-	(mSlots = new QLabel(tr("unknown"), grid))->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-	
-	new QLabel(tr("Queue size"), grid);
-	(mQueue = new QLabel(tr("unknown"), grid))->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-	
-	new QLabel(tr("Slots available"), grid);
-	(mAvail = new QLabel(tr("unknown"), grid))->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-	QIconSet refreshIcon = IMG("refresh");
-	mRefresh = new QPushButton(tr("Refresh"), grid);
-	mRefresh->setIconSet(refreshIcon);
+
+	grid->addWidget(new QLabel(tr("Uploads allowed"), statsWidget), 0, 0);
+	mSlots = new QLabel(tr("unknown"));
+	grid->addWidget(mSlots, 0, 1);
+	mSlots->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
+	grid->addWidget(new QLabel(tr("Queue size"), statsWidget), 1, 0);
+	mQueue = new QLabel(tr("unknown"), statsWidget);
+	grid->addWidget(mQueue, 1, 1);
+	mQueue->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
+	grid->addWidget(new QLabel(tr("Slots available"), statsWidget), 2, 0);
+	mAvail = new QLabel(tr("unknown"), statsWidget);
+	mAvail->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+	grid->addWidget(mAvail, 2, 1);
+	QIcon refreshIcon = IMG("refresh");
+	mRefresh = new QPushButton(tr("Refresh"), statsWidget);
+	mRefresh->setIcon(refreshIcon);
+	grid->addWidget(mRefresh);
 	connect(mRefresh, SIGNAL(clicked()), SLOT(getUserInfo()));
-	
-	vbox = new QVBox(split);
+
+
+	frame = new QGroupBox(tr("Picture"), split);
+	vbox = new QVBoxLayout(frame);
 	vbox->setMargin(5);
-	frame = new QVGroupBox(tr("Picture"), vbox);
-	
 	mView = new ScrollImage(frame);
+	vbox->addWidget(mView);
 }
 void UserInfo::getUserInfo() {
 	museeq->getUserInfo(mUser);
@@ -133,8 +150,10 @@ void UserInfo::setInfo(const QString& info, const QByteArray& picture, uint upsl
 	mQueue->setText(QString::number(queue));
 	mAvail->setText(free ? tr("yes") : tr("no"));
 	if(picture.size()) {
-		QPixmap p(picture);
+		QPixmap p;
+		p.loadFromData(picture);
 		mView->setPixmap(p, user());
 	} else
 		mView->setPixmap(QPixmap(), user());
+	emit(highlight(1));
 }

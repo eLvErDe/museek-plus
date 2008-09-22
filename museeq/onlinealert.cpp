@@ -1,62 +1,59 @@
+/* museeq - a Qt client to museekd
+ *
+ * Copyright (C) 2003-2004 Hyriand <hyriand@thegraveyard.org>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 
 #include "onlinealert.h"
+#include "museeq.h"
 
-#include <qvariant.h>
-#include <qlabel.h>
-#include <qframe.h>
-#include <qpushbutton.h>
-#include <qlayout.h>
-#include <qtooltip.h>
-#include <qwhatsthis.h>
+#include <QLabel>
+#include <QFrame>
+#include <QPushButton>
+#include <QDateTime>
 
-
-/*
- *  Constructs a OnlineAlert as a child of 'parent', with the
- *  name 'name' and widget flags set to 'f'.
- *
- *  The dialog will by default be modeless, unless you set 'modal' to
- *  TRUE to construct a modal dialog.
- */
-OnlineAlert::OnlineAlert( QWidget* parent, const char* name, bool modal, WFlags fl )
-    : QDialog( parent, name, modal, fl )
+OnlineAlert::OnlineAlert( QWidget* parent, const char* name, bool modal, Qt::WFlags fl )
+    : QDialog( parent )
 {
-    if ( !name )
-	setName( "OnlineAlert" );
-    OnlineAlertLayout = new QVBoxLayout( this, 11, 6, "OnlineAlertLayout"); 
+    OnlineAlertLayout = new QVBoxLayout( this);
 
-    mLabel = new QLabel( this, "mLabel" );
+    mLabel = new QLabel( this);
     OnlineAlertLayout->addWidget( mLabel );
 
-    frame3 = new QFrame( this, "frame3" );
+    frame3 = new QFrame( this );
     frame3->setFrameShape( QFrame::HLine );
     frame3->setFrameShadow( QFrame::Raised );
     OnlineAlertLayout->addWidget( frame3 );
 
-    layout3 = new QHBoxLayout( 0, 0, 6, "layout3"); 
+    layout3 = new QHBoxLayout;
     spacer1 = new QSpacerItem( 111, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
     layout3->addItem( spacer1 );
 
-    mRemove = new QPushButton( this, "mRemove" );
+    mRemove = new QPushButton( this );
     layout3->addWidget( mRemove );
 
-    mOK = new QPushButton( this, "mOK" );
+    mOK = new QPushButton( this );
     layout3->addWidget( mOK );
     OnlineAlertLayout->addLayout( layout3 );
     languageChange();
     resize( QSize(281, 92).expandedTo(minimumSizeHint()) );
-    clearWState( WState_Polished );
 
     // signals and slots connections
-    connect( mRemove, SIGNAL( clicked() ), this, SLOT( mRemove_clicked() ) );
+    connect( mRemove, SIGNAL( clicked() ), this, SLOT( slotRemoveAlert() ) );
     connect( mOK, SIGNAL( clicked() ), this, SLOT( accept() ) );
-}
-
-/*
- *  Destroys the object and frees any allocated resources
- */
-OnlineAlert::~OnlineAlert()
-{
-    // no need to delete child widgets, Qt does it all for us
 }
 
 /*
@@ -65,17 +62,11 @@ OnlineAlert::~OnlineAlert()
  */
 void OnlineAlert::languageChange()
 {
-    setCaption( tr( "Online alert" ) );
+    setWindowTitle( tr( "Online alert" ) );
     mLabel->setText( QString::null );
     mRemove->setText( tr( "&Remove" ) );
-    mRemove->setAccel( QKeySequence( tr( "Alt+R" ) ) );
     mOK->setText( tr( "&OK" ) );
-    mOK->setAccel( QKeySequence( tr( "Alt+O" ) ) );
 }
-
-
-#include "museeq.h"
-#include <qdatetime.h>
 
 void OnlineAlert::setUser( const QString &user )
 {
@@ -87,21 +78,22 @@ void OnlineAlert::setUser( const QString &user )
 void OnlineAlert::slotUserStatus( const QString & user, uint status )
 {
     if (museeq->mOnlineAlert)
-	return;
-    if(user == mUser && (status == 2 || isShown()))
-    {
-	QString s = (status == 0) ? QT_TR_NOOP("offline") : ((status == 1) ? QT_TR_NOOP("away") : QT_TR_NOOP("online"));
-	QString t = QTime::currentTime().toString();
-	mLabel->setText(QString(tr("%1 user %2 is now %3")).arg(t).arg(mUser).arg(s));
-	if(isShown())
-	    raise();
-	else
-	    show();
+        return;
+    if(user == mUser && (status == 2 || isVisible())) {
+        QString s = (status == 0) ? tr("offline") : ((status == 1) ? tr("away") : tr("online"));
+        QString t = QTime::currentTime().toString();
+        mLabel->setText(QString(tr("%1 user %2 is now %3")).arg(t).arg(mUser).arg(s));
+        if(isVisible())
+            raise();
+        else
+            show();
     }
 }
 
-void OnlineAlert::mRemove_clicked()
+void OnlineAlert::slotRemoveAlert()
 {
+    // FIXME Museeq gets closed when calling accept() and minimized
+	// This will be solved when alerts will be displayed on tray icon (#39)
     emit removeAlert(mUser);
     accept();
 }

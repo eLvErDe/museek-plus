@@ -20,15 +20,15 @@
 #ifndef INTERESTLISTITEM_H
 #define INTERESTLISTITEM_H
 
-#include <qlistview.h>
+#include <QTreeWidget>
 
 class InterestListView;
 
-class InterestListItem : public QListViewItem {
+class InterestListItem : public QTreeWidgetItem {
 public:
 	InterestListItem(InterestListView*, const QString&);
 	
-	int compare(QListViewItem*, int, bool) const;
+	int compare(QTreeWidgetItem*, int, bool) const;
 	
 	QString interest() const;
 	

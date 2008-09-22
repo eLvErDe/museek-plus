@@ -18,81 +18,182 @@
  */
 
 #include "transfers.h"
-
-#include <qlabel.h>
-#include <qvbox.h>
-#include <qcheckbox.h>
-#include <qurl.h>
-#include <qpopupmenu.h>
-#include <qspinbox.h>
-
 #include "transferlistview.h"
 #include "transferlistitem.h"
 #include "museeq.h"
 #include "usermenu.h"
 
+#include <QLabel>
+#include <QCheckBox>
+#include <QUrl>
+#include <QMenu>
+#include <QSpinBox>
+#include <QFrame>
+#include <QSplitter>
+#include <QLayout>
+#include <QSettings>
+
 Transfers::Transfers(QWidget* _p, const char* _n)
-          : QSplitter(_p, _n) {
-	
-	setOrientation(Vertical);
-	
-	QVBox *box = new QVBox(this);
-	QHBox *hbox = new QHBox(box);
-	(new QLabel(tr("Downloads:"), hbox))->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-	mGroupDownloads = new QCheckBox(tr("Group by user"), hbox);
+          : QWidget(_p) {
+
+
+	QVBoxLayout *MainBox = new QVBoxLayout(this);
+	MainBox->setMargin(0);
+	MainBox->setSpacing(0);
+	QSplitter * transferSplitter = new QSplitter(this);
+	MainBox->addWidget(transferSplitter);
+	downloadsWidget = new QWidget(transferSplitter);
+	uploadsWidget = new QWidget(transferSplitter);
+	transferSplitter->setOrientation(Qt::Vertical);
+
+	// Downloads
+	QVBoxLayout *downloadVbox = new QVBoxLayout(downloadsWidget);
+	downloadVbox->setMargin(0);
+	downloadVbox->setSpacing(3);
+	QHBoxLayout *downloadHbox = new QHBoxLayout;
+	downloadVbox->addLayout(downloadHbox);
+	QLabel * downloadsLabel = new QLabel(tr("Downloads:"), downloadsWidget);
+	downloadsLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+	downloadHbox->addWidget(downloadsLabel);
+
+	mDownrate = new QSpinBox(downloadsWidget);
+	downloadHbox->addWidget(mDownrate);
+	QLabel * downrateLabel = new QLabel(tr("KiB/s"), downloadsWidget);
+	downloadHbox->addWidget(downrateLabel);
+	connect(mDownrate, SIGNAL(valueChanged(const QString&)), SLOT(setDownrate(const QString&)));
+	connect(museeq, SIGNAL(configChanged(const QString&, const QString&, const QString&)), SLOT(slotConfigChanged(const QString&, const QString&, const QString&)));
+
+	QFrame* sep = new QFrame(downloadsWidget);
+	downloadHbox->addWidget(sep);
+	sep->setFrameShape(QFrame::VLine);
+	sep->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
+
+	mDownslots = new QSpinBox(downloadsWidget);
+	downloadHbox->addWidget(mDownslots);
+	QLabel * downslotsLabel = new QLabel(tr("slots"), downloadsWidget);
+	downloadHbox->addWidget(downslotsLabel);
+	connect(mDownslots, SIGNAL(valueChanged(const QString&)), SLOT(setDownslots(const QString&)));
+	connect(museeq, SIGNAL(configChanged(const QString&, const QString&, const QString&)), SLOT(slotConfigChanged(const QString&, const QString&, const QString&)));
+
+	QFrame* sep2 = new QFrame(downloadsWidget);
+	downloadHbox->addWidget(sep2);
+	sep2->setFrameShape(QFrame::VLine);
+	sep2->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
+
+	mGroupDownloads = new QCheckBox(tr("Group by user"), downloadsWidget);
+	downloadHbox->addWidget(mGroupDownloads);
 	connect(mGroupDownloads, SIGNAL(toggled(bool)), SLOT(groupDownloadsSet(bool)));
-	
-	mDownloads = new TransferListView(true, box);
+
+	mDownloads = new TransferListView(true, downloadsWidget);
+ 	downloadVbox->addWidget(mDownloads);
 	mDownloads->setAcceptDrops(true);
 	connect(museeq, SIGNAL(downloadUpdated(const NTransfer&)), mDownloads, SLOT(update(const NTransfer&)));
 	connect(museeq, SIGNAL(downloadRemoved(const QString&, const QString&)), mDownloads, SLOT(remove(const QString&, const QString&)));
-	connect(mDownloads, SIGNAL(dropSlsk(const QStringList&)), SLOT(dropSlsk(const QStringList&)));
-	
-	box = new QVBox(this);
-	hbox = new QHBox(box);
-	hbox->setSpacing(5);
-	(new QLabel(tr("Uploads:"), hbox))->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-	
-	mGroupUploads = new QCheckBox(tr("Group by user"), hbox);
-	connect(mGroupUploads, SIGNAL(toggled(bool)), SLOT(groupUploadsSet(bool)));
-	
-	QFrame* frame = new QFrame(hbox);
-	frame->setFrameShape(QFrame::VLine);
-	frame->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
-	
-	mUpslots = new QSpinBox(0, 99, 1, hbox);
-	mUploadSlotsChanging = false;
-	new QLabel(mUpslots, tr("slots"), hbox);
+	connect(mDownloads, SIGNAL(dropSlsk(const QList<QUrl>&)), SLOT(dropSlsk(const QList<QUrl>&)));
+	// Uploads
+	QVBoxLayout *uploadVbox = new QVBoxLayout(uploadsWidget);
+	uploadVbox->setMargin(0);
+	uploadVbox->setSpacing(3);
+	QHBoxLayout *uploadHbox = new QHBoxLayout;
+	uploadVbox->addLayout(uploadHbox);
+
+	uploadHbox->setSpacing(5);
+	QLabel * uploadsLabel = new QLabel(tr("Uploads:"));
+	uploadsLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+	uploadHbox->addWidget(uploadsLabel);
+
+	mUprate = new QSpinBox(uploadsWidget);
+	uploadHbox->addWidget(mUprate);
+	QLabel * uprateLabel = new QLabel(tr("KiB/s"), uploadsWidget);
+	uploadHbox->addWidget(uprateLabel);
+	connect(mUprate, SIGNAL(valueChanged(const QString&)), SLOT(setUprate(const QString&)));
+	connect(museeq, SIGNAL(configChanged(const QString&, const QString&, const QString&)), SLOT(slotConfigChanged(const QString&, const QString&, const QString&)));
+
+	QFrame* sep3 = new QFrame(uploadsWidget);
+	uploadHbox->addWidget(sep3);
+	sep3->setFrameShape(QFrame::VLine);
+	sep3->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
+
+	mUpslots = new QSpinBox(uploadsWidget);
+	uploadHbox->addWidget(mUpslots);
+	QLabel * upslotsLabel = new QLabel(tr("slots"), uploadsWidget);
+	uploadHbox->addWidget(upslotsLabel);
 	connect(mUpslots, SIGNAL(valueChanged(const QString&)), SLOT(setUpslots(const QString&)));
 	connect(museeq, SIGNAL(configChanged(const QString&, const QString&, const QString&)), SLOT(slotConfigChanged(const QString&, const QString&, const QString&)));
-	
-	mUploads = new TransferListView(false, box);
+
+	QFrame* sep4 = new QFrame(uploadsWidget);
+	uploadHbox->addWidget(sep4);
+	sep4->setFrameShape(QFrame::VLine);
+	sep4->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
+
+	mGroupUploads = new QCheckBox(tr("Group by user"), uploadsWidget);
+	uploadHbox->addWidget(mGroupUploads);
+	connect(mGroupUploads, SIGNAL(toggled(bool)), SLOT(groupUploadsSet(bool)));
+
+	mUploads = new TransferListView(false, uploadsWidget);
+	uploadVbox->addWidget(mUploads);
 	connect(museeq, SIGNAL(uploadUpdated(const NTransfer&)), mUploads, SLOT(update(const NTransfer&)));
 	connect(museeq, SIGNAL(uploadRemoved(const QString&, const QString&)), mUploads, SLOT(remove(const QString&, const QString&)));
-	
-	mTransferMenu = new QPopupMenu(this);
-	mTransferMenu->insertItem(tr("Retry"), this, SLOT(retrySelected()), 0, 0);
-	mTransferMenu->insertItem(tr("Abort"), this, SLOT(abortSelected()));
-	mTransferMenu->insertItem(tr("Check Position"), this, SLOT(updateSelected()), 0, 1);
-	
-	mClearMenu = new QPopupMenu(mTransferMenu);
-	mClearMenu->insertItem(tr("Selected"), this, SLOT(clearSelected()));
-	mClearMenu->insertSeparator();
-	mClearMenu->insertItem(tr("Finished"), this, SLOT(clearFinished()));
-	mClearMenu->insertItem(tr("Aborted"), this, SLOT(clearAborted()));
-	mClearMenu->insertItem(tr("Offline"), this, SLOT(clearAwaiting()));
-	mClearMenu->insertItem(tr("Cruft"), this, SLOT(clearCruft())); 
-	mClearMenu->insertItem(tr("Finished / aborted"), this, SLOT(clearFinishedAborted()));
-	mClearMenu->insertItem(tr("Queued"), this, SLOT(clearQueued()));
-	mTransferMenu->insertItem(tr("Clear"), mClearMenu);
-	
-	mTransferMenu->insertSeparator();
-	
-	mUsersMenu = new QPopupMenu(mTransferMenu);
-	mTransferMenu->insertItem(tr("Users"), mUsersMenu);
-	
-	connect(mUploads, SIGNAL(contextMenuRequested(QListViewItem*, const QPoint&, int)), SLOT(popupUploads(QListViewItem*, const QPoint&, int)));
-	connect(mDownloads, SIGNAL(contextMenuRequested(QListViewItem*, const QPoint&, int)), SLOT(popupDownloads(QListViewItem*, const QPoint&, int)));
+
+	mTransferMenu = new QMenu(this);
+
+
+
+	ActionRetry = new QAction(tr("Retry"), this);
+	connect(ActionRetry, SIGNAL(triggered()), this, SLOT(retrySelected()));
+	mTransferMenu->addAction(ActionRetry);
+
+	ActionAbort = new QAction(tr("Abort"), this);
+	connect(ActionAbort, SIGNAL(triggered()), this, SLOT(abortSelected()));
+	mTransferMenu->addAction(ActionAbort);
+
+	ActionCheckPosition = new QAction(tr("Check Place"), this);
+	connect(ActionCheckPosition, SIGNAL(triggered()), this, SLOT(updateSelected()));
+	mTransferMenu->addAction(ActionCheckPosition);
+
+	mClearMenu = mTransferMenu->addMenu(tr("Clear"));
+
+	ActionClearSelected = new QAction(tr("Selected"), this);
+	connect(ActionClearSelected, SIGNAL(triggered()), this, SLOT(clearSelected()));
+	mClearMenu->addAction(ActionClearSelected);
+
+	mClearMenu->addSeparator();
+
+	ActionClearFinished = new QAction(tr("Finished"), this);
+	connect(ActionClearFinished, SIGNAL(triggered()), this, SLOT(clearFinished()));
+	mClearMenu->addAction(ActionClearFinished);
+
+	ActionClearAborted = new QAction(tr("Aborted"), this);
+	connect(ActionClearAborted, SIGNAL(triggered()), this, SLOT(clearAborted()));
+	mClearMenu->addAction(ActionClearAborted);
+
+	ActionClearAwaiting = new QAction(tr("Offline"), this);
+	connect(ActionClearAwaiting, SIGNAL(triggered()), this, SLOT(clearAwaiting()));
+	mClearMenu->addAction(ActionClearAwaiting);
+
+	ActionClearCruft = new QAction(tr("Cruft"), this);
+	connect(ActionClearCruft, SIGNAL(triggered()), this, SLOT(clearCruft()));
+	mClearMenu->addAction(ActionClearCruft);
+
+	ActionClearFinishedAborted = new QAction(tr("Finished / aborted"), this);
+	connect(ActionClearFinishedAborted, SIGNAL(triggered()), this, SLOT(clearFinishedAborted()));
+	mClearMenu->addAction(ActionClearFinishedAborted);
+
+	ActionClearQueued = new QAction(tr("Queued"), this);
+	connect(ActionClearQueued, SIGNAL(triggered()), this, SLOT(clearQueued()));
+	mClearMenu->addAction(ActionClearQueued);
+
+
+	mTransferMenu->addSeparator();
+	mUsersMenu = mTransferMenu->addMenu(tr("Users"));
+
+	connect(mDownloads, SIGNAL(customContextMenuRequested(const QPoint&)), SLOT(popupDownloads(const QPoint&)));
+	connect(mUploads, SIGNAL(customContextMenuRequested(const QPoint&)), SLOT(popupUploads(const QPoint&)));
+	connect(museeq, SIGNAL(transfersSorting(bool)), SLOT(setSorting(bool)));
+
+	mUpGroupingChanging = mDownGroupingChanging = true;
+    groupDownloads(museeq->settings()->value("groupDownloads", false).toBool());
+    groupUploads(museeq->settings()->value("groupUploads", false).toBool());
 	mUpGroupingChanging = mDownGroupingChanging = false;
 }
 
@@ -104,78 +205,80 @@ TransferListView* Transfers::downloads() const {
 	return mDownloads;
 }
 
+void Transfers::setSorting(bool on) {
+	if(on) {
+		mDownloads->setSortingEnabled(on);
+		mUploads->setSortingEnabled(on);
+	} else {
+		mDownloads->setSortingEnabled(on);
+		mUploads->setSortingEnabled(on);
+	}
+	mDownloads->updateParentsStats();
+	mUploads->updateParentsStats();
+}
 void Transfers::groupDownloadsSet(bool on) {
 	if (mDownGroupingChanging)
 		return;
-	if(on)
-		museeq->setConfig("museeq.group", "downloads", "true");
-	else
-		museeq->setConfig("museeq.group", "downloads", "false");
+
+    museeq->settings()->setValue("groupDownloads", on);
+    mDownGroupingChanging = true;
+    groupDownloads(on);
+    mDownGroupingChanging = false;
 
 }
 
-void Transfers::groupDownloads(bool on) {	
+void Transfers::groupDownloads(bool on) {
+
 	TransferListView::GroupMode m = on ? TransferListView::User : TransferListView::None;
 	if(mDownloads->groupMode() == m)
-		return;	
+		return;
 	mDownloads->setGroupMode(m);
-	if(on != mGroupDownloads->isOn())
+	if(on != mGroupDownloads->isChecked())
 		mGroupDownloads->toggle();
 }
 
 void Transfers::groupUploadsSet(bool on) {
 	if (mUpGroupingChanging)
 		return;
-	if(on)
-		museeq->setConfig("museeq.group", "uploads", "true");
-	else
-		museeq->setConfig("museeq.group", "uploads", "false");
+
+    museeq->settings()->setValue("groupUploads", on);
+    mUpGroupingChanging = true;
+    groupUploads(on);
+    mUpGroupingChanging = false;
 }
 
 void Transfers::groupUploads(bool on) {
+
 	TransferListView::GroupMode m = on ? TransferListView::User : TransferListView::None;
 	if(mUploads->groupMode() == m)
 		return;
-	
+
 	mUploads->setGroupMode(m);
 
-	if(on != mGroupUploads->isOn())
+	if(on != mGroupUploads->isChecked())
 		mGroupUploads->toggle();
 }
 
-void Transfers::dropSlsk(const QStringList& l) {
-	QStringList::const_iterator it = l.begin();
+void Transfers::dropSlsk(const QList<QUrl>& l) {
+	QList<QUrl>::const_iterator it = l.begin();
 	for(; it != l.end(); ++it) {
-		QUrl url = QUrl(*it);
-		if(url.protocol() == "slsk" && url.hasHost() && url.hasPath()) {
-			QStringList s = QStringList::split("/", *it, true);
-			QStringList::iterator it = s.begin();
-			++it;
-			++it;
+		QUrl url = *it;
+		if(url.scheme() == "slsk" && !url.host().isEmpty() && !url.path().isEmpty()) {
+            // Try to find a size
+			qint64 size = 0;
+            bool ok;
+            size = url.password().toLongLong(&ok);
+            if(! ok)
+				size = 0;
 
-			Q_INT64 size = 0;
+            // Find the user name
+            QString user = url.userName();
+			if (user.isEmpty())
+                user = url.host();
 
-			QString user, path;
-			
-			QStringList s2 = QStringList::split("@", *it, true);
-			if(s2.size() == 2) {
-				bool ok;
-				size = s2[0].toLongLong(&ok);
-				if(! ok)
-					size = 0;
-				user = s2[1];
-			} else
-				user = *it;
-				
-			QUrl::decode(user);
-			++it;
-			while(it != s.end()) {
-				path += (*it);
-				++it;
-				if(it != s.end())
-					path += '\\';
-			}
-			QUrl::decode(path);
+            // Find the path (folder or file)
+			QString path = url.path().replace("/", "\\");
+
 			if(path.right(1) == "\\")
 				museeq->downloadFolder(user, QString(path));
 			else
@@ -186,50 +289,59 @@ void Transfers::dropSlsk(const QStringList& l) {
 
 void Transfers::setupUsers() {
 	mUsersMenu->clear();
-	
-	QValueList<QString> users;
-	QListViewItemIterator it(mPoppedUpload ? mUploads : mDownloads, QListViewItemIterator::Selected | QListViewItemIterator::Visible);
+
+	QList<QString> users;
+	QTreeWidgetItemIterator it(mPoppedUpload ? mUploads : mDownloads, QTreeWidgetItemIterator::Selected );
 	for(; *it; ++it) {
 		TransferListItem* item = static_cast<TransferListItem*>(*it);
-		if(users.find(item->user()) == users.end())
+		if(!users.contains(item->user()))
 		{
 			users << item->user();
 			Usermenu *m = new Usermenu(mUsersMenu);
 			m->setup(item->user());
-			mUsersMenu->insertItem(item->user(), m);
+			QAction * usermenu = mUsersMenu->addMenu(static_cast<QMenu*>(m));
+			usermenu->setText(item->user());
 		}
 	}
 }
 
-void Transfers::popupUploads(QListViewItem*, const QPoint& pos, int) {
-	mTransferMenu->setItemEnabled(0, true);
-// 	mTransferMenu->setItemEnabled(0, false);
-	mTransferMenu->setItemEnabled(1, false);
+void Transfers::popupUploads(const QPoint& pos) {
+	ActionRetry->setEnabled(true);
+	ActionAbort->setEnabled(true);
 	mPoppedUpload = true;
 	setupUsers();
-	mTransferMenu->exec(pos);
+	mTransferMenu->exec(mUploads->mapToGlobal(pos));
 }
 
-void Transfers::popupDownloads(QListViewItem*, const QPoint& pos, int) {
-	mTransferMenu->setItemEnabled(0, true);
-	mTransferMenu->setItemEnabled(1, true);
+void Transfers::popupDownloads(const QPoint& pos) {
+	ActionRetry->setEnabled(true);
+	ActionAbort->setEnabled(true);
 	mPoppedUpload = false;
 	setupUsers();
-	mTransferMenu->exec(pos);
+	mTransferMenu->exec(mDownloads->mapToGlobal(pos));
 }
 
-QValueList<QPair<QString, QString> > Transfers::findSelected(TransferListView* l) {
-	QValueList<QPair<QString, QString> > items;
-	QListViewItemIterator it(mPoppedUpload ? mUploads : mDownloads, QListViewItemIterator::Selected | QListViewItemIterator::Visible);
+QList<QPair<QString, QString> > Transfers::findSelected(TransferListView* l) {
+	QList<QPair<QString, QString> > items;
+	QTreeWidgetItemIterator it(mPoppedUpload ? mUploads : mDownloads, QTreeWidgetItemIterator::Selected | QTreeWidgetItemIterator::NotHidden);
 	for(; *it; ++it) {
 		TransferListItem* item = static_cast<TransferListItem*>(*it);
-		items += QPair<QString, QString>(item->user(), item->path());
+		if (!item->path().isEmpty())
+            items += QPair<QString, QString>(item->user(), item->path());
+        else {
+            // We would like to delete a group of transfers
+            int numChildren = item->childCount();
+            for(int childId = 0; childId < numChildren; childId++) {
+                TransferListItem* child = static_cast<TransferListItem*>(item->child(childId));
+                items += QPair<QString, QString>(child->user(), child->path());
+            }
+        }
 	}
 	return items;
 }
 
 void Transfers::clearSelected() {
-	QValueList<QPair<QString, QString> > items = findSelected(mPoppedUpload ? mUploads : mDownloads);
+	QList<QPair<QString, QString> > items = findSelected(mPoppedUpload ? mUploads : mDownloads);
 	if(mPoppedUpload)
 		museeq->removeUploads(items);
 	else
@@ -237,7 +349,7 @@ void Transfers::clearSelected() {
 }
 
 void Transfers::clearAwaiting() {  // added by d
-	QValueList<QPair<QString, QString> > items = findByState(mPoppedUpload ? mUploads : mDownloads, 10);
+	QList<QPair<QString, QString> > items = findByState(mPoppedUpload ? mUploads : mDownloads, 10);
 	if(mPoppedUpload)
 		museeq->removeUploads(items);
 	else
@@ -245,7 +357,7 @@ void Transfers::clearAwaiting() {  // added by d
 }
 
 void Transfers::clearCruft() {  // added by d
-	QValueList<QPair<QString, QString> > items = findByState(mPoppedUpload ? mUploads : mDownloads, 10);
+	QList<QPair<QString, QString> > items = findByState(mPoppedUpload ? mUploads : mDownloads, 10);
 	items += findByState(mPoppedUpload ? mUploads : mDownloads, 13);
 	items += findByState(mPoppedUpload ? mUploads : mDownloads, 12);
 	items += findByState(mPoppedUpload ? mUploads : mDownloads, 11);
@@ -257,7 +369,7 @@ void Transfers::clearCruft() {  // added by d
 }
 
 void Transfers::abortSelected() {
-	QValueList<QPair<QString, QString> > items = findSelected(mPoppedUpload ? mUploads : mDownloads);
+	QList<QPair<QString, QString> > items = findSelected(mPoppedUpload ? mUploads : mDownloads);
 	if(mPoppedUpload)
 		museeq->abortUploads(items);
 	else
@@ -265,15 +377,15 @@ void Transfers::abortSelected() {
 }
 
 void Transfers::retrySelected() {
-	QValueList<QPair<QString, QPair<QString, Q_INT64> > > items;
-	QListViewItemIterator it(mPoppedUpload ? mUploads : mDownloads, QListViewItemIterator::Selected | QListViewItemIterator::Visible);
+	QList<QPair<QString, QPair<QString, qint64> > > items;
+	QTreeWidgetItemIterator it(mPoppedUpload ? mUploads : mDownloads, QTreeWidgetItemIterator::Selected | QTreeWidgetItemIterator::NotHidden);
 	for(; *it; ++it) {
 		TransferListItem* item = static_cast<TransferListItem*>(*it);
-		items += QPair<QString, QPair<QString, Q_INT64> >(item->user(), QPair<QString, Q_INT64>(item->path(), item->size()));
+		items += QPair<QString, QPair<QString, qint64> >(item->user(), QPair<QString, qint64>(item->path(), item->size()));
 	}
-	QValueList<QPair<QString, QPair<QString, Q_INT64> > >::iterator sit = items.begin();
+	QList<QPair<QString, QPair<QString, qint64> > >::iterator sit = items.begin();
 	if (mPoppedUpload) {
-		QValueList<QPair<QString, QString> > items = findSelected(mPoppedUpload ? mUploads : mDownloads);
+		QList<QPair<QString, QString> > items = findSelected(mPoppedUpload ? mUploads : mDownloads);
 		museeq->removeUploads(items);
 	}
 	for(; sit != items.end(); ++sit) {
@@ -285,20 +397,20 @@ void Transfers::retrySelected() {
 }
 
 void Transfers::updateSelected() {
-	QValueList<QPair<QString, QString> > items;
-	QListViewItemIterator it(mDownloads, QListViewItemIterator::Selected | QListViewItemIterator::Visible);
+	QList<QPair<QString, QString> > items;
+	QTreeWidgetItemIterator it(mDownloads, QTreeWidgetItemIterator::Selected | QTreeWidgetItemIterator::NotHidden);
 	for(; *it; ++it) {
 		TransferListItem* item = static_cast<TransferListItem*>(*it);
 		items += QPair<QString, QString>(item->user(), item->path());
 	}
-	QValueList<QPair<QString, QString> >::iterator sit = items.begin();
+	QList<QPair<QString, QString> >::iterator sit = items.begin();
 	for(; sit != items.end(); ++sit)
 		museeq->updateTransfer((*sit).first, (*sit).second);
 }
 
-QValueList<QPair<QString, QString> > Transfers::findByState(TransferListView* l, uint state) {
-	QValueList<QPair<QString, QString> > items;
-	QListViewItemIterator it(mPoppedUpload ? mUploads : mDownloads, QListViewItemIterator::Selectable);
+QList<QPair<QString, QString> > Transfers::findByState(TransferListView* l, uint state) {
+	QList<QPair<QString, QString> > items;
+	QTreeWidgetItemIterator it(mPoppedUpload ? mUploads : mDownloads, QTreeWidgetItemIterator::Selectable);
 	for(; *it; ++it) {
 		TransferListItem* item = static_cast<TransferListItem*>(*it);
 		if(item->state() == state)
@@ -308,7 +420,7 @@ QValueList<QPair<QString, QString> > Transfers::findByState(TransferListView* l,
 }
 
 void Transfers::clearFinished() {
-	QValueList<QPair<QString, QString> > items = findByState(mPoppedUpload ? mUploads : mDownloads, 0);
+	QList<QPair<QString, QString> > items = findByState(mPoppedUpload ? mUploads : mDownloads, 0);
 	if(mPoppedUpload)
 		museeq->removeUploads(items);
 	else
@@ -316,7 +428,7 @@ void Transfers::clearFinished() {
 }
 
 void Transfers::clearAborted() {
-	QValueList<QPair<QString, QString> > items = findByState(mPoppedUpload ? mUploads : mDownloads, 13);
+	QList<QPair<QString, QString> > items = findByState(mPoppedUpload ? mUploads : mDownloads, 13);
 	if(mPoppedUpload)
 		museeq->removeUploads(items);
 	else
@@ -324,7 +436,7 @@ void Transfers::clearAborted() {
 }
 
 void Transfers::clearFinishedAborted() {
-	QValueList<QPair<QString, QString> > items = findByState(mPoppedUpload ? mUploads : mDownloads, 0);
+	QList<QPair<QString, QString> > items = findByState(mPoppedUpload ? mUploads : mDownloads, 0);
 	items += findByState(mPoppedUpload ? mUploads : mDownloads, 13);
 	if(mPoppedUpload)
 		museeq->removeUploads(items);
@@ -333,7 +445,7 @@ void Transfers::clearFinishedAborted() {
 }
 
 void Transfers::clearQueued() {
-	QValueList<QPair<QString, QString> > items = findByState(mPoppedUpload ? mUploads : mDownloads, 7);
+	QList<QPair<QString, QString> > items = findByState(mPoppedUpload ? mUploads : mDownloads, 7);
 	if(mPoppedUpload)
 		museeq->removeUploads(items);
 	else
@@ -341,21 +453,15 @@ void Transfers::clearQueued() {
 }
 
 void Transfers::slotConfigChanged(const QString& domain, const QString& key, const QString& value) {
-	if(domain == "museeq.group") {
-		bool on = value == "true";
-		if(key == "downloads") {
-			mDownGroupingChanging = true;
-			groupDownloads(on);
-			mDownGroupingChanging = false;
-		} else if(key == "uploads") {
-			mUpGroupingChanging = true;
-			groupUploads(on);
-			mUpGroupingChanging = false;
-		}
-	} else if(domain == "transfers" && key == "upload_slots" && value != mUpslots->cleanText()) {
+    if(domain == "transfers" && key == "upload_slots" && value != mUpslots->cleanText()) {
 		mUploadSlotsChanging = true;
 		mUpslots->setValue(value.toUInt());
 		mUploadSlotsChanging = false;
+	}
+    else if(domain == "transfers" && key == "upload_rate" && value != mUprate->cleanText()) {
+		mUploadRateChanging = true;
+		mUprate->setValue(value.toDouble());
+		mUploadRateChanging = false;
 	}
 }
 
@@ -363,4 +469,22 @@ void Transfers::setUpslots(const QString& upslots) {
 	if (mUploadSlotsChanging)
 		return;
 	museeq->setConfig("transfers", "upload_slots", upslots);
+}
+
+void Transfers::setUprate(const QString& uprate) {
+	if (mUploadRateChanging)
+		return;
+	museeq->setConfig("transfers", "upload_rate", uprate);
+}
+
+void Transfers::setDownslots(const QString& downslots) {
+	if (mDownloadSlotsChanging)
+		return;
+	museeq->setConfig("transfers", "download_slots", downslots);
+}
+
+void Transfers::setDownrate(const QString& downrate) {
+	if (mDownloadRateChanging)
+		return;
+	museeq->setConfig("transfers", "download_rate", downrate);
 }

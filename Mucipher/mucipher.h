@@ -24,6 +24,8 @@
 extern "C" {
 #endif
 
+#include "system.h"
+
 void shaBlock(unsigned char *dataIn, int len, unsigned char hashout[20]);
 void sha256Block(unsigned char *dataIn, int len, unsigned char hashout[32]);
 void md5Block(unsigned char *dataIn, int len, unsigned char hashout[16]);
@@ -44,6 +46,9 @@ void cipherKeyMD5(CipherContext* ctx, char* key, int len);
 
 void blockCipher(CipherContext* ctx, unsigned char* dataIn, int length, unsigned char* dataOut);
 void blockDecipher(CipherContext* ctx, unsigned char* dataIn, int length, unsigned char* dataOut);
+
+void _blockCipher(CipherContext *ctx, char *str, int len, char **s, int *slen);
+void _blockDecipher(CipherContext *ctx, char *str, int len, char **s, int *slen);
 
 void hexDigest(unsigned char *digest, int length, char* digestOut);
 

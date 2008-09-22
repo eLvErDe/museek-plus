@@ -22,39 +22,39 @@
 
 #include "museeqtypes.h"
 
-#include <qvbox.h>
-#include <qdict.h>
+#include <QWidget>
 
-class QHBox;
-class QComboBox;
 class QCheckBox;
 class SearchListView;
 class SearchFilter;
-        
-class Search : public QVBox {
+
+class Search : public QWidget {
 	Q_OBJECT
 public:
 	Search(const QString&, QWidget* = 0, const char* = 0);
 	~Search();
-	
+
 	QString query() const;
 	bool hasToken(uint) const;
-	
+	int highlighted() const {return mHighlight;};
+
 signals:
-	void highlight(int);
-	
+	void highlight(int, QWidget*);
+
 public slots:
 	void setToken(uint);
 	void append(const QString&, bool, uint, uint, const NFolder&);
-	
+	void setHighlighted(int newH) {mHighlight = newH;};
+
 protected slots:
 	void refilter();
 	void ignoreSearch();
-	
+
 private:
+	int mHighlight;
 	QString mQuery;
-	QValueList<uint> mTokens;
-	
+	QList<uint> mTokens;
+
 	QCheckBox* mShowFilters;
 	SearchFilter* mFilters;
 	SearchListView* mResults;

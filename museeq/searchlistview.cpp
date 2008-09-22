@@ -19,76 +19,108 @@
 
 #include "searchlistview.h"
 
-#include "slskdrag.h"
 #include "util.h"
 #include "usermenu.h"
 #include "museeq.h"
 #include "searchfilter.h"
-#include <qfile.h>
-#include <qfiledialog.h>
-#include <qpopupmenu.h>
+
+#include <QFileDialog>
+#include <QMenu>
+#include <QList>
+#include <QUrl>
+#include <QDrag>
+#include <QMouseEvent>
+#include <QPainter>
 
 SearchListView::SearchListView(SearchFilter* filter, QWidget* parent, const char* name)
-               : QListView(parent, name), mFilter(filter), mN(0) {
-	
-	setSelectionMode(Extended);
-	setShowSortIndicator(true);
-	setAllColumnsShowFocus(true);
-	
-	addColumn("");
-	addColumn(tr("User"), 100);
-	addColumn(tr("Filename"), 250);
-	addColumn(tr("Size"), 100);
-	addColumn(tr("Speed"), 100);
-	addColumn(tr("Queued"), 75);
-	addColumn(tr("Imm."),20);
-	addColumn(tr("Length"), 75);
-	addColumn(tr("Bitrate"), 75);
-	addColumn(tr("Path"));
-	
-	setColumnAlignment(0, Qt::AlignRight|Qt::AlignVCenter);
-	setColumnAlignment(3, Qt::AlignRight|Qt::AlignVCenter);
-	setColumnAlignment(4, Qt::AlignRight|Qt::AlignVCenter);
-	setColumnAlignment(5, Qt::AlignRight|Qt::AlignVCenter);
-	setColumnAlignment(6, Qt::AlignRight|Qt::AlignVCenter);
-	setColumnAlignment(7, Qt::AlignRight|Qt::AlignVCenter);
-	setColumnAlignment(8, Qt::AlignRight|Qt::AlignVCenter);
-	
-	mPopupMenu = new QPopupMenu(this);
-	mPopupMenu->insertItem(tr("Download file(s)"), this, SLOT(downloadFiles()));
-	mPopupMenu->insertItem(tr("Download file(s) to.."), this, SLOT(downloadFilesTo()));
-	mPopupMenu->insertItem(tr("Download selected folder(s)"), this, SLOT(downloadFolders()));
-	mPopupMenu->insertSeparator();
-	mUsersMenu = new QPopupMenu(mPopupMenu);
-	mPopupMenu->insertItem(tr("Users"), mUsersMenu);
-	
-	connect(this, SIGNAL(contextMenuRequested(QListViewItem*, const QPoint&, int)), SLOT(popupMenu(QListViewItem*, const QPoint&, int)));
+               : QTreeWidget(parent), mFilter(filter), mN(0) {
+	QStringList headers;
+	headers << QString::null << tr("User") << tr("Filename") << tr("Size") << tr("Speed") << tr("Queued") << tr("Imm.") << tr("Length") << tr("Bitrate") << tr("Path") << QString::null;
+	setHeaderLabels(headers);
+	setSortingEnabled(true);
+	sortItems(0, Qt::AscendingOrder);
+	setRootIsDecorated(false);
+	setSelectionMode(QAbstractItemView::ExtendedSelection);
+ 	setAllColumnsShowFocus(true);
+
+	setColumnWidth ( 0, 30 );
+	setColumnWidth ( 1, 100 );
+	setColumnWidth ( 2, 250 );
+	setColumnWidth ( 3, 100 );
+	setColumnWidth ( 4, 100 );
+	setColumnWidth ( 5, 75 );
+	setColumnWidth ( 6, 30 );
+	setColumnWidth ( 7, 75 );
+	setColumnWidth ( 8, 75 );
+	setColumnWidth ( 9, 150 );
+	setColumnWidth ( 10, 250 );
+	setColumnWidth ( 11, 0 );
+
+	mPopupMenu = new QMenu(this);
+	QAction * ActionDownloadFiles, * ActionDownloadFilesTo, * ActionDownloadFolders;
+	ActionDownloadFiles = new QAction(tr("Download file(s)"), this);
+	connect(ActionDownloadFiles, SIGNAL(triggered()), this, SLOT(downloadFiles()));
+	mPopupMenu->addAction(ActionDownloadFiles);
+
+	ActionDownloadFilesTo = new QAction(tr("Download file(s) to.."), this);
+	connect(ActionDownloadFilesTo, SIGNAL(triggered()), this, SLOT(downloadFilesTo()));
+	mPopupMenu->addAction(ActionDownloadFilesTo);
+
+	ActionDownloadFolders = new QAction(tr("Download selected folder(s)"), this);
+	connect(ActionDownloadFolders, SIGNAL(triggered()), this, SLOT(downloadFolders()));
+	mPopupMenu->addAction(ActionDownloadFolders);
+
+	mPopupMenu->addSeparator();
+	mUsersMenu = mPopupMenu->addMenu(tr("Users"));
+
+	setContextMenuPolicy(Qt::CustomContextMenu);
+	connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), SLOT(slotContextMenu(const QPoint&)));
+	connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), SLOT(slotActivate(QTreeWidgetItem*, int)));
+	connect(this, SIGNAL(itemActivated(QTreeWidgetItem*, int)), SLOT(slotActivate(QTreeWidgetItem*, int)));
+
+	setDragEnabled(true);
 }
 
+void SearchListView::slotContextMenu(const QPoint& pos) {
+	SearchListItem* item = static_cast<SearchListItem*>(itemAt(pos));
+
+	if (! item ) {
+		return;
+	}
+	setupUsers();
+	mPopupMenu->exec(mapToGlobal(pos));
+}
+void SearchListView::slotActivate(QTreeWidgetItem* item, int column) {
+
+	SearchListItem* _item = static_cast<SearchListItem*>(item);
+	if(item)
+		museeq->downloadFile(_item->user(), _item->path(), _item->size());
+}
 void SearchListView::setupUsers() {
 	mUsersMenu->clear();
-	
-	QValueList<QString> users;
-	QListViewItemIterator it(this, QListViewItemIterator::Selected|QListViewItemIterator::Visible);
-	for(; *it; ++it) {
+
+	QList<QString> users;
+	QTreeWidgetItemIterator it(this, QTreeWidgetItemIterator::Selected | QTreeWidgetItemIterator::NotHidden);
+
+	while (*it) {
 		SearchListItem* item = static_cast<SearchListItem*>(*it);
-		if(users.find(item->user()) == users.end())
+
+		if(users.indexOf(item->user()) == -1)
 		{
 			users << item->user();
 			Usermenu *m = new Usermenu(mUsersMenu);
 			m->setup(item->user());
-			mUsersMenu->insertItem(item->user(), m);
+			QAction * usermenu = mUsersMenu->addMenu(static_cast<QMenu*>(m));
+			usermenu->setText(item->user());
 		}
+		++it;
 	}
 }
 
-void SearchListView::popupMenu(QListViewItem* item, const QPoint& pos, int col) {
-	setupUsers();
-	mPopupMenu->popup(pos);
-}
 
 void SearchListView::downloadFiles() {
-	QListViewItemIterator it(this, QListViewItemIterator::Selected|QListViewItemIterator::Visible);
+	QTreeWidgetItemIterator it(this, QTreeWidgetItemIterator::Selected | QTreeWidgetItemIterator::NotHidden);
+
 	for(; *it; ++it) {
 		SearchListItem* item = static_cast<SearchListItem*>(*it);
 		museeq->downloadFile(item->user(), item->path(), item->size());
@@ -96,24 +128,16 @@ void SearchListView::downloadFiles() {
 }
 
 void SearchListView::downloadFilesTo() {
-	QListViewItemIterator it(this, QListViewItemIterator::Selected|QListViewItemIterator::Visible);
-
-	QFileDialog * fd = new QFileDialog( QDir::homeDirPath(), "", this);
-	fd->setCaption(tr("Select a Directory for current download(s)"));
-	fd->setMode(QFileDialog::Directory);
+	QTreeWidgetItemIterator it(this, QTreeWidgetItemIterator::Selected | QTreeWidgetItemIterator::NotHidden);
+	QFileDialog * fd = new QFileDialog(this,  QDir::homePath());
+	fd->setWindowTitle(tr("Select a Directory for current download(s)"));
+	fd->setFileMode(QFileDialog::Directory);
 	if(fd->exec() == QDialog::Accepted){
-		QString localpath = fd->dirPath();
-		QString filename;
+		QString localpath = fd->directory().path();
 		for(; *it; ++it) {
 			SearchListItem* item = static_cast<SearchListItem*>(*it);
-			int ix = item->path().findRev('\\');
-			if(ix != -1) {
-				filename = item->path().mid(ix + 1);
-			} else {
-				filename = item->path();
-			}
-			museeq->downloadFileTo(item->user(), item->path(), localpath +"/"+ filename,  item->size());
-			
+			museeq->downloadFileTo(item->user(), item->path(), localpath,  item->size());
+
 		}
 	}
 	delete fd;
@@ -121,84 +145,135 @@ void SearchListView::downloadFilesTo() {
 
 void SearchListView::downloadFolders() {
 	QMap<QString, QStringList> folders;
-	QListViewItemIterator it(this, QListViewItemIterator::Selected|QListViewItemIterator::Visible);
-	for(; *it; ++it) {
-		SearchListItem* item = static_cast<SearchListItem*>(*it);
-		QStringList& dirs = folders[item->user()];
-		if(dirs.find(item->dir()) == dirs.end()) {
-			QString d = item->dir();
-			if ( "\\" == d.right(1) || "/" == d.right(1 ))
-				museeq->downloadFolder(item->user(), d.mid(0, d.length()-1));
-			else
-				museeq->downloadFolder(item->user(), item->dir());
-			folders[item->user()] << item->dir();
-		}
-	}
+	QTreeWidgetItemIterator it(this, QTreeWidgetItemIterator::Selected | QTreeWidgetItemIterator::NotHidden);
+ 	for(; *it; ++it) {
+ 		SearchListItem* item = static_cast<SearchListItem*>(*it);
+ 		QStringList& dirs = folders[item->user()];
+ 		if(dirs.indexOf(item->dir()) == -1) {
+ 			QString d = item->dir();
+ 			if ( "\\" == d.right(1))
+ 				museeq->downloadFolder(item->user(), d.mid(0, d.length()-1));
+ 			else
+ 				museeq->downloadFolder(item->user(), item->dir());
+ 			folders[item->user()] << item->dir();
+ 		}
+ 	}
 }
 
 void SearchListView::append(const QString& u, bool f, uint s, uint q, const NFolder& r) {
 	NFolder::const_iterator it = r.begin();
 	for(; it != r.end(); ++it) {
 		SearchListItem *item = new SearchListItem(this, ++mN, u, f, s, q, it.key(), (*it).size, (*it).length, (*it).bitrate, (*it).vbr);
-		item->setVisible(mFilter->match(item));
+ 		item->setHidden(!mFilter->match(item));
 	}
+
 }
 
-QDragObject* SearchListView::dragObject() {
-	SlskDrag* drag = new SlskDrag(viewport());
-	
-	QValueList<SearchListItem*> items;
-	QStringList users;
-	
-	SearchListItem* item = static_cast<SearchListItem*>(firstChild());
-	for(; item != 0; item = static_cast<SearchListItem*>(item->nextSibling()))
-		if(isSelected(item) && item->isVisible()) {
-			if(users.find(item->user()) == users.end())
-				users << item->user();
-			drag->append(item->user(), item->path());
-			items << item;
-		}
-	
-	if(! items.count()) {
-		delete drag;
-		return 0;
+/**
+  * User have press mouse button in this widget
+  */
+void SearchListView::mousePressEvent(QMouseEvent *event)
+{
+    QList<QTreeWidgetItem *> oldItems = selectedItems();
+    event->accept();
+
+    if (event->button() == Qt::LeftButton)
+        mDragStartPosition = event->pos();
+
+    QTreeWidget::mousePressEvent(event);
+    setDragEnabled(oldItems == selectedItems());
+}
+
+/**
+  * User have moved his mouse in this widget
+  */
+void SearchListView::mouseMoveEvent(QMouseEvent *event)
+{
+    event->accept();
+
+    // Should we start dragging?
+    if (!dragEnabled()) {
+        // We change selection: don't stop dragging and restore extendedselection
+        setSelection(QRect(mDragStartPosition, event->pos()), QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+        return;
+    }
+    if (!(event->buttons() & Qt::LeftButton))
+        return;
+    if ((event->pos() - mDragStartPosition).manhattanLength() < QApplication::startDragDistance())
+        return;
+
+    // Create drag object
+    QDrag *drag = new QDrag(this);
+    QMimeData *mimeData = new QMimeData;
+
+    QList<QUrl> urls;
+    QStringList users;
+
+	QList<QTreeWidgetItem*> items = selectedItems();
+    QList<QTreeWidgetItem*>::const_iterator it = items.begin();
+	for(; it != items.end(); ++it) {
+        SearchListItem * item = static_cast<SearchListItem*>(*it);
+ 		if(item->isSelected() && !item->isHidden()) {
+ 			if(users.indexOf(item->user()) == -1)
+ 				users << item->user();
+
+            // slsk protocol: in QUrl, hostname is always lower case.
+            // So we put username as hostname for compatibility, and as username to have the correct case.
+            // Ex: slsk://MuSeEk:filesize@museek/path/to/a/file
+            // Code should first look at QUrl::userName() and if not present, try QUrl::host()
+            QUrl url("slsk://" + item->user());
+            url.setUserName(item->user());
+            url.setPath(item->path().replace("\\", "/"));
+            url.setPassword(QString::number(item->size()));
+
+            // There may be spaces in username so url may not be valid. It will work, but QUrl::isValid() should not be used
+            urls.push_back(url);
+ 		}
 	}
-	
-	QString x;
-	if(items.count() == 1)
-		x = tr("1 search result (1 user)");
-	else if(users.count() == 1)
-		x = QString(tr("%1 search results (1 user)") ).arg(items.count());
-	else
-		x = QString(tr("%1 search results (%2 users)") ).arg(items.count()).arg(users.count());
-	QSize s = viewport()->fontMetrics().size(Qt::SingleLine, x) + QSize(6, 4);
-	
-	QPixmap pix(s);
+
+	if(urls.count() == 0)
+		return;
+
+	// Add the urls to the mimedata
+    mimeData->setUrls(urls);
+    // Add them too in text format if we want to paste it in a text area
+    QString textUrls;
+    QList<QUrl>::const_iterator uit;
+    for(uit = urls.begin(); uit != urls.end(); uit++)
+        textUrls += uit->toString() + "\n";
+    mimeData->setText(textUrls);
+
+    // And now set this mimedata into drag object
+    drag->setMimeData(mimeData);
+
+	QString x(tr("%n search result(s)", "", urls.count()) + tr(" (%n user(s))", "", users.count()));
+ 	QSize s = viewport()->fontMetrics().size(Qt::TextSingleLine, x) + QSize(6, 4);
+
+ 	QPixmap pix(s);
 	QPainter p(&pix);
-	p.setFont(viewport()->font());
-	p.setPen(viewport()->foregroundColor());
-	
-	p.fillRect(QRect(QPoint(0, 0), s), viewport()->eraseColor());
-	p.drawRect(QRect(QPoint(0, 0), s));
-	p.drawText(QRect(QPoint(3, 3), s - QSize(3, 3)), AlignAuto | AlignVCenter, x);
-	
-	p.end();
-	
-	drag->setPixmap(pix, QPoint(-25, -25));
-	
-	return drag;
+ 	p.setFont(viewport()->font());
+ 	p.setPen(viewport()->palette().color(QPalette::WindowText));
+
+ 	p.fillRect(QRect(QPoint(0, 0), s), viewport()->palette().color(QPalette::Background));
+ 	p.drawRect(QRect(QPoint(0, 0), s));
+ 	p.drawText(QRect(QPoint(3, 3), s - QSize(3, 3)), Qt::AlignLeft | Qt::AlignVCenter, x);
+
+ 	p.end();
+
+    drag->setHotSpot(QPoint(20, 20));
+    drag->setPixmap(pix);
+
+    // Begin dragging
+    drag->exec();
 }
 
-SearchListItem::SearchListItem(QListView* parent, Q_UINT64 n, const QString& user, bool free, uint speed, uint inQueue,
-                               const QString& path, Q_INT64 size, uint length, uint bitrate, bool vbr)
-               : QListViewItem(parent), mN(n), mUser(user), mPath(path), mSpeed(speed), mInQueue(inQueue),
-                 mLength(length), mBitrate(bitrate), mSize(size), mFree(free), mVBR(vbr) {
-	
-	setDragEnabled(true);
-	
+SearchListItem::SearchListItem(QTreeWidget* parent, quint64 n, const QString& user, bool free, uint speed, uint inQueue, const QString& path, quint64 size, uint length, uint bitrate, bool vbr)
+               : QTreeWidgetItem(parent), mN(n), mUser(user), mPath(path), mSpeed(speed), mInQueue(inQueue),
+                 mLength(length), mBitrate(bitrate), mSize(size), mFree(free), mVBR(vbr)
+{
 	setText(0, QString::number(n));
 	setText(1, mUser);
-	int ix = mPath.findRev('\\');
+	int ix = mPath.lastIndexOf('\\');
 	if(ix != -1) {
 		mFilename = mPath.mid(ix + 1);
 		mDir = mPath.left(ix + 1);
@@ -210,16 +285,16 @@ SearchListItem::SearchListItem(QListView* parent, Q_UINT64 n, const QString& use
 		setText(2, mFilename);
 	}
 	setText(3, Util::makeSize(mSize));
-	setText(4, Util::makeSize(mSpeed) + QT_TR_NOOP("/s"));
+	setText(4, Util::makeSize(mSpeed) + SearchListView::tr("/s"));
 	setText(5, QString::number(mInQueue));
-	setText(6, mFree ? QT_TR_NOOP("Y") : QT_TR_NOOP("N"));
+	setText(6, mFree ? SearchListView::tr("Y") : SearchListView::tr("N"));
 	if(mLength)
 		setText(7, Util::makeTime(mLength));
 	if(mBitrate)
 		setText(8, Util::makeBitrate(mBitrate, mVBR));
 }
 
-int SearchListItem::compare(QListViewItem* i, int col, bool) const {
+int SearchListItem::compare(QTreeWidgetItem* i, int col, bool) const {
 	SearchListItem* item = static_cast<SearchListItem*>(i);
 	switch(col) {
 	case 0: return Util::cmp(mN, item->mN);
@@ -235,4 +310,46 @@ int SearchListItem::compare(QListViewItem* i, int col, bool) const {
 	default:
 		return 0;
 	}
+}
+
+bool SearchListItem::operator<(const QTreeWidgetItem & other_) const {
+	const SearchListItem * other = static_cast<const SearchListItem *>(&other_);
+	int col = 0;
+	if(treeWidget())
+	col = treeWidget()->sortColumn();
+
+	switch(col) {
+	case 0:
+		return n() < other->n();
+	case 1:
+		return user() < other->user();
+	case 2:
+		return text(2) < other->text(2);
+	case 3:
+		if(size() == other->size())
+			return user() < other->user();
+		return size() < other->size();
+	case 4:
+		if(speed() == other->speed())
+			return user() < other->user();
+		return speed() < other->speed();
+	case 5:
+		if(inQueue() == other->inQueue())
+			return user() < other->user();
+		return inQueue() < other->inQueue();
+	case 6:
+		return freeSlot();
+	case 7:
+		if(length() == other->length())
+			return user() < other->user();
+		return length() < other->length();
+	case 8:
+		if(bitrate() == other->bitrate())
+			return user() < other->user();
+		return bitrate() < other->bitrate();
+	case 9:
+		return dir() < other->dir() ;
+	}
+
+  return false;
 }

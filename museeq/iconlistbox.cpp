@@ -18,100 +18,155 @@
  */
 
 #include "iconlistbox.h"
-#include <qpainter.h>
-#include <qbitmap.h>
+#include "util.h"
 
-#include "slskdrag.h"
+#include <QPainter>
+#include <QBitmap>
+#include <QPixmap>
+#include <QScrollBar>
+#include <QDropEvent>
+#include <QDragMoveEvent>
+#include <QUrl>
 
-IconListBox::IconListBox( QWidget *parent, const char *name )
-  : QListBox( parent, name )
+IconListBox::IconListBox( QWidget *parent, const char *name, bool verticalIconBox )
+  : QListWidget( parent )
 {
-  setAcceptDrops(TRUE);
-  connect(this, SIGNAL(currentChanged(QListBoxItem*)), SLOT(slotCurrentChanged(QListBoxItem*)));
-  setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum);
+    setAcceptDrops(true);
+    setViewMode ( QListView::IconMode);
+    setFlow(QListView::LeftToRight);
+
+    connect(this, SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), SLOT(slotCurrentChanged(QListWidgetItem*, QListWidgetItem*)));
+
+    mVerticalIconBox = verticalIconBox;
+    if (!verticalIconBox)
+        setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
+    else
+        setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum);
 }
-
-
-void IconListBox::dragMoveEvent(QDragMoveEvent* event)
-{
-  bool canDrop = true;
-  if(!SlskDrag::canDecode(event))
-    canDrop = false;
-  
-  QListBoxItem* item = itemAt(event->pos());
-
-  if(item && ! isSelected(item))
-    setSelected(item, true);
-
-  event->accept(canDrop && item && static_cast<IconListItem*>(item)->canDrop());
-}
-
-
-void IconListBox::dropEvent(QDropEvent* event)
-{
-  QStringList l;
-  if(SlskDrag::decode(event, l)) {
-    IconListItem* item = static_cast<IconListItem*>(selectedItem());
-    if(item)
-      item->emitDropSlsk(l);
-  }
-}
-
 
 void IconListBox::updateMinimumHeight()
 {
-  int h = frameWidth()*2;
-  for( QListBoxItem *i = item(0); i != 0; i = i->next() )
-  {
-    h += i->height( this );
-  }
-  setMinimumHeight( h );
+    if (! mVerticalIconBox) {
+        int maxHeight = 10;
+
+        QList<QListWidgetItem*> icons = findItems(QString("*"),Qt::MatchWildcard );
+        QList<QListWidgetItem *>::iterator it = icons.begin();
+        for(; it != icons.end();  ++it) {
+            int w = static_cast<IconListItem*>(*it)->height(this);
+            maxHeight = qMax( w, maxHeight );
+        }
+        it = icons.begin();
+        for(; it != icons.end();  ++it) {
+            IconListItem* item = static_cast<IconListItem*>(*it);
+            item->setSizeHint(QSize(item->width(this), maxHeight));
+        }
+
+        if( verticalScrollBar()->isVisible() ) {
+            maxHeight += horizontalScrollBar()->sizeHint().height();
+        }
+        setMaximumHeight( maxHeight + 10 );
+    }
+    else {
+        int h = 0;
+        QList<QListWidgetItem *> icons = findItems(QString("*"),Qt::MatchWildcard );
+        QList<QListWidgetItem *>::const_iterator it = icons.begin();
+
+        for (; it != icons.end(); it++) {
+            h += static_cast<IconListItem*>(*it)->height(this);
+        }
+
+        setMinimumHeight( h );
+    }
 }
 
-
-void IconListBox::updateWidth()
+void IconListBox::updateMinimumWidth()
 {
-  int maxWidth = 10;
-  for( QListBoxItem *i = item(0); i != 0; i = i->next() )
-  {
-    int w = ((IconListItem *)i)->width(this);
-    maxWidth = QMAX( w, maxWidth );
-  }
-  for( QListBoxItem *i = item(0); i != 0; i = i->next() )
-  {
-    ((IconListItem *)i)->expandMinimumWidth( maxWidth );
-  }
-  if( verticalScrollBar()->isVisible() )
-  {
-    maxWidth += verticalScrollBar()->sizeHint().width();
-  }
-  setFixedWidth( maxWidth + frameWidth()*2 );
+    if (! mVerticalIconBox) {
+        int w = 0;
+        QList<QListWidgetItem *> icons = findItems(QString("*"),Qt::MatchWildcard );
+        QList<QListWidgetItem *>::const_iterator it = icons.begin();
+
+        for (; it != icons.end(); it++) {
+            w += static_cast<IconListItem*>(*it)->width(this) + 5;
+        }
+
+        setMinimumWidth( w );
+    }
+    else {
+        int maxWidth = 10;
+
+        QList<QListWidgetItem*> icons = findItems(QString("*"),Qt::MatchWildcard );
+        QList<QListWidgetItem *>::iterator it = icons.begin();
+        for(; it != icons.end();  ++it) {
+            int w = static_cast<IconListItem*>(*it)->width(this);
+            maxWidth = qMax( w, maxWidth );
+        }
+        it = icons.begin();
+        for(; it != icons.end();  ++it) {
+            IconListItem* item = static_cast<IconListItem*>(*it);
+            item->setSizeHint(QSize(maxWidth - 5, item->height(this)));
+        }
+
+        if( verticalScrollBar()->isVisible() ) {
+            maxWidth += verticalScrollBar()->sizeHint().width();
+        }
+        setFixedWidth( maxWidth );
+    }
 }
 
-void IconListBox::slotCurrentChanged(QListBoxItem* item)
+QStyleOptionViewItem IconListBox::viewOptions () const {
+    QStyleOptionViewItem item;
+    item = QListWidget::viewOptions();
+    item.decorationAlignment = Qt::AlignCenter;
+    return item;
+}
+
+void IconListBox::slotCurrentChanged(QListWidgetItem* item, QListWidgetItem* old)
 {
   static_cast<IconListItem*>(item)->selected();
 }
 
+void IconListBox::dragMoveEvent(QDragMoveEvent* event)
+{
+    // Find the item
+    QListWidgetItem* item = itemAt(event->pos());
 
-IconListItem::IconListItem( QListBox *listbox, const QPixmap &pixmap,
+    // Switch to the item if any found
+    if(item && ! (currentItem() == item))
+        setCurrentItem(item);
+
+    // We can drop urls directly on the icon: accept
+    if(Util::hasSlskUrls(event) && item && static_cast<IconListItem*>(item)->canDrop())
+        event->acceptProposedAction();
+}
+
+void IconListBox::dragEnterEvent(QDragEnterEvent* event)
+{
+    event->acceptProposedAction();
+}
+
+void IconListBox::dropEvent(QDropEvent* event)
+{
+    IconListItem* item = static_cast<IconListItem*>(currentItem());
+
+    if (item && Util::hasSlskUrls(event, item->dropNeedPath()) && item->canDrop())
+        item->emitDropSlsk(event->mimeData()->urls());
+
+    event->acceptProposedAction();
+}
+
+
+IconListItem::IconListItem( QListWidget *listbox, const QPixmap &pixmap,
                                           const QString &text )
-  : QObject( listbox ), QListBoxItem( listbox ), mPixmap(pixmap), mHighlight(0), mCanDrop(false)
+  : QObject( listbox ), QListWidgetItem( listbox ), mPixmap(pixmap), mHighlight(0), mCanDrop(false)
 {
-  if( mPixmap.isNull() == true )
-    mPixmap = defaultPixmap();
-  
-  setText( text );
-  mMinimumWidth = 0;
+    mDropNeedPath = false;
+    setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDropEnabled);
+    if( mPixmap.isNull() )
+        mPixmap = defaultPixmap();
+    setIcon(QIcon(mPixmap));
+    setText( text );
 }
-
-
-int IconListItem::expandMinimumWidth( int width )
-{
-  mMinimumWidth = QMAX( mMinimumWidth, width );
-  return( mMinimumWidth );
-}
-
 
 const QPixmap &IconListItem::defaultPixmap()
 {
@@ -125,7 +180,7 @@ const QPixmap &IconListItem::defaultPixmap()
     p.drawRect ( 0, 0, pix->width(), pix->height() );
     p.end();
 
-    QBitmap mask( pix->width(), pix->height(), true );
+    QBitmap mask( pix->width(), pix->height() ); //, true
     mask.fill( Qt::black );
     p.begin( &mask );
     p.setPen( Qt::white );
@@ -137,57 +192,27 @@ const QPixmap &IconListItem::defaultPixmap()
   return( *pix );
 }
 
-
-void IconListItem::paint( QPainter *painter )
+int IconListItem::height( const QListWidget *lb ) const
 {
-  QFontMetrics fm = painter->fontMetrics();
-  int ht = fm.boundingRect( 0, 0, 0, 0, Qt::AlignCenter, text() ).height();
-  int wp = mPixmap.width();
-  int hp = mPixmap.height();
-
-  painter->drawPixmap( (mMinimumWidth-wp)/2, 5, mPixmap );
-  if( text().isEmpty() == false )
-  {
-    QPen oldpen = painter->pen();
-    QFont oldfont = painter->font(), font = oldfont;
-    
-    if(mHighlight > 0)
-      font.setUnderline(true);
-    painter->setFont(font);
-    
-    if(mHighlight > 1)
-      painter->setPen(QColor(255, 0, 0));
-    
-    painter->drawText( 0, hp+7, mMinimumWidth, ht, Qt::AlignCenter, text() );
-    
-    painter->setFont(oldfont);
-    painter->setPen(oldpen);
-  }
-}
-
-int IconListItem::height( const QListBox *lb ) const
-{
-  if( text().isEmpty() == true )
-  {
-    return( mPixmap.height() );
-  }
-  else
-  {
+  if( text().isEmpty() )
+    return( mPixmap.height() + 10);
+  else {
     int ht = lb->fontMetrics().boundingRect( 0, 0, 0, 0, Qt::AlignCenter, text() ).height();
     return( mPixmap.height() + ht + 10 );
   }
 }
 
-
-int IconListItem::width( const QListBox *lb ) const
+int IconListItem::width( const QListWidget *lb ) const
 {
   int wt = lb->fontMetrics().boundingRect( 0, 0, 0, 0, Qt::AlignCenter, text() ).width() + 10;
   int wp = mPixmap.width() + 10;
-  int w  = QMAX( wt, wp );
-  return( QMAX( w, mMinimumWidth ) );
+  int w  = qMax( wt, wp );
+  return w;
 }
 
-
+/**
+  * Does this item accept droping on it?
+  */
 bool IconListItem::canDrop() const
 {
   return mCanDrop;
@@ -198,24 +223,52 @@ void IconListItem::setCanDrop(bool b)
   mCanDrop = b;
 }
 
-void IconListItem::emitDropSlsk(const QStringList& l)
+/**
+  * Does this item needs a path when droping a slsk QUrl?
+  */
+bool IconListItem::dropNeedPath() const
 {
-  emit dropSlsk(l);
+  return mDropNeedPath;
 }
 
+void IconListItem::setDropNeedPath(bool b)
+{
+  mDropNeedPath = b;
+}
+
+void IconListItem::emitDropSlsk(const QList<QUrl>& l)
+{
+    emit dropSlsk(l);
+}
+
+/**
+  * Alert the user
+  */
 void IconListItem::setHighlight(int level)
 {
-  if(! isSelected() && level > mHighlight) {
-    mHighlight = level;
-    static_cast<QListBox*>(parent())->triggerUpdate(false);
+	if(! isSelected() && level > highlighted()) {
+		setHighlighted(level);
+		QFont oldfont = font();
+		if(highlighted() > 0)
+			oldfont.setUnderline(true);
+
+		if(highlighted() > 1)
+			setForeground(QBrush(QColor(255, 0, 0)));
+		setFont(oldfont);
   }
 }
 
+/**
+  * The user has seen the alert
+  */
 void IconListItem::selected()
 {
-  if(mHighlight != 0) {
-    mHighlight = 0;
-    static_cast<QListBox*>(parent())->triggerUpdate(false);
-  }
+	if(highlighted() != 0) {
+		QFont oldfont = font();
+		setHighlighted(0);
+		oldfont.setUnderline(false);
+		setFont(oldfont);
+		setForeground(QBrush(listWidget()->palette().color(QPalette::Foreground)));
+    }
 }
 

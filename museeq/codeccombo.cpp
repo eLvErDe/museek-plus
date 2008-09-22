@@ -17,10 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <qtextcodec.h>
-
-#include "codeccombo.h"
 #include "museeq.h"
+#include "codeccombo.h"
 
 static QString _list[] = {
 	"UTF-8",
@@ -57,25 +55,25 @@ static QString _list[] = {
 };
 
 CodecCombo::CodecCombo(const QString& _d, const QString& _k, QWidget* _p, const char* _n)
-           : QComboBox(_p, _n), mDomain(_d), mKey(_k)
+           : QComboBox(_p), mDomain(_d), mKey(_k)
 {
 	QStringList l;
-	
+
 	QString *charset = _list;
 	while(! charset->isEmpty()) {
 		l.append(*charset);
 		charset++;
 	}
-	
-	insertStringList(l);
+
+	addItems(l);
 	setEditable(false);
-	
+
 	QString _i = museeq->config(_d, _k);
 	if(_i.isEmpty())
 		_i = museeq->config("encoding", "network");
-	
+
 	setCharset(_i);
-	
+
 	connect(museeq, SIGNAL(configChanged(const QString&, const QString&, const QString&)), SLOT(slotConfigChanged(const QString&, const QString&, const QString&)));
 	connect(this, SIGNAL(activated(const QString&)), SLOT(slotActivated(const QString&)));
 }
@@ -98,12 +96,12 @@ void
 CodecCombo::setCharset(const QString& charset)
 {
 	int c = count();
-	for(int i = 0; i < c; i++) {
-		if(text(i) == charset) {
-			setCurrentItem(i);
-			return;
-		}
+	int pos = findText ( charset,  Qt::MatchExactly);
+	if (pos != -1)
+	{
+		setCurrentIndex(pos);
+		return;
 	}
-	insertItem(charset);
-	setCurrentItem(c);
+	addItem(charset);
+	setCurrentIndex(c);
 }

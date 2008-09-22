@@ -17,42 +17,44 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "search.h"
-
-#include <qcombobox.h>
-#include <qlistview.h>
-#include <qcheckbox.h>
-#include <qpushbutton.h>
-#include <qlabel.h>
-
 #include "searchlistview.h"
 #include "searchfilter.h"
 #include "museeq.h"
+#include "search.h"
+
+#include <QCheckBox>
+#include <QPushButton>
+#include <QList>
+#include <QLayout>
 
 Search::Search(const QString& query, QWidget* parent, const char* name)
-       : QVBox(parent, name), mQuery(query) {
-	
-	setSpacing(5);
-	
-	QHBox* box = new QHBox(this);
-	box->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-	mShowFilters = new QCheckBox(tr("Enable filters"), box);
-	(new QWidget(box))->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-	QPushButton* mIgnore = new QPushButton(tr("Ignore"), box);
-	
+       : QWidget(parent), mHighlight(0), mQuery(query) {
+
+	setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+	QVBoxLayout* MainLayout = new QVBoxLayout(this);
+	QHBoxLayout* ButtonLayout = new QHBoxLayout;
+	MainLayout->addLayout(ButtonLayout);
+	mShowFilters = new QCheckBox(tr("Enable filters"), this);
+	ButtonLayout->addWidget(mShowFilters);
+	QPushButton* mIgnore = new QPushButton(tr("Ignore"), this);
+	ButtonLayout->addWidget(mIgnore);
+
 	mFilters = new SearchFilter(this);
-	
+	MainLayout->addWidget(mFilters);
+
+
 	mResults = new SearchListView(mFilters, this);
-	
+	MainLayout->addWidget(mResults);
+
 	connect(mShowFilters, SIGNAL(toggled(bool)), mFilters, SLOT(setShown(bool)));
 	mFilters->hide();
-	
+
 	connect(mFilters, SIGNAL(filterChanged()), SLOT(refilter()));
 	connect(mIgnore, SIGNAL(clicked()), SLOT(ignoreSearch()));
 }
 
 Search::~Search() {
-	QValueList<uint>::const_iterator it = mTokens.begin();
+	QList<uint>::const_iterator it = mTokens.begin();
 	for(; it != mTokens.end(); ++it)
 		museeq->terminateSearch(*it);
 }
@@ -62,16 +64,16 @@ QString Search::query() const {
 }
 
 void Search::setToken(uint token) {
-	mTokens << token;
+	mTokens.push_back( token);
 }
 
 bool Search::hasToken(uint token) const {
-	return mTokens.find(token) != mTokens.end();
+	return (mTokens.indexOf(token) != -1);
 }
 
 void Search::append(const QString& u, bool f, uint s, uint q, const NFolder& r) {
 	mResults->append(u, f, s, q, r);
-	emit highlight(1);
+	emit highlight(1, this);
 }
 
 void Search::ignoreSearch() {

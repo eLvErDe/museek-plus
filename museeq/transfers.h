@@ -22,66 +22,72 @@
 
 #include "museeqtypes.h"
 
-#include <qsplitter.h>
+#include <QList>
+#include <QWidget>
 
 class TransferListView;
-class QListViewItem;
-class QPopupMenu;
+class QMenu;
 class QCheckBox;
 class QSpinBox;
+class QUrl;
 
-class Transfers : public QSplitter {
+class Transfers : public QWidget {
 	Q_OBJECT
 public:
 	Transfers(QWidget* = 0, const char* = 0);
 
 	TransferListView* uploads() const;
 	TransferListView* downloads() const;
-	
+
 public slots:
 	void groupDownloads(bool);
 	void groupUploads(bool);
 
 protected:
-	QValueList<QPair<QString, QString> > findSelected(TransferListView* l);
-	QValueList<QPair<QString, QString> > findByState(TransferListView* l, uint state);
+	QList<QPair<QString, QString> > findSelected(TransferListView* l);
+	QList<QPair<QString, QString> > findByState(TransferListView* l, uint state);
 
 protected slots:
-	void dropSlsk(const QStringList&);
-	
+	void dropSlsk(const QList<QUrl>&);
+
 	void groupDownloadsSet(bool);
 	void groupUploadsSet(bool);
 
-	void popupUploads(QListViewItem*, const QPoint&, int);
-	void popupDownloads(QListViewItem*, const QPoint&, int);
-	
+	void popupUploads(const QPoint&);
+	void popupDownloads(const QPoint&);
+
 	void retrySelected();
 	void updateSelected();
 	void abortSelected();
 	void clearSelected();
-	void clearAwaiting(); //added by d
-	void clearCruft(); //added by d
+	void clearAwaiting();
+	void clearCruft();
 	void clearFinished();
 	void clearAborted();
 	void clearFinishedAborted();
 	void clearQueued();
-	
+
 	void slotConfigChanged(const QString&, const QString&, const QString&);
+	void setDownslots(const QString&);
+	void setDownrate(const QString&);
 	void setUpslots(const QString&);
-	
+	void setUprate(const QString&);
+	void setSorting(bool);
 	void setupUsers();
-	
+
 private:
+	QAction * ActionRetry, * ActionAbort, * ActionCheckPosition, * ActionClearSelected, * ActionClearFinished, * ActionClearAborted, * ActionClearAwaiting, * ActionClearCruft, * ActionClearQueued, * ActionClearFinishedAborted;
 	TransferListView* mUploads,
 	                * mDownloads;
-	
+
 	bool mPoppedUpload;
-	bool mUploadSlotsChanging;
+	bool mDownloadSlotsChanging, mDownloadRateChanging, mUploadSlotsChanging, mUploadRateChanging;
 	bool mUpGroupingChanging;
 	bool mDownGroupingChanging;
-	QPopupMenu* mTransferMenu, * mClearMenu, * mUsersMenu;
+	QMenu* mTransferMenu, * mClearMenu, * mUsersMenu;
 	QCheckBox* mGroupDownloads, * mGroupUploads;
-	QSpinBox* mUpslots;
+	QSpinBox* mDownslots, *mDownrate, *mUpslots, *mUprate;
+	QWidget * downloadsWidget, * uploadsWidget;
 };
 
 #endif

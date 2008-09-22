@@ -20,26 +20,26 @@
 #ifndef ACLINEEDIT_H
 #define ACLINEEDIT_H
 
-#include <qlineedit.h>
+#include <QLineEdit>
 
 class ACLineEdit : public QLineEdit {
 	Q_OBJECT
 public:
 	ACLineEdit(QWidget * parent = 0, const char * name = 0);
-	
+
 	void reset();
-	
+
 	void pushCompletor(const QString& i);
 	void setCompletors(const QStringList &l);
 	void addCompletor(const QString& text);
 	void removeCompletor(const QString& text);
-	
+
 protected slots:
 	void autoComplete();
-	
+
 protected:
 	void keyPressEvent(QKeyEvent *e);
-	
+
 private:
 	QStringList mCompletors, mMatches;
 	QString mLeft, mRight;

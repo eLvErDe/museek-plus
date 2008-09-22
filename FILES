@@ -1,28 +1,26 @@
 Here's a description of how the source tree is layed out:
 
-scons/           Helper functions for the build process
+cmake/           Needed file for cmake build
 
+icons/           Some icon files that are not currently used.
 
+mucous/          Curses Python Client
 
 Muhelp/          A generic helper library, basically, a big bucket of
                  miscellaneous functions and classes which are used by more
                  than one target.
-
+                 
+murmur/          GTK client
 
 
 Mucipher/        Museek's cipher library, contains SHA-1, SHA-256 and MD5
                  hashing algorithms as well as an AES encryption module.
 
-Mucipher/python/ Python bindings for Mucipher
-
-Mucipher/perl/   BROKEN perl bindings for Mucipher
+Mucipher/PyMucipher/ Python bindings for Mucipher
 
 
-
-Museekal/        Museeek's Network Abstraction Layer. This is where the
-                 networking arena is located, basic / abstract C++
-                 implementations for client sockets, listener sockets and a
-                 connection-manager.
+NewNet/          This is where the networking arena is located, basic / abstract C++
+                 implementations for client sockets, listener sockets and so on.
 
 Museek/          Museek's 'core' library. Provides most of the logic needed
                  to write a SoulSeek client, a more descriptive name for
@@ -34,17 +32,22 @@ museekd/         The Museek daemon. The beating heart of Museek.
 
 
 
-Tools/           The Museek tools, currently only 'muscan' and 'muscand',
-                 the share database managers.
-
+muscan/          'muscan' and 'muscand', the share database managers.
+                 
+                 
 
 
 museeq/          Museeq, the Qt GUI interface that connects to the daemon
-                 and allows you to actually do stuff.
+                 and allows you to actually do stuff. Rewritten using Qt4 lib.
+                 
+                 
 
 
+python-bindings/ Python bindings for museek.
 
-pymuseekd/       The Python tools to museekd, featuring a command line
+python-clients/  The Python tools to museekd, featuring a command line
                  client and a very primitive curses chat client.
                  (currently undergoing a rewrite)
+
+setup/           Setup tools for museek (musetup(-gtk/qt))
 

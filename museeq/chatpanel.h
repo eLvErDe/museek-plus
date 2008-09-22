@@ -20,20 +20,21 @@
 #ifndef CHATPANEL_H
 #define CHATPANEL_H
 
-#include <qvbox.h>
+#include <QLayout>
+#include <QWidget>
 
 class ChatText;
 class ACLineEdit;
-class QHBox;
 
-class ChatPanel : public QVBox {
+class ChatPanel : public QWidget {
 	Q_OBJECT
 public:
-	ChatPanel(const QString&, QWidget* = 0, const char* = 0);
-	
-	inline QHBox* box() const { return mBox; };
+	ChatPanel(const QString&, QWidget* = 0);
+
+	inline QWidget* box() const { return mBox; };
+	inline QHBoxLayout* boxLayout() const { return BoxLayout; };
 	inline ACLineEdit* entry() const { return mEntry; }
-	
+
 public slots:
 	void append(const QString&, const QString&);
 	void append(uint, const QString&, const QString&);
@@ -41,19 +42,20 @@ public slots:
 	void clear();
 signals:
 	void send(const QString&);
-	
+
 protected:
 	void showEvent(QShowEvent*);
-	
+
 protected slots:
 	void slotSendMessage();
 	void slotConnected();
 	void slotDisconnected();
-	
+
 private:
 	ChatText* mScroll;
 	ACLineEdit* mEntry;
-	QHBox* mBox;
+	QHBoxLayout* BoxLayout;
+	QWidget* mBox;
 };
 
 

@@ -20,18 +20,18 @@
 #ifndef CODECCOMBO_H
 #define CODECCOMBO_H
 
-#include <qcombobox.h>
+#include <QComboBox>
 
 class CodecCombo : public QComboBox {
 	Q_OBJECT
 public:
 	CodecCombo(const QString&, const QString&, QWidget * = 0, const char * = 0);
-	
+
 protected slots:
 	void slotActivated(const QString&);
 	void slotConfigChanged(const QString&, const QString&, const QString&);
 	void setCharset(const QString&);
-	
+
 private:
 	QString mDomain, mKey;
 };

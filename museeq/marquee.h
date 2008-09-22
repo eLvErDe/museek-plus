@@ -20,10 +20,13 @@
 #ifndef MARQUEE_H
 #define MARQUEE_H
 
-#include <qwidget.h>
+#include <QWidget>
 
 class QPixmap;
 class QTimer;
+class QMouseEvent;
+class QEvent;
+class QPaintEvent;
 
 class Marquee : public QWidget {
 	Q_OBJECT
@@ -35,28 +38,27 @@ public:
 
 signals:
 	void clicked();
-	
+
 protected:
 	void paintEvent(QPaintEvent *);
 	void updateHeight();
 	void paletteChange(const QPalette& oldPalette);
 	void fontChange(const QFont& oldFont);
 	void styleChange(QStyle& oldStyle);
-	
+
 	void mousePressEvent(QMouseEvent *);
 	void mouseReleaseEvent(QMouseEvent *);
 	void enterEvent(QEvent *);
 	void leaveEvent(QEvent *);
-	
+
 protected slots:
 	void timerTimeout();
 
 private:
 	void invalidate();
-	
+
 	QString mText;
 	QTimer* mTimer;
-	QPixmap* mBuffer,* mBuffer2;
 	bool mUpdate;
 	int mScroll;
 	bool mPressed, mEntered;

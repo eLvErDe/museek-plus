@@ -23,13 +23,12 @@
 #include "usertabwidget.h"
 #include "museeqtypes.h"
 
-#include <qlistview.h>
+#include <QTreeWidget>
 
-class QLineEdit;
+class FolderListItem;
 class FolderListView;
 class FileListView;
 class SharesData;
-class QPopupMenu;
 class QPushButton;
 class QLabel;
 
@@ -41,7 +40,7 @@ public:
 public slots:
 	void doSearch();
 	void setShares(const NShares&);
-	void getShares();	
+	void getShares();
 private:
 
 	NShares mShares;
@@ -56,51 +55,69 @@ private:
 };
 
 
-class FolderListView : public QListView {
+class FolderListView : public QTreeWidget {
 	Q_OBJECT
+
 public:
 	FolderListView(const QString&, QWidget* = 0, const char* = 0);
 	~FolderListView();
 	SharesData* shares() const { return mShares; }
+	QString parentPath(const QString&);
+
 public slots:
 	void setShares(const NShares&);
 	void show(const QStringList&);
+	FolderListItem * findParent(const QStringList&);
+
 signals:
 	void currentChanged(const QString&, const NFolder&);
+
 protected slots:
-	void doCurrentChanged(QListViewItem*);
-	void doPopupMenu(QListViewItem *, const QPoint&, int);
+	void doCurrentChanged(QTreeWidgetItem*, QTreeWidgetItem*);
+	void doPopupMenu(QTreeWidgetItem *, const QPoint&, int);
 	void doDownloadFolder();
+	void doDownloadFolderTo();
+	void doUploadFolder();
 	void doCopyURL();
-protected:
-	QDragObject* dragObject();
+	void slotContextMenu(const QPoint&);
+	void slotActivate(QTreeWidgetItem*, int);
+	void mouseMoveEvent(QMouseEvent *event);
+	void mousePressEvent(QMouseEvent *event);
+
 private:
 	QString mUser;
 	SharesData* mShares;
-	QPopupMenu* mPopupMenu;
-	QListViewItem* mPopped;
+	QMenu* mPopupMenu;
+	QTreeWidgetItem* mPopped;
+	QPoint mDragStartPosition;
 };
 
-	
-class FileListView : public QListView {
+
+class FileListView : public QTreeWidget {
 	Q_OBJECT
 public:
 	FileListView(const QString&, QWidget* = 0, const char* = 0);
+
 public slots:
 	void setFiles(const QString&, const NFolder&);
 	void match(const QString&);
-protected:
-	QDragObject* dragObject();
+
 protected slots:
-	void doPopupMenu(QListViewItem *, const QPoint&, int);
+	void doPopupMenu(QTreeWidgetItem *, const QPoint&, int);
 	void doDownloadFiles();
 	void doDownloadFilesTo();
 	void doUploadFiles();
 	void doCopyURL();
+	void slotContextMenu(const QPoint&);
+	void slotActivate(QTreeWidgetItem*, int);
+	void mouseMoveEvent(QMouseEvent *event);
+	void mousePressEvent(QMouseEvent *event);
+
 private:
 	QString mUser;
 	QString mPath;
-	QPopupMenu* mPopupMenu;
+	QMenu* mPopupMenu;
+	QPoint mDragStartPosition;
 };
 
 #endif // BROWSER_H

@@ -17,35 +17,47 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "interestlistview.h"
-
-#include <qpopupmenu.h>
-
 #include "museeq.h"
+#include "interestlistview.h"
+#include "images.h"
+
+#include <QMenu>
 
 InterestListView::InterestListView( const QString& caption,  QWidget* _p, const char* _n )
-             : QListView(_p, _n) {
+             : QTreeWidget(_p) {
 
-	addColumn(caption);
-	setSorting(0);
-	setShowSortIndicator(true);
-	setAllColumnsShowFocus(true);
-	
-	mPopup = new QPopupMenu(this);
+	QStringList headers;
+	headers << caption ;
+	setHeaderLabels(headers);
+
+ 	setAllColumnsShowFocus(true);
+	setSortingEnabled(true);
+	setRootIsDecorated(false);
+	mPopup = new QMenu(this);
+
+	ActionRemove = new QAction(IMG("remove"),tr("Remove"), this);
+
 	if ( caption == tr("I like:") ) {
-		mPopup->insertItem(tr("Remove"), this, SLOT(slotRemoveInterest()), 0, 0);
+		connect(ActionRemove, SIGNAL(triggered()), this, SLOT(slotRemoveInterest()));
 	}
 	else if ( caption == tr("I hate:") ) {
-		mPopup->insertItem(tr("Remove"), this, SLOT(slotRemoveHatedInterest()), 0, 0);
+		connect(ActionRemove, SIGNAL(triggered()), this, SLOT(slotRemoveHatedInterest()));
 	}
-	mPopup->insertItem(tr("Recommendations for this Item"), this, SLOT(slotItemRecommendations()), 0, 1);
-	mPopup->insertItem(tr("Similar Users for this Item"), this, SLOT(slotItemSimilarUsers()), 0, 2);
+	mPopup->addAction(ActionRemove);
 
-	connect(this, SIGNAL(contextMenuRequested(QListViewItem*, const QPoint&, int)), SLOT(slotPopupMenu(QListViewItem*, const QPoint&, int)));
+	ActionRecommendations = new QAction(tr("Recommendations for this Item"), this);
+	connect(ActionRecommendations, SIGNAL(triggered()), this, SLOT(slotItemRecommendations()));
+	mPopup->addAction(ActionRecommendations);
 
-	connect(this, SIGNAL(doubleClicked(QListViewItem*, const QPoint&, int)), SLOT(slotDoubleClicked(QListViewItem*, const QPoint&, int)));
+	ActionItemSimilarUsers = new QAction(tr("Similar Users for this Item"), this);
+	connect(ActionItemSimilarUsers, SIGNAL(triggered()), this, SLOT(slotItemSimilarUsers()));
+	mPopup->addAction(ActionItemSimilarUsers);
 
-	connect(this, SIGNAL(returnPressed(QListViewItem*)), SLOT(slotReturnPressed(QListViewItem*)));
+
+	setContextMenuPolicy(Qt::CustomContextMenu);
+	connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), SLOT(slotContextMenu(const QPoint&)));
+	connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), SLOT(slotActivate(QTreeWidgetItem*, int)));
+	connect(this, SIGNAL(itemActivated(QTreeWidgetItem*, int)), SLOT(slotActivate(QTreeWidgetItem*, int)));
 
 
 	connect(museeq, SIGNAL(disconnected()), SLOT(clear()));
@@ -67,20 +79,21 @@ void InterestListView::slotItemSimilarUsers() {
 }
 
 
-void InterestListView::slotPopupMenu(QListViewItem* item, const QPoint& pos, int) {
 
- 	if(item) {
+void InterestListView::slotContextMenu(const QPoint& pos) {
+	QTreeWidgetItem * item = itemAt(pos);
+	if(item) {
 		mPopped = item->text(0);
-		mPopup->exec(pos);
-	} 
-	
+		mPopup->exec(mapToGlobal(pos));
+	}
 }
 
-void InterestListView::slotDoubleClicked(QListViewItem* item, const QPoint&, int) {
-	slotReturnPressed(item);
-}
 
-void InterestListView::slotReturnPressed(QListViewItem* item) {
- 	if(item) 
+void InterestListView::slotActivate(QTreeWidgetItem* item, int column) {
+	slotActivate( item);
+}
+void InterestListView::slotActivate(QTreeWidgetItem* item) {
+ 	if(item)
  		museeq->updateItemRecommendations(item->text(0));
 }
+

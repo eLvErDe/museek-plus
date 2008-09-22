@@ -20,48 +20,31 @@
 #ifndef TABWIDGET_H
 #define TABWIDGET_H
 
-#include <qtabbar.h>
-#include <qtabwidget.h>
+#include <QTabBar>
+#include <QTabWidget>
 
-class TabWidget;
+class QDragMoveEvent;
+class QDropEvent;
 class Usermenu;
+class QUrl;
 
-class Tab : public QObject, public QTab {
-	Q_OBJECT
-public:
-	Tab(TabWidget* parent, const QString& text);
-	int highlighted() const;
-	
-public slots:
-	void setHighlight(int i);
-	void selected();
-
-private:
-	int mHighlight;
-};
-	
 class TabBar : public QTabBar {
 	Q_OBJECT
-	
+
 public:
 	TabBar(bool, QWidget* = 0, const char* = 0);
 
-public:
-	bool canDrop() const;
-	
-public slots:
-	void setCanDrop(bool);
-	
 signals:
-	void dropSlsk(const QStringList&);
-	
+	void dropSlsk(const QList<QUrl>&);
+
 protected:
 	void dragMoveEvent(QDragMoveEvent*);
+	void dragEnterEvent(QDragEnterEvent* event);
 	void dropEvent(QDropEvent*);
-	bool mCanDrop;
-	void paintLabel(QPainter*, const QRect&, QTab*, bool) const;
-	void contextMenuEvent(QContextMenuEvent*);
-	
+
+protected slots:
+
+	void slotContextMenu(const QPoint&);
 private:
 	Usermenu* mUsermenu;
 };
@@ -71,22 +54,21 @@ class TabWidget : public QTabWidget {
 	Q_PROPERTY(QString current READ getCurrentPage)
 public:
 	TabWidget(QWidget* = 0, const char* = 0, bool = false);
-	bool isCurrent(Tab*);
 	QString getCurrentPage() const;
-	
+
 public slots:
 	QWidget * getCurrentWidget() const;
 	void repaintTabBar();
-	
+
 protected:
 	bool protectFirst() const;
 	bool protectThird() const;
 	bool canDrop() const;
-	
+	TabBar* mTabBar;
+
 protected slots:
 	void setCanDrop(bool);
-	virtual void dropSlsk(const QStringList&);
-	
+
 	void setProtectThird(bool);
 	void doCurrentChanged(QWidget *);
 	virtual void closeCurrent();
@@ -96,7 +78,6 @@ protected slots:
 private:
 	bool mProtectFirst;
 	bool mProtectThird;
-	TabBar* mTabBar;
 };
 
 #endif // TABWIDGET_H

@@ -1,5 +1,8 @@
 <?xml version="1.0"?>
 <museekd>
+  <domain id="museekd">
+    <key id="version">0.2.0</key>
+  </domain>
   <domain id="autojoin">
     <key id="museek"/>
   </domain>
@@ -40,7 +43,7 @@
   <domain id="server">
     <key id="host">server.slsknet.org</key>
     <key id="password"/>
-    <key id="port">2240</key>
+    <key id="port">2242</key>
     <key id="username"/>
   </domain>
   <domain id="shares">
@@ -57,11 +60,19 @@
     <key id="user_warnings">true</key>
     <key id="privilege_buddies">true</key>
     <key id="upload_slots">2</key>
+    <key id="download_slots">0</key>
+    <key id="upload_rate">0</key>
+    <key id="download_rate">0</key>
     <key id="have_buddy_shares">false</key>
     <key id="trusting_uploads">false</key>
   </domain>
   <domain id="userinfo">
     <key id="image">$(CONFIG).image</key>
     <key id="text"/>
+  </domain>
+  <domain id="default-ticker">
+    <key id="ticker"/>
+  </domain>
+  <domain id="tickers">
   </domain>
 </museekd>

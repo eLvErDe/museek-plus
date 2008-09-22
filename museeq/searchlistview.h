@@ -20,41 +20,46 @@
 #ifndef SEARCHLISTVIEW_H
 #define SEARCHLISTVIEW_H
 
-#include <qlistview.h>
 #include "museeqtypes.h"
 
-class QPopupMenu;
-class SearchFilter;
+#include <QTreeWidget>
 
-class SearchListView : public QListView {
+class QMenu;
+class SearchFilter;
+class QMouseEvent;
+
+class SearchListView : public QTreeWidget {
 	Q_OBJECT
 public:
 	SearchListView(SearchFilter*, QWidget* = 0, const char* = 0);
-	
+
 public slots:
 	void append(const QString&, bool, uint, uint, const NFolder&);
 
 protected:
 	void setupUsers();
-	QDragObject* dragObject();
-	
+
 protected slots:
-	void popupMenu(QListViewItem*, const QPoint&, int);
 	void downloadFiles();
 	void downloadFilesTo();
 	void downloadFolders();
-	
+	void slotContextMenu(const QPoint&);
+	void slotActivate(QTreeWidgetItem*,  int);
+	void mouseMoveEvent(QMouseEvent *event);
+	void mousePressEvent(QMouseEvent *event);
+
 private:
 	SearchFilter* mFilter;
-	Q_UINT64 mN;
-	QPopupMenu* mPopupMenu, * mUsersMenu;
+	quint64 mN;
+	QMenu* mPopupMenu, * mUsersMenu;
+	QPoint mDragStartPosition;
 };
 
-class SearchListItem : public QListViewItem {
+class SearchListItem : public QTreeWidgetItem {
 public:
-	SearchListItem(QListView*, Q_UINT64, const QString&, bool, uint, uint, const QString&, Q_INT64, uint, uint, bool);
-	
-	Q_UINT64 n() const { return mN; };
+	SearchListItem(QTreeWidget*, quint64, const QString&, bool, uint, uint, const QString&, quint64, uint, uint, bool);
+
+	quint64 n() const { return mN; };
 	QString user() const { return mUser; }
 	QString dir() const { return mDir; }
 	QString path() const { return mPath; }
@@ -62,18 +67,18 @@ public:
 	uint inQueue() const { return mInQueue; }
 	uint length() const { return mLength; }
 	uint bitrate() const { return mBitrate; }
-	Q_INT64 size() const { return mSize; }
+	quint64 size() const { return mSize; }
 	bool vbr() const { return mVBR; }
 	bool freeSlot() const { return mFree; }
-
+	bool operator<(const QTreeWidgetItem & other) const;
 protected:
-	int compare(QListViewItem*, int, bool) const;
-	
+	int compare(QTreeWidgetItem*, int, bool) const;
+
 private:
-	Q_UINT64 mN;
+	quint64 mN;
 	QString mUser, mPath, mFilename, mDir;
 	uint mSpeed, mInQueue, mLength, mBitrate;
-	Q_INT64 mSize;
+	quint64 mSize;
 	bool mFree, mVBR;
 };
 

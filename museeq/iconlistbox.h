@@ -20,52 +20,60 @@
 #ifndef ICONLISTBOX_H
 #define ICONLISTBOX_H
 
-#include <qlistbox.h>
+#include <QListWidget>
 
-class IconListItem : public QObject, public QListBoxItem
+class IconListItem : public QObject, public QListWidgetItem
 {
 	Q_OBJECT
   public:
-    IconListItem( QListBox *listbox, const QPixmap &pixmap,
+    IconListItem( QListWidget *listbox, const QPixmap &pixmap,
 		   const QString &text );
-    virtual int height( const QListBox *lb ) const;
-    virtual int width( const QListBox *lb ) const;
-    int expandMinimumWidth( int width );
+    virtual int height( const QListWidget *lb ) const;
+    virtual int width( const QListWidget *lb ) const;
     bool canDrop() const;
-  
+    bool dropNeedPath() const;
+	int highlighted() const {return mHighlight;};
+
   public slots:
     void setCanDrop(bool);
-    void emitDropSlsk(const QStringList&);
+    void setDropNeedPath(bool);
+    void emitDropSlsk(const QList<QUrl>&);
     void setHighlight(int);
+	void setHighlighted(int newH) {mHighlight = newH;};
     void selected();
-    
+
   signals:
-    void dropSlsk(const QStringList&);
-    
+    void dropSlsk(const QList<QUrl>&);
+
   protected:
     const QPixmap &defaultPixmap();
     void paint( QPainter *painter );
 
   private:
     QPixmap mPixmap;
-    int mMinimumWidth, mHighlight;
-    bool mCanDrop;
+    int mHighlight;
+    bool mCanDrop, mDropNeedPath;
 };
 
-class IconListBox : public QListBox
+class IconListBox : public QListWidget
 {
     Q_OBJECT
   public:
-    IconListBox( QWidget *parent=0, const char *name=0 );
+    IconListBox( QWidget *parent=0, const char *name=0, bool align=true );
     void updateMinimumHeight();
-    void updateWidth();
+    void updateMinimumWidth();
 
   protected:
     void dragMoveEvent(QDragMoveEvent*);
+    void dragEnterEvent(QDragEnterEvent*);
     void dropEvent(QDropEvent*);
-   
+    QStyleOptionViewItem viewOptions () const;
+
   protected slots:
-    void slotCurrentChanged(QListBoxItem*);
+    void slotCurrentChanged(QListWidgetItem*, QListWidgetItem*);
+
+  private:
+    bool mVerticalIconBox;
 };
 
 #endif // ICONLISTBOX_H

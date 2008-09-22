@@ -1,8 +1,0 @@
-def doc_build(target, source, env):
-    from muscons import gendoc
-    open(str(target[0]), 'w').write(gendoc(str(source[0]), str(source[1])))
-    return 0
-
-Import('env')
-protocol = env.Command('protocol.html', ['../museekd/IfaceMessages.hh', 'protocol.tmpl'], doc_build)
-#env.Default(protocol)

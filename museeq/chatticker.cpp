@@ -19,34 +19,41 @@
 
 #include "chatticker.h"
 
-ChatTicker::ChatTicker(QWidget* _p, const char* _n)
-           : Marquee(QString::null, _p, _n) { };
+ChatTicker::ChatTicker(QWidget* _p, const char* _n, uint size)
+           : Marquee(QString::null, _p, _n), mSize(size) {  };
 
 void ChatTicker::setText(const QString& _u, const QString& _m) {
+
 	if(! _m.isEmpty()) {
 		mTickers[_u] = QString(_m).replace("\n", " ");
-		mTickers[_u].truncate(50);
 	} else
 		mTickers.remove(_u);
 	updateText();
 }
 
 void ChatTicker::setText(const NTickers& _t) {
+
 	mTickers.clear();
 	NTickers::const_iterator it = _t.begin();
 	for(; it != _t.end(); ++it)
 	{
-		mTickers[it.key()] = QString(it.data()).replace("\n", " ");
-		mTickers[it.key()].truncate(50);
+		mTickers[it.key()] = QString(it.value()).replace("\n", " ");
 	}
 	updateText();
 }
-
+void ChatTicker::setSize(uint size) {
+	mSize = size;
+	updateText();
+}
 void ChatTicker::updateText() {
+
 	QString t;
-	
+
 	NTickers::const_iterator it = mTickers.begin();
-	for(; it != mTickers.end(); ++it)
-		t += "[" + it.key() + "] " + it.data() + " -- ";
+	for(; it != mTickers.end(); ++it) {
+		QString message = it.value();
+		message.truncate(mSize);
+		t += "[" + it.key() + "] " + message + " -- ";
+	}
 	Marquee::setText(t);
 }

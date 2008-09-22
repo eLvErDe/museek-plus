@@ -17,20 +17,21 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <qaccel.h>
 #include "aclineedit.h"
 
+#include <QStringList>
+#include <QShortcut>
+
 ACLineEdit::ACLineEdit(QWidget * parent, const char * name)
-           : QLineEdit(parent, name)
+           : QLineEdit(name, parent)
 {
-	QAccel *accel = new QAccel(this);
-	accel->connectItem(accel->insertItem(Key_Tab), this, SLOT(autoComplete()));
+	new QShortcut(Qt::Key_Tab, this, SLOT(autoComplete()));
 }
 
 void
 ACLineEdit::pushCompletor(const QString& t)
 {
-	mCompletors.remove(t);
+	mCompletors.removeAt(mCompletors.indexOf(t));
 	mCompletors.prepend(t);
 }
 
@@ -41,9 +42,9 @@ ACLineEdit::autoComplete()
 		QString t = mMatches.front();
 		mMatches.pop_front();
 		mMatches.append(t);
-		
+
 		pushCompletor(t);
-		
+
 		if(mLeft.isEmpty()) {
 			setText(t + ": " + mRight);
 			setCursorPosition(t.length() + 2);
@@ -53,20 +54,20 @@ ACLineEdit::autoComplete()
 		}
 		return;
 	}
-	
+
 	QString _text = text(),
 		t = _text.left(cursorPosition());
-	int ix = t.findRev(' ') + 1;
+	int ix = t.lastIndexOf(' ') + 1;
 	t = t.mid(ix);
-	
+
 	QStringList::iterator it, end = mCompletors.end();
 	for(it = mCompletors.begin(); it != end; it ++)
-		if((*it).startsWith(t, false))
+		if((*it).startsWith(t, Qt::CaseInsensitive))
 			mMatches << *it;
-	
+
 	mLeft = _text.left(ix);
 	mRight = _text.mid(ix + t.length());
-	
+
 	if(mMatches.size())
 		autoComplete();
 }
@@ -87,8 +88,8 @@ ACLineEdit::addCompletor(const QString& text)
 void
 ACLineEdit::removeCompletor(const QString& text)
 {
-	mMatches.remove(text);
-	mCompletors.remove(text);
+	mMatches.removeAll(text);
+	mCompletors.removeAll(text);
 }
 
 void

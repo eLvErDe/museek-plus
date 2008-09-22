@@ -17,27 +17,26 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "museeq.h"
 #include "chatpanel.h"
-
-#include <qstylesheet.h>
-#include <qdatetime.h>
-#include <qcheckbox.h>
-#include <qregexp.h>
-
 #include "chattext.h"
 #include "aclineedit.h"
-#include "museeq.h"
 
-ChatPanel::ChatPanel(const QString& _tf, QWidget* _p, const char* _n)
-         : QVBox(_p, _n) {
-	
-	mScroll = new ChatText(_tf, this, "text");
-	
-	mBox = new QHBox(this);
-	
-	mEntry = new ACLineEdit(mBox, "line");
+ChatPanel::ChatPanel(const QString& _tf, QWidget* _p)
+         : QWidget(_p) {
+	QVBoxLayout * MainLayout = new QVBoxLayout(this);
+	MainLayout->setMargin(0);
+	mScroll = new ChatText(_tf, this);
+	MainLayout->addWidget(mScroll);
+
+	mBox = new QWidget(this);
+	MainLayout->addWidget(mBox);
+	BoxLayout = new QHBoxLayout(mBox);
+	BoxLayout->setMargin(0);
+	mEntry = new ACLineEdit(mBox);
 	mEntry->setEnabled(museeq->isConnected());
-	
+	BoxLayout->addWidget(mEntry);
+
 	connect(mEntry, SIGNAL(returnPressed()), SLOT(slotSendMessage()));
 	connect(museeq, SIGNAL(disconnectedFromServer()), SLOT(slotDisconnected()));
 	connect(museeq, SIGNAL(connectedToServer()), SLOT(slotConnected()));

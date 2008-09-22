@@ -1,26 +1,58 @@
----------------
-SCons
----------------
-INSTALLS:
-mucous, museeq, museekd, pymucipher, python-bindings (python client drivers),
-mulog, musetup, musetup-gtk
----------------
-# scons install PREFIX=/usr
+Requirements:
+libxml++2.6-dev or libxml++1.0-dev
+GCC
+Python (by Python bindings)
+pyexpat (for musetup)
+CMake >= 2.6 (for building)
+QT >= 4.4 for museeq
 
-read the INSTALL.scons file for more information
+Optional:
+libvorbis-dev
+libogg-dev
 
----------------
-CMake
----------------
-INSTALLS:
-museekd, muscan, muscand, mucous, murmur, museeq, python-bindings, python-clients
----------------
-DECLARATIONS (prefix with -D, set bool options on with 1; off with 0)
-PREFIX, MANDIR, EVERYTHING, BINDINGS, MURMUR, MUCOUS, CLIENTS
-NO_MUSEEKD, NO_MUSCAN, NO_SETUP, NO_PYMUCIPHER
-Museeq options: NO_MUSEEQ, BINRELOC, DATADIR, TRAYICON
-Museekd options MULOG (debug messages) MULOG_CALLTRACE MULOG_TT MULOG_CYCLE
+SWIG (for the mucipher Python bindings)
 
+
+
+Get binaries and help for Museek+ there:
+http://www.museek-plus.org
+
+
+
+-----------------------
+I - Install using CMake
+-----------------------
+CMake is the recommended way to build everything
+
+   I.1 - DECLARATIONS (prefix with -D, set bool options on with 1; off with 0):
+   ----------------------------------------------------------------------------
+PREFIX: Where museek+ should be installed (default is /usr)
+MANDIR: Where man files should be installed (default is PREFIX/man)
+
+EVERYTHING: Install every components of museek+ (daemon, clients, bindings, etc.)
+NO_MUSEEKD: don't install museekd
+NO_MUSCAN: don't install muscan
+NO_SETUP: don't install musetup, musetup-gtk and musetup-qt
+NO_PYMUCIPHER: don't install python bindings for mucipher (hashing library: SHA1, MD5, ...)
+NO_MUSEEQ: don't install museeq (Qt4 client)
+BINDINGS: install python bindings for museek
+MURMUR: install PyGTK client
+MUCOUS: install Curses Python client
+CLIENTS: install some Python tools to museekd, featuring a command line client and a very primitive curses chat client.
+
+Museeq options:
+  BINRELOC: Use binary relocation
+  DATADIR: Change default data dir
+  RELOAD_TRANSLATIONS: Update .ts files in src/museeq/translations
+Museekd options:
+  MULOG (debug and status messages)
+  MULOG_CALLTRACE
+  MULOG_TT
+  MULOG_CYCLE
+
+   I.2 - Commands
+   --------------
+# cd /path/to/src
 # mkdir workdir
 # cd workdir/
 # cmake -DPREFIX=/usr ..
@@ -30,31 +62,20 @@ Museekd options MULOG (debug messages) MULOG_CALLTRACE MULOG_TT MULOG_CYCLE
 # (or) make VERBOSE=1
 # make install
 
----------------
-qmake
----------------
-INSTALLS:
-museeq
----------------
-# cd museeq
-# qmake "CONFIG += QSA BINRELOC TRAYICON"
-# (or) qmake "CONFIG += BINRELOC TRAYICON" PREFIX=/usr
-# make
-# make install
 
-Read the INSTALL file in the museeq directory for more information
 
----------------
-distutils (Python's built-in installation tool)
+----------------------------------------------------
+II - Distutils (Python's built-in installation tool)
+----------------------------------------------------
 distutils doesn't provide for uninstalls, so be cautious with it.
----------------
+
 Enter a directory and issue these commands
 # python setup.py build
 # python setup.py install
 # (or) python setup.py install --prefix=/usr/local
 ---------------
 PyMucipher (requires SWIG, Python)
-# cd PyMucipher/
+# cd Mucipher/PyMucipher/
 ...............
 Python Bindings
 # cd python-bindings/

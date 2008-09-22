@@ -20,15 +20,14 @@
 #ifndef CHATTEXT_H
 #define CHATTEXT_H
 
-#include <qtextbrowser.h>
-#include <qdatetime.h>
+#include <QTextBrowser>
 
 class ChatText : public QTextBrowser {
 	Q_OBJECT
 public:
-	ChatText(const QString& tf, QWidget* = 0, const char* = 0);
+	ChatText(const QString& tf, QWidget* = 0);
 	QString colorRemote, colorNickname, colorMe, colorBuddy, colorBanned, colorTime, fontTime, fontMessage;
-	
+
 public slots:
 	void append(const QString&, const QString&);
 	void append(uint, const QString&, const QString&);
@@ -38,13 +37,13 @@ public slots:
 	void forward() { };
 	void home() { };
 	void reload() { };
-	
+
 protected slots:
 	void setNickname(const QString&);
-	
+
 protected:
 	QString postProcess(const QString&, const QString&, const QString&);
-	
+
 private:
 	QString mTimeFormat, mNickname;
 };

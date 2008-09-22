@@ -20,26 +20,27 @@
 #ifndef BANLIST_H
 #define BANLIST_H
 
-#include <qvbox.h>
+#include <QWidget>
 
 class UserListView;
 class QLineEdit;
+class QUrl;
 
-class BanList : public QVBox {
+class BanList : public QWidget {
 	Q_OBJECT
 public:
 	BanList(QWidget* = 0, const char* = 0);
 
 signals:
 	void activated(const QString&);
-	
+
 protected:
 	void showEvent(QShowEvent*);
-	
+
 protected slots:
 	void addBanned();
 	void editComments(const QString&);
-	void slotDropSlsk(const QStringList&);
+	void slotDropSlsk(const QList<QUrl>&);
 
 private:
 	UserListView* mUserList;

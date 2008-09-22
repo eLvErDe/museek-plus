@@ -20,21 +20,13 @@
 #include "interestlistitem.h"
 #include "interestlistview.h"
 
-InterestListItem::InterestListItem(InterestListView* _p, const QString& _i) //, unsigned int _n)
-                 : QListViewItem(static_cast<QListView *>(_p)), mInterest(_i) { /*, mNum(_n)  {*/
+InterestListItem::InterestListItem(InterestListView* _p, const QString& _i)
+                 : QTreeWidgetItem(static_cast<QTreeWidget *>(_p)), mInterest(_i) {
 	setText(0, mInterest);
-// 	setText(1, QString().sprintf("%u", mNum));
+ 	setText(1, QString("%1").arg(mNum));
 }
 
-static int cmp(unsigned int a, unsigned int b) {
-	if(a > b)
-		return 1;
-	if(a == b)
-		return 0;
-	return -1;
-}
-
-int InterestListItem::compare(QListViewItem * i, int col, bool) const {
+int InterestListItem::compare(QTreeWidgetItem * i, int col, bool) const {
 	InterestListItem *r = static_cast<InterestListItem *>(i);
 
 	return mInterest.localeAwareCompare(r->mInterest);

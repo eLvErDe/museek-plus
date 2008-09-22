@@ -16,19 +16,21 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
 #include "prefix.h"
-#include <qmap.h>
-#include <qfile.h>
-#include <qdir.h>
 #include "museeq.h"
 #include "images.h"
+
+#include <QMap>
+#include <QFile>
+#include <QPixmap>
 
 static QMap<QString, QPixmap>* iconcache = 0;
 
 QPixmap& IMG(const QString& icon) {
 	if(! iconcache)
 		iconcache = new QMap<QString, QPixmap>();
-	
+
 	if(iconcache->find(icon) == iconcache->end()) {
 		// Try the theme directory
 		if (museeq->mIconTheme != "default") {
@@ -40,7 +42,7 @@ QPixmap& IMG(const QString& icon) {
 			}
 		}
 		// Try the DATADIR path
-		QString file (QString(DATADIR) + "/museek/museeq/icons/default/" + icon + ".png");
+		QString file (QString(DATADIR) + "/museek/museeq/themes/default/" + icon + ".png");
 
 		if (QFile::exists(file)) {
 			QPixmap p = QPixmap(file);
@@ -48,7 +50,7 @@ QPixmap& IMG(const QString& icon) {
 			return (*iconcache)[icon];
 		} else {
 			// Try /usr/share/
-			file = ("/usr/share/museek/museeq/icons/default/" + icon + ".png");
+			file = ("/usr/share/museek/museeq/themes/default/" + icon + ".png");
 
 			if (QFile::exists(file)) {
 				QPixmap p = QPixmap(file);
@@ -60,7 +62,7 @@ QPixmap& IMG(const QString& icon) {
 				}
 			}
 
-		
+
 	}
 	return (*iconcache)[icon];
 }

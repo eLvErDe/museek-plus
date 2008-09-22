@@ -17,77 +17,83 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include "searchfilter.h"
-
 #include "searchlistview.h"
-#include <qcombobox.h>
-#include <qcheckbox.h>
-#include <qlabel.h>
-#include <qmessagebox.h>
+
+#include <QComboBox>
+#include <QCheckBox>
+#include <QLabel>
+#include <QLayout>
+#include <QMessageBox>
+#include <QKeyEvent>
 
 SearchFilter::SearchFilter(QWidget *parent, const char *name)
-             : QHBox(parent, name) {
-	
+             : QWidget(parent) {
+
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-	setSpacing(5);
-	
-	mFilterRegExp.setCaseSensitive(false);
-	
+// 	setSpacing(5);
+
+// 	mFilterRegExp.setCaseSensitive(false);
+	QHBoxLayout *box = new QHBoxLayout(this);
+
 	mRegExp = new QComboBox(this);
+	box->addWidget(mRegExp);
 	mRegExp->setLineEdit(new MyLineEdit(mRegExp));
 	mRegExp->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	mRegExp->setEditable(true);
 	connect(mRegExp->lineEdit(), SIGNAL(enterPressed()), SLOT(updateFilter()));
-	
-	QHBox *box = new QHBox(this);
-	new QLabel(tr("Size:"), box);
-	mSize = new QComboBox(box);
+
+	box->addWidget(new QLabel(tr("Size:")));
+	mSize = new QComboBox(this);
+	box->addWidget(mSize);
 	mSize->setLineEdit(new MyLineEdit(mSize));
 	mSize->setEditable(true);
 	connect(mSize->lineEdit(), SIGNAL(enterPressed()), SLOT(updateFilter()));
-	
-	box = new QHBox(this);
-	new QLabel(tr("Bitrate:"), box);
-	mBitrate = new QComboBox(box);
+
+// 	box = new QHBoxLayout(this);
+	box->addWidget(new QLabel(tr("Bitrate:")));
+	mBitrate = new QComboBox(this);
+	box->addWidget(mBitrate);
 	mBitrate->setLineEdit(new MyLineEdit(mBitrate));
 	mBitrate->setEditable(true);
 	connect(mBitrate->lineEdit(), SIGNAL(enterPressed()), SLOT(updateFilter()));
-	
+
 	mFreeSlot = new QCheckBox(tr("Free slot"), this);
+	box->addWidget(mFreeSlot);
 	connect(mFreeSlot, SIGNAL(toggled(bool)), SLOT(updateFilter()));
-	
+
 	updateFilter();
 }
 
 bool SearchFilter::match(SearchListItem *item) {
 	if(! mEnabled)
 		return true;
-	
-	if(! mFilterRegExp.isEmpty() && mFilterRegExp.search(item->path()) == -1)
+
+	if(! mFilterRegExp.isEmpty() && mFilterRegExp.indexIn(item->path()) == -1)
 		return false;
-	
+
 	// Gotta love these:
-	if(mFilterSize && ! (mFilterSizeExact ? (item->size() == mFilterSize) : ((mFilterSize < 0) ? (item->size() <= (-mFilterSize)) : (item->size() >= mFilterSize))))
+	if(mFilterSize && ! (mFilterSizeExact ? (static_cast<int>(item->size()) == mFilterSize) : ((mFilterSize < 0) ? (static_cast<int>(item->size()) <= (-mFilterSize)) : (static_cast<int>(item->size()) >= mFilterSize))))
 		return false;
-	
+
 	if(mFilterBitrate && ! (mFilterBitrateExact ? ((int)item->bitrate() == mFilterBitrate) : ((mFilterBitrate < 0) ? ((int)item->bitrate() <= (-mFilterBitrate)) : ((int)item->bitrate() >= mFilterBitrate))))
 		return false;
-	
+
 	if(mFilterFreeSlot && ! item->freeSlot())
 		return false;
-	
+
 	return true;
 }
 
 void SearchFilter::refilter(SearchListView *list) {
-	QListViewItemIterator it(list);
-	while(it.current()) {
-		it.current()->setVisible(match(static_cast<SearchListItem*>(it.current())));
-		it++;
-	}
+	QTreeWidgetItemIterator it(list);
+ 	while(*it) {
+ 		(*it)->setHidden(!match(static_cast<SearchListItem*>(*it)));
+ 		it++;
+ 	}
 }
 
 void SearchFilter::showEvent(QShowEvent *ev) {
-	QHBox::showEvent(ev);
+// 	Q3HBox::showEvent(ev);
 	if(! mEnabled) {
 		mEnabled = true;
 		emit filterChanged();
@@ -95,7 +101,7 @@ void SearchFilter::showEvent(QShowEvent *ev) {
 }
 
 void SearchFilter::hideEvent(QHideEvent *ev) {
-	QHBox::hideEvent(ev);
+// 	Q3HBox::hideEvent(ev);
 	if(mEnabled) {
 		mEnabled = false;
 		emit filterChanged();
@@ -108,9 +114,9 @@ void SearchFilter::updateFilter() {
 		QMessageBox::warning(this, tr("Warning - Museeq"), tr("Invalid regular expression, disabling it"));
 		mFilterRegExp.setPattern(QString::null);
 	}
-	
+
 	bool ok, neg = false;
-	Q_INT64 factor = 1;
+	qint64 factor = 1;
 	QString s = mSize->currentText();
 	mFilterSizeExact = false;
 	mFilterSize = 0;
@@ -122,9 +128,9 @@ void SearchFilter::updateFilter() {
 			neg = true;
 			s = s.mid(1);
 		}
-		
+
 		if(! s.isEmpty()) {
-			QString l = s.right(1).lower();
+			QString l = s.right(1).toLower();
 			if(l == tr("k"))
 				factor = 1024;
 			else if(l == tr("m"))
@@ -134,7 +140,7 @@ void SearchFilter::updateFilter() {
 			if(factor != 1)
 				s = s.left(s.length() - 1);
 		}
-		
+
 		mFilterSize = s.toInt(&ok);
 		if(! ok) {
 			QMessageBox::warning(this, tr("Warning - Museeq"), tr("Invalid size filter, disabling it"));
@@ -146,7 +152,7 @@ void SearchFilter::updateFilter() {
 			mFilterSize *= factor;
 		}
 	}
-	
+
 	neg = false;
 	s = mBitrate->currentText();
 	mFilterBitrateExact = false;
@@ -167,9 +173,9 @@ void SearchFilter::updateFilter() {
 		} else if(neg)
 			mFilterBitrate *= -1;
 	}
-	
+
 	mFilterFreeSlot = mFreeSlot->isChecked();
-	
+
 	emit filterChanged();
 }
 

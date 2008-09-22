@@ -21,23 +21,27 @@
 #define USERINFO_H
 
 #include "usertabwidget.h"
-#include <qscrollview.h>
+
+#include <QScrollArea>
 
 class QTextEdit;
 class QLabel;
-class QCanvasView;
 class ScrollImage;
-class QPopupMenu;
+class QMenu;
 class QPushButton;
+class QResizeEvent;
+class QMouseEvent;
+class QPixmap;
+
 class UserInfo : public UserWidget {
 	Q_OBJECT
 public:
 	UserInfo(const QString&, QWidget* = 0, const char* = 0);
-	
+
 public slots:
 	void setInfo(const QString&, const QByteArray&, uint, uint, bool);
 	void getUserInfo();
-	
+
 private:
 	QTextEdit* mDescr;
 	QLabel* mSlots, * mQueue, * mAvail;
@@ -46,7 +50,7 @@ private:
 	QString mUser;
 };
 
-class ScrollImage : public QScrollView {
+class ScrollImage : public QScrollArea {
 	Q_OBJECT
 public:
 	ScrollImage(QWidget* = 0, const char* = 0);
@@ -60,7 +64,7 @@ protected slots:
 private:
 	QString mBaseName;
 	QLabel* mLabel;
-	QPopupMenu* mPopupMenu;
+	QMenu* mPopupMenu;
 };
 
 #endif // USERINFO_H

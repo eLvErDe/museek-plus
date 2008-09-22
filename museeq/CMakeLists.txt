@@ -1,97 +1,21 @@
-project(museeq) # the name of your project
+# Project's name
+project(museeq)
 
-MESSAGE("DECLARATIONS: PREFIX (/usr), MANDIR (PREFIX/man), DATADIR (PREFIX/share), BINRELOC, TRAYICON
-Prefix declarations with -D and set them with either 1, 0 or a path.
-QSA is detected automatically
-")
+SET( QT_USE_QTNETWORK TRUE)
+SET( QT_USE_QTSCRIPT TRUE )
+SET( QT_USE_QTUITOOLS TRUE )
 
+# find and setup Qt4 for this project
+find_package(Qt4 REQUIRED)
 
-cmake_minimum_required(VERSION 2.4.0)
-include(CheckIncludeFiles)
-include(CheckTypeSize)
-
-include(CheckCXXSourceCompiles)
-
-add_subdirectory(Mucipher)
-find_package(Qt3 REQUIRED) # find and setup Qt3 for this project
-
-SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 add_definitions(${QT_DEFINITIONS} )
-# tell cmake where to search for Q headers:
-include_directories( ${QT_INCLUDE_DIR})
+
+# tell cmake where to search for headers:v
 include_directories(.)
-MACRO(ADD_MOC_FILES _sources)
-   FOREACH (_current_FILE ${ARGN})
-
-      GET_FILENAME_COMPONENT(_tmp_FILE ${_current_FILE} ABSOLUTE)
-
-      GET_FILENAME_COMPONENT(_basename ${_tmp_FILE} NAME_WE)
-      SET(_moc ${CMAKE_CURRENT_BINARY_DIR}/${_basename}.moc.cpp)
-
-      ADD_CUSTOM_COMMAND(OUTPUT ${_moc}
-         COMMAND moc #${QT_MOC_EXECUTABLE} 
-         ARGS ${_tmp_FILE} -o ${_moc}
-         DEPENDS ${_tmp_FILE}
-      )
-
-      SET(${_sources} ${${_sources}} ${_moc})
-
-   ENDFOREACH (_current_FILE)
-ENDMACRO(ADD_MOC_FILES)
-
-MACRO(ADD_TRANSLATION_FILES _sources )
-
-    FOREACH (_current_FILE ${ARGN})
-      GET_FILENAME_COMPONENT(_in ${_current_FILE} ABSOLUTE)
-      GET_FILENAME_COMPONENT(_basename ${_current_FILE} NAME_WE)
-
-      SET(_out ${CMAKE_CURRENT_BINARY_DIR}/${_basename}.qm)
-
-      ADD_CUSTOM_COMMAND(
-         OUTPUT ${_out}
-         COMMAND lrelease #${QT_LRELEASE_EXECUTABLE}
-         ARGS -verbose ${_in} -qm ${_out}
-         DEPENDS ${_in}
-      )
-
-      SET(${_sources} ${${_sources}} ${_out} )
-   ENDFOREACH (_current_FILE)
-ENDMACRO(ADD_TRANSLATION_FILES)
-
-FIND_PROGRAM(QT_LRELEASE_EXECUTABLE
-  NAMES lrelease lrelease-qt3
-  PATHS
-  "[HKEY_CURRENT_USER\\Software\\Trolltech\\Qt3Versions\\3.2.1;InstallDir]/include/Qt"
-  "[HKEY_CURRENT_USER\\Software\\Trolltech\\Qt3Versions\\3.2.0;InstallDir]/include/Qt"
-  "[HKEY_CURRENT_USER\\Software\\Trolltech\\Qt3Versions\\3.1.0;InstallDir]/include/Qt"
-  $ENV{QTDIR}/bin
-  ${GLOB_PATHS_BIN}
-  /usr/local/qt/bin
-  /usr/lib/qt/bin
-  /usr/lib/qt3/bin
-  /usr/share/qt3/bin
-  C:/Progra~1/qt/bin
-  /usr/X11R6/bin
-)
-
-FIND_LIBRARY(QSA_LIBRARY
-    NAMES
-    qsa
-    PATHS
-    "[HKEY_CURRENT_USER\\Software\\Trolltech\\Qt3Versions\\3.2.1;InstallDir]/lib"
-    "[HKEY_CURRENT_USER\\Software\\Trolltech\\Qt3Versions\\3.2.0;InstallDir]/lib"
-    "[HKEY_CURRENT_USER\\Software\\Trolltech\\Qt3Versions\\3.1.0;InstallDir]/lib"
-    $ENV{QTDIR}/lib
-    ${GLOB_PATHS_LIB}
-    /usr/local/qt/lib
-    /usr/lib/qt/lib
-    /usr/lib/qt3/lib
-    /usr/lib/qt3/lib64
-    /usr/share/qt3/lib
-    C:/Progra~1/qt/lib
-    /usr/X11R6/lib
-    /opt/qt/lib
-)
+INCLUDE( ${QT_USE_FILE} )
+INCLUDE(CheckIncludeFiles)
+INCLUDE(CheckTypeSize)
+INCLUDE(CheckCXXSourceCompiles)
 
 IF(PREFIX)
   SET(CMAKE_INSTALL_PREFIX ${PREFIX})
@@ -102,7 +26,7 @@ ENDIF(PREFIX)
 IF (NOT DATADIR)
   set(DATADIR ${CMAKE_INSTALL_PREFIX}/share)
 ENDIF (NOT DATADIR)
-ADD_DEFINITIONS(-DDATADIR=\\\"${DATADIR}\\\")
+ADD_DEFINITIONS(-DDATADIR="\""${DATADIR}"\"")
 
 if (MANDIR)
   set(MANUAL_DIRECTORY ${MANDIR}/man1)
@@ -114,6 +38,21 @@ if (BINRELOC)
  ADD_DEFINITIONS(-DENABLE_BINRELOC=1)
 endif (BINRELOC)
 
+
+if (QT_QTSCRIPT_FOUND)
+    MESSAGE(STATUS "Qt Script available")
+    add_definitions(-DHAVE_QTSCRIPT=1 )
+else (QT_QTSCRIPT_FOUND)
+    MESSAGE("!!! Qt Script NOT available (scripts won't be available)")
+endif (QT_QTSCRIPT_FOUND)
+
+
+if (QT_QTUITOOLS_FOUND)
+    MESSAGE(STATUS "Qt UI Tools available")
+    add_definitions(-DHAVE_QTUITOOLS=1 )
+else (QT_QTUITOOLS_FOUND)
+    MESSAGE("!!! Qt UI Tools NOT available (incomplete script support, no dialogs)")
+endif (QT_QTUITOOLS_FOUND)
 
 check_include_files(stdlib.h HAVE_STDLIB_H)
 check_include_files(stdio.h HAVE_STDIO_H)
@@ -152,43 +91,16 @@ elseif(UNSIGNED_LONG EQUAL 4)
 elseif(UNSIGNED_LONG_LONG EQUAL 4)
   set(UINT32_TYPE "unsigned long long")
 else(UNSIGNED_LONG_LONG EQUAL 4)
-  message(FATAL_ERROR "Couldn't determine 32bit unsigned interger type.")
+  message(FATAL_ERROR "Couldn't determine 32bit unsigned integer type.")
 endif(HAVE_UINT32)
 
 
-# 
-# message(STATUS ${QT_INCLUDE_DIR})
-# message(STATUS ${QT_DEFINITIONS})
-# message(STATUS ${QT_LIBRARIES})
-# message(STATUS ${CMAKE_REQUIRED_INCLUDES})
-
-# set(CMAKE_REQUIRED_DEFINITIONS ${QT_DEFINITIONS}  )
-set(CMAKE_REQUIRED_LIBRARIES ${QT_LIBRARIES} ${QSA_LIBRARY})
+set(CMAKE_REQUIRED_LIBRARIES ${QT_LIBRARIES})
 set(CMAKE_REQUIRED_INCLUDES . ${QT_INCLUDE_DIR})
 
-
-# Check if signal type.
-#   #include <qt.h>
-check_cxx_source_compiles("
-
-  #include \"qsproject.h\"
-  #include \"qsinterpreter.h\"
-  int main() {
-     QSInterpreter::defaultInterpreter()->hasFunction(\"\");
-  }
-" QSA)
-
-if (QSA)
-MESSAGE(STATUS "QSA available")
- add_definitions(-DHAVE_QSA=1 -DHAVE_QSA_DIALOG=1 )
-else (QSA)
-MESSAGE("!!! QSA NOT available")
-endif (QSA)
-
 message(STATUS "moc binary:" ${QT_MOC_EXECUTABLE})
-message(STATUS "lrelease binary:" ${QT_LRELEASE_EXECUTABLE})
 
-set(MUSEEQ_SOURCES
+SET(MUSEEQ_SOURCES
   aclineedit.cpp
   banlist.cpp
   browser.cpp
@@ -222,12 +134,12 @@ set(MUSEEQ_SOURCES
   roomlist.cpp
   roomlistitem.cpp
   roomlistview.cpp
+  script.cpp
   search.cpp
   searches.cpp
   searchfilter.cpp
   searchlistview.cpp
   settingsdialog.cpp
-  slskdrag.cpp
   tabwidget.cpp
   tickerdialog.cpp
   transferlistitem.cpp
@@ -243,7 +155,7 @@ set(MUSEEQ_SOURCES
   util.cpp
 )
 
-set(MUSEEQ_MOC_HEADERS
+SET(MUSEEQ_MOC_HEADERS
   aclineedit.h
   banlist.h
   browser.h
@@ -272,12 +184,12 @@ set(MUSEEQ_MOC_HEADERS
   recommendsview.h
   roomlist.h
   roomlistview.h
+  script.h
   search.h
   searches.h
   searchfilter.h
   searchlistview.h
   settingsdialog.h
-  slskdrag.h
   tabwidget.h
   tickerdialog.h
   transferlistview.h
@@ -288,90 +200,83 @@ set(MUSEEQ_MOC_HEADERS
   userlistview.h
   usermenu.h
   usertabwidget.h
-
 )
-
-IF(TRAYICON)
-  ADD_DEFINITIONS(-DHAVE_TRAYICON=1)
-  set(MUSEEQ_MOC_HEADERS ${MUSEEQ_MOC_HEADERS} trayicon.h)
-  set(MUSEEQ_SOURCES ${MUSEEQ_SOURCES} trayicon.cpp)
-endif (TRAYICON)
-
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/system.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/system.h)
 
 add_definitions(-DHAVE_SYSTEM_H)
 
-ADD_MOC_FILES(MUSEEQ_SOURCES ${MUSEEQ_MOC_HEADERS})
+if (QT_QTNETWORK_FOUND)
+    QT4_WRAP_CPP( MUSEEQ_SOURCES ${MUSEEQ_MOC_HEADERS} )
 
+    set(TRANSLATIONS
+      translations/museeq_de.ts
+      translations/museeq_es.ts
+      translations/museeq_en.ts
+      translations/museeq_fr.ts
+      translations/museeq_it.ts
+      translations/museeq_nl.ts
+      translations/museeq_pl.ts
+      translations/museeq_pt_BR.ts
+      translations/museeq_ro.ts
+    )
 
-add_executable(museeq ${MUSEEQ_SOURCES} ${MUSEEQ_MOC_HEADERS})
-set(LINK_LIBRARIES  Mucipher ${QT_LIBRARIES})
-if (QSA)
-  set(LINK_LIBRARIES ${LINK_LIBRARIES} ${QSA_LIBRARY})
-endif (QSA)
+    if (RELOAD_TRANSLATIONS)
+      QT4_CREATE_TRANSLATION(QM_FILES ${MUSEEQ_SOURCES} translations/museeq_template.ts ${TRANSLATIONS})
+    else (NOT RELOAD_TRANSLATIONS)
+      QT4_ADD_TRANSLATION(QM_FILES ${TRANSLATIONS})
+    endif (RELOAD_TRANSLATIONS)
 
-target_link_libraries(museeq ${LINK_LIBRARIES})
+    add_executable(museeq ${QM_FILES} ${MUSEEQ_SOURCES} ${MUSEEQ_MOC_HEADERS})
 
-install(
-  TARGETS museeq
-  DESTINATION bin
-)
-# file(GLOB_RECURSE TRANSLATIONS translations/museeq*.ts)
-set(TRANSLATIONS 
-  translations/museeq_fr.ts
-  translations/museeq_pl.ts
-  translations/museeq_it.ts
-  translations/museeq_de.ts
-  translations/museeq_pt_BR.ts
-  translations/museeq_es.ts
-  translations/museeq_ro.ts
-  translations/museeq_nl.ts
-)
+    set(LINK_LIBRARIES Mucipher ${QT_LIBRARIES})
 
-ADD_TRANSLATION_FILES (QM_FILES ${TRANSLATIONS})
-ADD_CUSTOM_TARGET (translations ALL DEPENDS ${QM_FILES})
-install(
-  FILES ${QM_FILES}
-  DESTINATION ${DATADIR}/museek/museeq/translations
-)
+    target_link_libraries(museeq ${LINK_LIBRARIES})
 
-file(GLOB_RECURSE THEME_DEFAULT default/*.png)
-install(FILES ${THEME_DEFAULT} DESTINATION ${DATADIR}/museek/museeq/icons/default)
-file(GLOB_RECURSE THEME_BLUEBOX bluebox/*.png)
-install(FILES ${THEME_BLUEBOX} DESTINATION ${DATADIR}/museek/museeq/icons/bluebox)
-file(GLOB_RECURSE THEME_SILK mikelabo-silk/*.png)
-install(FILES ${THEME_SILK} DESTINATION ${DATADIR}/museek/museeq/icons/mikelabo-silk)
-file(GLOB_RECURSE THEME_TRI mikelabo-tri/*.png)
-install(FILES ${THEME_TRI} DESTINATION ${DATADIR}/museek/museeq/icons/mikelabo-tri)
+    install(
+      TARGETS museeq
+      DESTINATION bin
+    )
 
-set(ICONS
-  museeq.png
-)
+    install(FILES ${QM_FILES} DESTINATION ${DATADIR}/museek/museeq/translations)
 
-install(
-  FILES ${ICONS}
-  DESTINATION "share/pixmaps"
-)
-set(DESKTOP
-  museeq.desktop
-)
+    install(DIRECTORY themes DESTINATION ${DATADIR}/museek/museeq
+            PATTERN ".svn" EXCLUDE)
 
-install(
-  FILES ${DESKTOP}
-  DESTINATION "share/applications"
-)
-install(
-  FILES "museeq.1"
-  DESTINATION ${MANUAL_DIRECTORY}
-)
-MESSAGE("--> Museeq will be installed.. [NO_MUSEEQ=1]")
-if (NOT BINRELOC)
-  MESSAGE(" * without Binary Relocation.. [BINRELOC=1]")
-else (NOT BINRELOC)
-  MESSAGE(" * with Binary Relocation.. [BINRELOC=0]")
-endif (NOT BINRELOC)
-if (NOT TRAYICON)
-  MESSAGE(" * without a Trayicon.. [TRAYICON=1]")
-else (NOT TRAYICON)
-  MESSAGE(" * with a Trayicon.. [TRAYICON=0]")
-endif (NOT TRAYICON)
+    install(DIRECTORY scripts DESTINATION ${DATADIR}/museek/museeq
+            PATTERN ".svn" EXCLUDE)
+
+    set(ICONS
+      museeq.png
+    )
+
+    install(
+      FILES ${ICONS}
+      DESTINATION "share/pixmaps"
+    )
+    set(DESKTOP
+      museeq.desktop
+    )
+
+    install(
+      FILES ${DESKTOP}
+      DESTINATION "share/applications"
+    )
+    install(
+      FILES "museeq.1"
+      DESTINATION ${MANUAL_DIRECTORY}
+    )
+
+    MESSAGE("--> Museeq-qt4 will be installed.. [NO_MUSEEQ=1]")
+
+    if (NOT BINRELOC)
+      MESSAGE("   * without Binary Relocation.. [BINRELOC=1]")
+    else (NOT BINRELOC)
+      MESSAGE("   * with Binary Relocation.. [BINRELOC=0]")
+    endif (NOT BINRELOC)
+
+    if (RELOAD_TRANSLATIONS)
+      message( "   * rebuilding translations from sources" )
+    endif (RELOAD_TRANSLATIONS)
+
+else (QT_QTNETWORK_FOUND)
+    MESSAGE("!!! museeq will NOT be installed [QTNETWORK not found]")
+endif (QT_QTNETWORK_FOUND)

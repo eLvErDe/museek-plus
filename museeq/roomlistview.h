@@ -20,12 +20,13 @@
 #ifndef ROOMLISTVIEW_H
 #define ROOMLISTVIEW_H
 
-#include <qlistview.h>
 #include "museeqtypes.h"
 
-class QPopupMenu;
+#include <QTreeWidget>
 
-class RoomListView : public QListView {
+class QMenu;
+
+class RoomListView : public QTreeWidget {
 	Q_OBJECT
 public:
 	RoomListView(QWidget* = 0, const char* = 0);
@@ -40,12 +41,12 @@ protected slots:
 	void slotJoin();
 	void slotLeave();
 	void slotRefresh();
-	void slotPopupMenu(QListViewItem*, const QPoint&, int);
-	void slotDoubleClicked(QListViewItem*, const QPoint&, int);
-	void slotReturnPressed(QListViewItem*);
-	
+	void slotActivate(QTreeWidgetItem*,  int);
+	void slotContextMenu(const QPoint&);
+
 protected:
-	QPopupMenu *mPopup;
+	QAction * ActionJoin, * ActionLeave, * ActionRefresh;
+	QMenu *mPopup;
 	QString mPopped;
 };
 
