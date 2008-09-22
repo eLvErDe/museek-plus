@@ -273,17 +273,15 @@ class MusetupWindow(QMainWindow):
       if domain in config:
         if key in config[domain]:
           value = config[domain][key]
-      else:
-        value = ""
-      widget = getattr(self, fixname(domain, key))
-      if hasattr(widget, 'setChecked'):
-        widget.setChecked(value == 'true')
-      elif hasattr(widget, 'setText'):
-        widget.setText(value)
-      elif hasattr(widget, 'setCurrentText'):
-        widget.setCurrentText(value)
-      elif hasattr(widget, 'setValue'):
-        widget.setValue(int(value))
+          widget = getattr(self, fixname(domain, key))
+          if hasattr(widget, 'setChecked'):
+            widget.setChecked(value == 'true')
+          elif hasattr(widget, 'setText'):
+            widget.setText(value)
+          elif hasattr(widget, 'setCurrentText'):
+            widget.setCurrentText(value)
+          elif hasattr(widget, 'setValue'):
+            widget.setValue(int(value))
     
     def populateList(domain):
       widget = getattr(self, fixname(domain, 'list'))
@@ -387,7 +385,7 @@ class MusetupWindow(QMainWindow):
       if node.nodeName == u'domain':
         id = node.getAttribute('id')
         config[id] = readDomain(node)
-      node = node.nextSibling	
+      node = node.nextSibling
     return config
 
 if __name__ == "__main__":
