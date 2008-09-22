@@ -57,8 +57,8 @@ UserListView::UserListView(bool comments, QWidget * parent, const char * name)
 	QPixmap& p(IMG("online"));
 	setColumnWidth (0, p.width()+5);
 	setColumnWidth ( 1, 100 );
-	setColumnWidth ( 2, 50 );
-	setColumnWidth ( 3, 50 );
+	setColumnWidth ( 2, 100 );
+	setColumnWidth ( 3, 100 );
 	setAllColumnsShowFocus(true);
 	setRootIsDecorated(false);
 	setContextMenuPolicy(Qt::CustomContextMenu);
