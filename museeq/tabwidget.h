@@ -58,7 +58,6 @@ public:
 
 public slots:
 	QWidget * getCurrentWidget() const;
-	void repaintTabBar();
 
 protected:
 	bool protectFirst() const;

@@ -110,10 +110,6 @@ void TabWidget::nextPage() {
 	setCurrentIndex((currentIndex() + 1) % count());
 }
 
-void TabWidget::repaintTabBar() {
-	tabBar()->update();
-}
-
 
 TabBar::TabBar(bool isUser, QWidget* parent, const char* name)
        : QTabBar(parent) {
