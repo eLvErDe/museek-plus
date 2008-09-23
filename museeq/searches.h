@@ -60,6 +60,7 @@ public slots:
 	void setUserSearchText(const QString&);
 	void searchModeSelected();
 	void doSearch(const QString&);
+	void tabSelected(QWidget*);
 
 protected slots:
 	void doSearch();

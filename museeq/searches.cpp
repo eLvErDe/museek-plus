@@ -99,6 +99,7 @@ Searches::Searches(QWidget* parent, const char* name)
 	connect(museeq, SIGNAL(connectedToServer(bool)), mEntry, SLOT(setEnabled(bool)));
 	connect(museeq, SIGNAL(connectedToServer(bool)), mSearch, SLOT(setEnabled(bool)));
 	connect(museeq, SIGNAL(connectedToServer(bool)), mInterests, SLOT(setEnabled(bool)));
+	connect(mSearchTabWidget, SIGNAL(currentChanged(QWidget*)), SLOT(tabSelected(QWidget*)));
 }
 
 void Searches::searchModeSelected() {
@@ -196,6 +197,13 @@ void Searches::doSearch(const QString& q) {
 void Searches::doSearch() {
 	QString q = mEntry->currentText();
 	doSearch(q);
+}
+
+void Searches::tabSelected(QWidget* searchwidget) {
+	if (mSearchTabWidget->currentIndex() == 0)
+		return;
+	Search * uw = static_cast<Search*>(searchwidget);
+    setSearchText(uw->query());
 }
 
 
