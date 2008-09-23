@@ -1969,7 +1969,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../transferlistview.cpp" line="277"/>
+        <location filename="../transferlistview.cpp" line="279"/>
         <source>%n transfer(s)</source>
         <translation type="unfinished">
             <numerusform>%n transfer</numerusform>
@@ -1977,7 +1977,7 @@
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../transferlistview.cpp" line="277"/>
+        <location filename="../transferlistview.cpp" line="279"/>
         <source> (%n user(s))</source>
         <translation type="unfinished">
             <numerusform> (%n user)</numerusform>
