@@ -240,7 +240,7 @@ Museek::ServerManager::onLoggedIn(const SLogin * message)
   if (m_ReconnectTimeout)
     museekd()->reactor()->removeTimeout(m_ReconnectTimeout);
 
-  m_PingTimeout = museekd()->reactor()->addTimeout(120000, this, &ServerManager::pingServer);
+  m_PingTimeout = museekd()->reactor()->addTimeout(60000, this, &ServerManager::pingServer);
 
   setLoggedIn(message->success);
   if(message->success)
@@ -297,12 +297,12 @@ Museek::ServerManager::pingServer(long diff) {
         NNLOG("museek.debug", "Pinging the server (%dms delay)", diff);
         SPing msg;
         sendMessage(msg.make_network_packet());
-        m_PingTimeout = museekd()->reactor()->addTimeout(120000, this, &ServerManager::pingServer);
+        m_PingTimeout = museekd()->reactor()->addTimeout(60000, this, &ServerManager::pingServer);
     }
     else {
         // We've sent someting to the server recently. Wait 60 seconds vefore pinging.
         NNLOG("museek.debug", "Delaying server ping");
-        m_PingTimeout = museekd()->reactor()->addTimeout(120000, this, &ServerManager::pingServer);
+        m_PingTimeout = museekd()->reactor()->addTimeout(60000, this, &ServerManager::pingServer);
     }
 }
 
