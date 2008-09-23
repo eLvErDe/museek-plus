@@ -109,6 +109,8 @@ void TransferListView::remove(const QString& _u, const QString& _p) {
             TransferListItem* parent = findParent(_u);
 			if(parent->childCount() == 0)
                 delete parent;
+            else
+                parent->updateStats();
 		}
 		return;
 	}
