@@ -116,7 +116,7 @@ Museek::UserSocket::onFirewallPierced(Museek::HandshakeSocket * socket)
 void
 Museek::UserSocket::onFirewallPierceTimedOut(long)
 {
-  if(socketState() != SocketUninitialized)
+  if(socketState() == SocketUninitialized)
   {
     NNLOG("museek.debug", "Passive connection failed: pierce firewall timed out. Trying an active connection.");
     initiateActive();

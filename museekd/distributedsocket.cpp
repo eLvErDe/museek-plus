@@ -112,10 +112,11 @@ Museek::DistributedSocket::onFirewallPierceTimedOut(long)
 {
     // Distributed socket tries first active mode, then passive (unlike usersocket).
     // So no need to retry active when passive fails.
-    if(socketState() != SocketUninitialized)
-    {
-        NNLOG("museek.debug", "Passive connection failed: pierce firewall timed out.");
-    }
+    NNLOG("museek.debug", "Passive connection failed: pierce firewall timed out.");
+
+    disconnect();
+    if (reactor())
+        museekd()->reactor()->remove(this);
 }
 
 void Museek::DistributedSocket::onBranchLevelReceived(const DBranchLevel * msg) {
