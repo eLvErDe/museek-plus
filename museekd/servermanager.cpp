@@ -292,7 +292,7 @@ Museek::ServerManager::pingServer(long diff) {
     struct timeval now;
     gettimeofday(&now, 0);
 
-    if (difftime(now, mLastSentMessage) > 60000) {
+    if (difftime(now, mLastSentMessage) > 59000) {
         // No data sent to server since 60 seconds. Ping the server
         NNLOG("museek.debug", "Pinging the server (%dms delay)", diff);
         SPing msg;
