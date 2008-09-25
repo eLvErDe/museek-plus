@@ -356,7 +356,8 @@ void Museek::SearchManager::roomsSearch(uint token, const std::string & query) {
 void Museek::SearchManager::onPeerSocketReady(PeerSocket * socket) {
     std::string username = socket->user();
 
-    if (m_PendingResults.find(username) != m_PendingResults.end() && m_PendingResults[username].size()) {
+    std::map<std::string, std::map<uint, Folder> >::iterator pending = m_PendingResults.find(username);
+    if (pending != m_PendingResults.end() && m_PendingResults[username].size()) {
         NNLOG("museek.debug", "Sending search results to %s", username.c_str());
 
         std::map<uint, Folder>::const_iterator it;
@@ -364,6 +365,8 @@ void Museek::SearchManager::onPeerSocketReady(PeerSocket * socket) {
             PSearchReply msg(it->first, username, it->second, transferSpeed(), museekd()->uploads()->queueTotalLength(), museekd()->uploads()->hasFreeSlots());
             socket->sendMessage(msg.make_network_packet());
         }
+
+        m_PendingResults.erase(pending);
     }
 }
 
