@@ -784,7 +784,7 @@ Museek::IfaceManager::onServerPrivateMessageReceived(const SPrivateMessage * mes
 {
   PrivateMessage msg;
   msg.ticket = message->ticket;
-  msg.timestamp = message->timestamp;
+  msg.timestamp = message->timestamp - 1800; // Server's timestamps are wrong
   msg.user = message->user;
   msg.message = museekd()->codeset()->fromPeer(msg.user, message->message);
   m_PrivateMessages.push_back(msg);
