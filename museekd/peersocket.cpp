@@ -54,7 +54,7 @@ Museek::PeerSocket::PeerSocket(Museek::HandshakeSocket * that) : Museek::UserSoc
 
 Museek::PeerSocket::~PeerSocket()
 {
-    NNLOG("museek.debug", "PeerSocket %d destroyed", descriptor());
+    NNLOG("museek.debug", "PeerSocket %d destroyed for %s", descriptor(), user().c_str());
 }
 
 void

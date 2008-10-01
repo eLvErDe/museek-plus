@@ -35,6 +35,8 @@ Museek::HandshakeSocket::HandshakeSocket() : NewNet::ClientSocket(), Museek::Mes
   // Connect some signals.
   dataReceivedEvent.connect(this, &HandshakeSocket::onDataReceived);
   messageReceivedEvent.connect(this, &HandshakeSocket::onMessageReceived);
+  disconnectedEvent.connect(this, &HandshakeSocket::onDisconnected);
+  cannotConnectEvent.connect(this, &HandshakeSocket::onCannotConnect);
 }
 
 Museek::HandshakeSocket::~HandshakeSocket()
@@ -118,4 +120,22 @@ Museek::HandshakeSocket::onMessageReceived(const MessageData * data)
     default:
       NNLOG("museek.warn", "Received unknown peer handshake message, type: %u, length: %u", data->type, data->length);
   }
+}
+
+void
+Museek::HandshakeSocket::onDisconnected(NewNet::ClientSocket * socket) {
+  NNLOG("museek.debug", "Handshake socket for %s has been disconnected.", m_User.c_str());
+  if(reactor())
+    reactor()->remove(this);
+}
+
+void
+Museek::HandshakeSocket::onCannotConnect(NewNet::ClientSocket *)
+{
+  NNLOG("museek.debug", "Could not connect handshake socket for user %s.", m_User.c_str());
+  // Try to disconnect even if it's probably not necessary
+  // then remove from reactor as this will probably not be done by disconnect()
+  disconnect();
+  if (reactor())
+    museekd()->reactor()->remove(this);
 }

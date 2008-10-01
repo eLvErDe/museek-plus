@@ -58,6 +58,8 @@ namespace Museek
   private:
     /* Handler for messageReceivedEvent. */
     void onMessageReceived(const MessageData * data);
+    void onDisconnected(NewNet::ClientSocket * socket);
+    void onCannotConnect(NewNet::ClientSocket * socket);
 
     NewNet::WeakRefPtr<Museekd> m_Museekd;
     uint m_Token;

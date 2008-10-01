@@ -138,6 +138,7 @@ void NewNet::Reactor::add(Socket * socket)
 
 void NewNet::Reactor::remove(Socket * socket)
 {
+  NNLOG("museek.debug", "removing socket %u from reactor", socket->descriptor());
   // Removing a socket from the wrong reactor is a programming error, trap it.
   assert(socket->reactor() == this);
 
