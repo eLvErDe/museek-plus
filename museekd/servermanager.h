@@ -110,7 +110,7 @@ namespace Museek
     std::string m_Username, m_Password;
 
     NewNet::WeakRefPtr<TcpMessageSocket> m_Socket;
-    bool m_LoggedIn;
+    bool m_LoggedIn, m_AutoConnect;
 
     std::vector<std::string> m_JoinedRooms;
     NewNet::WeakRefPtr<NewNet::Event<long>::Callback> m_PingTimeout, m_ReconnectTimeout;

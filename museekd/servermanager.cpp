@@ -43,6 +43,7 @@ Museek::ServerManager::ServerManager(Museekd * museekd) : m_Museekd(museekd), m_
     privilegedUserAddedEvent.connect(this, & ServerManager::onPrivilegedUserAddedReceived);
 
     m_ConnectionTries = 0;
+    m_AutoConnect = true;
 }
 
 Museek::ServerManager::~ServerManager()
@@ -98,6 +99,9 @@ Museek::ServerManager::connect()
   // Add the socket to the reactor
   museekd()->reactor()->add(m_Socket);
 
+  // Reconnect automatically if problems
+  m_AutoConnect = true;
+
   // Connect to the soulseek server
   m_Socket->connect(host, port);
 }
@@ -105,6 +109,9 @@ Museek::ServerManager::connect()
 void
 Museek::ServerManager::disconnect()
 {
+  // Don't try to reconnect automatically as we explicitly tell we want to stayt disconnected
+  m_AutoConnect = false;
+
   if(m_Socket.isValid())
     m_Socket->disconnect();
 }
@@ -114,7 +121,8 @@ Museek::ServerManager::disconnect()
   */
 void
 Museek::ServerManager::reconnect(long) {
-    connect();
+    if (m_AutoConnect)
+        connect();
 }
 
 void
@@ -143,13 +151,17 @@ void
 Museek::ServerManager::onCannotConnect(NewNet::ClientSocket * socket)
 {
   // We'll try to reconnect in a few seconds
-  int length = 2000;
-  if (m_ConnectionTries >= 2)
-    length = 30000;
-  m_ReconnectTimeout = museekd()->reactor()->addTimeout(length, this, &ServerManager::reconnect);
-  m_ConnectionTries++;
+  if (m_AutoConnect) {
+      int length = 2000;
+      if (m_ConnectionTries >= 2)
+        length = 30000;
+      m_ReconnectTimeout = museekd()->reactor()->addTimeout(length, this, &ServerManager::reconnect);
+      m_ConnectionTries++;
+      NNLOG("museek.warn", "Cannot connect to server... Will reconnect in %d ms.", length);
+  }
+  else
+      NNLOG("museek.warn", "Cannot connect to server... Will not try to reconnect.");
 
-  NNLOG("museek.warn", "Cannot connect to server... Will reconnect in %d ms.", length);
   setLoggedIn(false);
   if (socket->reactor())
     museekd()->reactor()->remove(socket);
@@ -167,13 +179,17 @@ void
 Museek::ServerManager::onDisconnected(NewNet::ClientSocket * socket)
 {
   // We'll try to reconnect in a few seconds
-  int length = 2000;
-  if (m_ConnectionTries >= 2)
-    length = 30000;
-  m_ReconnectTimeout = museekd()->reactor()->addTimeout(length, this, &ServerManager::reconnect);
-  m_ConnectionTries++;
+  if (m_AutoConnect) {
+      int length = 2000;
+      if (m_ConnectionTries >= 2)
+        length = 30000;
+      m_ReconnectTimeout = museekd()->reactor()->addTimeout(length, this, &ServerManager::reconnect);
+      m_ConnectionTries++;
+    NNLOG("museek.note", "Disconnected from server. Will reconnect in %d ms.", length);
+  }
+  else
+    NNLOG("museek.note", "Disconnected from server. Will not try to reconnect.");
 
-  NNLOG("museek.note", "Disconnected from server. Will reconnect in %d ms.", length);
 
   setLoggedIn(false);
   museekd()->reactor()->remove(socket);
