@@ -1192,19 +1192,22 @@ IFACEMESSAGE(IDownloadFile, 0x0503)
 
 	string username -- Username to download a file from
 	string path -- Path of the file to download
+	offset size -- Size of the file to download
 
 	*not sent*
 */
 
-	IDownloadFile() : user(""), path("") {}
+	IDownloadFile() : user(""), path(""), size(0) {}
 
 	PARSE
 		user = unpack_string();
 		path = unpack_string();
+		size = unpack_off();
 
 	END_PARSE
 
 	std::string user, path, localpath;
+	off_t size;
 
 END
 
@@ -1215,20 +1218,23 @@ IFACEMESSAGE(IDownloadFileTo, 0x0507)
 	string username -- Username to download a file from
 	string path -- Path of the file to download
 	string localpath -- Path to store the file name
+	offset size -- Size of the file to download
 
 	*not sent*
 */
 
-	IDownloadFileTo() : user(""), path(""), localpath("") {}
+	IDownloadFileTo() : user(""), path(""), localpath(""), size(0) {}
 
 	PARSE
 		user = unpack_string();
 		path = unpack_string();
 		localpath = unpack_string();
+		size = unpack_off();
 
 	END_PARSE
 
 	std::string user, path, localpath;
+	off_t size;
 
 END
 
