@@ -42,6 +42,7 @@ public:
 	qint64 position() const;
 	qint64 size() const;
 	uint rate() const;
+	uint timeLeft() const { return mTimeLeft; }
 	bool operator<(const QTreeWidgetItem & other) const;
 
 protected:
@@ -49,7 +50,7 @@ protected:
 	void update(const NTransfer&, bool);
 
 private:
-	uint mState, mRate, mPlaceInQueue;
+	uint mState, mRate, mPlaceInQueue, mTimeLeft;
 	QString mUser, mPath, mError;
 	qint64 mPosition, mSize;
 	uint separation;

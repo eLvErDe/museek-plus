@@ -31,7 +31,7 @@ TransferListView::TransferListView(bool place, QWidget* _p, const char* _n)
                  : QTreeWidget(_p), mGroupMode(None) {
 
 	QStringList headers;
-	headers << tr("User") << tr("File") << tr("Status") << tr("Place") << tr("Position") << tr("Size") << tr("Speed") << tr("Path") << QString::null;
+	headers << tr("User") << tr("File") << tr("Status") << tr("Place") << tr("Position") << tr("Size") << tr("Speed") << tr("Time Left") << tr("Path") << QString::null;
 
     setAllColumnsShowFocus(true);
 	setHeaderLabels(headers);
@@ -39,17 +39,19 @@ TransferListView::TransferListView(bool place, QWidget* _p, const char* _n)
 	setDragEnabled(true);
 	setSelectionMode(QAbstractItemView::ExtendedSelection);
 
-	setColumnWidth ( 0, 100 );
-	setColumnWidth ( 1, 250 );
-
 	if(! place)
 		setColumnHidden(3, true);
-	setColumnWidth(3, 50);
+
+	setColumnWidth ( 0, 100 );
+	setColumnWidth ( 1, 250 );
+	setColumnWidth ( 2, 100 );
+	setColumnWidth ( 3, 50 );
 	setColumnWidth ( 4, 100 );
 	setColumnWidth ( 5, 100 );
 	setColumnWidth ( 6, 100 );
-	setColumnWidth ( 7, 250 );
-	setColumnWidth ( 8, 0 );
+	setColumnWidth ( 7, 100 );
+	setColumnWidth ( 8, 250 );
+	setColumnWidth ( 9, 0 );
 
 	setContextMenuPolicy(Qt::CustomContextMenu);
 	connect(museeq, SIGNAL(disconnected()), SLOT(clear()));

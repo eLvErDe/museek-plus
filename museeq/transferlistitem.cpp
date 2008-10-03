@@ -29,6 +29,8 @@ TransferListItem::TransferListItem(QTreeWidget* p, const QString& _u, const QStr
 	setTextAlignment(3, Qt::AlignRight|Qt::AlignVCenter);
 	setTextAlignment(4, Qt::AlignRight|Qt::AlignVCenter);
 	setTextAlignment(5, Qt::AlignRight|Qt::AlignVCenter);
+	setTextAlignment(6, Qt::AlignRight|Qt::AlignVCenter);
+	setTextAlignment(7, Qt::AlignRight|Qt::AlignVCenter);
 	updatePath();
 	NTransfer t;
 	t.state = 15;
@@ -47,6 +49,8 @@ TransferListItem::TransferListItem(QTreeWidgetItem* p, const QString& _u, const 
 	setTextAlignment(3, Qt::AlignRight|Qt::AlignVCenter);
 	setTextAlignment(4, Qt::AlignRight|Qt::AlignVCenter);
 	setTextAlignment(5, Qt::AlignRight|Qt::AlignVCenter);
+	setTextAlignment(6, Qt::AlignRight|Qt::AlignVCenter);
+	setTextAlignment(7, Qt::AlignRight|Qt::AlignVCenter);
 	updatePath();
 
 	NTransfer t;
@@ -63,7 +67,7 @@ void TransferListItem::updatePath() {
 		int ix = mPath.lastIndexOf('\\');
 		if(ix != -1) {
 			setText(1, mPath.mid(ix + 1));
-			setText(7, mPath.left(ix + 1));
+			setText(8, mPath.left(ix + 1));
 		} else
 			setText(1, mPath);
 	}
@@ -171,6 +175,17 @@ void TransferListItem::update(const NTransfer& transfer, bool force) {
 		else
 			setText(3, "");
 	}
+	if((transfer.rate != mRate) || (transfer.filepos != mPosition) || (transfer.filesize != mSize) || force) {
+	    if (transfer.rate > 0)
+            mTimeLeft = (transfer.filesize - transfer.filepos) / transfer.rate;
+	    else
+            mTimeLeft = 0;
+
+        if (mTimeLeft > 0)
+            setText(7, Util::makeTime(mTimeLeft));
+        else
+            setText(7, TransferListView::tr("?"));
+	}
 	if(transfer.filepos != mPosition || force) {
 		mPosition = transfer.filepos;
 		setText(4, Util::makeSize(mPosition));
@@ -217,8 +232,8 @@ uint TransferListItem::rate() const {
 }
 
 void TransferListItem::updateStats() {
-	qint64 __f = 0, __t = 0;
-	uint __r = 0;
+	qint64 groupPosition = 0, groupSize = 0;
+	uint groupRate = 0, groupTimeLeft;
 	setText(3, "");
 	if (! childCount())
 		return;
@@ -227,24 +242,33 @@ void TransferListItem::updateStats() {
 	for(; pos < childCount(); pos++) {
 		file = static_cast<TransferListItem*>(child(pos));
 		if (file) {
-			__f += file->mPosition;
+			groupPosition += file->mPosition;
 			if(file->mSize == 0)
-				__t = -1;
-			else if(__t > -1)
-				__t += file->mSize;
+				groupSize = -1;
+			else if(groupSize > -1)
+				groupSize += file->mSize;
 			if(file->mState == 1)
-				__r = file->mRate;
+				groupRate = file->mRate;
 		}
 	}
 
-	setText(4, Util::makeSize(__f));
-	if(__t == -1)
+	setText(4, Util::makeSize(groupPosition));
+	if(groupSize == -1)
 		setText(5, "?");
 	else
-		setText(5, Util::makeSize(__t));
+		setText(5, Util::makeSize(groupSize));
 
-	setText(6, Util::makeSize(__r) + TransferListView::tr("/s"));
+	setText(6, Util::makeSize(groupRate) + TransferListView::tr("/s"));
 
+    if (groupRate > 0)
+        groupTimeLeft = (groupSize - groupPosition) / groupRate;
+    else
+        groupTimeLeft = 0;
+
+    if (groupTimeLeft > 0)
+        setText(7, Util::makeTime(groupTimeLeft));
+    else
+        setText(7, TransferListView::tr("?"));
 }
 
 void TransferListItem::update(const NTransfer& transfer) {
@@ -290,6 +314,10 @@ bool TransferListItem::operator<(const QTreeWidgetItem & other_) const {
 			return user() < other->user();
 		return rate() < other->rate();
 	case 7:
+		if(timeLeft() == other->timeLeft())
+			return user() < other->user();
+		return timeLeft() < other->timeLeft();
+	case 8:
 		if(path() == other->path())
 			return user() < other->user();
 		return path() < other->path();

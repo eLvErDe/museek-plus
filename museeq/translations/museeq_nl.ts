@@ -1685,7 +1685,7 @@
         <translation>Gebruikers</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="133"/>
+        <location filename="../searchlistview.cpp" line="134"/>
         <source>Select a Directory for current download(s)</source>
         <translation>Map kiezen voor de huidige download(s)</translation>
     </message>
@@ -1705,29 +1705,29 @@
         <translation type="obsolete">%1 zoekresultaten (%2 gebruikers)</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="290"/>
+        <location filename="../searchlistview.cpp" line="291"/>
         <source>Y</source>
         <translation type="unfinished">J</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="290"/>
+        <location filename="../searchlistview.cpp" line="291"/>
         <source>N</source>
         <translation type="unfinished">N</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="288"/>
+        <location filename="../searchlistview.cpp" line="289"/>
         <source>/s</source>
         <translation type="unfinished">/s</translation>
     </message>
     <message numerus="yes">
-        <location filename="../searchlistview.cpp" line="249"/>
+        <location filename="../searchlistview.cpp" line="250"/>
         <source>%n search result(s)</source>
         <translation type="unfinished">
             <numerusform></numerusform>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../searchlistview.cpp" line="249"/>
+        <location filename="../searchlistview.cpp" line="250"/>
         <source> (%n user(s))</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -2404,93 +2404,103 @@
         <translation type="obsolete">%1 overdrachten (%2 gebruikers)</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="78"/>
+        <location filename="../transferlistitem.cpp" line="82"/>
         <source>Finished</source>
         <translation type="unfinished">Voltooid</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="83"/>
+        <location filename="../transferlistitem.cpp" line="87"/>
         <source>Transferring</source>
         <translation type="unfinished">Wordt verstuurd</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="88"/>
+        <location filename="../transferlistitem.cpp" line="92"/>
         <source>Negotiating</source>
         <translation type="unfinished">Onderhandelen</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="93"/>
+        <location filename="../transferlistitem.cpp" line="97"/>
         <source>Waiting</source>
         <translation type="unfinished">Wachten</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="98"/>
+        <location filename="../transferlistitem.cpp" line="102"/>
         <source>Establishing</source>
         <translation type="unfinished">Tot stand brengen</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="103"/>
+        <location filename="../transferlistitem.cpp" line="107"/>
         <source>Initiating</source>
         <translation type="unfinished">Beginnen</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="108"/>
+        <location filename="../transferlistitem.cpp" line="112"/>
         <source>Connecting</source>
         <translation type="unfinished">Verbinden</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="154"/>
+        <location filename="../transferlistitem.cpp" line="158"/>
         <source>Queued</source>
         <translation type="unfinished">In de wacht</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="118"/>
+        <location filename="../transferlistitem.cpp" line="122"/>
         <source>Getting address</source>
         <translation type="unfinished">Adres ophalen</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="121"/>
+        <location filename="../transferlistitem.cpp" line="125"/>
         <source>Getting status</source>
         <translation type="unfinished">Status ophalen</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="126"/>
+        <location filename="../transferlistitem.cpp" line="130"/>
         <source>User Offline</source>
         <translation type="unfinished">Gebruiker offline</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="131"/>
+        <location filename="../transferlistitem.cpp" line="135"/>
         <source>Connection closed by peer</source>
         <translation type="unfinished">Verbinding verbroken door andere partij</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="136"/>
+        <location filename="../transferlistitem.cpp" line="140"/>
         <source>Cannot connect</source>
         <translation type="unfinished">Kan geen verbinding maken</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="141"/>
+        <location filename="../transferlistitem.cpp" line="145"/>
         <source>Aborted</source>
         <translation type="unfinished">Afgebroken</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="246"/>
+        <location filename="../transferlistitem.cpp" line="261"/>
         <source>/s</source>
         <translation type="unfinished">/s</translation>
     </message>
     <message numerus="yes">
-        <location filename="../transferlistview.cpp" line="279"/>
+        <location filename="../transferlistview.cpp" line="281"/>
         <source>%n transfer(s)</source>
         <translation type="unfinished">
             <numerusform></numerusform>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../transferlistview.cpp" line="279"/>
+        <location filename="../transferlistview.cpp" line="281"/>
         <source> (%n user(s))</source>
         <translation type="unfinished">
             <numerusform></numerusform>
         </translation>
+    </message>
+    <message>
+        <location filename="../transferlistview.cpp" line="34"/>
+        <source>Time Left</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transferlistitem.cpp" line="271"/>
+        <source>?</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
