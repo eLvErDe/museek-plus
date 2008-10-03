@@ -723,10 +723,9 @@ MESSAGE(NTransferRemove, 0x0502)
 END
 
 MESSAGE(NDownloadFile, 0x0503)
-	NDownloadFile(const QString& _user, const QString& _path, const QString& _local, qint64 _size) {
+	NDownloadFile(const QString& _user, const QString& _path, qint64 _size) {
 		pack(_user);
 		pack(_path);
-		pack(_local);
 		pack(_size);
 	}
 END

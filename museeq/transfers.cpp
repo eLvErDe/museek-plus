@@ -463,6 +463,16 @@ void Transfers::slotConfigChanged(const QString& domain, const QString& key, con
 		mUprate->setValue(value.toDouble());
 		mUploadRateChanging = false;
 	}
+    else if(domain == "transfers" && key == "download_slots" && value != mDownslots->cleanText()) {
+		mDownloadSlotsChanging = true;
+		mDownslots->setValue(value.toUInt());
+		mDownloadSlotsChanging = false;
+	}
+    else if(domain == "transfers" && key == "download_rate" && value != mDownrate->cleanText()) {
+		mDownloadRateChanging = true;
+		mDownrate->setValue(value.toDouble());
+		mDownloadRateChanging = false;
+	}
 }
 
 void Transfers::setUpslots(const QString& upslots) {

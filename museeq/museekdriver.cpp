@@ -424,7 +424,7 @@ void MuseekDriver::doDownloadFileTo(const QString& user, const QString& path, co
 }
 
 void MuseekDriver::doDownloadFile(const QString& user, const QString& path, qint64 size) {
-	send(NDownloadFile(user, path, "", size));
+	send(NDownloadFile(user, path, size));
 }
 
 void MuseekDriver::getFolderContents(const QString& user, const QString& path) {
