@@ -4338,7 +4338,7 @@ class Downloads:
 	def __init__(self, frame):
 		self.frame = frame
 		self.downloads = {}
-		self.states = {0: "Finished", 1: "Transferring", 2: "Negotiating", 3:"Waiting", 4: "Establishing", 5: "Initiating", 6: "Connecting",  7: "Queued", 8:"Address", 9:  "Status", 10: "Offline",11: "Closed",12: "Can't Connect", 13: "Aborted",14: "Not Shared"}
+		self.states = {0: "Finished", 1: "Transferring", 2: "Negotiating", 3:"Waiting", 4: "Establishing", 5: "Initiating", 6: "Connecting",  7: "Queued", 8:"Address", 9:  "Status", 10: "Offline",11: "Closed",12: "Can't Connect", 13: "Aborted", 14: "Remote Error", 15: "Local Error", 16: "Queued"}
 		self.Main = gtk.VBox(False, 5)
 		self.Main.set_border_width(3)
 		self.Main.show()
@@ -4580,7 +4580,7 @@ class Uploads:
 	def __init__(self, frame):
 		self.frame = frame
 		self.uploads = {}
-		self.states = {0: "Finished", 1: "Transferring", 2: "Negotiating", 3:"Waiting", 4: "Establishing", 5: "Initiating", 6: "Connecting",  7: "Queued", 8:"Address", 9:  "Status", 10: "Offline",11: "Closed",12: "Can't Connect", 13: "Aborted",14: "Not Shared"}
+		self.states = {0: "Finished", 1: "Transferring", 2: "Negotiating", 3:"Waiting", 4: "Establishing", 5: "Initiating", 6: "Connecting",  7: "Queued", 8:"Address", 9:  "Status", 10: "Offline",11: "Closed",12: "Can't Connect", 13: "Aborted", 14: "Remote Error", 15: "Local Error", 16: "Queued"}
 		
 		
 		self.Main = gtk.VBox(False, 5)
