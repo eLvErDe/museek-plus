@@ -140,10 +140,8 @@ int main(int argc, char ** argv)
   }
 
   /* Disable the debug override. */
-  if(museekd->config()->getBool("museekd.debug", "ALL") != true)
-  {
+  if(!museekd->config()->getBool("museekd.debug", "ALL"))
     NNLOG.disable("ALL");
-  }
 
   /* Load the shares database. */
   museekd->LoadShares();

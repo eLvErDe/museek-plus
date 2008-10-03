@@ -28,8 +28,6 @@ class RoomListItem : public QTreeWidgetItem {
 public:
 	RoomListItem(RoomListView*, const QString&, unsigned int);
 
-	int compare(QTreeWidgetItem*, int, bool) const;
-
 	QString room() const;
 	bool operator<(const QTreeWidgetItem & other) const;
 private:

@@ -258,25 +258,11 @@ void TransferListItem::update(const NTransfer& transfer) {
 	}
 }
 
-int TransferListItem::compare(QTreeWidgetItem* i, int col, bool) const {
-	TransferListItem* item = static_cast<TransferListItem*>(i);
-	switch(col) {
-	case 0: return mUser.localeAwareCompare(item->mUser);
-	case 1: return text(1).localeAwareCompare(item->text(1));
-	case 2: return text(2).localeAwareCompare(item->text(2));
-	case 3: return Util::cmp(mPlaceInQueue, item->mPlaceInQueue);
-	case 4: return Util::cmp(mPosition, item->mPosition);
-	case 5: return Util::cmp(mSize, item->mSize);
-	case 6: return Util::cmp(mRate, item->mRate);
-	case 7: return text(7).localeAwareCompare(item->text(7));
-	}
-	return 0;
-}
 bool TransferListItem::operator<(const QTreeWidgetItem & other_) const {
 	const TransferListItem * other = static_cast<const TransferListItem *>(&other_);
 	int col = 0;
 	if(treeWidget())
-	col = treeWidget()->sortColumn();
+        col = treeWidget()->sortColumn();
 
 	switch(col) {
 	case 0:
@@ -284,16 +270,13 @@ bool TransferListItem::operator<(const QTreeWidgetItem & other_) const {
 	case 1:
 		return text(1) < other->text(1);
 	case 2:
-
 		if(text(2) == other->text(2))
 			return user() < other->user();
 		return text(2) < other->text(2);
-
 	case 3:
 		if(mPlaceInQueue == other->mPlaceInQueue)
 			return user() < other->user();
 		return mPlaceInQueue < other->mPlaceInQueue;
-
 	case 4:
 		if(position() == other->position())
 			return user() < other->user();
@@ -306,7 +289,6 @@ bool TransferListItem::operator<(const QTreeWidgetItem & other_) const {
 		if(rate() == other->rate())
 			return user() < other->user();
 		return rate() < other->rate();
-
 	case 7:
 		if(path() == other->path())
 			return user() < other->user();

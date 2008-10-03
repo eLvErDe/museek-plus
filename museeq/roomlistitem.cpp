@@ -27,15 +27,6 @@ RoomListItem::RoomListItem(RoomListView* _p, const QString& _r, unsigned int _n)
 	setText(1, QString("%1").arg(mUsers));
 }
 
-int RoomListItem::compare(QTreeWidgetItem * i, int col, bool) const {
-	RoomListItem *r = static_cast<RoomListItem *>(i);
-
-	if(col == 0)
-		return mRoom.localeAwareCompare(r->mRoom);
-	else
-		return Util::cmp(r->mUsers, mUsers);
-}
-
 QString RoomListItem::room() const {
 	return mRoom;
 }

@@ -29,8 +29,6 @@ public:
 	TransferListItem(QTreeWidget*, const QString&, const QString& = QString::null);
 	TransferListItem(QTreeWidgetItem*, const QString&, const QString&);
 
-	int compare(QTreeWidgetItem *, int, bool) const;
-
 	void update(const NTransfer&);
 	void updateStats();
 

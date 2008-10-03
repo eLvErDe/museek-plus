@@ -28,8 +28,6 @@ class RecommendsItem : public QTreeWidgetItem {
 public:
 	RecommendsItem(RecommendsView*, const QString&, unsigned int);
 
-	int compare(QTreeWidgetItem*, int, bool) const;
-
 	QString interest() const;
 
 	bool operator<(const QTreeWidgetItem & other) const;

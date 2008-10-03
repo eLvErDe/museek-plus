@@ -27,18 +27,10 @@ RecommendsItem::RecommendsItem(RecommendsView* _p, const QString& _r, unsigned i
 	setText(1, QString("%1").arg(mNum));
 }
 
-int RecommendsItem::compare(QTreeWidgetItem * i, int col, bool) const {
-	RecommendsItem *r = static_cast<RecommendsItem *>(i);
-
-	if(col == 0)
-		return mInterest.localeAwareCompare(r->mInterest);
-	else
-		return Util::cmp(r->mNum, mNum);
-}
-
 QString RecommendsItem::interest() const {
 	return mInterest;
 }
+
 bool RecommendsItem::operator<(const QTreeWidgetItem & other_) const {
   const RecommendsItem * other = static_cast<const RecommendsItem *>(&other_);
   int col = 0;

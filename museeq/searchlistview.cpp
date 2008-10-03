@@ -90,12 +90,14 @@ void SearchListView::slotContextMenu(const QPoint& pos) {
 	setupUsers();
 	mPopupMenu->exec(mapToGlobal(pos));
 }
+
 void SearchListView::slotActivate(QTreeWidgetItem* item, int column) {
 
 	SearchListItem* _item = static_cast<SearchListItem*>(item);
 	if(item)
 		museeq->downloadFile(_item->user(), _item->path(), _item->size());
 }
+
 void SearchListView::setupUsers() {
 	mUsersMenu->clear();
 
@@ -116,7 +118,6 @@ void SearchListView::setupUsers() {
 		++it;
 	}
 }
-
 
 void SearchListView::downloadFiles() {
 	QTreeWidgetItemIterator it(this, QTreeWidgetItemIterator::Selected | QTreeWidgetItemIterator::NotHidden);
@@ -292,24 +293,6 @@ SearchListItem::SearchListItem(QTreeWidget* parent, quint64 n, const QString& us
 		setText(7, Util::makeTime(mLength));
 	if(mBitrate)
 		setText(8, Util::makeBitrate(mBitrate, mVBR));
-}
-
-int SearchListItem::compare(QTreeWidgetItem* i, int col, bool) const {
-	SearchListItem* item = static_cast<SearchListItem*>(i);
-	switch(col) {
-	case 0: return Util::cmp(mN, item->mN);
-	case 1: return mUser.localeAwareCompare(item->mUser);
-	case 2: return mFilename.localeAwareCompare(item->mFilename);
-	case 3: return Util::cmp(mSize, item->mSize);
-	case 5: return Util::cmp(mInQueue, item->mInQueue);
-	case 4: return Util::cmp(mSpeed, item->mSpeed);
-	case 6: return Util::cmp(mFree, item->mFree);
-	case 7: return Util::cmp(mLength, item->mLength);
-	case 8: return Util::cmp(mBitrate, item->mBitrate);
-	case 9: return mDir.localeAwareCompare(item->mDir);
-	default:
-		return 0;
-	}
 }
 
 bool SearchListItem::operator<(const QTreeWidgetItem & other_) const {

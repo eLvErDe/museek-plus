@@ -27,11 +27,10 @@ class InterestListView;
 class InterestListItem : public QTreeWidgetItem {
 public:
 	InterestListItem(InterestListView*, const QString&);
-	
-	int compare(QTreeWidgetItem*, int, bool) const;
-	
+
 	QString interest() const;
-	
+
+	bool operator<(const QTreeWidgetItem & other) const;
 private:
 	QString mInterest;
 	unsigned int mNum;

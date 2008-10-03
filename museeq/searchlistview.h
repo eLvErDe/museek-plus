@@ -71,8 +71,6 @@ public:
 	bool vbr() const { return mVBR; }
 	bool freeSlot() const { return mFree; }
 	bool operator<(const QTreeWidgetItem & other) const;
-protected:
-	int compare(QTreeWidgetItem*, int, bool) const;
 
 private:
 	quint64 mN;

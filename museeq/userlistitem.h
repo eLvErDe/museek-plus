@@ -28,8 +28,6 @@ class UserListItem : public QTreeWidgetItem {
 public:
 	UserListItem(UserListView *, const QString&, uint, uint, uint, const QString&);
 
-	int compare(QTreeWidgetItem *, int, bool) const;
-
 	uint status() const;
 	void updateUserStatus();
 	QString user() const;

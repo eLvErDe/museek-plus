@@ -26,13 +26,21 @@ InterestListItem::InterestListItem(InterestListView* _p, const QString& _i)
  	setText(1, QString("%1").arg(mNum));
 }
 
-int InterestListItem::compare(QTreeWidgetItem * i, int col, bool) const {
-	InterestListItem *r = static_cast<InterestListItem *>(i);
-
-	return mInterest.localeAwareCompare(r->mInterest);
-
-}
-
 QString InterestListItem::interest() const {
 	return mInterest;
+}
+
+bool InterestListItem::operator<(const QTreeWidgetItem & other_) const {
+  const InterestListItem * other = static_cast<const InterestListItem *>(&other_);
+  int col = 0;
+  if(treeWidget())
+    col = treeWidget()->sortColumn();
+
+  switch(col)
+  {
+    case 0:
+      return interest() < other->interest();
+  }
+
+  return false;
 }

@@ -128,21 +128,6 @@ QString UserListItem::comments() const {
 	return mComments;
 }
 
-int UserListItem::compare(QTreeWidgetItem* i, int col, bool) const {
-	UserListItem* u = static_cast<UserListItem*>(i);
-
-	if(col == 0)
-		return Util::cmp(mStatus, u->mStatus);
-	else if(col == 1)
-		return mUser.localeAwareCompare(u->mUser);
-	else if(col == 2)
-		return Util::cmp(mSpeed, u->mSpeed);
-	else if(col == 3)
-		return Util::cmp(mFiles, u->mFiles);
-	else
-		return mComments.localeAwareCompare(u->mComments);
-}
-
 bool UserListItem::operator<(const QTreeWidgetItem & other_) const {
 	const UserListItem * other = static_cast<const UserListItem *>(&other_);
 	int col = 0;
