@@ -38,14 +38,14 @@ public:
 
 	void fold(DirEntry* folded);
 	void network_pack(std::queue<unsigned char>&);
-	void flatten(std::map<std::string, FileEntry>&);
+	void flatten(Folder&);
 
 	void save(const std::string&);
 	void load(const std::string&);
 
 	std::string path;
 	std::map<std::string, DirEntry*> folders;
-	std::map<std::string, FileEntry> files;
+	Folder files;
 
 protected:
 	std::queue<unsigned char> pack();

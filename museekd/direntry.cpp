@@ -56,7 +56,7 @@ void DirEntry::fold(DirEntry* folded) {
 
 		DirEntry* de = folded->new_folder(path);
 
-		map<string, FileEntry>::iterator fit = files.begin();
+		Folder::iterator fit = files.begin();
 		for(; fit != files.end(); ++fit)
 			de->files[(*fit).first] = (*fit).second;
 
@@ -147,7 +147,7 @@ queue<unsigned char> DirEntry::pack() {
 
 	_pack(data, (uint32)files.size());
 
-	map<string, FileEntry>::iterator fit = files.begin();
+	Folder::iterator fit = files.begin();
 	for(; fit != files.end(); ++fit) {
 		_pack(data, (*fit).first);
 		_pack(data, (*fit).second.size);
@@ -247,7 +247,7 @@ void DirEntry::network_pack(queue<unsigned char>& data) {
 	for(; dit != folders.end(); ++dit) {
 		_pack_path(data, (*dit).first);
 		_pack(data, (uint32)(*dit).second->files.size());
-		map<string, FileEntry>::iterator fit = (*dit).second->files.begin();
+		Folder::iterator fit = (*dit).second->files.begin();
 		for(; fit != (*dit).second->files.end(); ++fit) {
 			data.push(1);
 			_pack(data, (*fit).first);
@@ -263,14 +263,14 @@ void DirEntry::network_pack(queue<unsigned char>& data) {
 	}
 }
 
-void DirEntry::flatten(map<string, FileEntry>& filemap) {
+void DirEntry::flatten(Folder& filemap) {
 	NNLOG("museek.direntry", "flatten <...>");
 
 	map<string, DirEntry*>::iterator dit = folders.begin();
 	for(; dit != folders.end(); ++dit)
 		(*dit).second->flatten(filemap);
 
-	map<string, FileEntry>::iterator fit = files.begin();
+	Folder::iterator fit = files.begin();
 	for(; fit != files.end(); ++fit)
 		filemap[str_replace(path, NewNet::Path::separator(), '\\') + "\\" + (*fit).first] = (*fit).second;
 }

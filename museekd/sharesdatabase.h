@@ -53,7 +53,7 @@ protected:
 	void update_word_maps();
 
 private:
-	inline std::map<std::string, FileEntry> fetch(const std::string& word) const;
+	inline Folder fetch(const std::string& word) const;
 
 	NewNet::WeakRefPtr<Museekd> mMuseekd;
 
@@ -64,7 +64,7 @@ private:
 
 	std::vector<unsigned char> mCompressed;
 
-	std::map<wchar_t, std::map<std::string, std::map<std::string, FileEntry> > > mCharMap;
+	std::map<wchar_t, Shares> mCharMap;
 };
 }
 #endif // MUSEEK_SHARESDATABASE_H

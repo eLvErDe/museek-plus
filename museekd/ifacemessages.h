@@ -1022,7 +1022,7 @@ IFACEMESSAGE(ISearchReply, 0x0402)
 	folder results -- The actual results
 */
 	ISearchReply() {}
-	ISearchReply(uint32 _t, const std::string& _u, bool _f, uint32 _s, uint32 _q, const std::map<std::string, FileEntry>& _r)
+	ISearchReply(uint32 _t, const std::string& _u, bool _f, uint32 _s, uint32 _q, const Folder& _r)
                     : username(_u), results(_r) { ticket = _t, slotfree = _f, speed = _s, queue = _q; }
 
 	MAKE
@@ -1045,7 +1045,7 @@ IFACEMESSAGE(ISearchReply, 0x0402)
 
 	uint32 ticket, speed, queue;
 	std::string username;
-	std::map<std::string, FileEntry> results;
+	Folder results;
 	bool slotfree;
 END
 

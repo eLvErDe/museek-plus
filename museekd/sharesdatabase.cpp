@@ -202,14 +202,14 @@ void Museek::SharesDatabase::update_word_maps() {
 	}
 }
 
-inline map<string, FileEntry> Museek::SharesDatabase::fetch(const std::string& word) const {
-	map<wchar_t, map<string, map<string, FileEntry> > >::const_iterator it1 = mCharMap.find(word[0]);
+inline Folder Museek::SharesDatabase::fetch(const std::string& word) const {
+	map<wchar_t, Shares>::const_iterator it1 = mCharMap.find(word[0]);
 	if(it1 != mCharMap.end()) {
-		map<string, map<string, FileEntry> >::const_iterator it2 = (*it1).second.find(word);
+		Shares::const_iterator it2 = (*it1).second.find(word);
 		if(it2 != (*it1).second.end())
 			return (*it2).second;
 	}
-	return map<string, FileEntry>();
+	return Folder();
 }
 
 /* this is the best I can do I think... */
@@ -228,9 +228,9 @@ void Museek::SharesDatabase::search(const string& _query, Folder& result) {
 	/* add a space to make sure we also get the last word */
 	query += (wchar_t)' ';
 
-	vector<map<string, FileEntry>* > q_in; // foobar
+	vector<Folder* > q_in; // foobar
 	StringList q_out; // -foobar
-	vector<string> q_part; // "foo bar" or *foobar
+	StringList q_part; // *foobar "foo bar"
 	bool quoted = false, was_quoted = false;
 
 	/* breaks up the query into in-groups, out-files and terms */
@@ -245,13 +245,16 @@ void Museek::SharesDatabase::search(const string& _query, Folder& result) {
 		wchar_t c = mutate(*sit, quoted ? false : word.empty());
 		if(! quoted && c == ' ') {
 			wchar_t firstC = word[0];
-			if(was_quoted || firstC == '*')
+			if(was_quoted || firstC == '*') {
+			    if (firstC == '*')
+                    word = word.substr(1);
 				q_part.push_back(word);
+			}
 			else if(firstC == '-')
 				q_out.push_back(mMuseekd->codeset()->toNet(string(word.data() + 1, word.size() - 1)));
 			else {
 				/* find files that match this word */
-				map<string, FileEntry>* t = &mCharMap[word[0]][word];
+				Folder* t = &mCharMap[word[0]][word];
 				if(! t->empty())
 					q_in.push_back(t);
 				else
@@ -264,47 +267,79 @@ void Museek::SharesDatabase::search(const string& _query, Folder& result) {
 		word += c;
 	}
 
-	if(q_in.empty())
+	if(q_in.empty() && q_part.empty())
 		return;
 
-    // TODO add support for q_part (match for phrases and partial words)
+    else if (!q_in.empty()) {
+        Folder* base = q_in[0];
+        vector<Folder* >::const_iterator first = q_in.begin()++;
+        Folder::const_iterator it = base->begin();
+        for(; it != base->end(); ++it) {
+            // Did we already found this result?
+            if(result.find((*it).first) != result.end())
+                continue;
 
-	map<string, FileEntry>* base = q_in[0];
-	vector<map<string, FileEntry>* >::const_iterator first = q_in.begin()++;
-	map<string, FileEntry>::const_iterator it = base->begin();
-	for(; it != base->end(); ++it) {
-	    // Did we already found this result?
-		if(result.find((*it).first) != result.end())
-			continue;
+            // Don't add results that contains forbidden words
+            if(! q_out.empty()) {
+                string lowr = tolower((*it).first);
+                StringList::const_iterator oit = q_out.begin();
+                for(; oit != q_out.end(); ++oit)
+                    if(lowr.find(*oit) != string::npos)
+                        break;
+                if(oit != q_out.end())
+                    continue;
+            }
 
-        // Don't add results that contains forbidden words
-		if(! q_out.empty()) {
-			string lowr = tolower((*it).first);
-			StringList::const_iterator oit = q_out.begin();
-			for(; oit != q_out.end(); ++oit)
-				if(lowr.find(*oit) != string::npos)
-					break;
-			if(oit != q_out.end())
-				continue;
-		}
+            // If we arrive here, we can add the file to the results if it matches every keyword
+            vector<Folder* >::const_iterator ref = first;
+            for(; ref != q_in.end(); ++ref)
+                if((*ref)->find((*it).first) == (*ref)->end())
+                    break;
 
-        // If we arrive here, we can add the file to the results
-		vector<map<string, FileEntry>* >::const_iterator ref = first;
-		for(; ref != q_in.end(); ++ref)
-			if((*ref)->find((*it).first) == (*ref)->end())
-				break;
+            if(ref == q_in.end()) {
+                // Ok, it matches every keyword, but does it match every phrase?
+                StringList::const_iterator partit = q_part.begin();
+                for(; partit != q_part.end(); ++partit)
+                    if (tolower((*it).first).find(tolower(*partit)) == std::string::npos)
+                        break;
 
-		if(ref == q_in.end()) {
-			result[(*it).first] = (*it).second;
-			++results;
-		}
+                if(partit == q_part.end()) {
+                    result[(*it).first] = (*it).second;
+                    ++results;
+                }
+            }
 
-        // Don't send more than 500 results
-		if(results >= 500)
-			return;
-	}
+            // Don't send more than 500 results
+            if(results >= 500)
+                return;
+        }
+    }
+    else {
+        // We're only searching phrases (*foobar "foo bar"), search in flat list
+        Folder::iterator fit = mFlat.begin();
+        StringList::const_iterator wit;
+        for(; fit != mFlat.end(); ++fit) {
+            string entry = tolower(mMuseekd->codeset()->fromNet((*fit).first));
+            bool notFound = false;
 
-	return;
+            for (wit = q_part.begin(); wit != q_part.end(); wit++) {
+                size_t posFound = entry.find(tolower(*wit));
+                if (posFound == std::string::npos) {
+                    notFound = true;
+                    break;
+                }
+            }
+
+            if (!notFound) {
+                result[(*fit).first] = (*fit).second;
+                ++results;
+            }
+
+            // Don't send more than 500 results
+            if(results >= 500)
+                return;
+        }
+    }
 }
 
 /**

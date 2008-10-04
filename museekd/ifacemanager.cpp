@@ -1008,8 +1008,8 @@ Museek::IfaceManager::onPeerSharesReceived(const PSharesReply * message)
     // We need to convert the shares with correct encoding
     Shares oriShares = message->shares;
     Shares encShares;
-    std::map<std::string, Folder>::iterator itFold;
-    std::map<std::string, FileEntry>::iterator itFile;
+    Shares::iterator itFold;
+    Folder::iterator itFile;
     for(itFold = oriShares.begin(); itFold != oriShares.end(); ++itFold) {
         Folder newFold;
         for(itFile = itFold->second.begin(); itFile != itFold->second.end(); ++itFile) {
