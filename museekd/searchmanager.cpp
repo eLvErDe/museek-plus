@@ -367,6 +367,9 @@ void Museek::SearchManager::onPeerSocketReady(PeerSocket * socket) {
         }
 
         m_PendingResults.erase(pending);
+
+        // Disconnect the peer socket as it is probably no longer needed and we have a limit for opened socket
+        socket->addSearchResultsOnlyTimeout(3000);
     }
 }
 

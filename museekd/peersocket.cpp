@@ -418,16 +418,20 @@ Museek::PeerSocket::onSearchResultsReceived(const PSearchReply * message) {
 
     museekd()->searches()->searchReplyReceived(message->ticket, message->user, message->slotfree, message->avgspeed, message->queuelen, folders);
 
+    addSearchResultsOnlyTimeout(3000);
+}
 
+void
+Museek::PeerSocket::addSearchResultsOnlyTimeout(long length) {
     // If we don't receive any other message in the next seconds, we should delete this socket as:
     // -we will probably not receive anything else soon
     // -there's a limit on the number of opened sockets (1024 for example): this can be a problem when doing big searches
-    m_SearchResultsOnlyTimeout = museekd()->reactor()->addTimeout(3000, this, &PeerSocket::onSearchResultsOnly);
+    m_SearchResultsOnlyTimeout = museekd()->reactor()->addTimeout(length, this, &PeerSocket::onSearchResultsOnly);
 }
 
 void
 Museek::PeerSocket::onSearchResultsOnly(long) {
-    NNLOG("museek.debug", "We only received search results: close this socket");
+    NNLOG("museek.debug", "We only received or sent search results: close this socket");
     disconnect();
     if (reactor()) {
         // We have to do this as we're not sure disconnect() will remove the socket from the reactor
