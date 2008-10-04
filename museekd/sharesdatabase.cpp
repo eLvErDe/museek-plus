@@ -131,6 +131,19 @@ bool Museek::SharesDatabase::is_shared(const string& path) const {
 	return mFlat.find(path) != mFlat.end();
 }
 
+/**
+ * The given path should be encoded with net encoding. Separator should be the network one (backslash).
+ * Do a case insensitive search in the base for a path corresponding to the given one.
+ */
+std::string Museek::SharesDatabase::find_shared_nocase(const std::string& path) const {
+    Folder::const_iterator it;
+    for (it = mFlat.begin(); it != mFlat.end(); it++) {
+        if (tolower(it->first) == path)
+            return it->first;
+    }
+    return std::string();
+}
+
 /* this is a bit hairy... */
 inline wchar_t mutate(wchar_t c, bool special = false) {
 	if(c >= 'A' && c <= 'Z')

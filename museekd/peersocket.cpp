@@ -194,6 +194,9 @@ Museek::PeerSocket::onTransferRequested(const PTransferRequest * request)
   bool allowed = false;
   if (request->direction == 0)
     {
+        // Since slsk 157, we're not supposed to received an upload request like this.
+        // The peer sends us PQueueDownload and then WE send him transfer request.
+        // So this code is not much useful anymore. That's why we haven't fixed the case problem (see Upload::setCaseProblem())
         std::string path = museekd()->codeset()->toNet(museekd()->codeset()->fromPeer(user(), request->filename));
 
         if (museekd()->uploads()->isUploadable(user(), path, &reason)) {
@@ -331,16 +334,21 @@ Museek::PeerSocket::onTransferRequested(const PTransferRequest * request)
 */
 void
 Museek::PeerSocket::onQueueDownloadRequested(const PQueueDownload * message) {
-    std::string reason;
-
-    // FIXME after sending a PFolderContentReply to a peer, if he's running the official client, we will get PQueueDownload with
-    // the filename in lower case. If in our shares the path has upper letters, we'll throw "File not shared" error.
-    // This is a bug in the official client and it's hard to solve gracefully.
+    std::string reason, goodPath;
 
     NNLOG("museek.debug", "request for queued upload %s %s", user().c_str(), message->filename.c_str());
 
     if (museekd()->uploads()->isUploadable(user(), message->filename, &reason)) {
         museekd()->uploads()->add(user(), museekd()->codeset()->fromNetToFS(message->filename));
+    }
+    else if ((reason == "File not shared") && museekd()->uploads()->findUploadableNoCase(user(), message->filename, &goodPath)) {
+        // We don't have this file!
+        // This happens frequently after sending a PFolderContentReply to a peer.
+        // If he's running the official client, we will get PQueueDownload with
+        // the filename in lower case. If in our shares the path has upper letters, we'll throw "File not shared" error.
+        // So let's try a case insensitive search: slower than previous one, with a risk to return a wrong file.
+        NNLOG("museek.debug", "File not shared but found a case insensitive match");
+        museekd()->uploads()->add(user(), museekd()->codeset()->fromNetToFS(goodPath),0 , true);
     }
     else {
         PQueueFailed msg(message->filename, reason);

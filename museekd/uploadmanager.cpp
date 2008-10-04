@@ -28,6 +28,7 @@
 #include "peermanager.h"
 #include "uploadsocket.h"
 #include "sharesdatabase.h"
+#include "string_ext.h"
 #include <NewNet/nnreactor.h>
 #include <NewNet/util.h>
 #include <NewNet/nnratelimiter.h>
@@ -309,6 +310,8 @@ void Museek::Upload::initiate(PeerSocket * socket) {
     museekd()->uploads()->setTransferReplyCallback(socket->transferReplyReceivedEvent.connect(museekd()->uploads(), &UploadManager::onPeerTransferReplyReceived));
 
 	std::string path = museekd()->codeset()->fromFSToNet(m_LocalPath);
+	if (m_CaseProblem)
+        path = tolower(path);
 	if(! path.empty()) {
 		PTransferRequest msg(m_Ticket, path, m_Size);
         socket->sendMessage(msg.make_network_packet());
@@ -502,13 +505,14 @@ void Museek::UploadManager::updateRates() {
   * The given path should be encoded with FS encoding. Separator should be the FS one.
   */
 void
-Museek::UploadManager::add(const std::string & user, const std::string & localPath, const uint & ticket)
+Museek::UploadManager::add(const std::string & user, const std::string & localPath, const uint & ticket, const bool caseProblem)
 {
     // Check if this upload already exits.
     Upload * upload = findUpload(user, localPath);
     if(! upload) {
         // Create new upload object.
         upload = new Upload(museekd(), user, localPath);
+        upload->setCaseProblem(caseProblem);
         if (ticket <= 0)
             upload->setTicket(museekd()->token());
         else
@@ -660,7 +664,7 @@ uint Museek::UploadManager::queueLength(const std::string& user, const std::stri
         if (found && (*it)->state() == TS_QueuedLocally && !priv && (museekd()->isPrivileged((*it)->user()) || (museekd()->privilegeBuddies() && museekd()->isBuddied((*it)->user()))))
 			uploads++;
 
-		if((*it)->localPath() == stopAt)
+		if(((*it)->localPath() == stopAt) || ((*it)->hasCaseProblem() && (tolower((*it)->localPath()) == stopAt)))
 			found = true;
 	}
 
@@ -840,6 +844,9 @@ bool Museek::UploadManager::isUploadable(const std::string & user, const std::st
 
     *error = std::string();
 
+    bool buddyShared = museekd()->buddyshares()->is_shared(path);
+    bool normalShared = museekd()->shares()->is_shared(path);
+
     if ( user == museekd()->server()->username() )
         *error = "Cannot Transfer to yourself";
     else if(museekd()->isBanned(user)) {
@@ -850,11 +857,11 @@ bool Museek::UploadManager::isUploadable(const std::string & user, const std::st
     }
     else if(!museekd()->isBuddied(user) && museekd()->toBuddiesOnly())
         *error = "Sharing Only to List";
-    else if(! museekd()->shares()->is_shared(path) && ! museekd()->buddyshares()->is_shared(path) )
+    else if(!normalShared && !buddyShared )
         *error = "File not shared";
-    else if(museekd()->haveBuddyShares() && museekd()->buddyshares()->is_shared(path) && ! museekd()->shares()->is_shared(path) && ! museekd()->isBuddied(user))
+    else if(museekd()->haveBuddyShares() && buddyShared && !normalShared && ! museekd()->isBuddied(user))
         *error = "File not shared";
-    else if( ! museekd()->haveBuddyShares()  && museekd()->buddyshares()->is_shared(path)  && ! museekd()->shares()->is_shared(path) )
+    else if( ! museekd()->haveBuddyShares()  && buddyShared  && !normalShared )
         *error = "File not shared";
 
 
@@ -864,4 +871,36 @@ bool Museek::UploadManager::isUploadable(const std::string & user, const std::st
     }
     else
         return true;
+}
+
+/**
+  * Return true if the given user can download a file corresponding to the given path (case insensitive).
+  * If true, put the correct path in 'goodPath'.
+  * The given path should be encoded with net encoding. Separator should be the network one (backslash).
+  */
+bool Museek::UploadManager::findUploadableNoCase(const std::string & user, const std::string & path, std::string * goodPath)
+{
+    if (!goodPath)
+        return false;
+
+    *goodPath = std::string();
+
+    std::string normalShared = museekd()->shares()->find_shared_nocase(path);
+
+    if (!normalShared.empty()) {
+        *goodPath = normalShared;
+        NNLOG("museek.debug", "Found an uploadable file for %s to user %s: %s", path.c_str(), user.c_str(), goodPath->c_str());
+        return true;
+    }
+    else if (museekd()->haveBuddyShares() && museekd()->isBuddied(user)) {
+        std::string buddyShared = museekd()->buddyshares()->find_shared_nocase(path);
+        if (!buddyShared.empty()) {
+            *goodPath = buddyShared;
+            NNLOG("museek.debug", "Found an uploadable file for %s to user %s: %s", path.c_str(), user.c_str(), goodPath->c_str());
+            return true;
+        }
+    }
+
+    NNLOG("museek.debug", "Couldn't find an uploadable file for %s to user %s", path.c_str(), user.c_str());
+    return false;
 }

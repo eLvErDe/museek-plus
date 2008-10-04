@@ -26,11 +26,10 @@
 #include <vector>
 #include "direntry.h"
 
-
 namespace Museek
 {
 class Museekd;
-class SharesDatabase  : public NewNet::Object {
+class SharesDatabase : public NewNet::Object {
 public:
 	SharesDatabase(Museekd * museekd);
 
@@ -40,6 +39,7 @@ public:
 	inline uint32 files() const { return mNumFiles; }
 
 	bool is_shared(const std::string& path) const;
+	std::string find_shared_nocase(const std::string& path) const;
 
 	inline const std::vector<unsigned char>& shares() const { return mCompressed; }
 	void search(const std::string& query, Folder& result);

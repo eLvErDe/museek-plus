@@ -87,6 +87,9 @@ namespace Museek
 
     uint rate() const { return m_Rate; }
 
+    bool hasCaseProblem() const {return m_CaseProblem;}
+    void setCaseProblem(bool problem) {m_CaseProblem = problem;}
+
     /* A transfer connection was initiated by a remote peer. */
     NewNet::Event<TicketSocket *> transferTicketReceivedEvent;
 
@@ -112,6 +115,8 @@ namespace Museek
 
 	struct timeval                      m_CollectStart; // When did we start uploading this file
 	uint                                m_Collected; // How many data has been sent since m_CollectStart ?
+
+	bool                                m_CaseProblem; // If this is true, the peer is waiting for a lowercase path
   };
 
   /* The upload manager manages .. uploads. */
@@ -128,7 +133,7 @@ namespace Museek
     const std::vector<NewNet::RefPtr<Upload> > & uploads() const { return m_Uploads; }
 
     /* Add a new upload or retry an existing one. */
-    void add(const std::string & user, const std::string & localPath, const uint & ticket = 0);
+    void add(const std::string & user, const std::string & localPath, const uint & ticket = 0, const bool caseProblem = false);
     /* Add a new folder to upload */
     void addFolder(const std::string & user, const std::string & localPath);
     /* Abort a upload. */
@@ -142,6 +147,7 @@ namespace Museek
     bool hasFreeSlots();
 
     bool isUploadable(const std::string & user, const std::string & path, std::string * error);
+    bool findUploadableNoCase(const std::string & user, const std::string & path, std::string * goodPath);
 
     /* Find a upload by it's path. */
     Upload * findUpload(const std::string & user, const std::string & path);
