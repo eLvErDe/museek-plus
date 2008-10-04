@@ -171,7 +171,9 @@ void Museek::PeerManager::addPeerSocket(PeerSocket * socket) {
     m_Peers[socket->user()] = socket;
     socket->cannotConnectEvent.connect(this, &PeerManager::onPeerCannotConnect);
     socket->disconnectedEvent.connect(this, &PeerManager::onDisconnected);
-    peerSocketReadyEvent(socket);
+    socket->connectedEvent.connect(this, &PeerManager::onConnected);
+    if (socket->socketState() == NewNet::Socket::SocketConnected)
+        peerSocketReadyEvent(socket);
 }
 
 /*
@@ -225,7 +227,6 @@ Museek::PeerManager::createPeerSocket(const std::string& user) {
             museekd()->reactor()->add(socket);
             socket->initiate(user);
         }
-        peerSocketReadyEvent(socket);
     }
 }
 
@@ -295,6 +296,14 @@ Museek::PeerManager::onDisconnected(NewNet::ClientSocket * socket_)
     it = m_Peers.find(user);
     if ((it != m_Peers.end()) && (it->second == socket))
         m_Peers.erase(it);
+}
+
+void
+Museek::PeerManager::onConnected(NewNet::ClientSocket * socket_)
+{
+    // Cast the socket to a peer socket.
+    PeerSocket * socket = (PeerSocket *)socket_;
+    peerSocketReadyEvent(socket);
 }
 
 void

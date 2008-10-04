@@ -88,6 +88,7 @@ namespace Museek
     void onServerUserStatsReceived(const SGetUserStats * message);
     void onPeerCannotConnect(NewNet::ClientSocket * socket_);
     void onDisconnected(NewNet::ClientSocket * socket_);
+    void onConnected(NewNet::ClientSocket * socket_);
 
     void createPeerSocket(const std::string&);
 
