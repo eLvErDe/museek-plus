@@ -456,9 +456,11 @@ void Museek::UploadManager::checkUploads() {
     NNLOG("museek.debug", "Checking if there are some uploads to start");
 
 	Upload* candidate = 0;
-	std::vector<NewNet::RefPtr<Upload> >::const_iterator it = m_Uploads.begin();
+	std::vector<NewNet::RefPtr<Upload> >::iterator it = m_Uploads.begin();
 	for(; it != m_Uploads.end(); ++it) {
-		if((*it)->state() == TS_QueuedLocally && !isUploadingTo((*it)->user())) {
+	    if ((*it)->state() == TS_QueuedLocally && museekd()->isBanned((*it)->user()))
+	        (*it)->setLocalError("Banned");
+		else if((*it)->state() == TS_QueuedLocally && !isUploadingTo((*it)->user())) {
 			if(museekd()->isPrivileged((*it)->user()) || (museekd()->privilegeBuddies() && museekd()->isBuddied((*it)->user()))) {
 				candidate = *it;
 				break;
@@ -819,6 +821,12 @@ Museek::UploadManager::onConfigKeySet(const Museek::ConfigManager::ChangeNotify 
         checkUploads();
     if(data->domain == "transfers" && data->key == "upload_rate")
         updateRates();
+    if(data->domain == "banned") {
+        Upload * current = isUploadingTo(data->key);
+        if (current)
+            current->setLocalError("Banned");
+        checkUploads();
+    }
 }
 
 /**
