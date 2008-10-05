@@ -985,7 +985,7 @@ void Museek::DownloadManager::loadDownloads() {
 
 	while(n) {
 		uint32 state;
-		off_t size;
+		off_t size, position = 0;
 		std::string user, path, localpath, temppath;
 		if(!read_int(&file, &state) ||
 		   !read_str(&file, user) ||
@@ -1008,6 +1008,15 @@ void Museek::DownloadManager::loadDownloads() {
                 dl->setState(TS_Offline); // We're not sure the peer is connected
             dl->setSize(size);
             dl->setIncompletePath(temppath);
+
+            std::ifstream ifs(temppath.c_str(), std::ifstream::in);
+            if (!ifs.fail()) {
+                ifs.seekg (0, std::ios_base::end);
+                position = ifs.tellg();
+                ifs.seekg (0, std::ios_base::beg);
+            }
+            ifs.close();
+            dl->setPosition(position); // FIXME chercher sur le disque
         }
 		n--;
 	}
