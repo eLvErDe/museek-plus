@@ -107,8 +107,12 @@ Museek::UserSocket::onFirewallPierced(Museek::HandshakeSocket * socket)
       m_Museekd->reactor()->removeTimeout(m_PassiveConnectTimeout);
     }
 
-    setDescriptor(socket->descriptor());
     setSocketState(SocketConnected);
+    setDescriptor(socket->descriptor());
+    receiveBuffer() = socket->receiveBuffer();
+    if(! receiveBuffer().empty())
+        dataReceivedEvent(this);
+    socket->receiveBuffer().clear();
     connectedEvent(this);
   }
 }

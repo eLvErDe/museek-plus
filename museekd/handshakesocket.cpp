@@ -62,6 +62,7 @@ Museek::HandshakeSocket::onMessageReceived(const MessageData * data)
       HPierceFirewall msg;
       msg.parse_network_packet(data->data, data->length);
       m_Token = msg.token;
+      receiveBuffer().seek(data->length + 5);
       // Tell the peer manager, it should know more.
       m_Museekd->peers()->firewallPiercedEvent(this);
       // This particular socket is no longer needed. Remove it from the reactor.

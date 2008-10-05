@@ -171,9 +171,10 @@ void Museek::PeerManager::addPeerSocket(PeerSocket * socket) {
     m_Peers[socket->user()] = socket;
     socket->cannotConnectEvent.connect(this, &PeerManager::onPeerCannotConnect);
     socket->disconnectedEvent.connect(this, &PeerManager::onDisconnected);
-    socket->connectedEvent.connect(this, &PeerManager::onConnected);
     if (socket->socketState() == NewNet::Socket::SocketConnected)
         peerSocketReadyEvent(socket);
+    else
+        socket->connectedEvent.connect(this, &PeerManager::onConnected);
 }
 
 /*
