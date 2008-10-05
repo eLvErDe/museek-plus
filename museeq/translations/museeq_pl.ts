@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="1.1" language="pl">
+<defaultcodec></defaultcodec>
 <context>
     <name>BanList</name>
     <message>
@@ -2025,17 +2026,17 @@
     <message>
         <location filename="../transferlistview.cpp" line="34"/>
         <source>Progress</source>
-        <translation type="unfinished"></translation>
+        <translation>Postęp</translation>
     </message>
     <message>
         <location filename="../transferlistitem.cpp" line="179"/>
         <source>Remote: </source>
-        <translation type="unfinished"></translation>
+        <translation>Zdalny:</translation>
     </message>
     <message>
         <location filename="../transferlistitem.cpp" line="185"/>
         <source>Local: </source>
-        <translation type="unfinished"></translation>
+        <translation>Lokalny:</translation>
     </message>
 </context>
 <context>
