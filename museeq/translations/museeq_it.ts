@@ -344,7 +344,7 @@
     <message>
         <location filename="../browser.cpp" line="794"/>
         <source>Upload File(s)</source>
-        <translation>Invia file(s)</translation>
+        <translation>Invia file</translation>
     </message>
     <message>
         <location filename="../browser.cpp" line="795"/>
@@ -1167,7 +1167,7 @@
     <message>
         <location filename="../mainwin.cpp" line="803"/>
         <source>Away</source>
-        <translation>Non presente</translation>
+        <translation>Assente</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="807"/>
@@ -1177,7 +1177,7 @@
     <message>
         <location filename="../mainwin.cpp" line="1195"/>
         <source> is a GUI for the Museek Daemon&lt;/p&gt;The programs, museeq and museekd and muscan, were created by Hyriand 2003-2005&lt;br&gt;&lt;br&gt;Additions by daelstorm, SeeSchloss and others in 2006-2008&lt;br&gt;This project is released under the GPL license.&lt;br&gt;Code and ideas taken from other opensource projects and people are mentioned in the CREDITS file included in the source tarball.</source>
-        <translation> è un&apos;interfaccia grafica per il daemon Museek&lt;/p&gt;I programmi, museeq e museekd e muscan, sono stati creati da Hyriand 2003-2005&lt;br&gt;&lt;br&gt;Aggiunte da daelstorm, SeeSchloss ed altri nel 2006-2008&lt;br&gt;Questo progetto è rilasciato sotto la licenza GPL.&lt;br&gt;Codice ed idee prese da altri progetti open source e persone sono menzionati nel file CREDITS incluso nel tarball sorgente.</translation>
+        <translation> è un&apos;interfaccia grafica per il daemon Museek&lt;/p&gt;I programmi, museeq e museekd e muscan, sono stati creati da Hyriand 2003-2005&lt;br&gt;&lt;br&gt;Aggiunte da daelstorm, SeeSchloss ed altri nel 2006-2008&lt;br&gt;Questo progetto è rilasciato sotto la licenza GPL.&lt;br&gt;Codice ed idee prese da altri progetti opensource e persone sono menzionati nel file CREDITS incluso nel tarball sorgente.</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="1203"/>
@@ -1632,7 +1632,7 @@
     <message>
         <location filename="../searchlistview.cpp" line="61"/>
         <source>Download file(s)</source>
-        <translation>Scarica file(s)</translation>
+        <translation>Scarica file</translation>
     </message>
     <message>
         <location filename="../searchlistview.cpp" line="69"/>
@@ -1659,7 +1659,7 @@
     <message>
         <location filename="../searchlistview.cpp" line="65"/>
         <source>Download file(s) to..</source>
-        <translation>Scarica files in..</translation>
+        <translation>Scarica file in..</translation>
     </message>
     <message>
         <location filename="../searchlistview.cpp" line="134"/>
