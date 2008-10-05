@@ -23,6 +23,7 @@
 #include "museeqtypes.h"
 
 #include <QTreeWidget>
+class QProgressBar;
 
 class TransferListItem : public QTreeWidgetItem {
 public:
@@ -43,6 +44,7 @@ public:
 	qint64 size() const;
 	uint rate() const;
 	uint timeLeft() const { return mTimeLeft; }
+	uint progress() const;
 	bool operator<(const QTreeWidgetItem & other) const;
 
 protected:
@@ -54,6 +56,7 @@ private:
 	QString mUser, mPath, mError;
 	qint64 mPosition, mSize;
 	uint separation;
+	QProgressBar *mProgress;
 };
 
 

@@ -84,9 +84,9 @@ SearchListView::SearchListView(SearchFilter* filter, QWidget* parent, const char
 void SearchListView::slotContextMenu(const QPoint& pos) {
 	SearchListItem* item = static_cast<SearchListItem*>(itemAt(pos));
 
-	if (! item ) {
+	if (! item )
 		return;
-	}
+
 	setupUsers();
 	mPopupMenu->exec(mapToGlobal(pos));
 }

@@ -30,9 +30,6 @@ SearchFilter::SearchFilter(QWidget *parent, const char *name)
              : QWidget(parent) {
 
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-// 	setSpacing(5);
-
-// 	mFilterRegExp.setCaseSensitive(false);
 	QHBoxLayout *box = new QHBoxLayout(this);
 
 	mRegExp = new QComboBox(this);
@@ -49,7 +46,6 @@ SearchFilter::SearchFilter(QWidget *parent, const char *name)
 	mSize->setEditable(true);
 	connect(mSize->lineEdit(), SIGNAL(enterPressed()), SLOT(updateFilter()));
 
-// 	box = new QHBoxLayout(this);
 	box->addWidget(new QLabel(tr("Bitrate:")));
 	mBitrate = new QComboBox(this);
 	box->addWidget(mBitrate);
@@ -93,7 +89,6 @@ void SearchFilter::refilter(SearchListView *list) {
 }
 
 void SearchFilter::showEvent(QShowEvent *ev) {
-// 	Q3HBox::showEvent(ev);
 	if(! mEnabled) {
 		mEnabled = true;
 		emit filterChanged();
@@ -101,7 +96,6 @@ void SearchFilter::showEvent(QShowEvent *ev) {
 }
 
 void SearchFilter::hideEvent(QHideEvent *ev) {
-// 	Q3HBox::hideEvent(ev);
 	if(mEnabled) {
 		mEnabled = false;
 		emit filterChanged();

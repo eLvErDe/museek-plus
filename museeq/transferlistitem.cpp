@@ -22,16 +22,27 @@
 #include "util.h"
 #include "museeq.h"
 
+#include <QProgressBar>
+#include <QPainter>
+
 TransferListItem::TransferListItem(QTreeWidget* p, const QString& _u, const QString& _p)
                  : QTreeWidgetItem(p), mUser(_u), mPath(_p), separation(10) {
 
 	setText(0, mUser);
-	setTextAlignment(3, Qt::AlignRight|Qt::AlignVCenter);
 	setTextAlignment(4, Qt::AlignRight|Qt::AlignVCenter);
 	setTextAlignment(5, Qt::AlignRight|Qt::AlignVCenter);
 	setTextAlignment(6, Qt::AlignRight|Qt::AlignVCenter);
 	setTextAlignment(7, Qt::AlignRight|Qt::AlignVCenter);
+	setTextAlignment(8, Qt::AlignRight|Qt::AlignVCenter);
 	updatePath();
+
+    mProgress = new QProgressBar();
+    mProgress->setMinimum(0);
+    mProgress->setMaximum(100);
+    QPainter pa;
+    mProgress->setFixedHeight(pa.fontMetrics().size(Qt::TextSingleLine, QString("FFFVfdvfdjç")).height());
+	treeWidget()->setItemWidget(this, 3, mProgress);
+
 	NTransfer t;
 	t.state = 15;
 	t.error = QString::null;
@@ -46,12 +57,19 @@ TransferListItem::TransferListItem(QTreeWidgetItem* p, const QString& _u, const 
                 : QTreeWidgetItem(p), mUser(_u), mPath(_p), separation(10) {
 
 	setText(0, mUser);
-	setTextAlignment(3, Qt::AlignRight|Qt::AlignVCenter);
 	setTextAlignment(4, Qt::AlignRight|Qt::AlignVCenter);
 	setTextAlignment(5, Qt::AlignRight|Qt::AlignVCenter);
 	setTextAlignment(6, Qt::AlignRight|Qt::AlignVCenter);
 	setTextAlignment(7, Qt::AlignRight|Qt::AlignVCenter);
+	setTextAlignment(8, Qt::AlignRight|Qt::AlignVCenter);
 	updatePath();
+
+    mProgress = new QProgressBar();
+    mProgress->setMinimum(0);
+    mProgress->setMaximum(1000);
+    QPainter pa;
+    mProgress->setFixedHeight(pa.fontMetrics().size(Qt::TextSingleLine, QString("FFFVfdvfdjç")).height());
+	treeWidget()->setItemWidget(this, 3, mProgress);
 
 	NTransfer t;
 	t.state = 15;
@@ -67,7 +85,7 @@ void TransferListItem::updatePath() {
 		int ix = mPath.lastIndexOf('\\');
 		if(ix != -1) {
 			setText(1, mPath.mid(ix + 1));
-			setText(8, mPath.left(ix + 1));
+			setText(9, mPath.left(ix + 1));
 		} else
 			setText(1, mPath);
 	}
@@ -171,9 +189,9 @@ void TransferListItem::update(const NTransfer& transfer, bool force) {
 	if(place != mPlaceInQueue || force) {
 		mPlaceInQueue = place;
 		if(mPlaceInQueue != (uint)-1)
-			setText(3, QString::number(mPlaceInQueue));
+			setText(4, QString::number(mPlaceInQueue));
 		else
-			setText(3, "");
+			setText(4, "");
 	}
 	if((transfer.rate != mRate) || (transfer.filepos != mPosition) || (transfer.filesize != mSize) || force) {
 	    if (transfer.rate > 0)
@@ -182,22 +200,27 @@ void TransferListItem::update(const NTransfer& transfer, bool force) {
             mTimeLeft = 0;
 
         if (mTimeLeft > 0)
-            setText(7, Util::makeTime(mTimeLeft));
+            setText(8, Util::makeTime(mTimeLeft));
         else
-            setText(7, TransferListView::tr("?"));
+            setText(8, TransferListView::tr("?"));
 	}
 	if(transfer.filepos != mPosition || force) {
 		mPosition = transfer.filepos;
-		setText(4, Util::makeSize(mPosition));
+		setText(5, Util::makeSize(mPosition));
 	}
 	if(transfer.filesize != mSize || force) {
 		mSize = transfer.filesize;
-		setText(5, Util::makeSize(mSize));
+		setText(6, Util::makeSize(mSize));
 	}
 	if(transfer.rate != mRate || force) {
 		mRate = transfer.rate;
-		setText(6, Util::makeSize(mRate) + TransferListView::tr("/s"));
+		setText(7, Util::makeSize(mRate) + TransferListView::tr("/s"));
 	}
+
+    int progress = 0;
+    if (mSize)
+        progress = static_cast<uint>((static_cast<float>(mPosition)/static_cast<float>(mSize)) * (mProgress->maximum() - mProgress->minimum()));
+	mProgress->setValue(progress);
 }
 
 QString TransferListItem::user() const {
@@ -231,10 +254,14 @@ uint TransferListItem::rate() const {
 	return mRate;
 }
 
+uint TransferListItem::progress() const {
+    return mProgress->value();
+}
+
 void TransferListItem::updateStats() {
 	qint64 groupPosition = 0, groupSize = 0;
 	uint groupRate = 0, groupTimeLeft;
-	setText(3, "");
+	setText(4, "");
 	if (! childCount())
 		return;
 	TransferListItem* file;
@@ -252,13 +279,13 @@ void TransferListItem::updateStats() {
 		}
 	}
 
-	setText(4, Util::makeSize(groupPosition));
+	setText(5, Util::makeSize(groupPosition));
 	if(groupSize == -1)
-		setText(5, "?");
+		setText(6, "?");
 	else
-		setText(5, Util::makeSize(groupSize));
+		setText(6, Util::makeSize(groupSize));
 
-	setText(6, Util::makeSize(groupRate) + TransferListView::tr("/s"));
+	setText(7, Util::makeSize(groupRate) + TransferListView::tr("/s"));
 
     if (groupRate > 0)
         groupTimeLeft = (groupSize - groupPosition) / groupRate;
@@ -266,9 +293,15 @@ void TransferListItem::updateStats() {
         groupTimeLeft = 0;
 
     if (groupTimeLeft > 0)
-        setText(7, Util::makeTime(groupTimeLeft));
+        setText(8, Util::makeTime(groupTimeLeft));
     else
-        setText(7, TransferListView::tr("?"));
+        setText(8, TransferListView::tr("?"));
+
+    // Update progress bar
+    int progress = 0;
+    if (groupSize)
+        progress = static_cast<uint>((static_cast<float>(groupPosition)/static_cast<float>(groupSize)) * (mProgress->maximum() - mProgress->minimum()));
+	mProgress->setValue(progress);
 }
 
 void TransferListItem::update(const NTransfer& transfer) {
@@ -297,27 +330,31 @@ bool TransferListItem::operator<(const QTreeWidgetItem & other_) const {
 		if(text(2) == other->text(2))
 			return user() < other->user();
 		return text(2) < other->text(2);
-	case 3:
+    case 3:
+		if(progress() == other->progress())
+			return user() < other->user();
+		return progress() < other->progress();
+	case 4:
 		if(mPlaceInQueue == other->mPlaceInQueue)
 			return user() < other->user();
 		return mPlaceInQueue < other->mPlaceInQueue;
-	case 4:
+	case 5:
 		if(position() == other->position())
 			return user() < other->user();
 		return position() < other->position();
-	case 5:
+	case 6:
 		if(size() == other->size())
 			return user() < other->user();
 		return size() < other->size();
-	case 6:
+	case 7:
 		if(rate() == other->rate())
 			return user() < other->user();
 		return rate() < other->rate();
-	case 7:
+	case 8:
 		if(timeLeft() == other->timeLeft())
 			return user() < other->user();
 		return timeLeft() < other->timeLeft();
-	case 8:
+	case 9:
 		if(path() == other->path())
 			return user() < other->user();
 		return path() < other->path();

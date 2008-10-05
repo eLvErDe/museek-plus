@@ -1579,52 +1579,52 @@
 <context>
     <name>SearchFilter</name>
     <message>
-        <location filename="../searchfilter.cpp" line="45"/>
+        <location filename="../searchfilter.cpp" line="42"/>
         <source>Size:</source>
         <translation>Größe:</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="53"/>
+        <location filename="../searchfilter.cpp" line="49"/>
         <source>Bitrate:</source>
         <translation>Bitrate:</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="60"/>
+        <location filename="../searchfilter.cpp" line="56"/>
         <source>Free slot</source>
         <translation>Freier Slot</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="170"/>
+        <location filename="../searchfilter.cpp" line="164"/>
         <source>Warning - Museeq</source>
         <translation>Warnung – Museeq</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="114"/>
+        <location filename="../searchfilter.cpp" line="108"/>
         <source>Invalid regular expression, disabling it</source>
         <translation>Ungültiger Regulärer Ausdruck, dieser Filter wird ignoriert.</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="134"/>
+        <location filename="../searchfilter.cpp" line="128"/>
         <source>k</source>
         <translation>k</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="136"/>
+        <location filename="../searchfilter.cpp" line="130"/>
         <source>m</source>
         <translation>m</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="138"/>
+        <location filename="../searchfilter.cpp" line="132"/>
         <source>g</source>
         <translation>g</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="146"/>
+        <location filename="../searchfilter.cpp" line="140"/>
         <source>Invalid size filter, disabling it</source>
         <translation>Ungültiger Wert für „Größe“, dieser Filter wird ignoriert.</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="170"/>
+        <location filename="../searchfilter.cpp" line="164"/>
         <source>Invalid bitrate filter, disabling it</source>
         <translation>Ungültiger Wert für „Bitrate“, dieser Filter wird ignoriert.</translation>
     </message>
@@ -2439,89 +2439,89 @@
         <translation type="obsolete">%1 Dateiübertragungen von %2 Benutzern</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="82"/>
+        <location filename="../transferlistitem.cpp" line="102"/>
         <source>Finished</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="87"/>
+        <location filename="../transferlistitem.cpp" line="107"/>
         <source>Transferring</source>
         <translation type="unfinished">Übertrage …</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="92"/>
+        <location filename="../transferlistitem.cpp" line="112"/>
         <source>Negotiating</source>
         <translation type="unfinished">Handle aus …</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="97"/>
+        <location filename="../transferlistitem.cpp" line="117"/>
         <source>Waiting</source>
         <translation type="unfinished">Warte …</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="102"/>
+        <location filename="../transferlistitem.cpp" line="122"/>
         <source>Establishing</source>
         <translation type="unfinished">Etabliere …</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="107"/>
+        <location filename="../transferlistitem.cpp" line="127"/>
         <source>Initiating</source>
         <translation type="unfinished">Initiiere …</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="112"/>
+        <location filename="../transferlistitem.cpp" line="132"/>
         <source>Connecting</source>
         <translation type="unfinished">Verbinde …</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="158"/>
+        <location filename="../transferlistitem.cpp" line="178"/>
         <source>Queued</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="122"/>
+        <location filename="../transferlistitem.cpp" line="142"/>
         <source>Getting address</source>
         <translation type="unfinished">Erfrage Adresse …</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="125"/>
+        <location filename="../transferlistitem.cpp" line="145"/>
         <source>Getting status</source>
         <translation type="unfinished">Erfrage Satus …</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="130"/>
+        <location filename="../transferlistitem.cpp" line="150"/>
         <source>User Offline</source>
         <translation type="unfinished">Benutzer offline</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="135"/>
+        <location filename="../transferlistitem.cpp" line="155"/>
         <source>Connection closed by peer</source>
         <translation type="unfinished">Verbindung von Gegenseite beendet.</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="140"/>
+        <location filename="../transferlistitem.cpp" line="160"/>
         <source>Cannot connect</source>
         <translation type="unfinished">Verbindung fehlgeschlagen.</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="145"/>
+        <location filename="../transferlistitem.cpp" line="165"/>
         <source>Aborted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="261"/>
+        <location filename="../transferlistitem.cpp" line="290"/>
         <source>/s</source>
         <translation type="unfinished">/s</translation>
     </message>
     <message numerus="yes">
-        <location filename="../transferlistview.cpp" line="281"/>
+        <location filename="../transferlistview.cpp" line="282"/>
         <source>%n transfer(s)</source>
         <translation type="unfinished">
             <numerusform></numerusform>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../transferlistview.cpp" line="281"/>
+        <location filename="../transferlistview.cpp" line="282"/>
         <source> (%n user(s))</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -2533,8 +2533,13 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="271"/>
+        <location filename="../transferlistitem.cpp" line="300"/>
         <source>?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transferlistview.cpp" line="34"/>
+        <source>Progress</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -1593,52 +1593,52 @@
 <context>
     <name>SearchFilter</name>
     <message>
-        <location filename="../searchfilter.cpp" line="45"/>
+        <location filename="../searchfilter.cpp" line="42"/>
         <source>Size:</source>
         <translation>Mărime:</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="53"/>
+        <location filename="../searchfilter.cpp" line="49"/>
         <source>Bitrate:</source>
         <translation>Bitrate:</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="60"/>
+        <location filename="../searchfilter.cpp" line="56"/>
         <source>Free slot</source>
         <translation>Slot liber</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="170"/>
+        <location filename="../searchfilter.cpp" line="164"/>
         <source>Warning - Museeq</source>
         <translation>Avertizare - Museeq</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="114"/>
+        <location filename="../searchfilter.cpp" line="108"/>
         <source>Invalid regular expression, disabling it</source>
         <translation>Expresie regulată invalidă, o dezactivez</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="134"/>
+        <location filename="../searchfilter.cpp" line="128"/>
         <source>k</source>
         <translation>k</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="136"/>
+        <location filename="../searchfilter.cpp" line="130"/>
         <source>m</source>
         <translation>m</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="138"/>
+        <location filename="../searchfilter.cpp" line="132"/>
         <source>g</source>
         <translation>g</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="146"/>
+        <location filename="../searchfilter.cpp" line="140"/>
         <source>Invalid size filter, disabling it</source>
         <translation>Filtru de mărime invalid, îl dezactivez</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="170"/>
+        <location filename="../searchfilter.cpp" line="164"/>
         <source>Invalid bitrate filter, disabling it</source>
         <translation>Filtru de bitrate invalid, îl dezactivez</translation>
     </message>
@@ -2457,82 +2457,82 @@
         <translation type="obsolete">%1 transferuri (%2 utilizatori)</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="82"/>
+        <location filename="../transferlistitem.cpp" line="102"/>
         <source>Finished</source>
         <translation type="unfinished">Terminat</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="87"/>
+        <location filename="../transferlistitem.cpp" line="107"/>
         <source>Transferring</source>
         <translation type="unfinished">Se transferă</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="92"/>
+        <location filename="../transferlistitem.cpp" line="112"/>
         <source>Negotiating</source>
         <translation type="unfinished">Se negociază</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="97"/>
+        <location filename="../transferlistitem.cpp" line="117"/>
         <source>Waiting</source>
         <translation type="unfinished">În aşteptare</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="102"/>
+        <location filename="../transferlistitem.cpp" line="122"/>
         <source>Establishing</source>
         <translation type="unfinished">În curs de stabilire</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="107"/>
+        <location filename="../transferlistitem.cpp" line="127"/>
         <source>Initiating</source>
         <translation type="unfinished">Iniţializare</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="112"/>
+        <location filename="../transferlistitem.cpp" line="132"/>
         <source>Connecting</source>
         <translation type="unfinished">Connectare</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="158"/>
+        <location filename="../transferlistitem.cpp" line="178"/>
         <source>Queued</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="122"/>
+        <location filename="../transferlistitem.cpp" line="142"/>
         <source>Getting address</source>
         <translation type="unfinished">Primesc adresa</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="125"/>
+        <location filename="../transferlistitem.cpp" line="145"/>
         <source>Getting status</source>
         <translation type="unfinished">Primesc starea</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="130"/>
+        <location filename="../transferlistitem.cpp" line="150"/>
         <source>User Offline</source>
         <translation type="unfinished">Utilizator neconectat</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="135"/>
+        <location filename="../transferlistitem.cpp" line="155"/>
         <source>Connection closed by peer</source>
         <translation type="unfinished">Conexiunea închisă de către partener</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="140"/>
+        <location filename="../transferlistitem.cpp" line="160"/>
         <source>Cannot connect</source>
         <translation type="unfinished">Nu mă pot conecta</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="145"/>
+        <location filename="../transferlistitem.cpp" line="165"/>
         <source>Aborted</source>
         <translation type="unfinished">Anulat</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="261"/>
+        <location filename="../transferlistitem.cpp" line="290"/>
         <source>/s</source>
         <translation type="unfinished">/s</translation>
     </message>
     <message numerus="yes">
-        <location filename="../transferlistview.cpp" line="281"/>
+        <location filename="../transferlistview.cpp" line="282"/>
         <source>%n transfer(s)</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -2541,7 +2541,7 @@
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../transferlistview.cpp" line="281"/>
+        <location filename="../transferlistview.cpp" line="282"/>
         <source> (%n user(s))</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -2555,8 +2555,13 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="271"/>
+        <location filename="../transferlistitem.cpp" line="300"/>
         <source>?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transferlistview.cpp" line="34"/>
+        <source>Progress</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
