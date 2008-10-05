@@ -137,8 +137,6 @@ Transfers::Transfers(QWidget* _p, const char* _n)
 
 	mTransferMenu = new QMenu(this);
 
-
-
 	ActionRetry = new QAction(tr("Retry"), this);
 	connect(ActionRetry, SIGNAL(triggered()), this, SLOT(retrySelected()));
 	mTransferMenu->addAction(ActionRetry);

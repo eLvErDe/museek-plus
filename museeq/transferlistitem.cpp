@@ -44,7 +44,7 @@ TransferListItem::TransferListItem(QTreeWidget* p, const QString& _u, const QStr
 	treeWidget()->setItemWidget(this, 3, mProgress);
 
 	NTransfer t;
-	t.state = 15;
+	t.state = 100;
 	t.error = QString::null;
 	t.filepos = 0;
 	t.filesize = 0;
@@ -80,6 +80,16 @@ TransferListItem::TransferListItem(QTreeWidgetItem* p, const QString& _u, const 
 	update(t, true);
 }
 
+void TransferListItem::updateProgressBar() {
+    delete mProgress;
+    mProgress = new QProgressBar();
+    mProgress->setMinimum(0);
+    mProgress->setMaximum(1000);
+    QPainter pa;
+    mProgress->setFixedHeight(pa.fontMetrics().size(Qt::TextSingleLine, QString("FFFVfdvfdjç")).height());
+	treeWidget()->setItemWidget(this, 3, mProgress);
+}
+
 void TransferListItem::updatePath() {
 	if(! mPath.isNull()) {
 		int ix = mPath.lastIndexOf('\\');
@@ -92,7 +102,7 @@ void TransferListItem::updatePath() {
 }
 
 void TransferListItem::update(const NTransfer& transfer, bool force) {
-	if(transfer.state != mState || force) {
+	if(transfer.state != mState || transfer.error != mError || force) {
 		mState = transfer.state;
 
 		switch(mState) {
@@ -165,24 +175,28 @@ void TransferListItem::update(const NTransfer& transfer, bool force) {
 			setForeground(2, QBrush(QColor(15,15,15)));
 			break;
 		case 14:
-			mError = QString::null;
+			mError = transfer.error;
+			setText(2, TransferListView::tr("Remote: ") + mError);
 			setBackground(2, QBrush(QColor(179,29,29)));
 			setForeground(2, QBrush(QColor(255,255,255)));
 			break;
 		case 15:
-			setText(2, QString::null);
+			mError = transfer.error;
+			setText(2, TransferListView::tr("Local: ") + mError);
+			setBackground(2, QBrush(QColor(179,29,29)));
+			setForeground(2, QBrush(QColor(255,255,255)));
 			break;
 		case 16:
 			setText(2, TransferListView::tr("Queued"));
 			setBackground(2, QBrush(QColor(233,232,135)));
 			setForeground(2, QBrush(QColor(15,15,15)));
 			break;
+        default:
+			setText(2, QString::null);
+			break;
 		}
 	}
-	if(mState == 14 && (transfer.error != mError || force)) {
-		mError = transfer.error;
-		setText(2, mError);
-	}
+
 	uint place = (uint)-1;
 	if(mState == 7)
 		place = transfer.placeInQueue;

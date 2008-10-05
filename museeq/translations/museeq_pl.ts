@@ -1920,77 +1920,77 @@
         <translation>Ścieżka</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="102"/>
+        <location filename="../transferlistitem.cpp" line="110"/>
         <source>Finished</source>
         <translation>Ukończono</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="107"/>
+        <location filename="../transferlistitem.cpp" line="115"/>
         <source>Transferring</source>
         <translation>Pobieranie</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="112"/>
+        <location filename="../transferlistitem.cpp" line="120"/>
         <source>Negotiating</source>
         <translation>Negocjowanie</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="117"/>
+        <location filename="../transferlistitem.cpp" line="125"/>
         <source>Waiting</source>
         <translation>Oczekiwanie</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="122"/>
+        <location filename="../transferlistitem.cpp" line="130"/>
         <source>Establishing</source>
         <translation>Ustanawianie</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="127"/>
+        <location filename="../transferlistitem.cpp" line="135"/>
         <source>Initiating</source>
         <translation>Inicjalizacja</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="132"/>
+        <location filename="../transferlistitem.cpp" line="140"/>
         <source>Connecting</source>
         <translation>Łączenie</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="178"/>
+        <location filename="../transferlistitem.cpp" line="190"/>
         <source>Queued</source>
         <translation>Zakolejkowano</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="142"/>
+        <location filename="../transferlistitem.cpp" line="150"/>
         <source>Getting address</source>
         <translation>Pobieranie adresu</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="145"/>
+        <location filename="../transferlistitem.cpp" line="153"/>
         <source>Getting status</source>
         <translation>Pobieranie stanu</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="150"/>
+        <location filename="../transferlistitem.cpp" line="158"/>
         <source>User Offline</source>
         <translation>Użytkownik poza siecią</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="155"/>
+        <location filename="../transferlistitem.cpp" line="163"/>
         <source>Connection closed by peer</source>
         <translation>Połączenie zamknięte przez partnera</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="160"/>
+        <location filename="../transferlistitem.cpp" line="168"/>
         <source>Cannot connect</source>
         <translation>Nie można połączyć</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="165"/>
+        <location filename="../transferlistitem.cpp" line="173"/>
         <source>Aborted</source>
         <translation>Anulowano</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="290"/>
+        <location filename="../transferlistitem.cpp" line="302"/>
         <source>/s</source>
         <translation>/s</translation>
     </message>
@@ -2018,13 +2018,23 @@
         <translation>Pozostały czas</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="300"/>
+        <location filename="../transferlistitem.cpp" line="312"/>
         <source>?</source>
         <translation>?</translation>
     </message>
     <message>
         <location filename="../transferlistview.cpp" line="34"/>
         <source>Progress</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transferlistitem.cpp" line="179"/>
+        <source>Remote: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transferlistitem.cpp" line="185"/>
+        <source>Local: </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2051,62 +2061,62 @@
         <translation>sloty</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="142"/>
+        <location filename="../transfers.cpp" line="140"/>
         <source>Retry</source>
         <translation>Ponów próbę</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="146"/>
+        <location filename="../transfers.cpp" line="144"/>
         <source>Abort</source>
         <translation>Anuluj</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="156"/>
+        <location filename="../transfers.cpp" line="154"/>
         <source>Selected</source>
         <translation>Wybrane</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="162"/>
+        <location filename="../transfers.cpp" line="160"/>
         <source>Finished</source>
         <translation>Skończone</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="166"/>
+        <location filename="../transfers.cpp" line="164"/>
         <source>Aborted</source>
         <translation>Anulowane</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="170"/>
+        <location filename="../transfers.cpp" line="168"/>
         <source>Offline</source>
         <translation>Poza siecią</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="174"/>
+        <location filename="../transfers.cpp" line="172"/>
         <source>Cruft</source>
         <translation>Szmelc</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="178"/>
+        <location filename="../transfers.cpp" line="176"/>
         <source>Finished / aborted</source>
         <translation>Skończonie / anulowane</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="182"/>
+        <location filename="../transfers.cpp" line="180"/>
         <source>Queued</source>
         <translation>Zakolejkowane</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="154"/>
+        <location filename="../transfers.cpp" line="152"/>
         <source>Clear</source>
         <translation>Wyczyść</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="188"/>
+        <location filename="../transfers.cpp" line="186"/>
         <source>Users</source>
         <translation>Użytkownicy</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="150"/>
+        <location filename="../transfers.cpp" line="148"/>
         <source>Check Place</source>
         <translation>Sprawdź miejsce</translation>
     </message>

@@ -47,6 +47,8 @@ public:
 	uint progress() const;
 	bool operator<(const QTreeWidgetItem & other) const;
 
+	void updateProgressBar();
+
 protected:
 	void updatePath();
 	void update(const NTransfer&, bool);

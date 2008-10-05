@@ -131,45 +131,45 @@ void TransferListView::setGroupMode(GroupMode mode) {
 	mGroupMode = mode;
 
 	if(mGroupMode == None) {
-
 		QList<QTreeWidgetItem *> items;
 		QList<QTreeWidgetItem *> subitems;
 		QList<QTreeWidgetItem *>::iterator sitx;
 		items = invisibleRootItem()->takeChildren ();
 		QList<QTreeWidgetItem *>::iterator itx = items.begin();
 		for(; itx != items.end(); ++itx) {
-
 			if ( ! ( static_cast<TransferListItem *>(*itx))->text(1).isNull()) {
-
 				invisibleRootItem()->addChild(*itx);
-			} else {
+				static_cast<TransferListItem *>(*itx)->updateProgressBar();
+			}
+			else {
 				subitems = (*itx)->takeChildren();
 				sitx = subitems.begin();
 				for(; sitx != subitems.end(); ++sitx) {
 					invisibleRootItem()->addChild(*sitx);
+                    static_cast<TransferListItem *>(*sitx)->updateProgressBar();
 				}
 			}
 		}
 
 		setRootIsDecorated(false);
-	} else {
-
+	}
+	else {
 		QList<QTreeWidgetItem *> items;
 
 		items = invisibleRootItem()->takeChildren ();
 
 		QList<QTreeWidgetItem *>::iterator itx = items.begin();
 		for(; itx != items.end(); ++itx) {
-
 			if ( (static_cast<TransferListItem *>(*itx))->text(1).isNull()) {
 				invisibleRootItem()->addChild(*itx);
+				static_cast<TransferListItem *>(*itx)->updateProgressBar();
 			}
 		}
 		itx = items.begin();
 		for(; itx != items.end(); ++itx) {
-
 			if (! (static_cast<TransferListItem *>(*itx))->text(1).isNull()) {
 				findParent((static_cast<TransferListItem *>(*itx))->user())->addChild(*itx);
+				static_cast<TransferListItem *>(*itx)->updateProgressBar();
 			}
 		}
 
@@ -177,8 +177,8 @@ void TransferListView::setGroupMode(GroupMode mode) {
 
 		setRootIsDecorated(true);
 	}
-
 }
+
 void TransferListView::updateParentsStats() {
 	if(mGroupMode == None)
 		return;
