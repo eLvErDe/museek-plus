@@ -322,7 +322,7 @@ Museek::DownloadManager::DownloadManager(Museekd * museekd) : m_Museekd(museekd)
     museekd->config()->keySetEvent.connect(this, &DownloadManager::onConfigKeySet);
     museekd->config()->keyRemovedEvent.connect(this, &DownloadManager::onConfigKeyRemoved);
 
-    m_AllowUpdate = true;
+    m_AllowUpdate = false;
 }
 
 Museek::DownloadManager::~DownloadManager()
