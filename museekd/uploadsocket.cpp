@@ -154,7 +154,7 @@ void Museek::UploadSocket::onDataSent(NewNet::ClientSocket * socket) {
         if(sendBuffer().count() < 10240 && (m_Upload->position() + (off_t) sendBuffer().count() < m_Upload->size())) {
             if(! m_Upload->read(sendBuffer())) {
                 NNLOG("museek.debug", "read error");
-                m_Upload->setLocalError("Local file error");
+                m_Upload->setLocalError("File error");
                 stop();
             }
         }
@@ -198,7 +198,7 @@ Museek::UploadSocket::findPosition() {
         // Try to seek
         if(! m_Upload->seek(pos)) {
             NNLOG("museek.debug", "seek error");
-            m_Upload->setLocalError("Local file error");
+            m_Upload->setLocalError("File error");
             stop();
             return;
         }
@@ -209,7 +209,7 @@ Museek::UploadSocket::findPosition() {
         // Try to send the data
         if(! m_Upload->read(sendBuffer())) {
             NNLOG("museek.debug", "read error");
-            m_Upload->setLocalError("Local file error");
+            m_Upload->setLocalError("File error");
             stop();
             return;
         }
