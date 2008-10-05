@@ -478,24 +478,23 @@ void Museek::UploadManager::checkUploads() {
 }
 
 /**
-  * Update the rate limiter for each upload
+  * Update the rate limiter for every uploads
   */
 void Museek::UploadManager::updateRates() {
     std::map<std::string, NewNet::WeakRefPtr<Upload> >::iterator it;
     uint globalRate = museekd()->config()->getUint("transfers", "upload_rate", 0);
     uint numUp = m_Uploading.size();
     if (numUp) {
-        uint perSockRate = (globalRate/numUp)*1000;
         NewNet::RateLimiter * limiter = new NewNet::RateLimiter();
+        if (globalRate > 0) {
+            // There's a limit, update the rate limiter
+            limiter->setLimit(globalRate*1000);
+        }
+        else {
+            // No limit, remove the rate limiter
+            limiter->setLimit(-1);
+        }
         for (it = m_Uploading.begin(); it != m_Uploading.end(); it++) {
-            if (globalRate > 0) {
-                // There's a limit, update the rate limiter
-                limiter->setLimit(perSockRate);
-            }
-            else {
-                // No limit, remove the rate limiter
-                limiter->setLimit(-1);
-            }
             if (it->second->socket())
                 it->second->socket()->setUpRateLimiter(limiter);
         }

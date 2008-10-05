@@ -581,24 +581,23 @@ void Museek::DownloadManager::checkDownloads() {
 }
 
 /**
-  * Update the rate limiter for each download
+  * Update the rate limiter for every downloads
   */
 void Museek::DownloadManager::updateRates() {
     std::map<std::string, NewNet::WeakRefPtr<Download> >::iterator it;
     uint globalRate = museekd()->config()->getUint("transfers", "download_rate", 0);
     uint numDown = m_Downloading.size();
     if (numDown) {
-        uint perSockRate = (globalRate/numDown)*1000;
         NewNet::RateLimiter * limiter = new NewNet::RateLimiter();
+        if (globalRate > 0) {
+            // There's a limit, update the rate limiter
+            limiter->setLimit(globalRate*1000);
+        }
+        else {
+            // No limit, remove the rate limiter
+            limiter->setLimit(-1);
+        }
         for (it = m_Downloading.begin(); it != m_Downloading.end(); it++) {
-            if (globalRate > 0) {
-                // There's a limit, update the rate limiter
-                limiter->setLimit(perSockRate);
-            }
-            else {
-                // No limit, remove the rate limiter
-                limiter->setLimit(-1);
-            }
             if (it->second->socket())
                 it->second->socket()->setDownRateLimiter(limiter);
         }
