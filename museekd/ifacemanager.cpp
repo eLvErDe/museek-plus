@@ -384,14 +384,16 @@ Museek::IfaceManager::onIfaceLogin(const ILogin * message)
     if(museekd()->server()->loggedIn())
       SEND_MESSAGE(message->ifaceSocket(), ISetStatus(m_AwayState));
 
-    // send peers stats
-    std::map<std::string, SGetUserStats>::const_iterator it = museekd()->peers()->userStats()->begin();
-    for(; it != museekd()->peers()->userStats()->end(); it++) {
-        SEND_ALL(IPeerStats(it->second.user, it->second.avgspeed, it->second.downloadnum, it->second.files, it->second.dirs));
-    }
-    std::map<std::string, uint32>::const_iterator sit = museekd()->peers()->userStatus()->begin();
-    for(; sit != museekd()->peers()->userStatus()->end(); sit++) {
-        SEND_ALL(IPeerStatus(sit->first, sit->second));
+    if (socket->mask() & EM_USERINFO) {
+        // send peers stats
+        std::map<std::string, SGetUserStats>::const_iterator it = museekd()->peers()->userStats()->begin();
+        for(; it != museekd()->peers()->userStats()->end(); it++) {
+            SEND_MESSAGE(socket, IPeerStats(it->second.user, it->second.avgspeed, it->second.downloadnum, it->second.files, it->second.dirs));
+        }
+        std::map<std::string, uint32>::const_iterator sit = museekd()->peers()->userStatus()->begin();
+        for(; sit != museekd()->peers()->userStatus()->end(); sit++) {
+            SEND_MESSAGE(socket, IPeerStatus(sit->first, sit->second));
+        }
     }
   }
 }
