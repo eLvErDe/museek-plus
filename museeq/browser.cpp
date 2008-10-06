@@ -162,7 +162,7 @@ void Browser::doSearch() {
 
 	while(1)
 	{
-		QStringList p = mCurrentResult.key().split('\\', QString::KeepEmptyParts);
+		QStringList p = mCurrentResult.key().split('\\', QString::SkipEmptyParts);
 
 		NFolder::const_iterator it;
 		NFolder::const_iterator end2 = mCurrentResult.value().end();
@@ -500,9 +500,9 @@ void FolderListView::show(const QStringList& p)
 		position = 0;
 		FolderListItem* i;
 		if(item == 0)
-			i = static_cast<FolderListItem*>(invisibleRootItem ());
-		else
-			i = static_cast<FolderListItem*>(item->child(position));
+			item = static_cast<FolderListItem*>(invisibleRootItem ());
+
+		i = static_cast<FolderListItem*>(item->child(position));
 
 		for(; i; i = static_cast<FolderListItem*>(item->child(position)))
 		{
@@ -510,8 +510,10 @@ void FolderListView::show(const QStringList& p)
 				break;
 			position += 1;
 		}
+
 		if(! i)
 			return;
+
 		item = i;
 		i->setExpanded(true);
 	}
