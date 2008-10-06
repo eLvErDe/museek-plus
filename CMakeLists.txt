@@ -236,13 +236,23 @@ set(code "
   ${INCLUDE_HEAD}
   int main() {
     struct dirent **temp;
-    scandir(0, &temp, 0, 0);
     return 0; }
 " )
 check_cxx_source_compiles("${code}" DIR_H)
 if (NOT DIR_H)
-  message(FATAL_ERROR "Headers for DIRENT not found")
+    message(FATAL_ERROR "Headers for DIRENT not found")
 endif (NOT DIR_H)
+
+check_cxx_source_compiles("
+  ${INCLUDE_HEAD}
+  int main() {
+    struct dirent **temp;
+    scandir(0, &temp, 0, 0);
+    return 0; }
+" DIR_SCANDIR_H)
+if (NOT DIR_SCANDIR_H)
+    set(HAVE_SCANDIR 0)
+endif (NOT DIR_SCANDIR_H)
 
 # Detect Vorbisfile library
 if (HAVE_VORBIS_H)
