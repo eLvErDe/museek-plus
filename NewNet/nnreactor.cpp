@@ -80,7 +80,8 @@ checkTimeouts(std::vector<TimeoutItem> & timeouts, struct timeval & timeout, boo
       timeouts.erase(it);
 
       // And emit it
-      item->operator()(diff);
+      if (item)
+        item->operator()(diff);
 
       retVal = true;
     }
