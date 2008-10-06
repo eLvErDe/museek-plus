@@ -212,6 +212,9 @@ namespace Museek
 
     bool                                                    m_AllowUpdate;      // Set it to false if you don't want downloads
                                                                                 // to be enqueued and saved
+    bool                                                    m_AllowSave;        // Set it to false if you don't want downloads
+                                                                                // to be saved
+    bool                                                    m_PendingDownloadsSave; // Should we save downloads soon?
     NewNet::WeakRefPtr<Museekd>                             m_Museekd;          // Ref to the museekd
     std::vector<NewNet::RefPtr<Download> >                  m_Downloads;        // List of all the downloads
     std::map<std::string, NewNet::WeakRefPtr<Download> >    m_Initiating;       // List of all the downloads currently being initiated

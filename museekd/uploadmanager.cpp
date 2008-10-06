@@ -111,6 +111,9 @@ Museek::Upload::setState(TrState state)
         default: ;
 	}
 
+    if (state == TS_Finished)
+        setPosition(size());
+
 	m_State = state;
 
     m_Museekd->uploads()->uploadUpdatedEvent(this);
@@ -162,6 +165,16 @@ Museek::Upload::setSocket(UploadSocket * socket)
 
 	m_CollectStart.tv_sec = m_CollectStart.tv_usec = 0;
     museekd()->uploads()->updateRates();
+}
+
+/**
+  * Set the position in the uploaded file
+  */
+void
+Museek::Upload::setPosition(off_t position)
+{
+    m_Position = position;
+    m_Museekd->uploads()->uploadUpdatedEvent(this);
 }
 
 /**

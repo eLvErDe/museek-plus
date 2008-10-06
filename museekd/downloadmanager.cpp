@@ -161,6 +161,9 @@ void
 Museek::Download::setSize(off_t size)
 {
     m_Size = size;
+    if (state() == TS_Finished)
+        setPosition(size);
+
     m_Museekd->downloads()->downloadUpdatedEvent(this);
 }
 
@@ -224,6 +227,9 @@ void
 Museek::Download::setState(TrState state)
 {
     m_State = state;
+    if (state == TS_Finished)
+        setPosition(size());
+
     m_Museekd->downloads()->downloadUpdatedEvent(this);
 
     if (    state != TS_Transferring
@@ -323,6 +329,8 @@ Museek::DownloadManager::DownloadManager(Museekd * museekd) : m_Museekd(museekd)
     museekd->config()->keyRemovedEvent.connect(this, &DownloadManager::onConfigKeyRemoved);
 
     m_AllowUpdate = false;
+    m_AllowSave = true;
+    m_PendingDownloadsSave = false;
 }
 
 Museek::DownloadManager::~DownloadManager()
@@ -731,7 +739,7 @@ Museek::DownloadManager::abort(const std::string & user, const std::string & pat
 }
 
 /**
-  * Abort the upload and removes it from the manager
+  * Abort the download and removes it from the manager
   * The path should be encoded with utf8 encoding. Separator should be the network one (backslash).
   */
 void
@@ -996,27 +1004,32 @@ void Museek::DownloadManager::loadDownloads() {
             file.close();
 			return;
 		}
-        NNLOG("museek.debug", "Loading download: %s from %s (size: %d)", path.c_str(), user.c_str(), size);
-        size_t posB = localpath.find_last_of(NewNet::Path::separator());
-        add(user, path, localpath.substr(0, posB));
-        Download * dl = findDownload(user, path);
-        if (dl) {
-            if(state == 0)
-                dl->setState(TS_Aborted);
-            else
-                dl->setState(TS_Offline); // We're not sure the peer is connected
-            dl->setSize(size);
-            dl->setIncompletePath(temppath);
+		if (!path.empty()) {
+            NNLOG("museek.debug", "Loading download: %s from %s (size: %d)", path.c_str(), user.c_str(), size);
+            size_t posB = localpath.find_last_of(NewNet::Path::separator());
+            add(user, path, localpath.substr(0, posB));
+            Download * dl = findDownload(user, path);
+            if (dl) {
+                if(state == 0)
+                    dl->setState(TS_Aborted);
+                else
+                    dl->setState(TS_Offline); // We're not sure the peer is connected
+                dl->setSize(size);
+                dl->setIncompletePath(temppath);
 
-            std::ifstream ifs(temppath.c_str(), std::ifstream::in);
-            if (!ifs.fail()) {
-                ifs.seekg (0, std::ios_base::end);
-                position = ifs.tellg();
-                ifs.seekg (0, std::ios_base::beg);
+                std::ifstream ifs(temppath.c_str(), std::ifstream::in);
+                if (!ifs.fail()) {
+                    ifs.seekg (0, std::ios_base::end);
+                    position = ifs.tellg();
+                    ifs.seekg (0, std::ios_base::beg);
+                }
+                ifs.close();
+                dl->setPosition(position);
             }
-            ifs.close();
-            dl->setPosition(position); // FIXME chercher sur le disque
-        }
+		}
+		else
+		    NNLOG("museek.warn", "Couldn't load a corrupted download: %s from %s (size: %d)", path.c_str(), user.c_str(), size);
+
 		n--;
 	}
 	file.close();
@@ -1028,74 +1041,94 @@ void Museek::DownloadManager::loadDownloads() {
   * Stores the download in the config file
   */
 void Museek::DownloadManager::saveDownloads() {
-    // Open config file
-    std::string path = museekd()->config()->get("transfers", "downloads");
-    std::string pathTemp(path + ".tmp");
-    std::remove(pathTemp.c_str()); // Remove the temp file if it already exists
+    if (m_AllowSave) {
+        m_AllowSave = false;
+        // Open config file
+        std::string path = museekd()->config()->get("transfers", "downloads");
+        std::string pathTemp(path + ".tmp");
+        std::remove(pathTemp.c_str()); // Remove the temp file if it already exists
 
-    std::ofstream file(pathTemp.c_str(), std::ofstream::binary | std::ofstream::app | std::ofstream::ate);
+        std::ofstream file(pathTemp.c_str(), std::ofstream::binary | std::ofstream::app | std::ofstream::ate);
 
-	if(file.fail() || !file.is_open()) {
-		NNLOG("museek.debug", "Cannot save downloads (%s). Trying again later", path.c_str());
-		return;
-	}
+        if(file.fail() || !file.is_open()) {
+            NNLOG("museek.debug", "Cannot save downloads (%s). Trying again later", path.c_str());
+            m_AllowSave = true;
+            return;
+        }
 
-	uint32 transfers = 0;
+        uint32 transfers = 0;
 
-	std::vector<NewNet::RefPtr<Download> >::const_iterator it = downloads().begin();
-	for(; it != downloads().end(); ++it)
-		if((*it)->state() != TS_Finished)
-			transfers++;
+        std::vector<NewNet::RefPtr<Download> >::const_iterator it = downloads().begin();
+        for(; it != downloads().end(); ++it)
+            if((*it)->state() != TS_Finished)
+                transfers++;
 
-	NNLOG("museek.debug", "Saving %d downloads", transfers);
+        NNLOG("museek.debug", "Saving %d downloads", transfers);
 
-	if(!write_int(&file, transfers) == -1) {
-		NNLOG("museek.debug", "Cannot save downloads number, trying again later.");
-		file.close();
-		return;
-	}
+        if(!write_int(&file, transfers) == -1) {
+            NNLOG("museek.debug", "Cannot save downloads number, trying again later.");
+            file.close();
+            m_AllowSave = true;
+            return;
+        }
 
-	for(it = downloads().begin(); it != downloads().end(); ++it) {
-		uint32 state;
-		switch((*it)->state()) {
-		case TS_Finished:
-			continue;
-		case TS_Aborted:
-			state = 0;
-			break;
-		default:
-			state = 1;
-			break;
-		}
+        for(it = downloads().begin(); it != downloads().end(); ++it) {
+            if (m_PendingDownloadsSave)
+                break; // If we have another save request, stop saving and restart from scratch
 
-        // The incomplete path is useless if we haven't started the download
-        std::string tmpPath = museekd()->codeset()->fromFsToUtf8((*it)->incompletePath(), false);
-        std::ifstream incompleteTest( tmpPath.c_str() );
-        if (incompleteTest.fail())
-            tmpPath = std::string();
-        incompleteTest.close();
+            uint32 state;
+            switch((*it)->state()) {
+            case TS_Finished:
+                continue;
+            case TS_Aborted:
+                state = 0;
+                break;
+            default:
+                state = 1;
+                break;
+            }
 
-		if(!write_int(&file, state) ||
-		   write_str(&file, (*it)->user()) == -1 ||
-		   !write_off(&file, (*it)->size()) ||
-		   write_str(&file, (*it)->remotePath()) == -1 ||
-		   write_str(&file, museekd()->codeset()->fromFsToUtf8((*it)->destinationPath(), false)) == -1 ||
-		   write_str(&file, tmpPath) == -1) {
-			NNLOG("museek.debug", "Cannot save downloads, trying again later.");
-			file.close();
-			return;
-		}
-	}
+            // The incomplete path is useless if we haven't started the download
+            std::string tmpPath = museekd()->codeset()->fromFsToUtf8((*it)->incompletePath(), false);
+            std::ifstream incompleteTest( tmpPath.c_str() );
+            if (incompleteTest.fail())
+                tmpPath = std::string();
+            incompleteTest.close();
 
-	file.close();
+            if(!write_int(&file, state) ||
+               write_str(&file, (*it)->user()) == -1 ||
+               !write_off(&file, (*it)->size()) ||
+               write_str(&file, (*it)->remotePath()) == -1 ||
+               write_str(&file, museekd()->codeset()->fromFsToUtf8((*it)->destinationPath(), false)) == -1 ||
+               write_str(&file, tmpPath) == -1) {
+                NNLOG("museek.debug", "Cannot save downloads, trying again later.");
+                file.close();
+                m_AllowSave = true;
+                return;
+            }
+        }
 
-#ifdef WIN32
-    // On Win32, rename doesn't overwrite an existing file automatically.
-    remove(path.c_str());
-#endif // WIN32
-    // Rename the temp file to the correct path.
-    if(rename(pathTemp.c_str(), path.c_str()) == -1) {
-        // Something happened. But nobody knows what.
-        NNLOG("museek.warn", "Renaming downloads config file failed for unknown reason.");
+        file.close();
+
+        if (!m_PendingDownloadsSave) {
+        #ifdef WIN32
+            // On Win32, rename doesn't overwrite an existing file automatically.
+            remove(path.c_str());
+        #endif // WIN32
+            // Rename the temp file to the correct path.
+            if(rename(pathTemp.c_str(), path.c_str()) == -1) {
+                // Something happened. But nobody knows what.
+                NNLOG("museek.warn", "Renaming downloads config file failed for unknown reason.");
+            }
+        }
+
+        // OK, we've finished. See if someone asked to save while we were saving (if true, we have to save now)
+        m_AllowSave = true;
+        if (m_PendingDownloadsSave)
+            saveDownloads();
+    }
+    else {
+        NNLOG("museek.debug", "Delaying downloads saving");
+        m_PendingDownloadsSave = true;
     }
 }
