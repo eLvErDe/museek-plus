@@ -51,6 +51,8 @@ TransferListItem::TransferListItem(QTreeWidget* p, const QString& _u, const QStr
 	t.rate = 0;
 	t.placeInQueue = (uint)-1;
 	update(t, true);
+
+	updateProgressBar();
 }
 
 TransferListItem::TransferListItem(QTreeWidgetItem* p, const QString& _u, const QString& _p)
@@ -78,15 +80,19 @@ TransferListItem::TransferListItem(QTreeWidgetItem* p, const QString& _u, const 
 	t.filesize = 0;
 	t.rate = 0;
 	update(t, true);
+
+	updateProgressBar();
 }
 
 void TransferListItem::updateProgressBar() {
+    int value = mProgress->value();
     delete mProgress;
     mProgress = new QProgressBar();
     mProgress->setMinimum(0);
     mProgress->setMaximum(1000);
     QPainter pa;
-    mProgress->setFixedHeight(pa.fontMetrics().size(Qt::TextSingleLine, QString("FFFVfdvfdjç")).height());
+    mProgress->setFixedHeight(pa.fontMetrics().size(Qt::TextSingleLine, user()).height());
+	mProgress->setValue(value);
 	treeWidget()->setItemWidget(this, 3, mProgress);
 }
 
@@ -232,7 +238,9 @@ void TransferListItem::update(const NTransfer& transfer, bool force) {
 	}
 
     int progress = 0;
-    if (mSize)
+    if (mState == 0)
+        progress = mProgress->maximum();
+    else if (mSize)
         progress = static_cast<uint>((static_cast<float>(mPosition)/static_cast<float>(mSize)) * (mProgress->maximum() - mProgress->minimum()));
 	mProgress->setValue(progress);
 }
