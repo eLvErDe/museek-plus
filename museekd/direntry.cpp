@@ -26,8 +26,6 @@
 #include "string_ext.h"
 #include <sys/stat.h>
 #include <NewNet/nnpath.h>
-// #define MULOG_DOMAIN "Muscan.DE"
-// #include <Muhelp/Mulog.hh>
 
 using std::string;
 using std::map;
