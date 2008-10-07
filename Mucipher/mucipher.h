@@ -20,10 +20,6 @@
 #ifndef __MUCIPHER_H__
 #define __MUCIPHER_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "system.h"
 
 void shaBlock(unsigned char *dataIn, int len, unsigned char hashout[20]);
@@ -52,8 +48,4 @@ void _blockDecipher(CipherContext *ctx, char *str, int len, char **s, int *slen)
 
 void hexDigest(unsigned char *digest, int length, char* digestOut);
 
-#ifdef __cplusplus
-}
-#endif
-
-#endif // __MUCIPHER_H__
+#endif /* __MUCIPHER_H__ */

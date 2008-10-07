@@ -84,7 +84,7 @@ static const void *body(MD5_CTX *ctx, const void *data, unsigned long size)
 	MD5_u32plus a, b, c, d;
 	MD5_u32plus saved_a, saved_b, saved_c, saved_d;
 
-	ptr = data;
+	ptr = static_cast<const unsigned char *>(data);
 
 	a = ctx->a;
 	b = ctx->b;
@@ -200,7 +200,7 @@ static void MD5_Update(MD5_CTX *ctx, const void *_data, unsigned long size)
 {
 	MD5_u32plus saved_lo;
 	unsigned long used, free;
-        const unsigned char *data = _data;
+        const unsigned char *data = static_cast<const unsigned char *>(_data);
         
 	saved_lo = ctx->lo;
 	if ((ctx->lo = (saved_lo + size) & 0x1fffffff) < saved_lo) ctx->hi++;
@@ -223,7 +223,7 @@ static void MD5_Update(MD5_CTX *ctx, const void *_data, unsigned long size)
 	}
 
 	if (size >= 64) {
-		data = body(ctx, data, size & ~(unsigned long)0x3f);
+		data = static_cast<const unsigned char *>(body(ctx, data, size & ~(unsigned long)0x3f));
 		size &= 0x3f;
 	}
 

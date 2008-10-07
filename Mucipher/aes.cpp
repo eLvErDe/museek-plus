@@ -286,7 +286,7 @@ gen_tabs (void)
 static int
 aes_set_key(void *ctx_arg, const u8 *in_key, unsigned int key_len)
 {
-	struct aes_ctx *ctx = ctx_arg;
+	struct aes_ctx *ctx = static_cast<struct aes_ctx *>(ctx_arg);
 	u32 i, t, u, v, w;
 
 	if (key_len != 16 && key_len != 24 && key_len != 32) {
@@ -353,7 +353,7 @@ aes_set_key(void *ctx_arg, const u8 *in_key, unsigned int key_len)
 
 static void aes_encrypt(void *ctx_arg, u8 *out, const u8 *in)
 {
-	const struct aes_ctx *ctx = ctx_arg;
+	const struct aes_ctx *ctx = static_cast<const struct aes_ctx *>(ctx_arg);
 	u32 b0[4], b1[4];
 	const u32 *kp = E_KEY + 4;
 
@@ -406,7 +406,7 @@ static void aes_encrypt(void *ctx_arg, u8 *out, const u8 *in)
 
 static void aes_decrypt(void *ctx_arg, u8 *out, const u8 *in)
 {
-	const struct aes_ctx *ctx = ctx_arg;
+	const struct aes_ctx *ctx = static_cast<const struct aes_ctx *>(ctx_arg);
 	u32 b0[4], b1[4];
 	const int key_len = ctx->key_length;
 	const u32 *kp = D_KEY + key_len + 20;
@@ -475,14 +475,14 @@ void blockCipher(struct aes_ctx* ctx, unsigned char* dataIn, int length, unsigne
 	unsigned char* block = dataIn;
 	unsigned int i = 0;
 	
-	for(i = 0; i < length / 16; i++) {
+	for(i = 0; static_cast<int>(i) < length / 16; i++) {
 		aes_encrypt(ctx, dataOut, block);
 		block += 16;
 		dataOut += 16;
 	}
 	
 	if(length % 16) {
-		for(i = 0; i < length % 16; i++) {
+		for(i = 0; static_cast<int>(i) < length % 16; i++) {
 			pad[i] = *block;
 			block++;
 		}
@@ -499,7 +499,7 @@ void blockDecipher(struct aes_ctx* ctx, unsigned char* dataIn, int length, unsig
 	
 	length = CIPHER_BLOCK(length);
 	
-	for(i = 0; i < length / 16; i++) {
+	for(i = 0; static_cast<int>(i) < length / 16; i++) {
 		aes_decrypt(ctx, dataOut, dataIn);
 		dataIn += 16;
 		dataOut += 16;

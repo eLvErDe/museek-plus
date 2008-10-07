@@ -29,7 +29,7 @@ SET(CMAKE_SWIG_FLAGS "")
 SET_SOURCE_FILES_PROPERTIES(mucipherc.py GENERATED)
 SET_SOURCE_FILES_PROPERTIES(mucipher.i PROPERTIES CPLUSPLUS ON)
 SET_SOURCE_FILES_PROPERTIES(mucipher.i PROPERTIES SWIG_FLAGS "-includeall")
-SWIG_ADD_MODULE(mucipherc python ${Mucipher_SOURCE_DIR}/aes.c ${Mucipher_SOURCE_DIR}/hexdigest.c ${Mucipher_SOURCE_DIR}/md5.c ${Mucipher_SOURCE_DIR}/sha.c ${Mucipher_SOURCE_DIR}/sha256.c ${Mucipher_SOURCE_DIR}/wraphelp.c mucipher.i )
+SWIG_ADD_MODULE(mucipherc python ${Mucipher_SOURCE_DIR}/aes.cpp ${Mucipher_SOURCE_DIR}/hexdigest.cpp ${Mucipher_SOURCE_DIR}/md5.cpp ${Mucipher_SOURCE_DIR}/sha.cpp ${Mucipher_SOURCE_DIR}/sha256.cpp ${Mucipher_SOURCE_DIR}/wraphelp.cpp mucipher.i )
 SWIG_LINK_LIBRARIES(mucipherc ${PYTHON_LIBRARIES})
 
 set(PYMUCIPHER_LIBS

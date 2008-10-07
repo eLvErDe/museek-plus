@@ -240,7 +240,7 @@ static void sha256_transform(uint32 *state, const unsigned char *input)
 
 static void sha256_init(void *ctx)
 {
-	struct sha256_ctx *sctx = ctx;
+	struct sha256_ctx *sctx = static_cast<struct sha256_ctx *>(ctx);
 	sctx->state[0] = H0;
 	sctx->state[1] = H1;
 	sctx->state[2] = H2;
@@ -255,7 +255,7 @@ static void sha256_init(void *ctx)
 
 static void sha256_update(void *ctx, const unsigned char *data, unsigned int len)
 {
-	struct sha256_ctx *sctx = ctx;
+	struct sha256_ctx *sctx = static_cast<struct sha256_ctx *>(ctx);
 	unsigned int i, index, part_len;
 
 	/* Compute number of bytes mod 128 */
@@ -287,7 +287,7 @@ static void sha256_update(void *ctx, const unsigned char *data, unsigned int len
 
 static void sha256_final(void* ctx, unsigned char *out)
 {
-	struct sha256_ctx *sctx = ctx;
+	struct sha256_ctx *sctx = static_cast<struct sha256_ctx *>(ctx);
 	unsigned char bits[8];
 	unsigned int index, pad_len, t;
 	int i, j;
