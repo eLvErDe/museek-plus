@@ -76,7 +76,7 @@ typedef struct
 {
   off_t size;
   std::string ext;
-  std::vector<uint32>attrs;
+  std::vector<uint32> attrs;
 } FileEntry;
 
 typedef std::map<std::string, std::string> StringMap;

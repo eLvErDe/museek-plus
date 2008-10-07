@@ -25,7 +25,7 @@ endif (NOT MANDIR)
 set(MUSEEKD_SOURCES
   codesetmanager.cpp  ifacemanager.cpp     peermanager.cpp
   configmanager.cpp   ifacesocket.cpp      peersocket.cpp
-  direntry.cpp        main.cpp             servermanager.cpp
+  main.cpp             servermanager.cpp
   downloadmanager.cpp messageprocessor.cpp sharesdatabase.cpp
   downloadsocket.cpp  museekd.cpp          ticketsocket.cpp
   handshakesocket.cpp networkmessage.cpp   usersocket.cpp
@@ -40,6 +40,7 @@ add_executable(museekd ${MUSEEKD_SOURCES})
 target_link_libraries(
   museekd
   Mucipher
+  Muhelp
   ${NEWNET_LIBRARIES}
   ${ZLIB_LIBRARIES}
   ${LIBXML2_LIBRARIES}

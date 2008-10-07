@@ -13,7 +13,6 @@ SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 MESSAGE("DECLARATIONS: PREFIX (/usr), MANDIR (PREFIX/man)
 Package options: EVERYTHING, NO_MUSEEKD, NO_MUSCAN, NO_SETUP, NO_MUSEEQ, NO_PYMUCIPHER, BINDINGS, MURMUR, MUCOUS, CLIENTS
 Museeq options: BINRELOC, DATADIR (PREFIX/share), RELOAD_TRANSLATIONS
-Museekd options MULOG (debug and status messages), MULOG_CALLTRACE MULOG_TT MULOG_CYCLE
 Prefix these declarations with -D and set them with either 1, 0 or a path.
 Set -DEVERYTHING=1 if you want it all")
 

@@ -25,36 +25,32 @@
 #include <vector>
 #include <map>
 
-typedef struct {
-	off_t size;
-	std::string ext;
-	std::vector<uint32>attrs;
-} FileEntry;
+#include <museekd/mutypes.h>
 
 class DirEntry {
 public:
 	DirEntry(bool _f = true) { fake = _f; mtime = 0; };
 	DirEntry(const std::string& p) : path(p) { fake = false; mtime = 0; };
 	virtual ~DirEntry();
-	
+
 	virtual DirEntry* new_folder(bool fake);
 	virtual DirEntry* new_folder(const std::string& path);
-	
+
 	void fold(DirEntry* folded);
 	void network_pack(std::queue<unsigned char>&);
-	void flatten(std::map<std::string, FileEntry>&);
+	void flatten(Folder&);
 
 	void save(const std::string&);
 	void load(const std::string&);
 
 	std::string path;
 	std::map<std::string, DirEntry*> folders;
-	std::map<std::string, FileEntry> files;
+	Folder files;
 
 protected:
 	std::queue<unsigned char> pack();
 	void unpack(std::queue<unsigned char>&);
-	
+
 	bool fake;
 	time_t mtime;
 };

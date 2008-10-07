@@ -8,13 +8,16 @@ ADD_DEFINITIONS(${LIBXMLPP_CFLAGS})
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BUILD_DIR})
 
-# MULOG_CALLTRACE MULOG_TT MULOG_CYCLE
 set(MUHELP_SOURCES
 Codec.cc
 DirEntry.cc
 Muconf.cc
-Mulog.cc
 )
 
-
 add_library(Muhelp STATIC ${MUHELP_SOURCES})
+
+# Link the Muhelp library to some libraries.
+target_link_libraries(
+  Muhelp
+  NewNet
+)

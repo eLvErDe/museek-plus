@@ -33,7 +33,6 @@
 #cmakedefine HAVE_SYS_NDIR_H 1
 #cmakedefine HAVE_FAM_H 1
 #cmakedefine HAVE_VORBIS 1
-#cmakedefine MULOG 1
 #ifdef HAVE_SYS_POLL_H
  #include <sys/poll.h>
 #endif
@@ -54,15 +53,11 @@
 #endif
 #ifndef HAVE_DIRENT_H
 
-#endif // ! HAVE_DIRENT_H
+#endif /* ! HAVE_DIRENT_H */
 
 #ifdef HAVE_PWD_H
  #include <pwd.h>
 #endif
-
-#ifdef MULOG
- #define MULOG_DEBUG 1
-#endif // MULOG
 
 #ifdef HAVE_SYSLOG_H
  #include <syslog.h>
@@ -127,21 +122,21 @@
 
 #ifndef UNIX_PATH_MAX
  #define UNIX_PATH_MAX 108
-#endif // UNIX_PATH_MAX
+#endif /* UNIX_PATH_MAX */
 
 #cmakedefine ICONV_CONST const
 #ifndef ICONV_CONST
 # define ICONV_CONST
-#endif // ! ICONV_CONST
+#endif /* ! ICONV_CONST */
 #define ICONV_IN ICONV_CONST char **
 
 #cmakedefine RSIGTYPE
 #ifdef RSIGTYPE
 # define RETSIGTYPE int
-#endif // RSIGTYPE
+#endif /* RSIGTYPE */
 #ifndef RSIGTYPE
 # define RETSIGTYPE void
-#endif // ! RSIGTYPE
+#endif /* ! RSIGTYPE */
 
 #cmakedefine HAVE_UINT
 #ifndef HAVE_UINT
@@ -154,4 +149,4 @@
  #define HAVE_UINT32
 #endif
 
-#endif // SYSTEM_H
+#endif /* SYSTEM_H */

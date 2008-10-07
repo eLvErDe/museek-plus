@@ -35,9 +35,7 @@ extern "C" {
 
 #include <Muhelp/DirEntry.hh>
 #include <Muhelp/string_ext.hh>
-
-#define MULOG_DOMAIN "Muscan.SC"
-#include <Muhelp/Mulog.hh>
+#include <NewNet/nnlog.h>
 
 #include <iostream>
 
@@ -81,20 +79,20 @@ void DirScanner::add(const string& path) {
 }
 
 DirEntry* DirScanner::new_folder(bool fake) {
-	CT("new_folder %i", fake);
+	NNLOG("museek.dirscanner", "new_folder %i", fake);
 	
 	return new DirScanner(fake);
 }
 
 DirEntry* DirScanner::new_folder(const string& path) {
-	CT("new_folder %s", path.c_str());
+	NNLOG("museek.dirscanner", "new_folder %s", path.c_str());
 	
 	return new DirScanner(path);
 }
 
 
 void DirScanner::scan(const struct stat* s) {
-	CT("scan <...>");
+	NNLOG("museek.dirscanner", "scan <...>");
 	
 	bool uptodate = false;
 	if (s != NULL) {
@@ -125,7 +123,7 @@ void DirScanner::scan(const struct stat* s) {
 
 
 FileEntry DirScanner::scan_file(const string& path) {
-	CT("scan file %s", path.c_str());
+	NNLOG("museek.dirscanner", "scan file %s", path.c_str());
 	
 	if(Scanner_Verbosity > 2)
 		cout << "Identifying " << path << endl;
@@ -172,7 +170,7 @@ FileEntry DirScanner::scan_file(const string& path) {
 }
 
 void DirScanner::real_scan() {
-	CT("real_scan");
+	NNLOG("museek.dirscanner", "real_scan");
 	
 	if(Scanner_Verbosity > 0)
 		cout << "Scanning " << path << endl;

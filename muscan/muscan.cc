@@ -21,9 +21,7 @@
 
 #include <muscan/scanner.hh>
 #include <Muhelp/Muconf.hh>
-
-#define MULOG_DOMAIN "Muscan.MS"
-#include <Muhelp/Mulog.hh>
+#include <NewNet/nnlog.h>
 
 #include <iostream>
 #include <cstdlib>
@@ -78,6 +76,11 @@ int main(int argc, char **argv) {
 		} else
 			help();
 	}
+	
+	if (Scanner_Verbosity >= 2){
+	    NNLOG.logEvent.connect(new NewNet::ConsoleOutput);
+    	NNLOG.enable("ALL");
+    }
 	
 	Muconf config(config_file);
 	if(! config.hasDomain("shares") || ! config["shares"].hasKey("database")) {

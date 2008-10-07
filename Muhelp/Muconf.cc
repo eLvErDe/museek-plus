@@ -23,15 +23,13 @@
 
 #include <libxml++/libxml++.h>
 #include <Muhelp/string_ext.hh>
-
-#define MULOG_DOMAIN "Muconf.NC"
-#include <Muhelp/Mulog.hh>
+#include <NewNet/nnlog.h>
 
 Muconf::Muconf() { };
 
 Muconf::Muconf(const std::string& filename)
         : mFilename(filename) {
-	CT("Muconf %s", filename.c_str());
+	NNLOG("museek.muconf", "Muconf %s", filename.c_str());
 	
 	try {
 		xmlpp::DomParser parser;
@@ -40,13 +38,13 @@ Muconf::Muconf(const std::string& filename)
 		if(parser) {
 			xmlpp::Element* root = parser.get_document()->get_root_node();
 			if(root->get_name() != "museekd") {
-				DEBUG("Invalid configuration database, root element name mismatch");
+				NNLOG("museek.muconf", "Invalid configuration database, root element name mismatch");
 				return;
 			}
 			restore(parser.get_document()->get_root_node());
 		}
 	} catch(const std::exception& ex) {
-		DEBUG("Exception (%s) caught while parsing configuration database", ex.what());
+		NNLOG("museek.muconf", "Exception (%s) caught while parsing configuration database", ex.what());
 	}
 }
 
@@ -55,13 +53,13 @@ std::string Muconf::filename() const {
 }
 
 bool Muconf::hasDomain(const std::string& domain) const {
-	CT("hasDomain %s", domain.c_str());
+	NNLOG("museek.muconf", "hasDomain %s", domain.c_str());
 	
 	return mDomains.find(domain) != mDomains.end();
 }
 
 std::vector<std::string> Muconf::domains() const {
-	CT("domains");
+	NNLOG("museek.muconf", "domains");
 	
 	std::vector<std::string> d;
 	
@@ -73,7 +71,7 @@ std::vector<std::string> Muconf::domains() const {
 }
 
 MuconfDomain& Muconf::operator[](const std::string& domain) {
-	CT("operator[] %s", domain.c_str());
+	NNLOG("museek.muconf", "operator[] %s", domain.c_str());
 	
 	std::map<std::string, MuconfDomain>::iterator it = mDomains.find(domain);
 	if(it != mDomains.end())
@@ -85,19 +83,19 @@ MuconfDomain& Muconf::operator[](const std::string& domain) {
 }
 
 void Muconf::restore(const xmlpp::Element* root) {
-	CT("restore <...>");
+	NNLOG("museek.muconf", "restore <...>");
 	
 	const xmlpp::Node::NodeList nodes = root->get_children("domain");
 	xmlpp::Node::NodeList::const_iterator it = nodes.begin();
 	for(; it != nodes.end(); ++it) {
 		const xmlpp::Element* elem = dynamic_cast<const xmlpp::Element*>(*it);
 		if(! elem) {
-			DEBUG("Domain node is not an element");
+			NNLOG("museek.muconf", "Domain node is not an element");
 			continue;
 		}
 		xmlpp::Attribute* attr = elem->get_attribute("id");
 		if(! attr) {
-			DEBUG("Domain is missing id attribute");
+			NNLOG("museek.muconf", "Domain is missing id attribute");
 			continue;
 		}
 		const std::string& domain = attr->get_value();
@@ -108,7 +106,7 @@ void Muconf::restore(const xmlpp::Element* root) {
 }
 
 void Muconf::store() {
-	CT("store");
+	NNLOG("museek.muconf", "store");
 	
 	xmlpp::Document doc;
 	xmlpp::Element* root = doc.create_root_node("museekd");
@@ -125,12 +123,12 @@ void Muconf::store() {
 	try {
 		doc.write_to_file(mFilename);
 	} catch(const std::exception& ex) {
-		DEBUG("Exception (%s) caught while writing configuration database to disk", ex.what());
+		NNLOG("museek.muconf", "Exception (%s) caught while writing configuration database to disk", ex.what());
 	}
 }
 
 Muconf::operator std::map<std::string, std::map<std::string, std::string> >() const {
-	CT("operator std::map<std::string, std::map<std::string, std::string> >");
+	NNLOG("museek.muconf", "operator std::map<std::string, std::map<std::string, std::string> >");
 	
 	std::map<std::string, std::map<std::string, std::string> > r;
 	
@@ -146,17 +144,17 @@ Muconf::operator std::map<std::string, std::map<std::string, std::string> >() co
 	
 MuconfDomain::MuconfDomain(const std::string& domain)
               : mDomain(domain) {
-	CT("MuconfDomain <...> %s", domain.c_str());
+	NNLOG("museek.muconf", "MuconfDomain <...> %s", domain.c_str());
 }
 
 bool MuconfDomain::hasKey(const std::string& key) const {
-	CT("hasKey %s", key.c_str());
+	NNLOG("museek.muconf", "hasKey %s", key.c_str());
 	
 	return mKeys.find(key) != mKeys.end();
 }
 
 std::vector<std::string> MuconfDomain::keys() const {
-	CT("keys");
+	NNLOG("museek.muconf", "keys");
 	
 	std::vector<std::string> d;
 	
@@ -168,7 +166,7 @@ std::vector<std::string> MuconfDomain::keys() const {
 }
 
 MuconfKey& MuconfDomain::operator[](const std::string& key) {
-	CT("operator[] %s", key.c_str());
+	NNLOG("museek.muconf", "operator[] %s", key.c_str());
 	
 	std::map<std::string, MuconfKey>::iterator it = mKeys.find(key);
 	if(it != mKeys.end())
@@ -180,19 +178,19 @@ MuconfKey& MuconfDomain::operator[](const std::string& key) {
 }
 
 void MuconfDomain::restore(const xmlpp::Element* root) {
-	CT("restore <...>");
+	NNLOG("museek.muconf", "restore <...>");
 	
 	const xmlpp::Node::NodeList nodes = root->get_children("key");
 	xmlpp::Node::NodeList::const_iterator it = nodes.begin();
 	for(; it != nodes.end(); ++it) {
 		const xmlpp::Element* elem = static_cast<const xmlpp::Element*>(*it);
 		if(! elem) {
-			DEBUG("Key node is not an element (domain: %s)", mDomain.c_str());
+			NNLOG("museek.muconf", "Key node is not an element (domain: %s)", mDomain.c_str());
 			continue;
 		}
 		xmlpp::Attribute* attr = elem->get_attribute("id");
 		if(! attr) {
-			DEBUG("Key is missing id attribute (domain %s)", mDomain.c_str());
+			NNLOG("museek.muconf", "Key is missing id attribute (domain %s)", mDomain.c_str());
 			continue;
 		}
 		std::string key = attr->get_value();
@@ -207,7 +205,7 @@ void MuconfDomain::restore(const xmlpp::Element* root) {
 }
 
 void MuconfDomain::store(xmlpp::Element* root) const {
-	CT("store <...>");
+	NNLOG("museek.muconf", "store <...>");
 	
 	std::map<std::string, MuconfKey>::const_iterator it = mKeys.begin();
 	for(; it != mKeys.end(); ++it) {
@@ -223,7 +221,7 @@ void MuconfDomain::store(xmlpp::Element* root) const {
 }
 
 MuconfDomain::operator std::map<std::string, std::string>() const {
-	CT("operator std::map<std::string, std::string>");
+	NNLOG("museek.muconf", "operator std::map<std::string, std::string>");
 	
 	std::map<std::string, std::string> r;
 	
@@ -235,13 +233,13 @@ MuconfDomain::operator std::map<std::string, std::string>() const {
 }
 
 std::string MuconfDomain::domain() const {
-	CT("domain");
+	NNLOG("museek.muconf", "domain");
 	
 	return mDomain;
 }
 
 void MuconfDomain::remove(const std::string& key) {
-	CT("remove %s", key.c_str());
+	NNLOG("museek.muconf", "remove %s", key.c_str());
 	
 	mKeys.erase(key);
 }
@@ -251,23 +249,23 @@ void MuconfDomain::remove(const std::string& key) {
 
 MuconfKey::MuconfKey(const std::string& key)
            : mKey(key) {
-	CT("MuconfKey::MuconfKey <...> %s", mKey.c_str());
+	NNLOG("museek.muconf", "MuconfKey::MuconfKey <...> %s", mKey.c_str());
 }
 
 void MuconfKey::operator=(const std::string& value) {
-	CT("MuconfKey::operator= %s", value.c_str());
+	NNLOG("museek.muconf", "MuconfKey::operator= %s", value.c_str());
 	
 	mValue = value;
 }
 
 void MuconfKey::operator=(const char* value) {
-	CT("MuconfKey::operator= %s", value);
+	NNLOG("museek.muconf", "MuconfKey::operator= %s", value);
 	
 	mValue = std::string(value);
 }
 
 void MuconfKey::operator=(uint value) {
-	CT("MuconfKey::operator= %u", value);
+	NNLOG("museek.muconf", "MuconfKey::operator= %u", value);
 	
 	char x[80];
 	snprintf(x, 80, "%u", value);
@@ -275,7 +273,7 @@ void MuconfKey::operator=(uint value) {
 }
 
 void MuconfKey::operator=(int value) {
-	CT("MuconfKey::operator= %i", value);
+	NNLOG("museek.muconf", "MuconfKey::operator= %i", value);
 	
 	char x[80];
 	snprintf(x, 80, "%i", value);
@@ -283,7 +281,7 @@ void MuconfKey::operator=(int value) {
 }
 
 void MuconfKey::operator=(double value) {
-	CT("MuconfKey::operator= %f", value);
+	NNLOG("museek.muconf", "MuconfKey::operator= %f", value);
 	
 	char x[80];
 	snprintf(x, 80, "%f", value);
@@ -291,7 +289,7 @@ void MuconfKey::operator=(double value) {
 }
 
 void MuconfKey::operator=(bool value) {
-	CT("MuconfKey::operator= %d", value);
+	NNLOG("museek.muconf", "MuconfKey::operator= %d", value);
 	if(value)
 		mValue = "true";
 	else
@@ -299,37 +297,37 @@ void MuconfKey::operator=(bool value) {
 }
 
 MuconfKey::operator std::string() const {
-	CT("MuconfKey::operator std::string");
+	NNLOG("museek.muconf", "MuconfKey::operator std::string");
 	
 	return mValue;
 }
 
 MuconfKey::operator const char*() const {
-	CT("MuconfKey::operator const char*");
+	NNLOG("museek.muconf", "MuconfKey::operator const char*");
 	
 	return mValue.c_str();
 }
 
 uint MuconfKey::asUint() const {
-	CT("MuconfKey::asUint");
+	NNLOG("museek.muconf", "MuconfKey::asUint");
 	
 	return atol(mValue.c_str());
 }
 
 int MuconfKey::asInt() const {
-	CT("MuconfKey::asInt");
+	NNLOG("museek.muconf", "MuconfKey::asInt");
 
 	return atoi(mValue.c_str());
 }
 
 double MuconfKey::asDouble() const {
-	CT("MuconfKey::asDouble");
+	NNLOG("museek.muconf", "MuconfKey::asDouble");
 	
 	return strtod(mValue.c_str(), NULL);
 }
 
 bool MuconfKey::asBool() const {
-	CT("MuconfKey::asBool");
+	NNLOG("museek.muconf", "MuconfKey::asBool");
 	
 	if(tolower(mValue) == "true" || asInt() != 0)
 		return true;
@@ -338,13 +336,13 @@ bool MuconfKey::asBool() const {
 }
 
 bool MuconfKey::operator==(const std::string& v) const {
-	CT("MuconfKey::operator== %s", v.c_str());
+	NNLOG("museek.muconf", "MuconfKey::operator== %s", v.c_str());
 	
 	return mValue == v;
 }
 
 bool MuconfKey::operator!=(const std::string& v) const {
-	CT("MuconfKey::operator!= %s", v.c_str());
+	NNLOG("museek.muconf", "MuconfKey::operator!= %s", v.c_str());
 	
 	return mValue != v;
 }

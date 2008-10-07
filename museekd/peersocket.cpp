@@ -35,7 +35,7 @@
 #include "uploadsocket.h"
 #include "searchmanager.h"
 #include "sharesdatabase.h"
-#include "string_ext.h"
+#include <Muhelp/string_ext.hh>
 #include <fstream>
 #include <NewNet/nnratelimiter.h>
 #include <NewNet/nnpath.h>

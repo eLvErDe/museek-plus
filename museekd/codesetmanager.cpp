@@ -23,7 +23,7 @@
 #include "codesetmanager.h"
 #include "museekd.h"
 #include "configmanager.h"
-#include "string_ext.h"
+#include <Muhelp/string_ext.hh>
 #include <NewNet/nnpath.h>
 #include <errno.h>
 

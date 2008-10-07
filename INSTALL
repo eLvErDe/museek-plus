@@ -44,11 +44,6 @@ Museeq options:
   BINRELOC: Use binary relocation
   DATADIR: Change default data dir
   RELOAD_TRANSLATIONS: Update .ts files in src/museeq/translations
-Museekd options:
-  MULOG (debug and status messages)
-  MULOG_CALLTRACE
-  MULOG_TT
-  MULOG_CYCLE
 
    I.2 - Commands
    --------------

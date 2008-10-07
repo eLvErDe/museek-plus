@@ -17,13 +17,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif // HAVE_CONFIG_H
+
 #include <system.h>
 
 #include <Muhelp/DirEntry.hh>
 #include <Muhelp/string_ext.hh>
 
-#define MULOG_DOMAIN "Muscan.DE"
-#include <Muhelp/Mulog.hh>
+#include <NewNet/nnlog.h>
+#include <NewNet/nnpath.h>
 
 using std::string;
 using std::map;
@@ -44,21 +48,21 @@ DirEntry* DirEntry::new_folder(bool fake) {
 }
 
 void DirEntry::fold(DirEntry* folded) {
-	CT("fold %s", folded->path.c_str());
-	
+	NNLOG("museek.direntry", "fold %s", folded->path.c_str());
+
 	if (! fake) {
 		if (folded->folders.find(path) != folded->folders.end())
 			return;
-		
+
 		DirEntry* de = folded->new_folder(path);
-		
-		map<string, FileEntry>::iterator fit = files.begin();
+
+		Folder::iterator fit = files.begin();
 		for(; fit != files.end(); ++fit)
 			de->files[(*fit).first] = (*fit).second;
 
 		folded->folders[path] = de;
 	}
-	
+
 	map<string, DirEntry*>::iterator dit = folders.begin();
 	for(; dit != folders.end(); ++dit)
 		(*dit).second->fold(folded);
@@ -124,13 +128,13 @@ static inline string _unpack_str(queue<unsigned char>& data) {
 }
 
 queue<unsigned char> DirEntry::pack() {
-	CT("pack");
-	
+	NNLOG("museek.direntry", "pack");
+
 	queue<unsigned char> data;
-	
+
 	_pack(data, path);
 	_pack(data, (uint32)mtime);
-	
+
 	_pack(data, (uint32)folders.size());
 	map<string, DirEntry*>::iterator dit = folders.begin();
 	for(; dit != folders.end(); ++dit) {
@@ -140,10 +144,10 @@ queue<unsigned char> DirEntry::pack() {
 			data2.pop();
 		}
 	}
-	
+
 	_pack(data, (uint32)files.size());
-	
-	map<string, FileEntry>::iterator fit = files.begin();
+
+	Folder::iterator fit = files.begin();
 	for(; fit != files.end(); ++fit) {
 		_pack(data, (*fit).first);
 		_pack(data, (*fit).second.size);
@@ -157,8 +161,8 @@ queue<unsigned char> DirEntry::pack() {
 }
 
 void DirEntry::save(const string& fn) {
-	CT("save %s", fn.c_str());
-	
+	NNLOG("museek.direntry", "save %s", fn.c_str());
+
 	queue<unsigned char> data = pack();
 	unsigned char *cdata = new unsigned char[data.size()];
 
@@ -177,23 +181,23 @@ void DirEntry::save(const string& fn) {
 }
 
 void DirEntry::unpack(queue<unsigned char>& data) {
-	CT("unpack %d", data.size());
-	
+	NNLOG("museek.direntry", "unpack %d", data.size());
+
 	for(map<string, DirEntry*>::iterator it = folders.begin(); it != folders.end(); ++it)
 		delete (*it).second;
 	folders.clear();
 	files.clear();
-	
+
 	path = _unpack_str(data);
 	mtime = _unpack_int(data);
-	
+
 	uint32 i = _unpack_int(data);
 	for(uint32 j = 0; j < i; ++j) {
 		DirEntry* de = new_folder(false);
 		de->unpack(data);
 		folders[de->path] = de;
 	}
-	
+
 	i = _unpack_int(data);
 	for(uint32 j = 0; j < i; ++j) {
 		FileEntry fe;
@@ -203,31 +207,37 @@ void DirEntry::unpack(queue<unsigned char>& data) {
 		fe.size = _unpack_off(data);
 		fe.ext = _unpack_str(data);
 		k = _unpack_int(data);
-		for(uint32 l = 0; l < k; ++l)
+        for(uint32 l = 0; l < k; ++l)
 			fe.attrs.push_back(_unpack_int(data));
 		files[fn] = fe;
 	}
 }
 
 void DirEntry::load(const string& fn) {
-	CT("load %s", fn.c_str());
-	
-	struct stat s;
-	if (stat(fn.c_str(), &s) || s.st_size == 0)
-		return;
+	NNLOG("museek.direntry", "load %s", fn.c_str());
+
+	long long size;
 
 	FILE *f = fopen(fn.c_str(), "r");
 	if (f == NULL)
 		return;
 
-	unsigned char *cdata = new unsigned char[s.st_size];
-	if (fread(cdata, 1, s.st_size, f) != (uint32)s.st_size) {
+    // obtain file size:
+    fseek (f , 0 , SEEK_END);
+    size = ftell (f);
+    rewind (f);
+    
+	if (size == 0)
+		return;
+
+	unsigned char *cdata = new unsigned char[size];
+	if (fread(cdata, 1, size, f) != (uint32)size) {
 		delete [] cdata;
 		return;
 	}
-	
+
 	queue<unsigned char> data;
-	for(int i = 0; i < s.st_size; i++)
+	for(int i = 0; i < size; i++)
 		data.push(cdata[i]);
 
 	delete [] cdata;
@@ -236,14 +246,14 @@ void DirEntry::load(const string& fn) {
 }
 
 void DirEntry::network_pack(queue<unsigned char>& data) {
-	CT("network pack <...>");
-	
+	NNLOG("museek.direntry", "network pack <...>");
+
 	_pack(data, (uint32)folders.size());
 	map<string, DirEntry*>::iterator dit = folders.begin();
 	for(; dit != folders.end(); ++dit) {
 		_pack_path(data, (*dit).first);
 		_pack(data, (uint32)(*dit).second->files.size());
-		map<string, FileEntry>::iterator fit = (*dit).second->files.begin();
+		Folder::iterator fit = (*dit).second->files.begin();
 		for(; fit != (*dit).second->files.end(); ++fit) {
 			data.push(1);
 			_pack(data, (*fit).first);
@@ -259,14 +269,14 @@ void DirEntry::network_pack(queue<unsigned char>& data) {
 	}
 }
 
-void DirEntry::flatten(map<string, FileEntry>& filemap) {
-	CT("flatten <...>");
-	
+void DirEntry::flatten(Folder& filemap) {
+	NNLOG("museek.direntry", "flatten <...>");
+
 	map<string, DirEntry*>::iterator dit = folders.begin();
 	for(; dit != folders.end(); ++dit)
 		(*dit).second->flatten(filemap);
 
-	map<string, FileEntry>::iterator fit = files.begin();
+	Folder::iterator fit = files.begin();
 	for(; fit != files.end(); ++fit)
-		filemap[str_replace(path, '/', '\\') + "\\" + (*fit).first] = (*fit).second;
+		filemap[str_replace(path, NewNet::Path::separator(), '\\') + "\\" + (*fit).first] = (*fit).second;
 }

@@ -24,7 +24,7 @@
 #include <NewNet/nnweakrefptr.h>
 #include <string>
 #include <vector>
-#include "direntry.h"
+#include <Muhelp/DirEntry.hh>
 
 namespace Museek
 {

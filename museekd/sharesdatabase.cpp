@@ -25,7 +25,7 @@
 #include "museekd.h"
 #include "codesetmanager.h"
 #include "servermanager.h"
-#include "string_ext.h"
+#include <Muhelp/string_ext.hh>
 #include <zlib.h>
 #include <string>
 #include <map>
