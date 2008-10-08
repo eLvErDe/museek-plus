@@ -57,6 +57,9 @@ signals:
 	void itemRecommendations(const QString& item, const NItemRecommendations&);
 	void itemSimilarUsers(const QString& item, const NItemSimilarUsers&);
 
+	void addWishItem(const QString&, uint);
+	void removeWishItem(const QString&);
+
 	void addInterest(const QString&);
 	void addHatedInterest(const QString&);
 	void removeInterest(const QString&);
@@ -105,6 +108,9 @@ public slots:
 	void doStartUserSearch(const QString&, const QString&);
 	void doStartWishListSearch(const QString&);
 	void doStopSearch(uint);
+
+	void doAddWishItem(const QString&);
+	void doRemoveWishItem(const QString&);
 
 	void doAddInterest(const QString&);
 	void doAddHatedInterest(const QString&);

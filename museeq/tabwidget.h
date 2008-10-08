@@ -60,23 +60,23 @@ public slots:
 	QWidget * getCurrentWidget() const;
 
 protected:
-	bool protectFirst() const;
-	bool protectThird() const;
+	uint firstProtected() const;
+	uint lastProtected() const;
 	bool canDrop() const;
 	TabBar* mTabBar;
 
 protected slots:
 	void setCanDrop(bool);
 
-	void setProtectThird(bool);
+	void setFirstProtected(uint);
+	void setLastProtected(uint);
 	void doCurrentChanged(QWidget *);
 	virtual void closeCurrent();
 	void previousPage();
 	void nextPage();
 
 private:
-	bool mProtectFirst;
-	bool mProtectThird;
+	uint mFirstProtected, mLastProtected;
 };
 
 #endif // TABWIDGET_H

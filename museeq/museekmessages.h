@@ -529,6 +529,32 @@ MESSAGE(NWishListSearchRequest, 0x0405)
 	}
 END
 
+MESSAGE(NAddWishItem, 0x0406)
+	QString query;
+	uint lastSearched;
+
+	NAddWishItem(const QString& _query) {
+		pack(_query);
+	}
+
+	PARSE
+		query = unpack_str();
+		lastSearched = unpack_uint();
+	END
+END
+
+MESSAGE(NRemoveWishItem, 0x0407)
+	QString query;
+
+	NRemoveWishItem(const QString& _query) {
+		pack(_query);
+	}
+
+	PARSE
+		query = unpack_str();
+	END
+END
+
 MESSAGE(NSayChatroom, 0x0307)
 	QString room, user;
 	QString line;

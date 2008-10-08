@@ -32,6 +32,7 @@ class QPushButton;
 
 class TabWidget;
 class Interests;
+class WishList;
 
 class SearchTabWidget : public TabWidget {
 	Q_OBJECT
@@ -73,7 +74,8 @@ private:
 	QRadioButton* mGlobal, * mRooms, * mBuddies, * mUser, * mWishList;
 	QLabel* mUserLabel;
 	Interests* mInterests;
-	SearchTabWidget* mSearchTabWidget;
+	WishList* mWishListView;
+	SearchTabWidget* mSearchTabWidget, mWishlistTabWidget;
 };
 
 #endif // SEARCHES_H

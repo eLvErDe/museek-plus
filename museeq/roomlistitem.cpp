@@ -43,7 +43,7 @@ bool RoomListItem::operator<(const QTreeWidgetItem & other_) const {
       return mRoom.toLower() < other->mRoom.toLower();
     case 1:
       if(mUsers == other->mUsers)
-        return mUsers < other->mUsers;
+        return mRoom < other->mRoom;
       return mUsers < other->mUsers;
 
   }

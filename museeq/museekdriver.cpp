@@ -184,6 +184,16 @@ void MuseekDriver::dataReady() {
 		emit roomList(m.roomlist);
 		break;
 	}
+	case 0x0406: {
+		NAddWishItem m(data);
+		emit addWishItem(m.query, m.lastSearched);
+		break;
+	}
+	case 0x0407: {
+		NRemoveWishItem m(data);
+		emit removeInterest(m.query);
+		break;
+	}
 	case 0x0600: {
 		NGetRecommendations m(data);
 		emit aRecommendations(m.recommendations);
@@ -401,6 +411,14 @@ void MuseekDriver::doStartUserSearch(const QString& user, const QString& query) 
 
 void MuseekDriver::doStartWishListSearch(const QString& query) {
 	send(NWishListSearchRequest( query));
+}
+
+void MuseekDriver::doAddWishItem(const QString& query) {
+	send(NAddWishItem(query));
+}
+
+void MuseekDriver::doRemoveWishItem(const QString& query) {
+	send(NRemoveWishItem(query));
 }
 
 void MuseekDriver::doJoinRoom(const QString& room) {

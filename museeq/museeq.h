@@ -67,6 +67,8 @@ public:
 	inline const QStringList& ignored() const { return mIgnored; }
 	inline bool isIgnored(const QString& u) const { return mIgnored.contains(u); }
 
+    inline bool isInWishlist(const QString& q) {return mWishlist.contains(q);}
+
 	inline const QStringList& autoJoined() const { return mAutoJoin; }
 	inline bool isAutoJoined(const QString& r) const { return mAutoJoin.contains(r); }
 	void output(const QString& message);
@@ -114,6 +116,9 @@ public slots:
 
 	void joinRoom(const QString&);
 	void leaveRoom(const QString&);
+
+	void addWishItem(const QString&);
+	void removeWishItem(const QString&);
 
 	void addInterest(const QString&);
 	void addHatedInterest(const QString&);
@@ -236,6 +241,8 @@ signals:
 	void addedHatedInterest(const QString&);
  	void removedInterest(const QString&);
  	void removedHatedInterest(const QString&);
+	void addedWishItem(const QString&, uint);
+ 	void removedWishItem(const QString&);
 	// Transfer related signals
 	void downloadUpdated(const NTransfer&);
 	void uploadUpdated(const NTransfer&);
@@ -280,7 +287,7 @@ private:
 	MuseekDriver* mDriver;
 	QSystemTrayIcon* mTray;
 	bool mConnected, mAway;
-	QStringList mBuddies, mBanned, mIgnored, mTrusted, mAutoJoin, mJoinedRooms, mLovedInterests, mHatedInterests;
+	QStringList mBuddies, mBanned, mIgnored, mTrusted, mAutoJoin, mJoinedRooms, mLovedInterests, mHatedInterests, mWishlist;
 	QMap<QString, OnlineAlert *> mAlerts;
 
 	MainWindow* mMainWin;

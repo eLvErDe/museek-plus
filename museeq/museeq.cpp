@@ -298,6 +298,9 @@ void Museeq::slotConfigSet(const QString& domain, const QString& key, const QStr
 	} else if(domain == "interests.hate") {
 		mHatedInterests.append(key);
 		emit addedHatedInterest(key);
+	} else if(domain == "wishlist") {
+		mWishlist.append(key);
+		emit addedWishItem(key, value.toUInt());
 	}
 	mConfig[domain][key] = value;
 	emit configChanged(domain, key, value);
@@ -344,6 +347,10 @@ void Museeq::slotConfigRemove(const QString& domain, const QString& key) {
 		if (mHatedInterests.indexOf(key) != -1)
 			mHatedInterests.removeAt(mHatedInterests.indexOf(key));
 		emit removedHatedInterest(key);
+	} else if(domain == "wishlist") {
+		if (mWishlist.indexOf(key) != -1)
+			mWishlist.removeAt(mWishlist.indexOf(key));
+		emit removedWishItem(key);
 	}
 }
 
@@ -364,6 +371,15 @@ void Museeq::stopDaemon() {
 void Museeq::saveConnectConfig() {
 	mMainWin->saveConnectConfig();
 }
+
+void Museeq::addWishItem(const QString& query) {
+	mDriver->doAddWishItem(query);
+}
+
+void Museeq::removeWishItem(const QString& query) {
+	mDriver->doRemoveWishItem(query);
+}
+
 void Museeq::addInterest(const QString& interest) {
 	mDriver->doAddInterest(interest);
 }

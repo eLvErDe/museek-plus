@@ -153,6 +153,9 @@ SET(MUSEEQ_SOURCES
   usermenu.cpp
   usertabwidget.cpp
   util.cpp
+  wishlist.cpp
+  wishlistview.cpp
+  wishlistitem.cpp
 )
 
 SET(MUSEEQ_MOC_HEADERS
@@ -200,6 +203,9 @@ SET(MUSEEQ_MOC_HEADERS
   userlistview.h
   usermenu.h
   usertabwidget.h
+  wishlist.h
+  wishlistview.h
+  wishlistitem.h
 )
 
 add_definitions(-DHAVE_SYSTEM_H)

@@ -28,11 +28,11 @@
 #include <QUrl>
 
 TabWidget::TabWidget(QWidget* parent, const char* name, bool isUser)
-          : QTabWidget(parent), mProtectFirst(true), mProtectThird(false){
+          : QTabWidget(parent), mFirstProtected(0), mLastProtected(0){
 
 	const QString& Name = name ;
 	if ( Name == "userInfo")
-		setProtectThird(true);
+		mLastProtected = 3;
 
 	mTabBar = new TabBar(isUser, this);
 	setTabBar(mTabBar);
@@ -54,7 +54,7 @@ TabWidget::TabWidget(QWidget* parent, const char* name, bool isUser)
 
 QString TabWidget::getCurrentPage() const {
 	int index = currentIndex();
-	if(mProtectFirst && index == 0)
+	if(( (currentIndex() >= mFirstProtected) && (currentIndex() <= mLastProtected) ))
 		return QString::null;
 	return tabText(index);
 }
@@ -63,11 +63,11 @@ QWidget * TabWidget::getCurrentWidget() const {
 	return currentWidget();
 }
 
-bool TabWidget::protectFirst() const {
-	return mProtectFirst;
+uint TabWidget::firstProtected() const {
+	return mFirstProtected;
 }
-bool TabWidget::protectThird() const {
-	return mProtectThird;
+uint TabWidget::lastProtected() const {
+	return mLastProtected;
 }
 bool TabWidget::canDrop() const {
 	return mTabBar->acceptDrops();
@@ -77,25 +77,22 @@ void TabWidget::setCanDrop(bool b) {
 	mTabBar->setAcceptDrops(b);
 }
 
-void TabWidget::setProtectThird(bool protectThird) {
-	mProtectThird = protectThird;
-	if(currentIndex() >= 0 && currentIndex() <= 3 ) {
-		if(! mProtectThird && ! currentIndex() == 0)
-			cornerWidget()->setEnabled(true);
-		else
-			cornerWidget()->setEnabled(false);
-	}
+void TabWidget::setLastProtected(uint lastProtected) {
+	mLastProtected = lastProtected;
+	cornerWidget()->setEnabled(!( (currentIndex() >= mFirstProtected) && (currentIndex() <= mLastProtected) ));
+}
+
+void TabWidget::setFirstProtected(uint firstProtected) {
+	mFirstProtected = firstProtected;
+	cornerWidget()->setEnabled(!( (currentIndex() >= mFirstProtected) && (currentIndex() <= mLastProtected) ));
 }
 
 void TabWidget::doCurrentChanged(QWidget*) {
-	if(mProtectFirst && ! mProtectThird)
-		cornerWidget()->setEnabled(currentIndex() != 0);
-	if(mProtectThird)
-		cornerWidget()->setEnabled(currentIndex() > 3);
+	cornerWidget()->setEnabled(!( (currentIndex() >= mFirstProtected) && (currentIndex() <= mLastProtected) ));
 }
 
 void TabWidget::closeCurrent() {
-	if(! mProtectFirst  ||  (! mProtectThird && mProtectFirst && currentIndex() > 0) || (mProtectThird && currentIndex() > 3))
+	if(!( (currentIndex() >= mFirstProtected) && (currentIndex() <= mLastProtected) ))
 		delete currentWidget();
 }
 
