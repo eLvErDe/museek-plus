@@ -28,6 +28,7 @@
 #include "servermessages.h"
 #include "peermessages.h"
 #include "distributedsocket.h"
+#include "configmanager.h"
 
 /* Forward declarations. */
 class SGetStatus;
@@ -82,6 +83,7 @@ namespace Museek
 
     void buddySearch(uint token, const std::string & query);
     void roomsSearch(uint token, const std::string & query);
+    void wishlistAdd(const std::string & query);
 
   protected:
     /* Find or make a peer socket for the specified user. */
@@ -94,9 +96,13 @@ namespace Museek
     void onSearchRequested(const SSearchRequest * msg);
     void onFileSearchRequested(const SFileSearch * msg);
     void onUserStatsReceived(const SGetUserStats * msg);
+    void onWishlistIntervalReceived(const SWishlistInterval * msg);
     void onPeerSocketReady(PeerSocket * socket);
     void onParentDisconnected(NewNet::ClientSocket * socket_);
     void onChildDisconnected(NewNet::ClientSocket * socket_);
+    void onConfigKeySet(const ConfigManager::ChangeNotify * data);
+    void onConfigKeyRemoved(const ConfigManager::RemoveNotify * data);
+    void onWishlistTimeout(long);
 
     NewNet::WeakRefPtr<Museekd>                 m_Museekd;          // Ref to the museekd
     std::string                                 m_ParentIp;         // The IP address of our parent
@@ -105,12 +111,15 @@ namespace Museek
     uint                                        m_TransferSpeed;    // Our own transfer speed
     NewNet::RefPtr<DistributedSocket>           m_Parent;           // Parent's socket
     uint                                        m_ChildrenMaxNumber;// Maximum number of child allowed
+    uint                                        m_WishlistInterval; // Wishlist interval
     std::map<std::string, std::pair<NewNet::RefPtr<DistributedSocket>, std::string> >
                                                 m_PotentialParents; // Potential parent we're connecting to
     std::map<std::string, std::pair<NewNet::RefPtr<DistributedSocket>, uint> >
                                                 m_Children;         // List of all our children with their respective depth
     std::map<std::string, std::map<uint, Folder> >
                                                 m_PendingResults;   // Pending search results we'll have to send soon
+    std::map<std::string, time_t>               m_Wishlist;         // Wishlist items with the last time we searched for them
+    NewNet::WeakRefPtr<NewNet::Event<long>::Callback> m_WishlistTimeout; // Wishlist timeout
   };
 }
 

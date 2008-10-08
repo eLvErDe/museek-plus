@@ -532,34 +532,6 @@ IFACEMESSAGE(IPeerStats, 0x0203)
 	uint32 speed, downloads, files, dirs;
 END
 
-IFACEMESSAGE(IPeerAddress, 0x0206)
-/*
-	Peer address -- Get a user's IP address and port
-
-	string username -- User to get the IP of
-
-	string username -- User we got the IP of
-	string IP -- User's IP address
-	uint port -- User's client port number
-*/
-
-	IPeerAddress() {}
-	IPeerAddress(const std::string& _u, const std::string& _ip, uint32 _p) : user(_u), ip(_ip), port(_p) {}
-
-	MAKE
-		pack(user);
-		pack(ip);
-		pack(port);
-	END_MAKE
-
-	PARSE
-		user = unpack_string();
-	END_PARSE
-
-	std::string user, ip;
-	uint32 port;
-END
-
 IFACEMESSAGE(IUserInfo, 0x0204)
 /*
 	User info -- Get a user's user-info
@@ -635,6 +607,34 @@ IFACEMESSAGE(IUserShares, 0x0205)
 
 	std::string user;
 	Shares shares;
+END
+
+IFACEMESSAGE(IPeerAddress, 0x0206)
+/*
+	Peer address -- Get a user's IP address and port
+
+	string username -- User to get the IP of
+
+	string username -- User we got the IP of
+	string IP -- User's IP address
+	uint port -- User's client port number
+*/
+
+	IPeerAddress() {}
+	IPeerAddress(const std::string& _u, const std::string& _ip, uint32 _p) : user(_u), ip(_ip), port(_p) {}
+
+	MAKE
+		pack(user);
+		pack(ip);
+		pack(port);
+	END_MAKE
+
+	PARSE
+		user = unpack_string();
+	END_PARSE
+
+	std::string user, ip;
+	uint32 port;
 END
 
 IFACEMESSAGE(IGivePrivileges, 0x0207)
@@ -1080,6 +1080,54 @@ IFACEMESSAGE(IWishListSearch, 0x0405)
 */
 
 	IWishListSearch() {}
+
+	PARSE
+		query = unpack_string();
+	END_PARSE
+
+	std::string query;
+END
+
+IFACEMESSAGE(IAddWishItem, 0x0406)
+/*
+	Add wishlist item -- Wishlist item added
+
+	string query -- Name of the item to add
+	off_t  lastSearched -- Last time the item has been searched
+
+	string query -- Name of the item added
+*/
+
+	IAddWishItem() {}
+	IAddWishItem(const std::string& _i, uint32 _t) : query(_i), lastSearched(_t) {}
+
+	MAKE
+		pack(query);
+	END_MAKE
+
+	PARSE
+		query = unpack_string();
+	END_PARSE
+
+	std::string query;
+	uint32 lastSearched;
+END
+
+IFACEMESSAGE(IRemoveWishItem, 0x0407)
+/*
+	Remove wishlist item -- Wishlist item Removed
+
+	string query -- Name of the item to remove
+
+	string query -- Name of the item remove
+*/
+
+	IRemoveWishItem() {}
+	IRemoveWishItem(const std::string& _i) : query(_i) {}
+
+	MAKE
+		pack(query);
+	END_MAKE
 
 	PARSE
 		query = unpack_string();

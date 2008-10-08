@@ -40,6 +40,9 @@ Museek::SearchManager::SearchManager(Museekd * museekd) : m_Museekd(museekd)
     museekd->peers()->peerSocketReadyEvent.connect(this, &SearchManager::onPeerSocketReady);
     museekd->peers()->peerSocketUnavailableEvent.connect(this, &SearchManager::onPeerSocketUnavailable);
     museekd->server()->userStatsReceivedEvent.connect(this, &SearchManager::onUserStatsReceived);
+    museekd->server()->wishlistIntervalReceivedEvent.connect(this, &SearchManager::onWishlistIntervalReceived);
+    museekd->config()->keySetEvent.connect(this, &SearchManager::onConfigKeySet);
+    museekd->config()->keyRemovedEvent.connect(this, &SearchManager::onConfigKeyRemoved);
 
     m_Parent = 0;
     m_ParentIp = std::string();
@@ -47,6 +50,7 @@ Museek::SearchManager::SearchManager(Museekd * museekd) : m_Museekd(museekd)
     m_BranchLevel = 0;
     m_TransferSpeed = 0;
     m_ChildrenMaxNumber = 3;
+    m_WishlistInterval = 720; // Default wishlist interval
 }
 
 Museek::SearchManager::~SearchManager()
@@ -289,6 +293,43 @@ void Museek::SearchManager::onUserStatsReceived(const SGetUserStats * msg) {
 }
 
 /**
+  * The server sends us the wishlist interval
+  */
+void Museek::SearchManager::onWishlistIntervalReceived(const SWishlistInterval * msg) {
+    NNLOG("museek.debug", "New wishlist interval: %d", msg->value);
+    m_WishlistInterval = msg->value;
+    if (m_WishlistTimeout.isValid())
+        museekd()->reactor()->removeTimeout(m_WishlistTimeout);
+    m_WishlistTimeout = museekd()->reactor()->addTimeout(m_WishlistInterval*1000, this, &SearchManager::onWishlistTimeout);
+}
+
+/**
+  * We can send a new wishlist request
+  */
+void Museek::SearchManager::onWishlistTimeout(long) {
+    if (!m_Wishlist.empty()) {
+        // Which request should we do?
+        std::map<std::string, time_t>::iterator oldest = m_Wishlist.begin(), it = m_Wishlist.begin();
+        for (; it != m_Wishlist.end(); it++) {
+            if (it->second < oldest->second)
+                oldest = it;
+        }
+        NNLOG("museek.debug", "Sending wishlist search for '%s'", oldest->first.c_str());
+        uint token = museekd()->token();
+
+        museekd()->ifaces()->sendNewSearchToAll(oldest->first, token);
+        // Send query
+        SWishlistSearch msg(token, museekd()->codeset()->toNet(oldest->first));
+        museekd()->server()->sendMessage(msg.make_network_packet());
+        // Update item's last query date
+        museekd()->config()->set("wishlist", oldest->first, static_cast<uint>(time(NULL)));
+    }
+
+    // Prepare next wishlist timeout
+    m_WishlistTimeout = museekd()->reactor()->addTimeout(m_WishlistInterval*1000, this, &SearchManager::onWishlistTimeout);
+}
+
+/**
   * Send the given search request to our children
   * The query's encoding should be the network one
   */
@@ -348,6 +389,29 @@ void Museek::SearchManager::roomsSearch(uint token, const std::string & query) {
         SRoomSearch msg(*it, token, museekd()->codeset()->toNet(query));
         museekd()->server()->sendMessage(msg.make_network_packet());
     }
+}
+
+/**
+  * Add an item to wishlist and search for it
+  */
+void Museek::SearchManager::wishlistAdd(const std::string & query) {
+    uint token = museekd()->token();
+    museekd()->ifaces()->sendNewSearchToAll(query, token);
+
+    if (m_Wishlist.find(query) != m_Wishlist.end()) {
+        NNLOG("museek.debug", "'%s' is already in the wishlist", query.c_str());
+        // This item is already in wishlist, just do a normal search
+        SFileSearch msg(token, museekd()->codeset()->toNet(query));
+        museekd()->server()->sendMessage(msg.make_network_packet());
+    }
+    else {
+        NNLOG("museek.debug", "Adding '%s' in the wishlist", query.c_str());
+        // launch a wishlist search
+        SWishlistSearch msg(token, museekd()->codeset()->toNet(query));
+        museekd()->server()->sendMessage(msg.make_network_packet());
+    }
+    // Update item's last query date
+    museekd()->config()->set("wishlist", query, static_cast<uint>(time(NULL)));
 }
 
 /**
@@ -479,4 +543,19 @@ Museek::SearchManager::onPeerSocketUnavailable(std::string user)
 void
 Museek::SearchManager::searchReplyReceived(uint ticket, const std::string & user, bool slotfree, uint avgspeed, uint queuelen, const Folder & folders) {
     museekd()->ifaces()->onSearchReply(ticket, user, slotfree, avgspeed, queuelen, folders);
+}
+
+void
+Museek::SearchManager::onConfigKeySet(const ConfigManager::ChangeNotify * data) {
+    if ((data->domain == "wishlist") && (!data->key.empty()))
+        m_Wishlist[data->key] = museekd()->config()->getInt(data->domain, data->key);
+}
+
+void
+Museek::SearchManager::onConfigKeyRemoved(const ConfigManager::RemoveNotify * data) {
+    if (data->domain == "wishlist") {
+        std::map<std::string, time_t>::iterator it = m_Wishlist.find(data->key);
+        if (it != m_Wishlist.end())
+            m_Wishlist.erase(it);
+    }
 }

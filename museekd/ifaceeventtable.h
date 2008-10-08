@@ -45,6 +45,8 @@ MAP_MESSAGE(0x0401, ISearch, startGlobalSearchEvent)
 MAP_MESSAGE(0x0402, ISearchReply, stopSearchEvent)
 MAP_MESSAGE(0x0403, IUserSearch, startUserSearchEvent)
 MAP_MESSAGE(0x0405, IWishListSearch, startWishListSearchEvent)
+MAP_MESSAGE(0x0406, IAddWishItem, addWishItemEvent)
+MAP_MESSAGE(0x0407, IRemoveWishItem, removeWishItemEvent)
 
 MAP_MESSAGE(0x0501, ITransferUpdate, updateTransferEvent)
 MAP_MESSAGE(0x0502, ITransferRemove, removeTransferEvent)

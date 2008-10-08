@@ -67,6 +67,8 @@ namespace Museek
     // Some search results received
     void onSearchReply(uint ticket, const std::string & user, bool slotfree, uint avgspeed, uint queuelen, const Folder & folders);
 
+    void sendNewSearchToAll(const std::string & query, uint token);
+
   private:
     bool addListener(const std::string & path);
     void removeListener(const std::string & path);
@@ -105,6 +107,9 @@ namespace Museek
     void onIfaceSetRoomTicker(const IRoomTickerSet * message);
     void onIfaceStartSearch(const ISearch * message);
     void onIfaceStartUserSearch(const IUserSearch * message);
+    void onIfaceStartWishListSearch(const IWishListSearch * message);
+    void onIfaceAddWishItem(const IAddWishItem * message);
+    void onIfaceRemoveWishItem(const IRemoveWishItem * message);
     void onIfaceGetRecommendations(const IGetRecommendations * message);
     void onIfaceGetGlobalRecommendations(const IGetGlobalRecommendations * message);
     void onIfaceGetSimilarUsers(const IGetSimilarUsers * message);

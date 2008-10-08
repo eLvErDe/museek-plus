@@ -242,6 +242,11 @@ Museek::IfaceManager::flushPrivateMessages()
 }
 
 void
+Museek::IfaceManager::sendNewSearchToAll(const std::string & query, uint token) {
+    SEND_ALL(ISearch(query, token));
+}
+
+void
 Museek::IfaceManager::onIfaceAccepted(IfaceSocket * socket)
 {
   NNLOG("museek.debug", "Accepted new interface socket.");
@@ -271,6 +276,7 @@ Museek::IfaceManager::onIfaceAccepted(IfaceSocket * socket)
   socket->setRoomTickerEvent.connect(this, &IfaceManager::onIfaceSetRoomTicker);
   socket->startGlobalSearchEvent.connect(this, &IfaceManager::onIfaceStartSearch);
   socket->startUserSearchEvent.connect(this, &IfaceManager::onIfaceStartUserSearch);
+  socket->startWishListSearchEvent.connect(this, &IfaceManager::onIfaceStartWishListSearch);
   socket->getRecommendationsEvent.connect(this, &IfaceManager::onIfaceGetRecommendations);
   socket->getGlobalRecommendationsEvent.connect(this, &IfaceManager::onIfaceGetGlobalRecommendations);
   socket->getSimilarUsersEvent.connect(this, &IfaceManager::onIfaceGetSimilarUsers);
@@ -280,6 +286,8 @@ Museek::IfaceManager::onIfaceAccepted(IfaceSocket * socket)
   socket->removeInterestEvent.connect(this, &IfaceManager::onIfaceRemoveInterest);
   socket->addHatedInterestEvent.connect(this, &IfaceManager::onIfaceAddHatedInterest);
   socket->removeHatedInterestEvent.connect(this, &IfaceManager::onIfaceRemoveHatedInterest);
+  socket->addWishItemEvent.connect(this, &IfaceManager::onIfaceAddWishItem);
+  socket->removeWishItemEvent.connect(this, &IfaceManager::onIfaceRemoveWishItem);
   socket->connectToServerEvent.connect(this, &IfaceManager::onIfaceConnectToServer);
   socket->disconnectFromServerEvent.connect(this, &IfaceManager::onIfaceDisconnectFromServer);
   socket->reloadSharesEvent.connect(this, &IfaceManager::onIfaceReloadShares);
@@ -558,7 +566,7 @@ Museek::IfaceManager::onIfaceStartSearch(const ISearch * message)
     else if (message->type == 2) // Room search
         museekd()->searches()->roomsSearch(token, message->query);
 
-    SEND_ALL(ISearch(message->query, token));
+    sendNewSearchToAll(message->query, token);
 }
 
 void
@@ -568,7 +576,12 @@ Museek::IfaceManager::onIfaceStartUserSearch(const IUserSearch * message)
 
     SEND_MESSAGE(museekd()->server(), SUserSearch(message->user, token, museekd()->codeset()->toNet(message->query)));
 
-    SEND_ALL(ISearch(message->query, token));
+    sendNewSearchToAll(message->query, token);
+}
+
+void
+Museek::IfaceManager::onIfaceStartWishListSearch(const IWishListSearch * message) {
+    museekd()->searches()->wishlistAdd(message->query);
 }
 
 void
@@ -623,6 +636,18 @@ void
 Museek::IfaceManager::onIfaceRemoveHatedInterest(const IRemoveHatedInterest * message)
 {
   museekd()->config()->removeKey("interests.hate", message->interest);
+}
+
+void
+Museek::IfaceManager::onIfaceAddWishItem(const IAddWishItem * message)
+{
+  museekd()->config()->set("wishlist", message->query, 0);
+}
+
+void
+Museek::IfaceManager::onIfaceRemoveWishItem(const IRemoveWishItem * message)
+{
+  museekd()->config()->removeKey("wishlist", message->query);
 }
 
 void
