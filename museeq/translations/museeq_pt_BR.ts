@@ -270,37 +270,37 @@
 <context>
     <name>FileListView</name>
     <message>
-        <location filename="../browser.cpp" line="577"/>
+        <location filename="../browser.cpp" line="579"/>
         <source>Filename</source>
         <translation>Nome do arquivo</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="577"/>
+        <location filename="../browser.cpp" line="579"/>
         <source>Size</source>
         <translation>Tamanho</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="577"/>
+        <location filename="../browser.cpp" line="579"/>
         <source>Length</source>
         <translation>Duração</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="577"/>
+        <location filename="../browser.cpp" line="579"/>
         <source>Bitrate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="591"/>
+        <location filename="../browser.cpp" line="593"/>
         <source>Download files</source>
         <translation>Baixar arquivos</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="599"/>
+        <location filename="../browser.cpp" line="601"/>
         <source>Upload files</source>
         <translation>Enviar arquivos</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="605"/>
+        <location filename="../browser.cpp" line="607"/>
         <source>Copy URL</source>
         <translation>Copiar URL</translation>
     </message>
@@ -315,27 +315,27 @@
         <translation type="obsolete">%1 arquivos</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="794"/>
+        <location filename="../browser.cpp" line="796"/>
         <source>Upload File(s)</source>
         <translation>Enviar arquivo(s)</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="795"/>
+        <location filename="../browser.cpp" line="797"/>
         <source>Which user do you wish to upload these to?</source>
         <translation>Para qual usuário você deseja enviar esses arquivos?</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="595"/>
+        <location filename="../browser.cpp" line="597"/>
         <source>Download files to..</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="759"/>
+        <location filename="../browser.cpp" line="761"/>
         <source>Select a Directory for current download(s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../browser.cpp" line="686"/>
+        <location filename="../browser.cpp" line="688"/>
         <source>%n file(s)</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -1330,27 +1330,27 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="868"/>
+        <location filename="../museeq.cpp" line="884"/>
         <source>Syntax: museeq [options]</source>
         <translation type="unfinished">Sintaxe: museeq [opções]</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="869"/>
+        <location filename="../museeq.cpp" line="885"/>
         <source>Options:</source>
         <translation type="unfinished">Opções:</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="870"/>
+        <location filename="../museeq.cpp" line="886"/>
         <source>-V --version<byte value="x9"/><byte value="x9"/>Display museeq version and quit</source>
         <translation type="unfinished">-V --version Exibe a versão do museeq e sai</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="871"/>
+        <location filename="../museeq.cpp" line="887"/>
         <source>-h --help<byte value="x9"/><byte value="x9"/>Display this message and quit</source>
         <translation type="unfinished">-h --help Exibe esta mensagem e sai</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="872"/>
+        <location filename="../museeq.cpp" line="888"/>
         <source>--no-tray<byte value="x9"/><byte value="x9"/>Don&apos;t load TrayIcon</source>
         <translation type="unfinished">--no-tray Não carrega o ícone da bandeja do sistema(tray)</translation>
     </message>
@@ -1642,49 +1642,59 @@
 <context>
     <name>Searches</name>
     <message>
-        <location filename="../searches.cpp" line="49"/>
+        <location filename="../searches.cpp" line="50"/>
         <source>User:</source>
         <translation>Usuário:</translation>
     </message>
     <message>
-        <location filename="../searches.cpp" line="60"/>
+        <location filename="../searches.cpp" line="61"/>
         <source>Search</source>
         <translation>Busca</translation>
     </message>
     <message>
-        <location filename="../searches.cpp" line="61"/>
+        <location filename="../searches.cpp" line="62"/>
         <source>Method</source>
         <translation>Método</translation>
     </message>
     <message>
-        <location filename="../searches.cpp" line="66"/>
+        <location filename="../searches.cpp" line="67"/>
         <source>Global</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../searches.cpp" line="70"/>
+        <location filename="../searches.cpp" line="71"/>
         <source>Rooms</source>
         <translation>Salas</translation>
     </message>
     <message>
-        <location filename="../searches.cpp" line="73"/>
+        <location filename="../searches.cpp" line="74"/>
         <source>Buddies</source>
         <translation>Amigos</translation>
     </message>
     <message>
-        <location filename="../searches.cpp" line="76"/>
+        <location filename="../searches.cpp" line="77"/>
         <source>WishList</source>
         <translation>Lista de desejo</translation>
     </message>
     <message>
-        <location filename="../searches.cpp" line="79"/>
+        <location filename="../searches.cpp" line="80"/>
         <source>User</source>
         <translation>Usuário</translation>
     </message>
     <message>
         <location filename="../searches.cpp" line="95"/>
         <source>*Search*</source>
-        <translation>*Busca*</translation>
+        <translation type="obsolete">*Busca*</translation>
+    </message>
+    <message>
+        <location filename="../searches.cpp" line="96"/>
+        <source>*Interests*</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../searches.cpp" line="101"/>
+        <source>*Wishlist*</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2294,77 +2304,77 @@
         <translation type="obsolete">%1 transferências (%2 usuários)</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="110"/>
+        <location filename="../transferlistitem.cpp" line="116"/>
         <source>Finished</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="115"/>
+        <location filename="../transferlistitem.cpp" line="121"/>
         <source>Transferring</source>
         <translation type="unfinished">Transferindo</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="120"/>
+        <location filename="../transferlistitem.cpp" line="126"/>
         <source>Negotiating</source>
         <translation type="unfinished">Negociando</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="125"/>
+        <location filename="../transferlistitem.cpp" line="131"/>
         <source>Waiting</source>
         <translation type="unfinished">Aguardando</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="130"/>
+        <location filename="../transferlistitem.cpp" line="136"/>
         <source>Establishing</source>
         <translation type="unfinished">Estabelecendo</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="135"/>
+        <location filename="../transferlistitem.cpp" line="141"/>
         <source>Initiating</source>
         <translation type="unfinished">Iniciando</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="140"/>
+        <location filename="../transferlistitem.cpp" line="146"/>
         <source>Connecting</source>
         <translation type="unfinished">Conectando</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="190"/>
+        <location filename="../transferlistitem.cpp" line="196"/>
         <source>Queued</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="150"/>
+        <location filename="../transferlistitem.cpp" line="156"/>
         <source>Getting address</source>
         <translation type="unfinished">Pegando endereço</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="153"/>
+        <location filename="../transferlistitem.cpp" line="159"/>
         <source>Getting status</source>
         <translation type="unfinished">Pegando status</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="158"/>
+        <location filename="../transferlistitem.cpp" line="164"/>
         <source>User Offline</source>
         <translation type="unfinished">Usuário offline</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="163"/>
+        <location filename="../transferlistitem.cpp" line="169"/>
         <source>Connection closed by peer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="168"/>
+        <location filename="../transferlistitem.cpp" line="174"/>
         <source>Cannot connect</source>
         <translation type="unfinished">Não é possível conectar</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="173"/>
+        <location filename="../transferlistitem.cpp" line="179"/>
         <source>Aborted</source>
         <translation type="unfinished">Abortado</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="302"/>
+        <location filename="../transferlistitem.cpp" line="310"/>
         <source>/s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2388,7 +2398,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="312"/>
+        <location filename="../transferlistitem.cpp" line="320"/>
         <source>?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2398,12 +2408,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="179"/>
+        <location filename="../transferlistitem.cpp" line="185"/>
         <source>Remote: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="185"/>
+        <location filename="../transferlistitem.cpp" line="191"/>
         <source>Local: </source>
         <translation type="unfinished"></translation>
     </message>
@@ -2734,6 +2744,32 @@
         <location filename="../usermenu.cpp" line="73"/>
         <source>Edit Comments</source>
         <translation>Editar comentários</translation>
+    </message>
+</context>
+<context>
+    <name>WishList</name>
+    <message>
+        <location filename="../wishlist.cpp" line="40"/>
+        <source>Add:</source>
+        <translation type="unfinished">Adicionar:</translation>
+    </message>
+</context>
+<context>
+    <name>WishListView</name>
+    <message>
+        <location filename="../wishlistview.cpp" line="33"/>
+        <source>Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../wishlistview.cpp" line="41"/>
+        <source>Remove</source>
+        <translation type="unfinished">Remover</translation>
+    </message>
+    <message>
+        <location filename="../wishlistview.cpp" line="33"/>
+        <source>Last try</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

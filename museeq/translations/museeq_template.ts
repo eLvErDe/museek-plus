@@ -202,62 +202,62 @@
 <context>
     <name>FileListView</name>
     <message>
-        <location filename="../browser.cpp" line="577"/>
+        <location filename="../browser.cpp" line="579"/>
         <source>Filename</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="577"/>
+        <location filename="../browser.cpp" line="579"/>
         <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="577"/>
+        <location filename="../browser.cpp" line="579"/>
         <source>Length</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="577"/>
+        <location filename="../browser.cpp" line="579"/>
         <source>Bitrate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="591"/>
+        <location filename="../browser.cpp" line="593"/>
         <source>Download files</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="599"/>
+        <location filename="../browser.cpp" line="601"/>
         <source>Upload files</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="605"/>
+        <location filename="../browser.cpp" line="607"/>
         <source>Copy URL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="794"/>
+        <location filename="../browser.cpp" line="796"/>
         <source>Upload File(s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="795"/>
+        <location filename="../browser.cpp" line="797"/>
         <source>Which user do you wish to upload these to?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="595"/>
+        <location filename="../browser.cpp" line="597"/>
         <source>Download files to..</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="759"/>
+        <location filename="../browser.cpp" line="761"/>
         <source>Select a Directory for current download(s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../browser.cpp" line="686"/>
+        <location filename="../browser.cpp" line="688"/>
         <source>%n file(s)</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -1070,27 +1070,27 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="868"/>
+        <location filename="../museeq.cpp" line="884"/>
         <source>Syntax: museeq [options]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="869"/>
+        <location filename="../museeq.cpp" line="885"/>
         <source>Options:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="870"/>
+        <location filename="../museeq.cpp" line="886"/>
         <source>-V --version<byte value="x9"/><byte value="x9"/>Display museeq version and quit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="871"/>
+        <location filename="../museeq.cpp" line="887"/>
         <source>-h --help<byte value="x9"/><byte value="x9"/>Display this message and quit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="872"/>
+        <location filename="../museeq.cpp" line="888"/>
         <source>--no-tray<byte value="x9"/><byte value="x9"/>Don&apos;t load TrayIcon</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1351,48 +1351,53 @@
 <context>
     <name>Searches</name>
     <message>
-        <location filename="../searches.cpp" line="49"/>
+        <location filename="../searches.cpp" line="50"/>
         <source>User:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../searches.cpp" line="60"/>
+        <location filename="../searches.cpp" line="61"/>
         <source>Search</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../searches.cpp" line="61"/>
+        <location filename="../searches.cpp" line="62"/>
         <source>Method</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../searches.cpp" line="66"/>
+        <location filename="../searches.cpp" line="67"/>
         <source>Global</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../searches.cpp" line="70"/>
+        <location filename="../searches.cpp" line="71"/>
         <source>Rooms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../searches.cpp" line="73"/>
+        <location filename="../searches.cpp" line="74"/>
         <source>Buddies</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../searches.cpp" line="76"/>
+        <location filename="../searches.cpp" line="77"/>
         <source>WishList</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../searches.cpp" line="79"/>
+        <location filename="../searches.cpp" line="80"/>
         <source>User</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../searches.cpp" line="95"/>
-        <source>*Search*</source>
+        <location filename="../searches.cpp" line="96"/>
+        <source>*Interests*</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../searches.cpp" line="101"/>
+        <source>*Wishlist*</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1890,77 +1895,77 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="110"/>
+        <location filename="../transferlistitem.cpp" line="116"/>
         <source>Finished</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="115"/>
+        <location filename="../transferlistitem.cpp" line="121"/>
         <source>Transferring</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="120"/>
+        <location filename="../transferlistitem.cpp" line="126"/>
         <source>Negotiating</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="125"/>
+        <location filename="../transferlistitem.cpp" line="131"/>
         <source>Waiting</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="130"/>
+        <location filename="../transferlistitem.cpp" line="136"/>
         <source>Establishing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="135"/>
+        <location filename="../transferlistitem.cpp" line="141"/>
         <source>Initiating</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="140"/>
+        <location filename="../transferlistitem.cpp" line="146"/>
         <source>Connecting</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="190"/>
+        <location filename="../transferlistitem.cpp" line="196"/>
         <source>Queued</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="150"/>
+        <location filename="../transferlistitem.cpp" line="156"/>
         <source>Getting address</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="153"/>
+        <location filename="../transferlistitem.cpp" line="159"/>
         <source>Getting status</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="158"/>
+        <location filename="../transferlistitem.cpp" line="164"/>
         <source>User Offline</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="163"/>
+        <location filename="../transferlistitem.cpp" line="169"/>
         <source>Connection closed by peer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="168"/>
+        <location filename="../transferlistitem.cpp" line="174"/>
         <source>Cannot connect</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="173"/>
+        <location filename="../transferlistitem.cpp" line="179"/>
         <source>Aborted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="302"/>
+        <location filename="../transferlistitem.cpp" line="310"/>
         <source>/s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1984,7 +1989,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="312"/>
+        <location filename="../transferlistitem.cpp" line="320"/>
         <source>?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1994,12 +1999,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="179"/>
+        <location filename="../transferlistitem.cpp" line="185"/>
         <source>Remote: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="185"/>
+        <location filename="../transferlistitem.cpp" line="191"/>
         <source>Local: </source>
         <translation type="unfinished"></translation>
     </message>
@@ -2276,6 +2281,32 @@
     <message>
         <location filename="../usermenu.cpp" line="73"/>
         <source>Edit Comments</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>WishList</name>
+    <message>
+        <location filename="../wishlist.cpp" line="40"/>
+        <source>Add:</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>WishListView</name>
+    <message>
+        <location filename="../wishlistview.cpp" line="33"/>
+        <source>Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../wishlistview.cpp" line="41"/>
+        <source>Remove</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../wishlistview.cpp" line="33"/>
+        <source>Last try</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
