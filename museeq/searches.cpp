@@ -152,8 +152,10 @@ void Searches::setToken(const QString& query, uint token) {
     int i;
 	for(i = 2; i < mSearchTabWidget->count(); ++i) {
 		Search* search = static_cast<Search*>(mSearchTabWidget->widget(i));
-		if(search->query() == QString(query))
+		if(search->query() == QString(query)) {
 			search->setToken(token);
+			return;
+		}
 	}
 
     // Create the tab if it's a wishlist result
