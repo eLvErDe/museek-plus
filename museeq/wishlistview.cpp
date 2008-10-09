@@ -34,6 +34,7 @@ WishListView::WishListView(QWidget* _p, const char* _n)
 	setColumnWidth(0, 200);
 	setHeaderLabels(headers);
 	setSortingEnabled(true);
+	sortByColumn(0, Qt::AscendingOrder);
 	setRootIsDecorated(false);
  	setAllColumnsShowFocus(true);
 

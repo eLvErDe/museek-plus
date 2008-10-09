@@ -33,6 +33,7 @@ InterestListView::InterestListView( const QString& caption,  QWidget* _p, bool r
 
  	setAllColumnsShowFocus(true);
 	setSortingEnabled(true);
+	sortByColumn(0, Qt::AscendingOrder);
 	setRootIsDecorated(false);
 	mPopup = new QMenu(this);
     if (!mReadOnly) {

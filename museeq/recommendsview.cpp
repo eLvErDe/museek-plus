@@ -30,6 +30,7 @@ RecommendsView::RecommendsView(QWidget* _p, const char* _n)
 	headers << tr("Interests") << tr("Num");
 	setHeaderLabels(headers);
 	setSortingEnabled(true);
+	sortByColumn(1, Qt::DescendingOrder);
 	setRootIsDecorated(false);
 
  	setAllColumnsShowFocus(true);
