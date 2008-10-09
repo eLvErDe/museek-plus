@@ -47,7 +47,7 @@ Museek::UploadSocket::UploadSocket(Museek::Museekd * museekd, Museek::Upload * u
 
 Museek::UploadSocket::~UploadSocket()
 {
-    NNLOG("museek.debug", "UploadSocket destroyed");
+    NNLOG("museekd.up.debug", "UploadSocket destroyed");
 }
 
 /*
@@ -59,7 +59,7 @@ Museek::UploadSocket::onDisconnected(ClientSocket * socket)
 	if(m_Upload->state() == TS_RemoteError || m_Upload->state() == TS_LocalError)
 		return;
 
-	NNLOG("museek.debug", "UploadSocket disconnected");
+	NNLOG("museekd.up.debug", "UploadSocket disconnected");
 
 	if(m_Upload->position() >= m_Upload->size())
 		m_Upload->setState(TS_Finished);
@@ -76,7 +76,7 @@ Museek::UploadSocket::onCannotConnect(ClientSocket * socket)
 	if(m_Upload->state() == TS_RemoteError || m_Upload->state() == TS_LocalError)
 		return;
 
-	NNLOG("museek.debug", "UploadSocket connection cannot be established");
+	NNLOG("museekd.up.debug", "UploadSocket connection cannot be established");
 	m_Upload->setState(TS_CannotConnect);
 }
 
@@ -101,11 +101,11 @@ Museek::UploadSocket::wait()
 void
 Museek::UploadSocket::stop()
 {
-    NNLOG("museek.debug", "Disconnecting upload socket...");
+    NNLOG("museekd.up.debug", "Disconnecting upload socket...");
     disconnect();
     if (reactor()) {
         // We have to do this as we're not sure disconnect() will remove the socket from the reactor
-        NNLOG("museek.debug", "Removing upload socket from reactor...");
+        NNLOG("museekd.up.debug", "Removing upload socket from reactor...");
         museekd()->reactor()->remove(this);
     }
 }
@@ -125,7 +125,7 @@ void Museek::UploadSocket::sendTicket() {
 
     send((const unsigned char *) &buf, 4);
     m_Upload->setState(TS_Waiting);
-    NNLOG("museek.debug", "Ticket %u has been sent", ticket);
+    NNLOG("museekd.ticket.debug", "Ticket %u has been sent", ticket);
 }
 
 /*
@@ -133,7 +133,7 @@ void Museek::UploadSocket::sendTicket() {
 */
 void Museek::UploadSocket::onDataReceived(NewNet::ClientSocket * socket) {
     if(m_Upload->state() == TS_Waiting) {
-        NNLOG("museek.debug", "got %u bytes in uploadsocket", receiveBuffer().count());
+        NNLOG("museekd.up.debug", "got %u bytes in uploadsocket", receiveBuffer().count());
 
         findPosition();
     }
@@ -153,7 +153,7 @@ void Museek::UploadSocket::onDataSent(NewNet::ClientSocket * socket) {
 
         if(sendBuffer().count() < 10240 && (m_Upload->position() + (off_t) sendBuffer().count() < m_Upload->size())) {
             if(! m_Upload->read(sendBuffer())) {
-                NNLOG("museek.debug", "read error");
+                NNLOG("museekd.up.debug", "read error");
                 m_Upload->setLocalError("File error");
                 stop();
             }
@@ -175,7 +175,7 @@ Museek::UploadSocket::onTransferTicketReceived(TicketSocket * socket)
         receiveBuffer() = socket->receiveBuffer();
         sendBuffer() = socket->sendBuffer();
 
-        NNLOG("museek.debug", "got %u bytes in uploadsocket", receiveBuffer().count());
+        NNLOG("museekd.up.debug", "got %u bytes in uploadsocket", receiveBuffer().count());
 
         findPosition();
     }
@@ -193,11 +193,11 @@ Museek::UploadSocket::findPosition() {
             pos += receiveBuffer().data()[0] << (i*8);
             receiveBuffer().seek(1);
         }
-        NNLOG("museek.debug", "Uploading from pos %i", pos);
+        NNLOG("museekd.up.debug", "Uploading from pos %i", pos);
 
         // Try to seek
         if(! m_Upload->seek(pos)) {
-            NNLOG("museek.debug", "seek error");
+            NNLOG("museekd.up.warn", "seek error");
             m_Upload->setLocalError("File error");
             stop();
             return;
@@ -208,12 +208,12 @@ Museek::UploadSocket::findPosition() {
 
         // Try to send the data
         if(! m_Upload->read(sendBuffer())) {
-            NNLOG("museek.debug", "read error");
+            NNLOG("museekd.up.warn", "read error");
             m_Upload->setLocalError("File error");
             stop();
             return;
         }
-        NNLOG("museek.debug", "have %i in sending buffer", sendBuffer().count());
+        NNLOG("museekd.up.debug", "have %i in sending buffer", sendBuffer().count());
 
         // Change the state.
         m_Upload->setState(TS_Transferring);

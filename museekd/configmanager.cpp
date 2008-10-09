@@ -36,13 +36,13 @@ Museek::ConfigManager::ConfigManager() : m_AutoSave(true)
 bool
 Museek::ConfigManager::load(const std::string & path)
 {
-  NNLOG("museek.debug", "Loading configuration '%s'.", path.c_str());
+  NNLOG("museekd.config.debug", "Loading configuration '%s'.", path.c_str());
 
   // Load and parse the specified configuration file.
   xmlDoc * doc = xmlReadFile(path.c_str(), 0, 0);
   if(! doc)
   {
-    NNLOG("museek.warn", "Could not parse configuration file '%s'.", path.c_str());
+    NNLOG("museekd.config.warn", "Could not parse configuration file '%s'.", path.c_str());
     return false;
   }
 
@@ -70,7 +70,7 @@ Museek::ConfigManager::load(const std::string & path)
       xmlChar * id = xmlGetProp(domainIter, (const xmlChar *)"id");
       if(! id)
       {
-        NNLOG("museek.warn", "Domain without id encountered in config file.");
+        NNLOG("museekd.config.warn", "Domain without id encountered in config file.");
         continue;
       }
       std::string domain((const char *)id);
@@ -87,7 +87,7 @@ Museek::ConfigManager::load(const std::string & path)
         xmlChar * id = xmlGetProp(keyIter, (const xmlChar *)"id");
         if(! id)
         {
-          NNLOG("museek.warn", "Key without id encountered in config file.");
+          NNLOG("museekd.config.warn", "Key without id encountered in config file.");
           continue;
         }
         std::string key((const char *)id);
@@ -128,11 +128,11 @@ Museek::ConfigManager::save(const std::string & path) const
   // Check if we know where to save the configuration.
   if(path.empty() && m_Path.empty())
   {
-    NNLOG("museek.warn", "No path to save configuration to specified.");
+    NNLOG("museekd.config.warn", "No path to save configuration to specified.");
     return false;
   }
 
-  NNLOG("museek.debug", "Saving configuration to '%s'.", path.empty() ? m_Path.c_str() : path.c_str());
+  NNLOG("museekd.config.config.debug", "Saving configuration to '%s'.", path.empty() ? m_Path.c_str() : path.c_str());
 
   // Build the xml document.
   xmlDocPtr doc = xmlNewDoc((const xmlChar *)"1.0");

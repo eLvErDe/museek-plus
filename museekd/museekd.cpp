@@ -78,7 +78,7 @@ void Museek::Museekd::LoadDownloads() {
 Museek::Museekd::~Museekd()
 {
   /* This destructor doesn't do much. */
-  NNLOG("museek.debug", "museekd destroyed");
+  NNLOG("museekd.debug", "museekd destroyed");
 }
 
 bool Museek::Museekd::isBanned(const std::string u) {
@@ -125,14 +125,14 @@ uint Museek::Museekd::downSlots() {
 void Museek::Museekd::addPrivilegedUser(const std::string & user) {
     if (!isPrivileged(user)) {
         mPrivilegedUsers.push_back(user);
-        NNLOG("museek.debug", "%u privileged users", mPrivilegedUsers.size());
+        NNLOG("museekd.debug", "%u privileged users", mPrivilegedUsers.size());
     }
 }
 
 // Replace the privileged users list with this new one
 void Museek::Museekd::setPrivilegedUsers(const std::vector<std::string> & users) {
     mPrivilegedUsers = users;
-    NNLOG("museek.debug", "%u privileged users", mPrivilegedUsers.size());
+    NNLOG("museekd.debug", "%u privileged users", mPrivilegedUsers.size());
 }
 
 void Museek::Museekd::sendSharedNumber() {

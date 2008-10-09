@@ -37,7 +37,7 @@ static NewNet::RefPtr<Museek::Museekd> museekd;
 /* Our signal handler, stop the reactor if we receive a HUP or INT signal. */
 static void museekd_signal_handler(int signal)
 {
-  NNLOG("museek.note", "Trapped signal %i. Stopping the reactor.", signal);
+  NNLOG("museekd.debug", "Trapped signal %i. Stopping the reactor.", signal);
   museekd->reactor()->stop();
 }
 
@@ -90,6 +90,8 @@ int main(int argc, char ** argv)
   std::string configPath(getConfigPath("Museekd") + "\\config.xml");
 #endif // WIN32
 
+    bool fullDebug = false;
+
   for(int i = 1; i < argc; i++) {
     std::string arg(argv[i]);
     if(arg == "--config" || arg == "-c") {
@@ -102,12 +104,15 @@ int main(int argc, char ** argv)
     } else if(arg == "--version" || arg == "-V" ) {
       std::cout << version << std::endl;
       return 0;
+    } else if(arg == "--debug" || arg == "-d" ) {
+      fullDebug = true;
     } else if(arg == "--help" || arg == "-h") {
       std::cout << version << std::endl;
       std::cout << "Syntax: museekd [options]" << std::endl << std::endl;
       std::cout << "Options:" << std::endl;
       std::cout << "-c --config <config file>\tUse alternative config file" << std::endl;
       std::cout << "-h --help\t\t\tDisplay this message and quit" << std::endl;
+      std::cout << "-d --debug\t\t\tDisplay debugging messages" << std::endl;
       std::cout << "-V --version\t\t\tDisplay museekd version and quit" << std::endl << std::endl;
       std::cout << "Signals:" << std::endl;
       std::cout << "kill -HUP \tReload Shares Database(s)" << std::endl;
@@ -123,7 +128,7 @@ int main(int argc, char ** argv)
   /* Check size of off_t */
   if(sizeof(off_t) < 8)
   {
-    NNLOG("museek.warn", "Warning: No large file support. This means you can't download files larger than 4GB.");
+    NNLOG("museekd.warn", "Warning: No large file support. This means you can't download files larger than 4GB.");
   }
 
   /* Create our Museek Daemon instance. */
@@ -135,12 +140,12 @@ int main(int argc, char ** argv)
 
   if(! museekd->config()->load(configPath))
   {
-    NNLOG("museek.warn", "Failed to load configuration, bailing out.");
+    NNLOG("museek.config.warn", "Failed to load configuration, bailing out.");
     return -1;
   }
 
   /* Disable the debug override. */
-  if(!museekd->config()->getBool("museekd.debug", "ALL"))
+  if(!museekd->config()->getBool("museekd.debug", "ALL") && !fullDebug)
     NNLOG.disable("ALL");
 
   /* Load the shares database. */

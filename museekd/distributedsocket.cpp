@@ -52,7 +52,7 @@ Museek::DistributedSocket::DistributedSocket(Museek::Museekd * museekd) : Museek
 
 Museek::DistributedSocket::~DistributedSocket()
 {
-  NNLOG("museek.debug", "DistributedSocket destroyed");
+  NNLOG("museekd.distrib.debug", "DistributedSocket destroyed");
 }
 
 /**
@@ -72,7 +72,7 @@ Museek::DistributedSocket::initiateActiveWithIP(const std::string & user, const 
     setUser(user);
     setToken(museekd()->token());
 
-    NNLOG("museek.debug", "Initiating active distributed connection to %s (type %s, ip %s, port %d).", user.c_str(), type().c_str(), ip.c_str(), port);
+    NNLOG("museekd.distrib.debug", "Initiating active distributed connection to %s (type %s, ip %s, port %d).", user.c_str(), type().c_str(), ip.c_str(), port);
 
     HInitiate handshake(museekd()->server()->username(), type(), token());
     sendMessage(handshake.make_network_packet());
@@ -103,7 +103,7 @@ Museek::DistributedSocket::onDisconnected(NewNet::ClientSocket * socket) {
 }
 
 void Museek::DistributedSocket::onCannotConnectActive(NewNet::ClientSocket * socket) {
-    NNLOG("museek.debug", "Cannot connect a distributed socket in active mode. Trying passive.");
+    NNLOG("museekd.distrib.debug", "Cannot connect a distributed socket in active mode. Trying passive.");
     initiatePassive();
 }
 
@@ -112,7 +112,7 @@ Museek::DistributedSocket::onFirewallPierceTimedOut(long)
 {
     // Distributed socket tries first active mode, then passive (unlike usersocket).
     // So no need to retry active when passive fails.
-    NNLOG("museek.debug", "Passive connection failed: pierce firewall timed out.");
+    NNLOG("museekd.distrib.debug", "Passive connection failed: pierce firewall timed out.");
 
     disconnect();
     if (reactor())
@@ -136,7 +136,7 @@ void Museek::DistributedSocket::onChildDepthReceived(const DChildDepth * msg) {
 void Museek::DistributedSocket::onSearchRequested(const DSearchRequest * msg) {
     std::string query = museekd()->codeset()->fromNet(msg->query);
 
-    NNLOG("museek.debug", "Received search request from our parent: %s for %s", query.c_str(), msg->username.c_str());
+    NNLOG("museekd.distrib.debug", "Received search request from our parent: %s for %s", query.c_str(), msg->username.c_str());
 
     museekd()->searches()->transmitSearch(msg->unknown, msg->username, msg->ticket, query);
     museekd()->searches()->sendSearchResults(msg->username, query, msg->ticket);
@@ -150,7 +150,7 @@ Museek::DistributedSocket::onMessageReceived(const MessageData * data)
     #define MAP_MESSAGE(ID, TYPE, EVENT) \
       case ID: \
       { \
-        NNLOG("museek.messages.distributed", "Received distributed message " #TYPE "."); \
+        NNLOG("museekd.messages.distributed", "Received distributed message " #TYPE "."); \
         TYPE msg; \
         msg.setDistributedSocket(this); \
         msg.parse_network_packet(data->data, data->length); \
@@ -161,7 +161,7 @@ Museek::DistributedSocket::onMessageReceived(const MessageData * data)
     #undef MAP_MESSAGE
 
     default:
-      NNLOG("museek.warn", "Received unknown distributed message, type: %u, length: %u", data->type, data->length);
+      NNLOG("museekd.distrib.warn", "Received unknown distributed message, type: %u, length: %u", data->type, data->length);
   }
 }
 
@@ -176,11 +176,11 @@ Museek::DistributedSocket::onDisconnectNow(long) {
 void
 Museek::DistributedSocket::stop()
 {
-    NNLOG("museek.debug", "Disconnecting distributed socket...");
+    NNLOG("museekd.distrib.debug", "Disconnecting distributed socket...");
     disconnect();
     if (reactor()) {
         // We have to do this as we're not sure disconnect() will remove the socket from the reactor
-        NNLOG("museek.debug", "Removing distributed socket from reactor...");
+        NNLOG("museekd.distrib.debug", "Removing distributed socket from reactor...");
         museekd()->reactor()->remove(this);
     }
 }

@@ -32,7 +32,7 @@ Museek::IfaceSocket::IfaceSocket() : NewNet::ClientSocket(), MessageProcessor(4)
 
 Museek::IfaceSocket::~IfaceSocket()
 {
-  NNLOG("museek.debug", "IfaceSocket destroyed");
+  NNLOG("museekd.iface.debug", "IfaceSocket destroyed");
   free(m_CipherContext);
 }
 
@@ -41,7 +41,7 @@ Museek::IfaceSocket::sendMessage(const NewNet::Buffer & buffer)
 {
   if(socketState() != SocketConnected)
   {
-    NNLOG("museek.warn", "Trying to send message over closed socket...");
+    NNLOG("museekd.iface.warn", "Trying to send message over closed socket...");
     return;
   }
 
@@ -59,7 +59,7 @@ Museek::IfaceSocket::onMessageReceived(const MessageData * data)
 {
   if((! authenticated()) && (data->type != 2))
   {
-    NNLOG("museek.warn", "Attempt to bypass security detected, disconnecting interface.");
+    NNLOG("museekd.iface.warn", "Attempt to bypass security detected, disconnecting interface.");
     data->socket->disconnect();
     return;
   }
@@ -91,6 +91,6 @@ Museek::IfaceSocket::onMessageReceived(const MessageData * data)
     #undef MAP_C_MESSAGE
 
     default:
-      NNLOG("museek.warn", "Received unknown interface message, type: %u, length: %u", data->type, data->length);
+      NNLOG("museekd.iface.warn", "Received unknown interface message, type: %u, length: %u", data->type, data->length);
   }
 }

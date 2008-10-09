@@ -45,7 +45,7 @@ Museek::SharesDatabase::SharesDatabase(Museekd* museekd) : mMuseekd(museekd), mN
 }
 
 void Museek::SharesDatabase::load(const string& db, bool add) {
- 	NNLOG("museek.debug", "loading share database %s", db.c_str());
+ 	NNLOG("museekd.shares.debug", "loading share database %s", db.c_str());
 	mShares.load(db);
 	update(add);
 }
@@ -59,7 +59,7 @@ void Museek::SharesDatabase::update(bool add) {
 	mNumFolders = mRecoded.folders.size();
 	mNumFiles = mFlat.size();
 
-	NNLOG("museek.debug", "Updated shares, mNumFolders=%i, mNumFiles=%i", mNumFolders, mNumFiles);
+	NNLOG("museekd.shares.debug", "Updated shares, mNumFolders=%i, mNumFiles=%i", mNumFolders, mNumFiles);
 
     mMuseekd->sendSharedNumber();
 }
@@ -72,7 +72,7 @@ void Museek::SharesDatabase::recode(bool add) {
 	for(; it != mShares.folders.end(); ++it) {
         std::string _redir = mMuseekd->codeset()->fromFSToNet((*it).first);
 		if(_redir.empty()) {
- 			NNLOG("museek.debug", "WARNING: Couldn't transcode '%s' to network encoding", (*it).first.c_str());
+ 			NNLOG("museekd.shares.warn", "Couldn't transcode '%s' to network encoding", (*it).first.c_str());
 			continue;
 		}
 
@@ -81,7 +81,7 @@ void Museek::SharesDatabase::recode(bool add) {
 		for(; fit != (*it).second->files.end(); ++fit) {
             std::string _refn = mMuseekd->codeset()->fromFSToNet((*fit).first);
 			if(_refn.empty()) {
- 				NNLOG("museek.debug", "WARNING: Couldn't transcode '%s' to network encoding", (*fit).first.c_str());
+ 				NNLOG("museekd.shares.warn", "Couldn't transcode '%s' to network encoding", (*fit).first.c_str());
 				continue;
 			}
 			_refolder[_refn] = (*fit).second;
@@ -118,7 +118,7 @@ void Museek::SharesDatabase::update_compressed() {
 		for(uint i = 0; i < outbuf_len; i++)
 			mCompressed.push_back(outbuf[i]);
 	} else
- 		NNLOG("museek.debug", "compression error");
+ 		NNLOG("museekd.shares.warn", "compression error");
 
 	delete [] outbuf;
 	delete [] inbuf;
@@ -227,7 +227,7 @@ inline Folder Museek::SharesDatabase::fetch(const std::string& word) const {
 
 /* this is the best I can do I think... */
 void Museek::SharesDatabase::search(const string& _query, Folder& result) {
- 	NNLOG("museek.debug", "sharesdatabase search %s", _query.c_str());
+ 	NNLOG("museekd.shares.debug", "sharesdatabase search %s", _query.c_str());
 
 	string query = _query;
 

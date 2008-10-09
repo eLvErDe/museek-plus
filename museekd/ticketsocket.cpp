@@ -40,7 +40,7 @@ Museek::TicketSocket::TicketSocket(Museek::Museekd * museekd) : UserSocket(musee
 
 Museek::TicketSocket::~TicketSocket()
 {
-  NNLOG("museek.debug", "TicketSocket destroyed");
+  NNLOG("museekd.ticket.debug", "TicketSocket destroyed");
 }
 
 void
@@ -53,7 +53,7 @@ Museek::TicketSocket::findTicket() {
     if(receiveBuffer().count() < 4)
         return;
 
-    NNLOG("museek.debug", "TicketSocket got %u bytes", receiveBuffer().count());
+    NNLOG("museekd.ticket.debug", "TicketSocket got %u bytes", receiveBuffer().count());
     // Unpack the ticket
     if (receiveBuffer().count() >= 4 ) {
         unsigned char * data = receiveBuffer().data();
@@ -62,7 +62,7 @@ Museek::TicketSocket::findTicket() {
     }
 
     // Notify our waiting downloadsockets
-    NNLOG("museek.debug", "Yay! We received ticket %u.. Now what..", m_Ticket);
+    NNLOG("museekd.ticket.debug", "Yay! We received ticket %u.. Now what..", m_Ticket);
     museekd()->downloads()->transferTicketReceivedEvent(this);
     museekd()->uploads()->transferTicketReceivedEvent(this);
 

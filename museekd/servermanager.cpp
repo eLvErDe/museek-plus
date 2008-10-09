@@ -55,7 +55,7 @@ Museek::ServerManager::connect()
 {
   if(m_Socket.isValid())
   {
-    NNLOG("museek.warn", "Already connected to server.");
+    NNLOG("museekd.server.warn", "Already connected to server.");
     return;
   }
 
@@ -66,13 +66,13 @@ Museek::ServerManager::connect()
 
   if(host.empty())
   {
-    NNLOG("museek.warn", "No hostname for server specified.");
+    NNLOG("museekd.server.warn", "No hostname for server specified.");
     return;
   }
 
   if(port == 0)
   {
-    NNLOG("museek.warn", "No port for server specified.");
+    NNLOG("museekd.server.warn", "No port for server specified.");
     return;
   }
 
@@ -80,7 +80,7 @@ Museek::ServerManager::connect()
   m_Password = museekd()->config()->get("server", "password");
   if(m_Username.empty())
   {
-    NNLOG("museek.warn", "No username for server specified.");
+    NNLOG("museekd.server.warn", "No username for server specified.");
     return;
   }
 
@@ -130,7 +130,7 @@ Museek::ServerManager::sendMessage(const NewNet::Buffer & buffer)
 {
   if(! m_Socket)
   {
-    NNLOG("museek.warn", "Trying to send message over closed socket...");
+    NNLOG("museekd.server.warn", "Trying to send message over closed socket...");
     return;
   }
 
@@ -157,10 +157,10 @@ Museek::ServerManager::onCannotConnect(NewNet::ClientSocket * socket)
         length = 30000;
       m_ReconnectTimeout = museekd()->reactor()->addTimeout(length, this, &ServerManager::reconnect);
       m_ConnectionTries++;
-      NNLOG("museek.warn", "Cannot connect to server... Will reconnect in %d ms.", length);
+      NNLOG("museekd.server.warn", "Cannot connect to server... Will reconnect in %d ms.", length);
   }
   else
-      NNLOG("museek.warn", "Cannot connect to server... Will not try to reconnect.");
+      NNLOG("museekd.server.warn", "Cannot connect to server... Will not try to reconnect.");
 
   setLoggedIn(false);
   if (socket->reactor())
@@ -170,8 +170,8 @@ Museek::ServerManager::onCannotConnect(NewNet::ClientSocket * socket)
 void
 Museek::ServerManager::onConnected(NewNet::ClientSocket *)
 {
-  NNLOG("museek.note", "Connected to server.");
-  NNLOG("museek.debug", "Sending login message.");
+  NNLOG("museekd.server.debug", "Connected to server.");
+  NNLOG("museekd.server.debug", "Sending login message.");
   SEND_MESSAGE(SLogin(m_Username, m_Password));
 }
 
@@ -185,10 +185,10 @@ Museek::ServerManager::onDisconnected(NewNet::ClientSocket * socket)
         length = 30000;
       m_ReconnectTimeout = museekd()->reactor()->addTimeout(length, this, &ServerManager::reconnect);
       m_ConnectionTries++;
-    NNLOG("museek.note", "Disconnected from server. Will reconnect in %d ms.", length);
+    NNLOG("museekd.server.debug", "Disconnected from server. Will reconnect in %d ms.", length);
   }
   else
-    NNLOG("museek.note", "Disconnected from server. Will not try to reconnect.");
+    NNLOG("museekd.server.debug", "Disconnected from server. Will not try to reconnect.");
 
 
   setLoggedIn(false);
@@ -215,7 +215,7 @@ Museek::ServerManager::onMessageReceived(const TcpMessageSocket::MessageData * d
     #undef MAP_MESSAGE
 
     default:
-      NNLOG("museek.warn", "Received unknown server message, type: %u, length: %u", data->type, data->length);
+      NNLOG("museekd.server.warn", "Received unknown server message, type: %u, length: %u", data->type, data->length);
   }
 }
 
@@ -310,14 +310,14 @@ Museek::ServerManager::pingServer(long diff) {
 
     if (difftime(now, mLastSentMessage) > 59000) {
         // No data sent to server since 60 seconds. Ping the server
-        NNLOG("museek.debug", "Pinging the server (%dms delay)", diff);
+        NNLOG("museekd.server.debug", "Pinging the server (%dms delay)", diff);
         SPing msg;
         sendMessage(msg.make_network_packet());
         m_PingTimeout = museekd()->reactor()->addTimeout(60000, this, &ServerManager::pingServer);
     }
     else {
         // We've sent someting to the server recently. Wait 60 seconds vefore pinging.
-        NNLOG("museek.debug", "Delaying server ping");
+        NNLOG("museekd.server.debug", "Delaying server ping");
         m_PingTimeout = museekd()->reactor()->addTimeout(60000, this, &ServerManager::pingServer);
     }
 }
@@ -348,12 +348,12 @@ Museek::ServerManager::onRoomLeft(const SLeaveRoom * message)
 
 void
 Museek::ServerManager::onPrivilegedUsersReceived(const SPrivilegedUsers * message) {
-    NNLOG("museek.debug", "Received privileged users");
+    NNLOG("museekd.server.debug", "Received privileged users");
     m_Museekd->setPrivilegedUsers(message->values);
 }
 
 void
 Museek::ServerManager::onPrivilegedUserAddedReceived(const SAddPrivileged * message) {
-    NNLOG("museek.debug", "Received a new privileged user");
+    NNLOG("museekd.server.debug", "Received a new privileged user");
     m_Museekd->addPrivilegedUser(message->value);
 }

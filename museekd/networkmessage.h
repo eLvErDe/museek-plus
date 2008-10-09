@@ -78,7 +78,7 @@ public:
     }
     catch(std::bad_alloc e)
     {
-      NNLOG("museek.warn", "Ran out of memory while unpacking message!");
+      NNLOG("museekd.warn", "Ran out of memory while unpacking message!");
     }
   }
 
@@ -125,7 +125,7 @@ protected:
     else
     {
       // Buffer was empty, message is invalid, print message
-      NNLOG("museek.warn", "Corrupted message encountered (unpack from empty buffer).");
+      NNLOG("museekd.warn", "Corrupted message encountered (unpack from empty buffer).");
     }
     // Return the value.
     return c;

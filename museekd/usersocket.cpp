@@ -74,7 +74,7 @@ Museek::UserSocket::initiate(const std::string & user)
 void
 Museek::UserSocket::initiateActive()
 {
-  NNLOG("museek.debug", "Initiating active user connection to %s (type %s).", m_User.c_str(), m_Type.c_str());
+  NNLOG("museekd.user.debug", "Initiating active user connection to %s (type %s).", m_User.c_str(), m_Type.c_str());
 
   HInitiate handshake(m_Museekd->server()->username(), m_Type, m_Token);
   sendMessage(handshake.make_network_packet());
@@ -87,7 +87,7 @@ Museek::UserSocket::initiateActive()
 void
 Museek::UserSocket::initiatePassive()
 {
-  NNLOG("museek.debug", "Initiating passive user connection to %s (type %s).", m_User.c_str(), m_Type.c_str());
+  NNLOG("museekd.user.debug", "Initiating passive user connection to %s (type %s).", m_User.c_str(), m_Type.c_str());
 
   m_PassiveConnectTimeout = m_Museekd->reactor()->addTimeout(60000, this, &UserSocket::onFirewallPierceTimedOut);
   m_Museekd->peers()->firewallPiercedEvent.connect(this, &UserSocket::onFirewallPierced);
@@ -101,7 +101,7 @@ Museek::UserSocket::onFirewallPierced(Museek::HandshakeSocket * socket)
 {
   if(socket->token() == m_Token)
   {
-    NNLOG("museek.debug", "%s's firewall successfully pierced.", m_User.c_str());
+    NNLOG("museekd.user.debug", "%s's firewall successfully pierced.", m_User.c_str());
     if(m_PassiveConnectTimeout.isValid())
     {
       m_Museekd->reactor()->removeTimeout(m_PassiveConnectTimeout);
@@ -122,7 +122,7 @@ Museek::UserSocket::onFirewallPierceTimedOut(long)
 {
   if(socketState() == SocketUninitialized)
   {
-    NNLOG("museek.debug", "Passive connection failed: pierce firewall timed out. Trying an active connection.");
+    NNLOG("museekd.user.debug", "Passive connection failed: pierce firewall timed out. Trying an active connection.");
     initiateActive();
   }
 }
@@ -131,7 +131,7 @@ void
 Museek::UserSocket::onCannotConnectNotify(const SCannotConnect * msg)
 {
     if (msg->token == token()) {
-        NNLOG("museek.debug", "Cannot connect to the peer.");
+        NNLOG("museekd.user.debug", "Cannot connect to the peer.");
         disconnect();
         if (reactor())
             museekd()->reactor()->remove(this);
@@ -143,7 +143,7 @@ Museek::UserSocket::onServerPeerAddressReceived(const SGetPeerAddress * message)
 {
   if((message->user != m_User) || (socketState() != SocketUninitialized))
     return;
-  NNLOG("museek.debug", "Received address of user %s: %s:%u", m_User.c_str(), message->ip.c_str(), message->port);
+  NNLOG("museekd.user.debug", "Received address of user %s: %s:%u", m_User.c_str(), message->ip.c_str(), message->port);
   if((message->ip == "0.0.0.0") || (message->port == 0))
   {
     cannotConnectEvent(this);
@@ -155,7 +155,7 @@ Museek::UserSocket::onServerPeerAddressReceived(const SGetPeerAddress * message)
 void
 Museek::UserSocket::reverseConnect(const std::string & user, uint token, const std::string & ip, uint port)
 {
-  NNLOG("museek.debug", "Trying to reverse connect to %s at %s:%u, token=%u", user.c_str(), ip.c_str(), port, token);
+  NNLOG("museekd.user.debug", "Trying to reverse connect to %s at %s:%u, token=%u", user.c_str(), ip.c_str(), port, token);
 
   cannotConnectEvent.connect(this, &UserSocket::onCannotReverseConnect);
 
@@ -171,7 +171,7 @@ Museek::UserSocket::reverseConnect(const std::string & user, uint token, const s
 void
 Museek::UserSocket::onCannotReverseConnect(NewNet::ClientSocket *)
 {
-  NNLOG("museek.debug", "Could not fulfill %s's connection request.", m_User.c_str());
+  NNLOG("museekd.user.debug", "Could not fulfill %s's connection request.", m_User.c_str());
   if (m_Museekd->server()->loggedIn()) {
     SCannotConnect msg(m_User, m_Token);
     m_Museekd->server()->sendMessage(msg.make_network_packet());

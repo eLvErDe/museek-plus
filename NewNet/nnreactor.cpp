@@ -139,7 +139,7 @@ void NewNet::Reactor::add(Socket * socket)
 
 void NewNet::Reactor::remove(Socket * socket)
 {
-  NNLOG("museek.debug", "removing socket %u from reactor", socket->descriptor());
+  NNLOG("newnet.net.debug", "removing socket %u from reactor", socket->descriptor());
   // Removing a socket from the wrong reactor is a programming error, trap it.
   assert(socket->reactor() == this);
 
@@ -297,7 +297,7 @@ void NewNet::Reactor::run()
     }
 
     if(r == -1) { // An error occured
-        NNLOG("museek.warn", "Error %d while selecting sockets", errno);
+        NNLOG("newnet.net.warn", "Error %d while selecting sockets", errno);
         continue; // Let's pretend nothing happened and just try again
     }
 

@@ -55,7 +55,7 @@ Museek::SearchManager::SearchManager(Museekd * museekd) : m_Museekd(museekd)
 
 Museek::SearchManager::~SearchManager()
 {
-    NNLOG("museek.debug", "Search Manager destroyed");
+    NNLOG("museekd.peers.debug", "Search Manager destroyed");
 }
 
 /**
@@ -81,7 +81,7 @@ void Museek::SearchManager::setChild(DistributedSocket * socket, uint depth) {
     if (socket) {
         bool isUpdate = m_Children.find(socket->user()) != m_Children.end();
         if ((parent() || isUpdate) && acceptChildren()) {
-            NNLOG("museek.debug", "Setting child: %s, depth %d", socket->user().c_str(), depth);
+            NNLOG("museekd.peers.debug", "Setting child: %s, depth %d", socket->user().c_str(), depth);
 
             uint oldDepth = childDepth();
 
@@ -89,7 +89,7 @@ void Museek::SearchManager::setChild(DistributedSocket * socket, uint depth) {
             uint newDepth = childDepth();
 
             if (oldDepth != newDepth) {
-                NNLOG("museek.debug", "Our child depth is now %d", newDepth);
+                NNLOG("museekd.peers.debug", "Our child depth is now %d", newDepth);
                 SChildDepth msg(newDepth);
                 museekd()->server()->sendMessage(msg.make_network_packet());
 
@@ -124,7 +124,7 @@ void Museek::SearchManager::setChild(DistributedSocket * socket, uint depth) {
   * Removes a child from our tree
   */
 void Museek::SearchManager::removeChild(const std::string & user) {
-    NNLOG("museek.debug", "Removing child: %s", user.c_str());
+    NNLOG("museekd.peers.debug", "Removing child: %s", user.c_str());
 
     uint oldDepth = childDepth();
 
@@ -135,7 +135,7 @@ void Museek::SearchManager::removeChild(const std::string & user) {
         // If we have a new child depth, inform the server and our parent
         uint newDepth = childDepth();
         if (oldDepth != newDepth) {
-            NNLOG("museek.debug", "Our child depth is now %d", newDepth);
+            NNLOG("museekd.peers.debug", "Our child depth is now %d", newDepth);
             SChildDepth msg(newDepth);
             museekd()->server()->sendMessage(msg.make_network_packet());
 
@@ -171,7 +171,7 @@ void Museek::SearchManager::setParent(DistributedSocket * parentSocket) {
     m_Parent = parentSocket;
     if (parentSocket) {
         std::string parentName = parentSocket->user();
-        NNLOG("museek.debug", "Found a parent : %s", parentName.c_str());
+        NNLOG("museekd.peers.debug", "Found a parent : %s", parentName.c_str());
         std::map<std::string, std::pair<NewNet::RefPtr<DistributedSocket>, std::string> >::iterator it;
         for (it = m_PotentialParents.begin(); it != m_PotentialParents.end(); it++) {
             if (it->first != parentName) {
@@ -195,7 +195,7 @@ void Museek::SearchManager::setParent(DistributedSocket * parentSocket) {
   * We have a new branch root, store it and notify the server
   */
 void Museek::SearchManager::setBranchRoot(const std::string & root) {
-    NNLOG("museek.debug", "Our branch root is %s", root.c_str());
+    NNLOG("museekd.peers.debug", "Our branch root is %s", root.c_str());
     m_BranchRoot = root;
 
     // Tell our new parent how many children we've got
@@ -229,7 +229,7 @@ void Museek::SearchManager::onNetInfoReceived(const SNetInfo * msg) {
 
     std::map<std::string, std::pair<std::string, uint32> >::const_iterator it;
     for (it = msg->users.begin(); it != msg->users.end(); it++) {
-        NNLOG("museek.debug", "Potential parent: %s (%s:%i)", it->first.c_str(), it->second.first.c_str(), it->second.second);
+        NNLOG("museekd.peers.debug", "Potential parent: %s (%s:%i)", it->first.c_str(), it->second.first.c_str(), it->second.second);
 
         DistributedSocket * socket = new DistributedSocket(museekd());
         museekd()->reactor()->add(socket);
@@ -265,7 +265,7 @@ void Museek::SearchManager::branchLevelReceived(DistributedSocket * socket, uint
 void Museek::SearchManager::onSearchRequested(const SSearchRequest * msg) {
     std::string query = museekd()->codeset()->fromNet(msg->query);
 
-    NNLOG("museek.debug", "Received search request from server: %s for %s", query.c_str(), msg->username.c_str());
+    NNLOG("museekd.peers.debug", "Received search request from server: %s for %s", query.c_str(), msg->username.c_str());
 
     transmitSearch(msg->unknown, msg->username, msg->token, msg->query);
     sendSearchResults(msg->username, query, msg->token);
@@ -277,7 +277,7 @@ void Museek::SearchManager::onSearchRequested(const SSearchRequest * msg) {
 void Museek::SearchManager::onFileSearchRequested(const SFileSearch * msg) {
     std::string query = museekd()->codeset()->fromNet(msg->query);
 
-    NNLOG("museek.debug", "Received file search request from server: %s for %s", query.c_str(), msg->user.c_str());
+    NNLOG("museekd.peers.debug", "Received file search request from server: %s for %s", query.c_str(), msg->user.c_str());
 
     sendSearchResults(msg->user, query, msg->ticket);
 }
@@ -287,7 +287,7 @@ void Museek::SearchManager::onFileSearchRequested(const SFileSearch * msg) {
   */
 void Museek::SearchManager::onUserStatsReceived(const SGetUserStats * msg) {
     if (msg->user == museekd()->server()->username()) {
-        NNLOG("museek.debug", "Our transfer speed is %d", msg->avgspeed);
+        NNLOG("museekd.peers.debug", "Our transfer speed is %d", msg->avgspeed);
         setTransferSpeed(msg->avgspeed);
     }
 }
@@ -296,7 +296,7 @@ void Museek::SearchManager::onUserStatsReceived(const SGetUserStats * msg) {
   * The server sends us the wishlist interval
   */
 void Museek::SearchManager::onWishlistIntervalReceived(const SWishlistInterval * msg) {
-    NNLOG("museek.debug", "New wishlist interval: %d", msg->value);
+    NNLOG("museekd.peers.debug", "New wishlist interval: %d", msg->value);
     m_WishlistInterval = msg->value;
     if (m_WishlistTimeout.isValid())
         museekd()->reactor()->removeTimeout(m_WishlistTimeout);
@@ -314,7 +314,7 @@ void Museek::SearchManager::onWishlistTimeout(long) {
             if (it->second < oldest->second)
                 oldest = it;
         }
-        NNLOG("museek.debug", "Sending wishlist search for '%s'", oldest->first.c_str());
+        NNLOG("museekd.peers.debug", "Sending wishlist search for '%s'", oldest->first.c_str());
         uint token = museekd()->token();
 
         museekd()->ifaces()->sendNewSearchToAll(oldest->first, token);
@@ -399,13 +399,13 @@ void Museek::SearchManager::wishlistAdd(const std::string & query) {
     museekd()->ifaces()->sendNewSearchToAll(query, token);
 
     if (m_Wishlist.find(query) != m_Wishlist.end()) {
-        NNLOG("museek.debug", "'%s' is already in the wishlist", query.c_str());
+        NNLOG("museekd.peers.debug", "'%s' is already in the wishlist", query.c_str());
         // This item is already in wishlist, just do a normal search
         SFileSearch msg(token, museekd()->codeset()->toNet(query));
         museekd()->server()->sendMessage(msg.make_network_packet());
     }
     else {
-        NNLOG("museek.debug", "Adding '%s' in the wishlist", query.c_str());
+        NNLOG("museekd.peers.debug", "Adding '%s' in the wishlist", query.c_str());
         // launch a wishlist search
         SWishlistSearch msg(token, museekd()->codeset()->toNet(query));
         museekd()->server()->sendMessage(msg.make_network_packet());
@@ -422,7 +422,7 @@ void Museek::SearchManager::onPeerSocketReady(PeerSocket * socket) {
 
     std::map<std::string, std::map<uint, Folder> >::iterator pending = m_PendingResults.find(username);
     if (pending != m_PendingResults.end() && m_PendingResults[username].size()) {
-        NNLOG("museek.debug", "Sending search results to %s", username.c_str());
+        NNLOG("museekd.peers.debug", "Sending search results to %s", username.c_str());
 
         std::map<uint, Folder>::const_iterator it;
         for (it = m_PendingResults[username].begin(); it != m_PendingResults[username].end(); it++) {
@@ -472,7 +472,7 @@ void Museek::SearchManager::onParentDisconnected(NewNet::ClientSocket * socket_)
 void Museek::SearchManager::onChildDisconnected(NewNet::ClientSocket * socket_) {
     DistributedSocket * socket = (DistributedSocket *) socket_;
 
-    NNLOG("museek.debug", "Child %s is gone", socket->user().c_str());
+    NNLOG("museekd.peers.debug", "Child %s is gone", socket->user().c_str());
 
     // Destroy this socket
     if (socket->reactor())
@@ -495,7 +495,7 @@ Museek::SearchManager::onServerLoggedInStateChanged(bool loggedIn)
         if (parentSocket)
             parentName = parentSocket->user();
 
-        NNLOG("museekd.debug", "Asking parents (level: %d, root: %s, child depth:%d)", level, parentName.c_str(), depth);
+        NNLOG("museekd.peers.debug", "Asking parents (level: %d, root: %s, child depth:%d)", level, parentName.c_str(), depth);
 
         SHaveNoParents msgNoParents(true);
         museekd()->server()->sendMessage(msgNoParents.make_network_packet());

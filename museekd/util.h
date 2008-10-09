@@ -54,7 +54,7 @@ static inline bool makedirs(const std::string & dir)
 #endif // ! WIN32
     {
       // Error and path didn't already exist. Issue a warning.
-      NNLOG("museek.warn", "Couldn't create directory '%s'.", path.c_str());
+      NNLOG("museekd.user.warn", "Couldn't create directory '%s'.", path.c_str());
       return false;
     }
   }

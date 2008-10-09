@@ -66,7 +66,7 @@ Museek::PeerManager::listen()
 
   if((first == 0) || (first > last))
   {
-    NNLOG("museek.warn", "No valid client bind port set (range: %i - %i).", first, last);
+    NNLOG("museekd.peers.warn", "No valid client bind port set (range: %i - %i).", first, last);
     unlisten();
     return;
   }
@@ -82,7 +82,7 @@ Museek::PeerManager::listen()
   unsigned int port = first;
   while(port <= last)
   {
-    NNLOG("museek.debug", "Trying to bind to port %i...", port);
+    NNLOG("museekd.peers.debug", "Trying to bind to port %i...", port);
     m_Factory = new PeerFactory();
     m_Factory->clientAcceptedEvent.connect(this, &PeerManager::onClientAccepted);
 
@@ -91,14 +91,14 @@ Museek::PeerManager::listen()
     if(m_Factory->serverSocket()->socketState() == NewNet::Socket::SocketListening)
     {
       onServerLoggedInStateChanged(m_Museekd->server()->loggedIn());
-      NNLOG("museek.note", "Listening for peers on port %i", port);
+      NNLOG("museekd.peers.debug", "Listening for peers on port %i", port);
       return;
     }
     unlisten();
     ++port;
   }
 
-  NNLOG("museek.warn", "Couldn't find port to listen for peers on (range: %i - %i).", first, last);
+  NNLOG("museekd.peers.warn", "Couldn't find port to listen for peers on (range: %i - %i).", first, last);
 }
 
 /**
@@ -106,7 +106,7 @@ Museek::PeerManager::listen()
   */
 void
 Museek::PeerManager::peerSocket(const std::string & user) {
-    NNLOG("museek.debug", "Asking a peersocket for %s", user.c_str());
+    NNLOG("museekd.peers.debug", "Asking a peersocket for %s", user.c_str());
 
     // Check if this user is already registered.
     std::map<std::string, NewNet::WeakRefPtr<PeerSocket> >::iterator it;
@@ -125,7 +125,7 @@ Museek::PeerManager::peerSocket(const std::string & user) {
                 std::map<std::string, struct timeval >::iterator tit;
                 tit = m_LastStatusTime.find(user);
                 if(tit == m_LastStatusTime.end() || difftime(now, (*tit).second) > 10000.0) {
-                    NNLOG("museek.debug", "No peer socket to %s, requesting status.", user.c_str());
+                    NNLOG("museekd.peers.debug", "No peer socket to %s, requesting status.", user.c_str());
                     m_LastStatusTime[user] = now;
 
                     // Let the server know we want to track the status of this user.
@@ -143,7 +143,7 @@ Museek::PeerManager::peerSocket(const std::string & user) {
             }
             else {
                 // User is offline, cannot create the socket
-                NNLOG("museek.debug", "User %s is offline", user.c_str());
+                NNLOG("museekd.peers.debug", "User %s is offline", user.c_str());
 
                 // Don't disconnect the peer socket if it exists: it will be disconnected if the user is completely offline.
                 // If he's only disconnected from the server, we can still talk to him directly.
@@ -162,11 +162,11 @@ Museek::PeerManager::peerSocket(const std::string & user) {
 */
 void Museek::PeerManager::addPeerSocket(PeerSocket * socket) {
     if(socket->user() == std::string()) {
-        NNLOG("museek.warn", "Cannot add a peer socket with no user associated.");
+        NNLOG("museekd.peers.warn", "Cannot add a peer socket with no user associated.");
         return;
     }
 
-    NNLOG("museek.debug", "Adding peer socket for %s", socket->user().c_str());
+    NNLOG("museekd.peers.debug", "Adding peer socket for %s", socket->user().c_str());
     // There shouldn't be several peer sockets for the same user. If that happens, keep only the last one.
     m_Peers[socket->user()] = socket;
     socket->cannotConnectEvent.connect(this, &PeerManager::onPeerCannotConnect);
@@ -187,12 +187,12 @@ Museek::PeerManager::onServerUserStatusReceived(const SGetStatus * message)
 
     // Is the user online?
     if(message->status > 0) {
-        NNLOG("museek.debug", "User %s is online", message->user.c_str());
+        NNLOG("museekd.peers.debug", "User %s is online", message->user.c_str());
 
         createPeerSocket(message->user);
     }
     else {
-        NNLOG("museek.debug", "User %s is offline", message->user.c_str());
+        NNLOG("museekd.peers.debug", "User %s is offline", message->user.c_str());
 
         // Don't disconnect the peer socket if it exists: it will be disconnected if the user is completely offline.
         // If he's only disconnected from the server, we can still talk to him directly.
@@ -257,7 +257,7 @@ bool Museek::PeerManager::isUserConnected(const std::string& user) {
 void
 Museek::PeerManager::onPeerCannotConnect(NewNet::ClientSocket * socket_)
 {
-	NNLOG("museek.debug", "Cannot connect to the peer");
+	NNLOG("museekd.peers.debug", "Cannot connect to the peer");
     // Cast the socket to a peer socket.
     PeerSocket * socket = (PeerSocket *)socket_;
     // Get the name of the user.
@@ -276,7 +276,7 @@ Museek::PeerManager::onPeerCannotConnect(NewNet::ClientSocket * socket_)
 
 void
 Museek::PeerManager::onCannotConnectNotify(const SCannotConnect * msg) {
-	NNLOG("museek.debug", "Cannot connect to the peer %s", msg->user.c_str());
+	NNLOG("museekd.peers.debug", "Cannot connect to the peer %s", msg->user.c_str());
 
     peerSocketUnavailableEvent(msg->user);
 }
@@ -287,7 +287,7 @@ Museek::PeerManager::onCannotConnectNotify(const SCannotConnect * msg) {
 void
 Museek::PeerManager::onDisconnected(NewNet::ClientSocket * socket_)
 {
-	NNLOG("museek.debug", "Peer socket disconnected");
+	NNLOG("museekd.peers.debug", "Peer socket disconnected");
     // Cast the socket to a peer socket.
     PeerSocket * socket = (PeerSocket *)socket_;
     // Get the name of the user.

@@ -40,7 +40,7 @@
   */
 Museek::Download::Download(Museek::Museekd * museekd, const std::string & user, const std::string & remotePath, const std::string & localDir)
 {
-    NNLOG("museek.debug", "Creating download from %s, %s", user.c_str(), remotePath.c_str());
+    NNLOG("museekd.down.debug", "Creating download from %s, %s", user.c_str(), remotePath.c_str());
 
     m_Museekd = museekd;
     m_User = user;
@@ -64,7 +64,7 @@ Museek::Download::Download(Museek::Museekd * museekd, const std::string & user, 
 
 Museek::Download::~Download()
 {
-  NNLOG("museek.debug", "Download destroyed.");
+  NNLOG("museekd.down.debug", "Download destroyed.");
   museekd()->downloads()->downloadRemovedEvent(this);
 }
 
@@ -281,7 +281,7 @@ void
 Museek::Download::initiate(PeerSocket * socket) {
     if (!socket) {
         setState(TS_LocalError);
-        NNLOG("museek.debug", "Error: in Museek::Download::initiate(), invalid PeerSocket");
+        NNLOG("museekd.down.warn", "Invalid PeerSocket in Museek::Download::initiate()");
         return;
     }
 
@@ -295,7 +295,7 @@ Museek::Download::initiate(PeerSocket * socket) {
 
 	m_Ticket = m_Museekd->token();
 
-	NNLOG("museek.debug", "initiating download sequence %u", m_Ticket);
+	NNLOG("museekd.down.debug", "Initiating download sequence %u", m_Ticket);
 
     museekd()->downloads()->setTransferReplyCallback(socket->transferReplyReceivedEvent.connect(museekd()->downloads(), &DownloadManager::onPeerTransferReplyReceived));
 
@@ -335,7 +335,7 @@ Museek::DownloadManager::DownloadManager(Museekd * museekd) : m_Museekd(museekd)
 
 Museek::DownloadManager::~DownloadManager()
 {
-    NNLOG("museek.debug", "Download Manager destroyed");
+    NNLOG("museekd.down.debug", "Download Manager destroyed");
 }
 
 /**
@@ -360,7 +360,7 @@ Museek::DownloadManager::askPendingFolderContents(PeerSocket * socket) {
 
         for (it = m_ContentsPending.begin(); it != m_ContentsPending.end() ; it++) {
             if (socket->user() == it->first) {
-                NNLOG("museek.debug", "Asking pending folder contents to %s", it->first.c_str());
+                NNLOG("museekd.down.debug", "Asking pending folder contents to %s", it->first.c_str());
                 for (fit = (*it).second.begin(); fit != (*it).second.end(); fit++) {
                     m_ContentsAsked[(*it).first][(*fit).first] = (*fit).second;
 
@@ -384,7 +384,7 @@ Museek::DownloadManager::askPendingPlaces(PeerSocket * socket) {
 
         for (it = m_PlacesPending.begin(); it != m_PlacesPending.end() ; it++) {
             if (socket->user() == it->first) {
-                NNLOG("museek.debug", "Asking pending place in queue to %s", it->first.c_str());
+                NNLOG("museekd.down.debug", "Asking pending place in queue to %s", it->first.c_str());
                 for (pit = (*it).second.begin(); pit != (*it).second.end(); pit++) {
                     PPlaceInQueueRequest msg(museekd()->codeset()->toPeer((*it).first, *pit));
                     socket->sendMessage(msg.make_network_packet());
@@ -400,7 +400,7 @@ Museek::DownloadManager::askPendingPlaces(PeerSocket * socket) {
  */
 void Museek::DownloadManager::addFolderContents(const std::string & user, const Folders & folders) {
     if (m_ContentsAsked.find(user) == m_ContentsAsked.end()) {
-        NNLOG("museek.warn", "Unexpected folder content from %s.", user.c_str());
+        NNLOG("museekd.down.warn", "Unexpected folder content from %s.", user.c_str());
         return;
     }
 
@@ -412,7 +412,7 @@ void Museek::DownloadManager::addFolderContents(const std::string & user, const 
         // The (optional) local path where the folder should be downloaded
         std::string localPathBase = m_ContentsAsked[user].find(remotePathBase)->second;
         if (m_ContentsAsked[user].find(remotePathBase) == m_ContentsAsked[user].end()) {
-            NNLOG("museek.warn", "Unexpected folder content from %s.", user.c_str());
+            NNLOG("museekd.down.warn", "Unexpected folder content from %s.", user.c_str());
             continue;
         }
 
@@ -509,7 +509,7 @@ void Museek::DownloadManager::onDownloadUpdated(Download * download) {
   */
 void Museek::DownloadManager::addDownloading(Download * download) {
     if (isDownloadingFrom(download->user()) != download) {
-        NNLOG("museek.debug", "We're downloading from %s", download->user().c_str());
+        NNLOG("museekd.down.debug", "We're downloading from %s", download->user().c_str());
         m_Downloading[download->user()] = download;
     }
 }
@@ -520,7 +520,7 @@ void Museek::DownloadManager::addDownloading(Download * download) {
 void Museek::DownloadManager::removeDownloading(const std::string & user) {
     std::map<std::string, NewNet::WeakRefPtr<Download> >::iterator it = m_Downloading.find(user);
     if (it != m_Downloading.end()) {
-        NNLOG("museek.debug", "Not downloading from %s", user.c_str());
+        NNLOG("museekd.down.debug", "Not downloading from %s", user.c_str());
         m_Downloading.erase(it);
         updateRates();
     }
@@ -531,7 +531,7 @@ void Museek::DownloadManager::removeDownloading(const std::string & user) {
   */
 void Museek::DownloadManager::addInitiating(Download * download) {
     if (isInitiatingFrom(download->user()) != download) {
-        NNLOG("museek.debug", "We're initiating the download from %s", download->user().c_str());
+        NNLOG("museekd.down.debug", "We're initiating the download from %s", download->user().c_str());
         m_Initiating[download->user()] = download;
     }
 }
@@ -542,7 +542,7 @@ void Museek::DownloadManager::addInitiating(Download * download) {
 void Museek::DownloadManager::removeInitiating(const std::string & user) {
     std::map<std::string, NewNet::WeakRefPtr<Download> >::iterator it = m_Initiating.find(user);
     if (it != m_Initiating.end()) {
-        NNLOG("museek.debug", "Not initiating to %s", user.c_str());
+        NNLOG("museekd.down.debug", "Not initiating to %s", user.c_str());
         m_Initiating.erase(it);
     }
 }
@@ -572,7 +572,7 @@ Museek::Download * Museek::DownloadManager::isInitiatingFrom(const std::string &
   */
 void Museek::DownloadManager::checkDownloads() {
     if (m_AllowUpdate) {
-        NNLOG("museek.debug", "Checking if there are some downloads to start");
+        NNLOG("museekd.down.debug", "Checking if there are some downloads to start");
 
         std::vector<NewNet::RefPtr<Download> >::iterator it = m_Downloads.begin();
         Download * download;
@@ -618,7 +618,7 @@ void Museek::DownloadManager::updateRates() {
 void
 Museek::DownloadManager::enqueueDownload(Download * download)
 {
-    NNLOG("museek.debug", "Enqueuing %s", download->remotePath().c_str());
+    NNLOG("museekd.down.debug", "Enqueuing %s", download->remotePath().c_str());
     download->setEnqueued(true);
     if (std::find(m_EnqueuingPending[download->user()].begin(), m_EnqueuingPending[download->user()].end(), download->remotePath()) == m_EnqueuingPending[download->user()].end())
         m_EnqueuingPending[download->user()].push_back(download->remotePath());
@@ -635,7 +635,7 @@ Museek::DownloadManager::askPendingEnqueuing(PeerSocket * socket)
         std::vector<std::string>::iterator eit;
         for ( it = m_EnqueuingPending.begin(); it != m_EnqueuingPending.end(); it++) {
             if (it->first == socket->user()) {
-                NNLOG("museek.debug", "Sending pending enqueuing request to %s", it->first.c_str());
+                NNLOG("museekd.down.debug", "Sending pending enqueuing request to %s", it->first.c_str());
                 for (eit = (*it).second.begin(); eit != (*it).second.end(); eit++) {
                     PQueueDownload msg(museekd()->codeset()->toPeer(it->first, *eit));
                     socket->sendMessage(msg.make_network_packet());
@@ -664,7 +664,7 @@ Museek::DownloadManager::add(const std::string & user, const std::string & path,
         else
             download->setTicket(ticket);
         m_Downloads.push_back(download);
-        NNLOG("museek.debug", "Created new download entry, user=%s, path=%s, ticket=%u.", user.c_str(), path.c_str(), download->ticket());
+        NNLOG("museekd.down.debug", "Created new download entry, user=%s, path=%s, ticket=%u.", user.c_str(), path.c_str(), download->ticket());
         downloadAddedEvent(download);
     }
     else if (download->state() == TS_Offline || !museekd()->server()->loggedIn()) {
@@ -678,7 +678,7 @@ Museek::DownloadManager::add(const std::string & user, const std::string & path,
     // Check that we don't already have this file downloaded in destination dir
     std::ifstream file(download->destinationPath().c_str(), std::fstream::in | std::fstream::binary);
     if(file.is_open()) {
-        NNLOG("museek.debug", "%s has already been downloaded.", path.c_str());
+        NNLOG("museekd.down.debug", "%s has already been downloaded.", path.c_str());
         download->setState(TS_Finished);
         file.close();
     }
@@ -700,7 +700,7 @@ Museek::DownloadManager::findDownload(const std::string & user, const std::strin
             return *it;
     }
 
-    NNLOG("museek.debug", "Download %s not found", path.c_str());
+    NNLOG("museekd.down.debug", "Download %s not found", path.c_str());
     return 0;
 }
 
@@ -717,7 +717,7 @@ Museek::DownloadManager::findDownload(const std::string & user, uint ticket)
             return *it;
     }
 
-    NNLOG("museek.debug", "Download not found");
+    NNLOG("museekd.down.debug", "Download with ticket %d not found", ticket);
     return 0;
 }
 
@@ -820,7 +820,7 @@ Museek::DownloadManager::onPeerTransferReplyReceived(const PTransferReply * mess
 
     if(message->allowed) {
         // Transfer can start immediately, no queue at remote end.
-        NNLOG("museek.debug", "Got transfer reply: user=%s,path=%s,ticket=%u,allowed=yes,filesize=%llu. Initiating download.", user.c_str(), download->remotePath().c_str(), download->ticket(), message->filesize);
+        NNLOG("museekd.down.debug", "Got transfer reply: user=%s,path=%s,ticket=%u,allowed=yes,filesize=%llu. Initiating download.", user.c_str(), download->remotePath().c_str(), download->ticket(), message->filesize);
         download->setSize(message->filesize);
         DownloadSocket * downloadSocket = new DownloadSocket(museekd(), download);
         download->setSocket(downloadSocket);
@@ -829,7 +829,7 @@ Museek::DownloadManager::onPeerTransferReplyReceived(const PTransferReply * mess
     }
     else {
         // Transfer (currently) not possible.
-        NNLOG("museek.debug", "Got transfer reply: user=%s,path=%s,ticket=%u,allowed=no,reason=%s", user.c_str(), download->remotePath().c_str(), download->ticket(), message->reason.c_str());
+        NNLOG("museekd.down.debug", "Got transfer reply: user=%s,path=%s,ticket=%u,allowed=no,reason=%s", user.c_str(), download->remotePath().c_str(), download->ticket(), message->reason.c_str());
         download->setRemoteError(message->reason);
     }
 }
@@ -856,14 +856,14 @@ void Museek::DownloadManager::onPeerSocketReady(PeerSocket * socket) {
 	    download = *it;
 	    if (download->user() == socket->user() && download->state() == TS_QueuedRemotely && !download->enqueued()) {
             if (!isDownloadingFrom(download->user())) {
-                NNLOG("museek.debug", "Starting download %s", download->remotePath().c_str());
+                NNLOG("museekd.down.debug", "Starting download %s", download->remotePath().c_str());
                 // Starting from 157, there's no need to send a PTransferRequest. Enqueuing the file is sufficient
                 download->setState(TS_Initiating);
                 download->setInitTimeout(museekd()->reactor()->addTimeout(10000, download, &Download::initTimedOut));
                 enqueueDownload(download);
             }
             else {
-                NNLOG("museek.debug", "Enqueueing download %s", download->remotePath().c_str());
+                NNLOG("museekd.down.debug", "Enqueueing download %s", download->remotePath().c_str());
                 enqueueDownload(download);
             }
 	    }
@@ -976,19 +976,19 @@ void Museek::DownloadManager::loadDownloads() {
     std::ifstream file(path.c_str(), std::fstream::in | std::fstream::binary);
 
 	if(file.fail() || !file.is_open()) {
-		NNLOG("museek.debug", "Cannot load downloads (%s).", path.c_str());
+		NNLOG("museekd.config.warn", "Cannot load downloads (%s).", path.c_str());
         file.close();
 		return;
 	}
 
     uint32 n;
     if (!read_int(&file, &n)) {
-		NNLOG("museek.debug", "Cannot load number of downloads.");
+		NNLOG("museekd.down.warn", "Cannot load number of downloads.");
         file.close();
 		return;
     }
 
-	NNLOG("museek.debug", "Loading %d downloads", n);
+	NNLOG("museekd.down.debug", "Loading %d downloads", n);
 
 	while(n) {
 		uint32 state;
@@ -1000,12 +1000,12 @@ void Museek::DownloadManager::loadDownloads() {
 		   !read_str(&file, path) ||
 		   !read_str(&file, localpath) ||
 		   !read_str(&file, temppath)) {
-			NNLOG("museek.debug", "Cannot load downloads. Bailing out");
+			NNLOG("museekd.config.warn", "Cannot load downloads. Bailing out");
             file.close();
 			return;
 		}
 		if (!path.empty()) {
-            NNLOG("museek.debug", "Loading download: %s from %s (size: %d)", path.c_str(), user.c_str(), size);
+            NNLOG("museekd.down.debug", "Loading download: %s from %s (size: %d)", path.c_str(), user.c_str(), size);
             size_t posB = localpath.find_last_of(NewNet::Path::separator());
             add(user, path, localpath.substr(0, posB));
             Download * dl = findDownload(user, path);
@@ -1028,7 +1028,7 @@ void Museek::DownloadManager::loadDownloads() {
             }
 		}
 		else
-		    NNLOG("museek.warn", "Couldn't load a corrupted download: %s from %s (size: %d)", path.c_str(), user.c_str(), size);
+		    NNLOG("museekd.config.warn", "Couldn't load a corrupted download: %s from %s (size: %d)", path.c_str(), user.c_str(), size);
 
 		n--;
 	}
@@ -1051,7 +1051,7 @@ void Museek::DownloadManager::saveDownloads() {
         std::ofstream file(pathTemp.c_str(), std::ofstream::binary | std::ofstream::app | std::ofstream::ate);
 
         if(file.fail() || !file.is_open()) {
-            NNLOG("museek.debug", "Cannot save downloads (%s). Trying again later", path.c_str());
+            NNLOG("museekd.config.warn", "Cannot save downloads (%s). Trying again later", path.c_str());
             m_AllowSave = true;
             return;
         }
@@ -1063,10 +1063,10 @@ void Museek::DownloadManager::saveDownloads() {
             if((*it)->state() != TS_Finished)
                 transfers++;
 
-        NNLOG("museek.debug", "Saving %d downloads", transfers);
+        NNLOG("museekd.down.debug", "Saving %d downloads", transfers);
 
         if(!write_int(&file, transfers) == -1) {
-            NNLOG("museek.debug", "Cannot save downloads number, trying again later.");
+            NNLOG("museekd.config.warn", "Cannot save downloads number, trying again later.");
             file.close();
             m_AllowSave = true;
             return;
@@ -1101,7 +1101,7 @@ void Museek::DownloadManager::saveDownloads() {
                write_str(&file, (*it)->remotePath()) == -1 ||
                write_str(&file, museekd()->codeset()->fromFsToUtf8((*it)->destinationPath(), false)) == -1 ||
                write_str(&file, tmpPath) == -1) {
-                NNLOG("museek.debug", "Cannot save downloads, trying again later.");
+                NNLOG("museekd.config.warn", "Cannot save downloads, trying again later.");
                 file.close();
                 m_AllowSave = true;
                 return;
@@ -1118,7 +1118,7 @@ void Museek::DownloadManager::saveDownloads() {
             // Rename the temp file to the correct path.
             if(rename(pathTemp.c_str(), path.c_str()) == -1) {
                 // Something happened. But nobody knows what.
-                NNLOG("museek.warn", "Renaming downloads config file failed for unknown reason.");
+                NNLOG("museekd.config.warn", "Renaming downloads config file failed for unknown reason.");
             }
         }
 
@@ -1128,7 +1128,7 @@ void Museek::DownloadManager::saveDownloads() {
             saveDownloads();
     }
     else {
-        NNLOG("museek.debug", "Delaying downloads saving");
+        NNLOG("museekd.down.debug", "Delaying downloads saving");
         m_PendingDownloadsSave = true;
     }
 }

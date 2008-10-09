@@ -238,7 +238,7 @@ void NetworkMessage::compress()
   else
   {
     // Ok, this might need some improvement.
-    NNLOG("museek.warn", "Corrupted message created (compression error).");
+    NNLOG("museekd.warn", "Corrupted message created (compression error).");
     buffer.seek(buffer.count());
   }
 
@@ -276,7 +276,7 @@ void NetworkMessage::decompress()
     delete [] outbuf;
     if (err != Z_MEM_ERROR)
       inflateEnd(&zst);
-    NNLOG("museek.warn", "Corrupted packet encountered (decompression error).");
+    NNLOG("museekd.warn", "Corrupted packet encountered (decompression error).");
     return;
   }
 
@@ -296,7 +296,7 @@ void NetworkMessage::decompress()
           inflateEnd(&zst);
           buffer.seek(buffer.count());
           delete [] outbuf;
-          NNLOG("museek.warn", "Corrupted packet encountered (decompression error).");
+          NNLOG("museekd.warn", "Corrupted packet encountered (decompression error).");
           return;
         }
       case Z_OK:
@@ -307,7 +307,7 @@ void NetworkMessage::decompress()
         break;
       default:
         // Bad stuff...
-        NNLOG("museek.warn", "Corrupted packet encountered (decompression error).");
+        NNLOG("museekd.warn", "Corrupted packet encountered (decompression error).");
         inflateEnd(&zst);
         buffer.seek(buffer.count());
         delete [] outbuf;

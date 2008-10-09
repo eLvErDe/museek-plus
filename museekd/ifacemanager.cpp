@@ -131,7 +131,7 @@ Museek::IfaceManager::addListener(const std::string & path)
     factory->serverSocket()->listen(path);
     if(factory->serverSocket()->socketState() != NewNet::Socket::SocketListening)
     {
-      NNLOG("museek.warn", "Couldn't listen on unix path '%s'.", path.c_str());
+      NNLOG("museekd.iface.warn", "Couldn't listen on unix path '%s'.", path.c_str());
       return false;
     }
     m_Factories[path] = factory;
@@ -144,7 +144,7 @@ Museek::IfaceManager::addListener(const std::string & path)
     std::string::size_type ix = path.find(':');
     if(ix == std::string::npos)
     {
-      NNLOG("museek.warn", "Invalid TCP description: '%s'.", path.c_str());
+      NNLOG("museekd.iface.warn", "Invalid TCP description: '%s'.", path.c_str());
       return false;
     }
     std::string host = path.substr(0, ix);
@@ -155,7 +155,7 @@ Museek::IfaceManager::addListener(const std::string & path)
     factory->serverSocket()->listen(host, port);
     if(factory->serverSocket()->socketState() != NewNet::Socket::SocketListening)
     {
-      NNLOG("museek.warn", "Couldn't listen on '%s:%u'", host.c_str(), port);
+      NNLOG("museekd.iface.warn", "Couldn't listen on '%s:%u'", host.c_str(), port);
       return false;
     }
     m_Factories[path] = factory;
@@ -163,7 +163,7 @@ Museek::IfaceManager::addListener(const std::string & path)
     museekd()->reactor()->add(factory->serverSocket());
   }
 
-  NNLOG("museek.note", "Listening on '%s'.", path.c_str());
+  NNLOG("museekd.iface.debug", "Listening on '%s'.", path.c_str());
   return true;
 }
 
@@ -249,7 +249,7 @@ Museek::IfaceManager::sendNewSearchToAll(const std::string & query, uint token) 
 void
 Museek::IfaceManager::onIfaceAccepted(IfaceSocket * socket)
 {
-  NNLOG("museek.debug", "Accepted new interface socket.");
+  NNLOG("museekd.iface.debug", "Accepted new interface socket.");
   m_Ifaces.push_back(socket);
 
   // Connect the events
@@ -329,7 +329,7 @@ Museek::IfaceManager::onIfaceLogin(const ILogin * message)
   std::string password = museekd()->config()->get("interfaces", "password");
   if(password.empty())
   {
-    NNLOG("museek.warn", "Rejecting login attempt because of empty password.");
+    NNLOG("museekd.iface.warn", "Rejecting login attempt because of empty password.");
     message->ifaceSocket()->setChallenge(challenge());
     SEND_MESSAGE(message->ifaceSocket(), ILogin(false, "INVPASS", message->ifaceSocket()->challenge()));
     return;
@@ -357,7 +357,7 @@ Museek::IfaceManager::onIfaceLogin(const ILogin * message)
   }
   else
   {
-    NNLOG("museek.warn", "Rejected login attempt because of unknown hash algorithm.");
+    NNLOG("museekd.iface.warn", "Rejected login attempt because of unknown hash algorithm.");
     message->ifaceSocket()->setChallenge(challenge());
     SEND_MESSAGE(message->ifaceSocket(), ILogin(false, "INVHASH", message->ifaceSocket()->challenge()));
     return;
@@ -367,13 +367,13 @@ Museek::IfaceManager::onIfaceLogin(const ILogin * message)
   hexDigest(digest, digest_len, hexdigest);
   if(message->chresponse != hexdigest)
   {
-    NNLOG("museek.warn", "Rejected login attempt because of incorrect password.");
+    NNLOG("museekd.iface.warn", "Rejected login attempt because of incorrect password.");
     message->ifaceSocket()->setChallenge(challenge());
     SEND_MESSAGE(message->ifaceSocket(), ILogin(false, "INVPASS", message->ifaceSocket()->challenge()));
   }
   else
   {
-    NNLOG("museek.note", "Interface successfully logged in.");
+    NNLOG("museekd.iface.debug", "Interface successfully logged in.");
     IfaceSocket * socket = message->ifaceSocket();
     socket->setAuthenticated(true);
     socket->setMask(message->mask);
@@ -961,7 +961,7 @@ Museek::IfaceManager::onServerItemSimilarUsersReceived(const SGetItemSimilarUser
 void
 Museek::IfaceManager::onServerUserInterestsReceived(const SUserInterests * message)
 {
-  NNLOG("museek.debug", "%s has %d likes and %d hates", message->user.c_str(), message->likes.size(), message->hates.size());
+  NNLOG("museekd.iface.debug", "%s has %d likes and %d hates", message->user.c_str(), message->likes.size(), message->hates.size());
   SEND_MASK(EM_USERINFO, IUserInterests(message->user, message->likes, message->hates));
 }
 
