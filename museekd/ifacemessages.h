@@ -1631,7 +1631,7 @@ IFACEMESSAGE(IRemoveHatedInterest, 0x0613)
 
 	string interest -- Name of the Interest to remove
 
-	string interest -- Name of the Interest remove
+	string interest -- Name of the Interest removed
 */
 
 	IRemoveHatedInterest() {}
@@ -1646,6 +1646,44 @@ IFACEMESSAGE(IRemoveHatedInterest, 0x0613)
 	END_PARSE
 
 	std::string interest;
+END
+
+
+IFACEMESSAGE(IUserInterests, 0x0614)
+/*
+	Get user interests -- User interests received
+
+	string user -- Name of the user
+
+	string user -- Name of the user
+	uint numliked  --  Number of 'I like'
+	*repeat numliked*
+		string helikes -- 'I like' item
+	uint numhated  --  Number of 'I hate'
+	*repeat numhated*
+		string hehate -- 'I hate' item
+*/
+
+	IUserInterests() {}
+	IUserInterests(const std::string& _u, const StringList& _l, const StringList& _h) : user(_u), liked(_l), hated(_h) {}
+
+	MAKE
+		pack(user);
+		pack((uint32)liked.size());
+		StringList::const_iterator it = liked.begin();
+		for(; it != liked.end(); ++it)
+			pack((*it));
+		pack((uint32)hated.size());
+		for(it = hated.begin(); it != hated.end(); ++it)
+			pack((*it));
+	END_MAKE
+
+	PARSE
+		user = unpack_string();
+	END_PARSE
+
+	std::string user;
+	StringList liked, hated;
 END
 
 

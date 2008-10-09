@@ -265,6 +265,7 @@ Museek::IfaceManager::onIfaceAccepted(IfaceSocket * socket)
   socket->getPeerStatusEvent.connect(this, &IfaceManager::onIfaceGetPeerStatus);
   socket->getPeerStatsEvent.connect(this, &IfaceManager::onIfaceGetPeerStats);
   socket->getUserInfoEvent.connect(this, &IfaceManager::onIfaceGetUserInfo);
+  socket->getUserInterestsEvent.connect(this, &IfaceManager::onIfaceGetUserInterests);
   socket->getUserSharesEvent.connect(this, &IfaceManager::onIfaceGetUserShares);
   socket->getPeerAddressEvent.connect(this, &IfaceManager::onIfaceGetPeerAddress);
   socket->givePrivilegesEvent.connect(this, &IfaceManager::onIfaceGivePrivileges);
@@ -477,11 +478,14 @@ Museek::IfaceManager::onIfaceGetUserInfo(const IUserInfo * message)
   if (std::find(m_PendingInfoWaiting.begin(), m_PendingInfoWaiting.end(), message->user) == m_PendingInfoWaiting.end())
     m_PendingInfoWaiting.push_back(message->user);
 
-  // Also check the user's Interests
-  // TODO we need a new iface message for this
-  m_Museekd->server()->sendMessage(SUserInterests(message->user).make_network_packet());
-
   museekd()->peers()->peerSocket(message->user);
+}
+
+void
+Museek::IfaceManager::onIfaceGetUserInterests(const IUserInterests * message)
+{
+  // Check the user's Interests
+  m_Museekd->server()->sendMessage(SUserInterests(message->user).make_network_packet());
 }
 
 void
@@ -957,10 +961,8 @@ Museek::IfaceManager::onServerItemSimilarUsersReceived(const SGetItemSimilarUser
 void
 Museek::IfaceManager::onServerUserInterestsReceived(const SUserInterests * message)
 {
-  // FIXME Until we have a proper iface message, send a StatusMessage
-  bool type = false;
-  std::string msg =  message->user + (" has ") + itos(message->likes.size()) + (" likes and ") + itos(message->hates.size()) + (" hates");
-  SEND_ALL(IStatusMessage(type, msg));
+  NNLOG("museek.debug", "%s has %d likes and %d hates", message->user.c_str(), message->likes.size(), message->hates.size());
+  SEND_MASK(EM_USERINFO, IUserInterests(message->user, message->likes, message->hates));
 }
 
 void

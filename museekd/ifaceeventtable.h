@@ -67,6 +67,7 @@ MAP_MESSAGE(0x0610, IAddInterest, addInterestEvent)
 MAP_MESSAGE(0x0611, IRemoveInterest, removeInterestEvent)
 MAP_MESSAGE(0x0612, IAddHatedInterest, addHatedInterestEvent)
 MAP_MESSAGE(0x0613, IRemoveHatedInterest, removeHatedInterestEvent)
+MAP_MESSAGE(0x0614, IUserInterests, getUserInterestsEvent)
 
 MAP_MESSAGE(0x0700, IConnectServer, connectToServerEvent)
 MAP_MESSAGE(0x0701, IDisconnectServer, disconnectFromServerEvent)

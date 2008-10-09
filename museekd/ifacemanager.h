@@ -96,6 +96,7 @@ namespace Museek
     void onIfaceGetPeerStatus(const IPeerStatus * message);
     void onIfaceGetPeerStats(const IPeerStats * message);
     void onIfaceGetUserInfo(const IUserInfo * message);
+    void onIfaceGetUserInterests(const IUserInterests * message);
     void onIfaceGetUserShares(const IUserShares * message);
     void onIfaceGetPeerAddress(const IPeerAddress * message);
     void onIfaceGivePrivileges(const IGivePrivileges * message);
