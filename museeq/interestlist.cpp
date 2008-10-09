@@ -20,46 +20,43 @@
 #include "museeq.h"
 #include "interestlist.h"
 #include "interestlistview.h"
+#include "interestlistitem.h"
 
 #include <QLineEdit>
 #include <QLayout>
 #include <QLabel>
 
-InterestList::InterestList(const QString& caption, QWidget* parent, const char* name)
-             : QWidget(parent) {
+InterestList::InterestList(const QString& caption, QWidget* parent, bool readOnly)
+             : QWidget(parent), mReadOnly(readOnly) {
 	QVBoxLayout* vbox = new QVBoxLayout(this);
 	vbox->setSpacing(5);
 	vbox->setMargin(0);
-	mListView = new InterestListView(caption, this);
+	mListView = new InterestListView(caption, this, mReadOnly);
 	vbox->addWidget(mListView);
-	QHBoxLayout* hbox = new QHBoxLayout;
-	hbox->setSpacing(3);
-	hbox->setMargin(2);
-	vbox->addLayout(hbox);
-	hbox->addWidget(new QLabel(tr("Add:")));
-	mEntry = new QLineEdit(this);
-	hbox->addWidget(mEntry);
+	if (!mReadOnly) {
+        QHBoxLayout* hbox = new QHBoxLayout;
+        hbox->setSpacing(3);
+        hbox->setMargin(2);
+        vbox->addLayout(hbox);
+        hbox->addWidget(new QLabel(tr("Add:")));
+        mEntry = new QLineEdit(this);
+        hbox->addWidget(mEntry);
 
-	if ( caption == tr("I like:") ) {
-		connect(mEntry, SIGNAL(returnPressed()), SLOT(slotDoAddInterest()));
- 	}
-	else if ( caption == tr("I hate:") ) {
-		connect(mEntry, SIGNAL(returnPressed()), SLOT(slotDoAddHatedInterest()));
-
+        if ( caption == tr("I like:") )
+            connect(mEntry, SIGNAL(returnPressed()), SLOT(slotDoAddInterest()));
+        else if ( caption == tr("I hate:") )
+            connect(mEntry, SIGNAL(returnPressed()), SLOT(slotDoAddHatedInterest()));
 	}
 }
 
 void InterestList::added(const QString& item) {
-
 	QList<QTreeWidgetItem *> InterestsMatch = mListView->findItems(item, Qt::MatchExactly, 0);
 	if (! InterestsMatch.isEmpty())
 		return;
-	QTreeWidgetItem * listItem = new QTreeWidgetItem(mListView);
-	listItem->setText(0, item);
+	InterestListItem * listItem = new InterestListItem(mListView, item);
 }
 
 void InterestList::removed(const QString& item) {
-
 	QList<QTreeWidgetItem *> InterestsMatch = mListView->findItems(item, Qt::MatchExactly, 0);
 	if (InterestsMatch.isEmpty())
 		return;
@@ -67,7 +64,6 @@ void InterestList::removed(const QString& item) {
 	if (! i)
 		return;
 	delete i;
-
 }
 
 void InterestList::slotDoAddInterest() {
@@ -84,9 +80,4 @@ void InterestList::slotDoAddHatedInterest() {
 		return;
 	mEntry->setText(QString::null);
 	museeq->addHatedInterest(s);
-}
-void InterestList::slotDoRemoveInterest() {
-}
-
-void InterestList::slotDoRemoveHatedInterest() {
 }

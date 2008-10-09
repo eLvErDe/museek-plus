@@ -26,6 +26,7 @@
 #include <Mucipher/mucipher.h>
 #include <QByteArray>
 #include <QList>
+#include <QStringList>
 
 class MuseekMessage {
 public:
@@ -129,6 +130,17 @@ public:
 		while(n) {
 			QString s = unpack_str();
 			r[s] = unpack_user();
+			--n;
+		}
+		return r;
+	}
+
+	QStringList unpack_stringList() {
+		QStringList r;
+		uint n = unpack_uint();
+		while(n) {
+			QString s = unpack_str();
+			r << s;
 			--n;
 		}
 		return r;
@@ -473,6 +485,22 @@ MESSAGE(NRemoveHatedInterest, 0x0613)
 
 	PARSE
 		interest = unpack_str();
+	END
+END
+
+MESSAGE(NUserInterests, 0x0614)
+	QString user;
+	QStringList likes;
+	QStringList hates;
+
+	NUserInterests(const QString& _user) {
+		pack(_user);
+	}
+
+	PARSE
+		user = unpack_str();
+		likes = unpack_stringList();
+		hates = unpack_stringList();
 	END
 END
 

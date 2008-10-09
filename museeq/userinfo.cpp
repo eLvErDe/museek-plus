@@ -21,6 +21,7 @@
 #include "images.h"
 #include "codeccombo.h"
 #include "museeq.h"
+#include "interestlist.h"
 
 #include <QSplitter>
 #include <QTextEdit>
@@ -100,6 +101,8 @@ UserInfo::UserInfo(const QString& user, QWidget* parent, const char* name)
 	vbox->setMargin(5);
 	vbox->setSpacing(5);
 	split->setStretchFactor ( 0, 5 );
+
+
 	QGroupBox* frame = new QGroupBox(tr("Description"), statsWidget);
 	vbox->addWidget(frame);
 	QVBoxLayout* DescriptionLayout = new QVBoxLayout(frame);
@@ -135,15 +138,28 @@ UserInfo::UserInfo(const QString& user, QWidget* parent, const char* name)
 	connect(mRefresh, SIGNAL(clicked()), SLOT(getUserInfo()));
 
 
+	frame = new QGroupBox(tr("Interests"), split);
+	vbox = new QVBoxLayout(frame);
+	vbox->setMargin(5);
+
+	mHeLoves = new InterestList(tr("He likes:"), 0, true);
+	vbox->addWidget(mHeLoves);
+	mHeHates = new InterestList(tr("He hates:"), 0, true);
+	vbox->addWidget(mHeHates);
+
+
 	frame = new QGroupBox(tr("Picture"), split);
 	vbox = new QVBoxLayout(frame);
 	vbox->setMargin(5);
 	mView = new ScrollImage(frame);
 	vbox->addWidget(mView);
 }
+
 void UserInfo::getUserInfo() {
 	museeq->getUserInfo(mUser);
+	museeq->getUserInterests(mUser);
 }
+
 void UserInfo::setInfo(const QString& info, const QByteArray& picture, uint upslots, uint queue, bool free) {
 	mDescr->setText(info);
 	mSlots->setText(QString::number(upslots));
@@ -155,5 +171,16 @@ void UserInfo::setInfo(const QString& info, const QByteArray& picture, uint upsl
 		mView->setPixmap(p, user());
 	} else
 		mView->setPixmap(QPixmap(), user());
+	emit(highlight(1));
+}
+
+void UserInfo::setInterests(const QStringList& likes, const QStringList& hates) {
+    QStringList::const_iterator it = likes.begin();
+    for (; it != likes.end(); it++)
+        mHeLoves->added(*it);
+
+    for (it = hates.begin(); it != hates.end(); it++)
+        mHeHates->added(*it);
+
 	emit(highlight(1));
 }

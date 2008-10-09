@@ -76,6 +76,7 @@ signals:
 	void roomTickerSet(const QString&, const QString&, const QString&);
 	void privateMessage(uint, uint, const QString&, const QString&);
 	void userInfo(const QString&, const QString&, const QByteArray&, uint, uint, bool);
+	void userInterests(const QString&, const QStringList&, const QStringList&);
 	void userShares(const QString&, const NShares&);
 	void transferState(const NTransfers&, const NTransfers&);
 	void transferUpdate(bool, const NTransfer&);
@@ -120,6 +121,7 @@ public slots:
 	void doJoinRoom(const QString&);
 	void doLeaveRoom(const QString&);
 	void getUserInfo(const QString&);
+	void getUserInterests(const QString&);
 	void getUserShares(const QString&);
 	void givePrivileges(const QString&, uint);
 	void doDownloadFile(const QString&, const QString&, qint64);

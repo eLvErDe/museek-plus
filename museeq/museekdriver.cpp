@@ -239,6 +239,11 @@ void MuseekDriver::dataReady() {
 		emit removeHatedInterest(m.interest);
 		break;
 	}
+	case 0x0614: {
+		NUserInterests m(data);
+		emit userInterests(m.user, m.likes, m.hates);
+		break;
+	}
 	case 0x0004: {
 		NCheckPrivileges m(data);
 		emit privilegesLeft(m.secondsleft);
@@ -435,6 +440,10 @@ void MuseekDriver::getUserShares(const QString& user) {
 
 void MuseekDriver::getUserInfo(const QString& user) {
 	send(NUserInfo(user));
+}
+
+void MuseekDriver::getUserInterests(const QString& user) {
+	send(NUserInterests(user));
 }
 
 void MuseekDriver::doDownloadFileTo(const QString& user, const QString& path, const QString& local, qint64 size) {

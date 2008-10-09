@@ -92,6 +92,7 @@ Museeq::Museeq(QApplication * app)
 	connect(mDriver, SIGNAL(searchResults(uint, const QString&, bool, uint, uint, const NFolder&)), SIGNAL(searchResults(uint, const QString&, bool, uint, uint, const NFolder&)));
 	connect(mDriver, SIGNAL(searchToken(const QString&, uint)), SIGNAL(searchToken(const QString&, uint)));
 	connect(mDriver, SIGNAL(userInfo(const QString&, const QString&, const QByteArray&, uint, uint, bool)), SIGNAL(userInfo(const QString&, const QString&, const QByteArray&, uint, uint, bool)));
+	connect(mDriver, SIGNAL(userInterests(const QString&, const QStringList&, const QStringList&)), SIGNAL(userInterests(const QString&, const QStringList&, const QStringList&)));
 	connect(mDriver, SIGNAL(userShares(const QString&, const NShares&)), SIGNAL(userShares(const QString&, const NShares&)));
 	connect(mDriver, SIGNAL(roomList(const NRoomList&)), SIGNAL(roomList(const NRoomList&)));
 	connect(mDriver, SIGNAL(Recommendations(const NGlobalRecommendations&)), SIGNAL(Recommendations(const NGlobalRecommendations&)));
@@ -547,6 +548,10 @@ void Museeq::terminateSearch(uint token) {
 
 void Museeq::getUserInfo(const QString& user) {
 	mDriver->getUserInfo(user);
+}
+
+void Museeq::getUserInterests(const QString& user) {
+	mDriver->getUserInterests(user);
 }
 
 void Museeq::getUserShares(const QString& user) {

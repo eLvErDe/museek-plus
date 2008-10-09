@@ -23,18 +23,25 @@
 
 UserInfos::UserInfos(QWidget* parent, const char* name)
           : UserTabWidget(parent, name) {
-	
+
 	connect(museeq, SIGNAL(userInfo(const QString&, const QString&, const QByteArray&, uint, uint, bool)), SLOT(setUserInfo(const QString&, const QString&, const QByteArray&, uint, uint, bool)));
+	connect(museeq, SIGNAL(userInterests(const QString&, const QStringList&, const QStringList&)), SLOT(setUserInterests(const QString&, const QStringList&, const QStringList&)));
 }
 
 UserWidget* UserInfos::makeNewPage(const QString& user) {
-	UserWidget* w = new UserInfo(user);
-	museeq->getUserInfo(user);
-	return w;
+	UserInfo* w = new UserInfo(user);
+	w->getUserInfo();
+	return static_cast<UserWidget*>(w);
 }
 
 void UserInfos::setUserInfo(const QString& user, const QString& info, const QByteArray& picture, uint upslots, uint queue, bool free) {
 	UserInfo* _info = static_cast<UserInfo*>(page(user));
 	if(_info)
 		_info->setInfo(info, picture, upslots, queue, free);
+}
+
+void UserInfos::setUserInterests(const QString& user, const QStringList& likes, const QStringList& hates) {
+	UserInfo* _info = static_cast<UserInfo*>(page(user));
+	if(_info)
+		_info->setInterests(likes, hates);
 }

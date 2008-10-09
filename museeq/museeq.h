@@ -165,6 +165,7 @@ public slots:
 	void terminateSearch(uint);
 
 	void getUserInfo(const QString&);
+	void getUserInterests(const QString&);
 	void getUserShares(const QString&);
 
 	void setConfig(const QString&, const QString&, const QString&);
@@ -256,6 +257,7 @@ signals:
 
 	// Peer stuff:
 	void userInfo(const QString&, const QString&, const QByteArray&, uint, uint, bool);
+	void userInterests(const QString&, const QStringList&, const QStringList&);
 	void userShares(const QString&, const NShares&);
 
 protected slots:

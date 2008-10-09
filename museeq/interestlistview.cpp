@@ -20,11 +20,12 @@
 #include "museeq.h"
 #include "interestlistview.h"
 #include "images.h"
+#include "interestlist.h"
 
 #include <QMenu>
 
-InterestListView::InterestListView( const QString& caption,  QWidget* _p, const char* _n )
-             : QTreeWidget(_p) {
+InterestListView::InterestListView( const QString& caption,  QWidget* _p, bool readOnly )
+             : QTreeWidget(_p), mReadOnly(readOnly) {
 
 	QStringList headers;
 	headers << caption ;
@@ -34,16 +35,17 @@ InterestListView::InterestListView( const QString& caption,  QWidget* _p, const 
 	setSortingEnabled(true);
 	setRootIsDecorated(false);
 	mPopup = new QMenu(this);
+    if (!mReadOnly) {
+        ActionRemove = new QAction(IMG("remove"),tr("Remove"), this);
 
-	ActionRemove = new QAction(IMG("remove"),tr("Remove"), this);
-
-	if ( caption == tr("I like:") ) {
-		connect(ActionRemove, SIGNAL(triggered()), this, SLOT(slotRemoveInterest()));
-	}
-	else if ( caption == tr("I hate:") ) {
-		connect(ActionRemove, SIGNAL(triggered()), this, SLOT(slotRemoveHatedInterest()));
-	}
-	mPopup->addAction(ActionRemove);
+        if ( caption == tr("I like:") ) {
+            connect(ActionRemove, SIGNAL(triggered()), this, SLOT(slotRemoveInterest()));
+        }
+        else if ( caption == tr("I hate:") ) {
+            connect(ActionRemove, SIGNAL(triggered()), this, SLOT(slotRemoveHatedInterest()));
+        }
+        mPopup->addAction(ActionRemove);
+    }
 
 	ActionRecommendations = new QAction(tr("Recommendations for this Item"), this);
 	connect(ActionRecommendations, SIGNAL(triggered()), this, SLOT(slotItemRecommendations()));

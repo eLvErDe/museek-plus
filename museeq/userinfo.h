@@ -24,9 +24,10 @@
 
 #include <QScrollArea>
 
+class ScrollImage;
+class InterestList;
 class QTextEdit;
 class QLabel;
-class ScrollImage;
 class QMenu;
 class QPushButton;
 class QResizeEvent;
@@ -40,6 +41,7 @@ public:
 
 public slots:
 	void setInfo(const QString&, const QByteArray&, uint, uint, bool);
+	void setInterests(const QStringList&, const QStringList&);
 	void getUserInfo();
 
 private:
@@ -48,6 +50,8 @@ private:
 	ScrollImage* mView;
 	QPushButton* mRefresh;
 	QString mUser;
+	InterestList* mHeLoves;
+	InterestList* mHeHates;
 };
 
 class ScrollImage : public QScrollArea {

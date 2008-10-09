@@ -26,10 +26,11 @@ class UserInfos : public UserTabWidget {
 	Q_OBJECT
 public:
 	UserInfos(QWidget* = 0, const char* = 0);
-	
+
 protected slots:
 	void setUserInfo(const QString&, const QString&, const QByteArray&, uint, uint, bool);
-	
+	void setUserInterests(const QString&, const QStringList&, const QStringList&);
+
 protected:
 	UserWidget* makeNewPage(const QString&);
 };

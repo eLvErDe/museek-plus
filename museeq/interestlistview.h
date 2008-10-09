@@ -27,7 +27,7 @@ class QMenu;
 class InterestListView : public QTreeWidget {
 	Q_OBJECT
 public:
-	InterestListView(const QString& = 0, QWidget* = 0, const char* = 0);
+	InterestListView(const QString& = 0, QWidget* = 0, bool readOnly = false);
 
 signals:
 
@@ -45,6 +45,7 @@ protected:
 	QAction * ActionRemove, * ActionRecommendations, * ActionItemSimilarUsers;
 	QMenu *mPopup;
 	QString mPopped;
+	bool mReadOnly;
 };
 
 #endif // INTERESTLISTVIEW_H

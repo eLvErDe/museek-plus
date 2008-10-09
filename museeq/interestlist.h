@@ -29,7 +29,8 @@ class QMenu;
 class InterestList : public QWidget {
 	Q_OBJECT
 public:
-	InterestList(const QString&, QWidget* = 0, const char* = 0);
+	InterestList(const QString&, QWidget* = 0, bool readOnly = false);
+
 	QLineEdit* mEntry;
 
 public slots:
@@ -37,8 +38,6 @@ public slots:
 	void removed(const QString&);
 	void slotDoAddInterest();
 	void slotDoAddHatedInterest();
-	void slotDoRemoveInterest();
-	void slotDoRemoveHatedInterest();
 signals:
 	void add(const QString&);
 	void remove(const QString&);
@@ -50,6 +49,7 @@ protected:
 	QMenu *mPopup;
 	QString mPopped;
 	InterestListView *mListView ;
+	bool mReadOnly;
 };
 
 #endif // INTERESTLIST_H
