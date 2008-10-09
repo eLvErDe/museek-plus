@@ -38,6 +38,7 @@ public:
 
 	void pack(const std::string& s, const bool trslash=false) { NetworkMessage::pack(s, trslash); }
 	void pack(uint32 i) { NetworkMessage::pack(i); }
+	void pack(int32 i) { NetworkMessage::pack(i); }
 	void pack(unsigned char c) { NetworkMessage::pack(c); }
 	void pack(off_t o) { NetworkMessage::pack(o); }
 
@@ -1444,8 +1445,7 @@ IFACEMESSAGE(IGetGlobalRecommendations, 0x0601)
 		Recommendations::const_iterator it = recommendations.begin();
 		for(; it != recommendations.end(); ++it) {
 			pack((*it).first);
-			pack((uint32)(*it).second);
-
+			pack((*it).second);
 		}
 
 	END_MAKE

@@ -395,12 +395,18 @@ SERVERMESSAGE(SGetRecommendations, 54)
 		uint32 n = unpack_int();
 		while(n) {
 			std::string recommendation = unpack_string();
-			recommendations[recommendation] = unpack_int();
+			recommendations[recommendation] = unpack_signed_int();
 			n--;
+		}
+		uint32 nu = unpack_int();
+		while(nu) {
+			std::string recommendation = unpack_string();
+			recommendations[recommendation] = unpack_signed_int();
+			nu--;
 		}
 	END_PARSE
 
-	std::map<std::string, uint32> recommendations;
+	std::map<std::string, int32> recommendations;
 END
 
 SERVERMESSAGE(SGetGlobalRecommendations, 56)
@@ -413,12 +419,18 @@ SERVERMESSAGE(SGetGlobalRecommendations, 56)
 		uint32 n = unpack_int();
 		while(n) {
 			std::string recommendation = unpack_string();
-			recommendations[recommendation] = unpack_int();
+			recommendations[recommendation] = static_cast<int32>(unpack_int());
 			n--;
+		}
+		uint32 nu = unpack_int();
+		while(nu) {
+			std::string recommendation = unpack_string();
+			recommendations[recommendation] = unpack_signed_int();
+			nu--;
 		}
 	END_PARSE
 
-	std::map<std::string, uint32> recommendations;
+	std::map<std::string, int32> recommendations;
 END
 
 SERVERMESSAGE(SUserInterests, 57)
@@ -632,13 +644,13 @@ SERVERMESSAGE(SGetItemRecommendations, 111)
 		uint32 n = unpack_int();
 		while(n) {
 			std::string recommendation = unpack_string();
-			recommendations[recommendation] = unpack_int();
+			recommendations[recommendation] = unpack_signed_int();
 			n--;
 		}
 	END_PARSE
 
 	std::string item;
-	std::map<std::string, uint32> recommendations;
+	std::map<std::string, int32> recommendations;
 END
 
 SERVERMESSAGE(SGetItemSimilarUsers, 112)

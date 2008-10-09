@@ -26,6 +26,7 @@
 #include <sys/types.h>
 
 typedef unsigned int uint32;
+typedef int int32;
 typedef unsigned int uint;
 typedef unsigned char uchar;
 
@@ -90,7 +91,7 @@ typedef enum _BaseConnState BaseConnState;
 typedef struct _FolderRequest FolderRequest;
 typedef StringMap Tickers;
 typedef std::map<std::string, std::wstring> WTickers;
-typedef std::map<std::string, uint32> Recommendations;
+typedef std::map<std::string, int32> Recommendations;
 typedef std::map<std::string, uint32> SimilarUsers;
 typedef std::map<std::string, std::pair<std::string, uint32> > NetInfo;
 typedef std::map<std::string, uint32> RoomList;

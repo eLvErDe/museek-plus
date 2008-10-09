@@ -26,14 +26,14 @@ class RecommendsView;
 
 class RecommendsItem : public QTreeWidgetItem {
 public:
-	RecommendsItem(RecommendsView*, const QString&, unsigned int);
+	RecommendsItem(RecommendsView*, const QString&, int);
 
 	QString interest() const;
 
 	bool operator<(const QTreeWidgetItem & other) const;
 private:
 	QString mInterest;
-	unsigned int mNum;
+	int mNum;
 };
 
 #endif // RECOMMENDSITEM_H

@@ -93,6 +93,12 @@ public:
 			r += unpack() << (j * 8);
 		return r;
 	}
+	int unpack_int() {
+		int r = -1;
+		for(int j = 0; j < 4; j++)
+			r -= (unpack() ^ 0xff) << (j * 8);
+		return r;
+	}
 	qint64 unpack_off() {
 		qint64 r = 0;
 		for(int j = 0; j < 8; j++)
@@ -368,7 +374,7 @@ MESSAGE(NGetGlobalRecommendations, 0x0601)
 		uint n = unpack_uint();
 		while(n) {
 			QString r = unpack_str();
-			recommendations[r] = unpack_uint();
+			recommendations[r] = unpack_int();
 			--n;
 		}
 	END
@@ -381,7 +387,7 @@ MESSAGE(NGetRecommendations, 0x0600)
 		uint n = unpack_uint();
 		while(n) {
 			QString r = unpack_str();
-			recommendations[r] = unpack_uint();
+			recommendations[r] = unpack_int();
 			--n;
 		}
 	END
@@ -414,7 +420,7 @@ MESSAGE(NGetItemRecommendations, 0x0603)
 		uint n = unpack_uint();
 		while(n) {
 			QString r = unpack_str();
-			recommendations[r] = unpack_uint();
+			recommendations[r] = unpack_int();
 			--n;
 		}
 	END

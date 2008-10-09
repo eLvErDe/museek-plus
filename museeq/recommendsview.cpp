@@ -62,7 +62,7 @@ RecommendsView::RecommendsView(QWidget* _p, const char* _n)
 void RecommendsView::setGlobalRecs(const NGlobalRecommendations& _r) {
 	clear();
 
-	QMap<QString, unsigned int>::const_iterator it = _r.begin();
+	QMap<QString, int>::const_iterator it = _r.begin();
 	for(; it != _r.end(); ++it)
 		new RecommendsItem(this, it.key(), it.value());
 }
@@ -70,7 +70,7 @@ void RecommendsView::setGlobalRecs(const NGlobalRecommendations& _r) {
 void RecommendsView::setRecs(const NRecommendations& _r) {
 	clear();
 
-	QMap<QString, unsigned int>::const_iterator rit = _r.begin();
+	QMap<QString, int>::const_iterator rit = _r.begin();
 	for(; rit != _r.end(); ++rit)
 		new RecommendsItem(this, rit.key(), rit.value());
 }
@@ -78,7 +78,7 @@ void RecommendsView::setRecs(const NRecommendations& _r) {
 void RecommendsView::setItemRecs(const QString& _i,  const NItemRecommendations& _r) {
 	clear();
 
-	QMap<QString, unsigned int>::const_iterator iit = _r.begin();
+	QMap<QString, int>::const_iterator iit = _r.begin();
 	for(; iit != _r.end(); ++iit)
 		new RecommendsItem(this, iit.key(), iit.value());
 }

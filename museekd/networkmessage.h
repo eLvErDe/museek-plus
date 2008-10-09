@@ -91,6 +91,8 @@ protected:
   void pack(const std::vector<uchar>&);
   /* Pack a 32bit unsigned integer. */
   void pack(uint32);
+  /* Pack a 32bit signed integer. */
+  void pack(int32);
   /* Pack a single raw 8bit element. */
   void pack(uchar c)
   {
@@ -107,6 +109,8 @@ protected:
   std::string unpack_ip();
   /* Unpack a 32bit unsigned integer. */
   uint32 unpack_int();
+  /* Unpack a 32bit signed integer. */
+  int32 unpack_signed_int();
   /* Unpack a 64bit unsigned integer. */
   off_t unpack_off();
   /* Unpack a raw 8bit element. */

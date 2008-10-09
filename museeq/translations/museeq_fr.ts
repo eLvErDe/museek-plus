@@ -584,17 +584,17 @@
 <context>
     <name>InterestList</name>
     <message>
-        <location filename="../interestlist.cpp" line="39"/>
+        <location filename="../interestlist.cpp" line="41"/>
         <source>Add:</source>
         <translation>Ajouter:</translation>
     </message>
     <message>
-        <location filename="../interestlist.cpp" line="43"/>
+        <location filename="../interestlist.cpp" line="45"/>
         <source>I like:</source>
         <translation>J&apos;aime:</translation>
     </message>
     <message>
-        <location filename="../interestlist.cpp" line="46"/>
+        <location filename="../interestlist.cpp" line="47"/>
         <source>I hate:</source>
         <translation>Je deteste:</translation>
     </message>
@@ -602,27 +602,27 @@
 <context>
     <name>InterestListView</name>
     <message>
-        <location filename="../interestlistview.cpp" line="40"/>
+        <location filename="../interestlistview.cpp" line="42"/>
         <source>I like:</source>
         <translation>J&apos;aime:</translation>
     </message>
     <message>
-        <location filename="../interestlistview.cpp" line="38"/>
+        <location filename="../interestlistview.cpp" line="40"/>
         <source>Remove</source>
         <translation>Enlever</translation>
     </message>
     <message>
-        <location filename="../interestlistview.cpp" line="43"/>
+        <location filename="../interestlistview.cpp" line="45"/>
         <source>I hate:</source>
         <translation>Je deteste:</translation>
     </message>
     <message>
-        <location filename="../interestlistview.cpp" line="48"/>
+        <location filename="../interestlistview.cpp" line="51"/>
         <source>Recommendations for this Item</source>
         <translation>Recommandations</translation>
     </message>
     <message>
-        <location filename="../interestlistview.cpp" line="52"/>
+        <location filename="../interestlistview.cpp" line="55"/>
         <source>Similar Users for this Item</source>
         <translation>Utilisateurs similaires</translation>
     </message>
@@ -1239,22 +1239,22 @@
 <context>
     <name>Museeq</name>
     <message>
-        <location filename="../museeq.cpp" line="157"/>
+        <location filename="../museeq.cpp" line="158"/>
         <source>&amp;Restore</source>
         <translation type="unfinished">&amp;Afficher</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="158"/>
+        <location filename="../museeq.cpp" line="159"/>
         <source>&amp;Museek Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="159"/>
+        <location filename="../museeq.cpp" line="160"/>
         <source>&amp;Hide</source>
         <translation type="unfinished">&amp;Masquer</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="161"/>
+        <location filename="../museeq.cpp" line="162"/>
         <source>&amp;Quit</source>
         <translation type="unfinished">&amp;Quitter</translation>
     </message>
@@ -1264,7 +1264,7 @@
         <translation type="obsolete">MuseeqTray</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="163"/>
+        <location filename="../museeq.cpp" line="164"/>
         <source>Museeq</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1446,27 +1446,27 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="884"/>
+        <location filename="../museeq.cpp" line="889"/>
         <source>Syntax: museeq [options]</source>
         <translation type="unfinished">Syntaxe: museeq [options]</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="885"/>
+        <location filename="../museeq.cpp" line="890"/>
         <source>Options:</source>
         <translation type="unfinished">Options:</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="886"/>
+        <location filename="../museeq.cpp" line="891"/>
         <source>-V --version<byte value="x9"/><byte value="x9"/>Display museeq version and quit</source>
         <translation type="unfinished">-V --version<byte value="x9"/><byte value="x9"/>Affiche la version de museeq puis quite</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="887"/>
+        <location filename="../museeq.cpp" line="892"/>
         <source>-h --help<byte value="x9"/><byte value="x9"/>Display this message and quit</source>
         <translation type="unfinished">-h --help<byte value="x9"/><byte value="x9"/>Affiche ce message puis quite</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="888"/>
+        <location filename="../museeq.cpp" line="893"/>
         <source>--no-tray<byte value="x9"/><byte value="x9"/>Don&apos;t load TrayIcon</source>
         <translation type="unfinished">--no-tray<byte value="x9"/><byte value="x9"/>Désactive la TrayIcon</translation>
     </message>
@@ -1497,12 +1497,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../recommendsview.cpp" line="40"/>
+        <location filename="../recommendsview.cpp" line="41"/>
         <source>Add item to Likes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../recommendsview.cpp" line="44"/>
+        <location filename="../recommendsview.cpp" line="45"/>
         <source>Add item to Hates</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1564,7 +1564,7 @@
 <context>
     <name>ScrollImage</name>
     <message>
-        <location filename="../userinfo.cpp" line="51"/>
+        <location filename="../userinfo.cpp" line="52"/>
         <source>Save picture...</source>
         <translation>Enregistrer l&apos;image...</translation>
     </message>
@@ -2685,54 +2685,69 @@
 <context>
     <name>UserInfo</name>
     <message>
-        <location filename="../userinfo.cpp" line="103"/>
+        <location filename="../userinfo.cpp" line="106"/>
         <source>Description</source>
         <translation>Description</translation>
     </message>
     <message>
-        <location filename="../userinfo.cpp" line="112"/>
+        <location filename="../userinfo.cpp" line="115"/>
         <source>Information</source>
         <translation>Information</translation>
     </message>
     <message>
-        <location filename="../userinfo.cpp" line="117"/>
+        <location filename="../userinfo.cpp" line="120"/>
         <source>Uploads allowed</source>
         <translation>Envoies autorisés</translation>
     </message>
     <message>
-        <location filename="../userinfo.cpp" line="128"/>
+        <location filename="../userinfo.cpp" line="131"/>
         <source>unknown</source>
         <translation>inconnu</translation>
     </message>
     <message>
-        <location filename="../userinfo.cpp" line="122"/>
+        <location filename="../userinfo.cpp" line="125"/>
         <source>Queue size</source>
         <translation>Nombr de personnes en queue</translation>
     </message>
     <message>
-        <location filename="../userinfo.cpp" line="127"/>
+        <location filename="../userinfo.cpp" line="130"/>
         <source>Slots available</source>
         <translation>Places disponibles</translation>
     </message>
     <message>
-        <location filename="../userinfo.cpp" line="132"/>
+        <location filename="../userinfo.cpp" line="135"/>
         <source>Refresh</source>
         <translation>Actualiser</translation>
     </message>
     <message>
-        <location filename="../userinfo.cpp" line="138"/>
+        <location filename="../userinfo.cpp" line="151"/>
         <source>Picture</source>
         <translation>Image</translation>
     </message>
     <message>
-        <location filename="../userinfo.cpp" line="151"/>
+        <location filename="../userinfo.cpp" line="167"/>
         <source>yes</source>
         <translation>oui</translation>
     </message>
     <message>
-        <location filename="../userinfo.cpp" line="151"/>
+        <location filename="../userinfo.cpp" line="167"/>
         <source>no</source>
         <translation>non</translation>
+    </message>
+    <message>
+        <location filename="../userinfo.cpp" line="141"/>
+        <source>Interests</source>
+        <translation type="unfinished">Centres d&apos;intérêt</translation>
+    </message>
+    <message>
+        <location filename="../userinfo.cpp" line="145"/>
+        <source>He likes:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../userinfo.cpp" line="147"/>
+        <source>He hates:</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2963,7 +2978,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../wishlistview.cpp" line="41"/>
+        <location filename="../wishlistview.cpp" line="42"/>
         <source>Remove</source>
         <translation type="unfinished">Enlever</translation>
     </message>

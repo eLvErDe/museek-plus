@@ -52,9 +52,9 @@ typedef QMap<QString, NFolder> NShares;
 typedef QMap<QString, NUserData> NRoom;
 typedef QMap<QString, NRoom> NRooms;
 typedef QMap<QString, uint> NRoomList;
-typedef QMap<QString, uint> NGlobalRecommendations;
-typedef QMap<QString, uint> NRecommendations;
-typedef QMap<QString, uint> NItemRecommendations;
+typedef QMap<QString, int> NGlobalRecommendations;
+typedef QMap<QString, int> NRecommendations;
+typedef QMap<QString, int> NItemRecommendations;
 typedef QMap<QString, uint> NItemSimilarUsers;
 typedef QMap<QString, uint> NSimilarUsers;
 

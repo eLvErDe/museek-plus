@@ -21,7 +21,7 @@
 #include "recommendsview.h"
 #include "util.h"
 
-RecommendsItem::RecommendsItem(RecommendsView* _p, const QString& _r, unsigned int _n)
+RecommendsItem::RecommendsItem(RecommendsView* _p, const QString& _r, int _n)
                  : QTreeWidgetItem(static_cast<QTreeWidget *>(_p)), mInterest(_r), mNum(_n) {
 	setText(0, mInterest);
 	setText(1, QString("%1").arg(mNum));

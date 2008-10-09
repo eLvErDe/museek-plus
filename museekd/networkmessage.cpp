@@ -87,6 +87,17 @@ void NetworkMessage::pack(uint32 i)
   buffer.append(buf, 4);
 }
 
+/* Pack a 32bit signed integer (little-endian) */
+void NetworkMessage::pack(int32 i)
+{
+  unsigned char buf[4];
+  buf[0] = i & 0xff;
+  buf[1] = (i >> 8) & 0xff;
+  buf[2] = (i >> 16) & 0xff;
+  buf[3] = (i >> 24) & 0xff;
+  buffer.append(buf, 4);
+}
+
 /* Pack a 64bit unsigned integer (file size / position). */
 void NetworkMessage::pack(off_t i)
 {
@@ -110,6 +121,22 @@ uint32 NetworkMessage::unpack_int()
     return 0;
   unsigned char * buf = buffer.data();
   uint32 l = buf[0] + (buf[1] << 8) + (buf[2] << 16) + (buf[3] << 24);
+  buffer.seek(4);
+  return l;
+}
+
+/* Unpack a 32bit signed integer (little endian). */
+int32 NetworkMessage::unpack_signed_int()
+{
+  // If we have less than 4 bytes, that's bad.
+  if(buffer.count() < 4)
+    return 0;
+  unsigned char * buf = buffer.data();
+  int32 l;
+  if ((buf[3] & 0xf0) == 0xf0) // This is a negative int
+    l = -1 - (buf[0] ^ 0xff + ((buf[1] ^ 0xff) << 8) + ((buf[2] ^ 0xff) << 16) + ((buf[3] ^ 0xff) << 24));
+  else
+    l = buf[0] + (buf[1] << 8) + (buf[2] << 16) + (buf[3] << 24);
   buffer.seek(4);
   return l;
 }
