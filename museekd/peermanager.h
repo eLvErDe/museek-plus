@@ -62,7 +62,7 @@ namespace Museek
     NewNet::Event<std::string> peerOfflineEvent;
 
     /* Find or make a peer socket for the specified user. */
-    void peerSocket(const std::string & user);
+    void peerSocket(const std::string & user, bool force = true);
     void addPeerSocket(PeerSocket * socket);
 
     std::map<std::string, SGetUserStats> *userStats() {return &m_UserStats;};

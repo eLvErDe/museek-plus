@@ -362,7 +362,7 @@ void Museek::SearchManager::sendSearchResults(const std::string & username, cons
 
         if (!results.empty()) {
             m_PendingResults[username][token] = results;
-            museekd()->peers()->peerSocket(username);
+            museekd()->peers()->peerSocket(username, false);
         }
 	}
 }

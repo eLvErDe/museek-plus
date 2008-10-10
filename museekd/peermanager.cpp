@@ -105,14 +105,21 @@ Museek::PeerManager::listen()
   * Returns a peersocket for the given user name.
   */
 void
-Museek::PeerManager::peerSocket(const std::string & user) {
+Museek::PeerManager::peerSocket(const std::string & user, bool force) {
     NNLOG("museekd.peers.debug", "Asking a peersocket for %s", user.c_str());
 
     // Check if this user is already registered.
     std::map<std::string, NewNet::WeakRefPtr<PeerSocket> >::iterator it;
     it = m_Peers.find(user);
     if(it == m_Peers.end() || !it->second) {
-        // Nope, register it.
+        // Nope, see if we can open a new peersocket
+        if (((m_Peers.size() > 750) && !force) || (m_Peers.size() > 950)) {
+            NNLOG("museekd.peers.warn", "Too much opened peer socket, cannot open a new one");
+            peerSocketUnavailableEvent(user);
+            return;
+        }
+
+        // We can, register the user
         m_Peers[user] = 0;
 
         if(museekd()->server()->loggedIn()) {

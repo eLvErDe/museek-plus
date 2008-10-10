@@ -153,6 +153,7 @@ void NewNet::Reactor::remove(Socket * socket)
 void NewNet::Reactor::run()
 {
   int nfds = 0;
+  int numErrors = 0;
   fd_set readfds, writefds, exceptfds;
 
   m_StopReactor = false;
@@ -298,8 +299,15 @@ void NewNet::Reactor::run()
 
     if(r == -1) { // An error occured
         NNLOG("newnet.net.warn", "Error %d while selecting sockets", errno);
+        numErrors++;
+        if (numErrors > 10000) {
+            NNLOG("newnet.net.warn", "Too much socket errors (%d). Closing museekd.", errno);
+            return;
+        }
         continue; // Let's pretend nothing happened and just try again
     }
+
+    numErrors = 0;
 
     for(it = sockets.begin(); (it != end) && (r > 0); ++it)
     {
