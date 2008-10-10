@@ -36,13 +36,6 @@ TransferListItem::TransferListItem(QTreeWidget* p, const QString& _u, const QStr
 	setTextAlignment(8, Qt::AlignRight|Qt::AlignVCenter);
 	updatePath();
 
-    mProgress = new QProgressBar();
-    mProgress->setMinimum(0);
-    mProgress->setMaximum(100);
-    QPainter pa;
-    mProgress->setFixedHeight(pa.fontMetrics().size(Qt::TextSingleLine, QString("FFFVfdvfdjç")).height());
-	treeWidget()->setItemWidget(this, 3, mProgress);
-
 	NTransfer t;
 	t.state = 100;
 	t.error = QString::null;
@@ -51,8 +44,6 @@ TransferListItem::TransferListItem(QTreeWidget* p, const QString& _u, const QStr
 	t.rate = 0;
 	t.placeInQueue = (uint)-1;
 	update(t, true);
-
-	updateProgressBar();
 }
 
 TransferListItem::TransferListItem(QTreeWidgetItem* p, const QString& _u, const QString& _p)
@@ -66,13 +57,6 @@ TransferListItem::TransferListItem(QTreeWidgetItem* p, const QString& _u, const 
 	setTextAlignment(8, Qt::AlignRight|Qt::AlignVCenter);
 	updatePath();
 
-    mProgress = new QProgressBar();
-    mProgress->setMinimum(0);
-    mProgress->setMaximum(1000);
-    QPainter pa;
-    mProgress->setFixedHeight(pa.fontMetrics().size(Qt::TextSingleLine, QString("FFFVfdvfdjç")).height());
-	treeWidget()->setItemWidget(this, 3, mProgress);
-
 	NTransfer t;
 	t.state = 15;
 	t.error = QString::null;
@@ -80,20 +64,6 @@ TransferListItem::TransferListItem(QTreeWidgetItem* p, const QString& _u, const 
 	t.filesize = 0;
 	t.rate = 0;
 	update(t, true);
-
-	updateProgressBar();
-}
-
-void TransferListItem::updateProgressBar() {
-    int value = mProgress->value();
-    delete mProgress;
-    mProgress = new QProgressBar();
-    mProgress->setMinimum(0);
-    mProgress->setMaximum(1000);
-    QPainter pa;
-    mProgress->setFixedHeight(pa.fontMetrics().size(Qt::TextSingleLine, user()).height());
-	mProgress->setValue(value);
-	treeWidget()->setItemWidget(this, 3, mProgress);
 }
 
 void TransferListItem::updatePath() {
@@ -239,10 +209,10 @@ void TransferListItem::update(const NTransfer& transfer, bool force) {
 
     int progress = 0;
     if (mState == 0)
-        progress = mProgress->maximum();
+        progress = 1000;
     else if (mSize)
-        progress = static_cast<uint>((static_cast<float>(mPosition)/static_cast<float>(mSize)) * (mProgress->maximum() - mProgress->minimum()));
-	mProgress->setValue(progress);
+        progress = static_cast<uint>((static_cast<float>(mPosition)/static_cast<float>(mSize)) * (1000 - 0));
+    setData(3, Qt::DisplayRole, progress);
 }
 
 QString TransferListItem::user() const {
@@ -274,10 +244,6 @@ qint64 TransferListItem::size() const {
 
 uint TransferListItem::rate() const {
 	return mRate;
-}
-
-uint TransferListItem::progress() const {
-    return mProgress->value();
 }
 
 void TransferListItem::updateStats() {
@@ -322,8 +288,8 @@ void TransferListItem::updateStats() {
     // Update progress bar
     int progress = 0;
     if (groupSize)
-        progress = static_cast<uint>((static_cast<float>(groupPosition)/static_cast<float>(groupSize)) * (mProgress->maximum() - mProgress->minimum()));
-	mProgress->setValue(progress);
+        progress = static_cast<uint>((static_cast<float>(groupPosition)/static_cast<float>(groupSize)) * (1000 - 0));
+    setData(3, Qt::DisplayRole, progress);
 }
 
 void TransferListItem::update(const NTransfer& transfer) {
@@ -353,9 +319,9 @@ bool TransferListItem::operator<(const QTreeWidgetItem & other_) const {
 			return user() < other->user();
 		return text(2) < other->text(2);
     case 3:
-		if(progress() == other->progress())
+		if(data( 3, Qt::DisplayRole ).toInt() == other->data( 3, Qt::DisplayRole ).toInt())
 			return user() < other->user();
-		return progress() < other->progress();
+		return data( 3, Qt::DisplayRole ).toInt() < other->data( 3, Qt::DisplayRole ).toInt();
 	case 4:
 		if(mPlaceInQueue == other->mPlaceInQueue)
 			return user() < other->user();

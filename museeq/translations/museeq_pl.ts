@@ -1890,122 +1890,122 @@
 <context>
     <name>TransferListView</name>
     <message>
-        <location filename="../transferlistview.cpp" line="34"/>
+        <location filename="../transferlistview.cpp" line="35"/>
         <source>User</source>
         <translation>Użytkownik</translation>
     </message>
     <message>
-        <location filename="../transferlistview.cpp" line="34"/>
+        <location filename="../transferlistview.cpp" line="35"/>
         <source>File</source>
         <translation>Plik</translation>
     </message>
     <message>
-        <location filename="../transferlistview.cpp" line="34"/>
+        <location filename="../transferlistview.cpp" line="35"/>
         <source>Status</source>
         <translation>Stan</translation>
     </message>
     <message>
-        <location filename="../transferlistview.cpp" line="34"/>
+        <location filename="../transferlistview.cpp" line="35"/>
         <source>Place</source>
         <translation>Miejsce</translation>
     </message>
     <message>
-        <location filename="../transferlistview.cpp" line="34"/>
+        <location filename="../transferlistview.cpp" line="35"/>
         <source>Position</source>
         <translation>Pozycja</translation>
     </message>
     <message>
-        <location filename="../transferlistview.cpp" line="34"/>
+        <location filename="../transferlistview.cpp" line="35"/>
         <source>Size</source>
         <translation>Rozmiar</translation>
     </message>
     <message>
-        <location filename="../transferlistview.cpp" line="34"/>
+        <location filename="../transferlistview.cpp" line="35"/>
         <source>Speed</source>
         <translation>Prędkość</translation>
     </message>
     <message>
-        <location filename="../transferlistview.cpp" line="34"/>
+        <location filename="../transferlistview.cpp" line="35"/>
         <source>Path</source>
         <translation>Ścieżka</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="116"/>
+        <location filename="../transferlistitem.cpp" line="86"/>
         <source>Finished</source>
         <translation>Ukończono</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="121"/>
+        <location filename="../transferlistitem.cpp" line="91"/>
         <source>Transferring</source>
         <translation>Pobieranie</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="126"/>
+        <location filename="../transferlistitem.cpp" line="96"/>
         <source>Negotiating</source>
         <translation>Negocjowanie</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="131"/>
+        <location filename="../transferlistitem.cpp" line="101"/>
         <source>Waiting</source>
         <translation>Oczekiwanie</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="136"/>
+        <location filename="../transferlistitem.cpp" line="106"/>
         <source>Establishing</source>
         <translation>Ustanawianie</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="141"/>
+        <location filename="../transferlistitem.cpp" line="111"/>
         <source>Initiating</source>
         <translation>Inicjalizacja</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="146"/>
+        <location filename="../transferlistitem.cpp" line="116"/>
         <source>Connecting</source>
         <translation>Łączenie</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="196"/>
+        <location filename="../transferlistitem.cpp" line="166"/>
         <source>Queued</source>
         <translation>Zakolejkowano</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="156"/>
+        <location filename="../transferlistitem.cpp" line="126"/>
         <source>Getting address</source>
         <translation>Pobieranie adresu</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="159"/>
+        <location filename="../transferlistitem.cpp" line="129"/>
         <source>Getting status</source>
         <translation>Pobieranie stanu</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="164"/>
+        <location filename="../transferlistitem.cpp" line="134"/>
         <source>User Offline</source>
         <translation>Użytkownik poza siecią</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="169"/>
+        <location filename="../transferlistitem.cpp" line="139"/>
         <source>Connection closed by peer</source>
         <translation>Połączenie zamknięte przez partnera</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="174"/>
+        <location filename="../transferlistitem.cpp" line="144"/>
         <source>Cannot connect</source>
         <translation>Nie można połączyć</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="179"/>
+        <location filename="../transferlistitem.cpp" line="149"/>
         <source>Aborted</source>
         <translation>Anulowano</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="310"/>
+        <location filename="../transferlistitem.cpp" line="276"/>
         <source>/s</source>
         <translation>/s</translation>
     </message>
     <message numerus="yes">
-        <location filename="../transferlistview.cpp" line="282"/>
+        <location filename="../transferlistview.cpp" line="279"/>
         <source>%n transfer(s)</source>
         <translation>
             <numerusform>%n transfer</numerusform>
@@ -2014,7 +2014,7 @@
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../transferlistview.cpp" line="282"/>
+        <location filename="../transferlistview.cpp" line="279"/>
         <source> (%n user(s))</source>
         <translation>
             <numerusform>(%n użytkownik)</numerusform>
@@ -2023,27 +2023,27 @@
         </translation>
     </message>
     <message>
-        <location filename="../transferlistview.cpp" line="34"/>
+        <location filename="../transferlistview.cpp" line="35"/>
         <source>Time Left</source>
         <translation>Pozostały czas</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="320"/>
+        <location filename="../transferlistitem.cpp" line="286"/>
         <source>?</source>
         <translation>?</translation>
     </message>
     <message>
-        <location filename="../transferlistview.cpp" line="34"/>
+        <location filename="../transferlistview.cpp" line="35"/>
         <source>Progress</source>
         <translation>Postęp</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="185"/>
+        <location filename="../transferlistitem.cpp" line="155"/>
         <source>Remote: </source>
         <translation>Zdalny:</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="191"/>
+        <location filename="../transferlistitem.cpp" line="161"/>
         <source>Local: </source>
         <translation>Lokalny:</translation>
     </message>

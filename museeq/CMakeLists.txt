@@ -144,6 +144,7 @@ SET(MUSEEQ_SOURCES
   tickerdialog.cpp
   transferlistitem.cpp
   transferlistview.cpp
+  transferlistitemprogress.cpp
   transfers.cpp
   trustlist.cpp
   userinfo.cpp
@@ -196,6 +197,7 @@ SET(MUSEEQ_MOC_HEADERS
   tabwidget.h
   tickerdialog.h
   transferlistview.h
+  transferlistitemprogress.h
   transfers.h
   trustlist.h
   userinfo.h
@@ -205,7 +207,6 @@ SET(MUSEEQ_MOC_HEADERS
   usertabwidget.h
   wishlist.h
   wishlistview.h
-  wishlistitem.h
 )
 
 add_definitions(-DHAVE_SYSTEM_H)

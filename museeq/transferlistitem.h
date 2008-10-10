@@ -44,10 +44,7 @@ public:
 	qint64 size() const;
 	uint rate() const;
 	uint timeLeft() const { return mTimeLeft; }
-	uint progress() const;
 	bool operator<(const QTreeWidgetItem & other) const;
-
-	void updateProgressBar();
 
 protected:
 	void updatePath();

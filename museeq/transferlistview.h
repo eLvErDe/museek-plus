@@ -27,6 +27,7 @@
 class QDropEvent;
 class QDragEnterEvent;
 class TransferListItem;
+class TransferListItemProgress;
 
 class TransferListView : public QTreeWidget {
 	Q_OBJECT
@@ -61,6 +62,7 @@ protected:
 private:
 	GroupMode mGroupMode;
 	QPoint mDragStartPosition;
+	TransferListItemProgress *mProgressBar;
 };
 
 

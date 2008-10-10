@@ -19,6 +19,7 @@
 
 #include "transferlistview.h"
 #include "transferlistitem.h"
+#include "transferlistitemprogress.h"
 #include "museeq.h"
 #include "util.h"
 
@@ -53,6 +54,10 @@ TransferListView::TransferListView(bool place, QWidget* _p, const char* _n)
 	setColumnWidth ( 8, 75 );
 	setColumnWidth ( 9, 250 );
 	setColumnWidth ( 10, 0 );
+
+    // Define the progress bar for the progress column
+    mProgressBar = new TransferListItemProgress(this);
+    setItemDelegateForColumn( 3, mProgressBar );
 
 	setContextMenuPolicy(Qt::CustomContextMenu);
 	connect(museeq, SIGNAL(disconnected()), SLOT(clear()));
@@ -137,17 +142,13 @@ void TransferListView::setGroupMode(GroupMode mode) {
 		items = invisibleRootItem()->takeChildren ();
 		QList<QTreeWidgetItem *>::iterator itx = items.begin();
 		for(; itx != items.end(); ++itx) {
-			if ( ! ( static_cast<TransferListItem *>(*itx))->text(1).isNull()) {
+			if ( ! ( static_cast<TransferListItem *>(*itx))->text(1).isNull())
 				invisibleRootItem()->addChild(*itx);
-				static_cast<TransferListItem *>(*itx)->updateProgressBar();
-			}
 			else {
 				subitems = (*itx)->takeChildren();
 				sitx = subitems.begin();
-				for(; sitx != subitems.end(); ++sitx) {
+				for(; sitx != subitems.end(); ++sitx)
 					invisibleRootItem()->addChild(*sitx);
-                    static_cast<TransferListItem *>(*sitx)->updateProgressBar();
-				}
 			}
 		}
 
@@ -160,17 +161,13 @@ void TransferListView::setGroupMode(GroupMode mode) {
 
 		QList<QTreeWidgetItem *>::iterator itx = items.begin();
 		for(; itx != items.end(); ++itx) {
-			if ( (static_cast<TransferListItem *>(*itx))->text(1).isNull()) {
+			if ( (static_cast<TransferListItem *>(*itx))->text(1).isNull())
 				invisibleRootItem()->addChild(*itx);
-				static_cast<TransferListItem *>(*itx)->updateProgressBar();
-			}
 		}
 		itx = items.begin();
 		for(; itx != items.end(); ++itx) {
-			if (! (static_cast<TransferListItem *>(*itx))->text(1).isNull()) {
+			if (! (static_cast<TransferListItem *>(*itx))->text(1).isNull())
 				findParent((static_cast<TransferListItem *>(*itx))->user())->addChild(*itx);
-				static_cast<TransferListItem *>(*itx)->updateProgressBar();
-			}
 		}
 
 		updateParentsStats();
