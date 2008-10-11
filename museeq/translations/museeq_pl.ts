@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="1.1" language="pl">
+<defaultcodec></defaultcodec>
 <context>
     <name>BanList</name>
     <message>
@@ -1413,12 +1414,12 @@
     <message>
         <location filename="../searches.cpp" line="96"/>
         <source>*Interests*</source>
-        <translation type="unfinished"></translation>
+        <translation>*Zainteresowania*</translation>
     </message>
     <message>
         <location filename="../searches.cpp" line="101"/>
         <source>*Wishlist*</source>
-        <translation type="unfinished"></translation>
+        <translation>*Lista życzeń*</translation>
     </message>
 </context>
 <context>
@@ -2209,17 +2210,17 @@
     <message>
         <location filename="../userinfo.cpp" line="141"/>
         <source>Interests</source>
-        <translation type="unfinished">Zainteresowania</translation>
+        <translation>Zainteresowania</translation>
     </message>
     <message>
         <location filename="../userinfo.cpp" line="145"/>
         <source>He likes:</source>
-        <translation type="unfinished"></translation>
+        <translation>Lubi:</translation>
     </message>
     <message>
         <location filename="../userinfo.cpp" line="147"/>
         <source>He hates:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie lubi:</translation>
     </message>
 </context>
 <context>
@@ -2345,7 +2346,7 @@
     <message>
         <location filename="../wishlist.cpp" line="40"/>
         <source>Add:</source>
-        <translation type="unfinished">Dodaj:</translation>
+        <translation>Dodaj:</translation>
     </message>
 </context>
 <context>
@@ -2353,17 +2354,17 @@
     <message>
         <location filename="../wishlistview.cpp" line="33"/>
         <source>Item</source>
-        <translation type="unfinished"></translation>
+        <translation>Element</translation>
     </message>
     <message>
         <location filename="../wishlistview.cpp" line="42"/>
         <source>Remove</source>
-        <translation type="unfinished">Usuń</translation>
+        <translation>Usuń</translation>
     </message>
     <message>
         <location filename="../wishlistview.cpp" line="33"/>
         <source>Last try</source>
-        <translation type="unfinished"></translation>
+        <translation>Ostatnia próba</translation>
     </message>
 </context>
 </TS>
