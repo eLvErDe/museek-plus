@@ -57,6 +57,7 @@ Transfers::Transfers(QWidget* _p, const char* _n)
 	downloadHbox->addWidget(downloadsLabel);
 
 	mDownrate = new QSpinBox(downloadsWidget);
+	mDownrate->setMaximum(9999);
 	downloadHbox->addWidget(mDownrate);
 	QLabel * downrateLabel = new QLabel(tr("KiB/s"), downloadsWidget);
 	downloadHbox->addWidget(downrateLabel);
@@ -103,6 +104,7 @@ Transfers::Transfers(QWidget* _p, const char* _n)
 	uploadHbox->addWidget(uploadsLabel);
 
 	mUprate = new QSpinBox(uploadsWidget);
+	mUprate->setMaximum(9999);
 	uploadHbox->addWidget(mUprate);
 	QLabel * uprateLabel = new QLabel(tr("KiB/s"), uploadsWidget);
 	uploadHbox->addWidget(uprateLabel);

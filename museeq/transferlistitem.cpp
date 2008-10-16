@@ -58,7 +58,7 @@ TransferListItem::TransferListItem(QTreeWidgetItem* p, const QString& _u, const 
 	updatePath();
 
 	NTransfer t;
-	t.state = 15;
+	t.state = 100;
 	t.error = QString::null;
 	t.filepos = 0;
 	t.filesize = 0;
@@ -211,7 +211,7 @@ void TransferListItem::update(const NTransfer& transfer, bool force) {
     if (mState == 0)
         progress = 1000;
     else if (mSize)
-        progress = static_cast<uint>((static_cast<float>(mPosition)/static_cast<float>(mSize)) * (1000 - 0));
+        progress = static_cast<uint>((static_cast<float>(mPosition)/static_cast<float>(mSize)) * 1000);
     setData(3, Qt::DisplayRole, progress);
 }
 
@@ -288,7 +288,7 @@ void TransferListItem::updateStats() {
     // Update progress bar
     int progress = 0;
     if (groupSize)
-        progress = static_cast<uint>((static_cast<float>(groupPosition)/static_cast<float>(groupSize)) * (1000 - 0));
+        progress = static_cast<uint>((static_cast<float>(groupPosition)/static_cast<float>(groupSize)) * 1000);
     setData(3, Qt::DisplayRole, progress);
 }
 
