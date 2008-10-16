@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="1.1" language="pl">
-<defaultcodec></defaultcodec>
 <context>
     <name>BanList</name>
     <message>
@@ -2057,82 +2056,82 @@
         <translation>Pobierania:</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="129"/>
+        <location filename="../transfers.cpp" line="131"/>
         <source>Group by user</source>
         <translation>Grupuj wg użytkowników</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="101"/>
+        <location filename="../transfers.cpp" line="102"/>
         <source>Uploads:</source>
         <translation>Wysyłania:</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="119"/>
+        <location filename="../transfers.cpp" line="121"/>
         <source>slots</source>
         <translation>sloty</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="140"/>
+        <location filename="../transfers.cpp" line="142"/>
         <source>Retry</source>
         <translation>Ponów próbę</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="144"/>
+        <location filename="../transfers.cpp" line="146"/>
         <source>Abort</source>
         <translation>Anuluj</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="154"/>
+        <location filename="../transfers.cpp" line="156"/>
         <source>Selected</source>
         <translation>Wybrane</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="160"/>
+        <location filename="../transfers.cpp" line="162"/>
         <source>Finished</source>
         <translation>Skończone</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="164"/>
+        <location filename="../transfers.cpp" line="166"/>
         <source>Aborted</source>
         <translation>Anulowane</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="168"/>
+        <location filename="../transfers.cpp" line="170"/>
         <source>Offline</source>
         <translation>Poza siecią</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="172"/>
+        <location filename="../transfers.cpp" line="174"/>
         <source>Cruft</source>
         <translation>Szmelc</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="176"/>
+        <location filename="../transfers.cpp" line="178"/>
         <source>Finished / aborted</source>
         <translation>Skończonie / anulowane</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="180"/>
+        <location filename="../transfers.cpp" line="182"/>
         <source>Queued</source>
         <translation>Zakolejkowane</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="152"/>
+        <location filename="../transfers.cpp" line="154"/>
         <source>Clear</source>
         <translation>Wyczyść</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="186"/>
+        <location filename="../transfers.cpp" line="188"/>
         <source>Users</source>
         <translation>Użytkownicy</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="148"/>
+        <location filename="../transfers.cpp" line="150"/>
         <source>Check Place</source>
         <translation>Sprawdź miejsce</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="107"/>
+        <location filename="../transfers.cpp" line="109"/>
         <source>KiB/s</source>
         <translation>KiB/s</translation>
     </message>

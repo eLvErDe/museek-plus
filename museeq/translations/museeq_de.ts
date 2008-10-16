@@ -2571,27 +2571,27 @@
         <translation>Downloads</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="129"/>
+        <location filename="../transfers.cpp" line="131"/>
         <source>Group by user</source>
         <translation>Nach Benutzer gruppieren</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="101"/>
+        <location filename="../transfers.cpp" line="102"/>
         <source>Uploads:</source>
         <translation>Uploads</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="119"/>
+        <location filename="../transfers.cpp" line="121"/>
         <source>slots</source>
         <translation>Slots freigeben</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="140"/>
+        <location filename="../transfers.cpp" line="142"/>
         <source>Retry</source>
         <translation>Neustarten</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="144"/>
+        <location filename="../transfers.cpp" line="146"/>
         <source>Abort</source>
         <translation>Abbrechen</translation>
     </message>
@@ -2601,57 +2601,57 @@
         <translation type="obsolete">Frage Warteschlangenposition ab</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="154"/>
+        <location filename="../transfers.cpp" line="156"/>
         <source>Selected</source>
         <translation>Auswahl</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="160"/>
+        <location filename="../transfers.cpp" line="162"/>
         <source>Finished</source>
         <translation>Fertig</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="164"/>
+        <location filename="../transfers.cpp" line="166"/>
         <source>Aborted</source>
         <translation>Abgebrochen</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="168"/>
+        <location filename="../transfers.cpp" line="170"/>
         <source>Offline</source>
         <translation>Offline</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="172"/>
+        <location filename="../transfers.cpp" line="174"/>
         <source>Cruft</source>
         <translation>Schrott</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="176"/>
+        <location filename="../transfers.cpp" line="178"/>
         <source>Finished / aborted</source>
         <translation>Fertig/abgebrochen</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="180"/>
+        <location filename="../transfers.cpp" line="182"/>
         <source>Queued</source>
         <translation>In Warteschlange</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="152"/>
+        <location filename="../transfers.cpp" line="154"/>
         <source>Clear</source>
         <translation>Aufräumen</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="186"/>
+        <location filename="../transfers.cpp" line="188"/>
         <source>Users</source>
         <translation>Benutzer</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="148"/>
+        <location filename="../transfers.cpp" line="150"/>
         <source>Check Place</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="107"/>
+        <location filename="../transfers.cpp" line="109"/>
         <source>KiB/s</source>
         <translation type="unfinished"></translation>
     </message>
