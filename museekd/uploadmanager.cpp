@@ -56,7 +56,7 @@ Museek::Upload::Upload(Museek::Museekd * museekd, const std::string & user, cons
 
     m_LocalPath = localPath;
 
-    // We need to know the filesize. The only way is to open the file and look into it. Bu close it when we're done.
+    // We need to know the filesize. The only way is to open the file and look into it. But close it when we're done.
     openFile();
     closeFile();
 

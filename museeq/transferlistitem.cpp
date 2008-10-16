@@ -210,7 +210,7 @@ void TransferListItem::update(const NTransfer& transfer, bool force) {
     int progress = 0;
     if (mState == 0)
         progress = 1000;
-    else if (mSize)
+    else if (mSize > 0)
         progress = static_cast<uint>((static_cast<float>(mPosition)/static_cast<float>(mSize)) * 1000);
     setData(3, Qt::DisplayRole, progress);
 }
@@ -287,7 +287,7 @@ void TransferListItem::updateStats() {
 
     // Update progress bar
     int progress = 0;
-    if (groupSize)
+    if (groupSize > 0)
         progress = static_cast<uint>((static_cast<float>(groupPosition)/static_cast<float>(groupSize)) * 1000);
     setData(3, Qt::DisplayRole, progress);
 }
