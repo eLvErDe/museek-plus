@@ -175,7 +175,7 @@ void Museek::SearchManager::setParent(DistributedSocket * parentSocket) {
         std::map<std::string, std::pair<NewNet::RefPtr<DistributedSocket>, std::string> >::iterator it;
         for (it = m_PotentialParents.begin(); it != m_PotentialParents.end(); it++) {
             if (it->first != parentName) {
-                if (it->second.first)
+                if (it->second.first.isValid())
                     it->second.first->stop();
             }
             else
@@ -215,7 +215,7 @@ void Museek::SearchManager::setBranchRoot(const std::string & root) {
     // Tell our children what we've done
     std::map<std::string, std::pair<NewNet::RefPtr<DistributedSocket>, uint> >::iterator cit;
     for (cit = m_Children.begin(); cit != m_Children.end(); cit++) {
-        if (cit->second.first)
+        if (cit->second.first.isValid())
             cit->second.first->sendPosition();
     }
 }

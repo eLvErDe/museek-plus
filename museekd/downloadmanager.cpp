@@ -813,7 +813,7 @@ Museek::DownloadManager::onPeerTransferReplyReceived(const PTransferReply * mess
     if(download->state() != TS_Initiating)
         return; // No longer needing this download, bail out.
 
-    if (m_TransferReplyCallback) {
+    if (m_TransferReplyCallback.isValid()) {
         message->peerSocket()->transferReplyReceivedEvent.disconnect(m_TransferReplyCallback);
         m_TransferReplyCallback = 0;
     }

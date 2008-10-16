@@ -253,7 +253,7 @@ void
 Museek::ServerManager::onLoggedIn(const SLogin * message)
 {
   m_ConnectionTries = 0;
-  if (m_ReconnectTimeout)
+  if (m_ReconnectTimeout.isValid())
     museekd()->reactor()->removeTimeout(m_ReconnectTimeout);
 
   m_PingTimeout = museekd()->reactor()->addTimeout(60000, this, &ServerManager::pingServer);

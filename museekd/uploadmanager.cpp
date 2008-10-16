@@ -88,7 +88,7 @@ Museek::Upload::setState(TrState state)
         case TS_LocalError:
             closeFile();
 
-            if(m_Socket) {
+            if(m_Socket.isValid()) {
                 m_Socket->disconnect();
                 m_Socket = 0;
             }
@@ -158,7 +158,7 @@ void
 Museek::Upload::setSocket(UploadSocket * socket)
 {
     // If we already have an upload socket, first stop it and then replace it by the new one
-    if(m_Socket.isValid() && m_Socket != socket)
+    if(m_Socket.isValid() && (m_Socket != socket))
         m_Socket->stop();
 
     m_Socket = socket;
@@ -241,6 +241,10 @@ bool Museek::Upload::seek(off_t pos) {
   */
 bool Museek::Upload::read(NewNet::Buffer & buffer) {
     NNLOG("museekd.up.debug", "Reading from file");
+
+    if(!m_Socket)
+        return false;
+
 	char buf[1024 * 1024];
 
 	m_File->read(buf, 1024 * 1024);
@@ -739,7 +743,7 @@ Museek::UploadManager::onPeerTransferReplyReceived(const PTransferReply * messag
     if(upload->state() != TS_Waiting)
         return; // No longer needing this upload, bail out.
 
-    if (m_TransferReplyCallback) {
+    if (m_TransferReplyCallback.isValid()) {
         message->peerSocket()->transferReplyReceivedEvent.disconnect(m_TransferReplyCallback);
         m_TransferReplyCallback = 0;
     }

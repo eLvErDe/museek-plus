@@ -1013,7 +1013,7 @@ Museek::IfaceManager::onPeerInfoReceived(const PInfoReply * message)
     it = m_PendingInfo.find(socket->user());
     if (it != m_PendingInfo.end()) {
         for (fit = it->second.begin(); fit != it->second.end(); fit++) {
-            if (*fit) {
+            if (fit->isValid()) {
                 IUserInfo msg(socket->user(), museekd()->codeset()->fromPeer(socket->user(), message->description), message->picture, message->totalupl, message->queuesize, message->slotfree);
                 (*fit)->sendMessage(msg.make_network_packet());
             }
@@ -1052,7 +1052,7 @@ Museek::IfaceManager::onPeerSharesReceived(const PSharesReply * message)
     it = m_PendingShares.find(socket->user());
     if (it != m_PendingShares.end()) {
         for (fit = it->second.begin(); fit != it->second.end(); fit++) {
-            if (*fit) {
+            if (fit->isValid()) {
                 IUserShares msg(socket->user(), encShares);
                 (*fit)->sendMessage(msg.make_network_packet());
             }
