@@ -75,6 +75,7 @@ Museek::PeerSocket::connectMessageSignals()
     uploadFailedEvent.connect(this, & PeerSocket::onUploadFailedReceived);
     searchResultsReceivedEvent.connect(this, & PeerSocket::onSearchResultsReceived);
     connectedEvent.connect(this, & PeerSocket::onConnected);
+    disconnectedEvent.connect(this, & PeerSocket::onDisconnected);
 }
 
 void
@@ -82,6 +83,16 @@ Museek::PeerSocket::onConnected(NewNet::ClientSocket *)
 {
     // If there's no activity in the next 130 seconds, then the socket should be closed (timeout)
     m_SocketTimeout = museekd()->reactor()->addTimeout(130000, this, &PeerSocket::onSocketTimeout);
+}
+
+void
+Museek::PeerSocket::onDisconnected(NewNet::ClientSocket *)
+{
+    if (m_SearchResultsOnlyTimeout.isValid())
+        museekd()->reactor()->removeTimeout(m_SearchResultsOnlyTimeout);
+
+    if (m_SocketTimeout.isValid())
+        museekd()->reactor()->removeTimeout(m_SocketTimeout);
 }
 
 void
@@ -433,6 +444,8 @@ Museek::PeerSocket::addSearchResultsOnlyTimeout(long length) {
     // If we don't receive any other message in the next seconds, we should delete this socket as:
     // -we will probably not receive anything else soon
     // -there's a limit on the number of opened sockets (1024 for example): this can be a problem when doing big searches
+    if (m_SearchResultsOnlyTimeout.isValid())
+        museekd()->reactor()->removeTimeout(m_SearchResultsOnlyTimeout);
     m_SearchResultsOnlyTimeout = museekd()->reactor()->addTimeout(length, this, &PeerSocket::onSearchResultsOnly);
 }
 

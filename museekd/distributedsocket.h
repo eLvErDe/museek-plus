@@ -40,6 +40,7 @@ namespace Museek
     void ping(long);
     void setPingTimeout(NewNet::WeakRefPtr<NewNet::Event<long>::Callback> ref) {m_PingTimeout = ref;};
 
+    void addDisconnectNowTimeout();
     void onDisconnectNow(long);
 
     void stop();
@@ -59,6 +60,7 @@ namespace Museek
     void onDisconnected(NewNet::ClientSocket * socket);
 
     NewNet::WeakRefPtr<NewNet::Event<long>::Callback> m_PingTimeout;
+    NewNet::WeakRefPtr<NewNet::Event<long>::Callback> m_DisconnectNowTimeout;
   };
 }
 

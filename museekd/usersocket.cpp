@@ -50,6 +50,8 @@ Museek::UserSocket::UserSocket(Museek::HandshakeSocket * that, const std::string
 
 Museek::UserSocket::~UserSocket()
 {
+    if(m_PassiveConnectTimeout.isValid())
+      m_Museekd->reactor()->removeTimeout(m_PassiveConnectTimeout);
 }
 
 void
@@ -103,9 +105,7 @@ Museek::UserSocket::onFirewallPierced(Museek::HandshakeSocket * socket)
   {
     NNLOG("museekd.user.debug", "%s's firewall successfully pierced.", m_User.c_str());
     if(m_PassiveConnectTimeout.isValid())
-    {
       m_Museekd->reactor()->removeTimeout(m_PassiveConnectTimeout);
-    }
 
     setSocketState(SocketConnected);
     setDescriptor(socket->descriptor());

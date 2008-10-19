@@ -48,6 +48,8 @@ Museek::ServerManager::ServerManager(Museekd * museekd) : m_Museekd(museekd), m_
 
 Museek::ServerManager::~ServerManager()
 {
+    if (m_ReconnectTimeout.isValid())
+        museekd()->reactor()->removeTimeout(m_ReconnectTimeout);
 }
 
 void
@@ -155,6 +157,8 @@ Museek::ServerManager::onCannotConnect(NewNet::ClientSocket * socket)
       int length = 2000;
       if (m_ConnectionTries >= 2)
         length = 30000;
+      if (m_ReconnectTimeout.isValid())
+        museekd()->reactor()->removeTimeout(m_ReconnectTimeout);
       m_ReconnectTimeout = museekd()->reactor()->addTimeout(length, this, &ServerManager::reconnect);
       m_ConnectionTries++;
       NNLOG("museekd.server.warn", "Cannot connect to server... Will reconnect in %d ms.", length);
@@ -183,6 +187,8 @@ Museek::ServerManager::onDisconnected(NewNet::ClientSocket * socket)
       int length = 2000;
       if (m_ConnectionTries >= 2)
         length = 30000;
+      if (m_ReconnectTimeout.isValid())
+        museekd()->reactor()->removeTimeout(m_ReconnectTimeout);
       m_ReconnectTimeout = museekd()->reactor()->addTimeout(length, this, &ServerManager::reconnect);
       m_ConnectionTries++;
     NNLOG("museekd.server.debug", "Disconnected from server. Will reconnect in %d ms.", length);

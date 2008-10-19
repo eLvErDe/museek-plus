@@ -63,6 +63,7 @@ namespace Museek
     void onUploadFailedReceived(const PUploadFailed * message);
     void onSearchResultsReceived(const PSearchReply * message);
     void onConnected(NewNet::ClientSocket *);
+    void onDisconnected(NewNet::ClientSocket *);
 
     void onSocketTimeout(long);
 

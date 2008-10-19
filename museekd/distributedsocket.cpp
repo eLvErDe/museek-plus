@@ -52,7 +52,9 @@ Museek::DistributedSocket::DistributedSocket(Museek::Museekd * museekd) : Museek
 
 Museek::DistributedSocket::~DistributedSocket()
 {
-  NNLOG("museekd.distrib.debug", "DistributedSocket destroyed");
+    if (m_DisconnectNowTimeout.isValid())
+        museekd()->reactor()->removeTimeout(m_DisconnectNowTimeout);
+    NNLOG("museekd.distrib.debug", "DistributedSocket destroyed");
 }
 
 /**
@@ -163,6 +165,13 @@ Museek::DistributedSocket::onMessageReceived(const MessageData * data)
     default:
       NNLOG("museekd.distrib.warn", "Received unknown distributed message, type: %u, length: %u", data->type, data->length);
   }
+}
+
+void
+Museek::DistributedSocket::addDisconnectNowTimeout() {
+    if (m_DisconnectNowTimeout.isValid())
+        museekd()->reactor()->removeTimeout(m_DisconnectNowTimeout);
+    m_DisconnectNowTimeout = museekd()->reactor()->addTimeout(1000, this, &DistributedSocket::onDisconnectNow);
 }
 
 void

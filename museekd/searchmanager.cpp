@@ -55,6 +55,8 @@ Museek::SearchManager::SearchManager(Museekd * museekd) : m_Museekd(museekd)
 
 Museek::SearchManager::~SearchManager()
 {
+    if (m_WishlistTimeout.isValid())
+        museekd()->reactor()->removeTimeout(m_WishlistTimeout);
     NNLOG("museekd.peers.debug", "Search Manager destroyed");
 }
 
@@ -115,7 +117,7 @@ void Museek::SearchManager::setChild(DistributedSocket * socket, uint depth) {
             // before doing this (If there is still a handshake socket, it will stay in the reactor even if it's a dead socket so there
             // will be problems. This happens if the peer sends us both HInitiate and DChildDepth message at once.).
             // To be sure of that, wait 1 second before disconnecting
-            museekd()->reactor()->addTimeout(1000, socket, &DistributedSocket::onDisconnectNow);
+            socket->addDisconnectNowTimeout();
         }
     }
 }
