@@ -2519,7 +2519,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="276"/>
+        <location filename="../transferlistitem.cpp" line="278"/>
         <source>/s</source>
         <translation type="unfinished">/s</translation>
     </message>
@@ -2543,7 +2543,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="286"/>
+        <location filename="../transferlistitem.cpp" line="288"/>
         <source>?</source>
         <translation type="unfinished"></translation>
     </message>

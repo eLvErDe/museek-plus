@@ -2000,7 +2000,7 @@
         <translation>Anulowano</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="276"/>
+        <location filename="../transferlistitem.cpp" line="278"/>
         <source>/s</source>
         <translation>/s</translation>
     </message>
@@ -2028,7 +2028,7 @@
         <translation>Pozostały czas</translation>
     </message>
     <message>
-        <location filename="../transferlistitem.cpp" line="286"/>
+        <location filename="../transferlistitem.cpp" line="288"/>
         <source>?</source>
         <translation>?</translation>
     </message>
