@@ -351,7 +351,7 @@ void Museek::SearchManager::transmitSearch(uint unknown, const std::string & use
   * The query's encoding should be UTF-8
   */
 void Museek::SearchManager::sendSearchResults(const std::string & username, const std::string & query, uint token) {
-	if(! museekd()->isBanned(username)) {
+	if(! museekd()->isBanned(username) && (username != museekd()->server()->username())) {
         SharesDatabase* db;
 
         if (museekd()->isBuddied(username))
