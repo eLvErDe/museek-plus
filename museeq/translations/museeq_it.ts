@@ -1,64 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="1.1" language="it">
 <context>
-    <name>@default</name>
-    <message>
-        <location filename="" line="0"/>
-        <source> Language: </source>
-        <translation type="obsolete">  Lingua:</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Syntax: museeq [options]</source>
-        <translation type="obsolete">Sintassi: museeq [opzioni]</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Options:</source>
-        <translation type="obsolete">Opzioni:</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>-V --version<byte value="x9"/><byte value="x9"/>Display museeq version and quit</source>
-        <translation type="obsolete">-V --version<byte value="x9"/><byte value="x9"/>Mostra la versione di museeq ed esci</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>-h --help<byte value="x9"/><byte value="x9"/>Display this message and quit</source>
-        <translation type="obsolete">-h --help<byte value="x9"/><byte value="x9"/>Mostra questo messaggio ed esci</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>--no-tray<byte value="x9"/><byte value="x9"/>Don&apos;t load TrayIcon</source>
-        <translation type="obsolete">--no-tray<byte value="x9"/><byte value="x9"/>Non caricare l&apos;icona tray</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>&amp;Restore</source>
-        <translation type="obsolete">&amp;Ripristina</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>&amp;Hide</source>
-        <translation type="obsolete">&amp;Nascondi</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>&amp;Quit</source>
-        <translation type="obsolete">&amp;Lascia</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>MuseeqTray</source>
-        <translation type="obsolete">MuseeqTray</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source><byte value="x9"/><byte value="x9"/><byte value="x9"/>Trayicon support was disabled at compile-time</source>
-        <translation type="obsolete"><byte value="x9"/><byte value="x9"/><byte value="x9"/>Il supporto dell&apos;icona tray è stato disabilitato in fase di compilazione</translation>
-    </message>
-</context>
-<context>
     <name>BanList</name>
     <message>
         <location filename="../banlist.cpp" line="50"/>
@@ -453,79 +395,6 @@
             <numerusform>%n cartella        </numerusform>
             <numerusform>%n cartelle</numerusform>
         </translation>
-    </message>
-</context>
-<context>
-    <name>FontsAndColorsDialog</name>
-    <message>
-        <location filename="" line="0"/>
-        <source>Fonts &amp; Colors</source>
-        <translation type="obsolete">Font &amp; Colori</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>OK</source>
-        <translation type="obsolete">OK</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Cancel</source>
-        <translation type="obsolete">Cancella</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Pick Color</source>
-        <translation type="obsolete">Scegli colore</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Pick Font</source>
-        <translation type="obsolete">Scegli font</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Time &amp; Brackets Text Color</source>
-        <translation type="obsolete">Colore testo per Tempo &amp; Parentesi</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Time &amp; Brackets Font</source>
-        <translation type="obsolete">Font per Tempo &amp; Parentesi</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>/Me Text</source>
-        <translation type="obsolete">/Me Testo</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Trusted Users</source>
-        <translation type="obsolete">Utenti affidabili</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Remote Text</source>
-        <translation type="obsolete">Testo remoto</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Message Font</source>
-        <translation type="obsolete">Font messaggio</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Buddied Users</source>
-        <translation type="obsolete">Utenti Amici</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>My Text</source>
-        <translation type="obsolete">Mio testo</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Banned Users</source>
-        <translation type="obsolete">Utenti Banditi</translation>
     </message>
 </context>
 <context>
@@ -1343,39 +1212,6 @@
     </message>
 </context>
 <context>
-    <name>ProtocolDialog</name>
-    <message>
-        <location filename="" line="0"/>
-        <source>Protocol</source>
-        <translation type="obsolete">Protocollo</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Handler</source>
-        <translation type="obsolete">Gestore</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Protocol handlers</source>
-        <translation type="obsolete">Gestori protocolli</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>OK</source>
-        <translation type="obsolete">OK</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Cancel</source>
-        <translation type="obsolete">Cancella</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>New</source>
-        <translation type="obsolete">Nuovo</translation>
-    </message>
-</context>
-<context>
     <name>QObject</name>
     <message>
         <location filename="" line="0"/>
@@ -1476,19 +1312,6 @@
         <location filename="../museeq.cpp" line="893"/>
         <source>--no-tray<byte value="x9"/><byte value="x9"/>Don&apos;t load TrayIcon</source>
         <translation>--no-tray<byte value="x9"/><byte value="x9"/>Non caricare l&apos;icona tray</translation>
-    </message>
-</context>
-<context>
-    <name>QTreeWidget</name>
-    <message>
-        <location filename="" line="0"/>
-        <source>Y</source>
-        <translation type="obsolete">S</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>N</source>
-        <translation type="obsolete">N</translation>
     </message>
 </context>
 <context>
@@ -1640,24 +1463,6 @@
         <location filename="../searchfilter.cpp" line="164"/>
         <source>Invalid bitrate filter, disabling it</source>
         <translation>Filtro bitrate invalido, disabilitato</translation>
-    </message>
-</context>
-<context>
-    <name>SearchListItem</name>
-    <message>
-        <location filename="" line="0"/>
-        <source>/s</source>
-        <translation type="obsolete">/s</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Y</source>
-        <translation type="obsolete">S</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>N</source>
-        <translation type="obsolete">N</translation>
     </message>
 </context>
 <context>
@@ -2329,84 +2134,6 @@
     </message>
 </context>
 <context>
-    <name>TransferListItem</name>
-    <message>
-        <location filename="" line="0"/>
-        <source>Finished</source>
-        <translation type="obsolete">Finito</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Transferring</source>
-        <translation type="obsolete">Trasferimento</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Negotiating</source>
-        <translation type="obsolete">Negoziazione</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Waiting</source>
-        <translation type="obsolete">Attesa</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Establishing</source>
-        <translation type="obsolete">Stabilendo connessione</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Initiating</source>
-        <translation type="obsolete">Inizializzazione</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Connecting</source>
-        <translation type="obsolete">Connessione</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Queued</source>
-        <translation type="obsolete">In coda</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Getting address</source>
-        <translation type="obsolete">Ottiene indirizzo</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Getting status</source>
-        <translation type="obsolete">Ottiene stato</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>User Offline</source>
-        <translation type="obsolete">Utente offline</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Connection closed by peer</source>
-        <translation type="obsolete">Connessione chiusa dall&apos;utente</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Cannot connect</source>
-        <translation type="obsolete">Connessione fallita</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Aborted</source>
-        <translation type="obsolete">Abortito</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>/s</source>
-        <translation type="obsolete">/s</translation>
-    </message>
-</context>
-<context>
     <name>TransferListView</name>
     <message>
         <location filename="../transferlistview.cpp" line="35"/>
@@ -2760,64 +2487,6 @@
     </message>
 </context>
 <context>
-    <name>UserInfoDialog</name>
-    <message>
-        <location filename="" line="0"/>
-        <source>Change user info</source>
-        <translation type="obsolete">Cambia info utente</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Image</source>
-        <translation type="obsolete">Immagine</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Clear</source>
-        <translation type="obsolete">Pulisci</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Don&apos;t touch</source>
-        <translation type="obsolete">Non cambiare</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Upload:</source>
-        <translation type="obsolete">Upload:</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>...</source>
-        <translation type="obsolete">...</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>OK</source>
-        <translation type="obsolete">OK</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Cancel</source>
-        <translation type="obsolete">Cancella</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Images (*.png *.gif *.jpg *.jpeg)</source>
-        <translation type="obsolete">Immagini (*.png *.gif *.jpg *.jpeg)</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Select an Image for you User info</source>
-        <translation type="obsolete">Seleziona un&apos;immagine per le tue Info utente</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>All files (*)</source>
-        <translation type="obsolete">Tutti i file (*)</translation>
-    </message>
-</context>
-<context>
     <name>UserListView</name>
     <message>
         <location filename="../userlistview.cpp" line="47"/>
@@ -2932,44 +2601,6 @@
         <location filename="../usermenu.cpp" line="73"/>
         <source>Edit Comments</source>
         <translation>Modifica commenti</translation>
-    </message>
-</context>
-<context>
-    <name>Util</name>
-    <message>
-        <location filename="" line="0"/>
-        <source>%.2f B</source>
-        <translation type="obsolete">%.2f B</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>%.2f KiB</source>
-        <translation type="obsolete">%.2f KiB</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>%.2f MiB</source>
-        <translation type="obsolete">%.2f MiB</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>%.2f GiB</source>
-        <translation type="obsolete">%.2f GiB</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>%.2f TiB</source>
-        <translation type="obsolete">%.2f TiB</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>%.2f PB</source>
-        <translation type="obsolete">%.2f PB</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>(vbr) %1</source>
-        <translation type="obsolete">(vbr) %1</translation>
     </message>
 </context>
 <context>
