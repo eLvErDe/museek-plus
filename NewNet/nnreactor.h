@@ -94,6 +94,8 @@ namespace NewNet
     void removeTimeout(Timeout::Callback * callback);
 
   private:
+    bool checkTimeouts(struct timeval & timeout, bool & timeout_set);
+
     bool m_StopReactor;
     std::vector<RefPtr<Socket> > m_Sockets;
 #ifndef DOXYGEN_UNDOCUMENTED

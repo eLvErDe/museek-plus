@@ -56,17 +56,20 @@ struct NewNet::Reactor::Timeouts
 /* Check if any timeouts have expired. If so, invoke them and remove them
    from the queue. Also, update the timeout if a timeout should be called
    before the currently set timeout. */
-static bool
-checkTimeouts(std::vector<TimeoutItem> & timeouts, struct timeval & timeout, bool & timeout_set)
+bool
+NewNet::Reactor::checkTimeouts(struct timeval & timeout, bool & timeout_set)
 {
   bool retVal = false;
 
   struct timeval now;
   gettimeofday(&now, 0);
 
-  std::vector<TimeoutItem>::iterator it, end = timeouts.end();
+  std::vector<TimeoutItem>::iterator it;
 
-  for(it = timeouts.begin(); it != end; ++it)
+  std::vector<TimeoutItem> timeouts = m_Timeouts->timeouts; // copy the timeouts in case it is modified somewhere else while iterating
+
+  it = timeouts.begin();
+  while (it != timeouts.end())
   {
     // Has the timeout expired?
     if(timercmp(&now, &(*it).first, >=))
@@ -77,7 +80,10 @@ checkTimeouts(std::vector<TimeoutItem> & timeouts, struct timeval & timeout, boo
 
       // Store the timeout callback and delete it from to-be-emitted list
       NewNet::RefPtr<NewNet::Reactor::Timeout::Callback> item = it->second;
-      timeouts.erase(it);
+
+      removeTimeout(item);
+
+      it = timeouts.erase(it);
 
       // And emit it
       if (item.isValid())
@@ -85,13 +91,15 @@ checkTimeouts(std::vector<TimeoutItem> & timeouts, struct timeval & timeout, boo
 
       retVal = true;
     }
-    else if((! timeout_set) || (timercmp(&(*it).first, &timeout, <)))
-    {
-      /* If the timeout expires before the next cycle timeout, adjust
-         the cycle timeout. */
-      timeout.tv_sec = (*it).first.tv_sec;
-      timeout.tv_usec = (*it).first.tv_usec;
-      timeout_set = true;
+    else {
+      if((! timeout_set) || (timercmp(&(*it).first, &timeout, <))) {
+          /* If the timeout expires before the next cycle timeout, adjust
+             the cycle timeout. */
+          timeout.tv_sec = (*it).first.tv_sec;
+          timeout.tv_usec = (*it).first.tv_usec;
+          timeout_set = true;
+      }
+      ++it;
     }
   }
 
@@ -242,7 +250,7 @@ void NewNet::Reactor::run()
         }
     }
 
-    if(checkTimeouts(m_Timeouts->timeouts, timeout, timeout_set))
+    if(checkTimeouts(timeout, timeout_set))
       continue;
 
     if(timeout_set)
