@@ -358,7 +358,9 @@ Museek::DownloadManager::askPendingFolderContents(PeerSocket * socket) {
         std::map<std::string, std::map<std::string, std::string> >::iterator it;
         std::map<std::string, std::string>::iterator fit;
 
-        for (it = m_ContentsPending.begin(); it != m_ContentsPending.end() ; it++) {
+        std::map<std::string, std::map<std::string, std::string> > pending = m_ContentsPending; // copy map to avoid undefined iterator
+
+        for (it = pending.begin(); it != pending.end() ; it++) {
             if (socket->user() == it->first) {
                 NNLOG("museekd.down.debug", "Asking pending folder contents to %s", it->first.c_str());
                 for (fit = (*it).second.begin(); fit != (*it).second.end(); fit++) {
@@ -367,7 +369,7 @@ Museek::DownloadManager::askPendingFolderContents(PeerSocket * socket) {
                     PFolderContentsRequest msg(m_Museekd->codeset()->toPeer((*it).first, (*fit).first));
                     socket->sendMessage(msg.make_network_packet());
                 }
-                m_ContentsPending.erase(it);
+                m_ContentsPending.erase(it->first);
             }
         }
     }
@@ -382,14 +384,16 @@ Museek::DownloadManager::askPendingPlaces(PeerSocket * socket) {
         std::map<std::string, std::vector<std::string> >::iterator it;
         std::vector<std::string>::iterator pit;
 
-        for (it = m_PlacesPending.begin(); it != m_PlacesPending.end() ; it++) {
+        std::map<std::string, std::vector<std::string> > pending = m_PlacesPending;
+
+        for (it = pending.begin(); it != pending.end() ; it++) {
             if (socket->user() == it->first) {
                 NNLOG("museekd.down.debug", "Asking pending place in queue to %s", it->first.c_str());
                 for (pit = (*it).second.begin(); pit != (*it).second.end(); pit++) {
                     PPlaceInQueueRequest msg(museekd()->codeset()->toPeer((*it).first, *pit));
                     socket->sendMessage(msg.make_network_packet());
                 }
-                m_PlacesPending.erase(it);
+                m_PlacesPending.erase(it->first);
             }
         }
     }
@@ -633,14 +637,17 @@ Museek::DownloadManager::askPendingEnqueuing(PeerSocket * socket)
     if (socket) {
         std::map<std::string, std::vector<std::string> >::iterator it;
         std::vector<std::string>::iterator eit;
-        for ( it = m_EnqueuingPending.begin(); it != m_EnqueuingPending.end(); it++) {
+
+        std::map<std::string, std::vector<std::string> > pending = m_EnqueuingPending;
+
+        for ( it = pending.begin(); it != pending.end(); it++) {
             if (it->first == socket->user()) {
                 NNLOG("museekd.down.debug", "Sending pending enqueuing request to %s", it->first.c_str());
                 for (eit = (*it).second.begin(); eit != (*it).second.end(); eit++) {
                     PQueueDownload msg(museekd()->codeset()->toPeer(it->first, *eit));
                     socket->sendMessage(msg.make_network_packet());
                 }
-                m_EnqueuingPending.erase(it);
+                m_EnqueuingPending.erase(it->first);
             }
         }
     }

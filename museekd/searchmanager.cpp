@@ -175,14 +175,17 @@ void Museek::SearchManager::setParent(DistributedSocket * parentSocket) {
         std::string parentName = parentSocket->user();
         NNLOG("museekd.peers.debug", "Found a parent : %s", parentName.c_str());
         std::map<std::string, std::pair<NewNet::RefPtr<DistributedSocket>, std::string> >::iterator it;
-        for (it = m_PotentialParents.begin(); it != m_PotentialParents.end(); it++) {
+
+        std::map<std::string, std::pair<NewNet::RefPtr<DistributedSocket>, std::string> > parents = m_PotentialParents;
+
+        for (it = parents.begin(); it != parents.end(); it++) {
             if (it->first != parentName) {
                 if (it->second.first.isValid())
                     it->second.first->stop();
             }
             else
                 m_ParentIp = it->second.second;
-            m_PotentialParents.erase(it);
+            m_PotentialParents.erase(it->first);
         }
 
         SAcceptChildren msgAccept(true);
