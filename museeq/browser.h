@@ -61,7 +61,6 @@ class FolderListView : public QTreeWidget {
 public:
 	FolderListView(const QString&, QWidget* = 0, const char* = 0);
 	~FolderListView();
-	SharesData* shares() const { return mShares; }
 	QString parentPath(const QString&);
 
 public slots:

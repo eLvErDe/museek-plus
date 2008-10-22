@@ -64,11 +64,8 @@ public:
 		if(folders.contains(piece))
 			n = folders[piece];
 		else {
-// 			QStringList::ConstIterator it, end = path.indexOf(i + 1);
 			QString p;
 			p = path.join("\\");
-// 			for(it = path.begin(); it != end; ++it)
-// 				p += *it + "\\";
 			n = new SharesData(p);
 			folders[piece] = n;
 		}
@@ -85,14 +82,12 @@ Browser::Browser(const QString& user, QWidget* parent, const char* name)
 	QHBoxLayout * TopLayout = new QHBoxLayout(topWidget);
 	TopLayout->setMargin(0);
 	mUser = user;
-// 	hbox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	TopLayout->addWidget(new QLabel(tr("Search files and folders"), topWidget));
 	mEntry = new QLineEdit(topWidget); /* "search"*/
 	TopLayout->addWidget(mEntry);
 	QFrame* frame = new QFrame(topWidget);
 	TopLayout->addWidget(frame);
 	frame->setFrameShape(QFrame::VLine);
-// 	frame->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
 	mFileCount = new QLabel(tr("Haven't received shares"), topWidget);
 	TopLayout->addWidget(mFileCount);
 	TopLayout->addWidget(new CodecCombo("encoding.users", user, topWidget, "encoding"));
@@ -114,7 +109,6 @@ Browser::Browser(const QString& user, QWidget* parent, const char* name)
 	mFiles = new FileListView(user, split, "files");
 	mFiles->setEnabled(false);
 	split->setStretchFactor(1,10);
-// 	mFiles->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
 	connect(mEntry, SIGNAL(returnPressed()), SLOT(doSearch()));
 	connect(mFolders, SIGNAL(currentChanged(const QString&, const NFolder&)), mFiles, SLOT(setFiles(const QString&, const NFolder&)));
@@ -452,7 +446,6 @@ FolderListItem * FolderListView::findParent(const QStringList& p) {
 	while (*it) {
 		if ((*it)->text(1) == path)
 			return static_cast<FolderListItem *>(*it);
-// 			treeWidget->setItemSelected(*it, true);
 		++it;
 	}
 
@@ -461,6 +454,7 @@ FolderListItem * FolderListView::findParent(const QStringList& p) {
 }
 
 void FolderListView::setShares(const NShares& shares) {
+    // FIXME this can freeze museeq when displaying huge shares: the app is blocked until the list the loop is finished
 	clear();
 	delete mShares;
 	mShares = new SharesData("");
@@ -469,7 +463,6 @@ void FolderListView::setShares(const NShares& shares) {
 
 	NShares::const_iterator it = shares.begin();
 	for(; it != shares.end(); ++it) {
-		QString path;
 		QStringList p;
 		p = it.key().split("\\", QString::KeepEmptyParts);
 		SharesData* sfolder = mShares->get(p);

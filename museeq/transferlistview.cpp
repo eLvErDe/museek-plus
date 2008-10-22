@@ -37,6 +37,7 @@ TransferListView::TransferListView(bool place, QWidget* _p, const char* _n)
     setAllColumnsShowFocus(true);
 	setHeaderLabels(headers);
 	setSortingEnabled ( false );
+	sortItems(0, Qt::AscendingOrder);
 	setDragEnabled(true);
 	setSelectionMode(QAbstractItemView::ExtendedSelection);
 
