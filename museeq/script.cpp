@@ -81,10 +81,10 @@ Script::~Script()
         QMenu* m = it.value().first;
         // Remove this script's actions from menu
         QList<QAction*>::iterator ait = it.value().second.begin();
-        for (; ait != it.value().second.end(); ait++) {
+        for (; ait != it.value().second.end();) {
             m->removeAction(*ait);
             delete *ait;
-            it.value().second.erase(ait);
+            it.value().second.erase(ait++);
         }
 
         // Remove the menu if it is empty

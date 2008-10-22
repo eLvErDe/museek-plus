@@ -762,13 +762,15 @@ void Museeq::unloadScript(const QString& scriptName)
 #ifdef HAVE_QTSCRIPT
     QList<Script*>::iterator it;
 
-    for (it = mScripts.begin(); it != mScripts.end(); it++) {
+    for (it = mScripts.begin(); it != mScripts.end();) {
         if((*it)->scriptName() == scriptName) {
             mMainWin->removeScript((*it)->scriptName());
 
             delete (*it);
-            mScripts.erase(it);
+            mScripts.erase(it++);
         }
+        else
+            ++it;
     }
 #endif // HAVE_QTSCRIPT
 }

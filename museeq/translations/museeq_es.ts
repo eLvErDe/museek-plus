@@ -310,37 +310,37 @@
 <context>
     <name>FileListView</name>
     <message>
-        <location filename="../browser.cpp" line="579"/>
+        <location filename="../browser.cpp" line="583"/>
         <source>Filename</source>
         <translation>Nombre de archivo</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="579"/>
+        <location filename="../browser.cpp" line="583"/>
         <source>Size</source>
         <translation>Tamaño</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="579"/>
+        <location filename="../browser.cpp" line="583"/>
         <source>Length</source>
         <translation>Duración</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="579"/>
+        <location filename="../browser.cpp" line="583"/>
         <source>Bitrate</source>
         <translation>Velocidad</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="593"/>
+        <location filename="../browser.cpp" line="597"/>
         <source>Download files</source>
         <translation>Descargar archivos</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="601"/>
+        <location filename="../browser.cpp" line="605"/>
         <source>Upload files</source>
         <translation>Transferir archivos</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="607"/>
+        <location filename="../browser.cpp" line="611"/>
         <source>Copy URL</source>
         <translation>Copiar el URL</translation>
     </message>
@@ -355,27 +355,27 @@
         <translation type="obsolete">%1 archivos</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="796"/>
+        <location filename="../browser.cpp" line="800"/>
         <source>Upload File(s)</source>
         <translation>Transferir Archivo(s)</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="797"/>
+        <location filename="../browser.cpp" line="801"/>
         <source>Which user do you wish to upload these to?</source>
         <translation>¿A qué usuario le desea transferir lo elegido?</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="597"/>
+        <location filename="../browser.cpp" line="601"/>
         <source>Download files to..</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="761"/>
+        <location filename="../browser.cpp" line="765"/>
         <source>Select a Directory for current download(s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../browser.cpp" line="688"/>
+        <location filename="../browser.cpp" line="692"/>
         <source>%n file(s)</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -1440,27 +1440,27 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="889"/>
+        <location filename="../museeq.cpp" line="891"/>
         <source>Syntax: museeq [options]</source>
         <translation type="unfinished">Sintaxis: museeq [opciones]</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="890"/>
+        <location filename="../museeq.cpp" line="892"/>
         <source>Options:</source>
         <translation type="unfinished">Opciones:</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="891"/>
+        <location filename="../museeq.cpp" line="893"/>
         <source>-V --version<byte value="x9"/><byte value="x9"/>Display museeq version and quit</source>
         <translation type="unfinished">-V --version<byte value="x9"/><byte value="x9"/>Mostrar versión de museeq y terminar</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="892"/>
+        <location filename="../museeq.cpp" line="894"/>
         <source>-h --help<byte value="x9"/><byte value="x9"/>Display this message and quit</source>
         <translation type="unfinished">-h --help<byte value="x9"/><byte value="x9"/>Mostrar este mensaje y terminar</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="893"/>
+        <location filename="../museeq.cpp" line="895"/>
         <source>--no-tray<byte value="x9"/><byte value="x9"/>Don&apos;t load TrayIcon</source>
         <translation type="unfinished">--no-tray<byte value="x9"/><byte value="x9"/>No cargue el TrayIcon</translation>
     </message>
@@ -1650,62 +1650,62 @@
 <context>
     <name>SearchListView</name>
     <message>
-        <location filename="../searchlistview.cpp" line="38"/>
+        <location filename="../searchlistview.cpp" line="39"/>
         <source>User</source>
         <translation>Usuario</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="38"/>
+        <location filename="../searchlistview.cpp" line="39"/>
         <source>Filename</source>
         <translation>Nombre de archivo</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="38"/>
+        <location filename="../searchlistview.cpp" line="39"/>
         <source>Size</source>
         <translation>Tamaño</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="38"/>
+        <location filename="../searchlistview.cpp" line="39"/>
         <source>Speed</source>
         <translation>Velocidad</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="38"/>
+        <location filename="../searchlistview.cpp" line="39"/>
         <source>Queued</source>
         <translation>En Fila</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="38"/>
+        <location filename="../searchlistview.cpp" line="39"/>
         <source>Imm.</source>
         <translation>Imm.</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="38"/>
+        <location filename="../searchlistview.cpp" line="39"/>
         <source>Length</source>
         <translation>Duración</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="38"/>
+        <location filename="../searchlistview.cpp" line="39"/>
         <source>Bitrate</source>
         <translation>Flujo</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="38"/>
+        <location filename="../searchlistview.cpp" line="39"/>
         <source>Path</source>
         <translation>Ruta</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="61"/>
+        <location filename="../searchlistview.cpp" line="62"/>
         <source>Download file(s)</source>
         <translation>Descargar archivo(s)</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="69"/>
+        <location filename="../searchlistview.cpp" line="70"/>
         <source>Download selected folder(s)</source>
         <translation>Descargar carpeta(s) seleccionada(s)</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="74"/>
+        <location filename="../searchlistview.cpp" line="75"/>
         <source>Users</source>
         <translation>Usuarios</translation>
     </message>
@@ -1725,39 +1725,39 @@
         <translation type="obsolete">%1 resultados de busqueda (%2 usuarios)</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="65"/>
+        <location filename="../searchlistview.cpp" line="66"/>
         <source>Download file(s) to..</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="134"/>
+        <location filename="../searchlistview.cpp" line="137"/>
         <source>Select a Directory for current download(s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="291"/>
+        <location filename="../searchlistview.cpp" line="306"/>
         <source>Y</source>
         <translation type="unfinished">S</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="291"/>
+        <location filename="../searchlistview.cpp" line="306"/>
         <source>N</source>
         <translation type="unfinished">N</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="289"/>
+        <location filename="../searchlistview.cpp" line="304"/>
         <source>/s</source>
         <translation type="unfinished">/s</translation>
     </message>
     <message numerus="yes">
-        <location filename="../searchlistview.cpp" line="250"/>
+        <location filename="../searchlistview.cpp" line="265"/>
         <source>%n search result(s)</source>
         <translation type="unfinished">
             <numerusform></numerusform>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../searchlistview.cpp" line="250"/>
+        <location filename="../searchlistview.cpp" line="265"/>
         <source> (%n user(s))</source>
         <translation type="unfinished">
             <numerusform></numerusform>

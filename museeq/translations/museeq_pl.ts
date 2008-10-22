@@ -208,62 +208,62 @@
 <context>
     <name>FileListView</name>
     <message>
-        <location filename="../browser.cpp" line="579"/>
+        <location filename="../browser.cpp" line="583"/>
         <source>Filename</source>
         <translation>Nazwa pliku</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="579"/>
+        <location filename="../browser.cpp" line="583"/>
         <source>Size</source>
         <translation>Rozmiar</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="579"/>
+        <location filename="../browser.cpp" line="583"/>
         <source>Length</source>
         <translation>Długość</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="579"/>
+        <location filename="../browser.cpp" line="583"/>
         <source>Bitrate</source>
         <translation>Próbkowanie</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="593"/>
+        <location filename="../browser.cpp" line="597"/>
         <source>Download files</source>
         <translation>Pobierz pliki</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="601"/>
+        <location filename="../browser.cpp" line="605"/>
         <source>Upload files</source>
         <translation>Wyślij pliki</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="607"/>
+        <location filename="../browser.cpp" line="611"/>
         <source>Copy URL</source>
         <translation>Skopiuj URL</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="796"/>
+        <location filename="../browser.cpp" line="800"/>
         <source>Upload File(s)</source>
         <translation>Wyślij plik(i)</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="797"/>
+        <location filename="../browser.cpp" line="801"/>
         <source>Which user do you wish to upload these to?</source>
         <translation>Do którego użytkownika chcesz je wysłać?</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="597"/>
+        <location filename="../browser.cpp" line="601"/>
         <source>Download files to..</source>
         <translation>Pobierz pliki do..</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="761"/>
+        <location filename="../browser.cpp" line="765"/>
         <source>Select a Directory for current download(s)</source>
         <translation>Wybierz katalog dla bieżącego pobierania</translation>
     </message>
     <message numerus="yes">
-        <location filename="../browser.cpp" line="688"/>
+        <location filename="../browser.cpp" line="692"/>
         <source>%n file(s)</source>
         <translation>
             <numerusform>%n plik</numerusform>
@@ -1081,27 +1081,27 @@
         <translation>%1:%2:%3</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="889"/>
+        <location filename="../museeq.cpp" line="891"/>
         <source>Syntax: museeq [options]</source>
         <translation>Składnia: museeq [opcje]</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="890"/>
+        <location filename="../museeq.cpp" line="892"/>
         <source>Options:</source>
         <translation>Opcje:</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="891"/>
+        <location filename="../museeq.cpp" line="893"/>
         <source>-V --version<byte value="x9"/><byte value="x9"/>Display museeq version and quit</source>
         <translation>-V --version<byte value="x9"/>Wyświetl wersję museeqa i zakończ</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="892"/>
+        <location filename="../museeq.cpp" line="894"/>
         <source>-h --help<byte value="x9"/><byte value="x9"/>Display this message and quit</source>
         <translation>-h --help<byte value="x9"/>Wyświetl tę wiadomość i zakończ</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="893"/>
+        <location filename="../museeq.cpp" line="895"/>
         <source>--no-tray<byte value="x9"/><byte value="x9"/>Don&apos;t load TrayIcon</source>
         <translation>--no-tray<byte value="x9"/>Nie ładuj ikony zasobnika</translation>
     </message>
@@ -1260,92 +1260,92 @@
 <context>
     <name>SearchListView</name>
     <message>
-        <location filename="../searchlistview.cpp" line="38"/>
+        <location filename="../searchlistview.cpp" line="39"/>
         <source>User</source>
         <translation>Użytkownik</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="38"/>
+        <location filename="../searchlistview.cpp" line="39"/>
         <source>Filename</source>
         <translation>Nazwa pliku</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="38"/>
+        <location filename="../searchlistview.cpp" line="39"/>
         <source>Size</source>
         <translation>Rozmiar</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="38"/>
+        <location filename="../searchlistview.cpp" line="39"/>
         <source>Speed</source>
         <translation>Prędkość</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="38"/>
+        <location filename="../searchlistview.cpp" line="39"/>
         <source>Queued</source>
         <translation>Zakolejkowane</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="38"/>
+        <location filename="../searchlistview.cpp" line="39"/>
         <source>Imm.</source>
         <translation>Nat.</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="38"/>
+        <location filename="../searchlistview.cpp" line="39"/>
         <source>Length</source>
         <translation>Długość</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="38"/>
+        <location filename="../searchlistview.cpp" line="39"/>
         <source>Bitrate</source>
         <translation>Próbkowanie</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="38"/>
+        <location filename="../searchlistview.cpp" line="39"/>
         <source>Path</source>
         <translation>Ścieżka</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="61"/>
+        <location filename="../searchlistview.cpp" line="62"/>
         <source>Download file(s)</source>
         <translation>Pobierz plik(i)</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="69"/>
+        <location filename="../searchlistview.cpp" line="70"/>
         <source>Download selected folder(s)</source>
         <translation>Pobierz wybrany/-e katalog(i)</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="74"/>
+        <location filename="../searchlistview.cpp" line="75"/>
         <source>Users</source>
         <translation>Użytkownicy</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="65"/>
+        <location filename="../searchlistview.cpp" line="66"/>
         <source>Download file(s) to..</source>
         <translation>Pobierz plik(i) do..</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="134"/>
+        <location filename="../searchlistview.cpp" line="137"/>
         <source>Select a Directory for current download(s)</source>
         <translation>Wybierz katalog dla bieżącego pobierania</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="291"/>
+        <location filename="../searchlistview.cpp" line="306"/>
         <source>Y</source>
         <translation>T</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="291"/>
+        <location filename="../searchlistview.cpp" line="306"/>
         <source>N</source>
         <translation>N</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="289"/>
+        <location filename="../searchlistview.cpp" line="304"/>
         <source>/s</source>
         <translation>/s</translation>
     </message>
     <message numerus="yes">
-        <location filename="../searchlistview.cpp" line="250"/>
+        <location filename="../searchlistview.cpp" line="265"/>
         <source>%n search result(s)</source>
         <translation>
             <numerusform>%n wynik wyszukiwania</numerusform>
@@ -1354,7 +1354,7 @@
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../searchlistview.cpp" line="250"/>
+        <location filename="../searchlistview.cpp" line="265"/>
         <source> (%n user(s))</source>
         <translation>
             <numerusform>(%n użytkownik)</numerusform>
