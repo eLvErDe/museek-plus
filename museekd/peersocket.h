@@ -49,6 +49,7 @@ namespace Museek
     void connectMessageSignals();
 
     void onMessageReceived(const MessageData * data);
+    void onDataReceived(NewNet::ClientSocket * socket);
 
     void onInfoRequested(const PInfoRequest *);
     void onSharesRequested(const PSharesRequest *);

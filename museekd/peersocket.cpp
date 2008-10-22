@@ -61,6 +61,7 @@ void
 Museek::PeerSocket::connectMessageSignals()
 {
     dataReceivedEvent.connect(this, &TcpMessageSocket::onDataReceived);
+    dataReceivedEvent.connect(this, &PeerSocket::onDataReceived);
     messageReceivedEvent.connect(this, &PeerSocket::onMessageReceived);
     infoRequestedEvent.connect(this, &PeerSocket::onInfoRequested);
     sharesRequestedEvent.connect(this, &PeerSocket::onSharesRequested);
@@ -93,6 +94,23 @@ Museek::PeerSocket::onDisconnected(NewNet::ClientSocket *)
 
     if (m_SocketTimeout.isValid())
         museekd()->reactor()->removeTimeout(m_SocketTimeout);
+}
+
+/*
+    Some data has been received
+*/
+void
+Museek::PeerSocket::onDataReceived(NewNet::ClientSocket * socket)
+{
+  if (m_SearchResultsOnlyTimeout.isValid())
+    museekd()->reactor()->removeTimeout(m_SearchResultsOnlyTimeout);
+
+  if (m_SocketTimeout.isValid()) {
+    museekd()->reactor()->removeTimeout(m_SocketTimeout);
+
+    // If there's no activity in the next 130 seconds, then the socket should be closed (timeout)
+    m_SocketTimeout = museekd()->reactor()->addTimeout(130000, this, &PeerSocket::onSocketTimeout);
+  }
 }
 
 void
