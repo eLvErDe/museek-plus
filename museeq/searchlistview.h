@@ -47,6 +47,7 @@ protected slots:
 	void slotActivate(QTreeWidgetItem*,  int);
 	void mouseMoveEvent(QMouseEvent *event);
 	void mousePressEvent(QMouseEvent *event);
+	void headerClicked(int);
 
 private:
 	SearchFilter* mFilter;

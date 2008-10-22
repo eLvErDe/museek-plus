@@ -31,14 +31,15 @@
 #include <QDrag>
 #include <QMouseEvent>
 #include <QPainter>
+#include <QHeaderView>
 
 SearchListView::SearchListView(SearchFilter* filter, QWidget* parent, const char* name)
                : QTreeWidget(parent), mFilter(filter), mN(0) {
 	QStringList headers;
 	headers << QString::null << tr("User") << tr("Filename") << tr("Size") << tr("Speed") << tr("Queued") << tr("Imm.") << tr("Length") << tr("Bitrate") << tr("Path") << QString::null;
 	setHeaderLabels(headers);
-	setSortingEnabled(true);
-	sortItems(0, Qt::AscendingOrder);
+	setSortingEnabled(false);
+	header()->setClickable(true);
 	setRootIsDecorated(false);
 	setSelectionMode(QAbstractItemView::ExtendedSelection);
  	setAllColumnsShowFocus(true);
@@ -77,6 +78,8 @@ SearchListView::SearchListView(SearchFilter* filter, QWidget* parent, const char
 	connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), SLOT(slotContextMenu(const QPoint&)));
 	connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), SLOT(slotActivate(QTreeWidgetItem*, int)));
 	connect(this, SIGNAL(itemActivated(QTreeWidgetItem*, int)), SLOT(slotActivate(QTreeWidgetItem*, int)));
+
+	connect(header(), SIGNAL(sectionClicked(int)), this, SLOT(headerClicked(int)));
 
 	setDragEnabled(true);
 }
@@ -167,7 +170,19 @@ void SearchListView::append(const QString& u, bool f, uint s, uint q, const NFol
 		SearchListItem *item = new SearchListItem(this, ++mN, u, f, s, q, it.key(), (*it).size, (*it).length, (*it).bitrate, (*it).vbr);
  		item->setHidden(!mFilter->match(item));
 	}
+}
 
+/**
+  * User clicked the header
+  * Sorting is disable when starting a new search to avoid annoying automatic moving in the list when adding new items
+  * So enable it when the user really wants to sort results
+  */
+void SearchListView::headerClicked(int i)
+{
+    if (!isSortingEnabled()) {
+        setSortingEnabled(true);
+        sortItems(i, Qt::AscendingOrder);
+    }
 }
 
 /**

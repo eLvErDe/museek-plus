@@ -229,7 +229,7 @@ FolderListView::FolderListView(const QString& user, QWidget* parent, const char*
 	QStringList headers;
 	headers << tr("Folder");
 	setHeaderLabels(headers);
-	setSortingEnabled(true);
+	setSortingEnabled(false);
  	setAllColumnsShowFocus(true);
 
 	setRootIsDecorated(true);
@@ -465,6 +465,8 @@ void FolderListView::setShares(const NShares& shares) {
 	delete mShares;
 	mShares = new SharesData("");
 
+	setSortingEnabled(false);
+
 	NShares::const_iterator it = shares.begin();
 	for(; it != shares.end(); ++it) {
 		QString path;
@@ -478,6 +480,8 @@ void FolderListView::setShares(const NShares& shares) {
 			new FolderListItem(findParent(p), sfolder, p.last(), it.key());
 		}
 	}
+
+	setSortingEnabled(true);
 
 	sortItems(0, Qt::AscendingOrder);
 }
