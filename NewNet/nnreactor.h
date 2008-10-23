@@ -93,6 +93,13 @@ namespace NewNet
         and frees the RefPtr on the callback object. */
     void removeTimeout(Timeout::Callback * callback);
 
+    //! Returns the maximum number of sockets that can be opened
+    /*! On linux this is usually 1024 */
+    int maxSocketNo();
+
+    //! Returns the current number of sockets opened
+    int currentSocketNo();
+
   private:
     bool checkTimeouts(struct timeval & timeout, bool & timeout_set);
 

@@ -25,6 +25,7 @@
 #include <iostream>
 #include <queue>
 #include <assert.h>
+#include <sys/resource.h>
 
 /* Update timeout to 'ms' miliseconds after the current time if that's
    sooner than the current timeout, or if no timeout has been set yet. */
@@ -388,4 +389,20 @@ NewNet::Reactor::removeTimeout(Timeout::Callback * callback)
     m_Timeouts->timeouts.erase(purge.front());
     purge.pop();
   }
+}
+
+int
+NewNet::Reactor::maxSocketNo()
+{
+    struct rlimit rlim;
+    if (getrlimit (RLIMIT_NOFILE, &rlim))
+        return -1;
+
+    return rlim.rlim_cur;
+}
+
+int
+NewNet::Reactor::currentSocketNo()
+{
+    return m_Sockets.size();
 }

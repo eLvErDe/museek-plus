@@ -42,6 +42,8 @@ Museek::PeerManager::PeerManager(Museekd * museekd) : m_Museekd(museekd)
   museekd->server()->userStatsReceivedEvent.connect(this, &PeerManager::onServerUserStatsReceived);
 
   listen();
+
+  m_MaxSocket = museekd->reactor()->maxSocketNo();
 }
 
 Museek::PeerManager::~PeerManager()
@@ -113,8 +115,10 @@ Museek::PeerManager::peerSocket(const std::string & user, bool force) {
     it = m_Peers.find(user);
     if(it == m_Peers.end() || !it->second) {
         // Nope, see if we can open a new peersocket
-        if (((m_Peers.size() > 750) && !force) || (m_Peers.size() > 950)) {
-            NNLOG("museekd.peers.warn", "Too much opened peer socket, cannot open a new one");
+        int currentSockets = museekd()->reactor()->currentSocketNo();
+
+        if ((!force && (currentSockets > (m_MaxSocket - static_cast<int>(m_MaxSocket*0.2)))) || (currentSockets > (m_MaxSocket - static_cast<int>(m_MaxSocket*0.05)))) {
+            NNLOG("museekd.peers.warn", "Too many opened peer socket, cannot open a new one");
             peerSocketUnavailableEvent(user);
             return;
         }
