@@ -314,8 +314,8 @@ void NewNet::Reactor::run()
         }
         continue; // Let's pretend nothing happened and just try again
     }
-
-    numErrors = 0;
+    else
+        numErrors = 0;
 
     for(it = sockets.begin(); (it != end) && (r > 0); ++it)
     {

@@ -102,9 +102,6 @@ Museek::PeerSocket::onDisconnected(NewNet::ClientSocket *)
 void
 Museek::PeerSocket::onDataReceived(NewNet::ClientSocket * socket)
 {
-  if (m_SearchResultsOnlyTimeout.isValid())
-    museekd()->reactor()->removeTimeout(m_SearchResultsOnlyTimeout);
-
   if (m_SocketTimeout.isValid()) {
     museekd()->reactor()->removeTimeout(m_SocketTimeout);
 
