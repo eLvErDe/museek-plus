@@ -389,8 +389,6 @@ void MuseekDriver::send(const MuseekMessage& m) {
 		i = i >> 8;
 	}
 
-    qDebug("Received message %i from daemon.", i);
-
 	// Message Data
 	QList<unsigned char>::ConstIterator it = data.begin();
 	for(; it != data.end(); ++it) {

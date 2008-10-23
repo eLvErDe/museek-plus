@@ -513,15 +513,32 @@ Museek::IfaceManager::onIfaceGivePrivileges(const IGivePrivileges * message)
 void
 Museek::IfaceManager::onIfaceSendPrivateMessage(const IPrivateMessage * message)
 {
-  std::string line = str_replace(museekd()->codeset()->toPeer(message->user, message->msg), '\n', ' ');
-  SEND_MESSAGE(museekd()->server(), SPrivateMessage(message->user, line));
+  std::string line = museekd()->codeset()->toPeer(message->user, message->msg);
 
-  IPrivateMessage msg(1, time(NULL), message->user, str_replace(message->msg, '\n', ' '));
-  const NewNet::Buffer & buffer = msg.make_network_packet();
-  std::vector<NewNet::RefPtr<Museek::IfaceSocket> >::iterator it, end = m_Ifaces.end();
-  for(it = m_Ifaces.begin(); it != end; ++it)
-    if((*it)->authenticated() && ((*it)->mask() & EM_PRIVATE) && ((*it) != message->ifaceSocket()))
-      (*it)->sendMessage(buffer);
+  // send one message per line
+  std::vector<std::string> lines;
+  std::vector<std::string>::const_iterator it;
+  split(line, lines, "\n");
+
+  for (it = lines.begin(); it != lines.end(); ++it) {
+    SEND_MESSAGE(museekd()->server(), SPrivateMessage(message->user, *it));
+  }
+
+  // send one message per line
+  std::vector<std::string> ilines;
+  std::vector<std::string>::const_iterator iit;
+  split(message->msg, ilines, "\n");
+
+  for (iit = ilines.begin(); iit != ilines.end(); ++iit) {
+    IPrivateMessage msg(1, time(NULL), message->user, *iit);
+
+    const NewNet::Buffer & buffer = msg.make_network_packet();
+    std::vector<NewNet::RefPtr<Museek::IfaceSocket> >::iterator fit;
+    for(fit = m_Ifaces.begin(); fit != m_Ifaces.end(); ++fit) {
+    if((*fit)->authenticated() && ((*fit)->mask() & EM_PRIVATE) && ((*fit) != message->ifaceSocket()))
+      (*fit)->sendMessage(buffer);
+    }
+  }
 }
 
 void
@@ -546,8 +563,15 @@ void
 Museek::IfaceManager::onIfaceSayRoom(const ISayRoom * message)
 {
   std::string line = museekd()->codeset()->toRoom(message->room, message->line);
-  line = str_replace(line, '\n', ' ');
-  SEND_MESSAGE(museekd()->server(), SSayRoom(message->room, line));
+
+  // send one message per line
+  std::vector<std::string> lines;
+  std::vector<std::string>::const_iterator it;
+  split(line, lines, "\n");
+
+  for (it = lines.begin(); it != lines.end(); ++it) {
+    SEND_MESSAGE(museekd()->server(), SSayRoom(message->room, *it));
+  }
 }
 
 void
