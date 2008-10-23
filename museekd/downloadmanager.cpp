@@ -268,7 +268,9 @@ Museek::Download::setSocket(DownloadSocket * socket)
     m_Socket = socket;
 
 	m_CollectStart.tv_sec = m_CollectStart.tv_usec = 0;
-    museekd()->downloads()->updateRates();
+
+    if (socket)
+        socket->setDownRateLimiter(museekd()->downloads()->limiter());
 
     museekd()->reactor()->removeTimeout(m_InitTimeout);
 }
@@ -331,6 +333,8 @@ Museek::DownloadManager::DownloadManager(Museekd * museekd) : m_Museekd(museekd)
     m_AllowUpdate = false;
     m_AllowSave = true;
     m_PendingDownloadsSave = false;
+    m_Limiter = new NewNet::RateLimiter();
+    m_Limiter->setLimit(-1);
 }
 
 Museek::DownloadManager::~DownloadManager()
@@ -598,21 +602,13 @@ void Museek::DownloadManager::checkDownloads() {
 void Museek::DownloadManager::updateRates() {
     std::map<std::string, NewNet::WeakRefPtr<Download> >::iterator it;
     uint globalRate = museekd()->config()->getUint("transfers", "download_rate", 0);
-    uint numDown = m_Downloading.size();
-    if (numDown) {
-        NewNet::RateLimiter * limiter = new NewNet::RateLimiter();
-        if (globalRate > 0) {
-            // There's a limit, update the rate limiter
-            limiter->setLimit(globalRate*1000);
-        }
-        else {
-            // No limit, remove the rate limiter
-            limiter->setLimit(-1);
-        }
-        for (it = m_Downloading.begin(); it != m_Downloading.end(); it++) {
-            if (it->second->socket())
-                it->second->socket()->setDownRateLimiter(limiter);
-        }
+    if (globalRate > 0) {
+        // There's a limit, update the rate limiter
+        m_Limiter->setLimit(globalRate*1000);
+    }
+    else {
+        // No limit
+        m_Limiter->setLimit(-1);
     }
 }
 

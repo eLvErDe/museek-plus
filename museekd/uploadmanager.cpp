@@ -164,7 +164,9 @@ Museek::Upload::setSocket(UploadSocket * socket)
     m_Socket = socket;
 
 	m_CollectStart.tv_sec = m_CollectStart.tv_usec = 0;
-    museekd()->uploads()->updateRates();
+
+    if (socket)
+        socket->setUpRateLimiter(museekd()->uploads()->limiter());
 }
 
 /**
@@ -347,6 +349,9 @@ Museek::UploadManager::UploadManager(Museekd * museekd) : m_Museekd(museekd)
     uploadUpdatedEvent.connect(this, &UploadManager::onUploadUpdated);
     museekd->config()->keySetEvent.connect(this, &UploadManager::onConfigKeySet);
     museekd->config()->keyRemovedEvent.connect(this, &UploadManager::onConfigKeyRemoved);
+
+    m_Limiter = new NewNet::RateLimiter();
+    m_Limiter->setLimit(-1);
 }
 
 Museek::UploadManager::~UploadManager()
@@ -500,21 +505,13 @@ void Museek::UploadManager::checkUploads() {
 void Museek::UploadManager::updateRates() {
     std::map<std::string, NewNet::WeakRefPtr<Upload> >::iterator it;
     uint globalRate = museekd()->config()->getUint("transfers", "upload_rate", 0);
-    uint numUp = m_Uploading.size();
-    if (numUp) {
-        NewNet::RateLimiter * limiter = new NewNet::RateLimiter();
-        if (globalRate > 0) {
-            // There's a limit, update the rate limiter
-            limiter->setLimit(globalRate*1000);
-        }
-        else {
-            // No limit, remove the rate limiter
-            limiter->setLimit(-1);
-        }
-        for (it = m_Uploading.begin(); it != m_Uploading.end(); it++) {
-            if (it->second->socket())
-                it->second->socket()->setUpRateLimiter(limiter);
-        }
+    if (globalRate > 0) {
+        // There's a limit, update the rate limiter
+        m_Limiter->setLimit(globalRate*1000);
+    }
+    else {
+        // No limit
+        m_Limiter->setLimit(-1);
     }
 }
 

@@ -34,6 +34,7 @@ class PTransferReply;
 namespace NewNet
 {
   class ClientSocket;
+  class RateLimiter;
 }
 
 namespace Museek
@@ -178,6 +179,8 @@ namespace Museek
     void loadDownloads();
     void saveDownloads();
 
+    NewNet::RateLimiter * limiter() {return m_Limiter;}
+
     /* A transfer connection was initiated by a remote peer. */
     NewNet::Event<TicketSocket *> transferTicketReceivedEvent;
 
@@ -215,6 +218,7 @@ namespace Museek
     bool                                                    m_AllowSave;        // Set it to false if you don't want downloads
                                                                                 // to be saved
     bool                                                    m_PendingDownloadsSave; // Should we save downloads soon?
+    NewNet::RefPtr<NewNet::RateLimiter>                     m_Limiter;          // Rate limiter shared between downloads
     NewNet::WeakRefPtr<Museekd>                             m_Museekd;          // Ref to the museekd
     std::vector<NewNet::RefPtr<Download> >                  m_Downloads;        // List of all the downloads
     std::map<std::string, NewNet::WeakRefPtr<Download> >    m_Initiating;       // List of all the downloads currently being initiated

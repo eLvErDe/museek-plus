@@ -36,6 +36,7 @@ class PTransferReply;
 namespace NewNet
 {
   class ClientSocket;
+  class RateLimiter;
 }
 
 namespace Museek
@@ -173,6 +174,8 @@ namespace Museek
 
     void setTransferReplyCallback(NewNet::Event<const PTransferReply *>::Callback * cb) {m_TransferReplyCallback = cb;};
 
+    NewNet::RateLimiter * limiter() {return m_Limiter;}
+
     /* A transfer connection was initiated by a remote peer. */
     NewNet::Event<TicketSocket *> transferTicketReceivedEvent;
 
@@ -202,6 +205,7 @@ namespace Museek
     std::vector<NewNet::RefPtr<Upload> >                    m_Uploads;      // List of all the uploads
     std::map<std::string, NewNet::WeakRefPtr<Upload> >      m_Initiating;   // List of all the uploads currently being initiated
     std::map<std::string, NewNet::WeakRefPtr<Upload> >      m_Uploading;    // List of user we're currently uploading
+    NewNet::RefPtr<NewNet::RateLimiter>                     m_Limiter;      // Rate limiter shared between uploads
     NewNet::WeakRefPtr<NewNet::Event<const PTransferReply *>::Callback>
                                                             m_TransferReplyCallback; // Callback to the transferreply event
   };
