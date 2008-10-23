@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="1.1" language="it">
+<defaultcodec></defaultcodec>
 <context>
     <name>BanList</name>
     <message>
@@ -123,11 +124,6 @@
         <translation>&amp;Salva Password</translation>
     </message>
     <message>
-        <location filename="" line="0"/>
-        <source>Alt+S</source>
-        <translation type="obsolete">Alt+S</translation>
-    </message>
-    <message>
         <location filename="../connect.cpp" line="90"/>
         <source>Connect to:</source>
         <translation>Connetti a:</translation>
@@ -138,19 +134,9 @@
         <translation>&amp;TCP</translation>
     </message>
     <message>
-        <location filename="" line="0"/>
-        <source>Alt+T</source>
-        <translation type="obsolete">Alt+T</translation>
-    </message>
-    <message>
         <location filename="../connect.cpp" line="102"/>
         <source>&amp;Unix socket</source>
         <translation>Socket &amp;Unix</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Alt+U</source>
-        <translation type="obsolete">Alt+U</translation>
     </message>
     <message>
         <location filename="../connect.cpp" line="110"/>
@@ -163,24 +149,9 @@
         <translation>Lancia &amp;Daemon</translation>
     </message>
     <message>
-        <location filename="" line="0"/>
-        <source>Alt+D</source>
-        <translation type="obsolete">Alt+D</translation>
-    </message>
-    <message>
         <location filename="../connect.cpp" line="131"/>
         <source>St&amp;op Daemon</source>
         <translation>&amp;Ferma daemon</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Alt+O</source>
-        <translation type="obsolete">Alt+O</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Museek Daemon Config:</source>
-        <translation type="obsolete">Configurazione daemon Museek:</translation>
     </message>
     <message>
         <location filename="../connect.cpp" line="157"/>
@@ -188,19 +159,9 @@
         <translation>Se&amp;leziona...</translation>
     </message>
     <message>
-        <location filename="" line="0"/>
-        <source>Alt+L</source>
-        <translation type="obsolete">Alt+L</translation>
-    </message>
-    <message>
         <location filename="../connect.cpp" line="172"/>
         <source>Co&amp;nnect</source>
         <translation>Co&amp;nnetti</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Alt+N</source>
-        <translation type="obsolete">Alt+N</translation>
     </message>
     <message>
         <location filename="../connect.cpp" line="176"/>
@@ -213,19 +174,9 @@
         <translation>&amp;Cancella</translation>
     </message>
     <message>
-        <location filename="" line="0"/>
-        <source>Alt+C</source>
-        <translation type="obsolete">Alt+C</translation>
-    </message>
-    <message>
         <location filename="../connect.cpp" line="139"/>
         <source>&amp;AutoStart Museek Daemon</source>
         <translation>Lancia Museekd &amp;automaticamente</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Alt+A</source>
-        <translation type="obsolete">Alt+A</translation>
     </message>
     <message>
         <location filename="../connect.cpp" line="143"/>
@@ -233,19 +184,9 @@
         <translation>C&amp;hiudi il daemon all&apos;uscita</translation>
     </message>
     <message>
-        <location filename="" line="0"/>
-        <source>Alt+H</source>
-        <translation type="obsolete">Alt+H</translation>
-    </message>
-    <message>
         <location filename="../connect.cpp" line="87"/>
         <source>Auto-Conn&amp;ect to Daemon</source>
         <translation>Conn&amp;etti automaticamente al daemon</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Alt+E</source>
-        <translation type="obsolete">Alt+E</translation>
     </message>
     <message>
         <location filename="../connect.cpp" line="67"/>
@@ -298,16 +239,6 @@
         <translation>Copia URL</translation>
     </message>
     <message>
-        <location filename="" line="0"/>
-        <source>1 file</source>
-        <translation type="obsolete">1 file</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>%1 files</source>
-        <translation type="obsolete">%1 files</translation>
-    </message>
-    <message>
         <location filename="../browser.cpp" line="793"/>
         <source>Upload File(s)</source>
         <translation>Invia file</translation>
@@ -344,24 +275,9 @@
         <translation>Cartella</translation>
     </message>
     <message>
-        <location filename="" line="0"/>
-        <source>Download folder</source>
-        <translation type="obsolete">Scarica cartella</translation>
-    </message>
-    <message>
         <location filename="../browser.cpp" line="251"/>
         <source>Copy URL</source>
         <translation>Copia URL</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>1 folder</source>
-        <translation type="obsolete">1 cartella</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>%1 folders</source>
-        <translation type="obsolete">%1 cartelle</translation>
     </message>
     <message>
         <location filename="../browser.cpp" line="238"/>
@@ -428,11 +344,6 @@
         <location filename="../ipdialog.cpp" line="67"/>
         <source>&amp;Close</source>
         <translation>&amp;Chiudi</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Alt+C</source>
-        <translation type="obsolete">Alt+C</translation>
     </message>
     <message>
         <location filename="../ipdialog.cpp" line="68"/>
@@ -550,11 +461,6 @@
         <translation>&amp;Connetti...</translation>
     </message>
     <message>
-        <location filename="" line="0"/>
-        <source>&amp;Disconnect</source>
-        <translation type="obsolete">&amp;Disconnetti</translation>
-    </message>
-    <message>
         <location filename="../mainwin.cpp" line="101"/>
         <source>Check &amp;privileges</source>
         <translation>Controlla &amp;privilegi</translation>
@@ -568,26 +474,6 @@
         <location filename="../mainwin.cpp" line="112"/>
         <source>E&amp;xit</source>
         <translation>E&amp;xit</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>&amp;Protocol handlers...</source>
-        <translation type="obsolete">Controllo &amp;protocolli...</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>&amp;User info...</source>
-        <translation type="obsolete">Informazioni &amp;utente...</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>&amp;Museek...</source>
-        <translation type="obsolete">&amp;Museek...</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>&amp;Colors and Fonts...</source>
-        <translation type="obsolete">&amp;Colori e fonts...</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="132"/>
@@ -645,11 +531,6 @@
         <translation>&amp;Modi</translation>
     </message>
     <message>
-        <location filename="" line="0"/>
-        <source>&amp;About...</source>
-        <translation type="obsolete">&amp;Riguardo...</translation>
-    </message>
-    <message>
         <location filename="../mainwin.cpp" line="203"/>
         <source>&amp;Commands...</source>
         <translation>&amp;Comandi...</translation>
@@ -678,21 +559,6 @@
         <location filename="../mainwin.cpp" line="222"/>
         <source>Sc&amp;ripts</source>
         <translation>Sc&amp;ript</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>File</source>
-        <translation type="obsolete">File</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Settings</source>
-        <translation type="obsolete">Impostazioni</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Scripts</source>
-        <translation type="obsolete">Script</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="243"/>
@@ -815,16 +681,6 @@
         <translation> Connesso a soulseek, tuo nickname:</translation>
     </message>
     <message>
-        <location filename="" line="0"/>
-        <source> Status: Away</source>
-        <translation type="obsolete"> Stato: Assente</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source> Status: Online</source>
-        <translation type="obsolete"> Stato: Online</translation>
-    </message>
-    <message>
         <location filename="../mainwin.cpp" line="820"/>
         <source>Disconnected from soulseek</source>
         <translation>Disconnesso da soulseek</translation>
@@ -838,11 +694,6 @@
         <location filename="../mainwin.cpp" line="874"/>
         <source>Enter a Museeq Icon Theme Directory</source>
         <translation>Inserisci una cartella Tema Icone</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Museeq&apos;s Icon Theme (*.png)</source>
-        <translation type="obsolete">Tema Icone di Museeq (*.png)</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="923"/>
@@ -870,11 +721,6 @@
         <translation> &lt;p align=&quot;center&quot;&gt;Museeq</translation>
     </message>
     <message>
-        <location filename="" line="0"/>
-        <source> is a GUI for the Museek Daemon&lt;/p&gt;The programs, museeq and museekd and muscan, were created by Hyriand 2003-2005&lt;br&gt;&lt;br&gt;Additions by Daelstorm and SeeSchloss in 2006&lt;br&gt;This project is released under the GPL license.&lt;br&gt;Code and ideas taken from other opensource projects and people are mentioned in the CREDITS file included in the source tarball.</source>
-        <translation type="obsolete"> è una GUI per il daemon Museek&lt;/p&gt;I programmi, museeq, museekd e muscan, sono stati creati da Hyriand 2003-2005&lt;br&gt;&lt;br&gt;Aggiunte da Daelstorm e SeeSchloss nel 2006&lt;br&gt;Questo progetto è rilasciato sotto la licenza GPL.&lt;br&gt;Codice ed idee prese da altri progetti open source e persone sono menzionati nel file CREDITS incluso nel codice sorgente.</translation>
-    </message>
-    <message>
         <location filename="../mainwin.cpp" line="1213"/>
         <source>Museeq Commands</source>
         <translation>Comandi Museeq</translation>
@@ -893,16 +739,6 @@
         <location filename="../mainwin.cpp" line="1217"/>
         <source>&lt;h3&gt;What&apos;s going on? I can&apos;t connect to a Soulseek Server with museeq!&lt;/h3&gt; You connect to museekd with museeq, so you need to have &lt;b&gt;museekd&lt;/b&gt; configured, running &lt;u&gt;and&lt;/u&gt; connected to a &lt;b&gt;Soulseek&lt;/b&gt; or Soulfind server. &lt;br&gt; &lt;h3&gt;Running for the first time?&lt;/h3&gt; Before you start museekd for the first time, you need to configure &lt;b&gt;museekd&lt;/b&gt; with &lt;b&gt;musetup&lt;/b&gt;,  a command-line configuration script.&lt;br&gt;&lt;br&gt; In musetup you &lt;b&gt;MUST&lt;/b&gt; configure the following items: Server, Username, Password, Interface Password, Download Dir&lt;br&gt; Also, take note of your interfaces, if you change them from the default localhost:2240 and /tmp/museek.&lt;tt&gt;USERNAME&lt;/tt&gt;, you&apos;ll need to know them for logging in with museeq. &lt;br&gt;&lt;br&gt; When you start museeq or choose File-&gt;Connect from the menu, you are asked to input the host and port, or Unix Socket of museekd, &lt;b&gt;not&lt;/b&gt; the Server.&lt;br&gt; &lt;h3&gt;Want to send someone a file?&lt;/h3&gt; Browse yourself, select file(s), and right-click-&gt;Upload. Input their name in the dialog box, and the upload should start, but it depends on if the user has place you on their &quot;trusted&quot; or &quot;uploads&quot; users list .&lt;br&gt;Once you&apos;re connected to museekd, change museekd options via Settings-&gt;Museek</source>
         <translation>  &lt;h3&gt;Cosa succede? Non posso connettermi ad un server SoulSeek con Museeq!&lt;/h3&gt; Ti connetti a Museekd con Museeq, quindi devi avere &lt;b&gt;Museekd&lt;/b&gt; configurato, avviato &lt;u&gt;e&lt;/u&gt; connesso ad un server &lt;b&gt;Soulseek&lt;/b&gt; o Soulfind. &lt;br&gt; &lt;h3&gt;Primo avvio?&lt;/h3&gt; Prima di avviare Museekd per la prima volta, devi configurare &lt;b&gt;Museekd&lt;/b&gt; con &lt;b&gt;musetup&lt;/b&gt;, uno script di configurazione da linea di comando.&lt;br&gt;&lt;br&gt; In musetup tu &lt;b&gt;DEVI&lt;/b&gt; configurare i seguenti oggetti: Server, Username, Password, Interface Password, Download Dir&lt;br&gt; Inoltre, prendi nota delle interfacce, se le cambi dalle standard localhost:2240 e /tmp/museek.&lt;tt&gt;USERNAME&lt;/tt&gt;, dovrai conoscerle per loggarti con Museeq. &lt;br&gt;&lt;br&gt; Quando avvii Museeq o selezioni File-&gt;Connetti dal menu, ti verrà chiesto d&apos;inserire l&apos;host e la porta, o lo Unix Socket di Museekd, &lt;b&gt;non&lt;/b&gt; il server.&lt;br&gt; &lt;h3&gt;Vuoi inviare un file a qualcuno?&lt;/h3&gt; Esplora il tuo share, seleziona i file, fai click destro e Upload. Inserisci il suo nome nel box, e l&apos;upload dovrebbe partire, ma dipende se l&apos;utente ti ha inserito nella sua lista &quot;trusted&quot; o &quot;Uploads&quot;.&lt;br&gt;Una volta connesso a Museekd, cambia le impostazioni di Museekd da Impostazioni-&gt;Museek</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Delete handler</source>
-        <translation type="obsolete">Cancella gestore</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Delete</source>
-        <translation type="obsolete">Cancella</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="1226"/>
@@ -970,11 +806,6 @@
         <location filename="../mainwin.cpp" line="82"/>
         <source>&amp;File</source>
         <translation>&amp;File</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Toggled &amp;away</source>
-        <translation type="obsolete">Imposta &amp;assente</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="146"/>
@@ -1130,11 +961,6 @@
         <translation>&amp;Esci</translation>
     </message>
     <message>
-        <location filename="" line="0"/>
-        <source>MuseeqTray</source>
-        <translation type="obsolete">MuseeqTray</translation>
-    </message>
-    <message>
         <location filename="../museeq.cpp" line="159"/>
         <source>&amp;Museek Settings</source>
         <translation>&amp;Impostazioni di Museek</translation>
@@ -1158,19 +984,9 @@
         <translation>&amp;Rimuovi</translation>
     </message>
     <message>
-        <location filename="" line="0"/>
-        <source>Alt+R</source>
-        <translation type="obsolete">Alt+R</translation>
-    </message>
-    <message>
         <location filename="../onlinealert.cpp" line="68"/>
         <source>&amp;OK</source>
         <translation>&amp;OK</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Alt+O</source>
-        <translation type="obsolete">Alt+O</translation>
     </message>
     <message>
         <location filename="../onlinealert.cpp" line="83"/>
@@ -1213,36 +1029,6 @@
 </context>
 <context>
     <name>QObject</name>
-    <message>
-        <location filename="" line="0"/>
-        <source>%.2f B</source>
-        <translation type="obsolete">%.2f B</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>%.2f KiB</source>
-        <translation type="obsolete">%.2f KiB</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>%.2f MiB</source>
-        <translation type="obsolete">%.2f MiB</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>%.2f GiB</source>
-        <translation type="obsolete">%.2f GiB</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>%.2f TiB</source>
-        <translation type="obsolete">%.2f TiB</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>%.2f PB</source>
-        <translation type="obsolete">%.2f PB</translation>
-    </message>
     <message>
         <location filename="../util.cpp" line="69"/>
         <source>(vbr) %1</source>
@@ -1528,21 +1314,6 @@
         <translation>Utenti</translation>
     </message>
     <message>
-        <location filename="" line="0"/>
-        <source>1 search result (1 user)</source>
-        <translation type="obsolete">1 risultato (1 utente)</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>%1 search results (1 user)</source>
-        <translation type="obsolete">%1 risultati (1 utente)</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>%1 search results (%2 users)</source>
-        <translation type="obsolete">%1 risultati (%2 utenti)</translation>
-    </message>
-    <message>
         <location filename="../searchlistview.cpp" line="66"/>
         <source>Download file(s) to..</source>
         <translation>Scarica file in..</translation>
@@ -1627,11 +1398,6 @@
         <translation>Utente</translation>
     </message>
     <message>
-        <location filename="../searches.cpp" line="95"/>
-        <source>*Search*</source>
-        <translation type="obsolete">*Ricerca*</translation>
-    </message>
-    <message>
         <location filename="../searches.cpp" line="96"/>
         <source>*Interests*</source>
         <translation>*Interessi*</translation>
@@ -1644,11 +1410,6 @@
 </context>
 <context>
     <name>SettingsDialog</name>
-    <message>
-        <location filename="" line="0"/>
-        <source>Museek Settings</source>
-        <translation type="obsolete">Impostazioni di Museek</translation>
-    </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1115"/>
         <source>Ok</source>
@@ -1663,11 +1424,6 @@
         <location filename="../settingsdialog.cpp" line="1117"/>
         <source>Cancel</source>
         <translation>Cancella</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Default Encoding:</source>
-        <translation type="obsolete">Codifica standard:</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1148"/>
@@ -1715,11 +1471,6 @@
         <translation>Server</translation>
     </message>
     <message>
-        <location filename="" line="0"/>
-        <source>&lt;p&gt;Configure your shares with musetup, or run &lt;u&gt;muscan -r &lt;/u&gt;to rescan your shares and then press:&lt;/p&gt;</source>
-        <translation type="obsolete">&lt;p&gt;Configura il tuo share con musetup, o esegui &lt;u&gt;muscan -r &lt;/u&gt;per aggiornare il tuo share e quindi premi:&lt;/p&gt;</translation>
-    </message>
-    <message>
         <location filename="../settingsdialog.cpp" line="1167"/>
         <source>Connections</source>
         <translation>Connessioni</translation>
@@ -1735,11 +1486,6 @@
         <translation>Connessioni passive</translation>
     </message>
     <message>
-        <location filename="" line="0"/>
-        <source>Reload Shares</source>
-        <translation type="obsolete">Ricarica share</translation>
-    </message>
-    <message>
         <location filename="../settingsdialog.cpp" line="1205"/>
         <source>Select..</source>
         <translation>Seleziona..</translation>
@@ -1753,11 +1499,6 @@
         <location filename="../settingsdialog.cpp" line="1206"/>
         <source>Incomplete Dir:</source>
         <translation>Cartella incompleti:</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Shares and Connections</source>
-        <translation type="obsolete">Condivisi e connessioni</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1209"/>
@@ -1883,11 +1624,6 @@
         <location filename="../settingsdialog.cpp" line="976"/>
         <source>Images (*.png *.gif *.jpg *.jpeg)</source>
         <translation>Immagini (*.png *.gif *.jpg *.jpeg)</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Select an Image for you User info</source>
-        <translation type="obsolete">Seleziona un&apos;immagine per le tue Info utente</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1114"/>
@@ -2118,19 +1854,9 @@
         <translation>&amp;Cancella</translation>
     </message>
     <message>
-        <location filename="" line="0"/>
-        <source>Alt+C</source>
-        <translation type="obsolete">Alt+C</translation>
-    </message>
-    <message>
         <location filename="../tickerdialog.cpp" line="113"/>
         <source>&amp;OK</source>
         <translation>&amp;OK</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Alt+O</source>
-        <translation type="obsolete">Alt+O</translation>
     </message>
 </context>
 <context>
@@ -2174,21 +1900,6 @@
         <location filename="../transferlistview.cpp" line="35"/>
         <source>Path</source>
         <translation>Percorso</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>1 transfer (1 user)</source>
-        <translation type="obsolete">1 trasferimento (1 utente)</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>%1 transfers (1 user)</source>
-        <translation type="obsolete">%1 trasferimenti (1 utente)</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>%1 transfers (%2 users)</source>
-        <translation type="obsolete">%1 trasferimenti (%2 utenti)</translation>
     </message>
     <message>
         <location filename="../transferlistitem.cpp" line="86"/>
@@ -2328,11 +2039,6 @@
         <location filename="../transfers.cpp" line="146"/>
         <source>Abort</source>
         <translation>Abortisci</translation>
-    </message>
-    <message>
-        <location filename="" line="0"/>
-        <source>Check Position</source>
-        <translation type="obsolete">Controlla posizione</translation>
     </message>
     <message>
         <location filename="../transfers.cpp" line="156"/>
