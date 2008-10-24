@@ -153,11 +153,6 @@
         <translation>Zatrzymaj dem&amp;ona</translation>
     </message>
     <message>
-        <location filename="../connect.cpp" line="158"/>
-        <source>Museek Daemon Config:</source>
-        <translation type="obsolete">Konfiguracja demona museeka:</translation>
-    </message>
-    <message>
         <location filename="../connect.cpp" line="157"/>
         <source>Se&amp;lect...</source>
         <translation>Wy&amp;bierz...</translation>
@@ -1406,11 +1401,6 @@
         <translation>Użytkownik</translation>
     </message>
     <message>
-        <location filename="../searches.cpp" line="95"/>
-        <source>*Search*</source>
-        <translation type="obsolete">*Szukaj*</translation>
-    </message>
-    <message>
         <location filename="../searches.cpp" line="96"/>
         <source>*Interests*</source>
         <translation>*Zainteresowania*</translation>
@@ -1499,11 +1489,6 @@
         <translation>Pasywne połączenia</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1203"/>
-        <source>Reload Shares</source>
-        <translation type="obsolete">Przeładuj udziały</translation>
-    </message>
-    <message>
         <location filename="../settingsdialog.cpp" line="1205"/>
         <source>Select..</source>
         <translation>Wybierz..</translation>
@@ -1584,11 +1569,6 @@
         <translation>Stan serwera</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="184"/>
-        <source>To configure your shares, use one of the following: musetup, musetup-gtk, muscan (in a terminal), or the buttons below. Press &lt;u&gt;Reload Shares&lt;/u&gt; to activate your changes.</source>
-        <translation type="obsolete">Aby skonfigurować swoje udziały, użyj jednego z: musetup, musetup-gtk, muscan (w terminalu), albo przycisków poniżej. Naciśnij &lt;u&gt;Przeładuj udziały&lt;/u&gt;, aby aktywować swoje zmiany.</translation>
-    </message>
-    <message>
         <location filename="../settingsdialog.cpp" line="240"/>
         <source>Directories</source>
         <translation>Katalogi</translation>
@@ -1647,11 +1627,6 @@
         <location filename="../settingsdialog.cpp" line="976"/>
         <source>Images (*.png *.gif *.jpg *.jpeg)</source>
         <translation>Obrazy (*.png *.gif *.jpg *.jpeg)</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="977"/>
-        <source>Select an Image for you User info</source>
-        <translation type="obsolete">Wybierz obraz dla informacji o sobie</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1114"/>
