@@ -1104,6 +1104,7 @@ IFACEMESSAGE(IAddWishItem, 0x0406)
 
 	MAKE
 		pack(query);
+		pack(lastSearched);
 	END_MAKE
 
 	PARSE
