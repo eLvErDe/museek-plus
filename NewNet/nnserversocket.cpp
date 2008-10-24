@@ -39,13 +39,13 @@ NewNet::ServerSocket::disconnect()
 void
 NewNet::ServerSocket::process()
 {
-  if(readyState() & StateReceive)
+  if (readyState() & StateReceive)
   {
     int client = ::accept(descriptor(), 0, 0);
 
     if(client == -1)
     {
-      if(WSAGetLastError() == EAGAIN)
+      if ((WSAGetLastError() == EAGAIN) || (WSAGetLastError() == EMFILE))
         setReadyState(readyState() & ~StateReceive);
       else
         NNLOG("newnet.net.warn", "Ignoring error '%i' in ServerSocket::accept().", errno);

@@ -53,6 +53,14 @@ NewNet::TcpClientSocket::connect(const std::string & host, unsigned int port)
   setnonblocking(s);
   setDescriptor(s);
 
+  if(s < 0)
+    {
+      NNLOG("newnet.net.warn", "Cannot connect to host '%s:%u', error: %i.", host.c_str(), port, WSAGetLastError());
+      setSocketError(ErrorCannotConnect);
+      cannotConnectEvent(this);
+      return;
+    }
+
   if(::connect(s, (struct sockaddr *)&address, sizeof(struct sockaddr_in)) == 0)
   {
     NNLOG("newnet.net.debug", "Connected to host '%s:%u'.", host.c_str(), port);

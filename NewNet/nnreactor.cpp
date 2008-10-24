@@ -115,6 +115,11 @@ NewNet::Reactor::Reactor()
   WORD wVersionRequested = MAKEWORD(1, 1);
   assert(WSAStartup(wVersionRequested, (WSADATA *)m_WsaData) == 0);
 #endif // WIN32
+
+    struct rlimit rlim;
+    m_maxSocketNo = -1;
+    if (getrlimit (RLIMIT_NOFILE, &rlim) >= 0)
+        m_maxSocketNo = rlim.rlim_cur;
 }
 
 #ifndef DOXYGEN_UNDOCUMENTED
@@ -394,11 +399,7 @@ NewNet::Reactor::removeTimeout(Timeout::Callback * callback)
 int
 NewNet::Reactor::maxSocketNo()
 {
-    struct rlimit rlim;
-    if (getrlimit (RLIMIT_NOFILE, &rlim))
-        return -1;
-
-    return rlim.rlim_cur;
+    return m_maxSocketNo;
 }
 
 int

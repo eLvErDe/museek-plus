@@ -104,6 +104,7 @@ namespace NewNet
     bool checkTimeouts(struct timeval & timeout, bool & timeout_set);
 
     bool m_StopReactor;
+    int m_maxSocketNo;
     std::vector<RefPtr<Socket> > m_Sockets;
 #ifndef DOXYGEN_UNDOCUMENTED
     struct Timeouts;

@@ -99,7 +99,6 @@ namespace Museek
     std::map<std::string, NewNet::WeakRefPtr<PeerSocket> >  m_Peers;            // List of all the peer sockets
     std::map<std::string, SGetUserStats>                    m_UserStats;        // User stats
     std::map<std::string, uint32>                           m_UserStatus;       // User status
-    int                                                     m_MaxSocket;        // Maximum number of sockets
   };
 }
 
