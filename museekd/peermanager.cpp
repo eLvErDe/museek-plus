@@ -117,7 +117,7 @@ Museek::PeerManager::peerSocket(const std::string & user, bool force) {
         // Nope, see if we can open a new peersocket
         int currentSockets = museekd()->reactor()->currentSocketNo();
 
-        if ((!force && (currentSockets > (m_MaxSocket - static_cast<int>(m_MaxSocket*0.2)))) || (currentSockets > (m_MaxSocket - static_cast<int>(m_MaxSocket*0.05)))) {
+        if ((m_MaxSocket > 0) && ((!force && (currentSockets > (m_MaxSocket - static_cast<int>(m_MaxSocket*0.2)))) || (currentSockets > (m_MaxSocket - static_cast<int>(m_MaxSocket*0.05))))) {
             NNLOG("museekd.peers.warn", "Too many opened peer socket, cannot open a new one");
             peerSocketUnavailableEvent(user);
             return;
