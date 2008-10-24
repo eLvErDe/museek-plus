@@ -196,7 +196,12 @@ void PrivateChat::slotSend(const QString& line_) {
 			return;
 			}
 		museeq->sayPrivate(user(), line);
-		logMessage(user(), museeq->nickname(), line);
-		mChatPanel->append(QString::null, line);
+
+        QStringList lines = line.split("\n");
+        QStringList::iterator it, end = lines.end();
+        for(it = lines.begin(); it != end; ++it) {
+            logMessage(user(), museeq->nickname(), *it);
+            mChatPanel->append(QString::null, *it);
+        }
 	}
 }
