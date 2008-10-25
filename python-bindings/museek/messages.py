@@ -36,14 +36,16 @@ TS_Waiting	= 3
 TS_Establishing	= 4
 TS_Initiating	= 5
 TS_Connecting	= 6
-TS_Queued	= 7
+TS_QueuedRemotely	= 7
 TS_Address	= 8
 TS_Status	= 9
 TS_Offline	= 10
 TS_ConnectionClosed	= 11
 TS_CannotConnect	= 12
 TS_Aborted	= 13
-TS_Error	= 14
+TS_RemoteError	= 14
+TS_LocalError	= 15
+TS_QueuedLocally	= 16
 
 class BaseMessage:
 	cipher = None
@@ -362,6 +364,38 @@ class WishListSearch(BaseMessage):
 	def make(self):
 		return self.pack_uint(self.code) + \
 			self.pack_string(self.query)
+
+
+class AddWishListItem(BaseMessage):
+	code = 0x0406
+	
+	def __init__(self,  query = None):
+		self.query = query
+		self.lastSearched = None
+
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.query)
+
+	def parse(self, data):
+		self.query, data = self.unpack_string(data)
+		self.lastSearched, data = self.unpack_uint(data)
+		return self
+
+
+class RemoveWishListItem(BaseMessage):
+	code = 0x0407
+	
+	def __init__(self,  query = None):
+		self.query = query
+
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.query)
+
+	def parse(self, data):
+		self.query, data = self.unpack_string(data)
+		return self
 
 
 class RoomState(BaseMessage):
@@ -737,6 +771,32 @@ class TransferRemove(BaseMessage):
 		self.transfer = self.upload, self.user, self.path
 		return self
 
+class DownloadFile(BaseMessage):
+	code = 0x0503
+	
+	def __init__(self, user = None, path = None, size = None):
+		self.user = user
+		self.path = path
+		self.size = size
+
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.user) + \
+			self.pack_string(self.path) + \
+			self.pack_off(self.path)
+
+class GetFolderContents(BaseMessage):
+	code = 0x0504
+	
+	def __init__(self, user = None, folder = None):
+		self.user = user
+		self.folder = folder
+
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.user) + \
+			self.pack_string(self.folder)
+
 class TransferAbort(BaseMessage):
 	code = 0x0505
 
@@ -762,8 +822,8 @@ class TransferAbort(BaseMessage):
 		self.transfer = self.upload, self.user, self.path
 		return self
 
-class DownloadFile(BaseMessage):
-	code = 0x0503
+class UploadFile(BaseMessage):
+	code = 0x0506
 	
 	def __init__(self, user = None, path = None):
 		self.user = user
@@ -777,6 +837,22 @@ class DownloadFile(BaseMessage):
 class DownloadFileTo(BaseMessage):
 	code = 0x0507
 	
+	def __init__(self, user = None, path = None, dpath = None, size = None):
+		self.user = user
+		self.path = path
+		self.dpath = dpath
+		self.size = size
+
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.user) + \
+			self.pack_string(self.path) + \
+			self.pack_string(self.dpath) + \
+			self.pack_off(self.size)
+
+class DownloadFolderTo(BaseMessage):
+	code = 0x0508
+	
 	def __init__(self, user = None, path = None, dpath = None):
 		self.user = user
 		self.path = path
@@ -785,22 +861,11 @@ class DownloadFileTo(BaseMessage):
 	def make(self):
 		return self.pack_uint(self.code) + \
 			self.pack_string(self.user) + \
-			self.pack_string(self.path) + self.pack_string(self.dpath)
+			self.pack_string(self.path) + \
+			self.pack_string(self.dpath)
 
-class GetFolderContents(BaseMessage):
-	code = 0x0504
-	
-	def __init__(self, user = None, folder = None):
-		self.user = user
-		self.folder = folder
-
-	def make(self):
-		return self.pack_uint(self.code) + \
-			self.pack_string(self.user) + \
-			self.pack_string(self.folder)
-
-class UploadFile(BaseMessage):
-	code = 0x0506
+class UploadFolder(BaseMessage):
+	code = 0x0509
 	
 	def __init__(self, user = None, path = None):
 		self.user = user
@@ -893,7 +958,7 @@ class GetRecommendations(BaseMessage):
 		n, data = self.unpack_uint(data);
 		for i in range (n):
 			r, data = self.unpack_string(data)
-			u, data = self.unpack_uint(data)
+			u, data = self.unpack_int(data)
 			self.recommendations[r] = u
 		return self
 
@@ -912,7 +977,7 @@ class GetGlobalRecommendations(BaseMessage):
 		n, data = self.unpack_uint(data);
 		for i in range (n):
 			r, data = self.unpack_string(data)
-			u, data = self.unpack_uint(data)
+			u, data = self.unpack_int(data)
 			self.recommendations[r] = u
 		return self
 
@@ -951,7 +1016,7 @@ class GetItemRecommendations(BaseMessage):
 		n, data = self.unpack_uint(data);
 		for i in range (n):
 			r, data = self.unpack_string(data)
-			u, data = self.unpack_uint(data)
+			u, data = self.unpack_int(data)
 			self.recommendations[r] = u
 		return self
 
