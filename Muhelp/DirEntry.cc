@@ -120,6 +120,7 @@ static inline off_t _unpack_off(queue<unsigned char>& data) {
 static inline string _unpack_str(queue<unsigned char>& data) {
 	string r;
 	uint32 l = _unpack_int(data);
+	r.reserve(l);
 	for(uint32 j = 0; j < l; ++j) {
 		r += data.front();
 		data.pop();

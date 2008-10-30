@@ -73,12 +73,11 @@ struct _FolderRequest {
   std::string folder;
 };
 
-typedef struct
-{
-  off_t size;
+struct _FileEntry {
+  long long size;
   std::string ext;
   std::vector<uint32> attrs;
-} FileEntry;
+};
 
 typedef std::map<std::string, std::string> StringMap;
 typedef std::vector<std::string> StringList;
@@ -87,6 +86,8 @@ typedef std::vector<std::wstring> WStringList;
 typedef struct _UserData UserData;
 typedef enum _TrState TrState;
 typedef enum _BaseConnState BaseConnState;
+
+typedef struct _FileEntry FileEntry;
 
 typedef struct _FolderRequest FolderRequest;
 typedef StringMap Tickers;

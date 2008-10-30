@@ -105,8 +105,6 @@ int main(int argc, char **argv) {
 		
 	root.load(state);
 
-
-	
 	if(doList) {
 		map<string, DirEntry*>::iterator fit = root.folders.begin();
 		for(; fit != root.folders.end(); ++fit)
@@ -153,8 +151,6 @@ int main(int argc, char **argv) {
 	} else {
 		folded.save(config["shares"]["database"]);
 	}
-
-
 
 	return 0;
 }

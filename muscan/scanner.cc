@@ -39,6 +39,8 @@ extern "C" {
 
 #include <iostream>
 
+#include "scanner.hh"
+
 using std::map;
 using std::vector;
 using std::string;
@@ -55,23 +57,6 @@ static int libvorbisfile_is_present = 1;
 #endif
 
 int Scanner_Verbosity = 0;
-
-class DirScanner : public DirEntry {
-public:
-	DirScanner(bool _f = true) : DirEntry(_f) { };
-	DirScanner(const string& _p) : DirEntry(_p) { };
-	
-	void add(const string& path);
-	
-	DirEntry* new_folder(bool fake);
-	DirEntry* new_folder(const string& path);
-	void scan(const struct stat* = NULL);
-	
-private:
-	FileEntry scan_file(const string&);
-	void real_scan();
-};
-
 
 void DirScanner::add(const string& path) {
 	if(folders.find(path) == folders.end())

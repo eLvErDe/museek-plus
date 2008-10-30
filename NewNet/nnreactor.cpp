@@ -315,7 +315,7 @@ void NewNet::Reactor::run()
         NNLOG("newnet.net.warn", "Error %d while selecting sockets", errno);
         numErrors++;
         if (numErrors > 10000) {
-            NNLOG("newnet.net.warn", "Too much socket errors (%d). Closing museekd.", errno);
+            NNLOG("newnet.net.warn", "Too many socket errors (%d). Closing museekd.", errno);
             return;
         }
         continue; // Let's pretend nothing happened and just try again
