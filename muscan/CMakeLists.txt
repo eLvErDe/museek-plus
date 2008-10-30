@@ -52,10 +52,8 @@ if (FAM_LIBRARIES AND FAM_FOUND)
       muscand
       Muhelp
       ${ZLIB_LIBRARIES}
-      ${LIBXML2_LIBRARIES}
       ${FAM_LIBRARIES}
       ${VORBIS_LIBRARIES}
-      ${LIBXMLPP_LIBRARIES}
       ${ICONV_LIBRARIES}
       ${OS_LIBRARIES}
     )
@@ -78,8 +76,6 @@ target_link_libraries(
   Muhelp
   ${ZLIB_LIBRARIES}
   ${VORBIS_LIBRARIES}
-  ${LIBXML2_LIBRARIES}
-  ${LIBXMLPP_LIBRARIES}
   ${ICONV_LIBRARIES}
   ${OS_LIBRARIES}
 )

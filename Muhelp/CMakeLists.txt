@@ -20,4 +20,6 @@ add_library(Muhelp STATIC ${MUHELP_SOURCES})
 target_link_libraries(
   Muhelp
   NewNet
+  ${LIBXML2_LIBRARIES}
+  ${LIBXMLPP_LIBRARIES}
 )
