@@ -53,7 +53,7 @@ void InterestList::added(const QString& item) {
 	QList<QTreeWidgetItem *> InterestsMatch = mListView->findItems(item, Qt::MatchExactly, 0);
 	if (! InterestsMatch.isEmpty())
 		return;
-	InterestListItem * listItem = new InterestListItem(mListView, item);
+	new InterestListItem(mListView, item);
 }
 
 void InterestList::removed(const QString& item) {

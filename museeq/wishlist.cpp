@@ -62,7 +62,7 @@ void WishList::added(const QString& item, uint lastSearched) {
         itemFound->setLastSearched(lastSearched);
 	}
 	else
-	    WishListItem * listItem = new WishListItem(mWishList, item, lastSearched);
+	    new WishListItem(mWishList, item, lastSearched);
 }
 
 void WishList::removed(const QString& item) {

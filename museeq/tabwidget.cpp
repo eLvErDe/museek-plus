@@ -54,7 +54,7 @@ TabWidget::TabWidget(QWidget* parent, const char* name, bool isUser)
 
 QString TabWidget::getCurrentPage() const {
 	int index = currentIndex();
-	if(( (currentIndex() >= mFirstProtected) && (currentIndex() <= mLastProtected) ))
+	if(( (currentIndex() >= static_cast<int>(mFirstProtected)) && (currentIndex() <= static_cast<int>(mLastProtected)) ))
 		return QString::null;
 	return tabText(index);
 }
@@ -79,20 +79,20 @@ void TabWidget::setCanDrop(bool b) {
 
 void TabWidget::setLastProtected(uint lastProtected) {
 	mLastProtected = lastProtected;
-	cornerWidget()->setEnabled(!( (currentIndex() >= mFirstProtected) && (currentIndex() <= mLastProtected) ));
+	cornerWidget()->setEnabled(!( (currentIndex() >= static_cast<int>(mFirstProtected)) && (currentIndex() <= static_cast<int>(mLastProtected)) ));
 }
 
 void TabWidget::setFirstProtected(uint firstProtected) {
 	mFirstProtected = firstProtected;
-	cornerWidget()->setEnabled(!( (currentIndex() >= mFirstProtected) && (currentIndex() <= mLastProtected) ));
+	cornerWidget()->setEnabled(!( (currentIndex() >= static_cast<int>(mFirstProtected)) && (currentIndex() <= static_cast<int>(mLastProtected)) ));
 }
 
 void TabWidget::doCurrentChanged(QWidget*) {
-	cornerWidget()->setEnabled(!( (currentIndex() >= mFirstProtected) && (currentIndex() <= mLastProtected) ));
+	cornerWidget()->setEnabled(!( (currentIndex() >= static_cast<int>(mFirstProtected)) && (currentIndex() <= static_cast<int>(mLastProtected)) ));
 }
 
 void TabWidget::closeCurrent() {
-	if(!( (currentIndex() >= mFirstProtected) && (currentIndex() <= mLastProtected) ))
+	if(!( (currentIndex() >= static_cast<int>(mFirstProtected)) && (currentIndex() <= static_cast<int>(mLastProtected)) ))
 		delete currentWidget();
 }
 
