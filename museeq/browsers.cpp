@@ -1,6 +1,7 @@
 /* museeq - a Qt client to museekd
  *
  * Copyright (C) 2003-2004 Hyriand <hyriand@thegraveyard.org>
+ * Copyright 2008 little blue poney <lbponey@users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +24,7 @@
 
 Browsers::Browsers(QWidget* parent, const char* name)
           : UserTabWidget(parent, name) {
-	
+
 	connect(museeq, SIGNAL(userShares(const QString&, const NShares&)), SLOT(setShares(const QString&, const NShares&)));
 }
 

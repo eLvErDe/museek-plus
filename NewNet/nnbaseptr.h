@@ -1,5 +1,6 @@
 /*  NewNet - A networking framework in C++
     Copyright (C) 2006-2007 Ingmar K. Steen (iksteen@gmail.com)
+    Copyright 2008 little blue poney <lbponey@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -127,5 +128,5 @@ namespace NewNet
 }
 
 #undef NN_PTR_CHECK
-  
+
 #endif // NEWNET_REFPTR_H

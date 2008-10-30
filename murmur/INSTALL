@@ -22,7 +22,6 @@ To build trayicon, you must have:
 To run from source:
 #    ./murmur
     
-To install, run as root:
+To install, see museek+ install procedure (using cmake) or use setup.py:
 
-#    make
-#    make install
+python setup.py install
