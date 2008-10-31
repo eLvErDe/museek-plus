@@ -497,7 +497,7 @@ SERVERMESSAGE(SExactFileSearch, 65)
 
 	std::string user, filename, path;
 	uint32 ticket, checksum;
-	off_t filesize;
+	uint64 filesize;
 END
 
 SSTRINGMESSAGE(SGlobalMessage, 66)

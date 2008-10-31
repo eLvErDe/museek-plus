@@ -100,7 +100,7 @@ protected:
     buffer.append(&c, 1);
   }
   /* Pack a 64bit unsigned integer. */
-  void pack(off_t);
+  void pack(uint64);
 
   /* Unpack a string. */
   std::string unpack_string();
@@ -113,7 +113,7 @@ protected:
   /* Unpack a 32bit signed integer. */
   int32 unpack_signed_int();
   /* Unpack a 64bit unsigned integer. */
-  off_t unpack_off();
+  uint64 unpack_off();
   /* Unpack a raw 8bit element. */
   uchar unpack_char()
   {

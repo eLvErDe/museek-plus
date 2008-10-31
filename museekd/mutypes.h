@@ -26,14 +26,15 @@
 #include <vector>
 #include <sys/types.h>
 
-typedef unsigned int uint32;
-typedef int int32;
+typedef uint32_t uint32;
+typedef uint64_t uint64;
+typedef int32_t int32;
 typedef unsigned int uint;
 typedef unsigned char uchar;
 
 struct _UserData {
   uint32 status, avgspeed, files, dirs;
-  off_t downloadnum;
+  uint64 downloadnum;
   bool slotsfull;
 };
 
@@ -75,7 +76,7 @@ struct _FolderRequest {
 };
 
 struct _FileEntry {
-  long long size;
+  uint64 size;
   std::string ext;
   std::vector<uint32> attrs;
 };

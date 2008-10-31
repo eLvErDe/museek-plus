@@ -76,7 +76,7 @@ static inline void _pack(queue<unsigned char>& data, uint32 i) {
     }
 }
 
-static inline void _pack(queue<unsigned char>& data, off_t i) {
+static inline void _pack(queue<unsigned char>& data, uint64 i) {
     for(uint j = 0; j < 8; j++) {
         data.push(i & 0xff);
         i >>= 8;
@@ -109,8 +109,8 @@ static inline uint32 _unpack_int(queue<unsigned char>& data) {
 	return i;
 }
 
-static inline off_t _unpack_off(queue<unsigned char>& data) {
-	off_t i = 0;
+static inline uint64 _unpack_off(queue<unsigned char>& data) {
+	uint64 i = 0;
 	for(uint j = 0; j < 8; j++) {
 		i += data.front() << (j * 8);
 		data.pop();

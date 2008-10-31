@@ -78,7 +78,7 @@ Museek::DownloadSocket::onConnected(NewNet::ClientSocket *)
     openIncompleteFile();
 
     // Send the file position.
-    off_t pos = m_Download->position();
+    uint64 pos = m_Download->position();
     for(int i = 0; i < 8; ++i) {
         buf[i + 4] = (pos >> (i * 8)) & 0xff;
     }
@@ -148,7 +148,7 @@ Museek::DownloadSocket::onTransferTicketReceived(TicketSocket * socket)
 
         // Send the file position.
         unsigned char buf[8];
-        off_t pos = m_Download->position();
+        uint64 pos = m_Download->position();
         for(int i = 0; i < 8; ++i) {
             buf[i] = (pos >> (i * 8)) & 0xff;
         }
@@ -177,7 +177,7 @@ Museek::DownloadSocket::openIncompleteFile()
 
     // Set the position of the download to EOF
     m_Download->setPosition(m_Output.tellp());
-    NNLOG("museekd.down.debug", "Set position to %llu (%llu).",m_Download->position(), (off_t)m_Output.tellp());
+    NNLOG("museekd.down.debug", "Set position to %llu (%llu).", m_Download->position(), (uint64)m_Output.tellp());
 
     return true;
 }

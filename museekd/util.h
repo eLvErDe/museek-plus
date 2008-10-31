@@ -107,7 +107,7 @@ static inline int write_int(std::ofstream * ofs, uint32 i) {
     return 4;
 }
 
-static inline int write_off(std::ofstream * ofs, off_t i) {
+static inline int write_off(std::ofstream * ofs, uint64 i) {
 	if(ofs->fail() || !ofs->is_open())
 		return -1;
 
@@ -148,7 +148,7 @@ static inline int read_int(std::ifstream * ifs, uint32* r) {
     return 4;
 }
 
-static inline int read_off(std::ifstream * ifs, off_t* r) {
+static inline int read_off(std::ifstream * ifs, uint64* r) {
     (*r) = 0;
 	if(ifs->fail() || !ifs->is_open())
 		return -1;
@@ -158,7 +158,7 @@ static inline int read_off(std::ifstream * ifs, off_t* r) {
 	if(ifs->fail() || !ifs->is_open())
 		return -1;
 
-	for(off_t j = 0; j < 8; j++) {
+	for(uint64 j = 0; j < 8; j++) {
 		(*r) += d[j] << (j * 8);
 	}
 	return 8;

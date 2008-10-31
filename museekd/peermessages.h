@@ -325,7 +325,7 @@ PEERMESSAGE(PTransferRequest, 40)
 	PTransferRequest() {};
 	PTransferRequest(uint _t, const std::string& _f)
                             : filename(_f) { direction = 0; ticket = _t; };
-	PTransferRequest(uint _t, const std::string& _f, off_t _s)
+	PTransferRequest(uint _t, const std::string& _f, uint64 _s)
                             : filename(_f) { direction = 1; ticket = _t; filesize = _s; };
 
 	MAKE
@@ -345,14 +345,14 @@ PEERMESSAGE(PTransferRequest, 40)
 	END_PARSE
 
 	uint direction, ticket;
-	off_t filesize;
+	uint64 filesize;
 	std::string filename;
 END
 
 PEERMESSAGE(PUploadReply, 41)
 	PUploadReply() { }
 	PUploadReply(uint _t, const std::string& _r) : ticket(_t), reason(_r), allowed(false) { }
-	PUploadReply(uint _t, off_t _f) : ticket(_t), filesize(_f), allowed(true) { }
+	PUploadReply(uint _t, uint64 _f) : ticket(_t), filesize(_f), allowed(true) { }
 	MAKE
 		pack(ticket);
 		if(allowed) {
@@ -366,7 +366,7 @@ PEERMESSAGE(PUploadReply, 41)
 
 	uint ticket;
 	std::string reason;
-	off_t filesize;
+	uint64 filesize;
 	bool allowed;
 END
 
@@ -402,7 +402,7 @@ PEERMESSAGE(PTransferReply, 41)
 	uint ticket;
 	bool allowed;
 	std::string reason;
-	off_t filesize;
+	uint64 filesize;
 
 END
 

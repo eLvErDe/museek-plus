@@ -100,7 +100,7 @@ void NetworkMessage::pack(int32 i)
 }
 
 /* Pack a 64bit unsigned integer (file size / position). */
-void NetworkMessage::pack(off_t i)
+void NetworkMessage::pack(uint64 i)
 {
   unsigned char buf[8];
   buf[0] = i & 0xff;
@@ -143,16 +143,16 @@ int32 NetworkMessage::unpack_signed_int()
 }
 
 /* Unpack a 64bit unsigned integer (file size / offset) */
-off_t NetworkMessage::unpack_off()
+uint64 NetworkMessage::unpack_off()
 {
   // If we have less than 8 bytes, that's bad.
   if(buffer.count() < 8)
     return 0;
   unsigned char * buf = buffer.data();
-  off_t l = ((off_t)buf[0] << 0)  + ((off_t)buf[1] << 8)  +
-            ((off_t)buf[2] << 16) + ((off_t)buf[3] << 24) +
-            ((off_t)buf[4] << 32) + ((off_t)buf[5] << 40) +
-            ((off_t)buf[6] << 48) + ((off_t)buf[7] << 56);
+  uint64 l = ((uint64)buf[0] << 0)  + ((uint64)buf[1] << 8)  +
+            ((uint64)buf[2] << 16) + ((uint64)buf[3] << 24) +
+            ((uint64)buf[4] << 32) + ((uint64)buf[5] << 40) +
+            ((uint64)buf[6] << 48) + ((uint64)buf[7] << 56);
   buffer.seek(8);
   return l;
 }

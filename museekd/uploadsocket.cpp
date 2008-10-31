@@ -118,7 +118,7 @@ Museek::UploadSocket::stop()
 void Museek::UploadSocket::sendTicket() {
     // Send the ticket
     char buf[4];
-    off_t ticket = m_Upload->ticket();
+    uint64 ticket = m_Upload->ticket();
     for(int i = 0; i < 4; ++i)
     {
       buf[i] = (ticket >> (i * 8)) & 0xff;
@@ -152,7 +152,7 @@ void Museek::UploadSocket::onDataSent(NewNet::ClientSocket * socket) {
         m_Upload->sent(sent);
         m_lastDataSentCount = sendBuffer().count();
 
-        if(sendBuffer().count() < 10240 && (m_Upload->position() + (off_t) sendBuffer().count() < m_Upload->size())) {
+        if(sendBuffer().count() < 10240 && (m_Upload->position() + (uint64) sendBuffer().count() < m_Upload->size())) {
             if(! m_Upload->read(sendBuffer())) {
                 NNLOG("museekd.up.debug", "read error");
                 m_Upload->setLocalError("File error");
@@ -189,7 +189,7 @@ void
 Museek::UploadSocket::findPosition() {
     if(!mHavePos && receiveBuffer().count() >= 8) {
         // Getting the position
-        off_t pos = 0;
+        uint64 pos = 0;
         for(int i = 0; i < 8; i++) {
             pos += receiveBuffer().data()[0] << (i*8);
             receiveBuffer().seek(1);

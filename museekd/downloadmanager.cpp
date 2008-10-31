@@ -159,7 +159,7 @@ Museek::Download::destinationPath() const
   * Set the size of the downloaded file
   */
 void
-Museek::Download::setSize(off_t size)
+Museek::Download::setSize(uint64 size)
 {
     m_Size = size;
     if (state() == TS_Finished)
@@ -172,7 +172,7 @@ Museek::Download::setSize(off_t size)
   * Set the position in the downloaded file
   */
 void
-Museek::Download::setPosition(off_t position)
+Museek::Download::setPosition(uint64 position)
 {
     m_Position = position;
     m_Museekd->downloads()->downloadUpdatedEvent(this);
@@ -996,7 +996,7 @@ void Museek::DownloadManager::loadDownloads() {
 
 	while(n) {
 		uint32 state;
-		off_t size, position = 0;
+		uint64 size, position = 0;
 		std::string user, path, localpath, temppath;
 		if(!read_int(&file, &state) ||
 		   !read_str(&file, user) ||

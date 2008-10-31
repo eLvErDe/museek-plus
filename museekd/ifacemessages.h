@@ -41,7 +41,7 @@ public:
 	void pack(uint32 i) { NetworkMessage::pack(i); }
 	void pack(int32 i) { NetworkMessage::pack(i); }
 	void pack(unsigned char c) { NetworkMessage::pack(c); }
-	void pack(off_t o) { NetworkMessage::pack(o); }
+	void pack(uint64 o) { NetworkMessage::pack(o); }
 
 	inline void pack(const UserData& d) {
 		pack(d.status);
@@ -1095,7 +1095,7 @@ IFACEMESSAGE(IAddWishItem, 0x0406)
 	Add wishlist item -- Wishlist item added
 
 	string query -- Name of the item to add
-	off_t  lastSearched -- Last time the item has been searched
+	uint64  lastSearched -- Last time the item has been searched
 
 	string query -- Name of the item added
 */
@@ -1258,7 +1258,7 @@ IFACEMESSAGE(IDownloadFile, 0x0503)
 	END_PARSE
 
 	std::string user, path, localpath;
-	off_t size;
+	uint64 size;
 
 END
 
@@ -1285,7 +1285,7 @@ IFACEMESSAGE(IDownloadFileTo, 0x0507)
 	END_PARSE
 
 	std::string user, path, localpath;
-	off_t size;
+	uint64 size;
 
 END
 

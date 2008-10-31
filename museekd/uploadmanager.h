@@ -59,7 +59,7 @@ namespace Museek
 
     bool openFile();
     void closeFile();
-    bool seek(off_t pos);
+    bool seek(uint64 pos);
     bool read(NewNet::Buffer & buffer);
     void sent(uint count);
     void collect(uint bytes);
@@ -71,9 +71,9 @@ namespace Museek
 
     const std::string & user() const { return m_User; }
     const std::string & localPath() const { return m_LocalPath; }
-    off_t size() const { return m_Size; }
-    off_t position() const { return m_Position; }
-    void setPosition(off_t position);
+    uint64 size() const { return m_Size; }
+    uint64 position() const { return m_Position; }
+    void setPosition(uint64 position);
 
     uint ticket() const { return m_Ticket; }
     void setTicket(uint ticket) { m_Ticket = ticket; }
@@ -103,8 +103,8 @@ namespace Museek
 
     std::string                         m_User; // Name of the user
     std::string                         m_LocalPath; // Path to the file we have to upload
-    off_t                               m_Size; // Size of this file
-    off_t                               m_Position; // Current position of this file
+    uint64                               m_Size; // Size of this file
+    uint64                               m_Position; // Current position of this file
 
     uint                                m_Ticket; // The upload ticket with which this upload is identified
 	bool                                m_TicketValid; // Is this ticket still valid ?

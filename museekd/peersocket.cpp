@@ -216,7 +216,7 @@ void
 Museek::PeerSocket::onTransferRequested(const PTransferRequest * request)
 {
   std::string reason;
-  off_t size = 0;
+  uint64 size = 0;
   bool allowed = false;
   if (request->direction == 0)
     {

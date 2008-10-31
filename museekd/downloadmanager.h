@@ -74,10 +74,10 @@ namespace Museek
     void setIncompletePath(const std::string & path) const { m_IncompletePath = path;};
     std::string destinationPath() const;
 
-    off_t size() const { return m_Size; }
-    void setSize(off_t size);
-    off_t position() const { return m_Position; }
-    void setPosition(off_t position);
+    uint64 size() const { return m_Size; }
+    void setSize(uint64 size);
+    uint64 position() const { return m_Position; }
+    void setPosition(uint64 position);
 
     void received(uint bytes);
 
@@ -107,8 +107,8 @@ namespace Museek
     mutable std::string                 m_Filename; // Name of the file
     mutable std::string                 m_IncompletePath; // Complete path where to store the incomplete file
 
-    off_t                               m_Size; // Size of this file
-    off_t                               m_Position; // Current position of this file
+    uint64                               m_Size; // Size of this file
+    uint64                               m_Position; // Current position of this file
 
     TrState                             m_State; // Transfer state (see mutypes.h)
     std::string                         m_Error; // Error message if state = TR_Error

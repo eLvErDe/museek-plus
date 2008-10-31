@@ -174,7 +174,7 @@ Museek::Upload::setSocket(UploadSocket * socket)
   * Set the position in the uploaded file
   */
 void
-Museek::Upload::setPosition(off_t position)
+Museek::Upload::setPosition(uint64 position)
 {
     m_Position = position;
     m_Museekd->uploads()->uploadUpdatedEvent(this);
@@ -220,7 +220,7 @@ bool Museek::Upload::openFile()
 /**
   * Seek to the position 'pos' in the file
   */
-bool Museek::Upload::seek(off_t pos) {
+bool Museek::Upload::seek(uint64 pos) {
     if (pos < 0 || pos > m_Size) {
         NNLOG("museekd.up.warn", "Wrong seeking position: %u (max size: %u)", pos, m_Size);
         return false;
@@ -251,7 +251,7 @@ bool Museek::Upload::read(NewNet::Buffer & buffer) {
 	char buf[1024 * 1024];
 
 	m_File->read(buf, 1024 * 1024);
-	off_t count = m_File->gcount();
+	int64_t count = m_File->gcount();
 	if(count == -1)
 		return false;
 
