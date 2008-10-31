@@ -552,8 +552,8 @@ class PopupMenu:
 					return 0
 				elif self.position == 1:
 					# Download Dir
-                    user, path = self.mucous.BrowseShares.CurrentDir() 
-                    self.mucous.Transfers.FolderDownload(user, path + "\\") 
+					user, path = self.mucous.BrowseShares.CurrentDir() 
+					self.mucous.Transfers.FolderDownload(user, path + "\\") 
 					return 0
 			
 				elif self.position == 2:
