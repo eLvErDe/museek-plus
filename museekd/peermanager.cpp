@@ -29,6 +29,7 @@
 #include "ticketsocket.h"
 #include "distributedsocket.h"
 #include "searchmanager.h"
+#include "ifacemanager.h"
 #include <NewNet/util.h>
 #include <NewNet/nntcpserversocket.h>
 
