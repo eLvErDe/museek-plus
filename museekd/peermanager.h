@@ -91,15 +91,19 @@ namespace Museek
     void onDisconnected(NewNet::ClientSocket * socket_);
     void onConnected(NewNet::ClientSocket * socket_);
 
+    void onTooManySockets(int);
+    void onNotTooManySockets(int);
+
     void createPeerSocket(const std::string&);
 
     NewNet::WeakRefPtr<Museekd> m_Museekd;
     NewNet::RefPtr<PeerFactory> m_Factory;
 
-    std::map<std::string, struct timeval >                  m_LastStatusTime;   // When did we ask for status of each user ?
+    std::map<std::string, struct timeval >                  m_LastStatusTime;   // When did we ask for status of each user?
     std::map<std::string, NewNet::WeakRefPtr<PeerSocket> >  m_Peers;            // List of all the peer sockets
     std::map<std::string, SGetUserStats>                    m_UserStats;        // User stats
     std::map<std::string, uint32>                           m_UserStatus;       // User status
+    bool                                                    m_AllowConnections; // Should we continue to connect to other peers?
   };
 }
 

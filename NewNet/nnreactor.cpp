@@ -117,6 +117,8 @@ NewNet::Reactor::Reactor()
   assert(WSAStartup(wVersionRequested, (WSADATA *)m_WsaData) == 0);
 #endif // WIN32
 
+    m_TooManySockets = false;
+
     struct rlimit rlim;
     m_maxSocketNo = -1;
     if (getrlimit (RLIMIT_NOFILE, &rlim) >= 0)
@@ -297,6 +299,18 @@ void NewNet::Reactor::run()
       Sleep(timeout.tv_sec * 1000 + timeout.tv_usec / 1000);
 #endif // ! WIN32
       continue;
+    }
+
+    /* See if we have too many opened sockets */
+    if (((maxSocketNo() > 0) && (currentSocketNo() > (maxSocketNo() - static_cast<int>(maxSocketNo()*0.02)))) || (nfds >= (FD_SETSIZE - 5))) {
+        if (!m_TooManySockets) {
+            m_TooManySockets = true;
+            tooManySockets(currentSocketNo());
+        }
+    }
+    else if (m_TooManySockets && (((maxSocketNo() > 0) && (currentSocketNo() < (maxSocketNo() - static_cast<int>(maxSocketNo()*0.05)))) || (nfds <= (FD_SETSIZE - 10)))) {
+        m_TooManySockets = false;
+        notTooManySockets(currentSocketNo());
     }
 
     /* Wait for socket events */

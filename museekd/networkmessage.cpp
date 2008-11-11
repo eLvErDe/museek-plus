@@ -135,7 +135,7 @@ int32 NetworkMessage::unpack_signed_int()
   unsigned char * buf = buffer.data();
   int32 l;
   if ((buf[3] & 0xf0) == 0xf0) // This is a negative int
-    l = -1 - (buf[0] ^ 0xff + ((buf[1] ^ 0xff) << 8) + ((buf[2] ^ 0xff) << 16) + ((buf[3] ^ 0xff) << 24));
+    l = -1 - ((buf[0] ^ 0xff) + ((buf[1] ^ 0xff) << 8) + ((buf[2] ^ 0xff) << 16) + ((buf[3] ^ 0xff) << 24));
   else
     l = buf[0] + (buf[1] << 8) + (buf[2] << 16) + (buf[3] << 24);
   buffer.seek(4);

@@ -26,7 +26,6 @@
 void
 NewNet::UnixClientSocket::connect(const std::string & path)
 {
-  // TODO: Make the UnixClientSocket class a bit more functional
   assert((descriptor() == -1) || (socketState() == SocketUninitialized));
 
   setSocketState(SocketConnecting);

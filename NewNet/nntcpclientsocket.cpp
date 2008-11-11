@@ -27,7 +27,6 @@
 void
 NewNet::TcpClientSocket::connect(const std::string & host, unsigned int port)
 {
-  // TODO: Make the TcpClientSocket class a bit more functional
   assert((descriptor() == -1) || (socketState() == SocketUninitialized));
 
   setSocketState(SocketConnecting);

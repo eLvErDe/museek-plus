@@ -49,6 +49,10 @@ Museek::PeerSocket::PeerSocket(Museek::Museekd * museekd) : Museek::UserSocket(m
 Museek::PeerSocket::PeerSocket(Museek::HandshakeSocket * that) : Museek::UserSocket(that, "P"), Museek::MessageProcessor(4)
 {
   connectMessageSignals();
+
+  // If there's no activity within the next 130 seconds, then the socket should be closed (timeout)
+  m_SocketTimeout = museekd()->reactor()->addTimeout(130000, this, &PeerSocket::onSocketTimeout);
+
   if(! receiveBuffer().empty())
     dataReceivedEvent(this);
 }
@@ -83,7 +87,10 @@ Museek::PeerSocket::connectMessageSignals()
 void
 Museek::PeerSocket::onConnected(NewNet::ClientSocket *)
 {
-    // If there's no activity in the next 130 seconds, then the socket should be closed (timeout)
+    // If there's no activity within the next 130 seconds, then the socket should be closed (timeout)
+    if (m_SocketTimeout.isValid())
+        museekd()->reactor()->removeTimeout(m_SocketTimeout);
+
     m_SocketTimeout = museekd()->reactor()->addTimeout(130000, this, &PeerSocket::onSocketTimeout);
 }
 

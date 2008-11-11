@@ -101,10 +101,19 @@ namespace NewNet
     //! Returns the current number of sockets opened
     int currentSocketNo();
 
+    //! Invoked when the maximum number of sockets has been reached
+    /*! This event will be invoked when the you should stop creating new sockets */
+    Event<int> tooManySockets;
+
+    //! Invoked when the maximum number of sockets is no longer reached
+    /*! This event will be invoked when the you can start creating new sockets */
+    Event<int> notTooManySockets;
+
   private:
     bool checkTimeouts(struct timeval & timeout, bool & timeout_set);
 
     bool m_StopReactor;
+    bool m_TooManySockets;
     int m_maxSocketNo;
     std::vector<RefPtr<Socket> > m_Sockets;
 #ifndef DOXYGEN_UNDOCUMENTED
