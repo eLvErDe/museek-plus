@@ -55,7 +55,7 @@ TabWidget::TabWidget(QWidget* parent, const char* name, bool isUser)
 
 QString TabWidget::getCurrentPage() const {
 	int index = currentIndex();
-	if(( (currentIndex() >= static_cast<int>(mFirstProtected)) && (currentIndex() <= static_cast<int>(mLastProtected)) ))
+	if(( (currentIndex() >= mFirstProtected) && (currentIndex() <= mLastProtected) ))
 		return QString::null;
 	return tabText(index);
 }
@@ -64,10 +64,10 @@ QWidget * TabWidget::getCurrentWidget() const {
 	return currentWidget();
 }
 
-uint TabWidget::firstProtected() const {
+int TabWidget::firstProtected() const {
 	return mFirstProtected;
 }
-uint TabWidget::lastProtected() const {
+int TabWidget::lastProtected() const {
 	return mLastProtected;
 }
 bool TabWidget::canDrop() const {
@@ -78,22 +78,22 @@ void TabWidget::setCanDrop(bool b) {
 	mTabBar->setAcceptDrops(b);
 }
 
-void TabWidget::setLastProtected(uint lastProtected) {
+void TabWidget::setLastProtected(int lastProtected) {
 	mLastProtected = lastProtected;
-	cornerWidget()->setEnabled(!( (currentIndex() >= static_cast<int>(mFirstProtected)) && (currentIndex() <= static_cast<int>(mLastProtected)) ));
+	cornerWidget()->setEnabled(!( (currentIndex() >= mFirstProtected) && (currentIndex() <= mLastProtected) ));
 }
 
-void TabWidget::setFirstProtected(uint firstProtected) {
+void TabWidget::setFirstProtected(int firstProtected) {
 	mFirstProtected = firstProtected;
-	cornerWidget()->setEnabled(!( (currentIndex() >= static_cast<int>(mFirstProtected)) && (currentIndex() <= static_cast<int>(mLastProtected)) ));
+	cornerWidget()->setEnabled(!( (currentIndex() >= mFirstProtected) && (currentIndex() <= mLastProtected) ));
 }
 
 void TabWidget::doCurrentChanged(QWidget*) {
-	cornerWidget()->setEnabled(!( (currentIndex() >= static_cast<int>(mFirstProtected)) && (currentIndex() <= static_cast<int>(mLastProtected)) ));
+	cornerWidget()->setEnabled(!( (currentIndex() >= mFirstProtected) && (currentIndex() <= mLastProtected) ));
 }
 
 void TabWidget::closeCurrent() {
-	if(!( (currentIndex() >= static_cast<int>(mFirstProtected)) && (currentIndex() <= static_cast<int>(mLastProtected)) ))
+	if(!( (currentIndex() >= mFirstProtected) && (currentIndex() <= mLastProtected) ))
 		delete currentWidget();
 }
 
