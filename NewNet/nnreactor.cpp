@@ -302,15 +302,15 @@ void NewNet::Reactor::run()
     }
 
     /* See if we have too many opened sockets */
-    if (((maxSocketNo() > 0) && (currentSocketNo() > (maxSocketNo() - static_cast<int>(maxSocketNo()*0.02)))) || (nfds >= (FD_SETSIZE - 5))) {
-        if (!m_TooManySockets) {
+    if ( (maxSocketNo() > 100) && (FD_SETSIZE > 100) ) { // we have some valid value
+        if (!m_TooManySockets && (((currentSocketNo() > (maxSocketNo() - static_cast<int>(maxSocketNo()*0.02)))) || (nfds >= (FD_SETSIZE - 5)))) {
             m_TooManySockets = true;
             tooManySockets(currentSocketNo());
         }
-    }
-    else if (m_TooManySockets && (((maxSocketNo() > 0) && (currentSocketNo() < (maxSocketNo() - static_cast<int>(maxSocketNo()*0.05)))) || (nfds <= (FD_SETSIZE - 10)))) {
-        m_TooManySockets = false;
-        notTooManySockets(currentSocketNo());
+        else if (m_TooManySockets && (((currentSocketNo() < (maxSocketNo() - static_cast<int>(maxSocketNo()*0.1)))) || (nfds <= (FD_SETSIZE - 50)))) {
+            m_TooManySockets = false;
+            notTooManySockets(currentSocketNo());
+        }
     }
 
     /* Wait for socket events */
