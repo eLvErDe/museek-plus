@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="1.1" language="it">
+<defaultcodec></defaultcodec>
 <context>
     <name>BanList</name>
     <message>
@@ -1687,7 +1688,7 @@
     <message>
         <location filename="../settingsdialog.cpp" line="1140"/>
         <source>Upload:</source>
-        <translation>Upload:</translation>
+        <translation>Invio:</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1144"/>
@@ -1797,7 +1798,7 @@
     <message>
         <location filename="../settingsdialog.cpp" line="1193"/>
         <source>Banned Users</source>
-        <translation>Utenti Banditi</translation>
+        <translation>Utenti banditi</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1195"/>
