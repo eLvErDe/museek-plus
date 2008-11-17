@@ -123,7 +123,7 @@ Museek::PeerManager::peerSocket(const std::string & user, bool force) {
         int maxSocket = museekd()->reactor()->maxSocketNo();
         int currentSockets = museekd()->reactor()->currentSocketNo();
 
-        if ((maxSocket > 0) && ((!force && (currentSockets > (maxSocket - static_cast<int>(maxSocket*0.2)))))) {
+        if (!force && (maxSocket > 100) && (FD_SETSIZE > 200) && ((currentSockets > (maxSocket - static_cast<int>(maxSocket*0.2))) || (museekd()->reactor()->maxFileDescriptor() > FD_SETSIZE - 200))) {
             NNLOG("museekd.peers.warn", "Too many opened peer socket, cannot open a new one");
             peerSocketUnavailableEvent(user);
             return;
@@ -223,7 +223,7 @@ Museek::PeerManager::onServerUserStatusReceived(const SGetStatus * message)
 void
 Museek::PeerManager::onTooManySockets(int) {
     NNLOG("museekd.peers.warn", "Too many opened sockets, trying to unlisten.");
-    museekd()->ifaces()->sendStatusMessage(true, std::string("Too much sockets. Trying to unlisten."));
+    museekd()->ifaces()->sendStatusMessage(true, std::string("Too many opened sockets. Unlistening. You may have problems connecting to other peers for a little while."));
     m_AllowConnections = false;
     unlisten();
 }
@@ -233,7 +233,7 @@ Museek::PeerManager::onTooManySockets(int) {
   */
 void
 Museek::PeerManager::onNotTooManySockets(int) {
-    museekd()->ifaces()->sendStatusMessage(true, std::string("Some free sockets. Trying to listen."));
+    museekd()->ifaces()->sendStatusMessage(true, std::string("Some sockets were freed. Listening again. Museek should now work perfectly."));
     m_AllowConnections = true;
     listen();
 }

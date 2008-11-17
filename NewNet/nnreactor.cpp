@@ -301,6 +301,8 @@ void NewNet::Reactor::run()
       continue;
     }
 
+    m_maxFD = nfds;
+
     /* See if we have too many opened sockets */
     if ( (maxSocketNo() > 100) && (FD_SETSIZE > 100) ) { // we have some valid value
         if (!m_TooManySockets && (((currentSocketNo() > (maxSocketNo() - static_cast<int>(maxSocketNo()*0.02)))) || (nfds >= (FD_SETSIZE - 5)))) {
@@ -421,4 +423,10 @@ int
 NewNet::Reactor::currentSocketNo()
 {
     return m_Sockets.size();
+}
+
+int
+NewNet::Reactor::maxFileDescriptor()
+{
+    return m_maxFD;
 }

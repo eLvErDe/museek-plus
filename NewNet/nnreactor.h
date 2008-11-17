@@ -101,6 +101,9 @@ namespace NewNet
     //! Returns the current number of sockets opened
     int currentSocketNo();
 
+    //! Returns the highest file descriptor currently used
+    int maxFileDescriptor();
+
     //! Invoked when the maximum number of sockets has been reached
     /*! This event will be invoked when the you should stop creating new sockets */
     Event<int> tooManySockets;
@@ -115,6 +118,7 @@ namespace NewNet
     bool m_StopReactor;
     bool m_TooManySockets;
     int m_maxSocketNo;
+    int m_maxFD;
     std::vector<RefPtr<Socket> > m_Sockets;
 #ifndef DOXYGEN_UNDOCUMENTED
     struct Timeouts;
