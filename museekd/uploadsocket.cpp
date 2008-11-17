@@ -91,6 +91,8 @@ Museek::UploadSocket::send(const unsigned char * data, size_t n)
 void
 Museek::UploadSocket::wait()
 {
+    m_DataTimeout = museekd()->reactor()->addTimeout(120000, this, &UploadSocket::dataTimeout);
+
     // Wait for an incoming connection (via TicketSocket).
     m_Upload->setState(TS_Waiting);
     museekd()->uploads()->transferTicketReceivedEvent.connect(this, &UploadSocket::onTransferTicketReceived);
@@ -145,6 +147,11 @@ void Museek::UploadSocket::onDataReceived(NewNet::ClientSocket * socket) {
 */
 void Museek::UploadSocket::onDataSent(NewNet::ClientSocket * socket) {
     if (m_Upload->state() == TS_Transferring) {
+        if (m_DataTimeout.isValid())
+            museekd()->reactor()->removeTimeout(m_DataTimeout);
+
+        m_DataTimeout = museekd()->reactor()->addTimeout(60000, this, &UploadSocket::dataTimeout);
+
         size_t sent = 0;
         if (m_lastDataSentCount > sendBuffer().count())
             sent = m_lastDataSentCount - sendBuffer().count();
@@ -223,4 +230,13 @@ Museek::UploadSocket::findPosition() {
     if(mHavePos)
         // We're not supposed to receive something else... throw it away
         receiveBuffer().seek(receiveBuffer().count());
+}
+
+/*
+    Called when we cannot send any data in this socket
+*/
+void
+Museek::UploadSocket::dataTimeout(long) {
+    NNLOG("museekd.up.debug", "Data timeout while uploading.");
+    stop();
 }

@@ -48,10 +48,12 @@ namespace Museek
     void onDataSent(NewNet::ClientSocket * socket);
     void onDataReceived(NewNet::ClientSocket * socket);
     void findPosition();
+    void dataTimeout(long);
 
     NewNet::RefPtr<Upload>  m_Upload; // Reference to the upload
 	bool                    mHavePos; // Have we already received the position sent by the downloader?
 	size_t                  m_lastDataSentCount; // What was the last data count in the buffer?
+    NewNet::WeakRefPtr<NewNet::Event<long>::Callback> m_DataTimeout;
   };
 }
 

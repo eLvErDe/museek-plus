@@ -66,6 +66,8 @@ Museek::DownloadSocket::onConnected(NewNet::ClientSocket *)
 {
     m_Download->setState(TS_Transferring);
 
+    m_DataTimeout = museekd()->reactor()->addTimeout(120000, this, &DownloadSocket::dataTimeout);
+
     // The send buffer (will hold ticket + offset)
     unsigned char buf[12];
 
@@ -189,6 +191,11 @@ void
 Museek::DownloadSocket::onDataReceived(NewNet::ClientSocket * socket)
 {
     if (m_Download->state() == TS_Transferring) {
+        if (m_DataTimeout.isValid())
+            museekd()->reactor()->removeTimeout(m_DataTimeout);
+
+        m_DataTimeout = museekd()->reactor()->addTimeout(60000, this, &DownloadSocket::dataTimeout);
+
         // Write buffer to disk.
         m_Output.write((const char *)receiveBuffer().data(), receiveBuffer().count());
         // Increase the download counter.
@@ -294,4 +301,13 @@ Museek::DownloadSocket::finish()
             NNLOG("museekd.down.warn", "Renaming '%s' to '%s' failed for unknown reason.", m_Download->incompletePath().c_str(), destpath.c_str());
         }
     }
+}
+
+/*
+    Called when we don't receive any data in this socket
+*/
+void
+Museek::DownloadSocket::dataTimeout(long) {
+    NNLOG("museekd.down.debug", "Data timeout while downloading.");
+    stop();
 }

@@ -307,7 +307,7 @@ void NewNet::Reactor::run()
             m_TooManySockets = true;
             tooManySockets(currentSocketNo());
         }
-        else if (m_TooManySockets && (((currentSocketNo() < (maxSocketNo() - static_cast<int>(maxSocketNo()*0.1)))) && (nfds <= (FD_SETSIZE - 50)))) {
+        else if (m_TooManySockets && ((currentSocketNo() < (maxSocketNo() - static_cast<int>(maxSocketNo()*0.1)))) && (nfds <= (FD_SETSIZE - 50))) {
             m_TooManySockets = false;
             notTooManySockets(currentSocketNo());
         }

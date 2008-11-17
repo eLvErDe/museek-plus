@@ -47,9 +47,11 @@ namespace Museek
     void onTransferTicketReceived(TicketSocket * socket);
     void onDataReceived(NewNet::ClientSocket * socket);
     void finish();
+    void dataTimeout(long);
 
     NewNet::RefPtr<Download> m_Download;
     std::ofstream m_Output;
+    NewNet::WeakRefPtr<NewNet::Event<long>::Callback> m_DataTimeout;
   };
 }
 
