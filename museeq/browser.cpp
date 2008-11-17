@@ -118,15 +118,18 @@ Browser::Browser(const QString& user, QWidget* parent, const char* name)
 void Browser::setShares(const NShares& shares) {
 	mShares = shares;
 
-	if (shares.size()) {
-		uint z = shares.size();
+    if (mShares.contains("\\"))
+        mShares.erase(mShares.find("\\"));
+
+	if (mShares.size()) {
+		uint z = mShares.size();
 		QVariant p (z);
 		mFileCount->setText(p.toString()+ " "+  tr("directories"));
 		}
 	else
 		mFileCount->setText(tr("Sharing nothing.."));
 	mCurrentResult = mShares.begin();
-	mFolders->setShares(shares);
+	mFolders->setShares(mShares);
 	mFolders->setEnabled(true);
 	mFiles->setEnabled(true);
 	emit(highlight(1));
@@ -455,7 +458,7 @@ FolderListItem * FolderListView::findParent(const QStringList& p) {
 }
 
 void FolderListView::setShares(const NShares& shares) {
-    // FIXME this can freeze museeq when displaying huge shares: the app is blocked until the list the loop is finished
+    // FIXME this can freeze museeq when displaying huge shares: the app is blocked until the loop is finished
 	clear();
 	delete mShares;
 	mShares = new SharesData("");
@@ -464,15 +467,15 @@ void FolderListView::setShares(const NShares& shares) {
 
 	NShares::const_iterator it = shares.begin();
 	for(; it != shares.end(); ++it) {
-		QStringList p;
-		p = it.key().split("\\", QString::KeepEmptyParts);
-		SharesData* sfolder = mShares->get(p);
-		sfolder->files = it.value();
+        QStringList p;
+        p = it.key().split("\\", QString::KeepEmptyParts);
+        SharesData* sfolder = mShares->get(p);
+        sfolder->files = it.value();
 
-		QList<QTreeWidgetItem *> Folders = findItems(it.key(), Qt::MatchExactly, 1);
-		if (Folders.isEmpty()) {
-			new FolderListItem(findParent(p), sfolder, p.last(), it.key());
-		}
+        QList<QTreeWidgetItem *> Folders = findItems(it.key(), Qt::MatchExactly, 1);
+        if (Folders.isEmpty()) {
+            new FolderListItem(findParent(p), sfolder, p.last(), it.key());
+        }
 	}
 
 	setSortingEnabled(true);

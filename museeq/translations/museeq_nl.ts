@@ -74,12 +74,12 @@
         <translation>Verversen</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="124"/>
+        <location filename="../browser.cpp" line="127"/>
         <source>directories</source>
         <translation>mappen</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="127"/>
+        <location filename="../browser.cpp" line="130"/>
         <source>Sharing nothing..</source>
         <translation>Deelt niets..</translation>
     </message>
@@ -300,42 +300,42 @@
 <context>
     <name>FileListView</name>
     <message>
-        <location filename="../browser.cpp" line="577"/>
+        <location filename="../browser.cpp" line="580"/>
         <source>Filename</source>
         <translation>Bestandsnaam</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="577"/>
+        <location filename="../browser.cpp" line="580"/>
         <source>Size</source>
         <translation>Grootte</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="577"/>
+        <location filename="../browser.cpp" line="580"/>
         <source>Length</source>
         <translation>Duur</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="577"/>
+        <location filename="../browser.cpp" line="580"/>
         <source>Bitrate</source>
         <translation>Bitrate</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="591"/>
+        <location filename="../browser.cpp" line="594"/>
         <source>Download files</source>
         <translation>Bestanden downloaden</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="595"/>
+        <location filename="../browser.cpp" line="598"/>
         <source>Download files to..</source>
         <translation>Bestanden downloaden naar..</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="599"/>
+        <location filename="../browser.cpp" line="602"/>
         <source>Upload files</source>
         <translation>Bestanden uploaden</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="605"/>
+        <location filename="../browser.cpp" line="608"/>
         <source>Copy URL</source>
         <translation>Kopiëer URL</translation>
     </message>
@@ -350,22 +350,22 @@
         <translation type="obsolete">%1 bestanden</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="759"/>
+        <location filename="../browser.cpp" line="762"/>
         <source>Select a Directory for current download(s)</source>
         <translation>Map kiezen voor de huidige downloads</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="794"/>
+        <location filename="../browser.cpp" line="797"/>
         <source>Upload File(s)</source>
         <translation>Bestand(en) uploaden</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="795"/>
+        <location filename="../browser.cpp" line="798"/>
         <source>Which user do you wish to upload these to?</source>
         <translation>Naar welke gebruiker wilt u de bestanden uploaden?</translation>
     </message>
     <message numerus="yes">
-        <location filename="../browser.cpp" line="686"/>
+        <location filename="../browser.cpp" line="689"/>
         <source>%n file(s)</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -375,7 +375,7 @@
 <context>
     <name>FolderListView</name>
     <message>
-        <location filename="../browser.cpp" line="225"/>
+        <location filename="../browser.cpp" line="228"/>
         <source>Folder</source>
         <translation>Map</translation>
     </message>
@@ -385,7 +385,7 @@
         <translation type="obsolete">Download map</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="252"/>
+        <location filename="../browser.cpp" line="255"/>
         <source>Copy URL</source>
         <translation>Kopiëer URL</translation>
     </message>
@@ -400,32 +400,32 @@
         <translation type="obsolete">%1 mappen</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="239"/>
+        <location filename="../browser.cpp" line="242"/>
         <source>Download Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="243"/>
+        <location filename="../browser.cpp" line="246"/>
         <source>Download Folder to...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="409"/>
+        <location filename="../browser.cpp" line="412"/>
         <source>Upload Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="387"/>
+        <location filename="../browser.cpp" line="390"/>
         <source>Select a Directory for current download(s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="410"/>
+        <location filename="../browser.cpp" line="413"/>
         <source>Which user do you wish to upload this to?</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../browser.cpp" line="328"/>
+        <location filename="../browser.cpp" line="331"/>
         <source>%n folder(s)</source>
         <translation type="unfinished">
             <numerusform></numerusform>
