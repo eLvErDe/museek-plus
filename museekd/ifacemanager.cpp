@@ -83,6 +83,7 @@ Museek::IfaceManager::IfaceManager(Museekd * museekd) : m_Museekd(museekd)
 
   museekd->server()->loggedInStateChangedEvent.connect(this, &IfaceManager::onServerLoggedInStateChanged);
   museekd->server()->loggedInEvent.connect(this, &IfaceManager::onServerLoggedIn);
+  museekd->server()->kickedEvent.connect(this, &IfaceManager::onServerKicked);
   museekd->server()->peerAddressReceivedEvent.connect(this, &IfaceManager::onServerPeerAddressReceived);
   museekd->server()->userExistsReceivedEvent.connect(this, &IfaceManager::onServerUserExistsReceived);
   museekd->server()->userStatusReceivedEvent.connect(this, &IfaceManager::onServerUserStatusReceived);
@@ -789,6 +790,19 @@ Museek::IfaceManager::onServerLoggedInStateChanged(bool loggedIn)
     m_PrivateMessages.clear();
     sendStatusMessage(true, std::string("Disconnected from the server"));
   }
+}
+
+void
+Museek::IfaceManager::onServerKicked(const SKicked* message) {
+    sendStatusMessage(true, std::string("Kicked from soulseek server"));
+
+    PrivateMessage msg;
+    msg.ticket = 0;
+    msg.timestamp = time(NULL);
+    msg.user = "Server";
+    msg.message = "You've been kicked from soulseek server. Maybe you tried to launch several museekd instances. Or you did something *wrong*. Try reconnecting in a moment (usually >30min).";
+    m_PrivateMessages.push_back(msg);
+    flushPrivateMessages();
 }
 
 void

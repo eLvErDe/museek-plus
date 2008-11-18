@@ -42,6 +42,7 @@ Museek::ServerManager::ServerManager(Museekd * museekd) : m_Museekd(museekd), m_
     roomLeftEvent.connect(this, &ServerManager::onRoomLeft);
     privilegedUsersReceivedEvent.connect(this, & ServerManager::onPrivilegedUsersReceived);
     privilegedUserAddedEvent.connect(this, & ServerManager::onPrivilegedUserAddedReceived);
+    kickedEvent.connect(this, & ServerManager::onKicked);
 
     m_ConnectionTries = 0;
     m_AutoConnect = true;
@@ -112,7 +113,7 @@ Museek::ServerManager::connect()
 void
 Museek::ServerManager::disconnect()
 {
-  // Don't try to reconnect automatically as we explicitly tell we want to stayt disconnected
+  // Don't try to reconnect automatically as we explicitly tell we want to stay disconnected
   m_AutoConnect = false;
 
   if(m_Socket.isValid())
@@ -363,4 +364,13 @@ void
 Museek::ServerManager::onPrivilegedUserAddedReceived(const SAddPrivileged * message) {
     NNLOG("museekd.server.debug", "Received a new privileged user");
     m_Museekd->addPrivilegedUser(message->value);
+}
+
+/**
+  * Called when museekd is kicked from the server.
+  */
+void
+Museek::ServerManager::onKicked(const SKicked * message) {
+    // Don't try to reconnect
+    m_AutoConnect = false;
 }

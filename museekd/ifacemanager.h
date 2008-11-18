@@ -137,6 +137,7 @@ namespace Museek
     // Server event handlers:
     void onServerLoggedIn(const SLogin * message);
     void onServerLoggedInStateChanged(bool loggedIn);
+    void onServerKicked(const SKicked* message);
     void onServerPeerAddressReceived(const SGetPeerAddress * message);
     void onServerUserExistsReceived(const SAddUser * message);
     void onServerUserStatusReceived(const SGetStatus * message);

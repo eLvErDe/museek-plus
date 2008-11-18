@@ -101,6 +101,7 @@ namespace Museek
     void onRoomLeft(const SLeaveRoom * message);
     void onPrivilegedUsersReceived(const SPrivilegedUsers * message);
     void onPrivilegedUserAddedReceived(const SAddPrivileged * message);
+    void onKicked(const SKicked * message);
 
   private:
     void pingServer(long);
