@@ -1,4 +1,9 @@
+Version 0.3.1
  * Added Spellchecking to chat entries with Libsexy (requires sexy-python)
+ * Use CMake build system
+ * Show version number in about
+ * Update settings dialog to match museekd 0.2
+ * Other minor changes
  
 Version 0.3.0svn
  * Lots of minor changes
