@@ -435,15 +435,12 @@ void MainWindow::doDaemon() {
 
  	if (! DaemonRunning) {
  		museekConfig = museeq->settings()->value("MuseekConfigFile").toString();
+        QStringList arguments;
 		if (! museekConfig.isEmpty() ) {
-			QStringList arguments ;
 			arguments.append("--config");
 			arguments.append(museekConfig);
-			daemon->start("museekd", arguments);
-
-		} else {
-			messageLabel->setText(tr("No Config for Museek Daemon selected, giving up..."));
 		}
+        daemon->start("museekd", arguments);
 	} else {
 		messageLabel->setText(tr("Museek Daemon is already running..."));
 	}
