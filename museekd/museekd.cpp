@@ -61,7 +61,6 @@ Museek::Museekd::Museekd(NewNet::Reactor * reactor) : m_Reactor(reactor)
 }
 
 void Museek::Museekd::LoadShares() {
-
   std::string shares = m_Config->get("shares", "database");
   if (! shares.empty()) {
     m_Shares->load(shares);
@@ -69,7 +68,7 @@ void Museek::Museekd::LoadShares() {
   }
   std::string bshares = m_Config->get("buddy.shares", "database");
   if (! bshares.empty() && haveBuddyShares())
-    m_BuddyShares->load(bshares, true);
+    m_BuddyShares->load(bshares, (!shares.empty()));
 }
 
 void Museek::Museekd::LoadDownloads() {

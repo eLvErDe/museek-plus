@@ -38,8 +38,14 @@ static NewNet::RefPtr<Museek::Museekd> museekd;
 /* Our signal handler, stop the reactor if we receive a HUP or INT signal. */
 static void museekd_signal_handler(int signal)
 {
-  NNLOG("museekd.debug", "Trapped signal %i. Stopping the reactor.", signal);
-  museekd->reactor()->stop();
+    if (signal == SIGINT) {
+        NNLOG("museekd.debug", "Trapped signal %i. Stopping the reactor.", signal);
+        museekd->reactor()->stop();
+    }
+    else if (signal == SIGHUP) {
+        NNLOG("museekd.debug", "Trapped signal %i. Reloading shares.", signal);
+        museekd->LoadShares();
+    }
 }
 
 /* Timeout callback to connect to the server. Not really required, could
