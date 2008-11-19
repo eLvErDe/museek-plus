@@ -53,6 +53,15 @@ static void museekd_signal_handler(int signal)
             museekd->server()->connect();
     }
 #endif // WIN32
+
+
+  /* Reconnect signal handlers for HUP, ALRM and INT signals.
+     Some Unix disconnect signals after each call */
+#ifndef WIN32
+  ::signal(SIGHUP, &museekd_signal_handler);
+  ::signal(SIGALRM, &museekd_signal_handler);
+#endif // WIN32
+  ::signal(SIGINT, &museekd_signal_handler);
 }
 
 /* Timeout callback to connect to the server. Not really required, could
@@ -166,7 +175,7 @@ int main(int argc, char ** argv)
   museekd->LoadShares();
   museekd->LoadDownloads();
 
-  /* Connect signal handlers for HUP and INT signals. */
+  /* Connect signal handlers for HUP, ALRM and INT signals. */
 #ifndef WIN32
   signal(SIGHUP, &museekd_signal_handler);
   signal(SIGALRM, &museekd_signal_handler);

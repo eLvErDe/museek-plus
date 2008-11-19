@@ -21,7 +21,7 @@ class FAMDirScanner;
 class FAMHandler
 {
 public:
-	FAMHandler(const string& config_file, bool doBuddy);
+	FAMHandler(const string& config_file, bool doBuddy, bool doReload);
 	~FAMHandler();
 	
 	int load();
@@ -36,6 +36,7 @@ private:
 	vector<FAMDirScanner *> nodes, pending;
 	time_t save_at;
 	FAMDirScanner *root;
+	bool m_doReload;
 	
 	void add(FAMDirScanner *);
 	void exists(FAMDirScanner *ds, const char *filename, bool force_file);
@@ -57,7 +58,7 @@ public:
 	bool isFake() { return fake; }
 };
 
-FAMHandler::FAMHandler(const string& config_file, bool doBuddy)
+FAMHandler::FAMHandler(const string& config_file, bool doBuddy, bool doReload)
            : save_at(0), root(0)
 {
 	FAMCONNECTION_GETFD(&fc) = -1;
@@ -66,7 +67,9 @@ FAMHandler::FAMHandler(const string& config_file, bool doBuddy)
 	    NNLOG.logEvent.connect(new NewNet::ConsoleOutput);
     	NNLOG.enable("ALL");
     }
-    
+ 
+	m_doReload = doReload;
+   
 	Muconf config(config_file);
 	if(! config.hasDomain("shares") || ! config["shares"].hasKey("database")) {
 		cerr << "config file '" << config_file << "' incomplete or corrupt shares" << endl;
@@ -81,12 +84,12 @@ FAMHandler::FAMHandler(const string& config_file, bool doBuddy)
 		string tmp = config["buddy.shares"]["database"];
 		shares = tmp;
 		state = shares + ".state";
-		}
+	}
 	else {
 		string tmp = config["shares"]["database"];
 		shares = tmp;
 		state = shares + ".state";
-		}
+	}
 
 }
 
@@ -244,7 +247,10 @@ FAMHandler::save()
 
 	root->fold(&folded);
 	folded.save(shares);
-
+#ifndef WIN32
+	if (m_doReload)
+		system("killall -HUP museekd");
+#endif // WIN32
 }
 
 void
@@ -312,7 +318,7 @@ FAMHandler::deleted(FAMDirScanner *ds, const char *filename)
 }
 
 void help() {
-	cout << "muscand [-c --config PATH] [-b --buddy] [-h --help]" << endl;
+	cout << "muscand [-c --config PATH] [-b --buddy] [-h --help] [-v --verbose] [--no-reload]" << endl;
 	cout << "Version 0.2.0" << endl;
 	exit(-1);
 }
@@ -329,6 +335,7 @@ int main(int argc, char **argv)
 #endif
 	string config_file = string(getenv("HOME")) + "/.museekd/config.xml";
 	bool doBuddy = false;
+	bool doReload = true;
 	for(int i = 1; i < argc; i++) {
 		string arg = argv[i];
 		if(arg == "-c" || arg == "--config") {
@@ -346,9 +353,12 @@ int main(int argc, char **argv)
 		else if(arg == "-v" || arg == "--verbose") {
 			Scanner_Verbosity += 1;
 		}
+		else if(arg == "--no-reload") {
+			doReload = false;
+		}
 	}
 	
-	FAMHandler fh(config_file, doBuddy);
+	FAMHandler fh(config_file, doBuddy, doReload);
 	if(fh.load())
 		return -1;
 	fh.run();

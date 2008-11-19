@@ -9,6 +9,7 @@
 [\-l] [\-\-list]
 [\-h] [\-\-help]
 [\-v] [\-\-verbose]
+[\-\-no\-reload]
 .SH "DESCRIPTION"
 .LP 
 Muscand is a FAM service that scans paths already configured by \fImuscan\fP(1) or \fImusetup\fP(1). If it detects changes to the paths, it will update the Shares Database it is watching after a few seconds. There are two available shares databases, Normal and Buddies\-Only. Buddies\-Only is an optional shares database that, if enabled, is only accessable by the users you've chosen as "Buddies".
@@ -29,6 +30,9 @@ Display Help, version and exit.
 .TP 
 .B \-v, \-\-verbose
 Be verbose while scanning shares.
+.TP 
+.B \-\-no\-reload
+Don't ask museekd to reload the database
 .SH "EXAMPLE"
 .LP 
 To run this program the standard way type:
