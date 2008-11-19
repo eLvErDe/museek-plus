@@ -42,10 +42,17 @@ static void museekd_signal_handler(int signal)
         NNLOG("museekd.debug", "Trapped signal %i. Stopping the reactor.", signal);
         museekd->reactor()->stop();
     }
+#ifndef WIN32
     else if (signal == SIGHUP) {
         NNLOG("museekd.debug", "Trapped signal %i. Reloading shares.", signal);
         museekd->LoadShares();
     }
+    else if (signal == SIGALRM) {
+        NNLOG("museekd.debug", "Trapped signal %i. Trying to reconnect to server.", signal);
+        if (!museekd->server()->loggedIn())
+            museekd->server()->connect();
+    }
+#endif // WIN32
 }
 
 /* Timeout callback to connect to the server. Not really required, could
@@ -162,6 +169,7 @@ int main(int argc, char ** argv)
   /* Connect signal handlers for HUP and INT signals. */
 #ifndef WIN32
   signal(SIGHUP, &museekd_signal_handler);
+  signal(SIGALRM, &museekd_signal_handler);
 #endif // WIN32
   signal(SIGINT, &museekd_signal_handler);
 
