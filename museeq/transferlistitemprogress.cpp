@@ -19,8 +19,8 @@
  */
 
 #include "transferlistitemprogress.h"
-
 #include <QApplication>
+#include <QModelIndex>
 
 TransferListItemProgress::TransferListItemProgress( QObject* parent ) : QItemDelegate( parent )
 {
