@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="1.1" language="it">
+<defaultcodec></defaultcodec>
 <context>
     <name>BanList</name>
     <message>
@@ -43,7 +44,7 @@
     <message>
         <location filename="../browser.cpp" line="92"/>
         <source>Haven&apos;t received shares</source>
-        <translation>Non ho ricevuto lo share</translation>
+        <translation>Non ho ricevuto i condivisi</translation>
     </message>
 </context>
 <context>
@@ -467,7 +468,7 @@
     <message>
         <location filename="../mainwin.cpp" line="106"/>
         <source>&amp;Browse My Shares</source>
-        <translation>&amp;Mio share</translation>
+        <translation>Esplora i &amp;miei condivisi</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="113"/>
@@ -522,7 +523,7 @@
     <message>
         <location filename="../mainwin.cpp" line="198"/>
         <source>&amp;Browse Shares</source>
-        <translation>&amp;Esplora share</translation>
+        <translation>&amp;Esplora condivisi</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="176"/>
