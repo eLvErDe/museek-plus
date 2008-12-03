@@ -360,12 +360,10 @@ void FolderListView::slotActivate(QTreeWidgetItem* item, int column) {
 }
 
 void FolderListView::slotContextMenu(const QPoint& pos) {
-// 	QTreeWidgetItem * item = 0 ;
 	mPopped = itemAt(pos) ;
-	if (! mPopped ) {
-
+	if (! mPopped )
 		return;
-	}
+
 	mPopupMenu->exec(mapToGlobal(pos));
 }
 
@@ -448,7 +446,7 @@ QString  FolderListView::parentPath(const QString& parent) {
 FolderListItem * FolderListView::findParent(const QStringList& p) {
 	QString path = parentPath(p.join("\\"));
 	if (path.isEmpty())
-		return dynamic_cast<FolderListItem *>(invisibleRootItem());
+		return static_cast<FolderListItem *>(invisibleRootItem());
 
 	QTreeWidgetItemIterator it(this);
 	while (*it) {
@@ -488,9 +486,10 @@ void FolderListView::setShares(const NShares& shares) {
 }
 
 void FolderListView::doCurrentChanged(QTreeWidgetItem* _item, QTreeWidgetItem* lastItem) {
-    FolderListItem* item = dynamic_cast<FolderListItem*>(_item);
-	if(item) {
-		emit currentChanged(item->data()->path, item->data()->files);
+	if(_item) {
+		FolderListItem* item = dynamic_cast<FolderListItem*>(_item);
+		if (item)
+			emit currentChanged(item->data()->path, item->data()->files);
 	} else
 		emit currentChanged("", NFolder());
 }

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="1.1" language="it">
-<defaultcodec></defaultcodec>
 <context>
     <name>BanList</name>
     <message>
@@ -204,62 +203,62 @@
 <context>
     <name>FileListView</name>
     <message>
-        <location filename="../browser.cpp" line="580"/>
+        <location filename="../browser.cpp" line="586"/>
         <source>Filename</source>
         <translation>Nome del file</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="580"/>
+        <location filename="../browser.cpp" line="586"/>
         <source>Size</source>
         <translation>Dimensione</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="580"/>
+        <location filename="../browser.cpp" line="586"/>
         <source>Length</source>
         <translation>Lunghezza</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="580"/>
+        <location filename="../browser.cpp" line="586"/>
         <source>Bitrate</source>
         <translation>Bitrate</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="594"/>
+        <location filename="../browser.cpp" line="600"/>
         <source>Download files</source>
         <translation>Scarica files</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="602"/>
+        <location filename="../browser.cpp" line="608"/>
         <source>Upload files</source>
         <translation>Invia files</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="608"/>
+        <location filename="../browser.cpp" line="614"/>
         <source>Copy URL</source>
         <translation>Copia URL</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="797"/>
+        <location filename="../browser.cpp" line="810"/>
         <source>Upload File(s)</source>
         <translation>Invia file</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="798"/>
+        <location filename="../browser.cpp" line="811"/>
         <source>Which user do you wish to upload these to?</source>
         <translation>A quale utente vuoi inviare questi file?</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="598"/>
+        <location filename="../browser.cpp" line="604"/>
         <source>Download files to..</source>
         <translation>Scarica files in..</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="762"/>
+        <location filename="../browser.cpp" line="772"/>
         <source>Select a Directory for current download(s)</source>
         <translation>Seleziona una cartella per i download correnti</translation>
     </message>
     <message numerus="yes">
-        <location filename="../browser.cpp" line="689"/>
+        <location filename="../browser.cpp" line="697"/>
         <source>%n file(s)</source>
         <translation>
             <numerusform>%n file        </numerusform>
@@ -290,22 +289,22 @@
         <translation>Scarica cartella in...</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="412"/>
+        <location filename="../browser.cpp" line="413"/>
         <source>Upload Folder</source>
         <translation>Invia cartella</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="390"/>
+        <location filename="../browser.cpp" line="391"/>
         <source>Select a Directory for current download(s)</source>
         <translation>Seleziona una cartella per i download correnti</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="413"/>
+        <location filename="../browser.cpp" line="414"/>
         <source>Which user do you wish to upload this to?</source>
         <translation>A quale utente vuoi inviarlo?</translation>
     </message>
     <message numerus="yes">
-        <location filename="../browser.cpp" line="331"/>
+        <location filename="../browser.cpp" line="333"/>
         <source>%n folder(s)</source>
         <translation>
             <numerusform>%n cartella        </numerusform>
@@ -1216,37 +1215,37 @@
         <translation>Slot libero</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="165"/>
+        <location filename="../searchfilter.cpp" line="167"/>
         <source>Warning - Museeq</source>
         <translation>Attenzione - Museeq</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="109"/>
+        <location filename="../searchfilter.cpp" line="111"/>
         <source>Invalid regular expression, disabling it</source>
         <translation>Espressione regolare invalida, disabilitata</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="129"/>
+        <location filename="../searchfilter.cpp" line="131"/>
         <source>k</source>
         <translation>k</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="131"/>
+        <location filename="../searchfilter.cpp" line="133"/>
         <source>m</source>
         <translation>m</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="133"/>
+        <location filename="../searchfilter.cpp" line="135"/>
         <source>g</source>
         <translation>g</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="141"/>
+        <location filename="../searchfilter.cpp" line="143"/>
         <source>Invalid size filter, disabling it</source>
         <translation>Filtro dimensione invalido, disabilitato</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="165"/>
+        <location filename="../searchfilter.cpp" line="167"/>
         <source>Invalid bitrate filter, disabling it</source>
         <translation>Filtro bitrate invalido, disabilitato</translation>
     </message>
@@ -1319,27 +1318,27 @@
         <translation>Scarica file in..</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="138"/>
+        <location filename="../searchlistview.cpp" line="139"/>
         <source>Select a Directory for current download(s)</source>
         <translation>Seleziona una cartella per i download correnti</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="307"/>
+        <location filename="../searchlistview.cpp" line="308"/>
         <source>Y</source>
         <translation>S</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="307"/>
+        <location filename="../searchlistview.cpp" line="308"/>
         <source>N</source>
         <translation>N</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="305"/>
+        <location filename="../searchlistview.cpp" line="306"/>
         <source>/s</source>
         <translation>/s</translation>
     </message>
     <message numerus="yes">
-        <location filename="../searchlistview.cpp" line="266"/>
+        <location filename="../searchlistview.cpp" line="267"/>
         <source>%n search result(s)</source>
         <translation>
             <numerusform>%n risultato ricerca        </numerusform>
@@ -1347,7 +1346,7 @@
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../searchlistview.cpp" line="266"/>
+        <location filename="../searchlistview.cpp" line="267"/>
         <source> (%n user(s))</source>
         <translation>
             <numerusform>(%n utente)        </numerusform>
@@ -1977,7 +1976,7 @@
         <translation>/s</translation>
     </message>
     <message numerus="yes">
-        <location filename="../transferlistview.cpp" line="281"/>
+        <location filename="../transferlistview.cpp" line="290"/>
         <source>%n transfer(s)</source>
         <translation>
             <numerusform>%n trasferimento        </numerusform>
@@ -1985,7 +1984,7 @@
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../transferlistview.cpp" line="281"/>
+        <location filename="../transferlistview.cpp" line="290"/>
         <source> (%n user(s))</source>
         <translation>
             <numerusform>(%n utente)        </numerusform>
@@ -2220,7 +2219,7 @@
         <translation>/s</translation>
     </message>
     <message numerus="yes">
-        <location filename="../userlistview.cpp" line="326"/>
+        <location filename="../userlistview.cpp" line="332"/>
         <source>%n user(s)</source>
         <translation>
             <numerusform>%n utente        </numerusform>

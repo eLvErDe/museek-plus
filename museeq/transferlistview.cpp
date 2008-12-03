@@ -79,7 +79,7 @@ TransferListItem* TransferListView::findTransfer(const QString& _u, const QStrin
 
 TransferListItem* TransferListView::findParent(const QString& user) {
 	if (mGroupMode == None)
-		return dynamic_cast<TransferListItem *>(invisibleRootItem());
+		return static_cast<TransferListItem *>(invisibleRootItem());
 
 	TransferListItem * parent = 0;
 	QList<QTreeWidgetItem *> Groups = TransferListView::findItems(user, Qt::MatchExactly, 0);
