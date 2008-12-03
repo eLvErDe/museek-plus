@@ -48,8 +48,8 @@ void ChatRooms::clear() {
 
 void ChatRooms::joined(const QString& room, const NRoom& r) {
 	for(int ix = 1; ix < count(); ++ix) {
-		ChatRoom* _room = static_cast<ChatRoom*>(widget(ix));
-		if(_room->room() == room) {
+		ChatRoom* _room = dynamic_cast<ChatRoom*>(widget(ix));
+		if(_room && _room->room() == room) {
 			_room->setUsers(r);
 			return;
 		}
@@ -66,8 +66,8 @@ void ChatRooms::joined(const QString& room, const NRoom& r) {
 
 void ChatRooms::left(const QString& room) {
 	for(int ix = 1; ix < count(); ++ix) {
-		ChatRoom* _room = static_cast<ChatRoom*>(widget(ix));
-		if(_room->room() == room) {
+		ChatRoom* _room = dynamic_cast<ChatRoom*>(widget(ix));
+		if(_room && _room->room() == room) {
 			delete _room;
 			return;
 		}
@@ -76,8 +76,8 @@ void ChatRooms::left(const QString& room) {
 
 void ChatRooms::append(const QString& room, const QString& user, const QString& line) {
 	for(int ix = 1; ix < count(); ++ix) {
-		ChatRoom* _room = static_cast<ChatRoom*>(widget(ix));
-		if(_room->room() == room) {
+		ChatRoom* _room = dynamic_cast<ChatRoom*>(widget(ix));
+		if(_room && _room->room() == room) {
 			_room->append(user, line);
 			return;
 		}
@@ -86,8 +86,8 @@ void ChatRooms::append(const QString& room, const QString& user, const QString& 
 
 void ChatRooms::userJoined(const QString& room, const QString& user, const NUserData& data) {
 	for(int ix = 1; ix < count(); ++ix) {
-		ChatRoom* _room = static_cast<ChatRoom*>(widget(ix));
-		if(_room->room() == room) {
+		ChatRoom* _room = dynamic_cast<ChatRoom*>(widget(ix));
+		if(_room && _room->room() == room) {
 			_room->userJoined(user, data.status, data.speed, data.files);
 			return;
 		}
@@ -96,8 +96,8 @@ void ChatRooms::userJoined(const QString& room, const QString& user, const NUser
 
 void ChatRooms::userLeft(const QString& room, const QString& user) {
 	for(int ix = 1; ix < count(); ++ix) {
-		ChatRoom* _room = static_cast<ChatRoom*>(widget(ix));
-		if(_room->room() == room) {
+		ChatRoom* _room = dynamic_cast<ChatRoom*>(widget(ix));
+		if(_room && _room->room() == room) {
 			_room->userLeft(user);
 			return;
 		}
@@ -105,14 +105,15 @@ void ChatRooms::userLeft(const QString& room, const QString& user) {
 }
 
 void ChatRooms::closeCurrent() {
-	ChatRoom* room = static_cast<ChatRoom*>(currentWidget());
-	museeq->leaveRoom(room->room());
+	ChatRoom* room = dynamic_cast<ChatRoom*>(currentWidget());
+	if (room)
+        museeq->leaveRoom(room->room());
 }
 
 void ChatRooms::setTickers(const QString& room, const NTickers& tickers) {
 	for(int ix = 1; ix < count(); ++ix) {
-		ChatRoom* _room = static_cast<ChatRoom*>(widget(ix));
-		if(_room->room() == room) {
+		ChatRoom* _room = dynamic_cast<ChatRoom*>(widget(ix));
+		if(_room && _room->room() == room) {
 			_room->setUserTicker(tickers);
 			break;
 		}
@@ -121,8 +122,8 @@ void ChatRooms::setTickers(const QString& room, const NTickers& tickers) {
 
 void ChatRooms::setTicker(const QString& room, const QString& user, const QString& message) {
 	for(int ix = 1; ix < count(); ++ix) {
-		ChatRoom* _room = static_cast<ChatRoom*>(widget(ix));
-		if(_room->room() == room) {
+		ChatRoom* _room = dynamic_cast<ChatRoom*>(widget(ix));
+		if(_room && _room->room() == room) {
 			_room->setUserTicker(user, message);
 			break;
 		}
@@ -130,8 +131,9 @@ void ChatRooms::setTicker(const QString& room, const QString& user, const QStrin
 }
 void ChatRooms::updateTickers() {
 	for(int ix = 1; ix < count(); ++ix) {
-		ChatRoom* _room = static_cast<ChatRoom*>(widget(ix));
-		_room->updateTickers(museeq->mTickerLength);
+		ChatRoom* _room = dynamic_cast<ChatRoom*>(widget(ix));
+		if (_room)
+            _room->updateTickers(museeq->mTickerLength);
 	}
 }
 void ChatRooms::doCurrentChanged(QWidget* widget) {
@@ -140,7 +142,10 @@ void ChatRooms::doCurrentChanged(QWidget* widget) {
 
 void ChatRooms::setHighlight(int highlight, QWidget* chatwidget) {
 
-	ChatRoom * uw = static_cast<ChatRoom*>(chatwidget);
+	ChatRoom * uw = dynamic_cast<ChatRoom*>(chatwidget);
+
+    if (!uw)
+        return;
 
 	int pos = indexOf(uw);
 	if(( currentIndex() != pos) && highlight > uw->highlighted() )
@@ -165,8 +170,8 @@ void ChatRooms::setHighlight(int highlight, QWidget* chatwidget) {
 void ChatRooms::selected(QWidget* chatwidget) {
 	if (currentIndex() == 0)
 		return;
-	ChatRoom * uw = static_cast<ChatRoom*>(chatwidget);
-	if(uw->highlighted() != 0) {
+	ChatRoom * uw = dynamic_cast<ChatRoom*>(chatwidget);
+	if(uw && uw->highlighted() != 0) {
 		uw->setHighlighted(0);
 		setHighlight(uw->highlighted(), uw );
 	}

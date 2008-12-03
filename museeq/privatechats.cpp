@@ -30,13 +30,14 @@ PrivateChats::PrivateChats(QWidget* _p, const char* _n)
 }
 
 void PrivateChats::append(uint _dir, uint _ts, const QString& _u, const QString& _m) {
-	PrivateChat* tab = static_cast<PrivateChat*>(page(_u, true));
-	tab->append(_dir, _ts, _u, _m);
+	PrivateChat* tab = dynamic_cast<PrivateChat*>(page(_u, true));
+	if (tab)
+        tab->append(_dir, _ts, _u, _m);
 }
 
 void PrivateChats::setUserStatus(const QString& _u, uint _s) {
 
-	PrivateChat* tab = static_cast<PrivateChat*>(page(_u, false));
+	PrivateChat* tab = dynamic_cast<PrivateChat*>(page(_u, false));
 	if (tab)
 		tab->status(_u, _s);
 

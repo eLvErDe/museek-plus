@@ -53,7 +53,10 @@ void WishListItem::setLastSearched(uint lastSearched) {
 }
 
 bool WishListItem::operator<(const QTreeWidgetItem & other_) const {
-  const WishListItem * other = static_cast<const WishListItem *>(&other_);
+  const WishListItem * other = dynamic_cast<const WishListItem *>(&other_);
+  if (!other)
+    return false;
+
   int col = 0;
   if(treeWidget())
     col = treeWidget()->sortColumn();

@@ -59,8 +59,9 @@ void WishList::slotAddWish() {
 void WishList::added(const QString& item, uint lastSearched) {
 	QList<QTreeWidgetItem *> itemMatch = mWishList->findItems(item, Qt::MatchExactly, 0);
 	if (! itemMatch.isEmpty()) {
-        WishListItem* itemFound = static_cast<WishListItem*>(itemMatch.at(0));
-        itemFound->setLastSearched(lastSearched);
+        WishListItem* itemFound = dynamic_cast<WishListItem*>(itemMatch.at(0));
+        if (itemFound)
+            itemFound->setLastSearched(lastSearched);
 	}
 	else
 	    new WishListItem(mWishList, item, lastSearched);

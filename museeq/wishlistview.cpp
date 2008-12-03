@@ -57,13 +57,13 @@ void WishListView::slotRemove() {
 }
 
 void WishListView::slotActivate(QTreeWidgetItem* item, int column) {
-	WishListItem* _item = static_cast<WishListItem*>(item);
+	WishListItem* _item = dynamic_cast<WishListItem*>(item);
 	if(item)
 		museeq->mainwin()->startSearch(_item->query());
 }
 
 void WishListView::slotContextMenu(const QPoint& pos) {
-	WishListItem* item = static_cast<WishListItem*>(itemAt(pos));
+	WishListItem* item = dynamic_cast<WishListItem*>(itemAt(pos));
 
 	if (! item ) {
 		mPopped = QString::null;

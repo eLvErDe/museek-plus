@@ -258,7 +258,7 @@ void TransferListItem::updateStats() {
 	TransferListItem* file;
 	int pos = 0;
 	for(; pos < childCount(); pos++) {
-		file = static_cast<TransferListItem*>(child(pos));
+		file = dynamic_cast<TransferListItem*>(child(pos));
 		if (file) {
 			groupPosition += file->mPosition;
 			if(file->mSize == 0)
@@ -302,14 +302,20 @@ void TransferListItem::update(const NTransfer& transfer) {
 		updateStats();
     else {
 		update(transfer, false);
-		if((static_cast<TransferListView *>(treeWidget()))->groupMode() == (static_cast<TransferListView *>(treeWidget()))->None)
+		TransferListView * tree = dynamic_cast<TransferListView *>(treeWidget());
+		if(!tree || tree->groupMode() == tree->None)
 			return;
-		static_cast<TransferListItem*>(parent())->updateStats();
+        TransferListItem* p = dynamic_cast<TransferListItem*>(parent());
+        if (p)
+            p->updateStats();
 	}
 }
 
 bool TransferListItem::operator<(const QTreeWidgetItem & other_) const {
-	const TransferListItem * other = static_cast<const TransferListItem *>(&other_);
+	const TransferListItem * other = dynamic_cast<const TransferListItem *>(&other_);
+	if (!other)
+        return false;
+
 	int col = 0;
 	if(treeWidget())
         col = treeWidget()->sortColumn();

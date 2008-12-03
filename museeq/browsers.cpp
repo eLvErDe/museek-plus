@@ -35,7 +35,7 @@ UserWidget* Browsers::makeNewPage(const QString& user) {
 }
 
 void Browsers::setShares(const QString& user, const NShares& shares) {
-	Browser* browser = static_cast<Browser*>(page(user));
+	Browser* browser = dynamic_cast<Browser*>(page(user));
 	if(! browser)
 		return;
 	browser->setShares(shares);

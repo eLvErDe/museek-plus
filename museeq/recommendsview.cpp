@@ -93,7 +93,7 @@ void RecommendsView::slotAddHate() {
 }
 
 void RecommendsView::slotContextMenu(const QPoint& pos) {
-	RecommendsItem* item = static_cast<RecommendsItem*>(itemAt(pos));
+	RecommendsItem* item = dynamic_cast<RecommendsItem*>(itemAt(pos));
 
 	if (item ) {
 		mPopped = item->interest();
@@ -115,7 +115,7 @@ void RecommendsView::slotActivate(QTreeWidgetItem* item, int column) {
 	slotActivate( item);
 }
 void RecommendsView::slotActivate(QTreeWidgetItem* item) {
-	RecommendsItem* _item = static_cast<RecommendsItem*>(item);
+	RecommendsItem* _item = dynamic_cast<RecommendsItem*>(item);
 	if(item)
 		museeq->joinRoom(_item->interest());
 }

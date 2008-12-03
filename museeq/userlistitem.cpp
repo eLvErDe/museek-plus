@@ -130,7 +130,10 @@ QString UserListItem::comments() const {
 }
 
 bool UserListItem::operator<(const QTreeWidgetItem & other_) const {
-	const UserListItem * other = static_cast<const UserListItem *>(&other_);
+	const UserListItem * other = dynamic_cast<const UserListItem *>(&other_);
+	if (!other)
+        return false;
+
 	int col = 0;
 	if(treeWidget())
 	col = treeWidget()->sortColumn();

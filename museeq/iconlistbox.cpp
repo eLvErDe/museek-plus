@@ -53,12 +53,17 @@ void IconListBox::updateMinimumHeight()
         QList<QListWidgetItem*> icons = findItems(QString("*"),Qt::MatchWildcard );
         QList<QListWidgetItem *>::iterator it = icons.begin();
         for(; it != icons.end();  ++it) {
-            int w = static_cast<IconListItem*>(*it)->height(this);
+            IconListItem* ilitem = dynamic_cast<IconListItem*>(*it);
+            if (!ilitem)
+                continue;
+            int w = ilitem->height(this);
             maxHeight = qMax( w, maxHeight );
         }
         it = icons.begin();
         for(; it != icons.end();  ++it) {
-            IconListItem* item = static_cast<IconListItem*>(*it);
+            IconListItem* item = dynamic_cast<IconListItem*>(*it);
+            if (!item)
+                continue;
             item->setSizeHint(QSize(item->width(this), maxHeight));
         }
 
@@ -73,7 +78,9 @@ void IconListBox::updateMinimumHeight()
         QList<QListWidgetItem *>::const_iterator it = icons.begin();
 
         for (; it != icons.end(); it++) {
-            h += static_cast<IconListItem*>(*it)->height(this);
+            IconListItem* item = dynamic_cast<IconListItem*>(*it);
+            if (item)
+                h += item->height(this);
         }
 
         setMinimumHeight( h );
@@ -88,7 +95,9 @@ void IconListBox::updateMinimumWidth()
         QList<QListWidgetItem *>::const_iterator it = icons.begin();
 
         for (; it != icons.end(); it++) {
-            w += static_cast<IconListItem*>(*it)->width(this) + 5;
+            IconListItem* item = dynamic_cast<IconListItem*>(*it);
+            if (item)
+                w += item->width(this) + 5;
         }
 
         setMinimumWidth( w );
@@ -99,13 +108,17 @@ void IconListBox::updateMinimumWidth()
         QList<QListWidgetItem*> icons = findItems(QString("*"),Qt::MatchWildcard );
         QList<QListWidgetItem *>::iterator it = icons.begin();
         for(; it != icons.end();  ++it) {
-            int w = static_cast<IconListItem*>(*it)->width(this);
+            IconListItem* item = dynamic_cast<IconListItem*>(*it);
+            if (!item)
+                continue;
+            int w = item->width(this);
             maxWidth = qMax( w, maxWidth );
         }
         it = icons.begin();
         for(; it != icons.end();  ++it) {
-            IconListItem* item = static_cast<IconListItem*>(*it);
-            item->setSizeHint(QSize(maxWidth - 5, item->height(this)));
+            IconListItem* item = dynamic_cast<IconListItem*>(*it);
+            if (item)
+                item->setSizeHint(QSize(maxWidth - 5, item->height(this)));
         }
 
         if( verticalScrollBar()->isVisible() ) {
@@ -124,7 +137,9 @@ QStyleOptionViewItem IconListBox::viewOptions () const {
 
 void IconListBox::slotCurrentChanged(QListWidgetItem* item, QListWidgetItem* old)
 {
-  static_cast<IconListItem*>(item)->selected();
+  IconListItem* _item = dynamic_cast<IconListItem*>(item);
+  if (_item)
+    _item->selected();
 }
 
 void IconListBox::dragMoveEvent(QDragMoveEvent* event)
@@ -133,11 +148,12 @@ void IconListBox::dragMoveEvent(QDragMoveEvent* event)
     QListWidgetItem* item = itemAt(event->pos());
 
     // Switch to the item if any found
-    if(item && ! (currentItem() == item))
+    if(item && (currentItem() != item))
         setCurrentItem(item);
 
     // We can drop urls directly on the icon: accept
-    if(Util::hasSlskUrls(event) && item && static_cast<IconListItem*>(item)->canDrop())
+    IconListItem* it = dynamic_cast<IconListItem*>(item);
+    if(Util::hasSlskUrls(event) && it && it->canDrop())
         event->acceptProposedAction();
 }
 
@@ -148,7 +164,7 @@ void IconListBox::dragEnterEvent(QDragEnterEvent* event)
 
 void IconListBox::dropEvent(QDropEvent* event)
 {
-    IconListItem* item = static_cast<IconListItem*>(currentItem());
+    IconListItem* item = dynamic_cast<IconListItem*>(currentItem());
 
     if (item && Util::hasSlskUrls(event, item->dropNeedPath()) && item->canDrop())
         item->emitDropSlsk(event->mimeData()->urls());

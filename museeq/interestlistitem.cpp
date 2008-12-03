@@ -32,7 +32,10 @@ QString InterestListItem::interest() const {
 }
 
 bool InterestListItem::operator<(const QTreeWidgetItem & other_) const {
-  const InterestListItem * other = static_cast<const InterestListItem *>(&other_);
+  const InterestListItem * other = dynamic_cast<const InterestListItem *>(&other_);
+  if (!other)
+    return false;
+
   int col = 0;
   if(treeWidget())
     col = treeWidget()->sortColumn();

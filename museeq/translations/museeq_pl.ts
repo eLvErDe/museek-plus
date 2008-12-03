@@ -203,62 +203,62 @@
 <context>
     <name>FileListView</name>
     <message>
-        <location filename="../browser.cpp" line="580"/>
+        <location filename="../browser.cpp" line="587"/>
         <source>Filename</source>
         <translation>Nazwa pliku</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="580"/>
+        <location filename="../browser.cpp" line="587"/>
         <source>Size</source>
         <translation>Rozmiar</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="580"/>
+        <location filename="../browser.cpp" line="587"/>
         <source>Length</source>
         <translation>Długość</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="580"/>
+        <location filename="../browser.cpp" line="587"/>
         <source>Bitrate</source>
         <translation>Próbkowanie</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="594"/>
+        <location filename="../browser.cpp" line="601"/>
         <source>Download files</source>
         <translation>Pobierz pliki</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="602"/>
+        <location filename="../browser.cpp" line="609"/>
         <source>Upload files</source>
         <translation>Wyślij pliki</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="608"/>
+        <location filename="../browser.cpp" line="615"/>
         <source>Copy URL</source>
         <translation>Skopiuj URL</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="797"/>
+        <location filename="../browser.cpp" line="811"/>
         <source>Upload File(s)</source>
         <translation>Wyślij plik(i)</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="798"/>
+        <location filename="../browser.cpp" line="812"/>
         <source>Which user do you wish to upload these to?</source>
         <translation>Do którego użytkownika chcesz je wysłać?</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="598"/>
+        <location filename="../browser.cpp" line="605"/>
         <source>Download files to..</source>
         <translation>Pobierz pliki do..</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="762"/>
+        <location filename="../browser.cpp" line="773"/>
         <source>Select a Directory for current download(s)</source>
         <translation>Wybierz katalog dla bieżącego pobierania</translation>
     </message>
     <message numerus="yes">
-        <location filename="../browser.cpp" line="689"/>
+        <location filename="../browser.cpp" line="698"/>
         <source>%n file(s)</source>
         <translation>
             <numerusform>%n plik</numerusform>
@@ -290,22 +290,22 @@
         <translation>Pobierz katalog do...</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="412"/>
+        <location filename="../browser.cpp" line="415"/>
         <source>Upload Folder</source>
         <translation>Wyślij katalog</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="390"/>
+        <location filename="../browser.cpp" line="393"/>
         <source>Select a Directory for current download(s)</source>
         <translation>Wybierz katalog dla bieżącego pobierania</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="413"/>
+        <location filename="../browser.cpp" line="416"/>
         <source>Which user do you wish to upload this to?</source>
         <translation>Do którego użytkownika chcesz je wysłać?</translation>
     </message>
     <message numerus="yes">
-        <location filename="../browser.cpp" line="331"/>
+        <location filename="../browser.cpp" line="333"/>
         <source>%n folder(s)</source>
         <translation>
             <numerusform>%n katalog</numerusform>
@@ -1217,37 +1217,37 @@
         <translation>Wolny slot</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="165"/>
+        <location filename="../searchfilter.cpp" line="167"/>
         <source>Warning - Museeq</source>
         <translation>Ostrzeżenie - Museeq</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="109"/>
+        <location filename="../searchfilter.cpp" line="111"/>
         <source>Invalid regular expression, disabling it</source>
         <translation>Nieprawidłowe wyrażenie regularne, wyłączam je</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="129"/>
+        <location filename="../searchfilter.cpp" line="131"/>
         <source>k</source>
         <translation>k</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="131"/>
+        <location filename="../searchfilter.cpp" line="133"/>
         <source>m</source>
         <translation>m</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="133"/>
+        <location filename="../searchfilter.cpp" line="135"/>
         <source>g</source>
         <translation>g</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="141"/>
+        <location filename="../searchfilter.cpp" line="143"/>
         <source>Invalid size filter, disabling it</source>
         <translation>Nieprawidłowy filtr rozmiaru, wyłączam go</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="165"/>
+        <location filename="../searchfilter.cpp" line="167"/>
         <source>Invalid bitrate filter, disabling it</source>
         <translation>Nieprawidłowy filtr próbkowania, wyłączam go</translation>
     </message>
@@ -1320,27 +1320,27 @@
         <translation>Pobierz plik(i) do..</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="138"/>
+        <location filename="../searchlistview.cpp" line="139"/>
         <source>Select a Directory for current download(s)</source>
         <translation>Wybierz katalog dla bieżącego pobierania</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="307"/>
+        <location filename="../searchlistview.cpp" line="308"/>
         <source>Y</source>
         <translation>T</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="307"/>
+        <location filename="../searchlistview.cpp" line="308"/>
         <source>N</source>
         <translation>N</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="305"/>
+        <location filename="../searchlistview.cpp" line="306"/>
         <source>/s</source>
         <translation>/s</translation>
     </message>
     <message numerus="yes">
-        <location filename="../searchlistview.cpp" line="266"/>
+        <location filename="../searchlistview.cpp" line="267"/>
         <source>%n search result(s)</source>
         <translation>
             <numerusform>%n wynik wyszukiwania</numerusform>
@@ -1349,7 +1349,7 @@
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../searchlistview.cpp" line="266"/>
+        <location filename="../searchlistview.cpp" line="267"/>
         <source> (%n user(s))</source>
         <translation>
             <numerusform>(%n użytkownik)</numerusform>
@@ -1980,7 +1980,7 @@
         <translation>/s</translation>
     </message>
     <message numerus="yes">
-        <location filename="../transferlistview.cpp" line="281"/>
+        <location filename="../transferlistview.cpp" line="290"/>
         <source>%n transfer(s)</source>
         <translation>
             <numerusform>%n transfer</numerusform>
@@ -1989,7 +1989,7 @@
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../transferlistview.cpp" line="281"/>
+        <location filename="../transferlistview.cpp" line="290"/>
         <source> (%n user(s))</source>
         <translation>
             <numerusform>(%n użytkownik)</numerusform>
@@ -2225,7 +2225,7 @@
         <translation>/s</translation>
     </message>
     <message numerus="yes">
-        <location filename="../userlistview.cpp" line="326"/>
+        <location filename="../userlistview.cpp" line="332"/>
         <source>%n user(s)</source>
         <translation>
             <numerusform>%n użytkownik</numerusform>

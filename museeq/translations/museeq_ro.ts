@@ -320,37 +320,37 @@
 <context>
     <name>FileListView</name>
     <message>
-        <location filename="../browser.cpp" line="580"/>
+        <location filename="../browser.cpp" line="587"/>
         <source>Filename</source>
         <translation>Numele fişierului</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="580"/>
+        <location filename="../browser.cpp" line="587"/>
         <source>Size</source>
         <translation>Mărime</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="580"/>
+        <location filename="../browser.cpp" line="587"/>
         <source>Length</source>
         <translation>Lungime</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="580"/>
+        <location filename="../browser.cpp" line="587"/>
         <source>Bitrate</source>
         <translation>Bitrate</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="594"/>
+        <location filename="../browser.cpp" line="601"/>
         <source>Download files</source>
         <translation>Descarcă fişierele</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="602"/>
+        <location filename="../browser.cpp" line="609"/>
         <source>Upload files</source>
         <translation>Urcă fişierele</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="608"/>
+        <location filename="../browser.cpp" line="615"/>
         <source>Copy URL</source>
         <translation>Copiază URL-ul</translation>
     </message>
@@ -365,27 +365,27 @@
         <translation type="obsolete">%1 fişiere</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="797"/>
+        <location filename="../browser.cpp" line="811"/>
         <source>Upload File(s)</source>
         <translation>Urcă fişierul(le)</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="798"/>
+        <location filename="../browser.cpp" line="812"/>
         <source>Which user do you wish to upload these to?</source>
         <translation>Cărui utilizator doriţi să îi trimiteţi aceste fişiere ?</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="598"/>
+        <location filename="../browser.cpp" line="605"/>
         <source>Download files to..</source>
         <translation>Descarcă fişierele în..</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="762"/>
+        <location filename="../browser.cpp" line="773"/>
         <source>Select a Directory for current download(s)</source>
         <translation>Selectează un director pentru fişierele descărcate</translation>
     </message>
     <message numerus="yes">
-        <location filename="../browser.cpp" line="689"/>
+        <location filename="../browser.cpp" line="698"/>
         <source>%n file(s)</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -432,22 +432,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="412"/>
+        <location filename="../browser.cpp" line="415"/>
         <source>Upload Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="390"/>
+        <location filename="../browser.cpp" line="393"/>
         <source>Select a Directory for current download(s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="413"/>
+        <location filename="../browser.cpp" line="416"/>
         <source>Which user do you wish to upload this to?</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../browser.cpp" line="331"/>
+        <location filename="../browser.cpp" line="333"/>
         <source>%n folder(s)</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -1608,37 +1608,37 @@
         <translation>Slot liber</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="165"/>
+        <location filename="../searchfilter.cpp" line="167"/>
         <source>Warning - Museeq</source>
         <translation>Avertizare - Museeq</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="109"/>
+        <location filename="../searchfilter.cpp" line="111"/>
         <source>Invalid regular expression, disabling it</source>
         <translation>Expresie regulată invalidă, o dezactivez</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="129"/>
+        <location filename="../searchfilter.cpp" line="131"/>
         <source>k</source>
         <translation>k</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="131"/>
+        <location filename="../searchfilter.cpp" line="133"/>
         <source>m</source>
         <translation>m</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="133"/>
+        <location filename="../searchfilter.cpp" line="135"/>
         <source>g</source>
         <translation>g</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="141"/>
+        <location filename="../searchfilter.cpp" line="143"/>
         <source>Invalid size filter, disabling it</source>
         <translation>Filtru de mărime invalid, îl dezactivez</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="165"/>
+        <location filename="../searchfilter.cpp" line="167"/>
         <source>Invalid bitrate filter, disabling it</source>
         <translation>Filtru de bitrate invalid, îl dezactivez</translation>
     </message>
@@ -1744,27 +1744,27 @@
         <translation>Descarcă fişierele în..</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="138"/>
+        <location filename="../searchlistview.cpp" line="139"/>
         <source>Select a Directory for current download(s)</source>
         <translation>Selectaţi un director pentru descărcarea curentă</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="307"/>
+        <location filename="../searchlistview.cpp" line="308"/>
         <source>Y</source>
         <translation type="unfinished">D</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="307"/>
+        <location filename="../searchlistview.cpp" line="308"/>
         <source>N</source>
         <translation type="unfinished">N</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="305"/>
+        <location filename="../searchlistview.cpp" line="306"/>
         <source>/s</source>
         <translation type="unfinished">/s</translation>
     </message>
     <message numerus="yes">
-        <location filename="../searchlistview.cpp" line="266"/>
+        <location filename="../searchlistview.cpp" line="267"/>
         <source>%n search result(s)</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -1773,7 +1773,7 @@
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../searchlistview.cpp" line="266"/>
+        <location filename="../searchlistview.cpp" line="267"/>
         <source> (%n user(s))</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -2542,7 +2542,7 @@
         <translation type="unfinished">/s</translation>
     </message>
     <message numerus="yes">
-        <location filename="../transferlistview.cpp" line="281"/>
+        <location filename="../transferlistview.cpp" line="290"/>
         <source>%n transfer(s)</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -2551,7 +2551,7 @@
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../transferlistview.cpp" line="281"/>
+        <location filename="../transferlistview.cpp" line="290"/>
         <source> (%n user(s))</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -2850,7 +2850,7 @@
         <translation type="unfinished">/s</translation>
     </message>
     <message numerus="yes">
-        <location filename="../userlistview.cpp" line="326"/>
+        <location filename="../userlistview.cpp" line="332"/>
         <source>%n user(s)</source>
         <translation type="unfinished">
             <numerusform></numerusform>

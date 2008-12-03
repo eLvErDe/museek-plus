@@ -86,13 +86,13 @@ void RoomListView::slotRefresh() {
 }
 void RoomListView::slotActivate(QTreeWidgetItem* item, int column) {
 
-	RoomListItem* _item = static_cast<RoomListItem*>(item);
+	RoomListItem* _item = dynamic_cast<RoomListItem*>(item);
 	if(item)
 		museeq->joinRoom(_item->room());
 }
 
 void RoomListView::slotContextMenu(const QPoint& pos) {
-	RoomListItem* item = static_cast<RoomListItem*>(itemAt(pos));
+	RoomListItem* item = dynamic_cast<RoomListItem*>(itemAt(pos));
 
 	if (! item ) {
 

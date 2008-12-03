@@ -141,8 +141,8 @@ void Searches::setUserSearchText(const QString& text) {
 void Searches::append(uint token, const QString& user, bool free, uint speed, uint files, const NFolder& r) {
     qDebug() << "Search results from " << user;
 	for(int i = 2; i < mSearchTabWidget->count(); ++i) {
-		Search* search = static_cast<Search*>(mSearchTabWidget->widget(i));
-		if(search->hasToken(token)) {
+		Search* search = dynamic_cast<Search*>(mSearchTabWidget->widget(i));
+		if(search && search->hasToken(token)) {
 			search->append(user, free, speed, files, r);
 			return;
 		}
@@ -152,8 +152,8 @@ void Searches::append(uint token, const QString& user, bool free, uint speed, ui
 void Searches::setToken(const QString& query, uint token) {
     int i;
 	for(i = 2; i < mSearchTabWidget->count(); ++i) {
-		Search* search = static_cast<Search*>(mSearchTabWidget->widget(i));
-		if(search->query() == QString(query)) {
+		Search* search = dynamic_cast<Search*>(mSearchTabWidget->widget(i));
+		if(search && search->query() == QString(query)) {
 			search->setToken(token);
 			return;
 		}
@@ -190,8 +190,8 @@ void Searches::doSearch(const QString& q) {
 
 	int i;
 	for(i = 2; i < mSearchTabWidget->count(); ++i) {
-		Search* search = static_cast<Search*>(mSearchTabWidget->widget(i));
-		if(search->query() == q) {
+		Search* search = dynamic_cast<Search*>(mSearchTabWidget->widget(i));
+		if(search && search->query() == q) {
 			mSearchTabWidget->setCurrentIndex(i);
 			break;
 		}
@@ -230,8 +230,9 @@ void Searches::doSearch() {
 void Searches::tabSelected(QWidget* searchwidget) {
 	if (mSearchTabWidget->currentIndex() <= 1)
 		return;
-	Search * uw = static_cast<Search*>(searchwidget);
-    setSearchText(uw->query());
+	Search * uw = dynamic_cast<Search*>(searchwidget);
+	if (uw)
+        setSearchText(uw->query());
 }
 
 
@@ -243,7 +244,10 @@ SearchTabWidget::SearchTabWidget(QWidget* _p, const char* _n)
 }
 
 void SearchTabWidget::setHighlight(int highlight, QWidget* widget) {
-	Search * uw = static_cast<Search*>(widget);
+	Search * uw = dynamic_cast<Search*>(widget);
+	if (!uw)
+        return;
+
     int pos = indexOf(uw);
 	if(( currentIndex() != pos) && highlight > uw->highlighted() )
 	{
@@ -266,8 +270,8 @@ void SearchTabWidget::setHighlight(int highlight, QWidget* widget) {
 void SearchTabWidget::selected(QWidget* searchwidget) {
 	if (currentIndex() <= 1)
 		return;
-	Search * uw = static_cast<Search*>(searchwidget);
-	if(uw->highlighted() != 0) {
+	Search * uw = dynamic_cast<Search*>(searchwidget);
+	if(uw && uw->highlighted() != 0) {
 		uw->setHighlighted(0);
 		setHighlight(uw->highlighted(), uw );
 	}

@@ -32,17 +32,17 @@ UserInfos::UserInfos(QWidget* parent, const char* name)
 UserWidget* UserInfos::makeNewPage(const QString& user) {
 	UserInfo* w = new UserInfo(user);
 	w->getUserInfo();
-	return static_cast<UserWidget*>(w);
+	return dynamic_cast<UserWidget*>(w);
 }
 
 void UserInfos::setUserInfo(const QString& user, const QString& info, const QByteArray& picture, uint upslots, uint queue, bool free) {
-	UserInfo* _info = static_cast<UserInfo*>(page(user));
+	UserInfo* _info = dynamic_cast<UserInfo*>(page(user));
 	if(_info)
 		_info->setInfo(info, picture, upslots, queue, free);
 }
 
 void UserInfos::setUserInterests(const QString& user, const QStringList& likes, const QStringList& hates) {
-	UserInfo* _info = static_cast<UserInfo*>(page(user));
+	UserInfo* _info = dynamic_cast<UserInfo*>(page(user));
 	if(_info)
 		_info->setInterests(likes, hates);
 }

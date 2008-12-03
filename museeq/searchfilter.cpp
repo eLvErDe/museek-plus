@@ -84,7 +84,9 @@ bool SearchFilter::match(SearchListItem *item) {
 void SearchFilter::refilter(SearchListView *list) {
 	QTreeWidgetItemIterator it(list);
  	while(*it) {
- 		(*it)->setHidden(!match(static_cast<SearchListItem*>(*it)));
+ 	    SearchListItem* item = dynamic_cast<SearchListItem*>(*it);
+ 	    if (item)
+            (*it)->setHidden(!match(item));
  		it++;
  	}
 }

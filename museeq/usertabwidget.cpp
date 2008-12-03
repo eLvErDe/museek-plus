@@ -63,8 +63,8 @@ UserTabWidget::UserTabWidget(QWidget* _p, const char* _n)
 
 UserWidget* UserTabWidget::page(const QString& _u, bool _m) {
 	for(int i = 1; i < count(); ++i) {
-		UserWidget* frame = static_cast<UserWidget*>(QTabWidget::widget(i));
-		if(frame->user() == _u) {
+		UserWidget* frame = dynamic_cast<UserWidget*>(QTabWidget::widget(i));
+		if(frame && frame->user() == _u) {
 			return frame;
 		}
 	}
@@ -102,12 +102,16 @@ void UserWidget::selected() {
 }
 
 void UserWidget::setHighlight(int i) {
-	UserTabWidget* p = static_cast<UserTabWidget*>(parentWidget()->parentWidget());
-	p->setHighlight(p->indexOf(this), i);
+	UserTabWidget* p = dynamic_cast<UserTabWidget*>(parentWidget()->parentWidget());
+	if (p)
+        p->setHighlight(p->indexOf(this), i);
 }
 
 void UserTabWidget::setHighlight(int pos, int highlight) {
-	UserWidget * uw = static_cast<UserWidget*>(widget(pos));
+	UserWidget * uw = dynamic_cast<UserWidget*>(widget(pos));
+
+    if (!uw)
+        return;
 
 	if(( currentIndex() != pos) && highlight > uw->highlighted() )
 	{

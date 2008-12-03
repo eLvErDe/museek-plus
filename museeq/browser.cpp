@@ -300,7 +300,9 @@ void FolderListView::mouseMoveEvent(QMouseEvent *event)
 	QList<QTreeWidgetItem*> items = selectedItems();
     QList<QTreeWidgetItem*>::const_iterator it = items.begin();
 	for(; it != items.end(); ++it) {
-        FolderListItem * item = static_cast<FolderListItem*>(*it);
+        FolderListItem * item = dynamic_cast<FolderListItem*>(*it);
+        if (!item)
+            continue;
         // slsk protocol: in QUrl, hostname is always lower case.
         // So we put username as hostname for compatibility, and as username to have the correct case.
         // Ex: slsk://MuSeEk:filesize@museek/path/to/a/file
@@ -350,12 +352,13 @@ void FolderListView::mouseMoveEvent(QMouseEvent *event)
 }
 
 void FolderListView::slotActivate(QTreeWidgetItem* item, int column) {
-	mPopped = static_cast<FolderListItem*>(item);
+	mPopped = dynamic_cast<FolderListItem*>(item);
 	if(! mPopped)
 		return;
 
 	doDownloadFolder();
 }
+
 void FolderListView::slotContextMenu(const QPoint& pos) {
 // 	QTreeWidgetItem * item = 0 ;
 	mPopped = itemAt(pos) ;
@@ -374,7 +377,7 @@ void FolderListView::doPopupMenu(QTreeWidgetItem* item, const QPoint& pos, int c
 void FolderListView::doDownloadFolder()
 {
 	if(mPopped) {
-		QString d = static_cast<FolderListItem *>(mPopped)->text(1);
+		QString d = mPopped->text(1);
 		if ( "\\" == d.right(1) || "/" == d.right(1 ))
 			museeq->downloadFolder(mUser, d.mid(0, d.length()-1));
 		else
@@ -393,7 +396,7 @@ void FolderListView::doDownloadFolderTo()
             QString localpath = fd->directory().path();
             QList<QTreeWidgetItem *>::iterator it = downloads.begin();
             for(; it != downloads.end(); ++it) {
-                QString d = static_cast<FolderListItem *>(mPopped)->text(1);
+                QString d = mPopped->text(1);
                 if ( "\\" == d.right(1) || "/" == d.right(1 ))
                     d = d.mid(0, d.length()-1);
                 museeq->downloadFolderTo(mUser, d, localpath);
@@ -413,7 +416,7 @@ void FolderListView::doUploadFolder()
                      tr("Which user do you wish to upload this to?"),
                      buddies, 0, true, &ok);
         if(ok && ! user.isEmpty()) {
-            QString d = static_cast<FolderListItem *>(mPopped)->text(1);
+            QString d = mPopped->text(1);
             if ( "\\" == d.right(1) || "/" == d.right(1 ))
                 museeq->uploadFolder(user, d.mid(0, d.length()-1));
             else
@@ -427,7 +430,9 @@ void FolderListView::doCopyURL() {
 		QClipboard *cb = QApplication::clipboard();
         QUrl url("slsk://" + mUser);
         url.setUserName(mUser);
-        url.setPath(static_cast<FolderListItem *>(mPopped)->data()->path.replace("\\", "/") + "/");
+        FolderListItem * popped = dynamic_cast<FolderListItem *>(mPopped);
+        if (popped)
+            url.setPath(popped->data()->path.replace("\\", "/") + "/");
 		QString link = url.toString();
 		cb->setText( link , QClipboard::Clipboard);
 	}
@@ -442,14 +447,13 @@ QString  FolderListView::parentPath(const QString& parent) {
 
 FolderListItem * FolderListView::findParent(const QStringList& p) {
 	QString path = parentPath(p.join("\\"));
-	if (path.isEmpty()) {
+	if (path.isEmpty())
+		return dynamic_cast<FolderListItem *>(invisibleRootItem());
 
-		return static_cast<FolderListItem *>(invisibleRootItem());
-	}
 	QTreeWidgetItemIterator it(this);
 	while (*it) {
 		if ((*it)->text(1) == path)
-			return static_cast<FolderListItem *>(*it);
+			return dynamic_cast<FolderListItem *>(*it);
 		++it;
 	}
 
@@ -484,8 +488,8 @@ void FolderListView::setShares(const NShares& shares) {
 }
 
 void FolderListView::doCurrentChanged(QTreeWidgetItem* _item, QTreeWidgetItem* lastItem) {
-	if(_item) {
-		FolderListItem* item = static_cast<FolderListItem*>(_item);
+    FolderListItem* item = dynamic_cast<FolderListItem*>(_item);
+	if(item) {
 		emit currentChanged(item->data()->path, item->data()->files);
 	} else
 		emit currentChanged("", NFolder());
@@ -501,11 +505,11 @@ void FolderListView::show(const QStringList& p)
 		position = 0;
 		FolderListItem* i;
 		if(item == 0)
-			item = static_cast<FolderListItem*>(invisibleRootItem ());
+			item = dynamic_cast<FolderListItem*>(invisibleRootItem ());
 
-		i = static_cast<FolderListItem*>(item->child(position));
+		i = dynamic_cast<FolderListItem*>(item->child(position));
 
-		for(; i; i = static_cast<FolderListItem*>(item->child(position)))
+		for(; i; i = dynamic_cast<FolderListItem*>(item->child(position)))
 		{
 			if(i->text(0) == *it)
 				break;
@@ -551,7 +555,10 @@ FileListItem::FileListItem(FileListView* parent, const QString& fn, const NFileD
 }
 
 bool FileListItem::operator<(const QTreeWidgetItem & other_) const {
-  const FileListItem * other = static_cast<const FileListItem *>(&other_);
+  const FileListItem * other = dynamic_cast<const FileListItem *>(&other_);
+  if (!other)
+    return false;
+
   int col = 0;
   if(treeWidget())
     col = treeWidget()->sortColumn();
@@ -656,7 +663,9 @@ void FileListView::mouseMoveEvent(QMouseEvent *event)
 	QList<QTreeWidgetItem*> items = selectedItems();
     QList<QTreeWidgetItem*>::const_iterator it = items.begin();
 	for(; it != items.end(); ++it) {
-        FileListItem * item = static_cast<FileListItem*>(*it);
+        FileListItem * item = dynamic_cast<FileListItem*>(*it);
+        if (!item)
+            continue;
 
         // slsk protocol: in QUrl, hostname is always lower case.
         // So we put username as hostname for compatibility, and as username to have the correct case.
@@ -709,7 +718,7 @@ void FileListView::mouseMoveEvent(QMouseEvent *event)
 
 void FileListView::slotActivate(QTreeWidgetItem* item, int column) {
 
-	FileListItem* _item = static_cast<FileListItem*>(item);
+	FileListItem* _item = dynamic_cast<FileListItem*>(item);
 	if(! _item)
 		return;
 	doDownloadFiles();
@@ -749,9 +758,11 @@ void FileListView::doDownloadFiles() {
 	QList<QTreeWidgetItem *> downloads = selectedItems ();
 	QList<QTreeWidgetItem *>::iterator it = downloads.begin();
 	for(; it != downloads.end(); ++it) {
-		FileListItem* _item = static_cast<FileListItem*>(*it);
-		NFileData data = _item->data();
-		museeq->downloadFile(mUser, mPath +"\\"+  _item->filename(), data.size);
+		FileListItem* _item = dynamic_cast<FileListItem*>(*it);
+		if (_item) {
+            NFileData data = _item->data();
+            museeq->downloadFile(mUser, mPath +"\\"+  _item->filename(), data.size);
+		}
 	}
 
 }
@@ -765,9 +776,11 @@ void FileListView::doDownloadFilesTo() {
 		QString localpath = fd->directory().path();
 		QList<QTreeWidgetItem *>::iterator it = downloads.begin();
 		for(; it != downloads.end(); ++it) {
-			FileListItem* _item = static_cast<FileListItem*>(*it);
-			NFileData data = _item->data();
-			museeq->downloadFileTo(mUser, mPath +"\\"+  _item->filename(), localpath, data.size);
+			FileListItem* _item = dynamic_cast<FileListItem*>(*it);
+			if (_item) {
+                NFileData data = _item->data();
+                museeq->downloadFileTo(mUser, mPath +"\\"+  _item->filename(), localpath, data.size);
+			}
 		}
 	}
 	delete fd;
@@ -778,14 +791,15 @@ void FileListView::doCopyURL() {
 	QList<QTreeWidgetItem *> downloads = selectedItems ();
 
 	if (! downloads.isEmpty()) {
-		FileListItem* _item = static_cast<FileListItem*>(downloads.at(0));
+		FileListItem* _item = dynamic_cast<FileListItem*>(downloads.at(0));
+		if (!_item)
+            return;
+
 		NFileData data = _item->data();
 		QString link;
 		link  = ( "slsk://" +  mUser +  "/"+ mPath + _item->filename() );
 		link.replace("\\", "/"); link.replace(" ", "%20"); link.replace("(", "%28"); link.replace(")", "%29");  link.replace("[", "%5B"); link.replace("]", "%5D");  link.replace("+", "%2B"); link.replace("~", "%7E"); link.replace("`", "%60"); link.replace("$", "%24"); link.replace("{", "%7B"); link.replace("}", "%7D"); link.replace('"', "%22"); link.replace(">", "%3E"); link.replace(",", "%2C"); link.replace("<", "%3C");
 		cb->setText( link  , QClipboard::Clipboard );
-
-
 	}
 
 }
@@ -801,9 +815,11 @@ void FileListView::doUploadFiles() {
 		QList<QTreeWidgetItem *> uploads = selectedItems ();
 		QList<QTreeWidgetItem *>::iterator it = uploads.begin();
 		for(; it != uploads.end(); ++it) {
-			FileListItem* _item = static_cast<FileListItem*>(*it);
-			NFileData data = _item->data();
-			museeq->uploadFile(user, mPath +"\\"+ _item->filename());
+			FileListItem* _item = dynamic_cast<FileListItem*>(*it);
+			if (_item) {
+                NFileData data = _item->data();
+                museeq->uploadFile(user, mPath +"\\"+ _item->filename());
+			}
 		}
 
 	}

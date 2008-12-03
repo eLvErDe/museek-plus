@@ -33,7 +33,10 @@ QString RecommendsItem::interest() const {
 }
 
 bool RecommendsItem::operator<(const QTreeWidgetItem & other_) const {
-  const RecommendsItem * other = static_cast<const RecommendsItem *>(&other_);
+  const RecommendsItem * other = dynamic_cast<const RecommendsItem *>(&other_);
+  if (!other)
+    return false;
+
   int col = 0;
   if(treeWidget())
     col = treeWidget()->sortColumn();

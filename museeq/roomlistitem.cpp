@@ -33,7 +33,10 @@ QString RoomListItem::room() const {
 }
 
 bool RoomListItem::operator<(const QTreeWidgetItem & other_) const {
-  const RoomListItem * other = static_cast<const RoomListItem *>(&other_);
+  const RoomListItem * other = dynamic_cast<const RoomListItem *>(&other_);
+  if (!other)
+    return false;
+
   int col = 0;
   if(treeWidget())
     col = treeWidget()->sortColumn();

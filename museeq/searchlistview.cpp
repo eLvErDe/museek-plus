@@ -86,7 +86,7 @@ SearchListView::SearchListView(SearchFilter* filter, QWidget* parent, const char
 }
 
 void SearchListView::slotContextMenu(const QPoint& pos) {
-	SearchListItem* item = static_cast<SearchListItem*>(itemAt(pos));
+	SearchListItem* item = dynamic_cast<SearchListItem*>(itemAt(pos));
 
 	if (! item )
 		return;
@@ -97,7 +97,7 @@ void SearchListView::slotContextMenu(const QPoint& pos) {
 
 void SearchListView::slotActivate(QTreeWidgetItem* item, int column) {
 
-	SearchListItem* _item = static_cast<SearchListItem*>(item);
+	SearchListItem* _item = dynamic_cast<SearchListItem*>(item);
 	if(item)
 		museeq->downloadFile(_item->user(), _item->path(), _item->size());
 }
@@ -109,14 +109,14 @@ void SearchListView::setupUsers() {
 	QTreeWidgetItemIterator it(this, QTreeWidgetItemIterator::Selected | QTreeWidgetItemIterator::NotHidden);
 
 	while (*it) {
-		SearchListItem* item = static_cast<SearchListItem*>(*it);
+		SearchListItem* item = dynamic_cast<SearchListItem*>(*it);
 
-		if(users.indexOf(item->user()) == -1)
+		if(item && users.indexOf(item->user()) == -1)
 		{
 			users << item->user();
 			Usermenu *m = new Usermenu(mUsersMenu);
 			m->setup(item->user());
-			QAction * usermenu = mUsersMenu->addMenu(static_cast<QMenu*>(m));
+			QAction * usermenu = mUsersMenu->addMenu(dynamic_cast<QMenu*>(m));
 			usermenu->setText(item->user());
 		}
 		++it;
@@ -127,8 +127,9 @@ void SearchListView::downloadFiles() {
 	QTreeWidgetItemIterator it(this, QTreeWidgetItemIterator::Selected | QTreeWidgetItemIterator::NotHidden);
 
 	for(; *it; ++it) {
-		SearchListItem* item = static_cast<SearchListItem*>(*it);
-		museeq->downloadFile(item->user(), item->path(), item->size());
+		SearchListItem* item = dynamic_cast<SearchListItem*>(*it);
+		if (item)
+            museeq->downloadFile(item->user(), item->path(), item->size());
 	}
 }
 
@@ -140,9 +141,9 @@ void SearchListView::downloadFilesTo() {
 	if(fd->exec() == QDialog::Accepted){
 		QString localpath = fd->directory().path();
 		for(; *it; ++it) {
-			SearchListItem* item = static_cast<SearchListItem*>(*it);
-			museeq->downloadFileTo(item->user(), item->path(), localpath,  item->size());
-
+			SearchListItem* item = dynamic_cast<SearchListItem*>(*it);
+			if (item)
+                museeq->downloadFileTo(item->user(), item->path(), localpath,  item->size());
 		}
 	}
 	delete fd;
@@ -152,9 +153,9 @@ void SearchListView::downloadFolders() {
 	QMap<QString, QStringList> folders;
 	QTreeWidgetItemIterator it(this, QTreeWidgetItemIterator::Selected | QTreeWidgetItemIterator::NotHidden);
  	for(; *it; ++it) {
- 		SearchListItem* item = static_cast<SearchListItem*>(*it);
+ 		SearchListItem* item = dynamic_cast<SearchListItem*>(*it);
  		QStringList& dirs = folders[item->user()];
- 		if(dirs.indexOf(item->dir()) == -1) {
+ 		if(item && dirs.indexOf(item->dir()) == -1) {
  			QString d = item->dir();
  			if ( "\\" == d.right(1))
  				museeq->downloadFolder(item->user(), d.mid(0, d.length()-1));
@@ -229,8 +230,8 @@ void SearchListView::mouseMoveEvent(QMouseEvent *event)
 	QList<QTreeWidgetItem*> items = selectedItems();
     QList<QTreeWidgetItem*>::const_iterator it = items.begin();
 	for(; it != items.end(); ++it) {
-        SearchListItem * item = static_cast<SearchListItem*>(*it);
- 		if(item->isSelected() && !item->isHidden()) {
+        SearchListItem * item = dynamic_cast<SearchListItem*>(*it);
+ 		if(item && item->isSelected() && !item->isHidden()) {
  			if(users.indexOf(item->user()) == -1)
  				users << item->user();
 
@@ -312,7 +313,10 @@ SearchListItem::SearchListItem(QTreeWidget* parent, quint64 n, const QString& us
 }
 
 bool SearchListItem::operator<(const QTreeWidgetItem & other_) const {
-	const SearchListItem * other = static_cast<const SearchListItem *>(&other_);
+    const SearchListItem * other = dynamic_cast<const SearchListItem*>(&other_);
+    if (!other)
+        return false;
+
 	int col = 0;
 	if(treeWidget())
 	col = treeWidget()->sortColumn();

@@ -294,8 +294,8 @@ void Transfers::setupUsers() {
 	QList<QString> users;
 	QTreeWidgetItemIterator it(mPoppedUpload ? mUploads : mDownloads, QTreeWidgetItemIterator::Selected );
 	for(; *it; ++it) {
-		TransferListItem* item = static_cast<TransferListItem*>(*it);
-		if(!users.contains(item->user()))
+		TransferListItem* item = dynamic_cast<TransferListItem*>(*it);
+		if(item && !users.contains(item->user()))
 		{
 			users << item->user();
 			Usermenu *m = new Usermenu(mUsersMenu);
@@ -326,15 +326,19 @@ QList<QPair<QString, QString> > Transfers::findSelected(TransferListView* l) {
 	QList<QPair<QString, QString> > items;
 	QTreeWidgetItemIterator it(mPoppedUpload ? mUploads : mDownloads, QTreeWidgetItemIterator::Selected | QTreeWidgetItemIterator::NotHidden);
 	for(; *it; ++it) {
-		TransferListItem* item = static_cast<TransferListItem*>(*it);
+		TransferListItem* item = dynamic_cast<TransferListItem*>(*it);
+		if (!item)
+            continue;
+
 		if (!item->path().isEmpty())
             items += QPair<QString, QString>(item->user(), item->path());
         else {
             // We would like to delete a group of transfers
             int numChildren = item->childCount();
             for(int childId = 0; childId < numChildren; childId++) {
-                TransferListItem* child = static_cast<TransferListItem*>(item->child(childId));
-                items += QPair<QString, QString>(child->user(), child->path());
+                TransferListItem* child = dynamic_cast<TransferListItem*>(item->child(childId));
+                if (child)
+                    items += QPair<QString, QString>(child->user(), child->path());
             }
         }
 	}
@@ -381,8 +385,9 @@ void Transfers::retrySelected() {
 	QList<QPair<QString, QPair<QString, qint64> > > items;
 	QTreeWidgetItemIterator it(mPoppedUpload ? mUploads : mDownloads, QTreeWidgetItemIterator::Selected | QTreeWidgetItemIterator::NotHidden);
 	for(; *it; ++it) {
-		TransferListItem* item = static_cast<TransferListItem*>(*it);
-		items += QPair<QString, QPair<QString, qint64> >(item->user(), QPair<QString, qint64>(item->path(), item->size()));
+		TransferListItem* item = dynamic_cast<TransferListItem*>(*it);
+		if (item)
+            items += QPair<QString, QPair<QString, qint64> >(item->user(), QPair<QString, qint64>(item->path(), item->size()));
 	}
 	QList<QPair<QString, QPair<QString, qint64> > >::iterator sit = items.begin();
 	if (mPoppedUpload) {
@@ -401,8 +406,9 @@ void Transfers::updateSelected() {
 	QList<QPair<QString, QString> > items;
 	QTreeWidgetItemIterator it(mDownloads, QTreeWidgetItemIterator::Selected | QTreeWidgetItemIterator::NotHidden);
 	for(; *it; ++it) {
-		TransferListItem* item = static_cast<TransferListItem*>(*it);
-		items += QPair<QString, QString>(item->user(), item->path());
+		TransferListItem* item = dynamic_cast<TransferListItem*>(*it);
+		if (item)
+            items += QPair<QString, QString>(item->user(), item->path());
 	}
 	QList<QPair<QString, QString> >::iterator sit = items.begin();
 	for(; sit != items.end(); ++sit)
@@ -413,8 +419,8 @@ QList<QPair<QString, QString> > Transfers::findByState(TransferListView* l, uint
 	QList<QPair<QString, QString> > items;
 	QTreeWidgetItemIterator it(mPoppedUpload ? mUploads : mDownloads, QTreeWidgetItemIterator::Selectable);
 	for(; *it; ++it) {
-		TransferListItem* item = static_cast<TransferListItem*>(*it);
-		if(item->state() == state)
+		TransferListItem* item = dynamic_cast<TransferListItem*>(*it);
+		if(item && item->state() == state)
 			items += QPair<QString, QString>(item->user(), item->path());
 	}
 	return items;

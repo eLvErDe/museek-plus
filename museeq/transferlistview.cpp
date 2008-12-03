@@ -68,24 +68,26 @@ TransferListView::TransferListView(bool place, QWidget* _p, const char* _n)
 TransferListItem* TransferListView::findTransfer(const QString& _u, const QString& _p) {
 	QTreeWidgetItemIterator it(this);
 	while (*it) {
-		if (((static_cast<TransferListItem *>(*it))->user() == _u) && ((static_cast<TransferListItem *>(*it))->path() == _p))
- 			return static_cast<TransferListItem *>(*it);
+	    TransferListItem * item = dynamic_cast<TransferListItem *>(*it);
+		if (item && (item->user() == _u) && (item->path() == _p))
+ 			return item;
 		++it;
 	}
 
-	return static_cast<TransferListItem *>(0);
+	return NULL;
 }
 
 TransferListItem* TransferListView::findParent(const QString& user) {
 	if (mGroupMode == None)
-		return static_cast<TransferListItem *>(invisibleRootItem());
+		return dynamic_cast<TransferListItem *>(invisibleRootItem());
 
 	TransferListItem * parent = 0;
 	QList<QTreeWidgetItem *> Groups = TransferListView::findItems(user, Qt::MatchExactly, 0);
 	QList<QTreeWidgetItem *>::iterator transfers_it = Groups.begin();
 	for(; transfers_it != Groups.end();  ++transfers_it) {
-		if (static_cast<TransferListItem *>(*transfers_it)->path().isNull()) {
-			parent = static_cast<TransferListItem *>(*transfers_it);
+	    TransferListItem * trans = dynamic_cast<TransferListItem *>(*transfers_it);
+		if (trans && trans->path().isNull()) {
+			parent = trans;
 		}
 	}
 
@@ -113,7 +115,7 @@ void TransferListView::remove(const QString& _u, const QString& _p) {
 	if(item->user() == _u && (mGroupMode != None || item->path() == _p)) {
 		if(mGroupMode == None) {
 			museeq->output("delete item");
-			delete static_cast<QTreeWidgetItem *>(item);
+			delete item;
 		} else {
             delete item;
             TransferListItem* parent = findParent(_u);
@@ -144,7 +146,7 @@ void TransferListView::setGroupMode(GroupMode mode) {
 		items = invisibleRootItem()->takeChildren ();
 		QList<QTreeWidgetItem *>::iterator itx = items.begin();
 		for(; itx != items.end(); ++itx) {
-			if ( ! ( static_cast<TransferListItem *>(*itx))->text(1).isNull())
+			if ( ! ( *itx)->text(1).isNull())
 				invisibleRootItem()->addChild(*itx);
 			else {
 				subitems = (*itx)->takeChildren();
@@ -163,13 +165,16 @@ void TransferListView::setGroupMode(GroupMode mode) {
 
 		QList<QTreeWidgetItem *>::iterator itx = items.begin();
 		for(; itx != items.end(); ++itx) {
-			if ( (static_cast<TransferListItem *>(*itx))->text(1).isNull())
+			if ( (*itx)->text(1).isNull())
 				invisibleRootItem()->addChild(*itx);
 		}
 		itx = items.begin();
 		for(; itx != items.end(); ++itx) {
-			if (! (static_cast<TransferListItem *>(*itx))->text(1).isNull())
-				findParent((static_cast<TransferListItem *>(*itx))->user())->addChild(*itx);
+			if (! (*itx)->text(1).isNull()) {
+			    TransferListItem *itxx = dynamic_cast<TransferListItem *>(*itx);
+			    if (itxx)
+                    findParent(itxx->user())->addChild(*itx);
+			}
 		}
 
 		updateParentsStats();
@@ -185,7 +190,9 @@ void TransferListView::updateParentsStats() {
 	int topit = 0;
 
 	for(; topit < topLevelItemCount(); topit++) {
-		static_cast<TransferListItem *>(topLevelItem(topit))->updateStats();
+	    TransferListItem * top = dynamic_cast<TransferListItem *>(topLevelItem(topit));
+		if (top)
+            top->updateStats();
 	}
 }
 
@@ -247,7 +254,9 @@ void TransferListView::mouseMoveEvent(QMouseEvent *event)
 	QList<QTreeWidgetItem*> items = selectedItems();
     QList<QTreeWidgetItem*>::const_iterator it = items.begin();
 	for(; it != items.end(); ++it) {
-	    TransferListItem * item = static_cast<TransferListItem*>(*it);
+	    TransferListItem * item = dynamic_cast<TransferListItem*>(*it);
+	    if (!item)
+            continue;
 
         if(users.indexOf(item->user()) == -1)
             users << item->user();

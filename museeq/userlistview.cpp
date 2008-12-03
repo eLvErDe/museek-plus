@@ -82,7 +82,7 @@ void UserListView::sorting(bool sort) {
 UserListItem* UserListView::findItem(const QString& _u) {
 	QList<QTreeWidgetItem *> items = findItems(_u, Qt::MatchExactly, 1);
 	if (!items.isEmpty())
-    	return static_cast<UserListItem *>(items.at(0));
+    	return dynamic_cast<UserListItem *>(items.at(0));
     else
         return NULL;
 }
@@ -177,7 +177,7 @@ void UserListView::slotActivate(QTreeWidgetItem* item, int column) {
 	slotActivate( item);
 }
 void UserListView::slotActivate(QTreeWidgetItem* item) {
-	UserListItem* _item = static_cast<UserListItem*>(item);
+	UserListItem* _item = dynamic_cast<UserListItem*>(item);
 	if(! _item)
 		return;
 	emit activated(_item->user());
@@ -257,7 +257,9 @@ void UserListView::mouseMoveEvent(QMouseEvent *event)
 	    // So we put username as hostname for compatibility, and as username to have the correct case.
 	    // Ex: slsk://MuSeEk@museek/path/to/a/file
 	    // Code should first look at QUrl::userName() and if not present, try QUrl::host()
-	    UserListItem * item = static_cast<UserListItem*>(*it);
+	    UserListItem * item = dynamic_cast<UserListItem*>(*it);
+	    if (!item)
+            continue;
 	    QUrl url("slsk://" + item->user());
 	    url.setUserName(item->user());
 
@@ -284,7 +286,9 @@ void UserListView::mouseMoveEvent(QMouseEvent *event)
     if(items.count() < 6) {
 		QSize dest(0, 0);
 		for(it = items.begin(); it != items.end(); ++it) {
-            UserListItem * item = static_cast<UserListItem*>(*it);
+            UserListItem * item = dynamic_cast<UserListItem*>(*it);
+            if (!item)
+                continue;
 
 			QSize textSize = viewport()->fontMetrics().size(Qt::TextSingleLine, item->user());
 
@@ -307,7 +311,9 @@ void UserListView::mouseMoveEvent(QMouseEvent *event)
 
 		int y = 2;
 		for(it = items.begin(); it != items.end(); ++it) {
-            UserListItem * item = static_cast<UserListItem*>(*it);
+            UserListItem * item = dynamic_cast<UserListItem*>(*it);
+            if (!item)
+                continue;
 
 			const QPixmap icon = item->icon(0).pixmap(50, 50);
 			p.drawPixmap(3, y + ((dest.height() - icon.height()) / 2), icon);
@@ -369,8 +375,9 @@ void UserListView::slotContextMenu(const QPoint& pos) {
 	}
 	mUsermenu->exec(item->text(1), mapToGlobal(pos));
 }
+
 void UserListView::slotContextMenu(QTreeWidgetItem* item, const QPoint& pos, int) {
-	if(! item)
-		return;
-	mUsermenu->exec((static_cast<UserListItem *>(item))->user(), pos);
+    UserListItem * _item = dynamic_cast<UserListItem *>(item);
+	if(_item)
+        mUsermenu->exec(_item->user(), pos);
 }
