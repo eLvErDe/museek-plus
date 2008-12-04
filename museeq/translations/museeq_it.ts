@@ -606,11 +606,6 @@
     </message>
     <message>
         <location filename="../mainwin.cpp" line="445"/>
-        <source>No Config for Museek Daemon selected, giving up...</source>
-        <translation type="obsolete">Nessuna configurazione per Museekd, terminato...</translation>
-    </message>
-    <message>
-        <location filename="../mainwin.cpp" line="445"/>
         <source>Museek Daemon is already running...</source>
         <translation>Museekd è già avviato...</translation>
     </message>
