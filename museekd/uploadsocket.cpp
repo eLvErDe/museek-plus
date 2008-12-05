@@ -91,6 +91,9 @@ Museek::UploadSocket::send(const unsigned char * data, size_t n)
 void
 Museek::UploadSocket::wait()
 {
+    if (m_DataTimeout.isValid())
+        museekd()->reactor()->removeTimeout(m_DataTimeout);
+
     m_DataTimeout = museekd()->reactor()->addTimeout(120000, this, &UploadSocket::dataTimeout);
 
     // Wait for an incoming connection (via TicketSocket).
@@ -125,6 +128,12 @@ void Museek::UploadSocket::sendTicket() {
     {
       buf[i] = (ticket >> (i * 8)) & 0xff;
     }
+
+
+    if (m_DataTimeout.isValid())
+        museekd()->reactor()->removeTimeout(m_DataTimeout);
+
+    m_DataTimeout = museekd()->reactor()->addTimeout(60000, this, &UploadSocket::dataTimeout);
 
     send((const unsigned char *) &buf, 4);
     m_Upload->setState(TS_Waiting);

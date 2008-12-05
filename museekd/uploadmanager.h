@@ -96,6 +96,8 @@ namespace Museek
     NewNet::Event<TicketSocket *> transferTicketReceivedEvent;
 
   private:
+    void replyTimeout(long);
+
     NewNet::WeakRefPtr<Museekd>         m_Museekd; // Ref to the museekd
 
     std::ifstream *                     m_File; // The file we need to send
@@ -119,6 +121,8 @@ namespace Museek
 	uint                                m_Collected; // How many data has been sent since m_CollectStart ?
 
 	bool                                m_CaseProblem; // If this is true, the peer is waiting for a lowercase path
+
+    NewNet::WeakRefPtr<NewNet::Event<long>::Callback> m_WaitingTimeout;
   };
 
   /* The upload manager manages .. uploads. */

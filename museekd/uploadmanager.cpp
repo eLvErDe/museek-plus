@@ -166,8 +166,11 @@ Museek::Upload::setSocket(UploadSocket * socket)
 
 	m_CollectStart.tv_sec = m_CollectStart.tv_usec = 0;
 
-    if (socket)
+    if (socket) {
         socket->setUpRateLimiter(museekd()->uploads()->limiter());
+        if (m_WaitingTimeout.isValid())
+            museekd()->reactor()->removeTimeout(m_WaitingTimeout);
+    }
 }
 
 /**
@@ -320,6 +323,11 @@ void Museek::Upload::initiate(PeerSocket * socket) {
 		return;
 	}
 
+    if (m_WaitingTimeout.isValid())
+        museekd()->reactor()->removeTimeout(m_WaitingTimeout);
+
+    m_WaitingTimeout = museekd()->reactor()->addTimeout(60000, this, &Upload::replyTimeout);
+
 	setState(TS_Waiting);
 
 	m_Ticket = m_Museekd->token();
@@ -337,6 +345,17 @@ void Museek::Upload::initiate(PeerSocket * socket) {
         socket->sendMessage(msg.make_network_packet());
 	}
 }
+
+/**
+  * Called when we didn't get the transfer reply
+  */
+void
+Museek::Upload::replyTimeout(long) {
+    NNLOG("museekd.up.debug", "No transfer reply for uploading.");
+    setSocket(0);
+    setState(TS_CannotConnect);
+}
+
 
 
 Museek::UploadManager::UploadManager(Museekd * museekd) : m_Museekd(museekd)
