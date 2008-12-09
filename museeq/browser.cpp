@@ -504,7 +504,7 @@ void FolderListView::show(const QStringList& p)
 		position = 0;
 		FolderListItem* i;
 		if(item == 0)
-			item = dynamic_cast<FolderListItem*>(invisibleRootItem ());
+			item = static_cast<FolderListItem*>(invisibleRootItem ());
 
 		i = dynamic_cast<FolderListItem*>(item->child(position));
 
