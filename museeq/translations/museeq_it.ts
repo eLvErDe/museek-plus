@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="1.1" language="it">
+<defaultcodec></defaultcodec>
 <context>
     <name>BanList</name>
     <message>
@@ -225,12 +226,12 @@
     <message>
         <location filename="../browser.cpp" line="600"/>
         <source>Download files</source>
-        <translation>Scarica files</translation>
+        <translation>Scarica file</translation>
     </message>
     <message>
         <location filename="../browser.cpp" line="608"/>
         <source>Upload files</source>
-        <translation>Invia files</translation>
+        <translation>Invia file</translation>
     </message>
     <message>
         <location filename="../browser.cpp" line="614"/>
@@ -255,7 +256,7 @@
     <message>
         <location filename="../browser.cpp" line="772"/>
         <source>Select a Directory for current download(s)</source>
-        <translation>Seleziona una cartella per i download correnti</translation>
+        <translation>Seleziona una cartella per gli scaricamenti correnti</translation>
     </message>
     <message numerus="yes">
         <location filename="../browser.cpp" line="697"/>
@@ -296,7 +297,7 @@
     <message>
         <location filename="../browser.cpp" line="391"/>
         <source>Select a Directory for current download(s)</source>
-        <translation>Seleziona una cartella per i download correnti</translation>
+        <translation>Seleziona una cartella per gli scaricamenti correnti</translation>
     </message>
     <message>
         <location filename="../browser.cpp" line="414"/>
@@ -692,7 +693,7 @@
     <message>
         <location filename="../mainwin.cpp" line="921"/>
         <source>Offline</source>
-        <translation>Offline</translation>
+        <translation>Non in linea</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="1110"/>
@@ -970,7 +971,7 @@
     <message>
         <location filename="../onlinealert.cpp" line="66"/>
         <source>Online alert</source>
-        <translation>Avvertimento online</translation>
+        <translation>Avvertimento in linea</translation>
     </message>
     <message>
         <location filename="../onlinealert.cpp" line="68"/>
@@ -985,7 +986,7 @@
     <message>
         <location filename="../onlinealert.cpp" line="84"/>
         <source>offline</source>
-        <translation>offline</translation>
+        <translation>non in linea</translation>
     </message>
     <message>
         <location filename="../onlinealert.cpp" line="84"/>
@@ -995,7 +996,7 @@
     <message>
         <location filename="../onlinealert.cpp" line="84"/>
         <source>online</source>
-        <translation>online</translation>
+        <translation>in linea</translation>
     </message>
     <message>
         <location filename="../onlinealert.cpp" line="86"/>
@@ -1008,7 +1009,7 @@
     <message>
         <location filename="../privatechat.cpp" line="58"/>
         <source>%1 is offline</source>
-        <translation>%1 è offline</translation>
+        <translation>%1 non è in linea</translation>
     </message>
     <message>
         <location filename="../privatechat.cpp" line="60"/>
@@ -1018,7 +1019,7 @@
     <message>
         <location filename="../privatechat.cpp" line="62"/>
         <source>%1 is online</source>
-        <translation>%1 è online</translation>
+        <translation>%1 è in linea</translation>
     </message>
 </context>
 <context>
@@ -1315,7 +1316,7 @@
     <message>
         <location filename="../searchlistview.cpp" line="139"/>
         <source>Select a Directory for current download(s)</source>
-        <translation>Seleziona una cartella per i download correnti</translation>
+        <translation>Seleziona una cartella per gli scaricamenti correnti</translation>
     </message>
     <message>
         <location filename="../searchlistview.cpp" line="308"/>
@@ -1487,7 +1488,7 @@
     <message>
         <location filename="../settingsdialog.cpp" line="1205"/>
         <source>Download Dir:</source>
-        <translation>Cartella download:</translation>
+        <translation>Cartella scaricamenti:</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1207"/>
@@ -1502,7 +1503,7 @@
     <message>
         <location filename="../settingsdialog.cpp" line="1211"/>
         <source>Online Alerts in Log Window instead of popup</source>
-        <translation>Avvertimenti online nella finestra log invece che popup</translation>
+        <translation>Avvertimenti in linea nella finestra log invece che popup</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1212"/>
@@ -1517,7 +1518,7 @@
     <message>
         <location filename="../settingsdialog.cpp" line="1214"/>
         <source>Seperate Shares list for Buddies</source>
-        <translation>Lista share separata per gli Amici</translation>
+        <translation>Lista condivisi separata per gli Amici</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1215"/>
@@ -1532,7 +1533,7 @@
     <message>
         <location filename="../settingsdialog.cpp" line="936"/>
         <source>Select a Directory to store your downloaded files.</source>
-        <translation>Seleziona una cartella per i tuoi download.</translation>
+        <translation>Seleziona una cartella per i tuoi scaricamenti.</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="980"/>
@@ -1542,7 +1543,7 @@
     <message>
         <location filename="../settingsdialog.cpp" line="965"/>
         <source>Select a Directory to store your incomplete downloading files.</source>
-        <translation>Seleziona una cartella per i tuoi download incompleti.</translation>
+        <translation>Seleziona una cartella per i tuoi scaricamenti incompleti.</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1216"/>
@@ -1597,7 +1598,7 @@
     <message>
         <location filename="../settingsdialog.cpp" line="726"/>
         <source>Select a Directory to write Chat Room log files.</source>
-        <translation>Seleziona una cartella per scrivere i log delle Stanze Chat.</translation>
+        <translation>Seleziona una Cartella per scrivere i log delle Stanze Chat.</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="772"/>
@@ -2017,7 +2018,7 @@
     <message>
         <location filename="../transfers.cpp" line="56"/>
         <source>Downloads:</source>
-        <translation>Downloads:</translation>
+        <translation>Scaricamenti:</translation>
     </message>
     <message>
         <location filename="../transfers.cpp" line="132"/>
@@ -2052,7 +2053,7 @@
     <message>
         <location filename="../transfers.cpp" line="171"/>
         <source>Offline</source>
-        <translation>Offline</translation>
+        <translation>Non in linea</translation>
     </message>
     <message>
         <location filename="../transfers.cpp" line="175"/>
@@ -2082,7 +2083,7 @@
     <message>
         <location filename="../transfers.cpp" line="103"/>
         <source>Uploads:</source>
-        <translation>Uploads:</translation>
+        <translation>Invii:</translation>
     </message>
     <message>
         <location filename="../transfers.cpp" line="122"/>
@@ -2092,7 +2093,7 @@
     <message>
         <location filename="../transfers.cpp" line="151"/>
         <source>Check Place</source>
-        <translation>Controlla Posto</translation>
+        <translation>Controlla Posizione</translation>
     </message>
     <message>
         <location filename="../transfers.cpp" line="110"/>
@@ -2133,7 +2134,7 @@
     <message>
         <location filename="../userinfo.cpp" line="121"/>
         <source>Uploads allowed</source>
-        <translation>Upload permessi</translation>
+        <translation>Invii permessi</translation>
     </message>
     <message>
         <location filename="../userinfo.cpp" line="132"/>
@@ -2201,7 +2202,7 @@
     <message>
         <location filename="../userlistview.cpp" line="48"/>
         <source>Files</source>
-        <translation>Files</translation>
+        <translation>File</translation>
     </message>
     <message>
         <location filename="../userlistview.cpp" line="50"/>
