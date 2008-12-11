@@ -59,9 +59,11 @@ namespace Museek
     void onCannotConnectActive(NewNet::ClientSocket * socket);
     void onFirewallPierceTimedOut(long);
     void onDisconnected(NewNet::ClientSocket * socket);
+    void onConnected(NewNet::ClientSocket * socket);
 
     NewNet::WeakRefPtr<NewNet::Event<long>::Callback> m_PingTimeout;
     NewNet::WeakRefPtr<NewNet::Event<long>::Callback> m_DisconnectNowTimeout;
+    NewNet::WeakRefPtr<NewNet::Event<long>::Callback> m_DataTimeout;
   };
 }
 

@@ -38,6 +38,7 @@ Museek::DistributedSocket::DistributedSocket(Museek::HandshakeSocket * that) : M
     childDepthReceivedEvent.connect(this, &DistributedSocket::onChildDepthReceived);
     searchRequestedEvent.connect(this, &DistributedSocket::onSearchRequested);
     disconnectedEvent.connect(this, &DistributedSocket::onDisconnected);
+    connectedEvent.connect(this, &DistributedSocket::onConnected);
 }
 
 Museek::DistributedSocket::DistributedSocket(Museek::Museekd * museekd) : Museek::UserSocket(museekd, "D"), Museek::MessageProcessor(1)
@@ -49,12 +50,17 @@ Museek::DistributedSocket::DistributedSocket(Museek::Museekd * museekd) : Museek
     childDepthReceivedEvent.connect(this, &DistributedSocket::onChildDepthReceived);
     searchRequestedEvent.connect(this, &DistributedSocket::onSearchRequested);
     disconnectedEvent.connect(this, &DistributedSocket::onDisconnected);
+    connectedEvent.connect(this, &DistributedSocket::onConnected);
 }
 
 Museek::DistributedSocket::~DistributedSocket()
 {
     if (m_DisconnectNowTimeout.isValid())
         museekd()->reactor()->removeTimeout(m_DisconnectNowTimeout);
+
+    if (m_DataTimeout.isValid())
+        museekd()->reactor()->removeTimeout(m_DataTimeout);
+
     NNLOG("museekd.distrib.debug", "DistributedSocket destroyed");
 }
 
@@ -97,6 +103,15 @@ Museek::DistributedSocket::ping(long) {
     DPing msg;
     sendMessage(msg.make_network_packet());
     m_PingTimeout = museekd()->reactor()->addTimeout(60000, this, &DistributedSocket::ping);
+}
+
+void
+Museek::DistributedSocket::onConnected(NewNet::ClientSocket * socket) {
+    // Check that the peer sends us something (if not, it's probably a child who has found another parent)
+    if (m_DataTimeout.isValid())
+        museekd()->reactor()->removeTimeout(m_DataTimeout);
+
+    m_DataTimeout = museekd()->reactor()->addTimeout(60000, this, &DistributedSocket::onDisconnectNow);
 }
 
 void
@@ -148,6 +163,9 @@ void Museek::DistributedSocket::onSearchRequested(const DSearchRequest * msg) {
 void
 Museek::DistributedSocket::onMessageReceived(const MessageData * data)
 {
+    if (m_DataTimeout.isValid())
+        museekd()->reactor()->removeTimeout(m_DataTimeout);
+
   switch(data->type)
   {
     #define MAP_MESSAGE(ID, TYPE, EVENT) \

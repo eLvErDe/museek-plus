@@ -440,7 +440,10 @@ void MainWindow::doDaemon() {
 			arguments.append("--config");
 			arguments.append(museekConfig);
 		}
-        daemon->start("museekd", arguments);
+
+        // FIXME This will launch museekd as a child process of museeq. So when closing museeq, museekd will be closed too.
+        // We could use QProcess::startDetached() instead but this is a static method (no more started/finished/error signals emitted).
+		daemon->start("museekd", arguments);
 	} else {
 		messageLabel->setText(tr("Museek Daemon is already running..."));
 	}

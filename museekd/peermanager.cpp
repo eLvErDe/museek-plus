@@ -233,9 +233,12 @@ Museek::PeerManager::onTooManySockets(int) {
   */
 void
 Museek::PeerManager::onNotTooManySockets(int) {
+    NNLOG("museekd.peers.warn", "Some sockets were freed. Listening again.");
     museekd()->ifaces()->sendStatusMessage(true, std::string("Some sockets were freed. Listening again. Museek should now work perfectly."));
     m_AllowConnections = true;
     listen();
+    museekd()->uploads()->checkUploads();
+    museekd()->downloads()->checkDownloads();
 }
 
 /**

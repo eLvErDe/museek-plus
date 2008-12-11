@@ -164,9 +164,11 @@ SERVERMESSAGE(SSayRoom, 13)
 END
 
 SERVERMESSAGE(SJoinRoom, 14)
-	SJoinRoom(const std::string& r = "") : room(r) {};
+	SJoinRoom(const std::string& r = "", bool p = false) : room(r), isPrivate(p) {};
 	MAKE
 		pack(room);
+		if (isPrivate)
+            pack(isPrivate);
 	END_MAKE
 
 	PARSE
@@ -200,6 +202,7 @@ SERVERMESSAGE(SJoinRoom, 14)
 	END_PARSE
 
 	std::string room;
+	bool isPrivate;
 	RoomData users;
 END
 
