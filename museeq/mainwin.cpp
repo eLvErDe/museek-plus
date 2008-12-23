@@ -621,10 +621,7 @@ void MainWindow::connectToMuseek() {
  	if (launchMuseekDaemon)	 {
 		mConnectDialog->mAutoStartDaemon->setChecked(true);
 		mConnectDialog->mMuseekConfig->show();
-		if (! museekConfig.isEmpty()) {
-			doDaemon();
-		}
-
+        doDaemon();
 	} else  {
 		mConnectDialog->mAutoStartDaemon->setChecked(false);
 	}
