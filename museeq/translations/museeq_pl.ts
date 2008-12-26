@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="1.1" language="pl">
+<defaultcodec></defaultcodec>
 <context>
     <name>BanList</name>
     <message>
@@ -1201,7 +1202,7 @@
     <message>
         <location filename="../search.cpp" line="40"/>
         <source>Stop search</source>
-        <translation type="unfinished"></translation>
+        <translation>Zatrzymaj przeszukiwanie</translation>
     </message>
 </context>
 <context>
