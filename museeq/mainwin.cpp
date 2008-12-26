@@ -560,6 +560,8 @@ void MainWindow::saveConnectConfig() {
     bool autoConnect = mConnectDialog->mAutoConnect->isChecked();
 	museeq->settings()->setValue("AutoConnect", autoConnect);
 
+    ActionToggleAutoConnect->setChecked(autoConnect);
+
 	if ( ! mConnectDialog->mMuseekConfig->text().isEmpty() )
 		museeq->settings()->setValue("MuseekConfigFile", mConnectDialog->mMuseekConfig->text() );
 	else
@@ -664,6 +666,7 @@ void MainWindow::connectToMuseek() {
 	bool autoConnect = museeq->settings()->value("AutoConnect").toBool();
 	if (autoConnect) {
 		mConnectDialog->mAutoConnect->setChecked(true);
+		ActionToggleAutoConnect->setChecked(true);
 		if (savePassword  and (! password.isEmpty()) ) {
             autoConnectServer = cServer;
             autoConnectPassword = password;
@@ -672,6 +675,7 @@ void MainWindow::connectToMuseek() {
 		}
 	} else {
 		mConnectDialog->mAutoConnect->setChecked(false);
+		ActionToggleAutoConnect->setChecked(false);
 	}
 
 	if(mConnectDialog->exec() == QDialog::Accepted) {
@@ -679,8 +683,6 @@ void MainWindow::connectToMuseek() {
 			password = mConnectDialog->mPassword->text();
 		saveConnectConfig();
 		connectToMuseekPS(server, password);
-
-
 	} else {
 		ActionConnect->setEnabled(true);
 	}
