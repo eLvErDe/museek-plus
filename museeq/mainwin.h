@@ -140,6 +140,8 @@ private slots:
 	void slotAddressActivated(const QString&);
 	void slotAddressChanged(const QString&);
 
+	void doAutoConnect();
+
 protected slots:
 	void changePage(QListWidgetItem*, QListWidgetItem*);
 
@@ -172,6 +174,7 @@ private:
 	int mMoves;
 	QPoint mLastPos;
 	QSize mLastSize;
+	QString autoConnectServer, autoConnectPassword;
 };
 
 #endif // MAINWINDOW_H

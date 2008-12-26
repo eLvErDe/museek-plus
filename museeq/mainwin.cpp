@@ -60,6 +60,7 @@
 #include <QCloseEvent>
 #include <QDateTime>
 #include <QSettings>
+#include <QTimer>
 
 #define _TIME QString("<span style='"+museeq->mFontTime+";color:"+museeq->mColorTime+"'>") + QDateTime::currentDateTime().toString("hh:mm:ss") + "</span> "
 
@@ -664,7 +665,9 @@ void MainWindow::connectToMuseek() {
 	if (autoConnect) {
 		mConnectDialog->mAutoConnect->setChecked(true);
 		if (savePassword  and (! password.isEmpty()) ) {
-			connectToMuseekPS(cServer, password);
+            autoConnectServer = cServer;
+            autoConnectPassword = password;
+			QTimer::singleShot(2000, this, SLOT(doAutoConnect()));
 			return;
 		}
 	} else {
@@ -682,6 +685,13 @@ void MainWindow::connectToMuseek() {
 		ActionConnect->setEnabled(true);
 	}
 }
+
+void MainWindow::doAutoConnect() {
+    if (!autoConnectServer.isEmpty()) {
+        connectToMuseekPS(autoConnectServer, autoConnectPassword);
+    }
+}
+
 void MainWindow::connectToMuseekPS(const QString& server, const QString& password) {
 	ActionDisconnect->setEnabled(true);
 	if(mConnectDialog->mTCP->isChecked()) {

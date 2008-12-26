@@ -37,7 +37,7 @@ Search::Search(const QString& query, QWidget* parent, const char* name)
 	MainLayout->addLayout(ButtonLayout);
 	mShowFilters = new QCheckBox(tr("Enable filters"), this);
 	ButtonLayout->addWidget(mShowFilters);
-	QPushButton* mIgnore = new QPushButton(tr("Ignore"), this);
+	QPushButton* mIgnore = new QPushButton(tr("Stop search"), this);
 	ButtonLayout->addWidget(mIgnore);
 
 	mFilters = new SearchFilter(this);
