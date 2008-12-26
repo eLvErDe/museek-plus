@@ -123,8 +123,8 @@ Museek::PeerManager::peerSocket(const std::string & user, bool force) {
         int maxSocket = museekd()->reactor()->maxSocketNo();
         int currentSockets = museekd()->reactor()->currentSocketNo();
 
-        if (!force && (maxSocket > 100) && (FD_SETSIZE > 200) && ((currentSockets > (maxSocket - static_cast<int>(maxSocket*0.2))) || (museekd()->reactor()->maxFileDescriptor() > FD_SETSIZE - 200))) {
-            NNLOG("museekd.peers.warn", "Too many opened peer socket, cannot open a new one");
+        if (!force && (maxSocket > 100) && ((currentSockets > (maxSocket - static_cast<int>(maxSocket*0.5))) || (museekd()->reactor()->maxFileDescriptor() > FD_SETSIZE - 500))) {
+            NNLOG("museekd.peers.warn", "Too many opened peer socket, cannot open a new one with low priority");
             peerSocketUnavailableEvent(user);
             return;
         }
