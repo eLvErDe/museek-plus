@@ -42,6 +42,7 @@
 #include <QFileDialog>
 #include <QDir>
 #include <QCloseEvent>
+#include <QSettings>
 
 SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Qt::WFlags fl )
     : QDialog( parent ), mSharesDirty(false)
@@ -546,7 +547,7 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Q
 	// signals and slots connections
 	connect( mOK, SIGNAL( clicked() ), this, SLOT( acceptSettings() ) );
 	connect( mSave, SIGNAL( clicked() ), this, SLOT( save() ) );
-	connect( mCancel, SIGNAL( clicked() ), this, SLOT( hide() ) );
+	connect( mCancel, SIGNAL( clicked() ), this, SLOT( rejectSettings() ) );
 	connect( SConnect, SIGNAL( clicked() ), this, SLOT( SConnect_clicked() ) );
 	connect( SDisconnect, SIGNAL( clicked() ), this, SLOT( SDisconnect_clicked() ) );
 	connect( SDownloadButton, SIGNAL( clicked() ), this, SLOT( SDownload_clicked() ) );
@@ -588,8 +589,55 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Q
 
 }
 
+void SettingsDialog::loadSettings() {
+    // museekd settings
+    SServerHost->setText(museeq->config("server", "host"));
+    SSoulseekUsername->setText(museeq->config("server", "username"));
+    SSoulseekPassword->setText(museeq->config("server", "password"));
+    SServerPort->setValue(museeq->config("server", "port").toInt());
+	SDownDir->setText(museeq->config("transfers", "download-dir"));
+    SIncompleteDir->setText(museeq->config("transfers", "incomplete-dir"));
+	mInfoText->setText(museeq->config("userinfo", "text"));
+    CPortStart->setValue(museeq->config("clients.bind", "first").toInt());
+    CPortEnd->setValue(museeq->config("clients.bind", "last").toInt());
+    SConfigFile->setText(QString (museeq->config("shares", "database")).replace(".shares", ".xml"));
+    NormalSharesRefresh();
+    BuddySharesRefresh();
+
+    SBuddiesShares->setChecked(museeq->config("transfers", "have_buddy_shares") == "true");
+    SShareBuddiesOnly->setChecked(museeq->config("transfers", "only_buddies") == "true");
+    SBuddiesPrivileged->setChecked(museeq->config("transfers", "privilege_buddies") == "true");
+    STrustedUsers->setChecked(museeq->config("transfers", "trusting_uploads") == "true");
+    SUserWarnings->setChecked(museeq->config("transfers", "user_warnings") == "true");
+    SActive->setChecked(museeq->config("clients", "connectmode") == "active");
+
+    // museeq settings
+	IconsAlignment->setChecked(museeq->settings()->value("VerticalIconBox").toBool());
+	SMessageFont->setText(museeq->mFontMessage);
+	STimeFont->setText(museeq->mFontTime);
+	STimeText->setText(museeq->mColorTime);
+	SRemoteText->setText(museeq->mColorRemote);
+	SMeText->setText(museeq->mColorMe);
+	SNicknameText->setText(museeq->mColorNickname);
+	SBuddiedText->setText(museeq->mColorBuddied);
+	SBannedText->setText(museeq->mColorBanned);
+	STrustedText->setText(museeq->mColorTrusted);
+	LoggingRoomDir->setText(museeq->mRoomLogDir);
+	LoggingPrivateDir->setText(museeq->mPrivateLogDir);
+	LoggingPrivate->setChecked(museeq->mLogPrivate);
+	LoggingRooms->setChecked(museeq->mLogRooms);
+	SOnlineAlerts->setChecked(museeq->mOnlineAlert);
+	SIPLog->setChecked(museeq->mIPLog);
+	TickerLength->setValue(museeq->mTickerLength);
+}
+
 void SettingsDialog::acceptSettings() {
     save();
+    hide();
+}
+
+void SettingsDialog::rejectSettings() {
+    loadSettings();
     hide();
 }
 
@@ -1222,6 +1270,6 @@ void SettingsDialog::languageChange()
 }
 
 void SettingsDialog::closeEvent(QCloseEvent * ev) {
-    hide();
+    rejectSettings();
     ev->ignore();
 }

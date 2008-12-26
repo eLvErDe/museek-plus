@@ -83,7 +83,6 @@ public:
 	QLineEdit* LoggingPrivateDir, * LoggingRoomDir;
 
 	QTextEdit* mInfoText;
-// 	QButtonGroup* buttonGroup1;
 	QRadioButton* mClear;
 	QRadioButton* mDontTouch;
 	QLineEdit* mImage;
@@ -91,7 +90,6 @@ public:
 	QPushButton* mBrowse;
 
 	QSpinBox* SServerPort;
-// 	QButtonGroup* buttonGroup2;
 	QRadioButton* SActive;
 	QRadioButton* SPassive;
 	QLineEdit* SSoulseekPassword;
@@ -144,6 +142,8 @@ public slots:
 	void PrivateDirSelect();
 	void RoomDirSelect();
 
+    void loadSettings();
+
 	virtual void color_text_me();
 	virtual void color_text_buddied();
 	virtual void color_text_nickname();
@@ -175,6 +175,7 @@ protected slots:
 	void finishedNormal(int, QProcess::ExitStatus);
 	void finishedBuddy(int, QProcess::ExitStatus);
 	void acceptSettings();
+	void rejectSettings();
 
 protected:
 	void closeEvent(QCloseEvent *);
