@@ -993,12 +993,12 @@
         <translation>Kon afbeeldingbestand niet openen om te lezen</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1192"/>
+        <location filename="../mainwin.cpp" line="1190"/>
         <source>About Museeq</source>
         <translation>Over Museeq</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1205"/>
+        <location filename="../mainwin.cpp" line="1203"/>
         <source>&lt;p align=&quot;center&quot;&gt;Museeq </source>
         <translation>&lt;p align=&quot;center&quot;&gt;Museeq </translation>
     </message>
@@ -1008,22 +1008,22 @@
         <translation type="obsolete"> is een GUI voor de Museek-daemon&lt;/p&gt;De programma&apos;s, museeq, museekd en muscan, zijn gemaakt door Hyriand 2003-2005&lt;br&gt;&lt;br&gt;Sinds 2006 zijn er door Daelstorm en SeeSchloss toevoegingen gemaakt.&lt;br&gt;Dit project wordt vrijgegeven onder de GPL-licentie.&lt;br&gt;Code en ideeën overgenomen van andere open source projecten en mensen worden in het CREDITS-bestand genoemd, deze is bijgevoegd in de broncode-tarball.</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1223"/>
+        <location filename="../mainwin.cpp" line="1221"/>
         <source>Museeq Commands</source>
         <translation>Museeq commando&apos;s</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1223"/>
+        <location filename="../mainwin.cpp" line="1221"/>
         <source>&lt;h3&gt;While in a chat window, such as a Chat Room, or a Private Chat, there are a number of commands available for use.&lt;/h3&gt;&lt;b&gt;/c /chat&lt;/b&gt;   &lt;i&gt;(Switch to Chat Rooms)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/pm /private&lt;/b&gt; &amp;lt;nothing | username&amp;gt;  &lt;i&gt;(Switch to Private Chat and start chatting with a user, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/transfers&lt;/b&gt;   &lt;i&gt;(Switch to Transfers)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/s /search&lt;/b&gt; &amp;lt;nothing | query&gt;   &lt;i&gt;(Switch to Searchs and start a Search with &amp;lt;query&amp;gt; if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/u /userinfo&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Switch to userinfo, and attempt to get a user&apos;s info, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/b /browse&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Switch to Browse and initate browsing a user, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ip&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Get the IP of a user)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/log&lt;/b&gt;    &lt;i&gt;(Toggle displaying the Special Message Log)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/t /ticker /tickers&lt;/b&gt;   &lt;i&gt;(Toggle the showing of Tickers)&lt;/i&gt; &lt;br&gt;&lt;b&gt;/f /fonts /c /colors&lt;/b&gt;   &lt;i&gt;(Open the Fonts and Colors settings dialog)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ban /unban&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Disallow/Allow a user to recieve your shares and download from you)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ignore /unignore&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Block/Unblock chat messages from a user)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/buddy /unbuddy&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Add/Remove a user to keep track of it and add comments about it)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/trust /distrust&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Add/Remove a user to the optional list of users who can send files to you)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/me&lt;/b&gt; &lt;does something&gt;    &lt;i&gt;(Say something in the Third-Person)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/slap&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Typical Trout-slapping)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/j /join&lt;/b&gt; &amp;lt;room&amp;gt;    &lt;i&gt;(Join a Chat Room)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/l /p /leave /part&lt;/b&gt; &amp;lt;nothing | room&amp;gt;    &lt;i&gt;(Leave the current room or inputed room)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/about /help /commands&lt;/b&gt;    &lt;i&gt;(Display information)&lt;/i&gt;&lt;br&gt;&lt;br&gt;Do not type the brackets, they are there only to make clear that something (or nothing) can be typed after the /command.</source>
         <translation>&lt;h3&gt;Op het moment dat u in een chatvenster zit, zoals in een chatroom of een privéchat, staan er u een aantal commando&apos;s ter beschikking&lt;/h3&gt;&lt;b&gt;/c /chat&lt;/b&gt;   &lt;i&gt;(Omschakelen naar chatrooms)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/pm /private&lt;/b&gt; &amp;lt;niets | gebruikersnaam&amp;gt;  &lt;i&gt;(Omschakelen naar privéchat en begin met een gebruiker te chatten, indien opgegeven)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/transfers&lt;/b&gt;   &lt;i&gt;(Omschakelen naar overdrachten)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/s /search&lt;/b&gt; &amp;lt;niets | query&gt;   &lt;i&gt;(Omschakelen naar de zoekopdrachten en begin een zoekopdracht met  and start a Search with &amp;lt;query&amp;gt; indien opgegeven)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/u /userinfo&lt;/b&gt; &amp;lt;gebruikersnaam&amp;gt;   &lt;i&gt;(Omschakelen naar gebruikersinfo, en probeer de info van een gebruiker op te halen, indien opgegeven)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/b /browse&lt;/b&gt; &amp;lt;gebruikersnaam&amp;gt;    &lt;i&gt;(Omschakelen naar bladeren en blader door de bestanden van een gebruiker, indien opgegeven)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ip&lt;/b&gt; &amp;lt;gebruikersnaam&amp;gt;   &lt;i&gt;(Het IP-adres van een gebruiker ophalen)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/log&lt;/b&gt;    &lt;i&gt;(Berichtenlogweergave aan/uitschakelen)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/t /ticker /tickers&lt;/b&gt;   &lt;i&gt;(Tickerweergave aan/uitschakelen)&lt;/i&gt; &lt;br&gt;&lt;b&gt;/f /fonts /c /colors&lt;/b&gt;   &lt;i&gt;(Venster voor kleur- en lettertype-instellingen openen )&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ban /unban&lt;/b&gt; &amp;lt;gebruikersnaam&amp;gt;   &lt;i&gt;(Een gebruiker toestaan / niet toestaan om door uw gedeelde bestanden te bladeren en om van u te downloaden)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ignore /unignore&lt;/b&gt; &amp;lt;gebruikersnaam&amp;gt;    &lt;i&gt;(Chatberichten van een gebruiker blokkeren of de-blokkeren)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/buddy /unbuddy&lt;/b&gt; &amp;lt;gebruikersnaam&amp;gt;   &lt;i&gt;(Een gebruiker aan uw vriendenlijst toevoegen / verwijderen om die te kunnen volgen en er opmerkingen over toe te voegen)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/trust /distrust&lt;/b&gt; &amp;lt;gebruikersnaam&amp;gt;    &lt;i&gt;(Een gebruiker aan de optionele lijst van gebruikers toevoegen / verwijderen die u bestanden mogen sturen)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/me&lt;/b&gt; &amp;lt;doet iets&amp;gt;    &lt;i&gt;(Zeg iets in de derde persoon)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/slap&lt;/b&gt; &amp;lt;gebruikersnaam&amp;gt;   &lt;i&gt;(Geeft iemand een mep met een forel)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/j /join&lt;/b&gt; &amp;lt;room&amp;gt;    &lt;i&gt;(Een chatroom binnengaan)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/l /p /leave /part&lt;/b&gt; &amp;lt;niets | room&amp;gt;    &lt;i&gt;(De huidige of opgegeven room verlaten)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/about /help /commands&lt;/b&gt;    &lt;i&gt;(Informatie weergeven)&lt;/i&gt;&lt;br&gt;&lt;br&gt;Laat de brackets (driehoekige haakjes) weg, ze staan hier alleen om duidelijk te maken dat er iets (of niets) achter een /commando kan worden getyped.</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1227"/>
+        <location filename="../mainwin.cpp" line="1225"/>
         <source>Museeq Help</source>
         <translation>Museeq hulp</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1227"/>
+        <location filename="../mainwin.cpp" line="1225"/>
         <source>&lt;h3&gt;What&apos;s going on? I can&apos;t connect to a Soulseek Server with museeq!&lt;/h3&gt; You connect to museekd with museeq, so you need to have &lt;b&gt;museekd&lt;/b&gt; configured, running &lt;u&gt;and&lt;/u&gt; connected to a &lt;b&gt;Soulseek&lt;/b&gt; or Soulfind server. &lt;br&gt; &lt;h3&gt;Running for the first time?&lt;/h3&gt; Before you start museekd for the first time, you need to configure &lt;b&gt;museekd&lt;/b&gt; with &lt;b&gt;musetup&lt;/b&gt;,  a command-line configuration script.&lt;br&gt;&lt;br&gt; In musetup you &lt;b&gt;MUST&lt;/b&gt; configure the following items: Server, Username, Password, Interface Password, Download Dir&lt;br&gt; Also, take note of your interfaces, if you change them from the default localhost:2240 and /tmp/museek.&lt;tt&gt;USERNAME&lt;/tt&gt;, you&apos;ll need to know them for logging in with museeq. &lt;br&gt;&lt;br&gt; When you start museeq or choose File-&gt;Connect from the menu, you are asked to input the host and port, or Unix Socket of museekd, &lt;b&gt;not&lt;/b&gt; the Server.&lt;br&gt; &lt;h3&gt;Want to send someone a file?&lt;/h3&gt; Browse yourself, select file(s), and right-click-&gt;Upload. Input their name in the dialog box, and the upload should start, but it depends on if the user has place you on their &quot;trusted&quot; or &quot;uploads&quot; users list .&lt;br&gt;Once you&apos;re connected to museekd, change museekd options via Settings-&gt;Museek</source>
         <translation>&lt;h3&gt;Wat gebeurt er? Via museeq krijg ik geen verbinding met een SoulSeek-server!&lt;/h3&gt; Met museeq maakt u verbinding met museekd, u moet dus &lt;b&gt;museekd&lt;/b&gt; hebben geconfigureerd, draaien, &lt;u&gt;en&lt;/u&gt; verbonden met een &lt;b&gt;Soulseek-&lt;/b&gt; of Soulfind-server. &lt;br&gt; &lt;h3&gt;Museeq voor het eerst gestart?&lt;/h3&gt; Voordat u museekd voor het eerst opstart, is het nodig dat u &lt;b&gt;museekd&lt;/b&gt; met behulp van &lt;b&gt;musetup&lt;/b&gt; configureert, dit is een configuratiescript dat in een terminal moet worden uitgevoerd.&lt;br&gt;&lt;br&gt;In musetup &lt;b&gt;MOET&lt;/b&gt; u de volgende dingen configureren: Server, gebruikersnaam, wachtwoord, interface wachtwoord en downloadmap.&lt;br&gt; Let ook op uw interfaces, als u ze wijzigt van de standaard localhost:2240 en /tmp/museek.&lt;tt&gt;GEBRUIKERSNAAM&lt;/tt&gt;, dan moet u deze kenne om bij museeq in te kunnen loggen. &lt;br&gt;&lt;br&gt; Als u museeq opstart of Bestand-&gt;Verbinden kiest uit het menu, dan zal u gevraagd worden om de host en de poort in te voeren, of de Unix-socket van museekd, &lt;b&gt;niet&lt;/b&gt; de server!br&gt; &lt;h3&gt; Wilt u iemand een bestand sturen?&lt;/h3&gt; Blader door uw eigen bestanden, kies bestand(en), klik de rechter muistoets en kies Upload. Type de naam van de gebruiker in het invoerscherm en de upload zou moeten beginnen, maar die is afhankelijk van of de gebruiker u op diens &quot;vertrouwd&quot;- of &quot;uploads&quot;-lijst heeft gezet.&lt;br&gt;Zodra u met museekd bent verbonden, kunt u de museekd-opties via Instellingen-&gt;Museek wijzigen</translation>
     </message>
@@ -1038,64 +1038,64 @@
         <translation type="obsolete">Verwijderen</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1236"/>
+        <location filename="../mainwin.cpp" line="1234"/>
         <source>Give privileges</source>
         <translation>Privileges geven</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1238"/>
+        <location filename="../mainwin.cpp" line="1236"/>
         <source>How many days worth of privileges 
 </source>
         <translation>Hoeveel dagen aan privileges
 </translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1238"/>
+        <location filename="../mainwin.cpp" line="1236"/>
         <source>do you wish to give to user </source>
         <translation>wilt u geven aan gebruiker </translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1267"/>
+        <location filename="../mainwin.cpp" line="1265"/>
         <source>Museeq - Soulseek Privileges</source>
         <translation>Museeq - Soulseekprivileges</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1267"/>
+        <location filename="../mainwin.cpp" line="1265"/>
         <source>You have %1 days, %2 hours, %3 minutes and %4 seconds of privileges left</source>
         <translation>U hebt %1 dagen, %2 uur, %3 minuten en %4 seconden aan privileges over</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1299"/>
+        <location filename="../mainwin.cpp" line="1297"/>
         <source>Shutdown Museeq</source>
         <translation>Museeq afsluiten</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1289"/>
+        <location filename="../mainwin.cpp" line="1287"/>
         <source>The Museek Daemon was launched by Museeq and is still running, and will be shut down if you close Museeq, are you sure you want to?</source>
         <translation>De museek-daemon werd door Museeq gestart en is nog actief, deze zal worden afgesloten zodra u Museeq afsluit. Weet u zeker dat u dit wilt?</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1299"/>
+        <location filename="../mainwin.cpp" line="1297"/>
         <source>&amp;Yes</source>
         <translation>&amp;Ja</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1299"/>
+        <location filename="../mainwin.cpp" line="1297"/>
         <source>&amp;No</source>
         <translation>&amp;Nee</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1294"/>
+        <location filename="../mainwin.cpp" line="1292"/>
         <source>The Museek Daemon was launched by Museeq and is still running, but will &lt;b&gt;not&lt;/b&gt; be shut down if you close Museeq. Are you sure you want to?</source>
         <translation>De museek-daemon werd door Museeq gestart en is nog actief, deze zal echter &lt;b&gt;niet&lt;/b&gt; worden afgesloten zodra u Museeq afsluit. Weet u zeker dat u dit wilt?</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1299"/>
+        <location filename="../mainwin.cpp" line="1297"/>
         <source>It&apos;s safe to close Museeq, but are you sure you want to?</source>
         <translation>Het is nu veilig om Museeq af te sluiten, maar weet u zeker dat u dit wilt?</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1318"/>
+        <location filename="../mainwin.cpp" line="1316"/>
         <source>Load Script</source>
         <translation>Script laden</translation>
     </message>
@@ -1145,7 +1145,7 @@
         <translation type="unfinished">Alt+T</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1220"/>
+        <location filename="../mainwin.cpp" line="1218"/>
         <source>About Qt</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1190,12 +1190,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1205"/>
+        <location filename="../mainwin.cpp" line="1203"/>
         <source> is a GUI for the Museek Daemon&lt;/p&gt;The programs, museeq and museekd and muscan, were created by Hyriand 2003-2005&lt;br&gt;&lt;br&gt;Additions by daelstorm, SeeSchloss and others in 2006-2008&lt;br&gt;This project is released under the GPL license.&lt;br&gt;Code and ideas taken from other opensource projects and people are mentioned in the CREDITS file included in the source tarball.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1213"/>
+        <location filename="../mainwin.cpp" line="1211"/>
         <source>&amp;Ok</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1236,12 +1236,12 @@
 <context>
     <name>OnlineAlert</name>
     <message>
-        <location filename="../onlinealert.cpp" line="66"/>
+        <location filename="../onlinealert.cpp" line="67"/>
         <source>Online alert</source>
         <translation>Waarschuwing indien online</translation>
     </message>
     <message>
-        <location filename="../onlinealert.cpp" line="68"/>
+        <location filename="../onlinealert.cpp" line="69"/>
         <source>&amp;Remove</source>
         <translation>Ve&amp;rwijderen</translation>
     </message>
@@ -1251,7 +1251,7 @@
         <translation type="obsolete">Alt+R</translation>
     </message>
     <message>
-        <location filename="../onlinealert.cpp" line="69"/>
+        <location filename="../onlinealert.cpp" line="70"/>
         <source>&amp;OK</source>
         <translation>&amp;OK</translation>
     </message>
@@ -1261,22 +1261,22 @@
         <translation type="obsolete">Alt+O</translation>
     </message>
     <message>
-        <location filename="../onlinealert.cpp" line="84"/>
+        <location filename="../onlinealert.cpp" line="85"/>
         <source>offline</source>
         <translation>offline</translation>
     </message>
     <message>
-        <location filename="../onlinealert.cpp" line="84"/>
+        <location filename="../onlinealert.cpp" line="85"/>
         <source>away</source>
         <translation>afwezig</translation>
     </message>
     <message>
-        <location filename="../onlinealert.cpp" line="84"/>
+        <location filename="../onlinealert.cpp" line="85"/>
         <source>online</source>
         <translation>online</translation>
     </message>
     <message>
-        <location filename="../onlinealert.cpp" line="86"/>
+        <location filename="../onlinealert.cpp" line="87"/>
         <source>%1 user %2 is now %3</source>
         <translation>%1 gebruiker %2 is nu %3</translation>
     </message>
@@ -1805,62 +1805,62 @@
         <translation type="obsolete">Museek-instellingen</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1116"/>
+        <location filename="../settingsdialog.cpp" line="1119"/>
         <source>Ok</source>
         <translation>Ok</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1117"/>
+        <location filename="../settingsdialog.cpp" line="1120"/>
         <source>Save</source>
         <translation>Opslaan</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1118"/>
+        <location filename="../settingsdialog.cpp" line="1121"/>
         <source>Cancel</source>
         <translation>Annuleren</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1149"/>
+        <location filename="../settingsdialog.cpp" line="1152"/>
         <source>Filesystem Encoding:</source>
         <translation>Bestandssysteemcodering:</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1150"/>
+        <location filename="../settingsdialog.cpp" line="1153"/>
         <source>Network Encoding:</source>
         <translation>Netwerkcodering:</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1151"/>
+        <location filename="../settingsdialog.cpp" line="1154"/>
         <source>Connect</source>
         <translation>Verbinden</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1152"/>
+        <location filename="../settingsdialog.cpp" line="1155"/>
         <source>Disconnect</source>
         <translation>Verbinding verbreken</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1153"/>
+        <location filename="../settingsdialog.cpp" line="1156"/>
         <source>Server Port:</source>
         <translation>Serverpoort:</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1154"/>
+        <location filename="../settingsdialog.cpp" line="1157"/>
         <source>Server Host:</source>
         <translation>Serverhost:</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1155"/>
+        <location filename="../settingsdialog.cpp" line="1158"/>
         <source>Soulseek Username:</source>
         <translation>Soulseek-gebruikersnaam:</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1156"/>
+        <location filename="../settingsdialog.cpp" line="1159"/>
         <source>Soulseek Password:</source>
         <translation>Soulseek-wachtwoord:</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1166"/>
+        <location filename="../settingsdialog.cpp" line="1169"/>
         <source>Server</source>
         <translation>Server</translation>
     </message>
@@ -1870,17 +1870,17 @@
         <translation type="obsolete">&lt;p&gt;Configureer uw gedeelde bestanden met musetup, of voer &lt;u&gt;muscan -r&lt;/u&gt; uit om uw bestanden opnieuw in te lezen en klik:&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1168"/>
+        <location filename="../settingsdialog.cpp" line="1171"/>
         <source>Connections</source>
         <translation>Verbindingen</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1202"/>
+        <location filename="../settingsdialog.cpp" line="1205"/>
         <source>Active Connections</source>
         <translation>Actieve verbindingen</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1203"/>
+        <location filename="../settingsdialog.cpp" line="1206"/>
         <source>Passive Connections</source>
         <translation>Passieve verbindingen</translation>
     </message>
@@ -1890,17 +1890,17 @@
         <translation type="obsolete">Gedeelde bestanden herinlezen</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1206"/>
+        <location filename="../settingsdialog.cpp" line="1209"/>
         <source>Select..</source>
         <translation>Kiezen..</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1205"/>
+        <location filename="../settingsdialog.cpp" line="1208"/>
         <source>Download Dir:</source>
         <translation>Downloadmap:</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1207"/>
+        <location filename="../settingsdialog.cpp" line="1210"/>
         <source>Incomplete Dir:</source>
         <translation>Onvoltooide bestanden:</translation>
     </message>
@@ -1910,127 +1910,127 @@
         <translation type="obsolete">Gedeelde bestanden en verbindingen</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1210"/>
+        <location filename="../settingsdialog.cpp" line="1213"/>
         <source>Buddies are Privileged</source>
         <translation>Vrienden hebben voorrang</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1211"/>
+        <location filename="../settingsdialog.cpp" line="1214"/>
         <source>Online Alerts in Log Window instead of popup</source>
         <translation>Online waarschuwingen in logvenster in plaats van apart venster</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1212"/>
+        <location filename="../settingsdialog.cpp" line="1215"/>
         <source>Share to Buddies Only</source>
         <translation>Alleen met vrienden delen</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1213"/>
+        <location filename="../settingsdialog.cpp" line="1216"/>
         <source>Trusted users can Send you Files</source>
         <translation>Vertrouwde gebruikers mogen u bestanden sturen</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1214"/>
+        <location filename="../settingsdialog.cpp" line="1217"/>
         <source>Seperate Shares list for Buddies</source>
         <translation>Aparte lijst met gedeelde bestanden voor vrienden</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1215"/>
+        <location filename="../settingsdialog.cpp" line="1218"/>
         <source>Send automatic warnings to users via Private Chat</source>
         <translation>Automatische waarschuwingen naar gebruikers sturen via privéchat</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1216"/>
+        <location filename="../settingsdialog.cpp" line="1219"/>
         <source>IP addresses in Log Window instead of popup</source>
         <translation>IP-adressen in logvenster in plaats van apart venster</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1169"/>
+        <location filename="../settingsdialog.cpp" line="1172"/>
         <source>User Options</source>
         <translation>Gebruikeropties</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="936"/>
+        <location filename="../settingsdialog.cpp" line="939"/>
         <source>Select a Directory to store your downloaded files.</source>
         <translation>Kies een map om uw gedownloade bestanden in op te slaan.</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="980"/>
+        <location filename="../settingsdialog.cpp" line="983"/>
         <source>All files (*)</source>
         <translation>Alle bestanden (*)</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="965"/>
+        <location filename="../settingsdialog.cpp" line="968"/>
         <source>Select a Directory to store your incomplete downloading files.</source>
         <translation>Kies een map om uw onvoltooide, nog downloadende bestanden in op te slaan.</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="96"/>
+        <location filename="../settingsdialog.cpp" line="94"/>
         <source>Host</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="136"/>
+        <location filename="../settingsdialog.cpp" line="134"/>
         <source>Server status</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="241"/>
+        <location filename="../settingsdialog.cpp" line="239"/>
         <source>Directories</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="273"/>
+        <location filename="../settingsdialog.cpp" line="271"/>
         <source>Peer Connections</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="419"/>
+        <location filename="../settingsdialog.cpp" line="417"/>
         <source>Protocol</source>
         <translation type="unfinished">Protocol</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="419"/>
+        <location filename="../settingsdialog.cpp" line="417"/>
         <source>Handler</source>
         <translation type="unfinished">Verwerker</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="580"/>
+        <location filename="../settingsdialog.cpp" line="578"/>
         <source>Delete handler</source>
         <translation type="unfinished">Verwerker verwijderen</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="681"/>
+        <location filename="../settingsdialog.cpp" line="684"/>
         <source>Select a Directory to add to your Buddy Shares.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="708"/>
+        <location filename="../settingsdialog.cpp" line="711"/>
         <source>Select a Directory to write Private Chat log files.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="726"/>
+        <location filename="../settingsdialog.cpp" line="729"/>
         <source>Select a Directory to write Chat Room log files.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="772"/>
+        <location filename="../settingsdialog.cpp" line="775"/>
         <source>Select a Directory to add to your Normal Shares.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="951"/>
+        <location filename="../settingsdialog.cpp" line="954"/>
         <source>Select the museekd config file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="952"/>
+        <location filename="../settingsdialog.cpp" line="955"/>
         <source>XML files (*.xml)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="977"/>
+        <location filename="../settingsdialog.cpp" line="980"/>
         <source>Images (*.png *.gif *.jpg *.jpeg)</source>
         <translation type="unfinished">Afbeeldingen (*.png *.gif *.jpg *.jpeg)</translation>
     </message>
@@ -2040,197 +2040,197 @@
         <translation type="obsolete">Kies een afbeelding voor uw gebruikersinfo</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1115"/>
+        <location filename="../settingsdialog.cpp" line="1118"/>
         <source>Museeq Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1119"/>
+        <location filename="../settingsdialog.cpp" line="1122"/>
         <source>Museekd Config:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1127"/>
+        <location filename="../settingsdialog.cpp" line="1130"/>
         <source>Refresh list</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1128"/>
+        <location filename="../settingsdialog.cpp" line="1131"/>
         <source>Update</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1129"/>
+        <location filename="../settingsdialog.cpp" line="1132"/>
         <source>Rescan</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1130"/>
+        <location filename="../settingsdialog.cpp" line="1133"/>
         <source>Add</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1131"/>
+        <location filename="../settingsdialog.cpp" line="1134"/>
         <source>Remove</source>
         <translation type="unfinished">Verwijderen</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1132"/>
+        <location filename="../settingsdialog.cpp" line="1135"/>
         <source>Listen port range (the first available port will be used when museekd starts up)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1133"/>
+        <location filename="../settingsdialog.cpp" line="1136"/>
         <source>First port:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1134"/>
+        <location filename="../settingsdialog.cpp" line="1137"/>
         <source>Last port:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1138"/>
+        <location filename="../settingsdialog.cpp" line="1141"/>
         <source>Clear</source>
         <translation type="unfinished">Wissen</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1139"/>
+        <location filename="../settingsdialog.cpp" line="1142"/>
         <source>Don&apos;t touch</source>
         <translation type="unfinished">Afblijven</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1140"/>
+        <location filename="../settingsdialog.cpp" line="1143"/>
         <source>Upload:</source>
         <translation type="unfinished">Uploaden:</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1144"/>
+        <location filename="../settingsdialog.cpp" line="1147"/>
         <source>Log Private Chats</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1145"/>
+        <location filename="../settingsdialog.cpp" line="1148"/>
         <source>Log Chat Rooms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1162"/>
+        <location filename="../settingsdialog.cpp" line="1165"/>
         <source>New</source>
         <translation type="unfinished">Nieuw</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1163"/>
+        <location filename="../settingsdialog.cpp" line="1166"/>
         <source>Modify</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1165"/>
+        <location filename="../settingsdialog.cpp" line="1168"/>
         <source>Museek Daemon</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1167"/>
+        <location filename="../settingsdialog.cpp" line="1170"/>
         <source>Shares</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1170"/>
+        <location filename="../settingsdialog.cpp" line="1173"/>
         <source>User Info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1172"/>
+        <location filename="../settingsdialog.cpp" line="1175"/>
         <source>Museeq</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1173"/>
+        <location filename="../settingsdialog.cpp" line="1176"/>
         <source>Appearance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1174"/>
+        <location filename="../settingsdialog.cpp" line="1177"/>
         <source>Fonts and Colors</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1175"/>
+        <location filename="../settingsdialog.cpp" line="1178"/>
         <source>Logging</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1176"/>
+        <location filename="../settingsdialog.cpp" line="1179"/>
         <source>Protocol handlers</source>
         <translation type="unfinished">Protocolverwerkers</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1179"/>
+        <location filename="../settingsdialog.cpp" line="1182"/>
         <source>Time &amp; Brackets Font</source>
         <translation type="unfinished">Lettertype voor tekst tussen haakjes &amp; tijd</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1187"/>
+        <location filename="../settingsdialog.cpp" line="1190"/>
         <source>Pick Font</source>
         <translation type="unfinished">Lettertype kiezen</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1181"/>
+        <location filename="../settingsdialog.cpp" line="1184"/>
         <source>Time &amp; Brackets Text Color</source>
         <translation type="unfinished">Kleur voor tekst tussen haakjes &amp; tijd</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1182"/>
+        <location filename="../settingsdialog.cpp" line="1185"/>
         <source>/Me Text</source>
         <translation type="unfinished">/Me tekst</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1196"/>
+        <location filename="../settingsdialog.cpp" line="1199"/>
         <source>Pick Color</source>
         <translation type="unfinished">Kleur kiezen</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1186"/>
+        <location filename="../settingsdialog.cpp" line="1189"/>
         <source>Message Font</source>
         <translation type="unfinished">Berichtlettertype</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1188"/>
+        <location filename="../settingsdialog.cpp" line="1191"/>
         <source>Buddied Users</source>
         <translation type="unfinished">Bevriende gebruikers</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1190"/>
+        <location filename="../settingsdialog.cpp" line="1193"/>
         <source>My Text</source>
         <translation type="unfinished">Mijn tekst</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1191"/>
+        <location filename="../settingsdialog.cpp" line="1194"/>
         <source>Trusted Users</source>
         <translation type="unfinished">Vertrouwde gebruikers</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1193"/>
+        <location filename="../settingsdialog.cpp" line="1196"/>
         <source>Banned Users</source>
         <translation type="unfinished">Verbannen gebruikers</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1195"/>
+        <location filename="../settingsdialog.cpp" line="1198"/>
         <source>Remote Text</source>
         <translation type="unfinished">Tekst van anderen</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1217"/>
+        <location filename="../settingsdialog.cpp" line="1220"/>
         <source>Maximum length of ticker messages:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1218"/>
+        <location filename="../settingsdialog.cpp" line="1221"/>
         <source>Align Mode Icons Vertically</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="979"/>
+        <location filename="../settingsdialog.cpp" line="982"/>
         <source>Select an image for your User info</source>
         <translation type="unfinished"></translation>
     </message>

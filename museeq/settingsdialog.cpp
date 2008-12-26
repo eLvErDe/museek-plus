@@ -41,13 +41,11 @@
 #include <QLayout>
 #include <QFileDialog>
 #include <QDir>
+#include <QCloseEvent>
 
 SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Qt::WFlags fl )
     : QDialog( parent ), mSharesDirty(false)
 {
-// 	if ( !name )
-// 		setName( "SettingsDialog" );
-
 	// Layout Containing everything
 	QVBoxLayout* vLayout= new QVBoxLayout( this);
 	vLayout->setMargin(5);
@@ -546,9 +544,9 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Q
 
 
 	// signals and slots connections
-	connect( mOK, SIGNAL( clicked() ), this, SLOT( accept() ) );
+	connect( mOK, SIGNAL( clicked() ), this, SLOT( acceptSettings() ) );
 	connect( mSave, SIGNAL( clicked() ), this, SLOT( save() ) );
-	connect( mCancel, SIGNAL( clicked() ), this, SLOT( reject() ) );
+	connect( mCancel, SIGNAL( clicked() ), this, SLOT( hide() ) );
 	connect( SConnect, SIGNAL( clicked() ), this, SLOT( SConnect_clicked() ) );
 	connect( SDisconnect, SIGNAL( clicked() ), this, SLOT( SDisconnect_clicked() ) );
 	connect( SDownloadButton, SIGNAL( clicked() ), this, SLOT( SDownload_clicked() ) );
@@ -588,6 +586,11 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Q
 
 	connect(museeq, SIGNAL(configChanged(const QString&, const QString&, const QString&)), SLOT(slotConfigChanged(const QString&, const QString&, const QString&)));
 
+}
+
+void SettingsDialog::acceptSettings() {
+    save();
+    hide();
 }
 
 void SettingsDialog::slotConfigChanged(const QString& domain, const QString& key, const QString& value) {
@@ -1218,3 +1221,7 @@ void SettingsDialog::languageChange()
 	IconsAlignment->setText( tr( "Align Mode Icons Vertically" ) );
 }
 
+void SettingsDialog::closeEvent(QCloseEvent * ev) {
+    hide();
+    ev->ignore();
+}

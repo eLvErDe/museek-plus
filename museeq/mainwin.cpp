@@ -1180,10 +1180,8 @@ void MainWindow::changeSettings() {
 		handler->setText(0, it.key());
 		handler->setText(1, it.value());
 	}
-	if(mSettingsDialog->exec() == QDialog::Accepted) {
-		saveSettings();
-
-	}
+	mSettingsDialog->setModal(true);
+	mSettingsDialog->show();
 }
 
 

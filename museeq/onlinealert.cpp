@@ -25,6 +25,7 @@
 #include <QFrame>
 #include <QPushButton>
 #include <QDateTime>
+#include <QCloseEvent>
 
 OnlineAlert::OnlineAlert( QWidget* parent, const char* name, bool modal, Qt::WFlags fl )
     : QDialog( parent )
@@ -54,7 +55,7 @@ OnlineAlert::OnlineAlert( QWidget* parent, const char* name, bool modal, Qt::WFl
 
     // signals and slots connections
     connect( mRemove, SIGNAL( clicked() ), this, SLOT( slotRemoveAlert() ) );
-    connect( mOK, SIGNAL( clicked() ), this, SLOT( accept() ) );
+    connect( mOK, SIGNAL( clicked() ), this, SLOT( hide() ) );
 }
 
 /*
@@ -93,8 +94,11 @@ void OnlineAlert::slotUserStatus( const QString & user, uint status )
 
 void OnlineAlert::slotRemoveAlert()
 {
-    // FIXME Museeq gets closed when calling accept() and minimized
-	// This will be solved when alerts will be displayed on tray icon (#39)
     emit removeAlert(mUser);
-    accept();
+    hide();
+}
+
+void OnlineAlert::closeEvent(QCloseEvent * ev) {
+    hide();
+    ev->ignore();
 }

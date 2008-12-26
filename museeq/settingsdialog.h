@@ -39,6 +39,7 @@ class QTreeWidget;
 class QSpinBox;
 class QRadioButton;
 class QCheckBox;
+class QCloseEvent;
 
 class SettingsDialog : public QDialog
 {
@@ -173,6 +174,10 @@ protected slots:
 	void finishedListBuddy(int, QProcess::ExitStatus);
 	void finishedNormal(int, QProcess::ExitStatus);
 	void finishedBuddy(int, QProcess::ExitStatus);
+	void acceptSettings();
+
+protected:
+	void closeEvent(QCloseEvent *);
 
 private:
     bool mSharesDirty;
