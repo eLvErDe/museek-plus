@@ -37,13 +37,14 @@ class Browser : public UserWidget {
 	Q_OBJECT
 public:
 	Browser(const QString&, QWidget* = 0, const char* = 0);
+	bool isLoading() {return mLoading;};
 
 public slots:
 	void doSearch();
 	void setShares(const NShares&);
 	void getShares();
-private:
 
+private:
 	NShares mShares;
 	NShares::const_iterator mCurrentResult;
 	QString mQuery;
@@ -53,6 +54,7 @@ private:
 	QLabel* mFileCount;
 	QPushButton* mRefresh;
 	QString mUser;
+	bool mLoading;
 };
 
 

@@ -40,3 +40,9 @@ void Browsers::setShares(const QString& user, const NShares& shares) {
 		return;
 	browser->setShares(shares);
 }
+
+void Browsers::closeCurrent() {
+    Browser * page = dynamic_cast<Browser*>(currentWidget());
+    if (!page->isLoading())
+        TabWidget::closeCurrent();
+}

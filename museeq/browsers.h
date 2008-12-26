@@ -34,6 +34,9 @@ public slots:
 
 protected:
 	UserWidget* makeNewPage(const QString&);
+
+protected slots:
+	void closeCurrent();
 };
 
 #endif // BROWSERS_H

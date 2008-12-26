@@ -77,6 +77,7 @@ public:
 
 Browser::Browser(const QString& user, QWidget* parent, const char* name)
        : UserWidget(user, parent, name) {
+    mLoading = false;
 	QVBoxLayout * MainLayout = new QVBoxLayout(this);
 	QWidget* topWidget = new QWidget(this);
 	MainLayout->addWidget(topWidget);
@@ -116,6 +117,7 @@ Browser::Browser(const QString& user, QWidget* parent, const char* name)
 }
 
 void Browser::setShares(const NShares& shares) {
+    mLoading = true;
 	mShares = shares;
 
     if (mShares.contains("\\"))
@@ -133,6 +135,7 @@ void Browser::setShares(const NShares& shares) {
 	mFolders->setEnabled(true);
 	mFiles->setEnabled(true);
 	emit(highlight(1));
+    mLoading = false;
 }
 
 void Browser::getShares() {
@@ -460,7 +463,6 @@ FolderListItem * FolderListView::findParent(const QStringList& p) {
 }
 
 void FolderListView::setShares(const NShares& shares) {
-    // FIXME this can freeze museeq when displaying huge shares: the app is blocked until the loop is finished
 	clear();
 	delete mShares;
 	mShares = new SharesData("");
@@ -478,6 +480,7 @@ void FolderListView::setShares(const NShares& shares) {
         if (Folders.isEmpty()) {
             new FolderListItem(findParent(p), sfolder, p.last(), it.key());
         }
+        QCoreApplication::processEvents();
 	}
 
 	setSortingEnabled(true);

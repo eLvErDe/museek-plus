@@ -74,27 +74,27 @@
 <context>
     <name>Browser</name>
     <message>
-        <location filename="../browser.cpp" line="86"/>
+        <location filename="../browser.cpp" line="87"/>
         <source>Search files and folders</source>
         <translation>Procura arquivos e pastas</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="92"/>
+        <location filename="../browser.cpp" line="93"/>
         <source>Haven&apos;t received shares</source>
         <translation>Não recebeu compartilhamentos</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="96"/>
+        <location filename="../browser.cpp" line="97"/>
         <source>Refresh</source>
         <translation>Atualizar</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="127"/>
+        <location filename="../browser.cpp" line="129"/>
         <source>directories</source>
         <translation>diretórios</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="130"/>
+        <location filename="../browser.cpp" line="132"/>
         <source>Sharing nothing..</source>
         <translation>Nada sendo compartilhado..</translation>
     </message>
@@ -270,37 +270,37 @@
 <context>
     <name>FileListView</name>
     <message>
-        <location filename="../browser.cpp" line="586"/>
+        <location filename="../browser.cpp" line="589"/>
         <source>Filename</source>
         <translation>Nome do arquivo</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="586"/>
+        <location filename="../browser.cpp" line="589"/>
         <source>Size</source>
         <translation>Tamanho</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="586"/>
+        <location filename="../browser.cpp" line="589"/>
         <source>Length</source>
         <translation>Duração</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="586"/>
+        <location filename="../browser.cpp" line="589"/>
         <source>Bitrate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="600"/>
+        <location filename="../browser.cpp" line="603"/>
         <source>Download files</source>
         <translation>Baixar arquivos</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="608"/>
+        <location filename="../browser.cpp" line="611"/>
         <source>Upload files</source>
         <translation>Enviar arquivos</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="614"/>
+        <location filename="../browser.cpp" line="617"/>
         <source>Copy URL</source>
         <translation>Copiar URL</translation>
     </message>
@@ -315,27 +315,27 @@
         <translation type="obsolete">%1 arquivos</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="810"/>
+        <location filename="../browser.cpp" line="813"/>
         <source>Upload File(s)</source>
         <translation>Enviar arquivo(s)</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="811"/>
+        <location filename="../browser.cpp" line="814"/>
         <source>Which user do you wish to upload these to?</source>
         <translation>Para qual usuário você deseja enviar esses arquivos?</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="604"/>
+        <location filename="../browser.cpp" line="607"/>
         <source>Download files to..</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="772"/>
+        <location filename="../browser.cpp" line="775"/>
         <source>Select a Directory for current download(s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../browser.cpp" line="697"/>
+        <location filename="../browser.cpp" line="700"/>
         <source>%n file(s)</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -345,7 +345,7 @@
 <context>
     <name>FolderListView</name>
     <message>
-        <location filename="../browser.cpp" line="228"/>
+        <location filename="../browser.cpp" line="231"/>
         <source>Folder</source>
         <translation>Pasta</translation>
     </message>
@@ -355,7 +355,7 @@
         <translation type="obsolete">Baixar pasta</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="255"/>
+        <location filename="../browser.cpp" line="258"/>
         <source>Copy URL</source>
         <translation>Copiar URL</translation>
     </message>
@@ -370,32 +370,32 @@
         <translation type="obsolete">%1 pastas</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="242"/>
+        <location filename="../browser.cpp" line="245"/>
         <source>Download Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="246"/>
+        <location filename="../browser.cpp" line="249"/>
         <source>Download Folder to...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="413"/>
+        <location filename="../browser.cpp" line="416"/>
         <source>Upload Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="391"/>
+        <location filename="../browser.cpp" line="394"/>
         <source>Select a Directory for current download(s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="414"/>
+        <location filename="../browser.cpp" line="417"/>
         <source>Which user do you wish to upload this to?</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../browser.cpp" line="333"/>
+        <location filename="../browser.cpp" line="336"/>
         <source>%n folder(s)</source>
         <translation type="unfinished">
             <numerusform></numerusform>
