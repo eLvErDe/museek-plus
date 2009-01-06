@@ -28,32 +28,49 @@
 #include <assert.h>
 #include <sys/resource.h>
 
-/* Update timeout to 'ms' miliseconds after the current time if that's
-   sooner than the current timeout, or if no timeout has been set yet. */
-inline void fixtime(struct timeval & timeout, long ms, bool & timeout_set)
+
+void eventCallback(int fd, short event, void *arg) {
+    static_cast<NewNet::Reactor *>(arg)->eventCallback(fd, event, arg);
+}
+
+NewNet::Reactor::Reactor()
 {
-  struct timeval now;
-  gettimeofday(&now, 0);
-  if((! timeout_set) || (difftime(timeout, now) > ms))
-  {
-    timeout.tv_sec = now.tv_sec + (ms / 1000);
-    timeout.tv_usec = now.tv_usec + (ms % 1000) * 1000;
-    if(timeout.tv_usec >= 1000000)
-    {
-      timeout.tv_sec += 1;
-      timeout.tv_usec -= 1000000;
+    m_Timeouts = new Timeouts;
+#ifdef WIN32
+    m_WsaData = new WSADATA;
+    WORD wVersionRequested = MAKEWORD(1, 1);
+    assert(WSAStartup(wVersionRequested, (WSADATA *)m_WsaData) == 0);
+#endif // WIN32
+
+    // Set the FD limit to the maximum available
+    // The maximum available can be modified in /etc/security/limits.conf (changing nofile parameter for your user)
+    struct rlimit rl;
+    if (getrlimit(RLIMIT_NOFILE, &rl) == 0) {
+        rl.rlim_cur = rl.rlim_max;
+        setrlimit(RLIMIT_NOFILE, &rl);
     }
-    timeout_set = true;
-  }
+
+    struct rlimit rlim;
+    m_maxSocketNo = -1;
+    if (getrlimit (RLIMIT_NOFILE, &rlim) >= 0)
+        m_maxSocketNo = rlim.rlim_cur;
+
+
+    NNLOG("newnet.net.debug", "%i file descriptors available for museekd.", m_maxSocketNo);
+
+    event_init();
 }
 
 #ifndef DOXYGEN_UNDOCUMENTED
-typedef std::pair<struct timeval, NewNet::RefPtr<NewNet::Reactor::Timeout::Callback> > TimeoutItem;
-struct NewNet::Reactor::Timeouts
+NewNet::Reactor::~Reactor()
 {
-  std::vector<TimeoutItem> timeouts;
-};
-#endif
+#ifdef WIN32
+  WSACleanup();
+  delete (WSADATA *)m_WsaData;
+#endif // WIN32
+  delete m_Timeouts;
+}
+#endif // DOXYGEN_UNDOCUMENTED
 
 /* Check if any timeouts have expired. If so, invoke them and remove them
    from the queue. Also, update the timeout if a timeout should be called
@@ -108,34 +125,6 @@ NewNet::Reactor::checkTimeouts(struct timeval & timeout, bool & timeout_set)
   return retVal;
 }
 
-NewNet::Reactor::Reactor()
-{
-  m_Timeouts = new Timeouts;
-#ifdef WIN32
-  m_WsaData = new WSADATA;
-  WORD wVersionRequested = MAKEWORD(1, 1);
-  assert(WSAStartup(wVersionRequested, (WSADATA *)m_WsaData) == 0);
-#endif // WIN32
-
-    m_TooManySockets = false;
-
-    struct rlimit rlim;
-    m_maxSocketNo = -1;
-    if (getrlimit (RLIMIT_NOFILE, &rlim) >= 0)
-        m_maxSocketNo = rlim.rlim_cur;
-}
-
-#ifndef DOXYGEN_UNDOCUMENTED
-NewNet::Reactor::~Reactor()
-{
-#ifdef WIN32
-  WSACleanup();
-  delete (WSADATA *)m_WsaData;
-#endif // WIN32
-  delete m_Timeouts;
-}
-#endif // DOXYGEN_UNDOCUMENTED
-
 void NewNet::Reactor::add(Socket * socket)
 {
   if(socket->reactor())
@@ -156,6 +145,7 @@ void NewNet::Reactor::add(Socket * socket)
 
 void NewNet::Reactor::remove(Socket * socket)
 {
+  int fd = socket->descriptor();
   NNLOG("newnet.net.debug", "removing socket %u from reactor", socket->descriptor());
   // Removing a socket from the wrong reactor is a programming error, trap it.
   assert(socket->reactor() == this);
@@ -163,105 +153,52 @@ void NewNet::Reactor::remove(Socket * socket)
   socket->setReactor(0);
   std::vector<RefPtr<Socket> >::iterator it;
   it = std::find(m_Sockets.begin(), m_Sockets.end(), socket);
-  if (it != m_Sockets.end())
+  if (it != m_Sockets.end()) {
+    // See if there is another socket using the same FD
+    std::vector<RefPtr<Socket> >::iterator itFD;
+    bool found = false;
+    for (itFD = m_Sockets.begin(); ((itFD != m_Sockets.end()) && !found); ++itFD) {
+        if (((*itFD)->descriptor() == fd) && (socket != *itFD))
+            found = true;
+    }
+    if (!found) {
+        // No other socket is using this FD stop watching it
+        struct event * ev = socket->getEventData();
+        if (event_initialized(ev))
+            event_del(ev);
+    }
+
     m_Sockets.erase(it);
+  }
 }
 
 void NewNet::Reactor::run()
 {
-  int nfds = 0;
-  int numErrors = 0;
-  fd_set readfds, writefds, exceptfds;
+    NNLOG("newnet.net.debug", "Running reactor. Libevent is using %s method.", event_get_method());
 
-  m_StopReactor = false;
-  while((! m_StopReactor) && (! (m_Timeouts->timeouts.empty() && m_Sockets.empty())))
-  {
+    bool loop = true;
+    while (loop) {
+        loop = prepareReactorData();
+    }
+
+    // Launch the main loop
+    event_dispatch();
+}
+
+bool
+NewNet::Reactor::prepareReactorData() {
     /* No timeout set yet */
     bool timeout_set = false;
     struct timeval timeout;
 
-    /* Zero the FD sets */
-    nfds = 0;
-    FD_ZERO(&readfds);
-    FD_ZERO(&writefds);
-    FD_ZERO(&exceptfds);
+    // Update the sockets watched by the reactor
+    checkSockets(timeout, timeout_set);
 
-    /* Make a copy of our socket list, as they might disappear because of
-       events that occur and then our iterators go berserk */
-    std::vector<NewNet::RefPtr<NewNet::Socket> > sockets(m_Sockets);
+    // Update the timeouts and call expired ones
+    if (checkTimeouts(timeout, timeout_set))
+        return true;
 
-    /* Check which events we want to hear about from which sockets */
-    std::vector<NewNet::RefPtr<NewNet::Socket> >::iterator it, end = sockets.end();
-    for(it = sockets.begin(); it != end; ++it)
-    {
-      /* Convenience... */
-      NewNet::Socket * sock = *it;
-      int fd = sock->descriptor();
-
-      if(fd == -1)
-        continue;
-
-      long n; // miliseconds to next window of opportunity
-
-      switch(sock->socketState())
-      {
-        /* The socket is dead, no events are interesting */
-        case NewNet::Socket::SocketUninitialized:
-        case NewNet::Socket::SocketDisconnecting:
-        case NewNet::Socket::SocketDisconnected:
-        case NewNet::Socket::SocketException:
-          break;
-
-        /* Listening socket, check for read-ready events */
-        case NewNet::Socket::SocketListening:
-          FD_SET(fd, &readfds);
-          nfds = std::max(nfds, fd + 1);
-          break;
-
-        /* Connecting socket, check for write-ready events */
-        case NewNet::Socket::SocketConnecting:
-          FD_SET(fd, &writefds);
-          nfds = std::max(nfds, fd + 1);
-          break;
-
-        /* Connected socket, if possible / allowed check for read, write
-           and OOB events */
-        case NewNet::Socket::SocketConnected:
-          /* Check if we're allowed to receive, and if not, when we might be. */
-          n = (! sock->downRateLimiter()) ? 0 : sock->downRateLimiter()->nextWindow();
-          if(n == 0)
-            FD_SET(fd, &readfds);
-          else
-          {
-            NNLOG("newnet.net.debug", "Download limiter for socket %i recommends %li ms sleep.", fd, n);
-            fixtime(timeout, n, timeout_set);
-          }
-
-          /* Check if we want to send, if we're allowed to send. And if we're
-             not allowed to send, when we might be. */
-          if(sock->dataWaiting())
-          {
-            n = (! sock->upRateLimiter()) ? 0 : sock->upRateLimiter()->nextWindow();
-            if(n == 0)
-              FD_SET(fd, &writefds);
-            else
-            {
-              NNLOG("newnet.net.debug", "Upload rate limiter for socket %i reports next window in %li ms", fd, n);
-              fixtime(timeout, n, timeout_set);
-            }
-          }
-
-          /* OOB data is not rate limited and we're always interested */
-          FD_SET(fd, &exceptfds);
-
-          nfds = std::max(nfds, fd + 1);
-          break;
-        }
-    }
-
-    if(checkTimeouts(timeout, timeout_set))
-      continue;
-
+    // Set a timer to come back here when needed
     if(timeout_set)
     {
       /* We know when we need to wake up, but how many sec/usec from
@@ -280,97 +217,149 @@ void NewNet::Reactor::run()
         timeout.tv_sec = 0;
         timeout.tv_usec = 0;
       }
+
+      evtimer_del(&mEvTimeout); // delete potentially existing previous timeout
+      evtimer_set(&mEvTimeout, ::eventCallback, this);
+      evtimer_add(&mEvTimeout, &timeout);
     }
 
-    /* If we have nothing to do, just sleep a bit */
-    if(nfds == 0)
-    {
-      /* If no timeout is set and there are no active descriptors, the reactor
-         is dead and it should exit. */
-      if(! timeout_set)
-        break;
-
-      NNLOG("newnet.net.debug", "Sleeping %li ms until next timeout.", (timeout.tv_sec * 1000) + (timeout.tv_usec / 1000));
-
-#ifndef WIN32
-      if(sleep(timeout.tv_sec) == 0)
-        usleep(timeout.tv_usec);
-#else
-      Sleep(timeout.tv_sec * 1000 + timeout.tv_usec / 1000);
-#endif // ! WIN32
-      continue;
-    }
-
-    m_maxFD = nfds;
-
-    /* See if we have too many opened sockets */
-    if ( (maxSocketNo() > 100) && (FD_SETSIZE > 100) ) { // we have some valid value
-        if (!m_TooManySockets && (((currentSocketNo() > (maxSocketNo() - static_cast<int>(maxSocketNo()*0.02)))) || (nfds >= (FD_SETSIZE - 5)))) {
-            m_TooManySockets = true;
-            tooManySockets(currentSocketNo());
-        }
-        else if (m_TooManySockets && ((currentSocketNo() < (maxSocketNo() - static_cast<int>(maxSocketNo()*0.1)))) && (nfds <= (FD_SETSIZE - 50))) {
-            m_TooManySockets = false;
-            notTooManySockets(currentSocketNo());
-        }
-    }
-
-    /* Wait for socket events */
-    int r = 0;
     if(timeout_set)
-    {
-      NNLOG("newnet.net.debug", "Waiting at most %li ms until one of max. %i sockets wakes up.", (timeout.tv_sec * 1000) + (timeout.tv_usec / 1000), nfds);
-      r = select(nfds, &readfds, &writefds, &exceptfds, &timeout);
-    }
+      NNLOG("newnet.net.debug", "Waiting at most %li ms until one of %i sockets wakes up (max FD: %i).", (timeout.tv_sec * 1000) + (timeout.tv_usec / 1000), currentSocketNo(), maxFileDescriptor());
     else
-    {
-      NNLOG("newnet.net.debug", "Waiting indefinitely until one of max. %i sockets wakes up.", nfds);
-      r = select(nfds, &readfds, &writefds, &exceptfds, 0);
-    }
+      NNLOG("newnet.net.debug", "Waiting indefinitely until one of %i sockets wakes up (max FD: %i).", currentSocketNo(), maxFileDescriptor());
 
-    if(r == -1) { // An error occured
-        NNLOG("newnet.net.warn", "Error %d while selecting sockets", errno);
-        numErrors++;
-        if (numErrors > 10000) {
-            NNLOG("newnet.net.warn", "Too many socket errors (%d). Closing museekd.", errno);
-            return;
+    return false;
+}
+
+void
+NewNet::Reactor::eventCallback(int fd, short event, void *arg) {
+    NNLOG("newnet.net.debug", "Entering event callback.");
+
+    bool loop = true;
+    while (loop) {
+        // Let the sockets do their job
+        if ((event & EV_READ) || (event & EV_WRITE)) {
+            /* Make a copy of our socket list, as they might disappear because of
+               events that occur and then our iterators go berserk */
+            std::vector<RefPtr<Socket> > sockets(m_Sockets);
+
+            /* Check which events we want to hear about from which sockets */
+            std::vector<RefPtr<Socket> >::iterator it, end = sockets.end();
+            // Process the event
+            for(it = sockets.begin(); it != end; ++it)
+            {
+              NewNet::Socket * sock = *it;
+              int fdSock = sock->descriptor();
+              if(fdSock != fd)
+                continue;
+
+              // Update the socket's ready state
+              int state = 0;
+              if(event & EV_READ)
+                state |= NewNet::Socket::StateReceive;
+              if(event & EV_WRITE)
+                state |= NewNet::Socket::StateSend;
+              sock->setReadyState(state);
+
+              // If we have something to report, make the socket process the events.
+              if(state)
+                sock->process();
+            }
         }
-        continue; // Let's pretend nothing happened and just try again
-    }
-    else
-        numErrors = 0;
 
-    for(it = sockets.begin(); (it != end) && (r > 0); ++it)
+        loop = prepareReactorData();
+    }
+}
+
+void
+NewNet::Reactor::checkSockets(struct timeval & timeout, bool & timeout_set) {
+    /* Make a copy of our socket list, as they might disappear because of
+       events that occur and then our iterators go berserk */
+    std::vector<RefPtr<Socket> > sockets(m_Sockets);
+
+    /* Check which events we want to hear about from which sockets */
+    std::vector<RefPtr<Socket> >::iterator it, end = sockets.end();
+
+    int nfds = 0;
+
+    for(it = sockets.begin(); it != end; ++it)
     {
+      /* Convenience... */
       NewNet::Socket * sock = *it;
+      struct event *evData = sock->getEventData();
       int fd = sock->descriptor();
       if(fd == -1)
         continue;
 
-      // Update the socket's ready state
-      int state = 0;
-      if(FD_ISSET(fd, &readfds))
-        state |= NewNet::Socket::StateReceive;
-      if(FD_ISSET(fd, &writefds))
-        state |= NewNet::Socket::StateSend;
-      if(FD_ISSET(fd, &exceptfds))
-        state |= NewNet::Socket::StateException;
-      sock->setReadyState(state);
+      long n; // miliseconds to next window of opportunity
+      short evFlags = 0; // event type flag to be used
 
-      // If we have something to report, make the socket process the events.
-      if(state)
+      switch(sock->socketState())
       {
-        --r;
-        sock->process();
+        /* The socket is dead, no events are interesting */
+        case NewNet::Socket::SocketUninitialized:
+        case NewNet::Socket::SocketDisconnecting:
+        case NewNet::Socket::SocketDisconnected:
+        case NewNet::Socket::SocketException:
+          break;
+
+        /* Listening socket, check for read-ready events */
+        case NewNet::Socket::SocketListening:
+          evFlags = EV_READ;
+          nfds = std::max(nfds, fd + 1);
+          break;
+
+        /* Connecting socket, check for write-ready events */
+        case NewNet::Socket::SocketConnecting:
+          evFlags = EV_WRITE;
+          nfds = std::max(nfds, fd + 1);
+          break;
+
+        /* Connected socket, if possible / allowed check for read, write */
+        case NewNet::Socket::SocketConnected:
+          /* Check if we're allowed to receive, and if not, when we might be. */
+          n = (! sock->downRateLimiter()) ? 0 : sock->downRateLimiter()->nextWindow();
+          if(n == 0)
+            evFlags = EV_READ;
+          else
+          {
+            NNLOG("newnet.net.debug", "Download limiter for socket %i recommends %li ms sleep.", fd, n);
+            fixtime(timeout, n, timeout_set);
+          }
+
+          /* Check if we want to send, if we're allowed to send. And if we're
+             not allowed to send, when we might be. */
+          if(sock->dataWaiting())
+          {
+            n = (! sock->upRateLimiter()) ? 0 : sock->upRateLimiter()->nextWindow();
+            if(n == 0)
+                evFlags |= EV_WRITE;
+            else
+            {
+              NNLOG("newnet.net.debug", "Upload rate limiter for socket %i reports next window in %li ms", fd, n);
+              fixtime(timeout, n, timeout_set);
+            }
+          }
+
+          nfds = std::max(nfds, fd + 1);
+          break;
+        }
+
+      m_maxFD = nfds;
+
+      if (evFlags > 0) {
+        if (event_initialized(evData))
+            event_del(evData);
+        event_set(evData, fd, evFlags, ::eventCallback, this);
+        event_add(evData, NULL);
       }
     }
-  }
 }
 
 void
 NewNet::Reactor::stop()
 {
-  m_StopReactor = true;
+  event_loopexit(NULL);
 }
 
 NewNet::Reactor::Timeout::Callback *
@@ -430,3 +419,4 @@ NewNet::Reactor::maxFileDescriptor()
 {
     return m_maxFD;
 }
+

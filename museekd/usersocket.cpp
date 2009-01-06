@@ -134,8 +134,6 @@ Museek::UserSocket::onCannotConnectNotify(const SCannotConnect * msg)
     if (msg->token == token()) {
         NNLOG("museekd.user.debug", "Cannot connect to the peer.");
         disconnect();
-        if (reactor())
-            museekd()->reactor()->remove(this);
     }
 }
 
@@ -180,8 +178,6 @@ Museek::UserSocket::onCannotReverseConnect(NewNet::ClientSocket *)
   // Try to disconnect even if it's probably not necessary
   // then remove from reactor as this will probably not be done by disconnect()
   disconnect();
-  if (reactor())
-    museekd()->reactor()->remove(this);
 }
 
 void

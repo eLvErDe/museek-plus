@@ -459,7 +459,7 @@ Museek::PeerSocket::onSearchResultsReceived(const PSearchReply * message) {
 
     museekd()->searches()->searchReplyReceived(message->ticket, message->user, message->slotfree, message->avgspeed, message->queuelen, folders);
 
-    addSearchResultsOnlyTimeout(3000);
+    addSearchResultsOnlyTimeout(2000);
 }
 
 void
@@ -476,18 +476,10 @@ void
 Museek::PeerSocket::onSearchResultsOnly(long) {
     NNLOG("museekd.peers.debug", "We only received or sent search results: close this socket");
     disconnect();
-    if (reactor()) {
-        // We have to do this as we're not sure disconnect() will remove the socket from the reactor
-        museekd()->reactor()->remove(this);
-    }
 }
 
 void
 Museek::PeerSocket::onSocketTimeout(long) {
     NNLOG("museekd.peers.debug", "Ping timeout on a peer socket");
     disconnect();
-    if (reactor()) {
-        // We have to do this as we're not sure disconnect() will remove the socket from the reactor
-        museekd()->reactor()->remove(this);
-    }
 }

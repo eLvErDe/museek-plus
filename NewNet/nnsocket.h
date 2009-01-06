@@ -25,6 +25,7 @@
 #include "nnrefptr.h"
 #include "nnweakrefptr.h"
 #include "nnratelimiter.h"
+#include "event.h"
 
 namespace NewNet
 {
@@ -84,6 +85,8 @@ namespace NewNet
               m_ReadyState(0), m_SocketError(ErrorNoError),
               m_DataWaiting(false)
     {
+        m_EventData = new struct event;
+        m_EventData->ev_flags = 0; // This event has not been initialized
     }
 
     //! Return the associated reactor.
@@ -213,6 +216,18 @@ namespace NewNet
     {
     }
 
+    //! Associate some libevent data to the socket.
+    /*! Associate some libevent data to the socket. */
+    void setEventData(struct event & evData) {
+        *m_EventData = evData;
+    }
+
+    //! Returns libevent data associated with the socket.
+    /*! Returns libevent data associated with the socket. */
+    struct event * getEventData() {
+        return m_EventData;
+    }
+
   private:
     Reactor * m_Reactor;
     int m_FD;
@@ -221,6 +236,7 @@ namespace NewNet
     SocketError m_SocketError;
     bool m_DataWaiting;
     RefPtr<RateLimiter> m_DownRateLimiter, m_UpRateLimiter;
+    struct event * m_EventData;
   };
 }
 

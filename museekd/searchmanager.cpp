@@ -439,7 +439,7 @@ void Museek::SearchManager::onPeerSocketReady(PeerSocket * socket) {
         m_PendingResults.erase(pending);
 
         // Disconnect the peer socket as it is probably no longer needed and we have a limit for opened socket
-        socket->addSearchResultsOnlyTimeout(3000);
+        socket->addSearchResultsOnlyTimeout(2000);
     }
 }
 
@@ -449,10 +449,6 @@ void Museek::SearchManager::onPeerSocketReady(PeerSocket * socket) {
 void Museek::SearchManager::onParentDisconnected(NewNet::ClientSocket * socket_) {
     m_BranchRoot = museekd()->server()->username();
     setBranchLevel(0);
-
-    // Destroy this socket
-    if (socket_->reactor())
-        museekd()->reactor()->remove(socket_);
 
     setParent(0);
 
@@ -479,10 +475,6 @@ void Museek::SearchManager::onChildDisconnected(NewNet::ClientSocket * socket_) 
     DistributedSocket * socket = (DistributedSocket *) socket_;
 
     NNLOG("museekd.peers.debug", "Child %s is gone", socket->user().c_str());
-
-    // Destroy this socket
-    if (socket->reactor())
-        museekd()->reactor()->remove(socket);
 
     removeChild(socket->user());
 }

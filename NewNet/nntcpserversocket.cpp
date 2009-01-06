@@ -49,7 +49,8 @@ NewNet::TcpServerSocket::listen(const std::string & host, unsigned int port)
     address.sin_addr.s_addr = INADDR_ANY;
 
   int sock = socket(PF_INET, SOCK_STREAM, 0);
-  setnonblocking(sock);
+  if (!setnonblocking(sock))
+    NNLOG("newnet.net.warn", "Couldn't set socket %i to non blocking (errno: %i)", sock, errno);
 
   sockopt_t socket_option = 1;
   setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &socket_option, sizeof(int));

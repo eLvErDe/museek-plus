@@ -72,7 +72,7 @@ namespace NewNet
 #ifndef DOXYGEN_UNDOCUMENTED
     void operator()(const Log::LogNotify * notice)
     {
-      std::cerr << "[" << notice->domain << "] " << notice->message << std::endl;
+      std::cout << "[" << notice->domain << "] " << notice->message << std::endl;
     }
 #endif
   };

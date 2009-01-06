@@ -59,16 +59,18 @@ gettimeofday(struct timeval * tv, void * tz)
 }
 #endif // NN_NO_GETTIMEOFDAY
 
-inline static void
+inline static bool
 setnonblocking(int sock)
 {
 #ifndef WIN32
   int mode = fcntl(sock, F_GETFL, 0);
-  fcntl(sock, F_SETFL, mode|O_NONBLOCK);
+  if (fcntl(sock, F_SETFL, mode|O_NONBLOCK) < 0)
+      return false;
 #else
   u_long ioctlArg = 1;
   ioctlsocket(sock, FIONBIO, &ioctlArg);
 #endif // ! WIN32
+  return true;
 }
 
 #endif // NEWNET_UTIL_H

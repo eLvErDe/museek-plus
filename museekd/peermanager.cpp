@@ -45,8 +45,6 @@ Museek::PeerManager::PeerManager(Museekd * museekd) : m_Museekd(museekd)
   museekd->reactor()->tooManySockets.connect(this, &PeerManager::onTooManySockets);
   museekd->reactor()->notTooManySockets.connect(this, &PeerManager::onNotTooManySockets);
 
-  m_AllowConnections = true;
-
   listen();
 }
 
@@ -123,7 +121,7 @@ Museek::PeerManager::peerSocket(const std::string & user, bool force) {
         int maxSocket = museekd()->reactor()->maxSocketNo();
         int currentSockets = museekd()->reactor()->currentSocketNo();
 
-        if (!force && (maxSocket > 100) && ((currentSockets > (maxSocket - static_cast<int>(maxSocket*0.5))) || (museekd()->reactor()->maxFileDescriptor() > FD_SETSIZE - 500))) {
+        if (!force && (maxSocket > 0) && (currentSockets > (maxSocket - static_cast<int>(maxSocket*0.5)))) {
             NNLOG("museekd.peers.warn", "Too many opened peer socket, cannot open a new one with low priority");
             peerSocketUnavailableEvent(user);
             return;
@@ -174,9 +172,9 @@ Museek::PeerManager::peerSocket(const std::string & user, bool force) {
         peerSocketReadyEvent((*it).second);
 }
 
-/*
-    Register a peer socket associated with the given user
-*/
+/**
+  * Register a peer socket associated with the given user
+  */
 void Museek::PeerManager::addPeerSocket(PeerSocket * socket) {
     if(socket->user() == std::string()) {
         NNLOG("museekd.peers.warn", "Cannot add a peer socket with no user associated.");
@@ -184,14 +182,38 @@ void Museek::PeerManager::addPeerSocket(PeerSocket * socket) {
     }
 
     NNLOG("museekd.peers.debug", "Adding peer socket for %s", socket->user().c_str());
+
+    bool isOurself = (socket->user() == museekd()->server()->username());
+
+    // Disconnect and remove any existing peer socket for this user except if we're connecting to ourself
+    if (!isOurself)
+        removePeerSocket(socket->user(), true);
+
     // There shouldn't be several peer sockets for the same user. If that happens, keep only the last one.
     m_Peers[socket->user()] = socket;
-    socket->cannotConnectEvent.connect(this, &PeerManager::onPeerCannotConnect);
-    socket->disconnectedEvent.connect(this, &PeerManager::onDisconnected);
+    if (!isOurself || (isOurself && !m_Peers[socket->user()])) {
+        // Don't watch for disconnection twice if we're trying to connect to ourself
+        socket->cannotConnectEvent.connect(this, &PeerManager::onPeerCannotConnect);
+        socket->disconnectedEvent.connect(this, &PeerManager::onDisconnected);
+    }
     if (socket->socketState() == NewNet::Socket::SocketConnected)
         peerSocketReadyEvent(socket);
     else
         socket->connectedEvent.connect(this, &PeerManager::onConnected);
+}
+
+/**
+  * Remove a peer socket associated with the given user if found. If disconnect is set to true, the peer socket will be disconnected first.
+  */
+void Museek::PeerManager::removePeerSocket(const std::string & user, bool disconnect) {
+    std::map<std::string, NewNet::WeakRefPtr<PeerSocket> >::iterator it;
+    it = m_Peers.find(user);
+    if (it != m_Peers.end()) {
+        if (disconnect && it->second)
+            it->second->disconnect();
+        else // disconnect will call removePeerSocket later with disconnect = false
+            m_Peers.erase(it);
+    }
 }
 
 /*
@@ -224,7 +246,6 @@ void
 Museek::PeerManager::onTooManySockets(int) {
     NNLOG("museekd.peers.warn", "Too many opened sockets, trying to unlisten.");
     museekd()->ifaces()->sendStatusMessage(true, std::string("Too many opened sockets. Unlistening. You may have problems connecting to other peers for a little while."));
-    m_AllowConnections = false;
     unlisten();
 }
 
@@ -235,7 +256,6 @@ void
 Museek::PeerManager::onNotTooManySockets(int) {
     NNLOG("museekd.peers.warn", "Some sockets were freed. Listening again.");
     museekd()->ifaces()->sendStatusMessage(true, std::string("Some sockets were freed. Listening again. Museek should now work perfectly."));
-    m_AllowConnections = true;
     listen();
     museekd()->uploads()->checkUploads();
     museekd()->downloads()->checkDownloads();
@@ -303,14 +323,6 @@ Museek::PeerManager::onPeerCannotConnect(NewNet::ClientSocket * socket_)
     PeerSocket * socket = (PeerSocket *)socket_;
     // Get the name of the user.
     std::string user = socket->user();
-    // Check if this is the most recently constructed socket.
-    std::map<std::string, NewNet::WeakRefPtr<PeerSocket> >::iterator it;
-    it = m_Peers.find(user);
-    if((it != m_Peers.end()) && (it->second == socket)) {
-        socket->disconnect();
-        if (socket->reactor())
-            museekd()->reactor()->remove(socket);
-    }
 
     peerSocketUnavailableEvent(user);
 }
@@ -329,15 +341,14 @@ void
 Museek::PeerManager::onDisconnected(NewNet::ClientSocket * socket_)
 {
 	NNLOG("museekd.peers.debug", "Peer socket disconnected");
+
     // Cast the socket to a peer socket.
     PeerSocket * socket = (PeerSocket *)socket_;
+
     // Get the name of the user.
-    std::string user = socket->user();
+    std::string user(socket->user());
     // Check if this is the most recently constructed socket.
-    std::map<std::string, NewNet::WeakRefPtr<PeerSocket> >::iterator it;
-    it = m_Peers.find(user);
-    if ((it != m_Peers.end()) && (it->second == socket))
-        m_Peers.erase(it);
+    removePeerSocket(user);
 }
 
 void
@@ -385,21 +396,21 @@ Museek::PeerManager::onServerLoggedInStateChanged(bool loggedIn)
 void
 Museek::PeerManager::onServerConnectToPeerRequested(const SConnectToPeer * message)
 {
-    if ((message->type == "P") && m_AllowConnections) {
+    if (message->type == "P") {
         PeerSocket * socket = new PeerSocket(m_Museekd);
         socket->setUser(message->user);
-        museekd()->peers()->addPeerSocket(socket);
+        addPeerSocket(socket);
         m_Museekd->reactor()->add(socket);
         socket->reverseConnect(message->user, message->token, message->ip, message->port);
     }
-    else if (message->type == "F") { // It's important: try to connect even if m_AllowConnections is false
+    else if (message->type == "F") {
         TicketSocket * socket = new TicketSocket(m_Museekd);
         m_Museekd->reactor()->add(socket);
         socket->reverseConnect(message->user, message->token, message->ip, message->port);
         // There may be some data waiting in the buffer (sent at connection). We have to ask the ticketsocket to check it.
         socket->findTicket();
     }
-    else if ((message->type == "D") && m_AllowConnections) {
+    else if (message->type == "D") {
         // Create a new DistributedSocket which will copy our descriptor and state.
         DistributedSocket * socket = new DistributedSocket(m_Museekd);
         // A potential parent doesn't care about our position

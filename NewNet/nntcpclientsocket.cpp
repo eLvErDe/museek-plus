@@ -50,7 +50,8 @@ NewNet::TcpClientSocket::connect(const std::string & host, unsigned int port)
   NNLOG("newnet.net.debug", "Connecting to host '%s:%u'.", host.c_str(), port);
 
   int s = socket(PF_INET, SOCK_STREAM, 0);
-  setnonblocking(s);
+  if (!setnonblocking(s))
+    NNLOG("newnet.net.warn", "Couldn't set socket %i to non blocking (errno: %i)", s, errno);
   setDescriptor(s);
 
   if(s < 0)

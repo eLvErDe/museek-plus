@@ -26,9 +26,10 @@
 void
 NewNet::ClientSocket::disconnect()
 {
-  if((socketState() == SocketUninitialized) || (descriptor() == -1))
+  if((socketState() == SocketUninitialized) || (descriptor() < 0))
   {
     NNLOG("newnet.net.warn", "Trying to disconnect an uninitialized client socket.");
+    disconnectedEvent(this);
     return;
   }
 
@@ -85,8 +86,10 @@ NewNet::ClientSocket::process()
     ssize_t received = ::recv(descriptor(), (char *)buf, 1024, 0);
     if(received == -1)
     {
-      if(errno == EAGAIN)
+      if ((errno == EAGAIN) || (errno == EWOULDBLOCK)) {
+        NNLOG("newnet.net.debug", "EAGAIN while receiving data on socket %i.", descriptor());
         setReadyState(readyState() & ~StateReceive);
+      }
       else
       {
         NNLOG("newnet.net.warn", "Socket %u encountered error %i. Closing it.", descriptor(), errno);

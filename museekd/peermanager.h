@@ -65,6 +65,7 @@ namespace Museek
     /* Find or make a peer socket for the specified user. */
     void peerSocket(const std::string & user, bool force = true);
     void addPeerSocket(PeerSocket * socket);
+    void removePeerSocket(const std::string & user, bool disconnect = false);
 
     std::map<std::string, SGetUserStats> *userStats() {return &m_UserStats;};
     std::map<std::string, uint32> *userStatus() {return &m_UserStatus;};
@@ -103,7 +104,6 @@ namespace Museek
     std::map<std::string, NewNet::WeakRefPtr<PeerSocket> >  m_Peers;            // List of all the peer sockets
     std::map<std::string, SGetUserStats>                    m_UserStats;        // User stats
     std::map<std::string, uint32>                           m_UserStatus;       // User status
-    bool                                                    m_AllowConnections; // Should we continue to connect to other peers?
   };
 }
 

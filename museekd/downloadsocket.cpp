@@ -123,11 +123,6 @@ Museek::DownloadSocket::stop()
 {
     NNLOG("museekd.down.debug", "Disconnecting download socket...");
     disconnect();
-    if (reactor()) {
-        // We have to do this as we're not sure disconnect() will remove the socket from the reactor
-        NNLOG("museekd.down.debug", "Removing download socket from reactor...");
-        museekd()->reactor()->remove(this);
-    }
 }
 
 /*

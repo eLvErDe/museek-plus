@@ -39,7 +39,7 @@ namespace Museek
     PeerSocket(HandshakeSocket * that);
     ~PeerSocket();
 
-    void addSearchResultsOnlyTimeout(long length = 3000);
+    void addSearchResultsOnlyTimeout(long length = 2000);
     void onSearchResultsOnly(long);
 
     #define MAP_MESSAGE(ID, TYPE, EVENT) NewNet::Event<const TYPE *> EVENT;

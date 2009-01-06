@@ -133,8 +133,6 @@ Museek::DistributedSocket::onFirewallPierceTimedOut(long)
     NNLOG("museekd.distrib.debug", "Passive connection failed: pierce firewall timed out.");
 
     disconnect();
-    if (reactor())
-        museekd()->reactor()->remove(this);
 }
 
 void Museek::DistributedSocket::onBranchLevelReceived(const DBranchLevel * msg) {
@@ -206,9 +204,4 @@ Museek::DistributedSocket::stop()
 {
     NNLOG("museekd.distrib.debug", "Disconnecting distributed socket...");
     disconnect();
-    if (reactor()) {
-        // We have to do this as we're not sure disconnect() will remove the socket from the reactor
-        NNLOG("museekd.distrib.debug", "Removing distributed socket from reactor...");
-        museekd()->reactor()->remove(this);
-    }
 }

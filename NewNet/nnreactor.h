@@ -25,7 +25,28 @@
 #include "nnsocket.h"
 #include "nnrefptr.h"
 #include "nnevent.h"
+#include "util.h"
 #include <vector>
+#include <event.h>
+
+/* Update timeout to 'ms' miliseconds after the current time if that's
+   sooner than the current timeout, or if no timeout has been set yet. */
+inline void fixtime(struct timeval & timeout, long ms, bool & timeout_set)
+{
+  struct timeval now;
+  gettimeofday(&now, 0);
+  if((! timeout_set) || (difftime(timeout, now) > ms))
+  {
+    timeout.tv_sec = now.tv_sec + (ms / 1000);
+    timeout.tv_usec = now.tv_usec + (ms % 1000) * 1000;
+    if(timeout.tv_usec >= 1000000)
+    {
+      timeout.tv_sec += 1;
+      timeout.tv_usec -= 1000000;
+    }
+    timeout_set = true;
+  }
+}
 
 namespace NewNet
 {
@@ -106,20 +127,36 @@ namespace NewNet
 
     //! Invoked when the maximum number of sockets has been reached
     /*! This event will be invoked when the you should stop creating new sockets */
-    Event<int> tooManySockets;
+    Event<int> tooManySockets; // FIXME not useful anymore (?)
 
     //! Invoked when the maximum number of sockets is no longer reached
     /*! This event will be invoked when the you can start creating new sockets */
-    Event<int> notTooManySockets;
+    Event<int> notTooManySockets; // FIXME not useful anymore (?)
+
+    //! Invoked by libevent when a socket wakes up
+    /*! Invoked by libevent when a socket wakes up */
+    void eventCallback(int, short, void *);
 
   private:
+    struct event mEvTimeout;
+
+  protected:
+    //! Prepare sockets to be watched by the reactor.
+    /*! Prepare sockets to be watched by the reactor. */
+    void checkSockets(struct timeval & timeout, bool & timeout_set);
+
+    //! Check for timeouts and emit needed actions. Set up next reactor wake up.
+    /*! Check for timeouts and emit needed actions. Set up next reactor wake up. */
     bool checkTimeouts(struct timeval & timeout, bool & timeout_set);
 
-    bool m_StopReactor;
-    bool m_TooManySockets;
+    //! Set up every data needed for the next reactor cycle.
+    /*! Set up every data needed for the next reactor cycle. */
+    bool prepareReactorData();
+
     int m_maxSocketNo;
     int m_maxFD;
     std::vector<RefPtr<Socket> > m_Sockets;
+
 #ifndef DOXYGEN_UNDOCUMENTED
     struct Timeouts;
     struct Timeouts * m_Timeouts;
@@ -129,5 +166,13 @@ namespace NewNet
 #endif
   };
 }
+
+#ifndef DOXYGEN_UNDOCUMENTED
+typedef std::pair<struct timeval, NewNet::RefPtr<NewNet::Reactor::Timeout::Callback> > TimeoutItem;
+struct NewNet::Reactor::Timeouts
+{
+  std::vector<TimeoutItem> timeouts;
+};
+#endif
 
 #endif // NEWNET_REACTOR_H

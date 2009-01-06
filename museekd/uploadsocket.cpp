@@ -109,11 +109,6 @@ Museek::UploadSocket::stop()
 {
     NNLOG("museekd.up.debug", "Disconnecting upload socket...");
     disconnect();
-    if (reactor()) {
-        // We have to do this as we're not sure disconnect() will remove the socket from the reactor
-        NNLOG("museekd.up.debug", "Removing upload socket from reactor...");
-        museekd()->reactor()->remove(this);
-    }
 }
 
 /*
