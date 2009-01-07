@@ -102,6 +102,7 @@ NewNet::ClientSocket::process()
     else if(received == 0)
     {
       NNLOG("newnet.net.debug", "Socket %u was disconnected.", descriptor());
+      closesocket(descriptor());
       setSocketState(SocketDisconnected);
       disconnectedEvent(this);
       return;
