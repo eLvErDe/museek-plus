@@ -51,13 +51,14 @@ namespace Museek
 
     void sendMessage(const NewNet::Buffer & buffer);
 
+    void firewallPierced(HandshakeSocket * socket);
+
   protected:
     void initiateActive();
     void initiatePassive();
 
     void onServerPeerAddressReceived(const SGetPeerAddress * message);
     void onCannotReverseConnect(NewNet::ClientSocket *);
-    void onFirewallPierced(HandshakeSocket * socket);
     void onFirewallPierceTimedOut(long);
     void onDisconnected(NewNet::ClientSocket *);
     void onCannotConnectNotify(const SCannotConnect * msg);

@@ -24,18 +24,20 @@
 #include <iostream>
 
 void
-NewNet::ClientSocket::disconnect()
+NewNet::ClientSocket::disconnect(bool invoke)
 {
   if((socketState() == SocketUninitialized) || (descriptor() < 0))
   {
     NNLOG("newnet.net.warn", "Trying to disconnect an uninitialized client socket.");
-    disconnectedEvent(this);
+    if (invoke)
+      disconnectedEvent(this);
     return;
   }
 
   closesocket(descriptor());
   setSocketState(SocketDisconnected);
-  disconnectedEvent(this);
+  if (invoke)
+    disconnectedEvent(this);
 }
 
 void

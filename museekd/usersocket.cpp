@@ -58,6 +58,9 @@ Museek::UserSocket::~UserSocket()
 void
 Museek::UserSocket::onDisconnected(NewNet::ClientSocket *)
 {
+  // Just in case this socket is still registered
+  m_Museekd->peers()->removePassiveConnectionWaiting(m_Token);
+
   if(reactor())
     reactor()->remove(this);
 }
@@ -93,17 +96,15 @@ Museek::UserSocket::initiatePassive()
   NNLOG("museekd.user.debug", "Initiating passive user connection to %s (type %s).", m_User.c_str(), m_Type.c_str());
 
   m_PassiveConnectTimeout = m_Museekd->reactor()->addTimeout(60000, this, &UserSocket::onFirewallPierceTimedOut);
-  m_Museekd->peers()->firewallPiercedEvent.connect(this, &UserSocket::onFirewallPierced);
+  m_Museekd->peers()->waitingPassiveConnection(this);
 
   SConnectToPeer msg(m_Token, m_User, m_Type);
   m_Museekd->server()->sendMessage(msg.make_network_packet());
 }
 
 void
-Museek::UserSocket::onFirewallPierced(Museek::HandshakeSocket * socket)
+Museek::UserSocket::firewallPierced(Museek::HandshakeSocket * socket)
 {
-  if(socket->token() == m_Token)
-  {
     NNLOG("museekd.user.debug", "%s's firewall successfully pierced.", m_User.c_str());
     if(m_PassiveConnectTimeout.isValid())
       m_Museekd->reactor()->removeTimeout(m_PassiveConnectTimeout);
@@ -115,12 +116,13 @@ Museek::UserSocket::onFirewallPierced(Museek::HandshakeSocket * socket)
         dataReceivedEvent(this);
     socket->receiveBuffer().clear();
     connectedEvent(this);
-  }
 }
 
 void
 Museek::UserSocket::onFirewallPierceTimedOut(long)
 {
+  m_Museekd->peers()->removePassiveConnectionWaiting(m_Token);
+
   if(socketState() == SocketUninitialized)
   {
     NNLOG("museekd.user.debug", "Passive connection failed: pierce firewall timed out. Trying an active connection.");
@@ -131,6 +133,8 @@ Museek::UserSocket::onFirewallPierceTimedOut(long)
 void
 Museek::UserSocket::onCannotConnectNotify(const SCannotConnect * msg)
 {
+    m_Museekd->peers()->removePassiveConnectionWaiting(m_Token);
+
     if (msg->token == token()) {
         NNLOG("museekd.user.debug", "Cannot connect to the peer.");
         disconnect();

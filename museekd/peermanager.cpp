@@ -45,6 +45,8 @@ Museek::PeerManager::PeerManager(Museekd * museekd) : m_Museekd(museekd)
   museekd->reactor()->tooManySockets.connect(this, &PeerManager::onTooManySockets);
   museekd->reactor()->notTooManySockets.connect(this, &PeerManager::onNotTooManySockets);
 
+  firewallPiercedEvent.connect(this, &PeerManager::onFirewallPierced);
+
   listen();
 }
 
@@ -418,5 +420,43 @@ Museek::PeerManager::onServerConnectToPeerRequested(const SConnectToPeer * messa
             socket->sendPosition();
         m_Museekd->reactor()->add(socket);
         socket->reverseConnect(message->user, message->token, message->ip, message->port);
+    }
+}
+
+/**
+  * Register a usersocket that is waiting for a response from a peer during a passive connection.
+  */
+void
+Museek::PeerManager::waitingPassiveConnection(UserSocket * socket) {
+    if (socket && (socket->token() > 0)) {
+        m_PassiveConnects[socket->token()] = socket;
+    }
+}
+
+/**
+  * Unregister a usersocket that is no longer waiting for a response from a peer during a passive connection.
+  */
+void
+Museek::PeerManager::removePassiveConnectionWaiting(uint token) {
+    if (token > 0) {
+        std::map<uint, NewNet::RefPtr<UserSocket> >::iterator it;
+        it = m_PassiveConnects.find(token);
+        if (it != m_PassiveConnects.end())
+            m_PassiveConnects.erase(it);
+    }
+}
+
+void
+Museek::PeerManager::onFirewallPierced(Museek::HandshakeSocket * socket)
+{
+    std::map<uint, NewNet::RefPtr<UserSocket> >::iterator it;
+    it = m_PassiveConnects.find(socket->token());
+    if (it != m_PassiveConnects.end()) {
+        it->second->firewallPierced(socket);
+        m_PassiveConnects.erase(it);
+    }
+    else {
+        NNLOG("museekd.user.warn", "Received an unexpected HPierceFirewall message.");
+        socket->disconnect(false);
     }
 }

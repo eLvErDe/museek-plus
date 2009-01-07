@@ -44,8 +44,8 @@ namespace NewNet
 
     //! Disconnect the client socket.
     /*! This immediately disconnects the client socket and invokes the
-        disconnected event. */
-    virtual void disconnect();
+        disconnected event (except if invoke is false). */
+    virtual void disconnect(bool invoke = true);
 
     //! Process network events.
     /*! This method is called by the reactor, it will process the events

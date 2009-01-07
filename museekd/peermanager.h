@@ -73,6 +73,10 @@ namespace Museek
 
     void setUserStatus(const std::string& user, uint32 status);
 
+    void waitingPassiveConnection(UserSocket * socket);
+    void removePassiveConnectionWaiting(uint token);
+    void onFirewallPierced(HandshakeSocket * socket);
+
   protected:
     void listen();
     void unlisten();
@@ -104,6 +108,7 @@ namespace Museek
     std::map<std::string, NewNet::WeakRefPtr<PeerSocket> >  m_Peers;            // List of all the peer sockets
     std::map<std::string, SGetUserStats>                    m_UserStats;        // User stats
     std::map<std::string, uint32>                           m_UserStatus;       // User status
+    std::map<uint, NewNet::RefPtr<UserSocket> >             m_PassiveConnects;  // Sockets trying to establish a passive connection
   };
 }
 
