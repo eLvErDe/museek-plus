@@ -117,6 +117,9 @@ public slots:
 	void addScript(const QString&);
 	void removeScript(const QString&);
 	void appendToLogWindow(const QString&);
+
+	void slotClose();
+
 signals:
 	void showAllTickers();
 	void hideAllTickers();
@@ -153,6 +156,7 @@ protected:
 private:
 	bool mWaitingPrivs;
 	bool DaemonRunning;
+	bool mCloseFromMenu;
 	IconListBox* mIcons;
 	QStackedWidget* mStack;
 	QLabel* mTitle;

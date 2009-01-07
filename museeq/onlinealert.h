@@ -28,7 +28,6 @@ class QSpacerItem;
 class QLabel;
 class QFrame;
 class QPushButton;
-class QCloseEvent;
 
 class OnlineAlert : public QDialog
 {
@@ -47,8 +46,6 @@ signals:
     void removeAlert(const QString&);
 
 protected:
-	void closeEvent(QCloseEvent *);
-
     QString mUser;
 
     QVBoxLayout* OnlineAlertLayout;

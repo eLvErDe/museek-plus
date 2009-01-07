@@ -160,7 +160,7 @@ Museeq::Museeq(QApplication * app)
 	mTrayMenu->addAction(tr("&Museek Settings"),  mMainWin , SLOT( changeSettings()) );
 	mTrayMenu->addAction(tr("&Hide"),  mMainWin , SLOT( hide()  ) );
 	mTrayMenu->addSeparator();
-	mTrayMenu->addAction( tr("&Quit"),  mMainWin , SLOT( close() ) );
+	mTrayMenu->addAction( tr("&Quit"),  mMainWin , SLOT( slotClose() ) );
 	mTray =  new QSystemTrayIcon( IMG("icon"), this);
 	mTray->setToolTip(tr("Museeq"));
 	mTray->setContextMenu(mTrayMenu);
@@ -903,6 +903,7 @@ int main(int argc, char **argv) {
 		museeq->mUsetray = true;
 	}
 	museeq->trayicon_load();
+	app.setQuitOnLastWindowClosed( false );
 	museeq->mainwin()->show();
 	museeq->mainwin()->connectToMuseek();
 

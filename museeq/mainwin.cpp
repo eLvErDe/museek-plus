@@ -81,6 +81,8 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(0, 0), m
 	connect(museeq, SIGNAL(configChanged(const QString&, const QString&, const QString&)), SLOT(slotConfigChanged(const QString&, const QString&, const QString&)));
 
 
+    mCloseFromMenu = false;
+
 	mMenuFile = menuBar()->addMenu(tr("&File"));
 	ActionConnect = new QAction(IMG("connect"), tr("&Connect..."), this);
 	ActionConnect->setShortcut(tr("Alt+C"));
@@ -113,7 +115,7 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(0, 0), m
 
 	ActionExit = new QAction(IMG("exit"), tr("E&xit"), this);
 	ActionExit->setShortcut(tr("Alt+X"));
-	connect(ActionExit, SIGNAL(triggered()), this, SLOT(close()));
+	connect(ActionExit, SIGNAL(triggered()), this, SLOT(slotClose()));
 	mMenuFile->addAction(ActionExit);
 
 	ActionDisconnect->setEnabled(false);
@@ -1281,24 +1283,34 @@ void MainWindow::resizeEvent(QResizeEvent * ev) {
 }
 
 void MainWindow::closeEvent(QCloseEvent * ev) {
-	ev->setAccepted(false);
-	if ( museeq->settings()->value("ShowExitDialog", false).toBool()) {
+    // If we asked to close from the X button (top right), send to the tray.
+    if (!mCloseFromMenu) {
+        ev->ignore();
+        toggleVisibility();
+        return;
+    }
+
+    if ( museeq->settings()->value("ShowExitDialog", false).toBool()) {
 		if (DaemonRunning && museeq->settings()->value("ShutDownDaemonOnExit", false).toBool()) {
 			if (QMessageBox::question(this, tr("Shutdown Museeq"), tr("The Museek Daemon was launched by Museeq and is still running, and will be shut down if you close Museeq, are you sure you want to?"), tr("&Yes"), tr("&No"), QString::null, 1 ) ) {
+                ev->ignore();
 				return;
 			}
 		}
 		else if (DaemonRunning)  {
-			if (QMessageBox::question(this, tr("Shutdown Museeq"), tr("The Museek Daemon was launched by Museeq and is still running, but will <b>not</b> be shut down if you close Museeq. Are you sure you want to?"), tr("&Yes"), tr("&No"), QString::null, 1 ) ) {
+			if (QMessageBox::question(this, tr("Shutdown Museeq"), tr("The Museek Daemon was launched by Museeq and is still running, but will <b>not</b> be shut down if you close Museeq. Are you sure you want to?"), tr("&Yes"), tr("&No"), QString::null, 1 ) ) { // FIXME this message is wrong as long as museekd is launched as a child process
+                ev->ignore();
 				return;
 			}
 		}
 		else {
 			if (QMessageBox::question(this, tr("Shutdown Museeq"), tr("It's safe to close Museeq, but are you sure you want to?"), tr("&Yes"), tr("&No"), QString::null, 1 ) ) {
+                ev->ignore();
 				return;
 			}
 		}
 	}
+
 	museeq->settings()->beginGroup("/MuseekPlus.org/Museeq");
 	museeq->settings()->setValue("X", mLastPos.x());
 	museeq->settings()->setValue("Y", mLastPos.y());
@@ -1309,6 +1321,12 @@ void MainWindow::closeEvent(QCloseEvent * ev) {
 		stopDaemon();
 	ev->accept();
 	QApplication::instance()->quit();
+}
+
+void MainWindow::slotClose() {
+    mCloseFromMenu = true;
+    close();
+    mCloseFromMenu = false;
 }
 
 void MainWindow::loadScript() {

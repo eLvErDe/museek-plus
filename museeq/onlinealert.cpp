@@ -25,7 +25,6 @@
 #include <QFrame>
 #include <QPushButton>
 #include <QDateTime>
-#include <QCloseEvent>
 
 OnlineAlert::OnlineAlert( QWidget* parent, const char* name, bool modal, Qt::WFlags fl )
     : QDialog( parent )
@@ -55,7 +54,7 @@ OnlineAlert::OnlineAlert( QWidget* parent, const char* name, bool modal, Qt::WFl
 
     // signals and slots connections
     connect( mRemove, SIGNAL( clicked() ), this, SLOT( slotRemoveAlert() ) );
-    connect( mOK, SIGNAL( clicked() ), this, SLOT( hide() ) );
+    connect( mOK, SIGNAL( clicked() ), this, SLOT( accept() ) );
 }
 
 /*
@@ -95,10 +94,5 @@ void OnlineAlert::slotUserStatus( const QString & user, uint status )
 void OnlineAlert::slotRemoveAlert()
 {
     emit removeAlert(mUser);
-    hide();
-}
-
-void OnlineAlert::closeEvent(QCloseEvent * ev) {
-    hide();
-    ev->ignore();
+    accept();
 }
