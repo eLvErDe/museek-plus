@@ -72,7 +72,7 @@ namespace Museek
     std::string filename() const;
     std::string incompletePath() const;
     void setIncompletePath(const std::string & path) const { m_IncompletePath = path;};
-    std::string destinationPath() const;
+    std::string destinationPath(bool create = false) const;
 
     uint64 size() const { return m_Size; }
     void setSize(uint64 size);

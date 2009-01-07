@@ -224,7 +224,7 @@ Museek::DownloadSocket::finish()
     // Ok, we're done.
     m_Download->setState(TS_Finished);
 
-    std::string destpath = m_Download->destinationPath();
+    std::string destpath = m_Download->destinationPath(true);
 
 #ifdef WIN32
     // On Win32, rename doesn't overwrite an existing file automatically.

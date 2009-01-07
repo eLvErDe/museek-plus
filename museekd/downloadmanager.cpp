@@ -124,7 +124,7 @@ Museek::Download::incompletePath() const
   * Encoded with FS encoding. Separator is the FS one.
   */
 std::string
-Museek::Download::destinationPath() const
+Museek::Download::destinationPath(bool create) const
 {
     // Build destination directory.
     std::stringstream path;
@@ -145,7 +145,8 @@ Museek::Download::destinationPath() const
         path << m_LocalDir;
 
     // Make sure the directory exists.
-    makedirs(path.str());
+    if (create)
+        makedirs(path.str());
 
     path << NewNet::Path::separator();
 
