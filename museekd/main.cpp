@@ -35,6 +35,29 @@
 /* Global reference to the museekd instance. */
 static NewNet::RefPtr<Museek::Museekd> museekd;
 
+/* Returns true if museekd is already running. */
+int get_lock(void)
+{
+# ifdef HAVE_FCNTL_H
+  struct flock fl;
+  int fdlock;
+
+  fl.l_type = F_WRLCK;
+  fl.l_whence = SEEK_SET;
+  fl.l_start = 0;
+  fl.l_len = 1;
+
+  if((fdlock = open("/tmp/museekd.lock", O_WRONLY|O_CREAT, 0666)) == -1)
+    return 0;
+
+  if(fcntl(fdlock, F_SETLK, &fl) == -1)
+    return 0;
+
+# endif // HAVE_FCNTL_H
+
+  return 1;
+}
+
 /* Our signal handler, stop the reactor if we receive a HUP or INT signal. */
 static void museekd_signal_handler(int signal)
 {
@@ -103,6 +126,12 @@ public:
 
 int main(int argc, char ** argv)
 {
+  if(!get_lock())
+  {
+    std::cerr << "Museekd already running!" << std::endl;
+    return 1;
+  }
+
   std::string version("museekd :: Version 0.2.0 :: Museek Daemon Plus");
 
 #ifndef WIN32
