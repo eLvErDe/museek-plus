@@ -1810,62 +1810,62 @@
         <translation type="obsolete">Museek-instellingen</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1149"/>
+        <location filename="../settingsdialog.cpp" line="1152"/>
         <source>Ok</source>
         <translation>Ok</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1150"/>
+        <location filename="../settingsdialog.cpp" line="1153"/>
         <source>Save</source>
         <translation>Opslaan</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1151"/>
+        <location filename="../settingsdialog.cpp" line="1154"/>
         <source>Cancel</source>
         <translation>Annuleren</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1180"/>
+        <location filename="../settingsdialog.cpp" line="1183"/>
         <source>Filesystem Encoding:</source>
         <translation>Bestandssysteemcodering:</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1181"/>
+        <location filename="../settingsdialog.cpp" line="1184"/>
         <source>Network Encoding:</source>
         <translation>Netwerkcodering:</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1182"/>
+        <location filename="../settingsdialog.cpp" line="1185"/>
         <source>Connect</source>
         <translation>Verbinden</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1183"/>
+        <location filename="../settingsdialog.cpp" line="1186"/>
         <source>Disconnect</source>
         <translation>Verbinding verbreken</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1184"/>
+        <location filename="../settingsdialog.cpp" line="1187"/>
         <source>Server Port:</source>
         <translation>Serverpoort:</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1185"/>
+        <location filename="../settingsdialog.cpp" line="1188"/>
         <source>Server Host:</source>
         <translation>Serverhost:</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1186"/>
+        <location filename="../settingsdialog.cpp" line="1189"/>
         <source>Soulseek Username:</source>
         <translation>Soulseek-gebruikersnaam:</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1187"/>
+        <location filename="../settingsdialog.cpp" line="1190"/>
         <source>Soulseek Password:</source>
         <translation>Soulseek-wachtwoord:</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1194"/>
+        <location filename="../settingsdialog.cpp" line="1197"/>
         <source>Server</source>
         <translation>Server</translation>
     </message>
@@ -1875,17 +1875,17 @@
         <translation type="obsolete">&lt;p&gt;Configureer uw gedeelde bestanden met musetup, of voer &lt;u&gt;muscan -r&lt;/u&gt; uit om uw bestanden opnieuw in te lezen en klik:&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1196"/>
+        <location filename="../settingsdialog.cpp" line="1199"/>
         <source>Connections</source>
         <translation>Verbindingen</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1229"/>
+        <location filename="../settingsdialog.cpp" line="1232"/>
         <source>Active Connections</source>
         <translation>Actieve verbindingen</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1230"/>
+        <location filename="../settingsdialog.cpp" line="1233"/>
         <source>Passive Connections</source>
         <translation>Passieve verbindingen</translation>
     </message>
@@ -1895,17 +1895,17 @@
         <translation type="obsolete">Gedeelde bestanden herinlezen</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1233"/>
+        <location filename="../settingsdialog.cpp" line="1236"/>
         <source>Select..</source>
         <translation>Kiezen..</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1232"/>
+        <location filename="../settingsdialog.cpp" line="1235"/>
         <source>Download Dir:</source>
         <translation>Downloadmap:</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1234"/>
+        <location filename="../settingsdialog.cpp" line="1237"/>
         <source>Incomplete Dir:</source>
         <translation>Onvoltooide bestanden:</translation>
     </message>
@@ -1915,127 +1915,127 @@
         <translation type="obsolete">Gedeelde bestanden en verbindingen</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1237"/>
+        <location filename="../settingsdialog.cpp" line="1240"/>
         <source>Buddies are Privileged</source>
         <translation>Vrienden hebben voorrang</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1238"/>
+        <location filename="../settingsdialog.cpp" line="1241"/>
         <source>Online Alerts in Log Window instead of popup</source>
         <translation>Online waarschuwingen in logvenster in plaats van apart venster</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1239"/>
+        <location filename="../settingsdialog.cpp" line="1242"/>
         <source>Share to Buddies Only</source>
         <translation>Alleen met vrienden delen</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1240"/>
+        <location filename="../settingsdialog.cpp" line="1243"/>
         <source>Trusted users can Send you Files</source>
         <translation>Vertrouwde gebruikers mogen u bestanden sturen</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1241"/>
+        <location filename="../settingsdialog.cpp" line="1244"/>
         <source>Seperate Shares list for Buddies</source>
         <translation>Aparte lijst met gedeelde bestanden voor vrienden</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1242"/>
+        <location filename="../settingsdialog.cpp" line="1245"/>
         <source>Send automatic warnings to users via Private Chat</source>
         <translation>Automatische waarschuwingen naar gebruikers sturen via privéchat</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1243"/>
+        <location filename="../settingsdialog.cpp" line="1246"/>
         <source>IP addresses in Log Window instead of popup</source>
         <translation>IP-adressen in logvenster in plaats van apart venster</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1197"/>
+        <location filename="../settingsdialog.cpp" line="1200"/>
         <source>User Options</source>
         <translation>Gebruikeropties</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="978"/>
+        <location filename="../settingsdialog.cpp" line="981"/>
         <source>Select a Directory to store your downloaded files.</source>
         <translation>Kies een map om uw gedownloade bestanden in op te slaan.</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1021"/>
+        <location filename="../settingsdialog.cpp" line="1024"/>
         <source>All files (*)</source>
         <translation>Alle bestanden (*)</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1006"/>
+        <location filename="../settingsdialog.cpp" line="1009"/>
         <source>Select a Directory to store your incomplete downloading files.</source>
         <translation>Kies een map om uw onvoltooide, nog downloadende bestanden in op te slaan.</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="95"/>
+        <location filename="../settingsdialog.cpp" line="96"/>
         <source>Host</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="135"/>
+        <location filename="../settingsdialog.cpp" line="136"/>
         <source>Server status</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="240"/>
+        <location filename="../settingsdialog.cpp" line="241"/>
         <source>Directories</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="270"/>
+        <location filename="../settingsdialog.cpp" line="271"/>
         <source>Peer Connections</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="413"/>
+        <location filename="../settingsdialog.cpp" line="414"/>
         <source>Protocol</source>
         <translation type="unfinished">Protocol</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="413"/>
+        <location filename="../settingsdialog.cpp" line="414"/>
         <source>Handler</source>
         <translation type="unfinished">Verwerker</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="575"/>
+        <location filename="../settingsdialog.cpp" line="576"/>
         <source>Delete handler</source>
         <translation type="unfinished">Verwerker verwijderen</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="727"/>
+        <location filename="../settingsdialog.cpp" line="728"/>
         <source>Select a Directory to add to your Buddy Shares.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="753"/>
+        <location filename="../settingsdialog.cpp" line="754"/>
         <source>Select a Directory to write Private Chat log files.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="770"/>
+        <location filename="../settingsdialog.cpp" line="771"/>
         <source>Select a Directory to write Chat Room log files.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="815"/>
+        <location filename="../settingsdialog.cpp" line="816"/>
         <source>Select a Directory to add to your Normal Shares.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="992"/>
+        <location filename="../settingsdialog.cpp" line="995"/>
         <source>Select the museekd config file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="993"/>
+        <location filename="../settingsdialog.cpp" line="996"/>
         <source>XML files (*.xml)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1018"/>
+        <location filename="../settingsdialog.cpp" line="1021"/>
         <source>Images (*.png *.gif *.jpg *.jpeg)</source>
         <translation type="unfinished">Afbeeldingen (*.png *.gif *.jpg *.jpeg)</translation>
     </message>
@@ -2045,197 +2045,197 @@
         <translation type="obsolete">Kies een afbeelding voor uw gebruikersinfo</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1148"/>
+        <location filename="../settingsdialog.cpp" line="1151"/>
         <source>Museeq Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1152"/>
+        <location filename="../settingsdialog.cpp" line="1155"/>
         <source>Museekd Config:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1160"/>
+        <location filename="../settingsdialog.cpp" line="1163"/>
         <source>Refresh list</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1161"/>
+        <location filename="../settingsdialog.cpp" line="1164"/>
         <source>Update</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1162"/>
+        <location filename="../settingsdialog.cpp" line="1165"/>
         <source>Rescan</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1163"/>
+        <location filename="../settingsdialog.cpp" line="1166"/>
         <source>Add</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1164"/>
+        <location filename="../settingsdialog.cpp" line="1167"/>
         <source>Remove</source>
         <translation type="unfinished">Verwijderen</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1165"/>
+        <location filename="../settingsdialog.cpp" line="1168"/>
         <source>Listen port range (the first available port will be used when museekd starts up)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1166"/>
+        <location filename="../settingsdialog.cpp" line="1169"/>
         <source>First port:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1167"/>
+        <location filename="../settingsdialog.cpp" line="1170"/>
         <source>Last port:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1169"/>
+        <location filename="../settingsdialog.cpp" line="1172"/>
         <source>Clear</source>
         <translation type="unfinished">Wissen</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1170"/>
+        <location filename="../settingsdialog.cpp" line="1173"/>
         <source>Don&apos;t touch</source>
         <translation type="unfinished">Afblijven</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1171"/>
+        <location filename="../settingsdialog.cpp" line="1174"/>
         <source>Upload:</source>
         <translation type="unfinished">Uploaden:</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1175"/>
+        <location filename="../settingsdialog.cpp" line="1178"/>
         <source>Log Private Chats</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1176"/>
+        <location filename="../settingsdialog.cpp" line="1179"/>
         <source>Log Chat Rooms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1190"/>
+        <location filename="../settingsdialog.cpp" line="1193"/>
         <source>New</source>
         <translation type="unfinished">Nieuw</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1191"/>
+        <location filename="../settingsdialog.cpp" line="1194"/>
         <source>Modify</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1193"/>
+        <location filename="../settingsdialog.cpp" line="1196"/>
         <source>Museek Daemon</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1195"/>
+        <location filename="../settingsdialog.cpp" line="1198"/>
         <source>Shares</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1198"/>
+        <location filename="../settingsdialog.cpp" line="1201"/>
         <source>User Info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1200"/>
+        <location filename="../settingsdialog.cpp" line="1203"/>
         <source>Museeq</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1201"/>
+        <location filename="../settingsdialog.cpp" line="1204"/>
         <source>Appearance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1202"/>
+        <location filename="../settingsdialog.cpp" line="1205"/>
         <source>Fonts and Colors</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1203"/>
+        <location filename="../settingsdialog.cpp" line="1206"/>
         <source>Logging</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1204"/>
+        <location filename="../settingsdialog.cpp" line="1207"/>
         <source>Protocol handlers</source>
         <translation type="unfinished">Protocolverwerkers</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1207"/>
+        <location filename="../settingsdialog.cpp" line="1210"/>
         <source>Time &amp; Brackets Font</source>
         <translation type="unfinished">Lettertype voor tekst tussen haakjes &amp; tijd</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1215"/>
+        <location filename="../settingsdialog.cpp" line="1218"/>
         <source>Pick Font</source>
         <translation type="unfinished">Lettertype kiezen</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1209"/>
+        <location filename="../settingsdialog.cpp" line="1212"/>
         <source>Time &amp; Brackets Text Color</source>
         <translation type="unfinished">Kleur voor tekst tussen haakjes &amp; tijd</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1210"/>
+        <location filename="../settingsdialog.cpp" line="1213"/>
         <source>/Me Text</source>
         <translation type="unfinished">/Me tekst</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1224"/>
+        <location filename="../settingsdialog.cpp" line="1227"/>
         <source>Pick Color</source>
         <translation type="unfinished">Kleur kiezen</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1214"/>
+        <location filename="../settingsdialog.cpp" line="1217"/>
         <source>Message Font</source>
         <translation type="unfinished">Berichtlettertype</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1216"/>
+        <location filename="../settingsdialog.cpp" line="1219"/>
         <source>Buddied Users</source>
         <translation type="unfinished">Bevriende gebruikers</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1218"/>
+        <location filename="../settingsdialog.cpp" line="1221"/>
         <source>My Text</source>
         <translation type="unfinished">Mijn tekst</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1219"/>
+        <location filename="../settingsdialog.cpp" line="1222"/>
         <source>Trusted Users</source>
         <translation type="unfinished">Vertrouwde gebruikers</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1221"/>
+        <location filename="../settingsdialog.cpp" line="1224"/>
         <source>Banned Users</source>
         <translation type="unfinished">Verbannen gebruikers</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1223"/>
+        <location filename="../settingsdialog.cpp" line="1226"/>
         <source>Remote Text</source>
         <translation type="unfinished">Tekst van anderen</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1244"/>
+        <location filename="../settingsdialog.cpp" line="1247"/>
         <source>Maximum length of ticker messages:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1245"/>
+        <location filename="../settingsdialog.cpp" line="1248"/>
         <source>Align Mode Icons Vertically</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1020"/>
+        <location filename="../settingsdialog.cpp" line="1023"/>
         <source>Select an image for your User info</source>
         <translation type="unfinished"></translation>
     </message>

@@ -22,6 +22,7 @@
 #include "museeq.h"
 #include "codeccombo.h"
 #include "images.h"
+#include "mainwin.h"
 
 #include <QMenu>
 #include <QPushButton>
@@ -948,11 +949,13 @@ void SettingsDialog::finishedListBuddy( int exitCode, QProcess::ExitStatus exitS
 
 void SettingsDialog::finishedNormal( int exitCode, QProcess::ExitStatus exitStatus) {
 	EnableNormalButtons(true);
+	museeq->mainwin()->appendToLogWindow(QString("Normal shares successfully reloaded."));
 	NormalSharesRefresh();
 }
 
 void SettingsDialog::finishedBuddy( int exitCode, QProcess::ExitStatus exitStatus) {
 	EnableBuddyButtons(SBuddiesShares->isChecked());
+	museeq->mainwin()->appendToLogWindow(QString("Buddy shares successfully reloaded."));
 	BuddySharesRefresh();
 }
 
