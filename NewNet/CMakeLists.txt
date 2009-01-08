@@ -2,7 +2,7 @@ project(NewNet CXX)
 
 # Find Event
 find_package(Event REQUIRED)
-include_directories(${Event_INCLUDE_DIR})
+include_directories(${Event_INCLUDE_DIRS})
 
 if (Event_LIBRARIES AND EVENT_FOUND)
     set(NEWNET_SOURCES
