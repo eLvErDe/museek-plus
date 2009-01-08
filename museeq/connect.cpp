@@ -20,6 +20,7 @@
 
 #include "museeq.h"
 #include "connect.h"
+#include "util.h"
 
 #include <QCheckBox>
 #include <QLabel>
@@ -199,6 +200,8 @@ ConnectDialog::ConnectDialog(QWidget *parent, const char *name)
 void ConnectDialog::startDaemon()
 {
     museeq->startDaemon();
+    startDaemonButton->setDisabled(true);
+    stopDaemonButton->setDisabled(false);
 }
 
 void ConnectDialog::clearSockets()
@@ -240,7 +243,9 @@ void ConnectDialog::selectConfig()
 
 void ConnectDialog::stopDaemon()
 {
-  museeq->stopDaemon();
+    museeq->stopDaemon();
+    startDaemonButton->setDisabled(false);
+    stopDaemonButton->setDisabled(true);
 }
 
 
@@ -248,4 +253,16 @@ void ConnectDialog::save()
 {
   museeq->saveConnectConfig();
 
+}
+
+void ConnectDialog::showEvent( QShowEvent * event ) {
+    bool locked = Util::getMuseekdLock();
+    if (locked) {
+        startDaemonButton->setDisabled(true);
+        stopDaemonButton->setDisabled(false);
+    }
+    else {
+        startDaemonButton->setDisabled(false);
+        stopDaemonButton->setDisabled(true);
+    }
 }

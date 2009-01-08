@@ -35,6 +35,7 @@ class QPushButton;
 class QCheckBox;
 class QLabel;
 class QLineEdit;
+class QShowEvent;
 
  class ConnectDialog : public QDialog
 {
@@ -70,6 +71,7 @@ public slots:
 	virtual void stopDaemon();
 	virtual void save();
 	virtual void extraOptions();
+	void showEvent( QShowEvent * event );
 
 private:
 	QWidget * DaemonItems;

@@ -35,6 +35,7 @@
 #include "ipdialog.h"
 #include "settingsdialog.h"
 #include "images.h"
+#include "util.h"
 
 #include <QMenu>
 #include <QLabel>
@@ -323,7 +324,6 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(0, 0), m
 	QFrame* frame = new QFrame(MainWidget);
 	header->addWidget(frame);
 	frame->setFrameShape(QFrame::HLine);
-// 	frame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
 	QSplitter *split = new QSplitter(MainWidget);
 	split->setOrientation(Qt::Vertical);
@@ -331,7 +331,6 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(0, 0), m
 
 	mStack = new QStackedWidget(split);
 	mStack->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-// 	header->addWidget(mStack);
 	header->setStretchFactor(mStack, 10);
 	mChatRooms = new ChatRooms(MainWidget);
 
@@ -368,10 +367,7 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(0, 0), m
 	QObject::connect(mIcons, SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), SLOT(changePage(QListWidgetItem*, QListWidgetItem*)));
 
 	connect(museeq->driver(), SIGNAL(userStatus(const QString&, uint)), SLOT(slotUserStatus(const QString&, uint)));
-// 	split->setOrientation(QSplitter::Vertical);
 	mLog = new QTextEdit(split);
-// 	header->addWidget(mLog);
-//  	split->setResizeMode(mLog, QSplitter::Auto);
 
 	mLog->setReadOnly(true);
 	mLog->setAcceptRichText(true);
@@ -380,20 +376,14 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(0, 0), m
 	if ( ! museeq->mShowStatusLog)
 		mLog->hide();
 
-
-	DaemonRunning = false;
 	mChatRooms->updateTickers();
 
 	// Disable Museekd settings
 	mSettingsDialog->mTabHolder->setTabEnabled(mSettingsDialog->mTabHolder->indexOf(mSettingsDialog->mMuseekdTabs), false);
 
 	changeCMode();
-// 	box->setEnabled(false);
-	daemon = new QProcess(this);
-	connect( daemon, SIGNAL(started()),  this, SLOT(daemonStarted()) );
-	connect( daemon, SIGNAL(finished( int, QProcess::ExitStatus )), this, SLOT(daemonExited( int, QProcess::ExitStatus)) );
-	connect( daemon, SIGNAL(error( QProcess::ProcessError)), this, SLOT(daemonError( QProcess::ProcessError)) );
 }
+
 void MainWindow::toggleVisibility() {
 	if ( museeq->mainwin()->isVisible() )
 		museeq->mainwin()->hide();
@@ -430,55 +420,29 @@ void MainWindow::changeMode(uint page) {
 	mStack->setCurrentIndex(page);
 }
 void MainWindow::changePage(QListWidgetItem* current, QListWidgetItem* last) {
-// 	int ix = mIcons->currentItem();
 	mTitle->setText(mIcons->currentItem()->text());
 	mStack->setCurrentIndex(mIcons->row(mIcons->currentItem()));
 }
+
 void MainWindow::doDaemon() {
+    museekConfig = museeq->settings()->value("MuseekConfigFile").toString();
+    QStringList arguments;
+    if (! museekConfig.isEmpty() ) {
+        arguments.append("--config");
+        arguments.append(museekConfig);
+    }
 
- 	if (! DaemonRunning) {
- 		museekConfig = museeq->settings()->value("MuseekConfigFile").toString();
-        QStringList arguments;
-		if (! museekConfig.isEmpty() ) {
-			arguments.append("--config");
-			arguments.append(museekConfig);
-		}
-
-        // FIXME This will launch museekd as a child process of museeq. So when closing museeq, museekd will be closed too.
-        // We could use QProcess::startDetached() instead but this is a static method (no more started/finished/error signals emitted).
-		daemon->start("museekd", arguments);
-	} else {
-		messageLabel->setText(tr("Museek Daemon is already running..."));
-	}
+    QProcess::startDetached("museekd", arguments);
 }
 
 void MainWindow::stopDaemon() {
-	if (DaemonRunning) {
-		daemon->terminate();
+	if (Util::getMuseekdLock()) {
+		QProcess::startDetached("killall museekd");
 		messageLabel->setText(tr("Terminating Museek Daemon..."));
 	} else {
 		messageLabel->setText(tr("Museek Daemon not running, no need to stop it..."));
 	}
 
-}
-void MainWindow::daemonStarted( ) {
-	DaemonRunning = true;
-	messageLabel->setText(tr("Launched Museek Daemon..."));
-	mConnectDialog->startDaemonButton->setDisabled(true);
-	mConnectDialog->stopDaemonButton->setDisabled(false);
-}
-void MainWindow::daemonExited( int exitCode, QProcess::ExitStatus exitStatus) {
-	DaemonRunning = false;
-	messageLabel->setText(tr("Museek Daemon has Shut Down..."));
-	mConnectDialog->startDaemonButton->setDisabled(false);
-	mConnectDialog->stopDaemonButton->setDisabled(true);
-}
-void MainWindow::daemonError( QProcess::ProcessError error) {
-	museeq->output(QVariant(error).toString());
-	DaemonRunning = false;
-	messageLabel->setText(tr("Failed Launching Museek Daemon..."));
-	mConnectDialog->startDaemonButton->setDisabled(false);
-	mConnectDialog->stopDaemonButton->setDisabled(true);
 }
 
 void MainWindow::readSettings() {
@@ -629,14 +593,6 @@ void MainWindow::connectToMuseek() {
         doDaemon();
 	} else  {
 		mConnectDialog->mAutoStartDaemon->setChecked(false);
-	}
-	if (DaemonRunning) {
-		mConnectDialog->startDaemonButton->setDisabled(true);
-		mConnectDialog->stopDaemonButton->setDisabled(false);
-	} else {
-		mConnectDialog->startDaemonButton->setDisabled(false);
-		mConnectDialog->stopDaemonButton->setDisabled(true);
-;
 	}
 	museeq->settings()->beginGroup("Servers");
 	QStringList s_keys = museeq->settings()->childKeys();
@@ -1291,14 +1247,15 @@ void MainWindow::closeEvent(QCloseEvent * ev) {
     }
 
     if ( museeq->settings()->value("ShowExitDialog", false).toBool()) {
-		if (DaemonRunning && museeq->settings()->value("ShutDownDaemonOnExit", false).toBool()) {
-			if (QMessageBox::question(this, tr("Shutdown Museeq"), tr("The Museek Daemon was launched by Museeq and is still running, and will be shut down if you close Museeq, are you sure you want to?"), tr("&Yes"), tr("&No"), QString::null, 1 ) ) {
+        bool museekdRunning = Util::getMuseekdLock();
+		if (museekdRunning && museeq->settings()->value("ShutDownDaemonOnExit", false).toBool()) {
+			if (QMessageBox::question(this, tr("Shutdown Museeq"), tr("The Museek Daemon is still running, and will be shut down if you close Museeq, are you sure you want to?"), tr("&Yes"), tr("&No"), QString::null, 1 ) ) {
                 ev->ignore();
 				return;
 			}
 		}
-		else if (DaemonRunning)  {
-			if (QMessageBox::question(this, tr("Shutdown Museeq"), tr("The Museek Daemon was launched by Museeq and is still running, but will <b>not</b> be shut down if you close Museeq. Are you sure you want to?"), tr("&Yes"), tr("&No"), QString::null, 1 ) ) { // FIXME this message is wrong as long as museekd is launched as a child process
+		else if (museekdRunning)  {
+			if (QMessageBox::question(this, tr("Shutdown Museeq"), tr("The Museek Daemon was launched by Museeq and is still running, but will <b>not</b> be shut down if you close Museeq. Are you sure you want to?"), tr("&Yes"), tr("&No"), QString::null, 1 ) ) {
                 ev->ignore();
 				return;
 			}

@@ -35,7 +35,7 @@
 /* Global reference to the museekd instance. */
 static NewNet::RefPtr<Museek::Museekd> museekd;
 
-/* Returns true if museekd is already running. */
+/* Returns 0 if museekd is already running, 1 otherwise. */
 int get_lock(void)
 {
 # ifdef HAVE_FCNTL_H

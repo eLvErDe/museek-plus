@@ -80,9 +80,6 @@ public slots:
 	void saveSettings();
 	void doDaemon();
 	void stopDaemon();
-	void daemonExited(int, QProcess::ExitStatus);
-	void daemonError( QProcess::ProcessError);
-	void daemonStarted();
 	void toggleAway();
 	void toggleTrayicon();
 	void checkPrivileges();
@@ -155,7 +152,6 @@ protected:
 
 private:
 	bool mWaitingPrivs;
-	bool DaemonRunning;
 	bool mCloseFromMenu;
 	IconListBox* mIcons;
 	QStackedWidget* mStack;
@@ -163,7 +159,6 @@ private:
 	QLabel* statusLabel, * messageLabel;
 	QMenu* mMenuScripts, * mMenuUnloadScripts,  * mMenuHelp;
 	QString museekConfig;
-	QProcess *daemon;
 	ConnectDialog* mConnectDialog;
 	IPDialog* mIPDialog;
 

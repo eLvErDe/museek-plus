@@ -664,7 +664,6 @@ void Museeq::showURL(const QUrl& rawUrl) {
 	handlerargs.removeAt(0);
 	QProcess p;
 	p.startDetached(executable, handlerargs);
-// 	QMessageBox::warning(mMainWin, "Error", QString("Couldn't launch:\n%1").arg(handler));
 }
 
 void Museeq::setProtocolHandlers(const QMap<QString, QString>& h) {

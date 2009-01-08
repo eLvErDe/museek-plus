@@ -32,6 +32,7 @@ public:
 	static QString makeTime(uint);
 	static QString makeBitrate(uint bitrate, bool vbr);
 	static bool hasSlskUrls(const QDropEvent* e, bool needPath = false);
+	static bool getMuseekdLock();
 };
 
 #endif // UTIL_H

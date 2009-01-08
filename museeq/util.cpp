@@ -20,6 +20,7 @@
 
 #include "util.h"
 #include "museeq.h"
+#include "system.h"
 
 #include <QDropEvent>
 #include <QUrl>
@@ -88,4 +89,29 @@ bool Util::hasSlskUrls(const QDropEvent* e, bool needPath) {
 			return true;
 	}
 	return false;
+}
+
+/* Returns true if museekd is already running. */
+bool Util::getMuseekdLock()
+{
+# ifdef HAVE_FCNTL_H
+  struct flock fl;
+  int fdlock;
+
+  fl.l_type = F_WRLCK;
+  fl.l_whence = SEEK_SET;
+  fl.l_start = 0;
+  fl.l_len = 1;
+
+  if((fdlock = open("/tmp/museekd.lock", O_WRONLY|O_CREAT, 0666)) == -1)
+    return true;
+
+  if(fcntl(fdlock, F_SETLK, &fl) == -1)
+    return true;
+
+  close(fdlock);
+
+# endif // HAVE_FCNTL_H
+
+  return false;
 }

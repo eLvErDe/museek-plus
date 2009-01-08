@@ -245,7 +245,6 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Q
 	SharesGrid->addLayout(sharesBuddyListButtons, 8, 2);
 	SharesGrid->setRowStretch(6, 2);
 	SharesGrid->setRowStretch(8, 2);
-// 	SharesGrid->setRowStretch(10, 1);
 	BSharesRefresh = new QPushButton( sharesTab);
 	BSharesRefresh->setIcon( IMG("reload"));
 	sharesBuddyListButtons->addWidget( BSharesRefresh);
@@ -268,11 +267,9 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Q
 	connectionsTab = new QWidget( mMuseekdTabs );
 	mMuseekdTabs->addTab( connectionsTab, QString::fromLatin1("") );
 	ConnectionsGrid = new QGridLayout( connectionsTab);
-// 	buttonGroup2 = new QHButtonGroup( connectionsTab );
 	QGroupBox * connectionsBox = new QGroupBox(tr("Peer Connections"), connectionsTab);
 	ConnectionsGrid->addWidget(connectionsBox, 0, 0, 1, 4);
 	QHBoxLayout * cboxLayout = new QHBoxLayout(connectionsBox);
-// 	connectionsBox->setLayout();
 	SActive = new QRadioButton( connectionsTab );
 	SPassive = new QRadioButton( SActive);
 
@@ -403,8 +400,6 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Q
 	mBrowse->setIcon(IMG("open"));
 	UserInfoGrid->addWidget( mBrowse, 2, 2 );
 	connect( mBrowse, SIGNAL( clicked() ), this, SLOT( UserImageBrowse_clicked() ) );
-
-// 	UserInfoGrid->addWidget( buttonGroup1, 1, 1, 0, 2 );
 
 	// Protocol Handlers Tab
 	ProtocolTab = new QWidget( mMuseeqTabs);
@@ -572,6 +567,7 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Q
 
 	connect( LoggingPrivateButton, SIGNAL( clicked() ), this, SLOT( PrivateDirSelect() ) );
 	connect( LoggingRoomButton, SIGNAL( clicked() ), this, SLOT( RoomDirSelect() ) );
+
 	// Protocol treewidget signals
 	mProtocols->setContextMenuPolicy(Qt::CustomContextMenu);
 	mProtocolsMenu = new QMenu(this);
@@ -583,7 +579,6 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Q
 	connect(mProtocols, SIGNAL(customContextMenuRequested(const QPoint&)), SLOT(slotProtocolContextMenu(const QPoint&)));
 	connect( mNewHandler, SIGNAL( clicked() ), this, SLOT( mNewHandler_clicked() ) );
 	connect( mModifyHandler, SIGNAL( clicked() ), this, SLOT( mModifyHandler_clicked() ) );
-// 	connect( mProtocols, SIGNAL( itemRenamed(QTreeWidgetItem*,int) ), this, SLOT( mProtocols_itemRenamed(QTreeWidgetItem*,int) ) );
 
 	connect(museeq, SIGNAL(configChanged(const QString&, const QString&, const QString&)), SLOT(slotConfigChanged(const QString&, const QString&, const QString&)));
 
@@ -751,14 +746,12 @@ void SettingsDialog::BuddySharesAdd() {
     mSharesDirty = true;
 }
 
-
 void SettingsDialog::PrivateDirSelect() {
 	QString path = LoggingPrivateDir->text();
 	if (path.isEmpty())
 		path = QDir::homePath();
 	QFileDialog * fd = new QFileDialog(this, tr("Select a Directory to write Private Chat log files."), path);
 	fd->setFileMode(QFileDialog::Directory);
-// 	fd->setShowHiddenFiles(true);
 	fd->setViewMode(QFileDialog::Detail);
 	fd->setFilter(tr("All files (*)"));
 	if(fd->exec() == QDialog::Accepted && ! fd->selectedFiles().isEmpty())
@@ -777,7 +770,6 @@ void SettingsDialog::RoomDirSelect() {
 	QFileDialog * fd = new QFileDialog(this, tr("Select a Directory to write Chat Room log files."), path);
 	fd->setFileMode(QFileDialog::Directory);
 	fd->setViewMode(QFileDialog::Detail);
-// 	fd->setShowHiddenFiles(true);
 
 	fd->setFilter(tr("All files (*)"));
 	if(fd->exec() == QDialog::Accepted && ! fd->selectedFiles().isEmpty())
@@ -858,9 +850,7 @@ void SettingsDialog::BuddySharesRemove() {
 	arguments.append(directory );
 	proc2->start( "muscan", arguments );
 
-// 		EnableBuddyButtons(true);
     mSharesDirty = true;
-
 }
 
 void SettingsDialog::NormalSharesRemove() {
@@ -879,7 +869,6 @@ void SettingsDialog::NormalSharesRemove() {
 	arguments.append("-u" );
 	arguments.append(directory );
 	proc1->start( "muscan", arguments );
-// 		EnableNormalButtons(true);
 
     mSharesDirty = true;
 }
@@ -896,10 +885,9 @@ void SettingsDialog::NormalSharesRescan() {
 
 	proc1->start( "muscan", arguments );
 
-// 		EnableNormalButtons(true);
     mSharesDirty = true;
-
 }
+
 void SettingsDialog::NormalSharesUpdate() {
 	EnableNormalButtons(false);
 
@@ -911,10 +899,8 @@ void SettingsDialog::NormalSharesUpdate() {
 
 	proc1->start( "muscan", arguments );
 
-// 		EnableNormalButtons(true);
     mSharesDirty = true;
 }
-
 
 void SettingsDialog::EnableBuddyButtons(bool on) {
 	BSharesRefresh->setEnabled(on);
@@ -923,6 +909,7 @@ void SettingsDialog::EnableBuddyButtons(bool on) {
 	BSharesRescan->setEnabled(on);
 	BSharesUpdate->setEnabled(on);
 }
+
 void SettingsDialog::EnableNormalButtons(bool on) {
 	NSharesRefresh->setEnabled(on);
 	NSharesAdd->setEnabled(on);
@@ -950,16 +937,20 @@ void SettingsDialog::readBuddy() {
 		}
 	}
 }
+
 void SettingsDialog::finishedListNormal( int exitCode, QProcess::ExitStatus exitStatus) {
 	EnableNormalButtons(true);
 }
+
 void SettingsDialog::finishedListBuddy( int exitCode, QProcess::ExitStatus exitStatus) {
 	EnableBuddyButtons(SBuddiesShares->isChecked());
 }
+
 void SettingsDialog::finishedNormal( int exitCode, QProcess::ExitStatus exitStatus) {
 	EnableNormalButtons(true);
 	NormalSharesRefresh();
 }
+
 void SettingsDialog::finishedBuddy( int exitCode, QProcess::ExitStatus exitStatus) {
 	EnableBuddyButtons(SBuddiesShares->isChecked());
 	BuddySharesRefresh();
@@ -998,7 +989,6 @@ void SettingsDialog::SConfig_clicked()
 {
 	QFileDialog * fd = new QFileDialog(this, QDir::homePath());
 	fd->setFileMode(QFileDialog::ExistingFile );
-// 	fd->setShowHiddenFiles(true);
 	fd->setWindowTitle(tr("Select the museekd config file."));
 	fd->setFilter(tr("XML files (*.xml)"));
 	if(fd->exec() == QDialog::Accepted && ! fd->selectedFiles().isEmpty())
@@ -1052,6 +1042,7 @@ void SettingsDialog::mModifyHandler_clicked()
 		mProtocols->editItem(item, 1);
 	}
 }
+
 void SettingsDialog::slotProtocolContextMenu(const QPoint& pos) {
 	QTreeWidgetItem * item = mProtocols->itemAt(pos);
 	if(! item)
@@ -1066,14 +1057,12 @@ void SettingsDialog::mProtocols_itemDelete() {
 	delete item;
 }
 
-
 void SettingsDialog::color_text_me()
 {
    QColor c = QColorDialog::getColor( SMeText->text(), this );
     if ( c.isValid() )
 	SMeText->setText(c.name());
 }
-
 
 void SettingsDialog::color_text_buddied()
 {
@@ -1082,14 +1071,12 @@ void SettingsDialog::color_text_buddied()
 	SBuddiedText->setText(c.name());
 }
 
-
 void SettingsDialog::color_text_nickname()
 {
    QColor c = QColorDialog::getColor( SNicknameText->text(), this );
     if ( c.isValid() )
 	SNicknameText->setText(c.name());
 }
-
 
 void SettingsDialog::color_text_banned()
 {
@@ -1098,16 +1085,12 @@ void SettingsDialog::color_text_banned()
 	SBannedText->setText(c.name());
 }
 
-
-
-
 void SettingsDialog::color_text_remote()
 {
    QColor c = QColorDialog::getColor( SRemoteText->text(), this );
     if ( c.isValid() )
 	SRemoteText->setText(c.name());
 }
-
 
 void SettingsDialog::color_text_time()
 {
@@ -1135,7 +1118,6 @@ void SettingsDialog::font_text_time()
 
     }
 }
-
 
 void SettingsDialog::font_text_message()
 {
@@ -1184,8 +1166,6 @@ void SettingsDialog::languageChange()
 	listenPortsStartLabel->setText( tr( "First port:" ) );
 	listenPortsEndLabel->setText( tr( "Last port:" ) );
 
-
-// 	buttonGroup1->setTitle( tr( "Image" ) );
 	mClear->setText( tr( "Clear" ) );
 	mDontTouch->setText( tr( "Don't touch" ) );
 	mUpload->setText( tr( "Upload:" ) );
@@ -1207,9 +1187,6 @@ void SettingsDialog::languageChange()
 	passwordLabel->setText( tr( "Soulseek Password:" ) );
 	SSoulseekPassword->setInputMask( QString::null );
 
-
-// 	mProtocols->header()->setLabel( 0, tr( "Protocol" ) );
-// 	mProtocols->header()->setLabel( 1, tr( "Handler" ) );
 	mNewHandler->setText( tr( "New" ) );
 	mModifyHandler->setText( tr( "Modify" ) );
 	// Museekd Tabs
@@ -1249,7 +1226,6 @@ void SettingsDialog::languageChange()
 
 
 	// Connections and Ports
-// 	buttonGroup2->setTitle( tr( "Connections" ) );
 	SActive->setText( tr( "Active Connections" ) );
 	SPassive->setText( tr( "Passive Connections" ) );
 	SDownloadButton->setText( tr( "Select.." ) );

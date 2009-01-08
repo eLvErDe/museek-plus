@@ -1,5 +1,6 @@
 Requirements:
 libxml++2.6-dev or libxml++1.0-dev
+libevent >= 1.3e
 GCC
 Python (by Python bindings)
 pyexpat (for musetup)
