@@ -26,6 +26,7 @@
 #include <QWidget>
 
 class QCheckBox;
+class QPushButton;
 class SearchListView;
 class SearchFilter;
 
@@ -59,6 +60,7 @@ private:
 	QCheckBox* mShowFilters;
 	SearchFilter* mFilters;
 	SearchListView* mResults;
+	QPushButton* mIgnore;
 };
 
 #endif // SEARCH_H

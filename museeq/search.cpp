@@ -37,7 +37,7 @@ Search::Search(const QString& query, QWidget* parent, const char* name)
 	MainLayout->addLayout(ButtonLayout);
 	mShowFilters = new QCheckBox(tr("Enable filters"), this);
 	ButtonLayout->addWidget(mShowFilters);
-	QPushButton* mIgnore = new QPushButton(tr("Stop search"), this);
+	mIgnore = new QPushButton(tr("Stop search"), this);
 	ButtonLayout->addWidget(mIgnore);
 
 	mFilters = new SearchFilter(this);
@@ -66,6 +66,7 @@ QString Search::query() const {
 
 void Search::setToken(uint token) {
 	mTokens.push_back( token);
+	mIgnore->setDisabled(false);
 }
 
 bool Search::hasToken(uint token) const {
@@ -79,6 +80,7 @@ void Search::append(const QString& u, bool f, uint s, uint q, const NFolder& r) 
 
 void Search::ignoreSearch() {
 	mTokens.clear();
+	mIgnore->setDisabled(true);
 }
 
 void Search::refilter() {
