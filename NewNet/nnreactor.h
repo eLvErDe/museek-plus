@@ -125,14 +125,6 @@ namespace NewNet
     //! Returns the highest file descriptor currently used
     int maxFileDescriptor();
 
-    //! Invoked when the maximum number of sockets has been reached
-    /*! This event will be invoked when the you should stop creating new sockets */
-    Event<int> tooManySockets; // FIXME not useful anymore (?)
-
-    //! Invoked when the maximum number of sockets is no longer reached
-    /*! This event will be invoked when the you can start creating new sockets */
-    Event<int> notTooManySockets; // FIXME not useful anymore (?)
-
     //! Invoked by libevent when a socket wakes up
     /*! Invoked by libevent when a socket wakes up */
     void eventCallback(int, short, void *);

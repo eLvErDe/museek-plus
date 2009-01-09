@@ -42,8 +42,6 @@ Museek::PeerManager::PeerManager(Museekd * museekd) : m_Museekd(museekd)
   museekd->server()->connectToPeerRequestedEvent.connect(this, &PeerManager::onServerConnectToPeerRequested);
   museekd->server()->userStatusReceivedEvent.connect(this, &PeerManager::onServerUserStatusReceived);
   museekd->server()->userStatsReceivedEvent.connect(this, &PeerManager::onServerUserStatsReceived);
-  museekd->reactor()->tooManySockets.connect(this, &PeerManager::onTooManySockets);
-  museekd->reactor()->notTooManySockets.connect(this, &PeerManager::onNotTooManySockets);
 
   firewallPiercedEvent.connect(this, &PeerManager::onFirewallPierced);
 
@@ -239,28 +237,6 @@ Museek::PeerManager::onServerUserStatusReceived(const SGetStatus * message)
         // If he's only disconnected from the server, we can still talk to him directly.
         peerOfflineEvent(message->user);
     }
-}
-
-/**
-  * Called when we have to stop creating new sockets
-  */
-void
-Museek::PeerManager::onTooManySockets(int) {
-    NNLOG("museekd.peers.warn", "Too many opened sockets, trying to unlisten.");
-    museekd()->ifaces()->sendStatusMessage(true, std::string("Too many opened sockets. Unlistening. You may have problems connecting to other peers for a little while."));
-    unlisten();
-}
-
-/**
-  * Called when we can create new sockets
-  */
-void
-Museek::PeerManager::onNotTooManySockets(int) {
-    NNLOG("museekd.peers.warn", "Some sockets were freed. Listening again.");
-    museekd()->ifaces()->sendStatusMessage(true, std::string("Some sockets were freed. Listening again. Museek should now work perfectly."));
-    listen();
-    museekd()->uploads()->checkUploads();
-    museekd()->downloads()->checkDownloads();
 }
 
 /**

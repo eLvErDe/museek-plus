@@ -96,9 +96,6 @@ namespace Museek
     void onDisconnected(NewNet::ClientSocket * socket_);
     void onConnected(NewNet::ClientSocket * socket_);
 
-    void onTooManySockets(int);
-    void onNotTooManySockets(int);
-
     void createPeerSocket(const std::string&);
 
     NewNet::WeakRefPtr<Museekd> m_Museekd;
