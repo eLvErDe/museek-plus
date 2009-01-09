@@ -78,6 +78,9 @@ namespace Museek
 
     void sendMessage(const NewNet::Buffer & message);
 
+    void onDisconnected(NewNet::ClientSocket *);
+    void onCannotConnect(NewNet::ClientSocket *);
+
     #define MAP_MESSAGE(ID, TYPE, EVENT) NewNet::Event<const TYPE *> EVENT;
     #define MAP_C_MESSAGE(ID, TYPE, EVENT) NewNet::Event<const TYPE *> EVENT;
     #include "ifaceeventtable.h"

@@ -44,6 +44,7 @@ namespace Museek
     bool openIncompleteFile();
     void onConnected(NewNet::ClientSocket * socket);
     void onDisconnected(NewNet::ClientSocket * socket);
+    void onCannotConnect(NewNet::ClientSocket * socket);
     void onTransferTicketReceived(TicketSocket * socket);
     void onDataReceived(NewNet::ClientSocket * socket);
     void finish();

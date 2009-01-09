@@ -135,4 +135,5 @@ void
 Museek::HandshakeSocket::onCannotConnect(NewNet::ClientSocket *)
 {
   NNLOG("museekd.hand.debug", "Could not connect handshake socket for user %s.", m_User.c_str());
+  disconnect();
 }

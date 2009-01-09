@@ -79,6 +79,7 @@ Museek::UploadSocket::onCannotConnect(ClientSocket * socket)
 
 	NNLOG("museekd.up.debug", "UploadSocket connection cannot be established");
 	m_Upload->setState(TS_CannotConnect);
+	disconnect();
 }
 
 void

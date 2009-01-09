@@ -43,6 +43,13 @@ namespace NewNet
     /*! Creates a new descriptor and tries to connect it to the specified
         port on the specified host. */
     void connect(const std::string & host, unsigned int port);
+
+    void onConnectionTimeout(long);
+
+    void onConnected(ClientSocket *);
+
+  private:
+    NewNet::WeakRefPtr<NewNet::Event<long>::Callback> m_ConnectionTimeout;
   };
 }
 

@@ -326,6 +326,8 @@ Museek::PeerManager::onPeerCannotConnect(NewNet::ClientSocket * socket_)
     // Get the name of the user.
     std::string user = socket->user();
 
+    socket->disconnect();
+
     peerSocketUnavailableEvent(user);
 }
 

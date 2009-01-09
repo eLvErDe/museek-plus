@@ -20,6 +20,7 @@
 
 #include "nnunixclientsocket.h"
 #include "nnlog.h"
+#include "nnreactor.h"
 #include "platform.h"
 #include <iostream>
 
@@ -49,21 +50,39 @@ NewNet::UnixClientSocket::connect(const std::string & path)
   fcntl(sock, F_SETFL, O_NONBLOCK);
   setDescriptor(sock);
 
+  // Add a connection timeout
+  if (reactor()) {
+    m_ConnectionTimeout = reactor()->addTimeout(120000, this, &UnixClientSocket::onConnectionTimeout);
+  }
+
+  connectedEvent.connect(this, &UnixClientSocket::onConnected);
+
   if(::connect(sock, (struct sockaddr *)&address, sizeof(struct sockaddr_un)) == 0)
   {
+    // When using non blocking socket (most of the time), we don't get here.
     NNLOG("newnet.net.debug", "Connected to unix socket '%s'.", path.c_str());
-    setDescriptor(sock);
     setSocketState(SocketConnected);
     connectedEvent(this);
     return;
   }
   else if(errno != EINPROGRESS)
   {
+    // When using non blocking socket (most of the time), we don't get here.
     NNLOG("newnet.net.warn", "Cannot connect to unix socket '%s', error: %i.", path.c_str(), errno);
     closesocket(sock);
     setSocketError(ErrorCannotConnect);
     cannotConnectEvent(this);
     return;
   }
-  setDescriptor(sock);
+}
+
+void
+NewNet::UnixClientSocket::onConnectionTimeout(long) {
+    cannotConnectEvent(this);
+}
+
+void
+NewNet::UnixClientSocket::onConnected(ClientSocket *) {
+  if (reactor())
+    reactor()->removeTimeout(m_ConnectionTimeout);
 }

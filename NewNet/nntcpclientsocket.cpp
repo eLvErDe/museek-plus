@@ -20,6 +20,7 @@
 
 #include "nntcpclientsocket.h"
 #include "nnlog.h"
+#include "nnreactor.h"
 #include "platform.h"
 #include "util.h"
 #include <iostream>
@@ -62,16 +63,36 @@ NewNet::TcpClientSocket::connect(const std::string & host, unsigned int port)
       return;
     }
 
+  // Add a connection timeout
+  if (reactor()) {
+    m_ConnectionTimeout = reactor()->addTimeout(120000, this, &TcpClientSocket::onConnectionTimeout);
+  }
+
+  connectedEvent.connect(this, &TcpClientSocket::onConnected);
+
   if(::connect(s, (struct sockaddr *)&address, sizeof(struct sockaddr_in)) == 0)
   {
+    // When using non blocking socket (most of the time), we don't get here.
     NNLOG("newnet.net.debug", "Connected to host '%s:%u'.", host.c_str(), port);
     setSocketState(SocketConnected);
     connectedEvent(this);
   }
   else if(WSAGetLastError() != WSAEWOULDBLOCK)
   {
+    // When using non blocking socket (most of the time), we don't get here.
     NNLOG("newnet.net.warn", "Cannot connect to host '%s:%u', error: %i.", host.c_str(), port, WSAGetLastError());
     setSocketError(ErrorCannotConnect);
     cannotConnectEvent(this);
   }
+}
+
+void
+NewNet::TcpClientSocket::onConnectionTimeout(long) {
+    cannotConnectEvent(this);
+}
+
+void
+NewNet::TcpClientSocket::onConnected(ClientSocket *) {
+  if (reactor())
+    reactor()->removeTimeout(m_ConnectionTimeout);
 }

@@ -169,8 +169,7 @@ Museek::ServerManager::onCannotConnect(NewNet::ClientSocket * socket)
       NNLOG("museekd.server.warn", "Cannot connect to server... Will not try to reconnect.");
 
   setLoggedIn(false);
-  if (socket->reactor())
-    museekd()->reactor()->remove(socket);
+  disconnect();
 }
 
 void

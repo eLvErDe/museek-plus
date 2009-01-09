@@ -155,6 +155,9 @@ Museek::UserSocket::onServerPeerAddressReceived(const SGetPeerAddress * message)
   connect(message->ip, message->port);
 }
 
+/**
+  * This is called when a peer asks us to connect to him.
+  */
 void
 Museek::UserSocket::reverseConnect(const std::string & user, uint token, const std::string & ip, uint port)
 {

@@ -36,6 +36,7 @@ Museek::DownloadSocket::DownloadSocket(Museek::Museekd * museekd, Museek::Downlo
     dataReceivedEvent.connect(this, &DownloadSocket::onDataReceived);
     // Connect disconnected event.
     disconnectedEvent.connect(this, &DownloadSocket::onDisconnected);
+    cannotConnectEvent.connect(this, &DownloadSocket::onCannotConnect);
 }
 
 Museek::DownloadSocket::~DownloadSocket()
@@ -102,6 +103,15 @@ Museek::DownloadSocket::onDisconnected(ClientSocket *)
 
     if(m_Output.is_open())
         m_Output.close();
+}
+
+/*
+    Called when the connection cannot be established
+*/
+void
+Museek::DownloadSocket::onCannotConnect(ClientSocket * socket)
+{
+	disconnect();
 }
 
 /*
