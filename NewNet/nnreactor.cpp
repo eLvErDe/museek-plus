@@ -181,6 +181,8 @@ void NewNet::Reactor::run()
         loop = prepareReactorData();
     }
 
+    event_priority_init(100);
+
     // Launch the main loop
     event_dispatch();
 }
@@ -351,6 +353,7 @@ NewNet::Reactor::checkSockets(struct timeval & timeout, bool & timeout_set) {
         if (event_initialized(evData))
             event_del(evData);
         event_set(evData, fd, evFlags, ::eventCallback, this);
+        event_priority_set(evData, sock->eventPriority());
         event_add(evData, NULL);
       }
     }

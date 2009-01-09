@@ -87,6 +87,7 @@ namespace NewNet
     {
         m_EventData = new struct event;
         m_EventData->ev_flags = 0; // This event has not been initialized
+        m_EventPriority = 100;
     }
 
     //! Return the associated reactor.
@@ -228,6 +229,21 @@ namespace NewNet
         return m_EventData;
     }
 
+    int eventPriority() {
+        int res = m_EventPriority;
+        if (m_EventPriority >= 100)
+            m_EventPriority = 50;
+        else {
+            // Don't always add the same value to avoid having a constant difference between 2 sockets.
+            int j = 1+(int) (10.0*rand()/(RAND_MAX+1.0));
+            m_EventPriority += j;
+            if (m_EventPriority >= 100)
+                m_EventPriority = 100;
+        }
+
+        return res;
+    }
+
   private:
     Reactor * m_Reactor;
     int m_FD;
@@ -237,6 +253,7 @@ namespace NewNet
     bool m_DataWaiting;
     RefPtr<RateLimiter> m_DownRateLimiter, m_UpRateLimiter;
     struct event * m_EventData;
+    int m_EventPriority;
   };
 }
 
