@@ -602,26 +602,6 @@
         <translation>Przeglądaj</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="464"/>
-        <source>Launched Museek Daemon...</source>
-        <translation type="obsolete">Uruchomiono demona museeka...</translation>
-    </message>
-    <message>
-        <location filename="../mainwin.cpp" line="477"/>
-        <source>Failed Launching Museek Daemon...</source>
-        <translation type="obsolete">Nie udało się uruchomić demona museeka...</translation>
-    </message>
-    <message>
-        <location filename="../mainwin.cpp" line="445"/>
-        <source>No Config for Museek Daemon selected, giving up...</source>
-        <translation type="obsolete">Nie wybrano konfiguracji demona museeka, poddaję się...</translation>
-    </message>
-    <message>
-        <location filename="../mainwin.cpp" line="449"/>
-        <source>Museek Daemon is already running...</source>
-        <translation type="obsolete">Demon museeka jest już uruchomiony...</translation>
-    </message>
-    <message>
         <location filename="../mainwin.cpp" line="441"/>
         <source>Terminating Museek Daemon...</source>
         <translation>Zatrzymywanie demona musseka...</translation>
@@ -630,11 +610,6 @@
         <location filename="../mainwin.cpp" line="443"/>
         <source>Museek Daemon not running, no need to stop it...</source>
         <translation>Demon museeka nie jest uruchomiony, nie ma potrzeby zatrzymywania go...</translation>
-    </message>
-    <message>
-        <location filename="../mainwin.cpp" line="470"/>
-        <source>Museek Daemon has Shut Down...</source>
-        <translation type="obsolete">Demon museeka wyłączył się...</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="661"/>
@@ -777,11 +752,6 @@
         <location filename="../mainwin.cpp" line="1264"/>
         <source>Shutdown Museeq</source>
         <translation>Wyłącz Museeqa</translation>
-    </message>
-    <message>
-        <location filename="../mainwin.cpp" line="1287"/>
-        <source>The Museek Daemon was launched by Museeq and is still running, and will be shut down if you close Museeq, are you sure you want to?</source>
-        <translation type="obsolete">Demon Museeka został uruchomiony przez Museeqa i ciągle działa, zostanie wyłaczony jeśli zamkniesz Museeqa, na pewno chcesz to zrobić?</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="1264"/>
@@ -946,7 +916,7 @@
     <message>
         <location filename="../mainwin.cpp" line="1252"/>
         <source>The Museek Daemon is still running, and will be shut down if you close Museeq, are you sure you want to?</source>
-        <translation type="unfinished"></translation>
+        <translation>Demon Museeka ciągle działa i zostanie wyłaczony jeśli zamkniesz Museeqa, na pewno chcesz to zrobić?</translation>
     </message>
 </context>
 <context>
@@ -1197,11 +1167,6 @@
         <location filename="../search.cpp" line="38"/>
         <source>Enable filters</source>
         <translation>Włącz filtry</translation>
-    </message>
-    <message>
-        <location filename="../search.cpp" line="40"/>
-        <source>Ignore</source>
-        <translation type="obsolete">Ignoruj</translation>
     </message>
     <message>
         <location filename="../search.cpp" line="40"/>
