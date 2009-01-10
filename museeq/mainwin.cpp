@@ -384,6 +384,15 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(0, 0), m
 	changeCMode();
 }
 
+void MainWindow::showWithRestoredSize() {
+	bool max = museeq->settings()->value("Maximized", false).toBool();
+
+	if (max)
+        showMaximized();
+    else
+        show();
+}
+
 void MainWindow::toggleVisibility() {
 	if ( museeq->mainwin()->isVisible() )
 		museeq->mainwin()->hide();
@@ -1268,12 +1277,14 @@ void MainWindow::closeEvent(QCloseEvent * ev) {
 		}
 	}
 
-	museeq->settings()->beginGroup("/MuseekPlus.org/Museeq");
 	museeq->settings()->setValue("X", mLastPos.x());
 	museeq->settings()->setValue("Y", mLastPos.y());
 	museeq->settings()->setValue("Width", mLastSize.width());
 	museeq->settings()->setValue("Height", mLastSize.height());
-	museeq->settings()->endGroup();
+	museeq->settings()->setValue("Maximized", isMaximized());
+
+    museeq->settings()->sync();
+
 	if ( museeq->settings()->value("ShutDownDaemonOnExit", false).toBool())
 		stopDaemon();
 	ev->accept();

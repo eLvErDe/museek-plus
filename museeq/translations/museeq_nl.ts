@@ -873,12 +873,12 @@
         <translation type="obsolete">Museek-daemon is al gestart....</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="441"/>
+        <location filename="../mainwin.cpp" line="450"/>
         <source>Terminating Museek Daemon...</source>
         <translation>Museek-daemon wordt afgesloten...</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="443"/>
+        <location filename="../mainwin.cpp" line="452"/>
         <source>Museek Daemon not running, no need to stop it...</source>
         <translation>Museek-daemon is niet gestart, en hoeft dus niet gestopt te worden...</translation>
     </message>
@@ -888,52 +888,52 @@
         <translation type="obsolete">Museek-daemon is afgesloten...</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="661"/>
+        <location filename="../mainwin.cpp" line="670"/>
         <source>Connecting to museek... Looking up host</source>
         <translation>Verbinding maken met museek... Host zoeken</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="665"/>
+        <location filename="../mainwin.cpp" line="674"/>
         <source>Connecting to museek...</source>
         <translation>Verbinding maken met museek...</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="671"/>
+        <location filename="../mainwin.cpp" line="680"/>
         <source>Connecting to museek... Connecting</source>
         <translation>Verbinding maken met museek... Verbinden</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="676"/>
+        <location filename="../mainwin.cpp" line="685"/>
         <source>Connecting to museek... Logging in</source>
         <translation>Verbinding maken met museek... Inloggen</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="681"/>
+        <location filename="../mainwin.cpp" line="690"/>
         <source>Disconnected from museek</source>
         <translation>Verbinding met museek verbroken</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="695"/>
+        <location filename="../mainwin.cpp" line="704"/>
         <source>Cannot connect to museek... Connection refused</source>
         <translation>Kan geen verbinding maken met museek... Verbinding geweigerd</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="698"/>
+        <location filename="../mainwin.cpp" line="707"/>
         <source>Cannot connect to museek... Host not found</source>
         <translation>Kan geen verbinding maken met museek... Host niet gevonden</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="715"/>
+        <location filename="../mainwin.cpp" line="724"/>
         <source>Logged in to museek</source>
         <translation>Ingelogd bij museek</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="728"/>
+        <location filename="../mainwin.cpp" line="737"/>
         <source>Login error: </source>
         <translation>Inlogfout: </translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="782"/>
+        <location filename="../mainwin.cpp" line="791"/>
         <source>Connected to soulseek, your nickname: </source>
         <translation>Verbonden met museek, uw bijnaam: </translation>
     </message>
@@ -948,17 +948,17 @@
         <translation type="obsolete"> Status: Online</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="788"/>
+        <location filename="../mainwin.cpp" line="797"/>
         <source>Disconnected from soulseek</source>
         <translation>Verbinding met museek verbroken</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="810"/>
+        <location filename="../mainwin.cpp" line="819"/>
         <source>waiting</source>
         <translation>wachten</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="842"/>
+        <location filename="../mainwin.cpp" line="851"/>
         <source>Enter a Museeq Icon Theme Directory</source>
         <translation>Museeq pictogramthema-map invoeren</translation>
     </message>
@@ -968,37 +968,37 @@
         <translation type="obsolete">Museeq&apos;s pictogramthema (*.png)</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="891"/>
+        <location filename="../mainwin.cpp" line="900"/>
         <source>Offline</source>
         <translation>Offline</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="912"/>
+        <location filename="../mainwin.cpp" line="921"/>
         <source>IP of </source>
         <translation>IP van </translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="912"/>
+        <location filename="../mainwin.cpp" line="921"/>
         <source>Port:</source>
         <translation>Poort:</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1080"/>
+        <location filename="../mainwin.cpp" line="1089"/>
         <source>Error</source>
         <translation>Fout</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1080"/>
+        <location filename="../mainwin.cpp" line="1089"/>
         <source>Couldn&apos;t open image file for reading</source>
         <translation>Kon afbeeldingbestand niet openen om te lezen</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1148"/>
+        <location filename="../mainwin.cpp" line="1157"/>
         <source>About Museeq</source>
         <translation>Over Museeq</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1161"/>
+        <location filename="../mainwin.cpp" line="1170"/>
         <source>&lt;p align=&quot;center&quot;&gt;Museeq </source>
         <translation>&lt;p align=&quot;center&quot;&gt;Museeq </translation>
     </message>
@@ -1008,22 +1008,22 @@
         <translation type="obsolete"> is een GUI voor de Museek-daemon&lt;/p&gt;De programma&apos;s, museeq, museekd en muscan, zijn gemaakt door Hyriand 2003-2005&lt;br&gt;&lt;br&gt;Sinds 2006 zijn er door Daelstorm en SeeSchloss toevoegingen gemaakt.&lt;br&gt;Dit project wordt vrijgegeven onder de GPL-licentie.&lt;br&gt;Code en ideeën overgenomen van andere open source projecten en mensen worden in het CREDITS-bestand genoemd, deze is bijgevoegd in de broncode-tarball.</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1179"/>
+        <location filename="../mainwin.cpp" line="1188"/>
         <source>Museeq Commands</source>
         <translation>Museeq commando&apos;s</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1179"/>
+        <location filename="../mainwin.cpp" line="1188"/>
         <source>&lt;h3&gt;While in a chat window, such as a Chat Room, or a Private Chat, there are a number of commands available for use.&lt;/h3&gt;&lt;b&gt;/c /chat&lt;/b&gt;   &lt;i&gt;(Switch to Chat Rooms)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/pm /private&lt;/b&gt; &amp;lt;nothing | username&amp;gt;  &lt;i&gt;(Switch to Private Chat and start chatting with a user, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/transfers&lt;/b&gt;   &lt;i&gt;(Switch to Transfers)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/s /search&lt;/b&gt; &amp;lt;nothing | query&gt;   &lt;i&gt;(Switch to Searchs and start a Search with &amp;lt;query&amp;gt; if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/u /userinfo&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Switch to userinfo, and attempt to get a user&apos;s info, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/b /browse&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Switch to Browse and initate browsing a user, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ip&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Get the IP of a user)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/log&lt;/b&gt;    &lt;i&gt;(Toggle displaying the Special Message Log)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/t /ticker /tickers&lt;/b&gt;   &lt;i&gt;(Toggle the showing of Tickers)&lt;/i&gt; &lt;br&gt;&lt;b&gt;/f /fonts /c /colors&lt;/b&gt;   &lt;i&gt;(Open the Fonts and Colors settings dialog)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ban /unban&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Disallow/Allow a user to recieve your shares and download from you)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ignore /unignore&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Block/Unblock chat messages from a user)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/buddy /unbuddy&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Add/Remove a user to keep track of it and add comments about it)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/trust /distrust&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Add/Remove a user to the optional list of users who can send files to you)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/me&lt;/b&gt; &lt;does something&gt;    &lt;i&gt;(Say something in the Third-Person)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/slap&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Typical Trout-slapping)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/j /join&lt;/b&gt; &amp;lt;room&amp;gt;    &lt;i&gt;(Join a Chat Room)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/l /p /leave /part&lt;/b&gt; &amp;lt;nothing | room&amp;gt;    &lt;i&gt;(Leave the current room or inputed room)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/about /help /commands&lt;/b&gt;    &lt;i&gt;(Display information)&lt;/i&gt;&lt;br&gt;&lt;br&gt;Do not type the brackets, they are there only to make clear that something (or nothing) can be typed after the /command.</source>
         <translation>&lt;h3&gt;Op het moment dat u in een chatvenster zit, zoals in een chatroom of een privéchat, staan er u een aantal commando&apos;s ter beschikking&lt;/h3&gt;&lt;b&gt;/c /chat&lt;/b&gt;   &lt;i&gt;(Omschakelen naar chatrooms)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/pm /private&lt;/b&gt; &amp;lt;niets | gebruikersnaam&amp;gt;  &lt;i&gt;(Omschakelen naar privéchat en begin met een gebruiker te chatten, indien opgegeven)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/transfers&lt;/b&gt;   &lt;i&gt;(Omschakelen naar overdrachten)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/s /search&lt;/b&gt; &amp;lt;niets | query&gt;   &lt;i&gt;(Omschakelen naar de zoekopdrachten en begin een zoekopdracht met  and start a Search with &amp;lt;query&amp;gt; indien opgegeven)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/u /userinfo&lt;/b&gt; &amp;lt;gebruikersnaam&amp;gt;   &lt;i&gt;(Omschakelen naar gebruikersinfo, en probeer de info van een gebruiker op te halen, indien opgegeven)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/b /browse&lt;/b&gt; &amp;lt;gebruikersnaam&amp;gt;    &lt;i&gt;(Omschakelen naar bladeren en blader door de bestanden van een gebruiker, indien opgegeven)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ip&lt;/b&gt; &amp;lt;gebruikersnaam&amp;gt;   &lt;i&gt;(Het IP-adres van een gebruiker ophalen)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/log&lt;/b&gt;    &lt;i&gt;(Berichtenlogweergave aan/uitschakelen)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/t /ticker /tickers&lt;/b&gt;   &lt;i&gt;(Tickerweergave aan/uitschakelen)&lt;/i&gt; &lt;br&gt;&lt;b&gt;/f /fonts /c /colors&lt;/b&gt;   &lt;i&gt;(Venster voor kleur- en lettertype-instellingen openen )&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ban /unban&lt;/b&gt; &amp;lt;gebruikersnaam&amp;gt;   &lt;i&gt;(Een gebruiker toestaan / niet toestaan om door uw gedeelde bestanden te bladeren en om van u te downloaden)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ignore /unignore&lt;/b&gt; &amp;lt;gebruikersnaam&amp;gt;    &lt;i&gt;(Chatberichten van een gebruiker blokkeren of de-blokkeren)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/buddy /unbuddy&lt;/b&gt; &amp;lt;gebruikersnaam&amp;gt;   &lt;i&gt;(Een gebruiker aan uw vriendenlijst toevoegen / verwijderen om die te kunnen volgen en er opmerkingen over toe te voegen)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/trust /distrust&lt;/b&gt; &amp;lt;gebruikersnaam&amp;gt;    &lt;i&gt;(Een gebruiker aan de optionele lijst van gebruikers toevoegen / verwijderen die u bestanden mogen sturen)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/me&lt;/b&gt; &amp;lt;doet iets&amp;gt;    &lt;i&gt;(Zeg iets in de derde persoon)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/slap&lt;/b&gt; &amp;lt;gebruikersnaam&amp;gt;   &lt;i&gt;(Geeft iemand een mep met een forel)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/j /join&lt;/b&gt; &amp;lt;room&amp;gt;    &lt;i&gt;(Een chatroom binnengaan)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/l /p /leave /part&lt;/b&gt; &amp;lt;niets | room&amp;gt;    &lt;i&gt;(De huidige of opgegeven room verlaten)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/about /help /commands&lt;/b&gt;    &lt;i&gt;(Informatie weergeven)&lt;/i&gt;&lt;br&gt;&lt;br&gt;Laat de brackets (driehoekige haakjes) weg, ze staan hier alleen om duidelijk te maken dat er iets (of niets) achter een /commando kan worden getyped.</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1183"/>
+        <location filename="../mainwin.cpp" line="1192"/>
         <source>Museeq Help</source>
         <translation>Museeq hulp</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1183"/>
+        <location filename="../mainwin.cpp" line="1192"/>
         <source>&lt;h3&gt;What&apos;s going on? I can&apos;t connect to a Soulseek Server with museeq!&lt;/h3&gt; You connect to museekd with museeq, so you need to have &lt;b&gt;museekd&lt;/b&gt; configured, running &lt;u&gt;and&lt;/u&gt; connected to a &lt;b&gt;Soulseek&lt;/b&gt; or Soulfind server. &lt;br&gt; &lt;h3&gt;Running for the first time?&lt;/h3&gt; Before you start museekd for the first time, you need to configure &lt;b&gt;museekd&lt;/b&gt; with &lt;b&gt;musetup&lt;/b&gt;,  a command-line configuration script.&lt;br&gt;&lt;br&gt; In musetup you &lt;b&gt;MUST&lt;/b&gt; configure the following items: Server, Username, Password, Interface Password, Download Dir&lt;br&gt; Also, take note of your interfaces, if you change them from the default localhost:2240 and /tmp/museek.&lt;tt&gt;USERNAME&lt;/tt&gt;, you&apos;ll need to know them for logging in with museeq. &lt;br&gt;&lt;br&gt; When you start museeq or choose File-&gt;Connect from the menu, you are asked to input the host and port, or Unix Socket of museekd, &lt;b&gt;not&lt;/b&gt; the Server.&lt;br&gt; &lt;h3&gt;Want to send someone a file?&lt;/h3&gt; Browse yourself, select file(s), and right-click-&gt;Upload. Input their name in the dialog box, and the upload should start, but it depends on if the user has place you on their &quot;trusted&quot; or &quot;uploads&quot; users list .&lt;br&gt;Once you&apos;re connected to museekd, change museekd options via Settings-&gt;Museek</source>
         <translation>&lt;h3&gt;Wat gebeurt er? Via museeq krijg ik geen verbinding met een SoulSeek-server!&lt;/h3&gt; Met museeq maakt u verbinding met museekd, u moet dus &lt;b&gt;museekd&lt;/b&gt; hebben geconfigureerd, draaien, &lt;u&gt;en&lt;/u&gt; verbonden met een &lt;b&gt;Soulseek-&lt;/b&gt; of Soulfind-server. &lt;br&gt; &lt;h3&gt;Museeq voor het eerst gestart?&lt;/h3&gt; Voordat u museekd voor het eerst opstart, is het nodig dat u &lt;b&gt;museekd&lt;/b&gt; met behulp van &lt;b&gt;musetup&lt;/b&gt; configureert, dit is een configuratiescript dat in een terminal moet worden uitgevoerd.&lt;br&gt;&lt;br&gt;In musetup &lt;b&gt;MOET&lt;/b&gt; u de volgende dingen configureren: Server, gebruikersnaam, wachtwoord, interface wachtwoord en downloadmap.&lt;br&gt; Let ook op uw interfaces, als u ze wijzigt van de standaard localhost:2240 en /tmp/museek.&lt;tt&gt;GEBRUIKERSNAAM&lt;/tt&gt;, dan moet u deze kenne om bij museeq in te kunnen loggen. &lt;br&gt;&lt;br&gt; Als u museeq opstart of Bestand-&gt;Verbinden kiest uit het menu, dan zal u gevraagd worden om de host en de poort in te voeren, of de Unix-socket van museekd, &lt;b&gt;niet&lt;/b&gt; de server!br&gt; &lt;h3&gt; Wilt u iemand een bestand sturen?&lt;/h3&gt; Blader door uw eigen bestanden, kies bestand(en), klik de rechter muistoets en kies Upload. Type de naam van de gebruiker in het invoerscherm en de upload zou moeten beginnen, maar die is afhankelijk van of de gebruiker u op diens &quot;vertrouwd&quot;- of &quot;uploads&quot;-lijst heeft gezet.&lt;br&gt;Zodra u met museekd bent verbonden, kunt u de museekd-opties via Instellingen-&gt;Museek wijzigen</translation>
     </message>
@@ -1038,34 +1038,34 @@
         <translation type="obsolete">Verwijderen</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1192"/>
+        <location filename="../mainwin.cpp" line="1201"/>
         <source>Give privileges</source>
         <translation>Privileges geven</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1194"/>
+        <location filename="../mainwin.cpp" line="1203"/>
         <source>How many days worth of privileges 
 </source>
         <translation>Hoeveel dagen aan privileges
 </translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1194"/>
+        <location filename="../mainwin.cpp" line="1203"/>
         <source>do you wish to give to user </source>
         <translation>wilt u geven aan gebruiker </translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1223"/>
+        <location filename="../mainwin.cpp" line="1232"/>
         <source>Museeq - Soulseek Privileges</source>
         <translation>Museeq - Soulseekprivileges</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1223"/>
+        <location filename="../mainwin.cpp" line="1232"/>
         <source>You have %1 days, %2 hours, %3 minutes and %4 seconds of privileges left</source>
         <translation>U hebt %1 dagen, %2 uur, %3 minuten en %4 seconden aan privileges over</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1264"/>
+        <location filename="../mainwin.cpp" line="1273"/>
         <source>Shutdown Museeq</source>
         <translation>Museeq afsluiten</translation>
     </message>
@@ -1075,27 +1075,27 @@
         <translation type="obsolete">De museek-daemon werd door Museeq gestart en is nog actief, deze zal worden afgesloten zodra u Museeq afsluit. Weet u zeker dat u dit wilt?</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1264"/>
+        <location filename="../mainwin.cpp" line="1273"/>
         <source>&amp;Yes</source>
         <translation>&amp;Ja</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1264"/>
+        <location filename="../mainwin.cpp" line="1273"/>
         <source>&amp;No</source>
         <translation>&amp;Nee</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1258"/>
+        <location filename="../mainwin.cpp" line="1267"/>
         <source>The Museek Daemon was launched by Museeq and is still running, but will &lt;b&gt;not&lt;/b&gt; be shut down if you close Museeq. Are you sure you want to?</source>
         <translation>De museek-daemon werd door Museeq gestart en is nog actief, deze zal echter &lt;b&gt;niet&lt;/b&gt; worden afgesloten zodra u Museeq afsluit. Weet u zeker dat u dit wilt?</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1264"/>
+        <location filename="../mainwin.cpp" line="1273"/>
         <source>It&apos;s safe to close Museeq, but are you sure you want to?</source>
         <translation>Het is nu veilig om Museeq af te sluiten, maar weet u zeker dat u dit wilt?</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1291"/>
+        <location filename="../mainwin.cpp" line="1302"/>
         <source>Load Script</source>
         <translation>Script laden</translation>
     </message>
@@ -1145,7 +1145,7 @@
         <translation type="unfinished">Alt+T</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1176"/>
+        <location filename="../mainwin.cpp" line="1185"/>
         <source>About Qt</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1155,52 +1155,52 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="789"/>
+        <location filename="../mainwin.cpp" line="798"/>
         <source>Status:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="729"/>
+        <location filename="../mainwin.cpp" line="738"/>
         <source>Disconnected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="701"/>
+        <location filename="../mainwin.cpp" line="710"/>
         <source>socket error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="716"/>
+        <location filename="../mainwin.cpp" line="725"/>
         <source>Connected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="775"/>
+        <location filename="../mainwin.cpp" line="784"/>
         <source>Status: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="771"/>
+        <location filename="../mainwin.cpp" line="780"/>
         <source>Away</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="775"/>
+        <location filename="../mainwin.cpp" line="784"/>
         <source>Online</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1161"/>
+        <location filename="../mainwin.cpp" line="1170"/>
         <source> is a GUI for the Museek Daemon&lt;/p&gt;The programs, museeq and museekd and muscan, were created by Hyriand 2003-2005&lt;br&gt;&lt;br&gt;Additions by daelstorm, SeeSchloss and others in 2006-2008&lt;br&gt;This project is released under the GPL license.&lt;br&gt;Code and ideas taken from other opensource projects and people are mentioned in the CREDITS file included in the source tarball.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1169"/>
+        <location filename="../mainwin.cpp" line="1178"/>
         <source>&amp;Ok</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1252"/>
+        <location filename="../mainwin.cpp" line="1261"/>
         <source>The Museek Daemon is still running, and will be shut down if you close Museeq, are you sure you want to?</source>
         <translation type="unfinished"></translation>
     </message>

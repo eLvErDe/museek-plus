@@ -903,7 +903,7 @@ int main(int argc, char **argv) {
 	}
 	museeq->trayicon_load();
 	app.setQuitOnLastWindowClosed( false );
-	museeq->mainwin()->show();
+	museeq->mainwin()->showWithRestoredSize();
 	museeq->mainwin()->connectToMuseek();
 
 	return app.exec();

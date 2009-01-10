@@ -82,10 +82,10 @@ Searches::Searches(QWidget* parent, const char* name)
 	methodsLayout->addWidget(mUser);
 
 	searchModeSelected();
-	connect(mEntry, SIGNAL(activated(const QString&)), SLOT(doSearch(const QString&)));
+	connect(mEntry->lineEdit(), SIGNAL(returnPressed()), SLOT(doSearch()));
 	connect(mEntry, SIGNAL(highlighted(const QString&)), SLOT(setSearchText(const QString&)));
 	connect(mUserEntry, SIGNAL(highlighted(const QString&)), SLOT(setUserSearchText(const QString&)));
-	connect(mUserEntry, SIGNAL(activated(const QString&)), SLOT(doSearch()));
+	connect(mUserEntry->lineEdit(), SIGNAL(returnPressed()), SLOT(doSearch()));
 	connect(mUser, SIGNAL(toggled(bool)), SLOT(searchModeSelected()));
 	connect(mSearch, SIGNAL(clicked()), SLOT(doSearch()));
 

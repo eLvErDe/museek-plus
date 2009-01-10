@@ -117,6 +117,8 @@ public slots:
 
 	void slotClose();
 
+	void showWithRestoredSize();
+
 signals:
 	void showAllTickers();
 	void hideAllTickers();
