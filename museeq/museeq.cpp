@@ -658,7 +658,7 @@ void Museeq::showURL(const QUrl& rawUrl) {
 		}
 
 	QString handler = mProtocolHandlers[protocol];
-	handler.replace("$", rawUrl.toString());
+	handler.replace("$", QString(rawUrl.toEncoded()));
 	QStringList handlerargs = handler.split(" ", QString::KeepEmptyParts);
 	QString executable (handlerargs.value(0));
 	handlerargs.removeAt(0);

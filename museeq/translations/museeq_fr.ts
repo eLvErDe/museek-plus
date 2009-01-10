@@ -944,7 +944,7 @@
     <message>
         <location filename="../mainwin.cpp" line="1252"/>
         <source>The Museek Daemon is still running, and will be shut down if you close Museeq, are you sure you want to?</source>
-        <translation type="unfinished"></translation>
+        <translation>Le démon Museekd fonctionne toujours. Cependant il sera fermé si vous quitter Museeq. Êtes vous sur de vouloir cela?</translation>
     </message>
 </context>
 <context>

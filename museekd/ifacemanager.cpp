@@ -316,7 +316,6 @@ Museek::IfaceManager::onIfaceDisconnected(NewNet::ClientSocket * socket)
     it = std::find(m_Ifaces.begin(), m_Ifaces.end(), static_cast<IfaceSocket *>(socket));
     if (it != m_Ifaces.end())
         m_Ifaces.erase(it);
-    museekd()->reactor()->remove(socket);
 }
 
 void
