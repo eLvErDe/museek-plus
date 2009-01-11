@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="1.1" language="it">
+<defaultcodec></defaultcodec>
 <context>
     <name>BanList</name>
     <message>
@@ -595,21 +596,6 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="464"/>
-        <source>Launched Museek Daemon...</source>
-        <translation type="obsolete">Museekd lanciato...</translation>
-    </message>
-    <message>
-        <location filename="../mainwin.cpp" line="477"/>
-        <source>Failed Launching Museek Daemon...</source>
-        <translation type="obsolete">Lancio Museekd fallito...</translation>
-    </message>
-    <message>
-        <location filename="../mainwin.cpp" line="449"/>
-        <source>Museek Daemon is already running...</source>
-        <translation type="obsolete">Museekd è già avviato...</translation>
-    </message>
-    <message>
         <location filename="../mainwin.cpp" line="450"/>
         <source>Terminating Museek Daemon...</source>
         <translation>Museekd in arresto...</translation>
@@ -618,11 +604,6 @@
         <location filename="../mainwin.cpp" line="452"/>
         <source>Museek Daemon not running, no need to stop it...</source>
         <translation>Museekd non avviato, non può essere terminato...</translation>
-    </message>
-    <message>
-        <location filename="../mainwin.cpp" line="470"/>
-        <source>Museek Daemon has Shut Down...</source>
-        <translation type="obsolete">Museekd è terminato...</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="670"/>
@@ -765,11 +746,6 @@
         <location filename="../mainwin.cpp" line="1273"/>
         <source>Shutdown Museeq</source>
         <translation>Spegni Museeq</translation>
-    </message>
-    <message>
-        <location filename="../mainwin.cpp" line="1287"/>
-        <source>The Museek Daemon was launched by Museeq and is still running, and will be shut down if you close Museeq, are you sure you want to?</source>
-        <translation type="obsolete">Museekd è stato lanciato da Museeq ed è ancora attivo, e si chiuderà se chiudi Museeq, sei sicuro di volerlo chiudere?</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="1273"/>
@@ -939,7 +915,7 @@
     <message>
         <location filename="../mainwin.cpp" line="1261"/>
         <source>The Museek Daemon is still running, and will be shut down if you close Museeq, are you sure you want to?</source>
-        <translation type="unfinished"></translation>
+        <translation>Il Daemon Museek è ancora in esecuzione, e verrà terminato se chiudi Museeq, sei sicuro di volerlo fare?</translation>
     </message>
 </context>
 <context>
@@ -1193,13 +1169,8 @@
     </message>
     <message>
         <location filename="../search.cpp" line="40"/>
-        <source>Ignore</source>
-        <translation type="obsolete">Ignora</translation>
-    </message>
-    <message>
-        <location filename="../search.cpp" line="40"/>
         <source>Stop search</source>
-        <translation type="unfinished"></translation>
+        <translation>Termina ricerca</translation>
     </message>
 </context>
 <context>
