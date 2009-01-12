@@ -1241,7 +1241,7 @@ void SettingsDialog::languageChange()
 	SOnlineAlerts->setText( tr( "Online Alerts in Log Window instead of popup" ) );
 	SShareBuddiesOnly->setText( tr( "Share to Buddies Only" ) );
 	STrustedUsers->setText( tr( "Trusted users can Send you Files" ) );
-	SBuddiesShares->setText( tr( "Seperate Shares list for Buddies" ) );
+	SBuddiesShares->setText( tr( "Additional Shares for Buddies" ) );
 	SUserWarnings->setText( tr( "Send automatic warnings to users via Private Chat" ) );
 	SIPLog->setText( tr( "IP addresses in Log Window instead of popup" ) );
 	TickerLengthLabel->setText( tr( "Maximum length of ticker messages:" ) );

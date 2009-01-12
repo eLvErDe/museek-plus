@@ -1501,7 +1501,7 @@
     <message>
         <location filename="../settingsdialog.cpp" line="1244"/>
         <source>Seperate Shares list for Buddies</source>
-        <translation>Oddzielna lista udziałów dla zaprzyjaźnionych użytkowników</translation>
+        <translation type="obsolete">Oddzielna lista udziałów dla zaprzyjaźnionych użytkowników</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1245"/>
@@ -1797,6 +1797,11 @@
         <location filename="../settingsdialog.cpp" line="1023"/>
         <source>Select an image for your User info</source>
         <translation>Wybierz obraz dla informacji o sobie</translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.cpp" line="1244"/>
+        <source>Additional Shares for Buddies</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

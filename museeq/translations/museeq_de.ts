@@ -1972,7 +1972,7 @@
     <message>
         <location filename="../settingsdialog.cpp" line="1244"/>
         <source>Seperate Shares list for Buddies</source>
-        <translation>Separate Freigabenliste für Freunde</translation>
+        <translation type="obsolete">Separate Freigabenliste für Freunde</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1245"/>
@@ -2272,6 +2272,11 @@
     <message>
         <location filename="../settingsdialog.cpp" line="1023"/>
         <source>Select an image for your User info</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.cpp" line="1244"/>
+        <source>Additional Shares for Buddies</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

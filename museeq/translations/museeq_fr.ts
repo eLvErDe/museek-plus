@@ -1534,7 +1534,7 @@
     <message>
         <location filename="../settingsdialog.cpp" line="1244"/>
         <source>Seperate Shares list for Buddies</source>
-        <translation>Liste de fichiers partagés différente pour mes amis</translation>
+        <translation type="obsolete">Liste de fichiers partagés différente pour mes amis</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1245"/>
@@ -1830,6 +1830,11 @@
         <location filename="../settingsdialog.cpp" line="1023"/>
         <source>Select an image for your User info</source>
         <translation>Choisissez une image pour vos informations personnelles</translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.cpp" line="1244"/>
+        <source>Additional Shares for Buddies</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
