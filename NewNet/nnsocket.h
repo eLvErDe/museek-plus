@@ -87,7 +87,7 @@ namespace NewNet
     {
         m_EventData = new struct event;
         m_EventData->ev_flags = 0; // This event has not been initialized
-        m_EventPriority = 100;
+        m_EventPriority = 40;
     }
 
     //! Return the associated reactor.
@@ -238,7 +238,7 @@ namespace NewNet
             int j = 1+(int) (10.0*rand()/(RAND_MAX+1.0));
             m_EventPriority += j;
             if (m_EventPriority >= 100)
-                m_EventPriority = 100;
+                m_EventPriority = 50;
         }
 
         return res;
