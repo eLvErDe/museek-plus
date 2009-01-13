@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="1.1" language="it">
+<defaultcodec></defaultcodec>
 <context>
     <name>BanList</name>
     <message>
@@ -1495,11 +1496,6 @@
         <translation>Gli utenti fidati possono inviarti file</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1244"/>
-        <source>Seperate Shares list for Buddies</source>
-        <translation type="obsolete">Lista condivisi separata per gli Amici</translation>
-    </message>
-    <message>
         <location filename="../settingsdialog.cpp" line="1245"/>
         <source>Send automatic warnings to users via Private Chat</source>
         <translation>Invia avvertimenti automatici agli utenti via messaggio privato</translation>
@@ -1797,7 +1793,7 @@
     <message>
         <location filename="../settingsdialog.cpp" line="1244"/>
         <source>Additional Shares for Buddies</source>
-        <translation type="unfinished"></translation>
+        <translation>Condivisi aggiuntivi per gli Amici</translation>
     </message>
 </context>
 <context>
