@@ -124,9 +124,7 @@ Museek::Upload::setState(TrState state)
             && state != TS_Waiting
             && state != TS_Establishing
             && state != TS_Initiating
-            && state != TS_Connecting
-            && state != TS_Offline
-            && state != TS_CannotConnect)
+            && state != TS_Connecting)
         m_Museekd->uploads()->checkUploads();
 }
 
@@ -739,7 +737,7 @@ Museek::UploadManager::onServerLoggedInStateChanged(bool loggedIn)
         // Server connection was severed. As are our chances to connect to a peer.
         std::vector<NewNet::RefPtr<Upload> >::iterator it, end = m_Uploads.end();
         for(it = m_Uploads.begin(); it != end; ++it) {
-            if (((*it) != isUploadingTo((*it)->user()) && ((*it)->state() != TS_Finished) && ((*it)->state() != TS_Aborted) ))
+            if (((*it) != isUploadingTo((*it)->user()) && ((*it)->state() != TS_Finished) && ((*it)->state() != TS_Aborted) && ((*it)->state() != TS_Offline)))
                 (*it)->setState(TS_Offline);
         }
     }
@@ -832,7 +830,8 @@ void Museek::UploadManager::onPeerOffline(std::string user) {
             && (*it)->state() != TS_Transferring
             && (*it)->state() != TS_ConnectionClosed
             && (*it)->state() != TS_CannotConnect
-            && (*it)->state() != TS_Aborted)
+            && (*it)->state() != TS_Aborted
+            && (*it)->state() != TS_Offline)
             (*it)->setState(TS_Offline);
     }
 }
