@@ -181,8 +181,6 @@ void NewNet::Reactor::run()
         loop = prepareReactorData();
     }
 
-    event_priority_init(100);
-
     // Launch the main loop
     event_dispatch();
 }
@@ -239,27 +237,23 @@ NewNet::Reactor::eventCallback(int fd, short event, void *arg) {
 
     bool loop = true;
     while (loop) {
-        // Let the sockets do their job
-        if ((event & EV_READ) || (event & EV_WRITE)) {
-            /* Make a copy of our socket list, as they might disappear because of
-               events that occur and then our iterators go berserk */
-            std::vector<RefPtr<Socket> > sockets(m_Sockets);
+        /* Make a copy of our socket list, as they might disappear because of
+           events that occur and then our iterators go berserk */
+        std::vector<RefPtr<Socket> > sockets(m_Sockets);
 
-            /* Check which events we want to hear about from which sockets */
-            std::vector<RefPtr<Socket> >::iterator it, end = sockets.end();
-            // Process the event
-            for(it = sockets.begin(); it != end; ++it)
-            {
-              NewNet::Socket * sock = *it;
-              int fdSock = sock->descriptor();
-              if(fdSock != fd)
-                continue;
+        std::vector<RefPtr<Socket> >::iterator it, end = sockets.end();
 
+        for(it = sockets.begin(); it != end; ++it) {
+            NewNet::Socket * sock = *it;
+            struct event *evData = sock->getEventData();
+
+            // Let the sockets do their job
+            if ((sock->descriptor() >= 0) && ((evData->ev_res & EV_READ) || (evData->ev_res & EV_WRITE))) {
               // Update the socket's ready state
               int state = 0;
-              if(event & EV_READ)
+              if(evData->ev_res & EV_READ)
                 state |= NewNet::Socket::StateReceive;
-              if(event & EV_WRITE)
+              if(evData->ev_res & EV_WRITE)
                 state |= NewNet::Socket::StateSend;
               sock->setReadyState(state);
 
@@ -353,7 +347,6 @@ NewNet::Reactor::checkSockets(struct timeval & timeout, bool & timeout_set) {
         if (event_initialized(evData))
             event_del(evData);
         event_set(evData, fd, evFlags, ::eventCallback, this);
-        event_priority_set(evData, sock->eventPriority());
         event_add(evData, NULL);
       }
     }
