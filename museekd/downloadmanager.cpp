@@ -199,6 +199,8 @@ Museek::Download::received(uint bytes)
 		while(m_RatePool.size() > 10)
 			m_RatePool.erase(m_RatePool.begin());
 
+        m_Rate = 0;
+
 		std::vector<uint>::iterator it, end = m_RatePool.end();
 		for(it = m_RatePool.begin(); it != end; ++it)
 			m_Rate += *it;

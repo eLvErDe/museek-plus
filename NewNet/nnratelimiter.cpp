@@ -106,7 +106,7 @@ NewNet::RateLimiter::nextWindow()
       if(d <= 0)
         return 0;
       else
-        return d + 50; /* Make sure we don't wake up too early */
+        return d;
     }
   }
 
