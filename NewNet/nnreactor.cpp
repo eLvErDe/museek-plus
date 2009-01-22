@@ -250,10 +250,13 @@ NewNet::Reactor::eventCallback(int fd, short event, void *arg) {
             // Let the sockets do their job
             if ((sock->descriptor() >= 0) && ((evData->ev_res & EV_READ) || (evData->ev_res & EV_WRITE))) {
               // Update the socket's ready state
+              long upLimit = (! sock->upRateLimiter()) ? 0 : sock->upRateLimiter()->nextWindow();
+              long downLimit = (! sock->downRateLimiter()) ? 0 : sock->downRateLimiter()->nextWindow();
+
               int state = 0;
-              if(evData->ev_res & EV_READ)
+              if ((downLimit == 0) && (evData->ev_res & EV_READ))
                 state |= NewNet::Socket::StateReceive;
-              if(evData->ev_res & EV_WRITE)
+              if ((upLimit == 0) && (evData->ev_res & EV_WRITE))
                 state |= NewNet::Socket::StateSend;
               sock->setReadyState(state);
 
