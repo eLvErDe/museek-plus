@@ -49,7 +49,7 @@ static inline bool makedirs(const std::string & dir)
       continue;
     // Create the piece of the path.
 #ifndef WIN32
-    if(mkdir(path.c_str(), S_IRWXU | S_IRGRP | S_IWGRP | S_IROTH | S_IXOTH) == -1 && errno != EEXIST)
+    if(mkdir(path.c_str(), S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH) == -1 && errno != EEXIST)
 #else
     if(mkdir(path.c_str()) == -1 && errno != EEXIST)
 #endif // ! WIN32
