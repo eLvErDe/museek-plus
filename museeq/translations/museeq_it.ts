@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="1.1" language="it">
-<defaultcodec></defaultcodec>
 <context>
     <name>BanList</name>
     <message>
@@ -1155,7 +1154,7 @@
 <context>
     <name>ScrollImage</name>
     <message>
-        <location filename="../userinfo.cpp" line="53"/>
+        <location filename="../userinfo.cpp" line="54"/>
         <source>Save picture...</source>
         <translation>Salva immagine...</translation>
     </message>
@@ -2102,67 +2101,67 @@
 <context>
     <name>UserInfo</name>
     <message>
-        <location filename="../userinfo.cpp" line="107"/>
+        <location filename="../userinfo.cpp" line="122"/>
         <source>Description</source>
-        <translation>Descrizione</translation>
-    </message>
-    <message>
-        <location filename="../userinfo.cpp" line="116"/>
-        <source>Information</source>
-        <translation>Informazioni</translation>
-    </message>
-    <message>
-        <location filename="../userinfo.cpp" line="121"/>
-        <source>Uploads allowed</source>
-        <translation>Invii permessi</translation>
-    </message>
-    <message>
-        <location filename="../userinfo.cpp" line="132"/>
-        <source>unknown</source>
-        <translation>sconosciuto</translation>
-    </message>
-    <message>
-        <location filename="../userinfo.cpp" line="126"/>
-        <source>Queue size</source>
-        <translation>Dimensione coda</translation>
+        <translation type="unfinished">Descrizione</translation>
     </message>
     <message>
         <location filename="../userinfo.cpp" line="131"/>
-        <source>Slots available</source>
-        <translation>Slot disponibili</translation>
+        <source>Information</source>
+        <translation type="unfinished">Informazioni</translation>
     </message>
     <message>
         <location filename="../userinfo.cpp" line="136"/>
-        <source>Refresh</source>
-        <translation>Aggiorna</translation>
+        <source>Uploads allowed</source>
+        <translation type="unfinished">Invii permessi</translation>
     </message>
     <message>
-        <location filename="../userinfo.cpp" line="152"/>
+        <location filename="../userinfo.cpp" line="147"/>
+        <source>unknown</source>
+        <translation type="unfinished">sconosciuto</translation>
+    </message>
+    <message>
+        <location filename="../userinfo.cpp" line="141"/>
+        <source>Queue size</source>
+        <translation type="unfinished">Dimensione coda</translation>
+    </message>
+    <message>
+        <location filename="../userinfo.cpp" line="146"/>
+        <source>Slots available</source>
+        <translation type="unfinished">Slot disponibili</translation>
+    </message>
+    <message>
+        <location filename="../userinfo.cpp" line="151"/>
+        <source>Refresh</source>
+        <translation type="unfinished">Aggiorna</translation>
+    </message>
+    <message>
+        <location filename="../userinfo.cpp" line="167"/>
         <source>Picture</source>
         <translation>Immagine</translation>
     </message>
     <message>
-        <location filename="../userinfo.cpp" line="168"/>
+        <location filename="../userinfo.cpp" line="184"/>
         <source>yes</source>
         <translation>sì</translation>
     </message>
     <message>
-        <location filename="../userinfo.cpp" line="168"/>
+        <location filename="../userinfo.cpp" line="184"/>
         <source>no</source>
         <translation>no</translation>
     </message>
     <message>
-        <location filename="../userinfo.cpp" line="142"/>
+        <location filename="../userinfo.cpp" line="157"/>
         <source>Interests</source>
         <translation>Interessi</translation>
     </message>
     <message>
-        <location filename="../userinfo.cpp" line="146"/>
+        <location filename="../userinfo.cpp" line="161"/>
         <source>He likes:</source>
         <translation>Gli piace:</translation>
     </message>
     <message>
-        <location filename="../userinfo.cpp" line="148"/>
+        <location filename="../userinfo.cpp" line="163"/>
         <source>He hates:</source>
         <translation>Non gli piace:</translation>
     </message>

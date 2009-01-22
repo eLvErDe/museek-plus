@@ -1533,7 +1533,7 @@
 <context>
     <name>ScrollImage</name>
     <message>
-        <location filename="../userinfo.cpp" line="53"/>
+        <location filename="../userinfo.cpp" line="54"/>
         <source>Save picture...</source>
         <translation>Afbeelding opslaan...</translation>
     </message>
@@ -2657,67 +2657,67 @@
 <context>
     <name>UserInfo</name>
     <message>
-        <location filename="../userinfo.cpp" line="107"/>
+        <location filename="../userinfo.cpp" line="122"/>
         <source>Description</source>
-        <translation>Omschrijving</translation>
-    </message>
-    <message>
-        <location filename="../userinfo.cpp" line="116"/>
-        <source>Information</source>
-        <translation>Informatie</translation>
-    </message>
-    <message>
-        <location filename="../userinfo.cpp" line="121"/>
-        <source>Uploads allowed</source>
-        <translation>Uploads toegestaan</translation>
-    </message>
-    <message>
-        <location filename="../userinfo.cpp" line="132"/>
-        <source>unknown</source>
-        <translation>onbekend</translation>
-    </message>
-    <message>
-        <location filename="../userinfo.cpp" line="126"/>
-        <source>Queue size</source>
-        <translation>Wachtrijgrootte</translation>
+        <translation type="unfinished">Omschrijving</translation>
     </message>
     <message>
         <location filename="../userinfo.cpp" line="131"/>
-        <source>Slots available</source>
-        <translation>Slots beschikbaar</translation>
+        <source>Information</source>
+        <translation type="unfinished">Informatie</translation>
     </message>
     <message>
         <location filename="../userinfo.cpp" line="136"/>
-        <source>Refresh</source>
-        <translation>Verversen</translation>
+        <source>Uploads allowed</source>
+        <translation type="unfinished">Uploads toegestaan</translation>
     </message>
     <message>
-        <location filename="../userinfo.cpp" line="152"/>
+        <location filename="../userinfo.cpp" line="147"/>
+        <source>unknown</source>
+        <translation type="unfinished">onbekend</translation>
+    </message>
+    <message>
+        <location filename="../userinfo.cpp" line="141"/>
+        <source>Queue size</source>
+        <translation type="unfinished">Wachtrijgrootte</translation>
+    </message>
+    <message>
+        <location filename="../userinfo.cpp" line="146"/>
+        <source>Slots available</source>
+        <translation type="unfinished">Slots beschikbaar</translation>
+    </message>
+    <message>
+        <location filename="../userinfo.cpp" line="151"/>
+        <source>Refresh</source>
+        <translation type="unfinished">Verversen</translation>
+    </message>
+    <message>
+        <location filename="../userinfo.cpp" line="167"/>
         <source>Picture</source>
         <translation>Afbeelding</translation>
     </message>
     <message>
-        <location filename="../userinfo.cpp" line="168"/>
+        <location filename="../userinfo.cpp" line="184"/>
         <source>yes</source>
         <translation>ja</translation>
     </message>
     <message>
-        <location filename="../userinfo.cpp" line="168"/>
+        <location filename="../userinfo.cpp" line="184"/>
         <source>no</source>
         <translation>nee</translation>
     </message>
     <message>
-        <location filename="../userinfo.cpp" line="142"/>
+        <location filename="../userinfo.cpp" line="157"/>
         <source>Interests</source>
         <translation type="unfinished">Interesses</translation>
     </message>
     <message>
-        <location filename="../userinfo.cpp" line="146"/>
+        <location filename="../userinfo.cpp" line="161"/>
         <source>He likes:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../userinfo.cpp" line="148"/>
+        <location filename="../userinfo.cpp" line="163"/>
         <source>He hates:</source>
         <translation type="unfinished"></translation>
     </message>

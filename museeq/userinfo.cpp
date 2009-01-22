@@ -37,6 +37,7 @@
 #include <QMouseEvent>
 #include <QMenu>
 #include <QPushButton>
+#include <QScrollBar>
 
 ScrollImage::ScrollImage(QWidget* parent, const char* name)
 	   : QScrollArea(parent) {
@@ -54,14 +55,19 @@ ScrollImage::ScrollImage(QWidget* parent, const char* name)
 	connect(ActionSave, SIGNAL(triggered()), this, SLOT(savePicture()));
 	mPopupMenu->addAction(ActionSave);
 
+	connect(horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(ensureCentered()));
+	connect(verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(ensureCentered()));
 }
 
 void ScrollImage::resizeEvent(QResizeEvent* event) {
 	QScrollArea::resizeEvent(event);
-	recenterImage();
+	ensureCentered();
 }
 
-void ScrollImage::recenterImage() {
+/**
+  * Sets the image to the correct initial position.
+  */
+void ScrollImage::centerImage() {
  	if(width() > mLabel->size().width())
  		mLabel->move((width() - mLabel->width()) / 2, mLabel->pos().y());
  	else
@@ -72,11 +78,21 @@ void ScrollImage::recenterImage() {
  		mLabel->move(mLabel->pos().x(), 0);
 }
 
+/**
+  * Ensure that the image is correctly centered at any time if its size is smaller than the area.
+  */
+void ScrollImage::ensureCentered() {
+ 	if(width() > mLabel->size().width())
+ 		mLabel->move((width() - mLabel->width()) / 2, mLabel->pos().y());
+ 	if(height() > mLabel->size().height())
+ 		mLabel->move(mLabel->pos().x(), (height() - mLabel->height()) / 2);
+}
+
 void ScrollImage::setPixmap(const QPixmap& p, const QString& baseName) {
 	mBaseName = baseName;
 	mLabel->setPixmap(p);
 	mLabel->setFixedSize(p.size());
-	QTimer::singleShot(10, this, SLOT(recenterImage()));
+	QTimer::singleShot(10, this, SLOT(centerImage()));
 }
 
 void ScrollImage::mouseReleaseEvent(QMouseEvent* e) {
@@ -101,7 +117,6 @@ UserInfo::UserInfo(const QString& user, QWidget* parent, const char* name)
 	QVBoxLayout* vbox = new QVBoxLayout(statsWidget);
 	vbox->setMargin(5);
 	vbox->setSpacing(5);
-	split->setStretchFactor ( 0, 5 );
 
 
 	QGroupBox* frame = new QGroupBox(tr("Description"), statsWidget);
@@ -151,6 +166,7 @@ UserInfo::UserInfo(const QString& user, QWidget* parent, const char* name)
 
 	frame = new QGroupBox(tr("Picture"), split);
 	vbox = new QVBoxLayout(frame);
+	vbox->addStrut(3 * MainLayout->sizeHint().width() / 4);
 	vbox->setMargin(5);
 	mView = new ScrollImage(frame);
 	vbox->addWidget(mView);

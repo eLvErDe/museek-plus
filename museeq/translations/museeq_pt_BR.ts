@@ -1448,7 +1448,7 @@
 <context>
     <name>ScrollImage</name>
     <message>
-        <location filename="../userinfo.cpp" line="53"/>
+        <location filename="../userinfo.cpp" line="54"/>
         <source>Save picture...</source>
         <translation>Salvar figura...</translation>
     </message>
@@ -2547,67 +2547,67 @@
 <context>
     <name>UserInfo</name>
     <message>
-        <location filename="../userinfo.cpp" line="107"/>
+        <location filename="../userinfo.cpp" line="122"/>
         <source>Description</source>
-        <translation>Descrição</translation>
-    </message>
-    <message>
-        <location filename="../userinfo.cpp" line="116"/>
-        <source>Information</source>
-        <translation>Informação</translation>
-    </message>
-    <message>
-        <location filename="../userinfo.cpp" line="121"/>
-        <source>Uploads allowed</source>
-        <translation>Uploads permitidos</translation>
-    </message>
-    <message>
-        <location filename="../userinfo.cpp" line="132"/>
-        <source>unknown</source>
-        <translation>desconhecido</translation>
-    </message>
-    <message>
-        <location filename="../userinfo.cpp" line="126"/>
-        <source>Queue size</source>
-        <translation>Tamanho da fila</translation>
+        <translation type="unfinished">Descrição</translation>
     </message>
     <message>
         <location filename="../userinfo.cpp" line="131"/>
-        <source>Slots available</source>
-        <translation>Slots disponíveis</translation>
+        <source>Information</source>
+        <translation type="unfinished">Informação</translation>
     </message>
     <message>
         <location filename="../userinfo.cpp" line="136"/>
-        <source>Refresh</source>
-        <translation>Atualizar</translation>
+        <source>Uploads allowed</source>
+        <translation type="unfinished">Uploads permitidos</translation>
     </message>
     <message>
-        <location filename="../userinfo.cpp" line="152"/>
+        <location filename="../userinfo.cpp" line="147"/>
+        <source>unknown</source>
+        <translation type="unfinished">desconhecido</translation>
+    </message>
+    <message>
+        <location filename="../userinfo.cpp" line="141"/>
+        <source>Queue size</source>
+        <translation type="unfinished">Tamanho da fila</translation>
+    </message>
+    <message>
+        <location filename="../userinfo.cpp" line="146"/>
+        <source>Slots available</source>
+        <translation type="unfinished">Slots disponíveis</translation>
+    </message>
+    <message>
+        <location filename="../userinfo.cpp" line="151"/>
+        <source>Refresh</source>
+        <translation type="unfinished">Atualizar</translation>
+    </message>
+    <message>
+        <location filename="../userinfo.cpp" line="167"/>
         <source>Picture</source>
         <translation>Foto</translation>
     </message>
     <message>
-        <location filename="../userinfo.cpp" line="168"/>
+        <location filename="../userinfo.cpp" line="184"/>
         <source>yes</source>
         <translation>sim</translation>
     </message>
     <message>
-        <location filename="../userinfo.cpp" line="168"/>
+        <location filename="../userinfo.cpp" line="184"/>
         <source>no</source>
         <translation>não</translation>
     </message>
     <message>
-        <location filename="../userinfo.cpp" line="142"/>
+        <location filename="../userinfo.cpp" line="157"/>
         <source>Interests</source>
         <translation type="unfinished">Interesses</translation>
     </message>
     <message>
-        <location filename="../userinfo.cpp" line="146"/>
+        <location filename="../userinfo.cpp" line="161"/>
         <source>He likes:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../userinfo.cpp" line="148"/>
+        <location filename="../userinfo.cpp" line="163"/>
         <source>He hates:</source>
         <translation type="unfinished"></translation>
     </message>

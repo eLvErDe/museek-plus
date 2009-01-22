@@ -1563,7 +1563,7 @@
 <context>
     <name>ScrollImage</name>
     <message>
-        <location filename="../userinfo.cpp" line="53"/>
+        <location filename="../userinfo.cpp" line="54"/>
         <source>Save picture...</source>
         <translation>Guardar foto...</translation>
     </message>
@@ -2692,67 +2692,67 @@
 <context>
     <name>UserInfo</name>
     <message>
-        <location filename="../userinfo.cpp" line="107"/>
+        <location filename="../userinfo.cpp" line="122"/>
         <source>Description</source>
-        <translation>Descripción</translation>
-    </message>
-    <message>
-        <location filename="../userinfo.cpp" line="116"/>
-        <source>Information</source>
-        <translation>Información</translation>
-    </message>
-    <message>
-        <location filename="../userinfo.cpp" line="121"/>
-        <source>Uploads allowed</source>
-        <translation>Transferencias permitidas</translation>
-    </message>
-    <message>
-        <location filename="../userinfo.cpp" line="132"/>
-        <source>unknown</source>
-        <translation>desconocido</translation>
-    </message>
-    <message>
-        <location filename="../userinfo.cpp" line="126"/>
-        <source>Queue size</source>
-        <translation>Tamaño de fila</translation>
+        <translation type="unfinished">Descripción</translation>
     </message>
     <message>
         <location filename="../userinfo.cpp" line="131"/>
-        <source>Slots available</source>
-        <translation>Espacios disponibles</translation>
+        <source>Information</source>
+        <translation type="unfinished">Información</translation>
     </message>
     <message>
         <location filename="../userinfo.cpp" line="136"/>
-        <source>Refresh</source>
-        <translation>Actualizar</translation>
+        <source>Uploads allowed</source>
+        <translation type="unfinished">Transferencias permitidas</translation>
     </message>
     <message>
-        <location filename="../userinfo.cpp" line="152"/>
+        <location filename="../userinfo.cpp" line="147"/>
+        <source>unknown</source>
+        <translation type="unfinished">desconocido</translation>
+    </message>
+    <message>
+        <location filename="../userinfo.cpp" line="141"/>
+        <source>Queue size</source>
+        <translation type="unfinished">Tamaño de fila</translation>
+    </message>
+    <message>
+        <location filename="../userinfo.cpp" line="146"/>
+        <source>Slots available</source>
+        <translation type="unfinished">Espacios disponibles</translation>
+    </message>
+    <message>
+        <location filename="../userinfo.cpp" line="151"/>
+        <source>Refresh</source>
+        <translation type="unfinished">Actualizar</translation>
+    </message>
+    <message>
+        <location filename="../userinfo.cpp" line="167"/>
         <source>Picture</source>
         <translation>Foto</translation>
     </message>
     <message>
-        <location filename="../userinfo.cpp" line="168"/>
+        <location filename="../userinfo.cpp" line="184"/>
         <source>yes</source>
         <translation>sí</translation>
     </message>
     <message>
-        <location filename="../userinfo.cpp" line="168"/>
+        <location filename="../userinfo.cpp" line="184"/>
         <source>no</source>
         <translation>no</translation>
     </message>
     <message>
-        <location filename="../userinfo.cpp" line="142"/>
+        <location filename="../userinfo.cpp" line="157"/>
         <source>Interests</source>
         <translation type="unfinished">Interéses</translation>
     </message>
     <message>
-        <location filename="../userinfo.cpp" line="146"/>
+        <location filename="../userinfo.cpp" line="161"/>
         <source>He likes:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../userinfo.cpp" line="148"/>
+        <location filename="../userinfo.cpp" line="163"/>
         <source>He hates:</source>
         <translation type="unfinished"></translation>
     </message>

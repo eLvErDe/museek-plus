@@ -64,7 +64,8 @@ protected:
 	void resizeEvent(QResizeEvent*);
 	void mouseReleaseEvent(QMouseEvent* e);
 protected slots:
-	void recenterImage();
+	void centerImage();
+	void ensureCentered();
 	void savePicture();
 private:
 	QString mBaseName;
