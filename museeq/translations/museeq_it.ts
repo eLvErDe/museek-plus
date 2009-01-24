@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="1.1" language="it">
+<defaultcodec></defaultcodec>
 <context>
     <name>BanList</name>
     <message>
@@ -2103,37 +2104,37 @@
     <message>
         <location filename="../userinfo.cpp" line="122"/>
         <source>Description</source>
-        <translation type="unfinished">Descrizione</translation>
+        <translation>Descrizione</translation>
     </message>
     <message>
         <location filename="../userinfo.cpp" line="131"/>
         <source>Information</source>
-        <translation type="unfinished">Informazioni</translation>
+        <translation>Informazioni</translation>
     </message>
     <message>
         <location filename="../userinfo.cpp" line="136"/>
         <source>Uploads allowed</source>
-        <translation type="unfinished">Invii permessi</translation>
+        <translation>Invii permessi</translation>
     </message>
     <message>
         <location filename="../userinfo.cpp" line="147"/>
         <source>unknown</source>
-        <translation type="unfinished">sconosciuto</translation>
+        <translation>sconosciuto</translation>
     </message>
     <message>
         <location filename="../userinfo.cpp" line="141"/>
         <source>Queue size</source>
-        <translation type="unfinished">Dimensione coda</translation>
+        <translation>Dimensione coda</translation>
     </message>
     <message>
         <location filename="../userinfo.cpp" line="146"/>
         <source>Slots available</source>
-        <translation type="unfinished">Slot disponibili</translation>
+        <translation>Slot disponibili</translation>
     </message>
     <message>
         <location filename="../userinfo.cpp" line="151"/>
         <source>Refresh</source>
-        <translation type="unfinished">Aggiorna</translation>
+        <translation>Aggiorna</translation>
     </message>
     <message>
         <location filename="../userinfo.cpp" line="167"/>
