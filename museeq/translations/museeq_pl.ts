@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="1.1" language="pl">
+<defaultcodec></defaultcodec>
 <context>
     <name>BanList</name>
     <message>
@@ -1801,7 +1802,7 @@
     <message>
         <location filename="../settingsdialog.cpp" line="1244"/>
         <source>Additional Shares for Buddies</source>
-        <translation type="unfinished"></translation>
+        <translation>Dodatkowe udziały dla zaprzyjaźnionych użytkowników</translation>
     </message>
 </context>
 <context>
@@ -2114,37 +2115,37 @@
     <message>
         <location filename="../userinfo.cpp" line="122"/>
         <source>Description</source>
-        <translation type="unfinished">Opis</translation>
+        <translation>Opis</translation>
     </message>
     <message>
         <location filename="../userinfo.cpp" line="131"/>
         <source>Information</source>
-        <translation type="unfinished">Informacja</translation>
+        <translation>Informacja</translation>
     </message>
     <message>
         <location filename="../userinfo.cpp" line="136"/>
         <source>Uploads allowed</source>
-        <translation type="unfinished">Pozwolenie na wysyłanie</translation>
+        <translation>Pozwolenie na wysyłanie</translation>
     </message>
     <message>
         <location filename="../userinfo.cpp" line="147"/>
         <source>unknown</source>
-        <translation type="unfinished">nieznany</translation>
+        <translation>nieznany</translation>
     </message>
     <message>
         <location filename="../userinfo.cpp" line="141"/>
         <source>Queue size</source>
-        <translation type="unfinished">Długość kolejki</translation>
+        <translation>Długość kolejki</translation>
     </message>
     <message>
         <location filename="../userinfo.cpp" line="146"/>
         <source>Slots available</source>
-        <translation type="unfinished">Dostępne sloty</translation>
+        <translation>Dostępne sloty</translation>
     </message>
     <message>
         <location filename="../userinfo.cpp" line="151"/>
         <source>Refresh</source>
-        <translation type="unfinished">Odśwież</translation>
+        <translation>Odśwież</translation>
     </message>
     <message>
         <location filename="../userinfo.cpp" line="167"/>
