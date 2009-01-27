@@ -40,10 +40,13 @@ TransferListItem::TransferListItem(QTreeWidget* p, const QString& _u, const QStr
 	NTransfer t;
 	t.state = 100;
 	t.error = QString::null;
+	t.user = QString::null;
+	t.filename = QString::null;
 	t.filepos = 0;
 	t.filesize = 0;
 	t.rate = 0;
 	t.placeInQueue = (uint)-1;
+
 	update(t, true);
 }
 

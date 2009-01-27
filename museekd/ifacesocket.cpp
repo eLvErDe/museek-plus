@@ -29,7 +29,6 @@ Museek::IfaceSocket::IfaceSocket() : NewNet::ClientSocket(), MessageProcessor(4)
   m_CipherContext = new CipherContext();
   dataReceivedEvent.connect(this, &IfaceSocket::onDataReceived);
   messageReceivedEvent.connect(this, &IfaceSocket::onMessageReceived);
-  disconnectedEvent.connect(this, &IfaceSocket::onDisconnected);
   cannotConnectEvent.connect(this, &IfaceSocket::onCannotConnect);
 }
 
@@ -96,13 +95,6 @@ Museek::IfaceSocket::onMessageReceived(const MessageData * data)
     default:
       NNLOG("museekd.iface.warn", "Received unknown interface message, type: %u, length: %u", data->type, data->length);
   }
-}
-
-void
-Museek::IfaceSocket::onDisconnected(NewNet::ClientSocket *)
-{
-  if(reactor())
-    reactor()->remove(this);
 }
 
 void

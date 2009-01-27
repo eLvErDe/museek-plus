@@ -263,8 +263,10 @@ void Museek::SharesDatabase::search(const string& _query, Folder& result) {
                     word = word.substr(1);
 				q_part.push_back(word);
 			}
-			else if(firstC == '-')
-				q_out.push_back(mMuseekd->codeset()->toNet(string(word.data() + 1, word.size() - 1)));
+			else if(firstC == '-') {
+			    if (word.size() > 0)
+                    q_out.push_back(mMuseekd->codeset()->toNet(string(word.data() + 1, word.size() - 1)));
+			}
 			else {
 				/* find files that match this word */
 				Folder* t = &mCharMap[word[0]][word];

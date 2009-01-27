@@ -379,8 +379,9 @@ void Museek::SearchManager::sendSearchResults(const std::string & username, cons
 void Museek::SearchManager::buddySearch(uint token, const std::string & query) {
     std::vector<std::string> buddies = museekd()->config()->keys("buddies");
     std::vector<std::string>::const_iterator it;
+    std::string q = museekd()->codeset()->toNet(query);
     for(it = buddies.begin(); it != buddies.end(); ++it) {
-        SUserSearch msg(*it, token, museekd()->codeset()->toNet(query));
+        SUserSearch msg(*it, token, q);
         museekd()->server()->sendMessage(msg.make_network_packet());
     }
 }
@@ -391,8 +392,9 @@ void Museek::SearchManager::buddySearch(uint token, const std::string & query) {
 void Museek::SearchManager::roomsSearch(uint token, const std::string & query) {
     std::vector<std::string> rooms = museekd()->server()->joinedRooms();
     std::vector<std::string>::const_iterator it;
+    std::string q = museekd()->codeset()->toNet(query);
     for(it = rooms.begin(); it != rooms.end(); ++it) {
-        SRoomSearch msg(*it, token, museekd()->codeset()->toNet(query));
+        SRoomSearch msg(*it, token, q);
         museekd()->server()->sendMessage(msg.make_network_packet());
     }
 }

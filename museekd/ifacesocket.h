@@ -78,7 +78,6 @@ namespace Museek
 
     void sendMessage(const NewNet::Buffer & message);
 
-    void onDisconnected(NewNet::ClientSocket *);
     void onCannotConnect(NewNet::ClientSocket *);
 
     #define MAP_MESSAGE(ID, TYPE, EVENT) NewNet::Event<const TYPE *> EVENT;
