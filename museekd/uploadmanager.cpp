@@ -533,7 +533,6 @@ void Museek::UploadManager::updateRates() {
         // No limit
         m_Limiter->setLimit(-1);
     }
-    NNLOG("temp.debug", "New upload rate limit %i", globalRate); // FIXME debug
 }
 
 /**

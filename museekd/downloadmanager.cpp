@@ -612,7 +612,6 @@ void Museek::DownloadManager::updateRates() {
         // No limit
         m_Limiter->setLimit(-1);
     }
-    NNLOG("temp.debug", "New download rate limit %i", globalRate); // FIXME debug
 }
 
 /**

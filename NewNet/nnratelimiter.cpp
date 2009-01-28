@@ -21,7 +21,6 @@
 #include "nnratelimiter.h"
 #include "platform.h"
 #include "util.h"
-#include "nnlog.h"
 
 #include <vector>
 #include <queue>
@@ -82,8 +81,6 @@ long
 NewNet::RateLimiter::nextWindow()
 {
   flush();
-
-    NNLOG("temp.debug", "Next window in rate limiter, limit is %i", m_Limit); // FIXME debug
 
   if(m_Limit == -1)
     return 0;
