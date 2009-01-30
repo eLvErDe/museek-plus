@@ -40,6 +40,7 @@
 #include <fstream>
 #include <NewNet/nnratelimiter.h>
 #include <NewNet/nnpath.h>
+#include <NewNet/nntcpserversocket.h>
 
 Museek::PeerSocket::PeerSocket(Museek::Museekd * museekd) : Museek::UserSocket(museekd, "P"), Museek::MessageProcessor(4)
 {
@@ -482,4 +483,37 @@ void
 Museek::PeerSocket::onSocketTimeout(long) {
     NNLOG("museekd.peers.debug", "Ping timeout on a peer socket");
     disconnect();
+}
+
+void
+Museek::PeerSocket::initiateOurself()
+{
+    setToken(museekd()->token());
+
+    NNLOG("museekd.distrib.debug", "Initiating active connection to ourself.");
+
+    HInitiate handshake(museekd()->server()->username(), type(), token());
+    sendMessage(handshake.make_network_packet());
+
+    m_CannotConnectOurselfCallback = cannotConnectEvent.connect(this, & PeerManager::onCannotConnectOurself);
+
+    uint port = museekd()->peers()->peerFactory()->serverSocket()->listenPort();
+
+    if(port == 0) {
+        cannotConnectEvent(this);
+        return;
+    }
+    connect("127.0.0.1", port);
+}
+
+void
+Museek::PeerSocket::stopConnectOurself() {
+    disconnect(false);
+
+    if (m_CannotConnectOurselfCallback.isValid()) {
+        cannotConnectEvent.disconnect(m_CannotConnectOurselfCallback);
+        m_CannotConnectOurselfCallback = 0;
+    }
+
+    sendBuffer().clear(); // We have a HInitiate message still waiting in the buffer. We don't need it anymore
 }

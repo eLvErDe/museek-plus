@@ -41,6 +41,8 @@ namespace Museek
 
     void addSearchResultsOnlyTimeout(long length = 2000);
     void onSearchResultsOnly(long);
+    void initiateOurself();
+    void stopConnectOurself();
 
     #define MAP_MESSAGE(ID, TYPE, EVENT) NewNet::Event<const TYPE *> EVENT;
     #include "peereventtable.h"
@@ -71,6 +73,7 @@ namespace Museek
 
 	NewNet::WeakRefPtr<NewNet::Event<long>::Callback> m_SearchResultsOnlyTimeout;
 	NewNet::WeakRefPtr<NewNet::Event<long>::Callback> m_SocketTimeout;
+	NewNet::WeakRefPtr<NewNet::Event<NewNet::ClientSocket *>::Callback> m_CannotConnectOurselfCallback; // Callback to the transferreply event
   };
 }
 

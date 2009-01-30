@@ -122,6 +122,7 @@ Museek::DistributedSocket::onDisconnected(NewNet::ClientSocket * socket) {
 
 void Museek::DistributedSocket::onCannotConnectActive(NewNet::ClientSocket * socket) {
     NNLOG("museekd.distrib.debug", "Cannot connect a distributed socket in active mode. Trying passive.");
+    socket->sendBuffer().clear(); // We have a HInitiate message still waiting in the buffer. We don't need it anymore
     disconnect();
     initiatePassive();
 }

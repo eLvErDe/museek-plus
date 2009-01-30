@@ -265,7 +265,10 @@ Museek::PeerManager::createPeerSocket(const std::string& user) {
             socket->setUser(user);
             addPeerSocket(socket);
             museekd()->reactor()->add(socket);
-            socket->initiate(user);
+            if (user == museekd()->server()->username())
+                socket->initiateOurself();
+            else
+                socket->initiate(user);
         }
     }
 }
@@ -305,6 +308,19 @@ Museek::PeerManager::onPeerCannotConnect(NewNet::ClientSocket * socket_)
     socket->disconnect();
 
     peerSocketUnavailableEvent(user);
+}
+
+/*
+    Called when the connection cannot be made with ourself (actively 127.0.0.1:listenport).
+*/
+void
+Museek::PeerManager::onCannotConnectOurself(NewNet::ClientSocket * socket_) {
+    // Could't connect actively, try the standard way (which needs reverse NAT)
+    PeerSocket * socket = (PeerSocket *)socket_;
+    if (socket) {
+        socket->stopConnectOurself();
+        socket->initiate(museekd()->server()->username());
+    }
 }
 
 void

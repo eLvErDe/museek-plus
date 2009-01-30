@@ -76,6 +76,7 @@ namespace Museek
     void waitingPassiveConnection(UserSocket * socket);
     void removePassiveConnectionWaiting(uint token);
     void onFirewallPierced(HandshakeSocket * socket);
+    void onCannotConnectOurself(NewNet::ClientSocket * socket_);
 
   protected:
     void listen();
