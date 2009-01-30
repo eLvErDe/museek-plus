@@ -171,7 +171,7 @@ void Browser::doSearch() {
 		for(it = mCurrentResult.value().begin(); it != end2; ++it)
 		{
             // See if some file match query
-			if(!it.key().isEmpty() && it.key().contains(mQuery, Qt::CaseInsensitive))
+			if(it.key().contains(mQuery, Qt::CaseInsensitive))
 			{
 			    // We've found some file!
 				mFolders->show(p); // Show this folder content
@@ -181,7 +181,7 @@ void Browser::doSearch() {
 			}
 		}
 
-		if(!p.back().isEmpty() && p.back().contains(mQuery, Qt::CaseInsensitive))
+		if(p.back().contains(mQuery, Qt::CaseInsensitive))
 		{
 		    // The folder name contains the query
 			mFolders->show(p); // Show this folder content
