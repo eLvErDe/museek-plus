@@ -124,6 +124,7 @@ namespace Museek
     void LoadDownloads();
 
     bool isBanned(const std::string u);
+    bool isIgnored(const std::string u);
     bool isTrusted(const std::string u);
     bool isBuddied(const std::string u);
     bool isPrivileged(const std::string u);

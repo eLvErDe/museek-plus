@@ -85,6 +85,10 @@ bool Museek::Museekd::isBanned(const std::string u) {
     return config()->hasKey("banned", u);
 }
 
+bool Museek::Museekd::isIgnored(const std::string u) {
+    return config()->hasKey("ignored", u);
+}
+
 bool Museek::Museekd::isTrusted(const std::string u) {
     return config()->hasKey("trusted", u);
 }

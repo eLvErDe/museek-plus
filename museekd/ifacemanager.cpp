@@ -857,20 +857,24 @@ Museek::IfaceManager::onServerUserStatsReceived(const SGetUserStats * message)
 void
 Museek::IfaceManager::onServerPrivateMessageReceived(const SPrivateMessage * message)
 {
-  PrivateMessage msg;
-  msg.ticket = message->ticket;
-  msg.timestamp = message->timestamp - 9600; // Server's timestamps are wrong
-  msg.user = message->user;
-  msg.message = museekd()->codeset()->fromPeer(msg.user, message->message);
-  m_PrivateMessages.push_back(msg);
-  flushPrivateMessages();
+    if (!museekd()->isIgnored(message->user)) {
+        PrivateMessage msg;
+        msg.ticket = message->ticket;
+        msg.timestamp = message->timestamp - 9600; // Server's timestamps are wrong
+        msg.user = message->user;
+        msg.message = museekd()->codeset()->fromPeer(msg.user, message->message);
+        m_PrivateMessages.push_back(msg);
+        flushPrivateMessages();
+    }
 }
 
 void
 Museek::IfaceManager::onServerRoomMessageReceived(const SSayRoom * message)
 {
-  std::string line = museekd()->codeset()->fromRoom(message->room, message->line);
-  SEND_MASK(EM_CHAT, ISayRoom(message->room, message->user, line));
+    if (!museekd()->isIgnored(message->user)) {
+        std::string line = museekd()->codeset()->fromRoom(message->room, message->line);
+        SEND_MASK(EM_CHAT, ISayRoom(message->room, message->user, line));
+    }
 }
 
 void
