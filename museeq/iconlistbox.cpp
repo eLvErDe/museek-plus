@@ -34,15 +34,22 @@ IconListBox::IconListBox( QWidget *parent, const char *name, bool verticalIconBo
 {
     setAcceptDrops(true);
     setViewMode ( QListView::IconMode);
-    setFlow(QListView::LeftToRight);
-
+    setMovement (QListView::Static);
+    setWordWrap (true);
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     connect(this, SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), SLOT(slotCurrentChanged(QListWidgetItem*, QListWidgetItem*)));
 
     mVerticalIconBox = verticalIconBox;
     if (!verticalIconBox)
-        setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
+        {
+                setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+                setFlow(QListView::TopToBottom);
+        }
     else
-        setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum);
+        {
+                setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+                setFlow(QListView::LeftToRight);
+        }
 }
 
 void IconListBox::updateMinimumHeight()
