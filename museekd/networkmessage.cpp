@@ -22,6 +22,7 @@
 # include "config.h"
 #endif // HAVE_CONFIG_H
 #include "networkmessage.h"
+#include <cstdio>
 #include <zlib.h>
 
 /* Pack a string. trslash indicates wether / to \ translation is in order,

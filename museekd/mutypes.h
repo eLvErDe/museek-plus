@@ -24,6 +24,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <stdint.h>
 #include <sys/types.h>
 
 typedef uint32_t uint32;

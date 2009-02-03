@@ -29,6 +29,7 @@
 #include <io.h>
 #endif // ! WIN32
 #include <errno.h>
+#include <stdint.h>
 #include <fstream>
 
 /* Make sure a directory exists by creating all the pieces from the ground
