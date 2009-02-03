@@ -26,24 +26,29 @@
         <translation>Cerca file e cartelle</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="97"/>
+        <location filename="../browser.cpp" line="103"/>
         <source>Refresh</source>
         <translation>Aggiorna</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="129"/>
+        <location filename="../browser.cpp" line="136"/>
         <source>directories</source>
         <translation>cartelle</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="132"/>
+        <location filename="../browser.cpp" line="139"/>
         <source>Sharing nothing..</source>
         <translation>Nulla di condiviso..</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="93"/>
+        <location filename="../browser.cpp" line="99"/>
         <source>Haven&apos;t received shares</source>
         <translation>Non ho ricevuto i condivisi</translation>
+    </message>
+    <message>
+        <location filename="../browser.cpp" line="91"/>
+        <source>Find next</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -203,62 +208,62 @@
 <context>
     <name>FileListView</name>
     <message>
-        <location filename="../browser.cpp" line="591"/>
+        <location filename="../browser.cpp" line="598"/>
         <source>Filename</source>
         <translation>Nome del file</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="591"/>
+        <location filename="../browser.cpp" line="598"/>
         <source>Size</source>
         <translation>Dimensione</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="591"/>
+        <location filename="../browser.cpp" line="598"/>
         <source>Length</source>
         <translation>Lunghezza</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="591"/>
+        <location filename="../browser.cpp" line="598"/>
         <source>Bitrate</source>
         <translation>Bitrate</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="605"/>
+        <location filename="../browser.cpp" line="612"/>
         <source>Download files</source>
         <translation>Scarica file</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="613"/>
+        <location filename="../browser.cpp" line="620"/>
         <source>Upload files</source>
         <translation>Invia file</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="619"/>
+        <location filename="../browser.cpp" line="626"/>
         <source>Copy URL</source>
         <translation>Copia URL</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="815"/>
+        <location filename="../browser.cpp" line="822"/>
         <source>Upload File(s)</source>
         <translation>Invia file</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="816"/>
+        <location filename="../browser.cpp" line="823"/>
         <source>Which user do you wish to upload these to?</source>
         <translation>A quale utente vuoi inviare questi file?</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="609"/>
+        <location filename="../browser.cpp" line="616"/>
         <source>Download files to..</source>
         <translation>Scarica files in..</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="777"/>
+        <location filename="../browser.cpp" line="784"/>
         <source>Select a Directory for current download(s)</source>
         <translation>Seleziona una cartella per gli scaricamenti correnti</translation>
     </message>
     <message numerus="yes">
-        <location filename="../browser.cpp" line="702"/>
+        <location filename="../browser.cpp" line="709"/>
         <source>%n file(s)</source>
         <translation>
             <numerusform>%n file        </numerusform>
@@ -269,42 +274,42 @@
 <context>
     <name>FolderListView</name>
     <message>
-        <location filename="../browser.cpp" line="233"/>
+        <location filename="../browser.cpp" line="240"/>
         <source>Folder</source>
         <translation>Cartella</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="260"/>
+        <location filename="../browser.cpp" line="267"/>
         <source>Copy URL</source>
         <translation>Copia URL</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="247"/>
+        <location filename="../browser.cpp" line="254"/>
         <source>Download Folder</source>
         <translation>Scarica cartella</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="251"/>
+        <location filename="../browser.cpp" line="258"/>
         <source>Download Folder to...</source>
         <translation>Scarica cartella in...</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="418"/>
+        <location filename="../browser.cpp" line="425"/>
         <source>Upload Folder</source>
         <translation>Invia cartella</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="396"/>
+        <location filename="../browser.cpp" line="403"/>
         <source>Select a Directory for current download(s)</source>
         <translation>Seleziona una cartella per gli scaricamenti correnti</translation>
     </message>
     <message>
-        <location filename="../browser.cpp" line="419"/>
+        <location filename="../browser.cpp" line="426"/>
         <source>Which user do you wish to upload this to?</source>
         <translation>A quale utente vuoi inviarlo?</translation>
     </message>
     <message numerus="yes">
-        <location filename="../browser.cpp" line="338"/>
+        <location filename="../browser.cpp" line="345"/>
         <source>%n folder(s)</source>
         <translation>
             <numerusform>%n cartella        </numerusform>
@@ -1342,47 +1347,47 @@
         <translation>Utente:</translation>
     </message>
     <message>
-        <location filename="../searches.cpp" line="62"/>
+        <location filename="../searches.cpp" line="59"/>
         <source>Search</source>
         <translation>Cerca</translation>
     </message>
     <message>
-        <location filename="../searches.cpp" line="63"/>
+        <location filename="../searches.cpp" line="62"/>
         <source>Method</source>
         <translation>Metodo</translation>
     </message>
     <message>
-        <location filename="../searches.cpp" line="68"/>
+        <location filename="../searches.cpp" line="67"/>
         <source>Global</source>
         <translation>Globale</translation>
     </message>
     <message>
-        <location filename="../searches.cpp" line="72"/>
+        <location filename="../searches.cpp" line="71"/>
         <source>Rooms</source>
         <translation>Stanze</translation>
     </message>
     <message>
-        <location filename="../searches.cpp" line="75"/>
+        <location filename="../searches.cpp" line="74"/>
         <source>Buddies</source>
         <translation>Amici</translation>
     </message>
     <message>
-        <location filename="../searches.cpp" line="78"/>
+        <location filename="../searches.cpp" line="77"/>
         <source>WishList</source>
         <translation>Lista dei desideri</translation>
     </message>
     <message>
-        <location filename="../searches.cpp" line="81"/>
+        <location filename="../searches.cpp" line="80"/>
         <source>User</source>
         <translation>Utente</translation>
     </message>
     <message>
-        <location filename="../searches.cpp" line="97"/>
+        <location filename="../searches.cpp" line="96"/>
         <source>*Interests*</source>
         <translation>*Interessi*</translation>
     </message>
     <message>
-        <location filename="../searches.cpp" line="102"/>
+        <location filename="../searches.cpp" line="101"/>
         <source>*Wishlist*</source>
         <translation>*Lista dei desideri*</translation>
     </message>

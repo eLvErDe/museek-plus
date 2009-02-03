@@ -53,6 +53,7 @@ private:
 	FileListView* mFiles;
 	QLabel* mFileCount;
 	QPushButton* mRefresh;
+	QPushButton* mSearchButton;
 	QString mUser;
 	bool mLoading;
 };

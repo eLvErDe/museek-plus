@@ -55,11 +55,10 @@ Searches::Searches(QWidget* parent, const char* name)
 	hbox->addWidget(mUserEntry);
 	mUserEntry->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
-	QIcon mSearchIcon = IMG("search-small");
+	QIcon searchIcon = IMG("search-small");
 	mSearch = new QPushButton(tr("Search"));
 	hbox->addWidget(mSearch);
-	mSearch->setIcon(mSearchIcon);
-	mSearch->setText(tr("Search"));
+	mSearch->setIcon(searchIcon);
 	QGroupBox * methods = new QGroupBox(tr("Method"), this);
 	vbox->addWidget(methods);
 	QHBoxLayout* methodsLayout = new QHBoxLayout(methods);

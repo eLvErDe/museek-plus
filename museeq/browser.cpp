@@ -87,6 +87,12 @@ Browser::Browser(const QString& user, QWidget* parent, const char* name)
 	TopLayout->addWidget(new QLabel(tr("Search files and folders"), topWidget));
 	mEntry = new QLineEdit(topWidget); /* "search"*/
 	TopLayout->addWidget(mEntry);
+
+    mSearchButton = new QPushButton(tr("Find next"));
+	QIcon searchIcon = IMG("search-small");
+	mSearchButton->setIcon(searchIcon);
+	TopLayout->addWidget(mSearchButton);
+
 	QFrame* frame = new QFrame(topWidget);
 	TopLayout->addWidget(frame);
 	frame->setFrameShape(QFrame::VLine);
@@ -114,6 +120,7 @@ Browser::Browser(const QString& user, QWidget* parent, const char* name)
 
 	connect(mEntry, SIGNAL(returnPressed()), SLOT(doSearch()));
 	connect(mFolders, SIGNAL(currentChanged(const QString&, const NFolder&)), mFiles, SLOT(setFiles(const QString&, const NFolder&)));
+	connect(mSearchButton, SIGNAL(clicked()), SLOT(doSearch()));
 }
 
 void Browser::setShares(const NShares& shares) {
