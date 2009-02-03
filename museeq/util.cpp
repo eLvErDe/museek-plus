@@ -77,6 +77,7 @@ QString Util::makeBitrate(uint bitrate, bool vbr) {
   * Tells if the given QDropEvent transports some slsk:// urls (with or without path)
   */
 bool Util::hasSlskUrls(const QDropEvent* e, bool needPath) {
+    // FIXME drag & drop doesn't work with usernames containing '_' or '@' (they're not valid urls)
     if (!e->mimeData()->hasUrls())
         return false;
 
