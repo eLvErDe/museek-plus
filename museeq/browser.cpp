@@ -148,7 +148,7 @@ void Browser::getShares() {
 void Browser::doSearch() {
     // Find the query
 	QString q = mEntry->text();
-	if(q.isEmpty() || mShares.isEmpty())
+	if(q.isEmpty() || mShares.isEmpty() || isLoading())
 		return;
 
     // It's a new query
@@ -168,25 +168,27 @@ void Browser::doSearch() {
 		NFolder::const_iterator it;
 		NFolder::const_iterator end2 = mCurrentResult.value().end();
 		// Navigate in current folder
-		for(it = mCurrentResult.value().begin(); it != end2; ++it)
-		{
-            // See if some file match query
-			if(it.key().contains(mQuery, Qt::CaseInsensitive))
-			{
-			    // We've found some file!
-				mFolders->show(p); // Show this folder content
-				mFiles->match(mQuery); // Select every matching file
-				++mCurrentResult; // Next search will be in next folder
-				return;
-			}
-		}
+		if (!p.isEmpty() ) {
+            for(it = mCurrentResult.value().begin(); it != end2; ++it)
+            {
+                // See if some file match query
+                if(it.key().contains(mQuery, Qt::CaseInsensitive))
+                {
+                    // We've found some file!
+                    mFolders->show(p); // Show this folder content
+                    mFiles->match(mQuery); // Select every matching file
+                    ++mCurrentResult; // Next search will be in next folder
+                    return;
+                }
+            }
 
-		if(p.back().contains(mQuery, Qt::CaseInsensitive))
-		{
-		    // The folder name contains the query
-			mFolders->show(p); // Show this folder content
-			++mCurrentResult; // Next search will be in next folder
-			return;
+            if(p.back().contains(mQuery, Qt::CaseInsensitive)) // FIXME crash on freebsd
+            {
+                // The folder name contains the query
+                mFolders->show(p); // Show this folder content
+                ++mCurrentResult; // Next search will be in next folder
+                return;
+            }
 		}
 
         // No result found, go to next folder
