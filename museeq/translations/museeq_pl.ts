@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="1.1" language="pl">
+<defaultcodec></defaultcodec>
 <context>
     <name>BanList</name>
     <message>
@@ -48,7 +49,7 @@
     <message>
         <location filename="../browser.cpp" line="91"/>
         <source>Find next</source>
-        <translation type="unfinished"></translation>
+        <translation>Znajdź następny</translation>
     </message>
 </context>
 <context>
@@ -926,7 +927,7 @@
     <message>
         <location filename="../mainwin.cpp" line="1270"/>
         <source>The Museek Daemon is still running. Do you want to close it?</source>
-        <translation type="unfinished"></translation>
+        <translation>Demon Museeka ciągle działa. Chcesz go zakończyć?</translation>
     </message>
 </context>
 <context>
