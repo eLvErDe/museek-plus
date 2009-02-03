@@ -854,7 +854,7 @@ int main(int argc, char **argv) {
 	}
 
 	QTranslator qtTranslation(0);
-    QString qtLocalePath = QString(DATADIR) + QString("/qt4/");
+    QString qtLocalePath = QString(DATADIR) + QString("/qt4/translations/");
     QString qtTransFile = QString( "qt_%1.qm").arg( language );
 
 	QFileInfo fiqt( qtLocalePath + qtTransFile );

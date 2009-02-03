@@ -182,7 +182,7 @@ void Browser::doSearch() {
                 }
             }
 
-            if(p.back().contains(mQuery, Qt::CaseInsensitive)) // FIXME crash on freebsd
+            if(p.back().contains(mQuery, Qt::CaseInsensitive))
             {
                 // The folder name contains the query
                 mFolders->show(p); // Show this folder content

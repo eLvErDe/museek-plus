@@ -47,6 +47,7 @@ public slots:
 protected:
 	QList<QPair<QString, QString> > findSelected(TransferListView* l);
 	QList<QPair<QString, QString> > findByState(TransferListView* l, uint state);
+	QList<QPair<QString, QString> > findByStates(TransferListView* l, QList<uint> states);
 
 protected slots:
 	void dropSlsk(const QList<QUrl>&);

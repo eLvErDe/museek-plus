@@ -37,6 +37,9 @@ void ChatText::append(const QString& _u, const QString& _l) {
 	append(QDateTime::currentDateTime().toTime_t(), _u, _l);
 }
 
+/**
+  * Append general information (not specific to a single user)
+  */
 void ChatText::append(uint ts,  const QString& _l) {
 	QString line ="";
 	QDateTime _t;
@@ -47,7 +50,7 @@ void ChatText::append(uint ts,  const QString& _l) {
 		else
 			line = QString("<span style='"+museeq->mFontTime+";color:"+museeq->mColorTime+"'>%1</span>").arg(_t.toString(mTimeFormat));
 	}
-	line +=  "<span style='" + museeq->mFontMessage +  ";color:"+museeq->mColorNickname+"'>  * " + _l +"</span>";
+	line +=  "<span style='" + museeq->mFontMessage +  ";color:"+museeq->mColorRemote+"'>  * " + _l +"</span>";
 	QTextBrowser::append(line);
 }
 
@@ -78,15 +81,15 @@ void ChatText::append(uint ts, const QString& _u, const QString& _l) {
 	if(_l.startsWith("/me ")) {
 		line += "<span style='" + fontMessage + ";color:"+colorMe+";'> * " + Qt::escape(u) + " ";
 		l = _l.mid(4);
-	} else if(museeq->nickname() == _u) {
+	} else if(museeq->nickname() == u) {
 		line += " <span style='"+fontTime+";color:"+colorTime+";'>[</span><span style='" + fontMessage + ";color:"+colorNickname+";'>" + Qt::escape(u) + "</span><span style='"+fontTime+";color:"+colorTime+";'>]</span> <span style='" + fontMessage + ";color:"+colorNickname+";'> ";
 	} else {
 		line += " <span style='"+fontTime+";color:"+colorTime+";'>[</span><span style='" + fontMessage;
-		 if(museeq->isBanned(_u)) {
+		 if(museeq->isBanned(u)) {
 			line += ";color:"+colorBanned+";'>";
-		} else if(museeq->isTrusted(_u)) {
+		} else if(museeq->isTrusted(u)) {
 			line += ";color:"+colorTrusted+";'>";
-		} else if(museeq->isBuddy(_u)) {
+		} else if(museeq->isBuddy(u)) {
 			line += ";color:"+colorBuddied+";'>";
 		} else
 			line += ";color:"+colorRemote+";'>";
@@ -107,13 +110,13 @@ void ChatText::append(uint ts, const QString& _u, const QString& _l) {
 		int len = url_rx.matchedLength();
 		QString url = l.mid(ix, len);
 
-		line += postProcess( l.left(ix), _l, _u);
+		line += postProcess( l.left(ix), _l, u);
 		line += "<a href=\"" + url + "\">" + Qt::escape(url) + "</a>";
 		l = l.mid(ix + len);
 	}
 
 	if(! l.isEmpty()) {
-		line += postProcess(l, _l, _u)+"</span>";
+		line += postProcess(l, _l, u)+"</span>";
 	}
 
 	QTextBrowser::append(line);

@@ -362,11 +362,13 @@ void Transfers::clearAwaiting() {  // added by d
 }
 
 void Transfers::clearCruft() {  // added by d
-	QList<QPair<QString, QString> > items = findByState(mPoppedUpload ? mUploads : mDownloads, 10);
-	items += findByState(mPoppedUpload ? mUploads : mDownloads, 13);
-	items += findByState(mPoppedUpload ? mUploads : mDownloads, 12);
-	items += findByState(mPoppedUpload ? mUploads : mDownloads, 11);
-	items += findByState(mPoppedUpload ? mUploads : mDownloads, 0);
+    QList<uint> states;
+    states.append(10);
+    states.append(13);
+    states.append(12);
+    states.append(11);
+    states.append(0);
+	QList<QPair<QString, QString> > items = findByStates(mPoppedUpload ? mUploads : mDownloads, states);
 	if(mPoppedUpload)
 		museeq->removeUploads(items);
 	else
@@ -421,6 +423,17 @@ QList<QPair<QString, QString> > Transfers::findByState(TransferListView* l, uint
 	for(; *it; ++it) {
 		TransferListItem* item = dynamic_cast<TransferListItem*>(*it);
 		if(item && item->state() == state)
+			items += QPair<QString, QString>(item->user(), item->path());
+	}
+	return items;
+}
+
+QList<QPair<QString, QString> > Transfers::findByStates(TransferListView* l, QList<uint> states) {
+	QList<QPair<QString, QString> > items;
+	QTreeWidgetItemIterator it(mPoppedUpload ? mUploads : mDownloads, QTreeWidgetItemIterator::Selectable);
+	for(; *it; ++it) {
+		TransferListItem* item = dynamic_cast<TransferListItem*>(*it);
+		if(item && states.contains(item->state()))
 			items += QPair<QString, QString>(item->user(), item->path());
 	}
 	return items;

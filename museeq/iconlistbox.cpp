@@ -221,14 +221,14 @@ int IconListItem::height( const QListWidget *lb ) const
   if( text().isEmpty() )
     return( mPixmap.height() + 10);
   else {
-    int ht = lb->fontMetrics().boundingRect( 0, 0, 0, 0, Qt::AlignCenter | Qt::TextWordWrap, text() ).height(); // FIXME replace 0 0 by proper desired width+height
+    int ht = lb->fontMetrics().boundingRect( 0, 0, 0, 0, Qt::AlignCenter | Qt::TextWordWrap, text() ).height();
     return( mPixmap.height() + ht + 10 );
   }
 }
 
 int IconListItem::width( const QListWidget *lb ) const
 {
-  int wt = lb->fontMetrics().boundingRect( 0, 0, 0, 0, Qt::AlignCenter | Qt::TextWordWrap, text() ).width() + 10; // FIXME replace 0 0 by proper desired width+height
+  int wt = lb->fontMetrics().boundingRect( 0, 0, 0, 0, Qt::AlignCenter | Qt::TextWordWrap, text() ).width() + 10;
   int wp = mPixmap.width() + 10;
   int w  = qMax( wt, wp );
   return w;

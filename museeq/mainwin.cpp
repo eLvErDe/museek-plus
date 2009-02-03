@@ -479,19 +479,26 @@ void MainWindow::readSettings() {
 	mSettingsDialog->SMessageFont->setText(museeq->mFontMessage);
 	museeq->mFontTime = museeq->settings()->value("fontTime").toString();
 	mSettingsDialog->STimeFont->setText(museeq->mFontTime);
-	museeq->mColorTime = museeq->settings()->value("colorTime").toString();
+	museeq->mColorTime = museeq->settings()->value("colorTime", "black").toString();
+	if (museeq->mColorTime.isEmpty()) museeq->mColorTime = "black";
 	mSettingsDialog->STimeText->setText(museeq->mColorTime);
-	museeq->mColorRemote = museeq->settings()->value("colorRemote").toString();
+	museeq->mColorRemote = museeq->settings()->value("colorRemote", "black").toString();
+	if (museeq->mColorRemote.isEmpty()) museeq->mColorRemote = "black";
 	mSettingsDialog->SRemoteText->setText(museeq->mColorRemote);
-	museeq->mColorMe = museeq->settings()->value("colorMe").toString();
+	museeq->mColorMe = museeq->settings()->value("colorMe", "red").toString();
+	if (museeq->mColorMe.isEmpty()) museeq->mColorMe = "red";
 	mSettingsDialog->SMeText->setText(museeq->mColorMe);
-	museeq->mColorNickname = museeq->settings()->value("colorNickname").toString();
+	museeq->mColorNickname = museeq->settings()->value("colorNickname", "blue").toString();
+	if (museeq->mColorNickname.isEmpty()) museeq->mColorNickname = "blue";
 	mSettingsDialog->SNicknameText->setText(museeq->mColorNickname);
-	museeq->mColorBuddied = museeq->settings()->value("colorBuddied").toString();
+	museeq->mColorBuddied = museeq->settings()->value("colorBuddied", "black").toString();
+	if (museeq->mColorBuddied.isEmpty()) museeq->mColorBuddied = "black";
 	mSettingsDialog->SBuddiedText->setText(museeq->mColorBuddied);
-	museeq->mColorBanned = museeq->settings()->value("colorBanned").toString();
+	museeq->mColorBanned = museeq->settings()->value("colorBanned", "black").toString();
+	if (museeq->mColorBanned.isEmpty()) museeq->mColorBanned = "black";
 	mSettingsDialog->SBannedText->setText(museeq->mColorBanned);
-	museeq->mColorTrusted = museeq->settings()->value("colorTrusted").toString();
+	museeq->mColorTrusted = museeq->settings()->value("colorTrusted", "black").toString();
+	if (museeq->mColorTrusted.isEmpty()) museeq->mColorTrusted = "black";
 	mSettingsDialog->STrustedText->setText(museeq->mColorTrusted);
 
 	// Private logging
@@ -1255,22 +1262,21 @@ void MainWindow::closeEvent(QCloseEvent * ev) {
         return;
     }
 
+    bool shutdownDaemon = museeq->settings()->value("ShutDownDaemonOnExit", false).toBool();
+
     if ( museeq->settings()->value("ShowExitDialog", false).toBool()) {
         bool museekdRunning = Util::getMuseekdLock();
-		if (museekdRunning && museeq->settings()->value("ShutDownDaemonOnExit", false).toBool()) {
-			if (QMessageBox::question(this, tr("Shutdown Museeq"), tr("The Museek Daemon is still running, and will be shut down if you close Museeq, are you sure you want to?"), tr("&Yes"), tr("&No"), QString::null, 1 ) ) {
+		if (museekdRunning) {
+		    QMessageBox::StandardButton resp = QMessageBox::question(this, tr("Shutdown Museeq"), tr("The Museek Daemon is still running. Do you want to close it?"), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Cancel );
+			if (resp == QMessageBox::Cancel ) {
                 ev->ignore();
 				return;
 			}
-		}
-		else if (museekdRunning)  {
-			if (QMessageBox::question(this, tr("Shutdown Museeq"), tr("The Museek Daemon was launched by Museeq and is still running, but will <b>not</b> be shut down if you close Museeq. Are you sure you want to?"), tr("&Yes"), tr("&No"), QString::null, 1 ) ) {
-                ev->ignore();
-				return;
-			}
+			else
+			    shutdownDaemon = (resp == QMessageBox::Yes);
 		}
 		else {
-			if (QMessageBox::question(this, tr("Shutdown Museeq"), tr("It's safe to close Museeq, but are you sure you want to?"), tr("&Yes"), tr("&No"), QString::null, 1 ) ) {
+			if ( QMessageBox::question(this, tr("Shutdown Museeq"), tr("It's safe to close Museeq, but are you sure you want to?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::No ) ==  QMessageBox::No) {
                 ev->ignore();
 				return;
 			}
@@ -1285,7 +1291,7 @@ void MainWindow::closeEvent(QCloseEvent * ev) {
 
     museeq->settings()->sync();
 
-	if ( museeq->settings()->value("ShutDownDaemonOnExit", false).toBool())
+	if ( shutdownDaemon )
 		stopDaemon();
 	ev->accept();
 	QApplication::instance()->quit();
