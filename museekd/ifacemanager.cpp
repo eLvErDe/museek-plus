@@ -398,12 +398,16 @@ Museek::IfaceManager::onIfaceLogin(const ILogin * message)
 
     if (socket->mask() & EM_USERINFO) {
         // send peers stats
-        std::map<std::string, SGetUserStats>::const_iterator it = museekd()->peers()->userStats()->begin();
-        for(; it != museekd()->peers()->userStats()->end(); it++) {
+        // copy the maps to avoid invalid iterator when they are modified elsewhere
+        std::map<std::string, SGetUserStats> userStats(*(museekd()->peers()->userStats()));
+        std::map<std::string, SGetUserStats>::const_iterator it = userStats.begin();
+        for(; it != userStats.end(); it++) {
             SEND_MESSAGE(socket, IPeerStats(it->second.user, it->second.avgspeed, it->second.downloadnum, it->second.files, it->second.dirs));
         }
-        std::map<std::string, uint32>::const_iterator sit = museekd()->peers()->userStatus()->begin();
-        for(; sit != museekd()->peers()->userStatus()->end(); sit++) {
+
+        std::map<std::string, uint32> userStatus(*(museekd()->peers()->userStatus()));
+        std::map<std::string, uint32>::const_iterator sit = userStatus.begin();
+        for(; sit != userStatus.end(); sit++) {
             SEND_MESSAGE(socket, IPeerStatus(sit->first, sit->second));
         }
     }
