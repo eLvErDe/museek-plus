@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="1.1" language="it">
+<defaultcodec></defaultcodec>
 <context>
     <name>BanList</name>
     <message>
@@ -48,7 +49,7 @@
     <message>
         <location filename="../browser.cpp" line="91"/>
         <source>Find next</source>
-        <translation type="unfinished"></translation>
+        <translation>Trova prossimo</translation>
     </message>
 </context>
 <context>
@@ -753,21 +754,6 @@
     </message>
     <message>
         <location filename="../mainwin.cpp" line="1279"/>
-        <source>&amp;Yes</source>
-        <translation type="obsolete">&amp;Sì</translation>
-    </message>
-    <message>
-        <location filename="../mainwin.cpp" line="1279"/>
-        <source>&amp;No</source>
-        <translation type="obsolete">&amp;No</translation>
-    </message>
-    <message>
-        <location filename="../mainwin.cpp" line="1267"/>
-        <source>The Museek Daemon was launched by Museeq and is still running, but will &lt;b&gt;not&lt;/b&gt; be shut down if you close Museeq. Are you sure you want to?</source>
-        <translation type="obsolete">Museekd è stato lanciato da Museeq ed è ancora attivo, ma &lt;b&gt;non&lt;/b&gt; si chiuderà se chiudi Museeq. Sei sicuro di volerlo chiudere?</translation>
-    </message>
-    <message>
-        <location filename="../mainwin.cpp" line="1279"/>
         <source>It&apos;s safe to close Museeq, but are you sure you want to?</source>
         <translation>E&apos; sicuro chiudere Museeq, ma vuoi farlo veramente?</translation>
     </message>
@@ -917,14 +903,9 @@
         <translation>&amp;Ok</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1261"/>
-        <source>The Museek Daemon is still running, and will be shut down if you close Museeq, are you sure you want to?</source>
-        <translation type="obsolete">Il Daemon Museek è ancora in esecuzione, e verrà terminato se chiudi Museeq, sei sicuro di volerlo fare?</translation>
-    </message>
-    <message>
         <location filename="../mainwin.cpp" line="1270"/>
         <source>The Museek Daemon is still running. Do you want to close it?</source>
-        <translation type="unfinished"></translation>
+        <translation>Il Daemon Museek è ancora in esecuzione. Vuoi terminarlo?</translation>
     </message>
 </context>
 <context>
