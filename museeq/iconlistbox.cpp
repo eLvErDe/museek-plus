@@ -34,7 +34,6 @@ IconListBox::IconListBox( QWidget *parent, const char *name, bool verticalIconBo
 {
     setAcceptDrops(true);
     setViewMode ( QListView::IconMode);
-    setMovement (QListView::Static);
     setWordWrap (true);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     connect(this, SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), SLOT(slotCurrentChanged(QListWidgetItem*, QListWidgetItem*)));
