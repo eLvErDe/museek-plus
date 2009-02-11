@@ -112,7 +112,6 @@ SET(MUSEEQ_SOURCES
   chattext.cpp
   chatticker.cpp
   codeccombo.cpp
-  connect.cpp
   iconlistbox.cpp
   ignorelist.cpp
   images.cpp
@@ -171,7 +170,6 @@ SET(MUSEEQ_MOC_HEADERS
   chattext.h
   chatticker.h
   codeccombo.h
-  connect.h
   iconlistbox.h
   ignorelist.h
   interestlist.h

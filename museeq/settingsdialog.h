@@ -23,6 +23,7 @@
 
 #include <QDialog>
 #include <QProcess>
+#include <QtNetwork/QTcpSocket>
 
 class QMenu;
 class QHBoxLayout;
@@ -64,8 +65,7 @@ public:
 
 	QPushButton* BSharesRefresh, * BSharesRescan, * BSharesAdd, * BSharesRemove, * BSharesUpdate;
 
-	QWidget* sharesTab, * usersTab, * serverTab, * ColorsAndFontsTab, * AppearanceTab;
-	QWidget* connectionsTab, * LoggingTab, * UserInfoTab, * ProtocolTab;
+	QWidget * mSharesTab, * mUsersTab, * mServerTab, * mColorsAndFontsTab, * mAppearanceTab, * mConnectionsTab, * mLoggingTab, * mUserInfoTab, * mProtocolTab, * mDConnectionTab;
 
 	QComboBox* SFileSystemEncoding, * SNetworkEncoding;
 	QLabel* fEncodingLabel, * nEncodingLabel;
@@ -96,7 +96,7 @@ public:
 	QLineEdit* SSoulseekUsername;
 	QLineEdit* SServerHost;
 	QLineEdit* SDownDir;
-	QLineEdit* SIncompleteDir, * SConfigFile;
+	QLineEdit* SIncompleteDir;
 
 	QPushButton* mNewHandler;
 	QPushButton* mModifyHandler;
@@ -107,8 +107,13 @@ public:
 	QLineEdit* SRemoteText, * SNicknameText, * STrustedText, * SBannedText, * STimeText, * SMessageFont, * SMeText, * STimeFont, * SBuddiedText;
 
 	QSpinBox* CPortStart, * CPortEnd, * TickerLength;
-	QCheckBox* SBuddiesPrivileged, * SOnlineAlerts,* SShareBuddiesOnly, * STrustedUsers, * SBuddiesShares, * SUserWarnings, * SIPLog, * LoggingPrivate, * LoggingRooms, * IconsAlignment;
+	QCheckBox* SBuddiesPrivileged, * SOnlineAlerts,* SShareBuddiesOnly, * STrustedUsers, * SBuddiesShares, * SUserWarnings, * SIPLog, * LoggingPrivate, * LoggingRooms, * IconsAlignment, * mToggleTickers, * mToggleLog, * mToggleTimestamps, * mToggleTrayicon;
 	QTreeWidget* ListNormalShares, * ListBuddyShares;
+
+    QComboBox * mDAddress, * mDConnectType;
+    QPushButton * mDClearButton, * mSelectConfigFileButton, * mStartDaemonButton, * mStopDaemonButton, * mMusetupButton, * mConnectToDaemonButton, * mDisconnectFromDaemonButton, * mIconTheme;
+    QLineEdit * mDPassword, * mMuseekConfigFile;
+    QCheckBox * mAutoStartDaemon, * mDAutoConnect, * mShowExitDialog, * mShutDownDaemonOnExit, * mDSavePassword;
 
 public slots:
 	void SConnect_clicked();
@@ -116,6 +121,9 @@ public slots:
 	void save();
 	virtual void SDownload_clicked();
 	virtual void SIncomplete_clicked();
+	virtual void startDaemon();
+	virtual void stopDaemon();
+	void showEvent( QShowEvent * event );
 
 	void BuddySharesAdd();
 	void BuddySharesRefresh();
@@ -144,6 +152,8 @@ public slots:
 
     void loadSettings();
 
+    void selectConfig();
+
 	virtual void color_text_me();
 	virtual void color_text_buddied();
 	virtual void color_text_nickname();
@@ -154,20 +164,21 @@ public slots:
 	virtual void font_text_time();
 	virtual void font_text_message();
 protected:
+    void populateDConnectionTab();
+
 	QAction * ActionDeleteHandler;
 	QMenu * mProtocolsMenu;
 	QHBoxLayout* buttonsLayout;
-	QSpacerItem* spacer14, * spacer16, * spacer15, * spacer13, * spacer5, * protocolSpacer, * spacerServer;
+	QSpacerItem * spacer5, * protocolSpacer, * spacerServer;
 	QGridLayout* ServerGrid, * SharesGrid, *ConnectionsGrid, *UsersGrid,
 	*LoggingGrid, * UserInfoGrid, * buttonGroup1Layout, * ProtocolGrid,
-	* ColorsGrid, * AppearanceGrid;
+	* ColorsGrid, * AppearanceGrid, * mDConnectionGrid;
 	QProcess* proc1;
 	QProcess * proc2;
 
 protected slots:
 	virtual void languageChange();
 	void slotProtocolContextMenu(const QPoint&);
-	void SConfig_clicked();
 	void EnableNormalButtons(bool);
 	void EnableBuddyButtons(bool);
 	void finishedListNormal(int, QProcess::ExitStatus);
@@ -176,12 +187,21 @@ protected slots:
 	void finishedBuddy(int, QProcess::ExitStatus);
 	void acceptSettings();
 	void rejectSettings();
+	void clearSockets();
+	void launchMusetup();
+	void toggleSavePassword(bool);
+	void musetupError( QProcess::ProcessError);
+	void loggedIn(bool, const QString&);
+	void slotDisconnected();
+	void slotError(QAbstractSocket::SocketError);
 
 protected:
 	void closeEvent(QCloseEvent *);
 
 private:
     bool mSharesDirty;
+    QLabel * mHostLabel, * mDPasswordLabel, * mConfigFileLabel;
+    QProcess * mSetupProc;
 };
 
 #endif // SETTINGSDIALOG_H

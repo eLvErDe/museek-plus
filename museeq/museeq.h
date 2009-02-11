@@ -49,7 +49,7 @@ class Museeq : public QObject {
 
 public:
 	Museeq(QApplication *);
-	bool mShowTickers, mShowStatusLog, mOnlineAlert, mShowTimestamps, mIPLog, mUsetray, mLogRooms, mLogPrivate;
+	bool mOnlineAlert, mShowTimestamps, mIPLog, mUsetray, mLogRooms, mLogPrivate;
 	uint mTickerLength;
 	inline MuseekDriver* driver() const { return mDriver; }
 	inline bool isConnected() const { return mConnected; }
@@ -100,7 +100,6 @@ public slots:
 	void showURL(const QUrl&);
 	void startDaemon();
 	void stopDaemon();
-	void saveConnectConfig();
 	void setAway(bool);
 
 	void addBuddy(const QString&, const QString& = QString::null);

@@ -125,27 +125,27 @@
 <context>
     <name>ChatRoom</name>
     <message>
-        <location filename="../chatroom.cpp" line="87"/>
+        <location filename="../chatroom.cpp" line="88"/>
         <source>Auto-join</source>
         <translation>Connexión Automática</translation>
     </message>
     <message>
-        <location filename="../chatroom.cpp" line="267"/>
+        <location filename="../chatroom.cpp" line="268"/>
         <source>%1 joined the room</source>
         <translation>%1 se ha unido a la sala</translation>
     </message>
     <message>
-        <location filename="../chatroom.cpp" line="291"/>
+        <location filename="../chatroom.cpp" line="292"/>
         <source>%1 left the room</source>
         <translation>%1 salió de la sala</translation>
     </message>
     <message>
-        <location filename="../chatroom.cpp" line="311"/>
+        <location filename="../chatroom.cpp" line="312"/>
         <source>%1 has gone away</source>
         <translation>%1 está ausente</translation>
     </message>
     <message>
-        <location filename="../chatroom.cpp" line="313"/>
+        <location filename="../chatroom.cpp" line="314"/>
         <source>%1 has returned</source>
         <translation>%1 ha vuelto</translation>
     </message>
@@ -163,22 +163,22 @@
     <message>
         <location filename="../connect.cpp" line="39"/>
         <source>Connect to Museekd...</source>
-        <translation>Conectarse a Museekd...</translation>
+        <translation type="obsolete">Conectarse a Museekd...</translation>
     </message>
     <message>
         <location filename="../connect.cpp" line="62"/>
         <source>Host / path:</source>
-        <translation>Servidor / ruta:</translation>
+        <translation type="obsolete">Servidor / ruta:</translation>
     </message>
     <message>
         <location filename="../connect.cpp" line="79"/>
         <source>Password:</source>
-        <translation>Contraseña:</translation>
+        <translation type="obsolete">Contraseña:</translation>
     </message>
     <message>
         <location filename="../connect.cpp" line="84"/>
         <source>&amp;Save Password</source>
-        <translation>Guardar Contra&amp;seña</translation>
+        <translation type="obsolete">Guardar Contra&amp;seña</translation>
     </message>
     <message>
         <location filename="" line="0"/>
@@ -188,12 +188,12 @@
     <message>
         <location filename="../connect.cpp" line="92"/>
         <source>Connect to:</source>
-        <translation>Conectarse a:</translation>
+        <translation type="obsolete">Conectarse a:</translation>
     </message>
     <message>
         <location filename="../connect.cpp" line="103"/>
         <source>&amp;TCP</source>
-        <translation>&amp;TCP</translation>
+        <translation type="obsolete">&amp;TCP</translation>
     </message>
     <message>
         <location filename="" line="0"/>
@@ -203,7 +203,7 @@
     <message>
         <location filename="../connect.cpp" line="104"/>
         <source>&amp;Unix socket</source>
-        <translation>Socket de &amp;Unix</translation>
+        <translation type="obsolete">Socket de &amp;Unix</translation>
     </message>
     <message>
         <location filename="" line="0"/>
@@ -213,12 +213,12 @@
     <message>
         <location filename="../connect.cpp" line="112"/>
         <source>Daemon O&amp;ptions...</source>
-        <translation>O&amp;pciones del Daemon...</translation>
+        <translation type="obsolete">O&amp;pciones del Daemon...</translation>
     </message>
     <message>
         <location filename="../connect.cpp" line="128"/>
         <source>Start &amp;Daemon</source>
-        <translation>Empezar el &amp;Daemon</translation>
+        <translation type="obsolete">Empezar el &amp;Daemon</translation>
     </message>
     <message>
         <location filename="" line="0"/>
@@ -228,7 +228,7 @@
     <message>
         <location filename="../connect.cpp" line="133"/>
         <source>St&amp;op Daemon</source>
-        <translation>Detener el Daem&amp;on</translation>
+        <translation type="obsolete">Detener el Daem&amp;on</translation>
     </message>
     <message>
         <location filename="" line="0"/>
@@ -243,7 +243,7 @@
     <message>
         <location filename="../connect.cpp" line="159"/>
         <source>Se&amp;lect...</source>
-        <translation>Se&amp;leccionar...</translation>
+        <translation type="obsolete">Se&amp;leccionar...</translation>
     </message>
     <message>
         <location filename="" line="0"/>
@@ -253,7 +253,7 @@
     <message>
         <location filename="../connect.cpp" line="174"/>
         <source>Co&amp;nnect</source>
-        <translation>Co&amp;néctate</translation>
+        <translation type="obsolete">Co&amp;néctate</translation>
     </message>
     <message>
         <location filename="" line="0"/>
@@ -263,12 +263,12 @@
     <message>
         <location filename="../connect.cpp" line="178"/>
         <source>Save</source>
-        <translation>Guardar Cambios</translation>
+        <translation type="obsolete">Guardar Cambios</translation>
     </message>
     <message>
         <location filename="../connect.cpp" line="183"/>
         <source>&amp;Cancel</source>
-        <translation>&amp;Cancelar</translation>
+        <translation type="obsolete">&amp;Cancelar</translation>
     </message>
     <message>
         <location filename="" line="0"/>
@@ -278,7 +278,7 @@
     <message>
         <location filename="../connect.cpp" line="141"/>
         <source>&amp;AutoStart Museek Daemon</source>
-        <translation>&amp;AutoComenzar Museek Daemon</translation>
+        <translation type="obsolete">&amp;AutoComenzar Museek Daemon</translation>
     </message>
     <message>
         <location filename="" line="0"/>
@@ -288,7 +288,7 @@
     <message>
         <location filename="../connect.cpp" line="145"/>
         <source>S&amp;hutDown Daemon on Exit</source>
-        <translation>Cerrar Daemon a la &amp;hora de salida</translation>
+        <translation type="obsolete">Cerrar Daemon a la &amp;hora de salida</translation>
     </message>
     <message>
         <location filename="" line="0"/>
@@ -296,20 +296,9 @@
         <translation type="obsolete">Alt+H</translation>
     </message>
     <message>
-        <location filename="../connect.cpp" line="89"/>
-        <source>Auto-Conn&amp;ect to Daemon</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../connect.cpp" line="69"/>
         <source>Clear</source>
-        <translation type="unfinished">Limpiar</translation>
-    </message>
-    <message>
-        <location filename="../connect.cpp" line="154"/>
-        <source>Museek Daemon Config:
-(leave empty for default)</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Limpiar</translation>
     </message>
 </context>
 <context>
@@ -670,7 +659,7 @@
     <message>
         <location filename="../mainwin.cpp" line="88"/>
         <source>&amp;Connect...</source>
-        <translation>&amp;Conéctate...</translation>
+        <translation type="obsolete">&amp;Conéctate...</translation>
     </message>
     <message>
         <location filename="" line="0"/>
@@ -725,17 +714,17 @@
     <message>
         <location filename="../mainwin.cpp" line="137"/>
         <source>Pick &amp;Icon Theme... (Requires Restart)</source>
-        <translation>Elige Tema de &amp;Iconos... (Requiere Reiniciar)</translation>
+        <translation type="obsolete">Elige Tema de &amp;Iconos... (Requiere Reiniciar)</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="141"/>
         <source>Show &amp;Tickers</source>
-        <translation>Mostrar &amp;Tickers</translation>
+        <translation type="obsolete">Mostrar &amp;Tickers</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="146"/>
+        <location filename="../mainwin.cpp" line="141"/>
         <source>Show &amp;Log</source>
-        <translation>Mostrar &amp;Registros</translation>
+        <translation type="obsolete">Mostrar &amp;Registros</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="127"/>
@@ -743,37 +732,37 @@
         <translation>&amp;Configuración</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="182"/>
+        <location filename="../mainwin.cpp" line="139"/>
         <source>&amp;Chat Rooms</source>
         <translation>&amp;Salas de Charla</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="186"/>
+        <location filename="../mainwin.cpp" line="143"/>
         <source>&amp;Private Chat</source>
         <translation>&amp;Charla Privada</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="190"/>
+        <location filename="../mainwin.cpp" line="147"/>
         <source>&amp;Transfers</source>
         <translation>&amp;Transferencias</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="194"/>
+        <location filename="../mainwin.cpp" line="151"/>
         <source>&amp;Search</source>
         <translation>&amp;Buscar</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="198"/>
+        <location filename="../mainwin.cpp" line="155"/>
         <source>&amp;User Info</source>
         <translation>Perfil de &amp;Usuario</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="202"/>
+        <location filename="../mainwin.cpp" line="159"/>
         <source>&amp;Browse Shares</source>
         <translation>&amp;Navegar</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="180"/>
+        <location filename="../mainwin.cpp" line="137"/>
         <source>&amp;Modes</source>
         <translation>&amp;Modos</translation>
     </message>
@@ -783,32 +772,32 @@
         <translation type="obsolete">&amp;Acerca...</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="208"/>
+        <location filename="../mainwin.cpp" line="183"/>
         <source>&amp;Commands...</source>
         <translation>&amp;Comandos...</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="212"/>
+        <location filename="../mainwin.cpp" line="187"/>
         <source>&amp;Help...</source>
         <translation>&amp;Ayuda...</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="206"/>
+        <location filename="../mainwin.cpp" line="181"/>
         <source>&amp;Help</source>
         <translation>&amp;Ayuda</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="229"/>
+        <location filename="../mainwin.cpp" line="166"/>
         <source>&amp;Load script...</source>
         <translation>&amp;Cargar guión...</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="233"/>
+        <location filename="../mainwin.cpp" line="170"/>
         <source>&amp;Unload script</source>
         <translation>&amp;Descargar guión</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="227"/>
+        <location filename="../mainwin.cpp" line="164"/>
         <source>Sc&amp;ripts</source>
         <translation>Gu&amp;iones</translation>
     </message>
@@ -828,37 +817,37 @@
         <translation type="obsolete">Guiones</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="248"/>
+        <location filename="../mainwin.cpp" line="205"/>
         <source>Welcome to Museeq</source>
         <translation>Bienvenido a Museeq</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="293"/>
+        <location filename="../mainwin.cpp" line="254"/>
         <source>Chat rooms</source>
         <translation>Salas de charla</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="295"/>
+        <location filename="../mainwin.cpp" line="256"/>
         <source>Private chat</source>
         <translation>Charla Privada</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="298"/>
+        <location filename="../mainwin.cpp" line="259"/>
         <source>Transfers</source>
         <translation>Transferencias</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="303"/>
+        <location filename="../mainwin.cpp" line="264"/>
         <source>Search</source>
         <translation>Buscar</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="306"/>
+        <location filename="../mainwin.cpp" line="267"/>
         <source>User info</source>
         <translation>Perfil de usuario</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="309"/>
+        <location filename="../mainwin.cpp" line="270"/>
         <source>Browse</source>
         <translation>Navegar</translation>
     </message>
@@ -883,12 +872,12 @@
         <translation type="obsolete">El Museek Daemon ya esta en función...</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="450"/>
+        <location filename="../mainwin.cpp" line="414"/>
         <source>Terminating Museek Daemon...</source>
         <translation>Cerrando el Museek Daemon...</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="452"/>
+        <location filename="../mainwin.cpp" line="416"/>
         <source>Museek Daemon not running, no need to stop it...</source>
         <translation>El Museek Daemon no esta en función, no hay necesidad de pararlo...</translation>
     </message>
@@ -898,52 +887,52 @@
         <translation type="obsolete">El Museek Daemon se ha Cerrado...</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="677"/>
+        <location filename="../mainwin.cpp" line="562"/>
         <source>Connecting to museek... Looking up host</source>
         <translation>Conectándose a museek... Buscando el servidor</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="681"/>
+        <location filename="../mainwin.cpp" line="566"/>
         <source>Connecting to museek...</source>
         <translation>Conectándose a museek...</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="687"/>
+        <location filename="../mainwin.cpp" line="573"/>
         <source>Connecting to museek... Connecting</source>
         <translation>Conectándose a museek... Conectándose</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="692"/>
+        <location filename="../mainwin.cpp" line="578"/>
         <source>Connecting to museek... Logging in</source>
         <translation>Conectándose a museek... Entrando</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="697"/>
+        <location filename="../mainwin.cpp" line="583"/>
         <source>Disconnected from museek</source>
         <translation>Desconectado de museek</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="711"/>
+        <location filename="../mainwin.cpp" line="597"/>
         <source>Cannot connect to museek... Connection refused</source>
         <translation>No puede conectarse a museek... Conexión rechazada</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="714"/>
+        <location filename="../mainwin.cpp" line="600"/>
         <source>Cannot connect to museek... Host not found</source>
         <translation>No puede conectarse a museek... Servidor no encontrado</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="731"/>
+        <location filename="../mainwin.cpp" line="616"/>
         <source>Logged in to museek</source>
         <translation>En museek</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="744"/>
+        <location filename="../mainwin.cpp" line="626"/>
         <source>Login error: </source>
         <translation>Error de entrada: </translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="798"/>
+        <location filename="../mainwin.cpp" line="674"/>
         <source>Connected to soulseek, your nickname: </source>
         <translation>Conectado a soulseek, su nombre de usuario: </translation>
     </message>
@@ -958,17 +947,17 @@
         <translation type="obsolete"> Estado: Conectado</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="804"/>
+        <location filename="../mainwin.cpp" line="680"/>
         <source>Disconnected from soulseek</source>
         <translation>Desconectado de soulseek</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="826"/>
+        <location filename="../mainwin.cpp" line="702"/>
         <source>waiting</source>
         <translation>esperando</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="858"/>
+        <location filename="../mainwin.cpp" line="735"/>
         <source>Enter a Museeq Icon Theme Directory</source>
         <translation>Ponga un Directorio de Tema de Icono Museeq</translation>
     </message>
@@ -978,27 +967,27 @@
         <translation type="obsolete">Tema de Icono de Museeq (*.png)</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="907"/>
+        <location filename="../mainwin.cpp" line="784"/>
         <source>Offline</source>
         <translation>Desconectado</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1096"/>
+        <location filename="../mainwin.cpp" line="974"/>
         <source>Error</source>
         <translation>Error</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1096"/>
+        <location filename="../mainwin.cpp" line="974"/>
         <source>Couldn&apos;t open image file for reading</source>
         <translation>No pudo leer archivo imagen</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1164"/>
+        <location filename="../mainwin.cpp" line="1053"/>
         <source>About Museeq</source>
         <translation>Acerca de Museeq</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1177"/>
+        <location filename="../mainwin.cpp" line="1066"/>
         <source>&lt;p align=&quot;center&quot;&gt;Museeq </source>
         <translation>&lt;p align=&quot;center&quot;&gt;Museeq </translation>
     </message>
@@ -1008,22 +997,22 @@
         <translation type="obsolete"> es un GUI para el Museek Daemon&lt;/p&gt; Los programas, museeq y museekd y muscan, fueron creados por Hyriand 2003-2005&lt;br&gt;&lt;br&gt;Adiciones por Daelstorm y SeeSchloss fueron hechas en el 2006.&lt;br&gt; Este proyecto ha sido publicado con la licencia GPL.&lt;br&gt;Código e ideas tomadas de otros proyectos de código abierto y de otra gente han sido mencionados en el archivo llamado CREDITOS incluido en la fuente tarball.</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1195"/>
+        <location filename="../mainwin.cpp" line="1084"/>
         <source>Museeq Commands</source>
         <translation>Comandos de Museeq</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1195"/>
+        <location filename="../mainwin.cpp" line="1084"/>
         <source>&lt;h3&gt;While in a chat window, such as a Chat Room, or a Private Chat, there are a number of commands available for use.&lt;/h3&gt;&lt;b&gt;/c /chat&lt;/b&gt;   &lt;i&gt;(Switch to Chat Rooms)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/pm /private&lt;/b&gt; &amp;lt;nothing | username&amp;gt;  &lt;i&gt;(Switch to Private Chat and start chatting with a user, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/transfers&lt;/b&gt;   &lt;i&gt;(Switch to Transfers)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/s /search&lt;/b&gt; &amp;lt;nothing | query&gt;   &lt;i&gt;(Switch to Searchs and start a Search with &amp;lt;query&amp;gt; if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/u /userinfo&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Switch to userinfo, and attempt to get a user&apos;s info, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/b /browse&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Switch to Browse and initate browsing a user, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ip&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Get the IP of a user)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/log&lt;/b&gt;    &lt;i&gt;(Toggle displaying the Special Message Log)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/t /ticker /tickers&lt;/b&gt;   &lt;i&gt;(Toggle the showing of Tickers)&lt;/i&gt; &lt;br&gt;&lt;b&gt;/f /fonts /c /colors&lt;/b&gt;   &lt;i&gt;(Open the Fonts and Colors settings dialog)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ban /unban&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Disallow/Allow a user to recieve your shares and download from you)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ignore /unignore&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Block/Unblock chat messages from a user)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/buddy /unbuddy&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Add/Remove a user to keep track of it and add comments about it)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/trust /distrust&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Add/Remove a user to the optional list of users who can send files to you)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/me&lt;/b&gt; &lt;does something&gt;    &lt;i&gt;(Say something in the Third-Person)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/slap&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Typical Trout-slapping)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/j /join&lt;/b&gt; &amp;lt;room&amp;gt;    &lt;i&gt;(Join a Chat Room)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/l /p /leave /part&lt;/b&gt; &amp;lt;nothing | room&amp;gt;    &lt;i&gt;(Leave the current room or inputed room)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/about /help /commands&lt;/b&gt;    &lt;i&gt;(Display information)&lt;/i&gt;&lt;br&gt;&lt;br&gt;Do not type the brackets, they are there only to make clear that something (or nothing) can be typed after the /command.</source>
         <translation>&lt;h3&gt;Mientras uno está en una ventana de charlas, asi como una Sala de Charlas, o una Charla Privada, hay un número de comandos disponibles para su uso.&lt;/h3&gt;&lt;b&gt;/c chat&lt;/b&gt;   &lt;i&gt;(Cambiar a Salas de Charla)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/pm /private&lt;/b&gt; &amp;lt;nada | nombre de usuario&amp;gt;  &lt;i&gt;(Cambiar a Charla Privada y comenzar a charlar con un usuario especificado, si lo ha incluido)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/transfers&lt;/b&gt;   &lt;i&gt;(Cambiar a Transferencias)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/s /search&lt;/b&gt; &amp;lt;nada | consulta&gt;   &lt;i&gt;(Cambiar a Buscar y comenzar busqueda con &amp;lt;consulta&amp;gt; si la ha incluido)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/u /userinfo&lt;/b&gt; &amp;lt;nombre de usuario&amp;gt;   &lt;i&gt;(Cambiar a Perfil de usuario, y tratar de obtener perfil de usuario especificado, si lo ha incluido)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/b /browse&lt;/b&gt; &amp;lt;nombre de usuario&amp;gt;   &lt;i&gt;(Cambiar a Navegar y comience a mirar archivos de usuario especificado, si lo ha incluido)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ip&lt;/b&gt; &amp;lt;nombre de usuario&amp;gt;   &lt;i&gt;(Obtener IP del usuario)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/log&lt;/b&gt;    &lt;i&gt;(Cambiar a Log (Registro) de Mensajes Especiales)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/t /ticker /tickers&lt;/b&gt;&lt;i&gt; (Mostrar o esconder Tickers)    &lt;/i&gt; &lt;br&gt;&lt;b&gt;/f /fonts /c /colors&lt;/b&gt;   &lt;i&gt;(Abrir el diálogo de configuración de Letras y Colores)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ban /unban&lt;/b&gt; &amp;lt;nombre de usuario&amp;gt;   &lt;i&gt;(Prohibir/Permitir a un usuario que reciba tus archivos compartidos y que descargue tus archivos)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ignore /unignore&lt;/b&gt; &amp;lt;nombre de usuario&amp;gt;   &lt;i&gt;(Prohibir/Permitir mensajes de un usuario)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/buddy /unbuddy&lt;/b&gt; &amp;lt;nombre de usuario&amp;gt;   &lt;i&gt;(Añadir/Eliminar a un usuario para mantenerse informado de este y añadir comentarios sobre este)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/trust /distrust&lt;/b&gt; &amp;lt;nombre de usuario&amp;gt;    &lt;i&gt;(Añadir/Eliminar a un usuario de la lista opcional de usuarios confiados que te pueden enviar archivos)  &lt;/i&gt;&lt;br&gt;&lt;b&gt;/me&lt;/b&gt; &lt;hace algo&gt;    &lt;i&gt;(Di algo en tercera persona)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/slap&lt;/b&gt; &amp;lt;nombre de usuario&amp;gt;    &lt;i&gt;(Típica paliza usando una trucha)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/j /join&lt;/b&gt; &amp;lt;sala&amp;gt;   &lt;i&gt;(Entrar a Sala de Charla)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/l /p /leave /part&lt;/b&gt; &amp;lt;nada | sala&amp;gt;    &lt;i&gt;(Salir de la sala o de una sala específica)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/about /help /commands&lt;/b&gt;    &lt;i&gt;(Mostrar información)&lt;/i&gt;&lt;br&gt;&lt;br&gt;No tiene que tipear los paréntesis, ellos han sido usados solo para indicar que algo (o nada) puede ser tipeado después del /comando.</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1199"/>
+        <location filename="../mainwin.cpp" line="1088"/>
         <source>Museeq Help</source>
         <translation>Ayuda con Museeq</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1199"/>
+        <location filename="../mainwin.cpp" line="1088"/>
         <source>&lt;h3&gt;What&apos;s going on? I can&apos;t connect to a Soulseek Server with museeq!&lt;/h3&gt; You connect to museekd with museeq, so you need to have &lt;b&gt;museekd&lt;/b&gt; configured, running &lt;u&gt;and&lt;/u&gt; connected to a &lt;b&gt;Soulseek&lt;/b&gt; or Soulfind server. &lt;br&gt; &lt;h3&gt;Running for the first time?&lt;/h3&gt; Before you start museekd for the first time, you need to configure &lt;b&gt;museekd&lt;/b&gt; with &lt;b&gt;musetup&lt;/b&gt;,  a command-line configuration script.&lt;br&gt;&lt;br&gt; In musetup you &lt;b&gt;MUST&lt;/b&gt; configure the following items: Server, Username, Password, Interface Password, Download Dir&lt;br&gt; Also, take note of your interfaces, if you change them from the default localhost:2240 and /tmp/museek.&lt;tt&gt;USERNAME&lt;/tt&gt;, you&apos;ll need to know them for logging in with museeq. &lt;br&gt;&lt;br&gt; When you start museeq or choose File-&gt;Connect from the menu, you are asked to input the host and port, or Unix Socket of museekd, &lt;b&gt;not&lt;/b&gt; the Server.&lt;br&gt; &lt;h3&gt;Want to send someone a file?&lt;/h3&gt; Browse yourself, select file(s), and right-click-&gt;Upload. Input their name in the dialog box, and the upload should start, but it depends on if the user has place you on their &quot;trusted&quot; or &quot;uploads&quot; users list .&lt;br&gt;Once you&apos;re connected to museekd, change museekd options via Settings-&gt;Museek</source>
         <translation>&lt;h3&gt;¿Qué está sucediendo? ¡No me puedo conectar al Servidor de Soulseek con museeq!&lt;/h3&gt; Uno se conecta a museekd con museeq, es por eso que es necesario que &lt;b&gt;museekd&lt;/b&gt; este configurado, funcionando, &lt;u&gt;y&lt;/u&gt; conectado a un servidor de &lt;b&gt;Soulseek&lt;/b&gt; o Soulfind. &lt;br&gt; &lt;h3&gt;¿Utilizandolo por primera vez?&lt;/h3&gt; Antes que utilice museekd por primera vez, necesita configurar &lt;b&gt;museekd&lt;/b&gt; con &lt;b&gt;musetup&lt;/b&gt;,   un guión de configuración de línea de comando.&lt;br&gt;&lt;br&gt; En musetup uno &lt;b&gt;NECESITA&lt;/b&gt; configurar lo siguiente: Server (Servidor), Username (Nombre de usuario), Password (Contraseña), Interface Password (Contraseña de interfaz), Download Dir (Directorio de descarga).&lt;br&gt; Además, tome nota de sus interfaces, si las cambia de los valores predetermindados localhost:2240 y /tmp/museek.&lt;tt&gt;NOMBRE-DE-USUARIO&lt;/tt&gt;, va a tener que saber esta información para iniciar su sesión con museeq. &lt;br&gt;&lt;br&gt; Cuando abra museeq o escoja Archivo-&gt;Conéctate del menú, se requiere que ponga el equipo y el puerto, o Socket de Unix de museekd, &lt;b&gt;no&lt;/b&gt; el del Servidor.&lt;br&gt; &lt;h3&gt;¿Quiere enviarle un archivo a alguien?&lt;/h3&gt; Mire sus propios archivos, seleccione uno o varios archivos, y pulse el botón derecho del ratón -&gt; Transferir archivos. Tipea el nombre del usuario en la ventana de diálogo, y la transferencia debería comenzar, pero eso depende si el usuario lo ha colocado en su lista de &quot;usuarios de confianza&quot; o &quot;subida.&quot; &lt;br&gt;Una vez que este conectado a museekd, cambie las opciones de museekd a través de Configuración-&gt;Museek</translation>
     </message>
@@ -1038,34 +1027,34 @@
         <translation type="obsolete">Borrar</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1208"/>
+        <location filename="../mainwin.cpp" line="1097"/>
         <source>Give privileges</source>
         <translation>Dar privilegios</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1210"/>
+        <location filename="../mainwin.cpp" line="1099"/>
         <source>How many days worth of privileges 
 </source>
         <translation>Cuantos días de privilegio
 </translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1210"/>
+        <location filename="../mainwin.cpp" line="1099"/>
         <source>do you wish to give to user </source>
         <translation>desea darle al usuario </translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1239"/>
+        <location filename="../mainwin.cpp" line="1130"/>
         <source>Museeq - Soulseek Privileges</source>
         <translation>Museeq - Privilegios de Soulseek</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1239"/>
+        <location filename="../mainwin.cpp" line="1130"/>
         <source>You have %1 days, %2 hours, %3 minutes and %4 seconds of privileges left</source>
         <translation>Le quedan %1 días, %2 horas, %3 minutos y %4 segundos de privilegio</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1279"/>
+        <location filename="../mainwin.cpp" line="1170"/>
         <source>Shutdown Museeq</source>
         <translation>Cerrar Museeq</translation>
     </message>
@@ -1090,27 +1079,27 @@
         <translation type="obsolete">El Museek Daemon ha sido iniciado por Museeq y sigue funcionando, pero &lt;b&gt;no&lt;/b&gt; va a ser terminado si cierra Museeq. ¿Está seguro(a) que quiere hacer esto?</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1279"/>
+        <location filename="../mainwin.cpp" line="1170"/>
         <source>It&apos;s safe to close Museeq, but are you sure you want to?</source>
         <translation>Es seguro que cierre Museeq, pero ¿quiere hacer esto?</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1308"/>
+        <location filename="../mainwin.cpp" line="1199"/>
         <source>Load Script</source>
         <translation>Cargar Guión</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="151"/>
+        <location filename="../mainwin.cpp" line="146"/>
         <source>Show T&amp;imestamps</source>
-        <translation>Mostrar sellos de t&amp;iempo</translation>
+        <translation type="obsolete">Mostrar sellos de t&amp;iempo</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="928"/>
+        <location filename="../mainwin.cpp" line="805"/>
         <source>IP of </source>
         <translation>IP de </translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="928"/>
+        <location filename="../mainwin.cpp" line="805"/>
         <source>Port:</source>
         <translation>Puerto:</translation>
     </message>
@@ -1120,29 +1109,9 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="156"/>
-        <source>Auto-Connect to Daemon</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwin.cpp" line="161"/>
-        <source>Show Exit Dialog</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../mainwin.cpp" line="165"/>
-        <source>Enable &amp;Trayicon</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../mainwin.cpp" line="89"/>
         <source>Alt+C</source>
         <translation type="unfinished">Alt+C</translation>
-    </message>
-    <message>
-        <location filename="../mainwin.cpp" line="93"/>
-        <source>&amp;Disconnect...</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="94"/>
@@ -1175,90 +1144,130 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="167"/>
+        <location filename="../mainwin.cpp" line="153"/>
         <source>Alt+T</source>
-        <translation type="unfinished">Alt+T</translation>
+        <translation type="obsolete">Alt+T</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1192"/>
+        <location filename="../mainwin.cpp" line="1081"/>
         <source>About Qt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="222"/>
+        <location filename="../mainwin.cpp" line="197"/>
         <source>&amp;About Museeq</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="805"/>
+        <location filename="../mainwin.cpp" line="681"/>
         <source>Status:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="745"/>
+        <location filename="../mainwin.cpp" line="627"/>
         <source>Disconnected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="717"/>
+        <location filename="../mainwin.cpp" line="603"/>
         <source>socket error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="732"/>
+        <location filename="../mainwin.cpp" line="617"/>
         <source>Connected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="791"/>
+        <location filename="../mainwin.cpp" line="667"/>
         <source>Status: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="787"/>
+        <location filename="../mainwin.cpp" line="663"/>
         <source>Away</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="791"/>
+        <location filename="../mainwin.cpp" line="667"/>
         <source>Online</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1177"/>
+        <location filename="../mainwin.cpp" line="1066"/>
         <source> is a GUI for the Museek Daemon&lt;/p&gt;The programs, museeq and museekd and muscan, were created by Hyriand 2003-2005&lt;br&gt;&lt;br&gt;Additions by daelstorm, SeeSchloss and others in 2006-2008&lt;br&gt;This project is released under the GPL license.&lt;br&gt;Code and ideas taken from other opensource projects and people are mentioned in the CREDITS file included in the source tarball.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1185"/>
+        <location filename="../mainwin.cpp" line="1263"/>
         <source>&amp;Ok</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1270"/>
+        <location filename="../mainwin.cpp" line="1161"/>
         <source>The Museek Daemon is still running. Do you want to close it?</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwin.cpp" line="88"/>
+        <source>&amp;Connect to daemon</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwin.cpp" line="93"/>
+        <source>&amp;Disconnect from daemon</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwin.cpp" line="1024"/>
+        <source>New configuration file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwin.cpp" line="1024"/>
+        <source>You have chosen a new configuration file for the daemon. Do you want to restart it now?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwin.cpp" line="1239"/>
+        <source>Connecting to daemon...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwin.cpp" line="1243"/>
+        <source>Please, insert the museekd password:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwin.cpp" line="1251"/>
+        <source>&amp;Save Password</source>
+        <translation type="unfinished">Guardar Contra&amp;seña</translation>
+    </message>
+    <message>
+        <location filename="../mainwin.cpp" line="1261"/>
+        <source>&amp;Cancel</source>
+        <translation type="unfinished">&amp;Cancelar</translation>
     </message>
 </context>
 <context>
     <name>Museeq</name>
     <message>
-        <location filename="../museeq.cpp" line="159"/>
+        <location filename="../museeq.cpp" line="156"/>
         <source>&amp;Restore</source>
         <translation type="unfinished">&amp;Restaurar</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="160"/>
+        <location filename="../museeq.cpp" line="157"/>
         <source>&amp;Museek Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="161"/>
+        <location filename="../museeq.cpp" line="158"/>
         <source>&amp;Hide</source>
         <translation type="unfinished">&amp;Esconder</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="163"/>
+        <location filename="../museeq.cpp" line="160"/>
         <source>&amp;Quit</source>
         <translation type="unfinished">&amp;Terminar</translation>
     </message>
@@ -1268,7 +1277,7 @@
         <translation type="obsolete">MuseeqTray</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="165"/>
+        <location filename="../museeq.cpp" line="162"/>
         <source>Museeq</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1450,27 +1459,27 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="891"/>
+        <location filename="../museeq.cpp" line="895"/>
         <source>Syntax: museeq [options]</source>
         <translation type="unfinished">Sintaxis: museeq [opciones]</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="892"/>
+        <location filename="../museeq.cpp" line="896"/>
         <source>Options:</source>
         <translation type="unfinished">Opciones:</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="893"/>
+        <location filename="../museeq.cpp" line="897"/>
         <source>-V --version<byte value="x9"/><byte value="x9"/>Display museeq version and quit</source>
         <translation type="unfinished">-V --version<byte value="x9"/><byte value="x9"/>Mostrar versión de museeq y terminar</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="894"/>
+        <location filename="../museeq.cpp" line="898"/>
         <source>-h --help<byte value="x9"/><byte value="x9"/>Display this message and quit</source>
         <translation type="unfinished">-h --help<byte value="x9"/><byte value="x9"/>Mostrar este mensaje y terminar</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="895"/>
+        <location filename="../museeq.cpp" line="899"/>
         <source>--no-tray<byte value="x9"/><byte value="x9"/>Don&apos;t load TrayIcon</source>
         <translation type="unfinished">--no-tray<byte value="x9"/><byte value="x9"/>No cargue el TrayIcon</translation>
     </message>
@@ -1845,17 +1854,17 @@
         <translation type="obsolete">Configuración de Museek</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1152"/>
+        <location filename="../settingsdialog.cpp" line="1390"/>
         <source>Ok</source>
         <translation>Aceptar</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1153"/>
+        <location filename="../settingsdialog.cpp" line="1391"/>
         <source>Save</source>
         <translation>Guardar Cambios</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1154"/>
+        <location filename="../settingsdialog.cpp" line="1392"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
@@ -1865,47 +1874,47 @@
         <translation type="obsolete">Codificación Predeterminada:</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1183"/>
+        <location filename="../settingsdialog.cpp" line="1419"/>
         <source>Filesystem Encoding:</source>
         <translation>Codificación del sistema de archivos:</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1184"/>
+        <location filename="../settingsdialog.cpp" line="1420"/>
         <source>Network Encoding:</source>
         <translation>Codificación de la red:</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1185"/>
+        <location filename="../settingsdialog.cpp" line="1421"/>
         <source>Connect</source>
         <translation>Conectar</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1186"/>
+        <location filename="../settingsdialog.cpp" line="1422"/>
         <source>Disconnect</source>
         <translation>Desconectar</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1187"/>
+        <location filename="../settingsdialog.cpp" line="1423"/>
         <source>Server Port:</source>
         <translation>Puerto del Servidor:</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1188"/>
+        <location filename="../settingsdialog.cpp" line="1424"/>
         <source>Server Host:</source>
         <translation>Equipo del Servidor:</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1189"/>
+        <location filename="../settingsdialog.cpp" line="1425"/>
         <source>Soulseek Username:</source>
         <translation>Nick de Soulseek:</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1190"/>
+        <location filename="../settingsdialog.cpp" line="1426"/>
         <source>Soulseek Password:</source>
         <translation>Contraseña de Soulseek:</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1197"/>
+        <location filename="../settingsdialog.cpp" line="1433"/>
         <source>Server</source>
         <translation>Servidor</translation>
     </message>
@@ -1915,17 +1924,17 @@
         <translation type="obsolete">&lt;p&gt;Configure sus archivos compartidos con musetup, o ejecute &lt;u&gt;muscan -r&lt;/u&gt; para volver a examinar sus archivos compartidos y después pulse:&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1199"/>
+        <location filename="../settingsdialog.cpp" line="1435"/>
         <source>Connections</source>
         <translation>Conecciones</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1232"/>
+        <location filename="../settingsdialog.cpp" line="1469"/>
         <source>Active Connections</source>
         <translation>Conecciones Activas</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1233"/>
+        <location filename="../settingsdialog.cpp" line="1470"/>
         <source>Passive Connections</source>
         <translation>Conecciones Pasivas</translation>
     </message>
@@ -1935,17 +1944,17 @@
         <translation type="obsolete">Recargar Archivos Compartidos</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1236"/>
+        <location filename="../settingsdialog.cpp" line="1473"/>
         <source>Select..</source>
         <translation>Seleccionar..</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1235"/>
+        <location filename="../settingsdialog.cpp" line="1472"/>
         <source>Download Dir:</source>
         <translation>Directorio de Descarga:</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1237"/>
+        <location filename="../settingsdialog.cpp" line="1474"/>
         <source>Incomplete Dir:</source>
         <translation>Directorio de Incompletos:</translation>
     </message>
@@ -1955,22 +1964,22 @@
         <translation type="obsolete">Archivos Compartidos y Conexiones</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1240"/>
+        <location filename="../settingsdialog.cpp" line="1477"/>
         <source>Buddies are Privileged</source>
         <translation>Amigos son Privilegiados</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1241"/>
+        <location filename="../settingsdialog.cpp" line="1478"/>
         <source>Online Alerts in Log Window instead of popup</source>
         <translation>Alertas de conexión en ventana de Log (registro), no como pop-up</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1242"/>
+        <location filename="../settingsdialog.cpp" line="1479"/>
         <source>Share to Buddies Only</source>
         <translation>Compartir Solo con Amigos</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1243"/>
+        <location filename="../settingsdialog.cpp" line="1480"/>
         <source>Trusted users can Send you Files</source>
         <translation>Usuarios de confianza pueden Enviarle Archivos</translation>
     </message>
@@ -1980,102 +1989,92 @@
         <translation type="obsolete">Lista aparte para Amigos</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1245"/>
+        <location filename="../settingsdialog.cpp" line="1482"/>
         <source>Send automatic warnings to users via Private Chat</source>
         <translation>Enviar alertas automáticos a usuarios a través de Charla Privada</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1200"/>
+        <location filename="../settingsdialog.cpp" line="1436"/>
         <source>User Options</source>
         <translation>Opciones de Usuario</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="981"/>
+        <location filename="../settingsdialog.cpp" line="1234"/>
         <source>Select a Directory to store your downloaded files.</source>
         <translation>Selecciona un directorio para guardar tus descargas.</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1024"/>
+        <location filename="../settingsdialog.cpp" line="1263"/>
         <source>All files (*)</source>
         <translation>Todos los archivos (*)</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1009"/>
+        <location filename="../settingsdialog.cpp" line="1248"/>
         <source>Select a Directory to store your incomplete downloading files.</source>
         <translation>Selecciona un Directorio para guardar tus descargas incompletas.</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1246"/>
+        <location filename="../settingsdialog.cpp" line="1483"/>
         <source>IP addresses in Log Window instead of popup</source>
         <translation>Direcciones de IP en la ventana de Log (registro), no como pop-up</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="96"/>
+        <location filename="../settingsdialog.cpp" line="102"/>
         <source>Host</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="136"/>
+        <location filename="../settingsdialog.cpp" line="141"/>
         <source>Server status</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="241"/>
+        <location filename="../settingsdialog.cpp" line="234"/>
         <source>Directories</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="271"/>
+        <location filename="../settingsdialog.cpp" line="264"/>
         <source>Peer Connections</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="414"/>
+        <location filename="../settingsdialog.cpp" line="427"/>
         <source>Protocol</source>
         <translation type="unfinished">Protocolo</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="414"/>
+        <location filename="../settingsdialog.cpp" line="427"/>
         <source>Handler</source>
         <translation type="unfinished">Gestor</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="576"/>
+        <location filename="../settingsdialog.cpp" line="588"/>
         <source>Delete handler</source>
         <translation type="unfinished">Borrar gestor</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="728"/>
+        <location filename="../settingsdialog.cpp" line="957"/>
         <source>Select a Directory to add to your Buddy Shares.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="754"/>
+        <location filename="../settingsdialog.cpp" line="986"/>
         <source>Select a Directory to write Private Chat log files.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="771"/>
+        <location filename="../settingsdialog.cpp" line="1003"/>
         <source>Select a Directory to write Chat Room log files.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="816"/>
+        <location filename="../settingsdialog.cpp" line="1054"/>
         <source>Select a Directory to add to your Normal Shares.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="995"/>
-        <source>Select the museekd config file.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="996"/>
-        <source>XML files (*.xml)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1021"/>
+        <location filename="../settingsdialog.cpp" line="1260"/>
         <source>Images (*.png *.gif *.jpg *.jpeg)</source>
         <translation type="unfinished">Imágenes (*.png *.gif *.jpg *.jpeg)</translation>
     </message>
@@ -2085,204 +2084,355 @@
         <translation type="obsolete">Selecciona una Imagen para tu perfil de Usuario</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1151"/>
+        <location filename="../settingsdialog.cpp" line="1389"/>
         <source>Museeq Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1155"/>
-        <source>Museekd Config:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1163"/>
+        <location filename="../settingsdialog.cpp" line="1399"/>
         <source>Refresh list</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1164"/>
+        <location filename="../settingsdialog.cpp" line="1400"/>
         <source>Update</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1165"/>
+        <location filename="../settingsdialog.cpp" line="1401"/>
         <source>Rescan</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1166"/>
+        <location filename="../settingsdialog.cpp" line="1402"/>
         <source>Add</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1167"/>
+        <location filename="../settingsdialog.cpp" line="1403"/>
         <source>Remove</source>
         <translation type="unfinished">Eliminar</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1168"/>
+        <location filename="../settingsdialog.cpp" line="1404"/>
         <source>Listen port range (the first available port will be used when museekd starts up)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1169"/>
+        <location filename="../settingsdialog.cpp" line="1405"/>
         <source>First port:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1170"/>
+        <location filename="../settingsdialog.cpp" line="1406"/>
         <source>Last port:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1172"/>
+        <location filename="../settingsdialog.cpp" line="1408"/>
         <source>Clear</source>
         <translation type="unfinished">Limpiar</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1173"/>
+        <location filename="../settingsdialog.cpp" line="1409"/>
         <source>Don&apos;t touch</source>
         <translation type="unfinished">Dejar</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1174"/>
+        <location filename="../settingsdialog.cpp" line="1410"/>
         <source>Upload:</source>
         <translation type="unfinished">Subir:</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1178"/>
+        <location filename="../settingsdialog.cpp" line="1414"/>
         <source>Log Private Chats</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1179"/>
+        <location filename="../settingsdialog.cpp" line="1415"/>
         <source>Log Chat Rooms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1193"/>
+        <location filename="../settingsdialog.cpp" line="1429"/>
         <source>New</source>
         <translation type="unfinished">Nuevo</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1194"/>
+        <location filename="../settingsdialog.cpp" line="1430"/>
         <source>Modify</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1196"/>
+        <location filename="../settingsdialog.cpp" line="1432"/>
         <source>Museek Daemon</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1198"/>
+        <location filename="../settingsdialog.cpp" line="1434"/>
         <source>Shares</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1201"/>
+        <location filename="../settingsdialog.cpp" line="1437"/>
         <source>User Info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1203"/>
+        <location filename="../settingsdialog.cpp" line="1439"/>
         <source>Museeq</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1204"/>
+        <location filename="../settingsdialog.cpp" line="1441"/>
         <source>Appearance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1205"/>
+        <location filename="../settingsdialog.cpp" line="1442"/>
         <source>Fonts and Colors</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1206"/>
+        <location filename="../settingsdialog.cpp" line="1443"/>
         <source>Logging</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1207"/>
+        <location filename="../settingsdialog.cpp" line="1444"/>
         <source>Protocol handlers</source>
         <translation type="unfinished">Controles de Protocolo</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1210"/>
+        <location filename="../settingsdialog.cpp" line="1447"/>
         <source>Time &amp; Brackets Font</source>
         <translation type="unfinished">Tipo del Tiempo &amp; Paréntesis</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1218"/>
+        <location filename="../settingsdialog.cpp" line="1455"/>
         <source>Pick Font</source>
         <translation type="unfinished">Escoger Tipo</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1212"/>
+        <location filename="../settingsdialog.cpp" line="1449"/>
         <source>Time &amp; Brackets Text Color</source>
         <translation type="unfinished">Color del Tiempo &amp; Paréntesis</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1213"/>
+        <location filename="../settingsdialog.cpp" line="1450"/>
         <source>/Me Text</source>
         <translation type="unfinished">/Me Texto</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1227"/>
+        <location filename="../settingsdialog.cpp" line="1464"/>
         <source>Pick Color</source>
         <translation type="unfinished">Escoger Color</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1217"/>
+        <location filename="../settingsdialog.cpp" line="1454"/>
         <source>Message Font</source>
         <translation type="unfinished">Letra de Mensajes</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1219"/>
+        <location filename="../settingsdialog.cpp" line="1456"/>
         <source>Buddied Users</source>
         <translation type="unfinished">Usuarios Amigos</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1221"/>
+        <location filename="../settingsdialog.cpp" line="1458"/>
         <source>My Text</source>
         <translation type="unfinished">Mi texto</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1222"/>
+        <location filename="../settingsdialog.cpp" line="1459"/>
         <source>Trusted Users</source>
         <translation type="unfinished">Usuarios de Confianza</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1224"/>
+        <location filename="../settingsdialog.cpp" line="1461"/>
         <source>Banned Users</source>
         <translation type="unfinished">Usuarios Excluidos</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1226"/>
+        <location filename="../settingsdialog.cpp" line="1463"/>
         <source>Remote Text</source>
         <translation type="unfinished">Texto Remoto</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1247"/>
+        <location filename="../settingsdialog.cpp" line="1484"/>
         <source>Maximum length of ticker messages:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1248"/>
+        <location filename="../settingsdialog.cpp" line="1485"/>
         <source>Align Mode Icons Vertically</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1023"/>
+        <location filename="../settingsdialog.cpp" line="1262"/>
         <source>Select an image for your User info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1244"/>
+        <location filename="../settingsdialog.cpp" line="1481"/>
         <source>Additional Shares for Buddies</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.cpp" line="342"/>
+        <source>Show &amp;Tickers</source>
+        <translation type="unfinished">Mostrar &amp;Tickers</translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.cpp" line="607"/>
+        <source>Daemon management:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.cpp" line="612"/>
+        <source>C&amp;onfigure the daemon (Musetup)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.cpp" line="615"/>
+        <source>&amp;Start Daemon</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.cpp" line="618"/>
+        <source>S&amp;top Daemon</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.cpp" line="636"/>
+        <source>Daemon connection:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.cpp" line="645"/>
+        <source>TCP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.cpp" line="646"/>
+        <source>Unix socket</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.cpp" line="667"/>
+        <source>Password:</source>
+        <translation type="unfinished">Contraseña:</translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.cpp" line="673"/>
+        <source>S&amp;ave Password</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.cpp" line="687"/>
+        <source>&amp;Connect to daemon</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.cpp" line="691"/>
+        <source>&amp;Disconnect from daemon</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.cpp" line="709"/>
+        <source>Museek Daemon Config:
+(leave empty for default)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.cpp" line="714"/>
+        <source>Se&amp;lect...</source>
+        <translation type="unfinished">Se&amp;leccionar...</translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.cpp" line="730"/>
+        <source>Auto-sta&amp;rt museek daemon</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.cpp" line="734"/>
+        <source>A&amp;uto-connect to daemon</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.cpp" line="738"/>
+        <source>Don&apos;t show e&amp;xit dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.cpp" line="742"/>
+        <source>S&amp;hutdown daemon on exit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.cpp" line="1440"/>
+        <source>Daemon connection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.cpp" line="1487"/>
+        <source>Host / path:</source>
+        <translation type="unfinished">Servidor / ruta:</translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.cpp" line="1546"/>
+        <source>Musetup error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.cpp" line="1546"/>
+        <source>Couldn&apos;t launch musetup-qt. Check that it is correctly installed. You can also launch musetup in a terminal using this command: &apos;musetup&apos;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.cpp" line="1568"/>
+        <source>Connection error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.cpp" line="1553"/>
+        <source>Couldn&apos;t connect to the daemon. Please, check daemon connection settings (wrong password?).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.cpp" line="1554"/>
+        <source>Couldn&apos;t connect to the daemon. Please, check daemon connection settings (wrong password?). Would you like to change museeq settings?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.cpp" line="1567"/>
+        <source>Couldn&apos;t connect or lost connection to the daemon. Please, check that the daemon is running and that it is listening at the given address.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.cpp" line="1568"/>
+        <source>Couldn&apos;t connect or lost connection to the daemon. Please, check that the daemon is running and that it is listening at the given address. Would you like to change museeq settings?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.cpp" line="324"/>
+        <source>Enable &amp;Trayicon</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.cpp" line="327"/>
+        <source>Show &amp;Log</source>
+        <translation type="unfinished">Mostrar &amp;Registros</translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.cpp" line="336"/>
+        <source>Show T&amp;imestamps</source>
+        <translation type="unfinished">Mostrar sellos de t&amp;iempo</translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.cpp" line="356"/>
+        <source>Pick &amp;Icon Theme... (Requires Restart)</source>
+        <translation type="unfinished">Elige Tema de &amp;Iconos... (Requiere Reiniciar)</translation>
     </message>
 </context>
 <context>

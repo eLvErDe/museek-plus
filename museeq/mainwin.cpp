@@ -31,7 +31,6 @@
 #include "userinfos.h"
 #include "browsers.h"
 #include "museekdriver.h"
-#include "connect.h"
 #include "ipdialog.h"
 #include "settingsdialog.h"
 #include "images.h"
@@ -62,6 +61,7 @@
 #include <QDateTime>
 #include <QSettings>
 #include <QTimer>
+#include <QLayout>
 
 #define _TIME QString("<span style='"+museeq->mFontTime+";color:"+museeq->mColorTime+"'>") + QDateTime::currentDateTime().toString("hh:mm:ss") + "</span> "
 
@@ -85,12 +85,12 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(0, 0), m
     mCloseFromMenu = false;
 
 	mMenuFile = menuBar()->addMenu(tr("&File"));
-	ActionConnect = new QAction(IMG("connect"), tr("&Connect..."), this);
+	ActionConnect = new QAction(IMG("connect"), tr("&Connect to daemon"), this);
 	ActionConnect->setShortcut(tr("Alt+C"));
 	connect(ActionConnect, SIGNAL(triggered()), this, SLOT(connectToMuseek()));
 	mMenuFile->addAction(ActionConnect);
 
-	ActionDisconnect = new QAction(IMG("disconnect"), tr("&Disconnect..."), this);
+	ActionDisconnect = new QAction(IMG("disconnect"), tr("&Disconnect from daemon"), this);
 	ActionDisconnect->setShortcut(tr("Alt+D"));
 	connect(ActionDisconnect, SIGNAL(triggered()), museeq->driver(), SLOT(disconnect()));
 	mMenuFile->addAction(ActionDisconnect);
@@ -134,49 +134,6 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(0, 0), m
 
 	mMenuSettings->addSeparator();
 
-	ActionIconTheme = new QAction(tr("Pick &Icon Theme... (Requires Restart)"), this);
-	connect(ActionIconTheme, SIGNAL(triggered()), this, SLOT(changeTheme()));
-	mMenuSettings->addAction(ActionIconTheme);
-
-	ActionToggleTickers = new QAction(tr("Show &Tickers"), this);
-	ActionToggleTickers->setCheckable(true);
-	connect(ActionToggleTickers, SIGNAL(triggered()), this, SLOT(toggleTickers()));
-	mMenuSettings->addAction(ActionToggleTickers);
-
-	ActionToggleLog = new QAction(tr("Show &Log"), this);
-	ActionToggleLog->setCheckable(true);
-	connect(ActionToggleLog, SIGNAL(triggered()), this, SLOT(toggleLog()));
-	mMenuSettings->addAction(ActionToggleLog);
-
-	ActionToggleTimestamps = new QAction(tr("Show T&imestamps"), this);
-	ActionToggleTimestamps->setCheckable(true);
-	connect(ActionToggleTimestamps, SIGNAL(triggered()), this, SLOT(toggleTimestamps()));
-	mMenuSettings->addAction(ActionToggleTimestamps);
-
-	ActionToggleAutoConnect = new QAction(tr("Auto-Connect to Daemon"), this);
-	ActionToggleAutoConnect->setCheckable(true);
-	connect(ActionToggleAutoConnect, SIGNAL(triggered()), this, SLOT(toggleAutoConnect()));
-	mMenuSettings->addAction(ActionToggleAutoConnect);
-
-	ActionToggleExitDialog = new QAction(tr("Show Exit Dialog"), this);
-	ActionToggleExitDialog->setCheckable(true);
-	connect(ActionToggleExitDialog, SIGNAL(triggered()), this, SLOT(toggleExitDialog()));
-	mMenuSettings->addAction(ActionToggleExitDialog);
-	ActionToggleTrayicon = new QAction(tr("Enable &Trayicon"), this);
-	ActionToggleTrayicon->setCheckable(true);
-	ActionToggleTrayicon->setShortcut(tr("Alt+T"));
-	connect(ActionToggleTrayicon, SIGNAL(triggered()), this, SLOT(toggleTrayicon()));
-	mMenuSettings->addAction(ActionToggleTrayicon);
-	mMenuSettings->addSeparator();
-	ActionIconTheme->setEnabled(true);
-
-	museeq->mShowTickers = museeq->settings()->value("showTickers").toBool();
-	museeq->mShowStatusLog = museeq->settings()->value("showStatusLog").toBool();
-
- 	ActionToggleTickers->setChecked(museeq->mShowTickers);
- 	ActionToggleLog->setChecked(museeq->mShowStatusLog);
- 	ActionToggleTimestamps->setChecked(museeq->mShowTimestamps);
-
 	mMenuModes = menuBar()->addMenu(tr("&Modes"));
 
 	ActionChatRooms = new QAction(IMG("chatroom-small"), tr("&Chat Rooms"), this);
@@ -203,6 +160,24 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(0, 0), m
 	connect(ActionBrowseShares, SIGNAL(triggered()), this, SLOT(changeBMode()));
 	mMenuModes->addAction(ActionBrowseShares);
 
+#ifdef HAVE_QTSCRIPT
+    mMenuScripts = menuBar()->addMenu(tr("Sc&ripts"));
+
+    ActionLoadScript = new QAction(tr("&Load script..."), this);
+	connect(ActionLoadScript, SIGNAL(triggered()), this, SLOT(loadScript()));
+
+    mMenuScripts->addAction(ActionLoadScript);
+	mMenuUnloadScripts = mMenuScripts->addMenu(tr("&Unload script"));
+
+    mMenuScripts->addSeparator();
+
+    museeq->registerMenu("File", mMenuFile);
+    museeq->registerMenu("Settings", mMenuSettings);
+    museeq->registerMenu("Modes", mMenuModes);
+    museeq->registerMenu("Scripts", mMenuScripts);
+    museeq->registerMenu("Help", mMenuHelp);
+#endif // HAVE_QTSCRIPT
+
 	mMenuHelp = menuBar()->addMenu(tr("&Help"));
 
 	ActionCommands = new QAction(IMG("help"), tr("&Commands..."), this);
@@ -223,43 +198,29 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(0, 0), m
 	connect(ActionAbout, SIGNAL(triggered()), this, SLOT(displayAboutDialog()));
 	mMenuHelp->addAction(ActionAbout);
 
-#ifdef HAVE_QTSCRIPT
-    mMenuScripts = menuBar()->addMenu(tr("Sc&ripts"));
-
-    ActionLoadScript = new QAction(tr("&Load script..."), this);
-	connect(ActionLoadScript, SIGNAL(triggered()), this, SLOT(loadScript()));
-
-    mMenuScripts->addAction(ActionLoadScript);
-	mMenuUnloadScripts = mMenuScripts->addMenu(tr("&Unload script"));
-
-    mMenuScripts->addSeparator();
-
-    museeq->registerMenu("File", mMenuFile);
-    museeq->registerMenu("Settings", mMenuSettings);
-    museeq->registerMenu("Modes", mMenuModes);
-    museeq->registerMenu("Scripts", mMenuScripts);
-    museeq->registerMenu("Help", mMenuHelp);
-#endif // HAVE_QTSCRIPT
-
 	statusLabel = new QLabel(this);
 	messageLabel = new QLabel(this);
 	statusBar()->addWidget(messageLabel, 10);
 	statusBar()->addWidget(statusLabel, 0);
 	messageLabel->setText(tr("Welcome to Museeq"));
 	statusLabel->setText(tr("Status:")+" "+tr("Disconnected"));
-	mConnectDialog = new ConnectDialog(this, "connectDialog");
 
-#ifdef HAVE_SYS_UN_H
-	connect(mConnectDialog->mAddress, SIGNAL(activated(const QString&)), SLOT(slotAddressActivated(const QString&)));
-	connect(mConnectDialog->mAddress, SIGNAL(textChanged(const QString&)), SLOT(slotAddressChanged(const QString&)));
-#else
-	mConnectDialog->mUnix->setDisabled(true);
-#endif
 	mIPDialog = new IPDialog(this, "ipDialog");
 
 	mSettingsDialog = new SettingsDialog(this, "settingsDialog");
+	slotAddressActivated(mSettingsDialog->mDAddress->currentText());
+
 	QWidget * MainWidget = new QWidget(this);
 	setCentralWidget(MainWidget);
+
+#ifdef HAVE_SYS_UN_H
+	connect(mSettingsDialog->mDAddress, SIGNAL(activated(const QString&)), SLOT(slotAddressActivated(const QString&)));
+	connect(mSettingsDialog->mDAddress, SIGNAL(textChanged(const QString&)), SLOT(slotAddressChanged(const QString&)));
+#else
+    mSettingsDialog->mDConnectType->removeItem(1);
+#endif
+
+	connect( mSettingsDialog->mDisconnectFromDaemonButton, SIGNAL(clicked()), museeq->driver(), SLOT(disconnect()));
 
 	QVBoxLayout *box = new QVBoxLayout(MainWidget);
 
@@ -373,7 +334,7 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(0, 0), m
 	mLog->setAcceptRichText(true);
 	mLog->setFocusPolicy(Qt::NoFocus);
 	mLog->resize(0, 100);
-	if ( ! museeq->mShowStatusLog)
+	if ( ! museeq->settings()->value("showStatusLog", false).toBool())
 		mLog->hide();
 
 	mChatRooms->updateTickers();
@@ -434,7 +395,10 @@ void MainWindow::changePage(QListWidgetItem* current, QListWidgetItem* last) {
 }
 
 void MainWindow::doDaemon() {
-    museekConfig = museeq->settings()->value("MuseekConfigFile").toString();
+    if (Util::getMuseekdLock())
+        return;
+
+    QString museekConfig = museeq->settings()->value("MuseekConfigFile").toString();
     QStringList arguments;
     if (! museekConfig.isEmpty() ) {
         arguments.append("--config");
@@ -455,10 +419,6 @@ void MainWindow::stopDaemon() {
 }
 
 void MainWindow::readSettings() {
-	if (museeq->settings()->value("ShowExitDialog", true).toBool()) {
-		museeq->settings()->setValue("ShowExitDialog", true);
-		ActionToggleExitDialog->setChecked(true);
-	}
 	mMoves = 0;
 	int w = museeq->settings()->value("Width", 600).toInt();
 	int h = museeq->settings()->value("Height", -1).toInt();
@@ -532,39 +492,24 @@ void MainWindow::readSettings() {
 	mSettingsDialog->TickerLength->setValue(museeq->mTickerLength);
 
 }
+
 void MainWindow::saveConnectConfig() {
-	QString server = mConnectDialog->mAddress->currentText(),
-		password = mConnectDialog->mPassword->text();
+	QString server = mSettingsDialog->mDAddress->currentText();
+    QString password = mSettingsDialog->mDPassword->text();
 
-	bool autoStart = mConnectDialog->mAutoStartDaemon->isChecked();
-	museeq->settings()->setValue("LaunchMuseekDaemon", autoStart);
-
-    bool autoConnect = mConnectDialog->mAutoConnect->isChecked();
-	museeq->settings()->setValue("AutoConnect", autoConnect);
-
-    ActionToggleAutoConnect->setChecked(autoConnect);
-
-	if ( ! mConnectDialog->mMuseekConfig->text().isEmpty() )
-		museeq->settings()->setValue("MuseekConfigFile", mConnectDialog->mMuseekConfig->text() );
-	else
-		museeq->settings()->remove("MuseekConfigFile");
-
-    bool savePass = mConnectDialog->mSavePassword->isChecked();
+    bool savePass = mSettingsDialog->mDSavePassword->isChecked();
     museeq->settings()->setValue("SavePassword", savePass);
 	if(savePass)
 		museeq->settings()->setValue("Password", password);
 	else
 		museeq->settings()->remove("Password");
 
-    bool shutDown = mConnectDialog->mShutDownDaemonOnExit->isChecked();
-	museeq->settings()->setValue("ShutDownDaemonOnExit", shutDown);
-
 	museeq->settings()->remove("Servers");
 	museeq->settings()->beginGroup("Servers");
 	int ix = 1;
-	for(int i = 0; i < mConnectDialog->mAddress->count(); ++i)
+	for(int i = 0; i < mSettingsDialog->mDAddress->count(); ++i)
 	{
-		QString s = mConnectDialog->mAddress->itemText(i);
+		QString s = mSettingsDialog->mDAddress->itemText(i);
 		if(s != server)
 		{
 			museeq->settings()->setValue(QString::number(ix), s);
@@ -573,104 +518,44 @@ void MainWindow::saveConnectConfig() {
 	}
 	museeq->settings()->setValue(QString::number(ix), server);
 	museeq->settings()->endGroup();
-
 }
 
-void MainWindow::connectToMuseek() {
+void MainWindow::connectToMuseek(bool autoConnectAsked) {
 	ActionConnect->setEnabled(false);
 
-	mConnectDialog->mAddress->clear();
-	QString museekConfig;
-	QString password;
-
-	bool savePassword = museeq->settings()->value("SavePassword").toBool();
-
- 	if (savePassword)
-	{
-		mConnectDialog->mSavePassword->setChecked(true);
-		password = museeq->settings()->value("Password").toString();
-		if ( !  password.isEmpty())
-			mConnectDialog->mPassword->setText(password);
-	} else  {
-		mConnectDialog->mSavePassword->setChecked(false);
-	}
-	museekConfig = museeq->settings()->value("MuseekConfigFile").toString();
-	if (! museekConfig.isEmpty())
-		mConnectDialog->mMuseekConfig->setText(museekConfig);
-
-	bool ShutDownDaemonOnExit = museeq->settings()->value("ShutDownDaemonOnExit").toBool();
-	mConnectDialog->mShutDownDaemonOnExit->setChecked(ShutDownDaemonOnExit);
-
-	bool launchMuseekDaemon = museeq->settings()->value("LaunchMuseekDaemon").toBool();
-
- 	if (launchMuseekDaemon)	 {
-		mConnectDialog->mAutoStartDaemon->setChecked(true);
-		mConnectDialog->mMuseekConfig->show();
+ 	if (museeq->settings()->value("LaunchMuseekDaemon").toBool() && !Util::getMuseekdLock()) {
         doDaemon();
-	} else  {
-		mConnectDialog->mAutoStartDaemon->setChecked(false);
-	}
-	museeq->settings()->beginGroup("Servers");
-	QStringList s_keys = museeq->settings()->childKeys();
-	museeq->settings()->endGroup();
-// 	appendToLogWindow(
-	QString cServer;
-	if(! s_keys.isEmpty()) {
-		for(QStringList::Iterator it = s_keys.begin(); it != s_keys.end(); ++it)
-		{
-			cServer = museeq->settings()->value("Servers/" + (*it)).toString();
-			mConnectDialog->mAddress->addItem(cServer);
-		}
-		mConnectDialog->mPassword->setFocus();
-	} else {
-		cServer = "localhost:2240";
-		mConnectDialog->mAddress->addItem(cServer);
-		mConnectDialog->mAddress->setFocus();
-#ifdef HAVE_SYS_UN_H
-# ifdef HAVE_PWD_H
-		struct passwd *pw = getpwuid(getuid());
-		if(pw)
-			mConnectDialog->mAddress->addItem(QString("/tmp/museekd.") + QString(pw->pw_name));
-# endif
-#endif
-	}
-	mConnectDialog->mAddress->setCurrentIndex(mConnectDialog->mAddress->count() - 1);
-	slotAddressActivated(mConnectDialog->mAddress->currentText());
-	// Display Connect Dialog
-	bool autoConnect = museeq->settings()->value("AutoConnect").toBool();
-	if (autoConnect) {
-		mConnectDialog->mAutoConnect->setChecked(true);
-		ActionToggleAutoConnect->setChecked(true);
-		if (savePassword  and (! password.isEmpty()) ) {
-            autoConnectServer = cServer;
-            autoConnectPassword = password;
-			QTimer::singleShot(2000, this, SLOT(doAutoConnect()));
-			return;
-		}
-	} else {
-		mConnectDialog->mAutoConnect->setChecked(false);
-		ActionToggleAutoConnect->setChecked(false);
-	}
+        // Wait a bit before trying to connect to the daemon
+        QTimer::singleShot(2000, this, SLOT(connectToMuseek()));
+        return;
+ 	}
 
-	if(mConnectDialog->exec() == QDialog::Accepted) {
-		QString server = mConnectDialog->mAddress->currentText(),
-			password = mConnectDialog->mPassword->text();
-		saveConnectConfig();
-		connectToMuseekPS(server, password);
-	} else {
+	if (!autoConnectAsked || museeq->settings()->value("AutoConnect").toBool()) {
+		QString server = mSettingsDialog->mDAddress->currentText();
+		QString password = mSettingsDialog->mDPassword->text();
+		if (museeq->settings()->value("SavePassword").toBool()  && (! password.isEmpty()) )
+            connectToMuseekPS(server, password);
+		else {
+		    QString pass;
+		    bool savePass = askPassword(pass);
+		    if (!pass.isEmpty()) {
+		        connectToMuseekPS(server, pass);
+		        if (savePass) {
+		            museeq->settings()->setValue("SavePassword", true);
+                    museeq->settings()->setValue("Password", pass);
+                    mSettingsDialog->loadSettings();
+		        }
+		    }
+		}
+	}
+	else { // We don't have to connect now
 		ActionConnect->setEnabled(true);
 	}
 }
 
-void MainWindow::doAutoConnect() {
-    if (!autoConnectServer.isEmpty()) {
-        connectToMuseekPS(autoConnectServer, autoConnectPassword);
-    }
-}
-
 void MainWindow::connectToMuseekPS(const QString& server, const QString& password) {
 	ActionDisconnect->setEnabled(true);
-	if(mConnectDialog->mTCP->isChecked()) {
+	if(mSettingsDialog->mDConnectType->currentIndex() == 0) {
 		int ix = server.indexOf(':');
 		quint16 port = server.mid(ix+1).toUInt();
 		qDebug("Connecting to museek... Looking up host");
@@ -682,6 +567,7 @@ void MainWindow::connectToMuseekPS(const QString& server, const QString& passwor
 		museeq->driver()->connectToUnix(server, password);
 	}
 }
+
 void MainWindow::slotHostFound() {
 	qDebug("Connecting to museek... Connecting");
 	messageLabel->setText(tr("Connecting to museek... Connecting"));
@@ -719,7 +605,6 @@ void MainWindow::slotError(QAbstractSocket::SocketError e) {
 	}
 	statusLabel->setText(tr("Status:")+" "+tr("Disconnected"));
 	qDebug() << "socket error: " << e;
-	doNotAutoConnect();
 	ActionConnect->setEnabled(true);
 	ActionDisconnect->setEnabled(false);
 	ActionBrowseMyShares->setEnabled(false);
@@ -735,9 +620,6 @@ void MainWindow::slotLoggedIn(bool success, const QString& msg) {
 
 		ActionConnect->setEnabled(false);
 		ActionDisconnect->setEnabled(true);
-		ActionToggleTickers->setChecked(museeq->mShowTickers);
-		ActionToggleLog->setChecked(museeq->mShowStatusLog);
-		ActionToggleTimestamps->setChecked(museeq->mShowTimestamps);
 		ActionBrowseMyShares->setEnabled(true);
 	} else {
 		mSettingsDialog->mTabHolder->setTabEnabled(mSettingsDialog->mTabHolder->indexOf(mSettingsDialog->mMuseekdTabs), false);
@@ -748,15 +630,7 @@ void MainWindow::slotLoggedIn(bool success, const QString& msg) {
 		ActionAway->setEnabled(false);
 		ActionCheckPrivileges->setEnabled(false);
 		ActionBrowseMyShares->setEnabled(false);
-		doNotAutoConnect();
 		museeq->trayicon_setIcon("disconnect");
-	}
-}
-void MainWindow::doNotAutoConnect() {
-	if(mConnectDialog->mAutoConnect->isChecked()) {
-		museeq->settings()->setValue("AutoConnect", false);
-		mConnectDialog->mAutoConnect->setChecked(false);
-		ActionToggleAutoConnect->setChecked(false);
 	}
 }
 
@@ -775,6 +649,7 @@ void MainWindow::appendToLogWindow(const QString& msg) {
 			mLog->append(QString("<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+Qt::escape(*it)+"</span>"));
 	}
 }
+
 void MainWindow::slotUserStatus( const QString & user, uint status ) {
  	if (museeq->mOnlineAlert  && museeq->hasAlert(user)) {
 		QString s = (status == 0) ? "offline" : ((status == 1) ? "away" : "online");
@@ -782,6 +657,7 @@ void MainWindow::slotUserStatus( const QString & user, uint status ) {
 
 	}
 }
+
 void MainWindow::slotStatusSet(uint status) {
 	if (status) {
 		statusLabel->setText(tr("Status: ")+tr("Away"));
@@ -836,9 +712,9 @@ void MainWindow::showIPDialog(const QString& user) {
 void MainWindow::slotAddressActivated(const QString& server) {
 #ifdef HAVE_SYS_UN_H
 	if(! server.isEmpty() && server[0] == '/')
-		mConnectDialog->mUnix->setChecked(true);
+        mSettingsDialog->mDConnectType->setCurrentIndex(1);
 	else
-		mConnectDialog->mTCP->setChecked(true);
+        mSettingsDialog->mDConnectType->setCurrentIndex(0);
 #endif
 }
 
@@ -846,11 +722,12 @@ void MainWindow::slotAddressChanged(const QString& text) {
 	if(text.length() == 1)
 	{
 		if(text[0] == '/')
-			mConnectDialog->mUnix->setChecked(true);
+            mSettingsDialog->mDConnectType->setCurrentIndex(1);
 		else
-			mConnectDialog->mTCP->setChecked(true);
+            mSettingsDialog->mDConnectType->setCurrentIndex(0);
 	}
 }
+
 void MainWindow::changeTheme() {
 	QString _path = QString(DATADIR) + "/museek/museeq/themes";
 	QDir dir  (_path);
@@ -930,74 +807,75 @@ void MainWindow::slotUserAddress(const QString& user, const QString& ip, uint po
 	}
 
 }
+
 void MainWindow::toggleTickers() {
-	if (museeq->mShowTickers) {
-		museeq->settings()->setValue("showTickers", false);
-		museeq->mShowTickers = false;
-		ActionToggleTickers->setChecked(museeq->mShowTickers);
+    bool current = museeq->settings()->value("showTickers", true).toBool();
+    museeq->settings()->setValue("showTickers", !current);
+    mSettingsDialog->loadSettings();
+	if (current)
 		emit hideAllTickers();
-	}
-	else {
-		museeq->settings()->setValue("showTickers", true);
-		museeq->mShowTickers = true;
-		ActionToggleTickers->setChecked(museeq->mShowTickers);
+	else
 		emit showAllTickers();
-	}
 }
-void MainWindow::toggleTimestamps() {
-	if (museeq->mShowTimestamps) {
-		museeq->settings()->setValue("showTimestamps", false);
-		museeq->mShowTimestamps = false;
-	}
-	else {
-		museeq->settings()->setValue("showTimestamps", true);
-		museeq->mShowTimestamps = true;
-	}
-	ActionToggleTimestamps->setChecked(museeq->mShowTimestamps);
-}
+
 void MainWindow::toggleLog() {
-	if (museeq->mShowStatusLog) {
-		museeq->settings()->setValue("showStatusLog", false);
-		museeq->mShowStatusLog = false;
+    bool current = museeq->settings()->value("showStatusLog", false).toBool();
+    museeq->settings()->setValue("showStatusLog", !current);
+    mSettingsDialog->loadSettings();
+	if (current)
 		mLog->hide();
-	}
-	else {
-		museeq->settings()->setValue("showStatusLog", true);
-		museeq->mShowStatusLog = true;
+	else
 		mLog->show();
-	}
-	ActionToggleLog->setChecked(museeq->mShowStatusLog);
 }
-void MainWindow::toggleAutoConnect() {
-	bool autoConnect = museeq->settings()->value("AutoConnect").toBool();
-	if (autoConnect) {
-		museeq->settings()->setValue("AutoConnect", false);
-		ActionToggleAutoConnect->setChecked(false);
-		mConnectDialog->mAutoConnect->setChecked(false);
-	} else {
-		museeq->settings()->setValue("AutoConnect", true);
-		mConnectDialog->mAutoConnect->setChecked(true);
-		ActionToggleAutoConnect->setChecked(true);
-	}
-}
-void MainWindow::toggleExitDialog() {
-	if(museeq->settings()->value("ShowExitDialog").toBool()) {
-		museeq->settings()->setValue("ShowExitDialog", false);
-		ActionToggleExitDialog->setChecked(false);
-	} else {
-		museeq->settings()->setValue("ShowExitDialog", true);
-		ActionToggleExitDialog->setChecked(true);
-	}
-}
+
 void MainWindow::changeColors() {
 
 	mSettingsDialog->mTabHolder->setCurrentWidget(mSettingsDialog->mMuseeqTabs);
-	mSettingsDialog->mMuseeqTabs->setCurrentWidget(mSettingsDialog->ColorsAndFontsTab);
+	mSettingsDialog->mMuseeqTabs->setCurrentWidget(mSettingsDialog->mColorsAndFontsTab);
 	changeSettings();
 }
 
 
 void MainWindow::saveSettings() {
+    saveConnectConfig();
+
+    bool showTimestamps = mSettingsDialog->mToggleTimestamps->isChecked();
+    museeq->settings()->setValue("showTimestamps", showTimestamps);
+    museeq->mShowTimestamps = showTimestamps;
+
+    bool showTray = mSettingsDialog->mToggleTrayicon->isChecked();
+    if (museeq->mUsetray && !showTray)
+		museeq->trayicon_hide();
+	else if (showTray)
+		museeq->trayicon_show();
+    if (museeq->mUsetray)
+        museeq->settings()->setValue("showTrayIcon", showTray);
+
+    bool enableTickers = mSettingsDialog->mToggleTickers->isChecked();
+    museeq->settings()->setValue("showTickers", enableTickers);
+	if (!enableTickers)
+		emit hideAllTickers();
+	else
+		emit showAllTickers();
+
+    bool showLog = mSettingsDialog->mToggleLog->isChecked();
+    museeq->settings()->setValue("showStatusLog", showLog);
+    if (!showLog)
+		mLog->hide();
+	else
+		mLog->show();
+
+    QString previousMuseekConfig = museeq->settings()->value("MuseekConfigFile").toString();
+    museeq->settings()->setValue("MuseekConfigFile", mSettingsDialog->mMuseekConfigFile->text());
+
+	museeq->settings()->setValue("LaunchMuseekDaemon", mSettingsDialog->mAutoStartDaemon->isChecked());
+
+	museeq->settings()->setValue("AutoConnect", mSettingsDialog->mDAutoConnect->isChecked());
+
+	museeq->settings()->setValue("ShowExitDialog", !mSettingsDialog->mShowExitDialog->isChecked());
+
+	museeq->settings()->setValue("ShutDownDaemonOnExit", mSettingsDialog->mShutDownDaemonOnExit->isChecked());
+
 	museeq->mRoomLogDir = mSettingsDialog->LoggingRoomDir->text();
 	museeq->settings()->setValue("RoomLogDir", museeq->mRoomLogDir);
 
@@ -1139,6 +1017,17 @@ void MainWindow::saveSettings() {
 	    museeq->reloadShares();
 	    mSettingsDialog->setSharesDirty(false);
 	}
+
+
+    // If we changed the config file ask to restart the daemon
+    if ((previousMuseekConfig != mSettingsDialog->mMuseekConfigFile->text()) && Util::getMuseekdLock()) {
+        QMessageBox::StandardButton resp = QMessageBox::question(this, tr("New configuration file"), tr("You have chosen a new configuration file for the daemon. Do you want to restart it now?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes );
+        if (resp == QMessageBox::Yes) {
+            museeq->stopDaemon();
+            if (mSettingsDialog->mDAutoConnect->isChecked())
+                connectToMuseek(true);
+        }
+    }
 }
 
 
@@ -1217,11 +1106,13 @@ void MainWindow::toggleAway() {
 	museeq->setAway((museeq->isAway() + 1) & 1);
 }
 
-void MainWindow::toggleTrayicon() {
-	if (museeq->mUsetray)
-		museeq->trayicon_hide();
-	else
-		museeq->trayicon_show();
+void MainWindow::setTrayIconInitState() {
+    if (!museeq->mUsetray) {
+        mSettingsDialog->mToggleTrayicon->setChecked(false);
+        mSettingsDialog->mToggleTrayicon->setEnabled(false);
+    }
+    else
+        mSettingsDialog->mToggleTrayicon->setChecked(museeq->settings()->value("showTrayIcon", true).toBool());
 }
 
 void MainWindow::checkPrivileges() {
@@ -1256,7 +1147,7 @@ void MainWindow::resizeEvent(QResizeEvent * ev) {
 
 void MainWindow::closeEvent(QCloseEvent * ev) {
     // If we asked to close from the X button (top right), send to the tray.
-    if (!mCloseFromMenu) {
+    if (museeq->mUsetray && museeq->settings()->value("showTrayIcon", true).toBool() && !mCloseFromMenu) {
         ev->ignore();
         toggleVisibility();
         return;
@@ -1264,7 +1155,7 @@ void MainWindow::closeEvent(QCloseEvent * ev) {
 
     bool shutdownDaemon = museeq->settings()->value("ShutDownDaemonOnExit", false).toBool();
 
-    if ( museeq->settings()->value("ShowExitDialog", false).toBool()) {
+    if ( museeq->settings()->value("ShowExitDialog", true).toBool()) {
         bool museekdRunning = Util::getMuseekdLock();
 		if (museekdRunning) {
 		    QMessageBox::StandardButton resp = QMessageBox::question(this, tr("Shutdown Museeq"), tr("The Museek Daemon is still running. Do you want to close it?"), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Cancel );
@@ -1336,4 +1227,63 @@ void MainWindow::removeScript(const QString& scriptname) {
 		}
 	}
 #endif // HAVE_QTSCRIPT
+}
+
+/**
+  * Create a dialog to ask the museekd connection password.
+  * Returns true if the given password should be saved.
+  * The given password is stored in pass.
+  */
+bool MainWindow::askPassword(QString & pass) {
+    QDialog * askPass = new QDialog (this);
+	askPass->setWindowTitle( tr("Connecting to daemon..."));
+	QVBoxLayout * vLayout = new QVBoxLayout(askPass);
+
+	QLabel * question = new QLabel(askPass);
+	question->setText(tr("Please, insert the museekd password:"));
+	vLayout->addWidget(question);
+
+	QLineEdit * password = new QLineEdit( askPass );
+	password->setEchoMode(QLineEdit::Password);
+	vLayout->addWidget(password);
+
+	QCheckBox * savePassword = new QCheckBox( askPass );
+	savePassword->setText( tr( "&Save Password" ) );
+	vLayout->addWidget(savePassword);
+
+	QHBoxLayout * buttonLayout = new QHBoxLayout;
+	vLayout->addLayout(buttonLayout);
+
+	QSpacerItem * spacer5 = new QSpacerItem( 120, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
+	buttonLayout->addItem( spacer5 );
+
+	QPushButton * cancel = new QPushButton( this);
+	cancel->setText( tr( "&Cancel" ) );
+	QPushButton * ok = new QPushButton( this);
+	ok->setText( tr( "&Ok" ) );
+	ok->setDefault(true);
+	buttonLayout->addWidget( cancel );
+	buttonLayout->addWidget( ok );
+
+	connect( ok, SIGNAL( clicked() ), askPass, SLOT( accept() ) );
+	connect( cancel, SIGNAL( clicked() ), askPass, SLOT( reject() ) );
+
+	int res = askPass->exec();
+
+	if (res == QDialog::Accepted) {
+	    QString p = password->text();
+	    if (!p.isEmpty()) {
+            pass = p;
+	    }
+	}
+
+    bool returnValue = savePassword->isChecked();
+
+	delete savePassword;
+	delete password;
+	delete question;
+	delete vLayout;
+	delete askPass;
+
+	return returnValue;
 }

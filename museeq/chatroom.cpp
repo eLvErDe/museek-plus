@@ -37,6 +37,7 @@
 #include <QDir>
 #include <QFile>
 #include <QTextStream>
+#include <QSettings>
 
 #define _TIME QString("<span style='"+museeq->mFontTime+";color:"+museeq->mColorTime+"'>") + QDateTime::currentDateTime().toString("hh:mm:ss") + "</span> "
 
@@ -47,7 +48,7 @@ ChatRoom::ChatRoom(const QString _r, QWidget * parent, const QString name)
 	QVBoxLayout * mainlayout = new QVBoxLayout(this);
 	mTicker = new ChatTicker(this, "ticker", museeq->mTickerLength);
 	connect(mTicker, SIGNAL(clicked()), SLOT(setTicker()));
-	if ( ! museeq->mShowTickers )
+	if ( ! museeq->settings()->value("showTickers", true).toBool() )
 		mTicker->hide();
 	mainlayout->addWidget(mTicker);
 
@@ -286,9 +287,9 @@ void ChatRoom::userLeft(const QString& _u) {
 	mStatus.remove(_u);
 	if (! museeq->isIgnored(_u))  {
 		if (museeq->mShowTimestamps)
-			mLog->append(QString(_TIME+"</span><span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+tr("%1 left the room")+"</span>").arg(Qt::escape(_u)));
+			mLog->append(QString(_TIME+"<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+tr("%1 left the room")+"</span>").arg(Qt::escape(_u)));
 		else
-			mLog->append(QString("</span><span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+tr("%1 left the room")+"</span>").arg(Qt::escape(_u)));
+			mLog->append(QString("<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+tr("%1 left the room")+"</span>").arg(Qt::escape(_u)));
 	}
 	mUserList->remove(_u);
 

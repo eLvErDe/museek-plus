@@ -36,7 +36,6 @@ class QResizeEvent;
 class QCloseEvent;
 class QMoveEvent;
 
-class ConnectDialog;
 class IPDialog;
 class SettingsDialog;
 class ChatRooms;
@@ -54,13 +53,14 @@ public:
 	const QPoint & lastPos() const { return mLastPos; }
 	const QSize & lastSize() const { return mLastSize; }
 	ChatRooms* chatRooms() { return mChatRooms;}
+	bool askPassword(QString & pass);
 	QMenu* mMenuFile, *  mMenuSettings, * mMenuModes;
 	QString  mVersion;
 	QTextEdit *mLog;
 
 	QAction * ActionConnect, * ActionDisconnect, * ActionAway, * ActionCheckPrivileges, * ActionBrowseMyShares, * ActionExit;
 	QAction * ActionLoadScript;
-	QAction * ActionSettings, * ActionIconTheme, * ActionToggleTickers, * ActionToggleLog, * ActionToggleTimestamps, * ActionToggleAutoConnect, * ActionToggleExitDialog, * ActionToggleTrayicon;
+	QAction * ActionSettings, * ActionToggleAutoConnect;
 	QAction * ActionChatRooms, * ActionPrivateChat, * ActionTransfers, * ActionSearch, * ActionUserInfo, * ActionBrowseShares;
 	QAction * ActionAbout, * ActionCommands, * ActionHelp;
 	bool mVerticalIconBox;
@@ -72,23 +72,19 @@ public slots:
 	void changeBMode();
 	void changeUMode();
 	void changeMode(uint);
-	void connectToMuseek();
+	void connectToMuseek(bool autoConnectAsked = false);
 	void connectToMuseekPS(const QString&, const QString&);
-	void doNotAutoConnect();
 	void saveConnectConfig();
 	void readSettings();
 	void saveSettings();
 	void doDaemon();
 	void stopDaemon();
 	void toggleAway();
-	void toggleTrayicon();
+	void setTrayIconInitState();
 	void checkPrivileges();
 	void getOwnShares();
 	void toggleTickers();
-	void toggleTimestamps();
 	void toggleLog();
-	void toggleAutoConnect();
-	void toggleExitDialog();
 	void toggleVisibility();
 
 	void showIPDialog();
@@ -119,6 +115,8 @@ public slots:
 
 	void showWithRestoredSize();
 
+	void slotAddressActivated(const QString&);
+
 signals:
 	void showAllTickers();
 	void hideAllTickers();
@@ -139,10 +137,7 @@ private slots:
 	void slotUserAddress(const QString& user, const QString& ip, uint port);
 	void slotPrivilegesLeft(uint);
 
-	void slotAddressActivated(const QString&);
 	void slotAddressChanged(const QString&);
-
-	void doAutoConnect();
 
 protected slots:
 	void changePage(QListWidgetItem*, QListWidgetItem*);
@@ -160,8 +155,6 @@ private:
 	QLabel* mTitle;
 	QLabel* statusLabel, * messageLabel;
 	QMenu* mMenuScripts, * mMenuUnloadScripts,  * mMenuHelp;
-	QString museekConfig;
-	ConnectDialog* mConnectDialog;
 	IPDialog* mIPDialog;
 
 	SettingsDialog* mSettingsDialog;
@@ -175,7 +168,6 @@ private:
 	int mMoves;
 	QPoint mLastPos;
 	QSize mLastSize;
-	QString autoConnectServer, autoConnectPassword;
 };
 
 #endif // MAINWINDOW_H

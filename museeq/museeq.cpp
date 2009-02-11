@@ -55,14 +55,11 @@ Museeq::Museeq(QApplication * app)
 	museeq = this;
 	mDriver = new MuseekDriver(this, "driver");
 	mUsetray = false;
-	mShowTickers = true;
-	mShowStatusLog = false;
 	mLogRooms = mLogPrivate = false;
 	mFontTime = "font-family:fixed-width";
 	mRoomLogDir = mPrivateLogDir = mFontMessage =  "";
 	mOnlineAlert = false;
 	mColorBanned = mColorBuddied = mColorTime = mColorNickname = mColorTrusted = mColorRemote = mColorMe = "";
-	mShowTimestamps = true;
 	mIPLog = false;
 	mTickerLength = 50;
 	mSettings = new QSettings("MuseekPlus.org","Museeq");
@@ -368,10 +365,8 @@ void Museeq::startDaemon() {
 	mMainWin->doDaemon();
 }
 void Museeq::stopDaemon() {
+    driver()->disconnect();
 	mMainWin->stopDaemon();
-}
-void Museeq::saveConnectConfig() {
-	mMainWin->saveConnectConfig();
 }
 
 void Museeq::addWishItem(const QString& query) {
@@ -649,13 +644,22 @@ void Museeq::showURL(const QUrl& rawUrl) {
 		return;
 	}
 	if (protocol == "slsk") {
-		QString user = rawUrl.authority();
+		QString user = rawUrl.userName();
+        if (user.isEmpty())
+            user = rawUrl.host();
+        if (user.isEmpty())
+            return;
+
 		QString path = rawUrl.path();
-		uint size  = 0;
-		path.replace("/", "\\");
- 		mDriver->doDownloadFile(user, path, size);
-		return;
+		if (!path.isEmpty()) {
+            uint size  = 0;
+            path.replace("/", "\\");
+            mDriver->doDownloadFile(user, path, size);
 		}
+		else
+            museeq->mainwin()->showUserInfo(user);
+		return;
+    }
 
 	QString handler = mProtocolHandlers[protocol];
 	handler.replace("$", QString(rawUrl.toEncoded()));
@@ -797,31 +801,31 @@ QString Museeq::handleInput(bool privateMessage, const QString& target, QString 
 #endif // HAVE_QTSCRIPT
 	return line;
 }
+
 void Museeq::trayicon_hide() {
-	if (mTray) {
+	if (trayicon())
 		trayicon()->hide();
-		mUsetray = false;
-        mMainWin->ActionToggleTrayicon->setChecked(mUsetray);
-	}
 }
+
 void Museeq::trayicon_show() {
-	if (mTray) {
+	if (trayicon())
 		trayicon()->show();
-		mUsetray = true;
-        mMainWin->ActionToggleTrayicon->setChecked(mUsetray);
-	}
 }
 
 void Museeq::trayicon_setIcon(const QString& icon) {
-	if (mTray)
+	if (trayicon())
 		trayicon()->setIcon(IMG(icon));
 }
+
 void Museeq::trayicon_load() {
-	if (mUsetray)
+	if (mUsetray && settings()->value("showTrayIcon", true).toBool())
 		mTray->show();
+
+	mainwin()->setTrayIconInitState();
+
 	mTrayMenu->show();
-    mMainWin->ActionToggleTrayicon->setChecked(mUsetray);
 }
+
 void Museeq::output(const QString& message) {
 	std::cout << message.toStdString() << std::endl;
 	mMainWin->appendToLogWindow(message);
@@ -883,10 +887,10 @@ int main(int argc, char **argv) {
 		if(arg == "--version" || arg == "-V" ) {
 			std::cout << version << std::endl << std::endl;
 			return 0;
-		} else if(arg == "--no-tray" ) {
+		}
+		else if(arg == "--no-tray" )
 			usetray = string("no");
-
-		} else if(arg == "--help" || arg == "-h") {
+		else if(arg == "--help" || arg == "-h") {
 			std::cout << version << std::endl;
 			std::cout << QObject::tr("Syntax: museeq [options]").toStdString() << std::endl << std::endl;
 			std::cout << QObject::tr("Options:").toStdString() << std::endl;
@@ -898,13 +902,14 @@ int main(int argc, char **argv) {
 		}
 
 	}
-	if (usetray == "yes") {
+
+	if (usetray == "yes")
 		museeq->mUsetray = true;
-	}
+
 	museeq->trayicon_load();
 	app.setQuitOnLastWindowClosed( false );
 	museeq->mainwin()->showWithRestoredSize();
-	museeq->mainwin()->connectToMuseek();
+	museeq->mainwin()->connectToMuseek(true);
 
 	return app.exec();
 
