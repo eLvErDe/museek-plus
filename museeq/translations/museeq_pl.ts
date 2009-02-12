@@ -106,106 +106,6 @@
     </message>
 </context>
 <context>
-    <name>ConnectDialog</name>
-    <message>
-        <location filename="../connect.cpp" line="39"/>
-        <source>Connect to Museekd...</source>
-        <translation type="obsolete">Podłącz do Museekd...</translation>
-    </message>
-    <message>
-        <location filename="../connect.cpp" line="62"/>
-        <source>Host / path:</source>
-        <translation type="obsolete">Host / ścieżka:</translation>
-    </message>
-    <message>
-        <location filename="../connect.cpp" line="79"/>
-        <source>Password:</source>
-        <translation type="obsolete">Hasło:</translation>
-    </message>
-    <message>
-        <location filename="../connect.cpp" line="84"/>
-        <source>&amp;Save Password</source>
-        <translation type="obsolete">&amp;Zapisz hasło</translation>
-    </message>
-    <message>
-        <location filename="../connect.cpp" line="92"/>
-        <source>Connect to:</source>
-        <translation type="obsolete">Podłącz do:</translation>
-    </message>
-    <message>
-        <location filename="../connect.cpp" line="103"/>
-        <source>&amp;TCP</source>
-        <translation type="obsolete">&amp;TCP</translation>
-    </message>
-    <message>
-        <location filename="../connect.cpp" line="104"/>
-        <source>&amp;Unix socket</source>
-        <translation type="obsolete">&amp;Gniazdo uniksowe</translation>
-    </message>
-    <message>
-        <location filename="../connect.cpp" line="112"/>
-        <source>Daemon O&amp;ptions...</source>
-        <translation type="obsolete">O&amp;pcje demona...</translation>
-    </message>
-    <message>
-        <location filename="../connect.cpp" line="128"/>
-        <source>Start &amp;Daemon</source>
-        <translation type="obsolete">Uruchom &amp;demona</translation>
-    </message>
-    <message>
-        <location filename="../connect.cpp" line="133"/>
-        <source>St&amp;op Daemon</source>
-        <translation type="obsolete">Zatrzymaj dem&amp;ona</translation>
-    </message>
-    <message>
-        <location filename="../connect.cpp" line="159"/>
-        <source>Se&amp;lect...</source>
-        <translation type="obsolete">Wy&amp;bierz...</translation>
-    </message>
-    <message>
-        <location filename="../connect.cpp" line="174"/>
-        <source>Co&amp;nnect</source>
-        <translation type="obsolete">Po&amp;dłącz</translation>
-    </message>
-    <message>
-        <location filename="../connect.cpp" line="178"/>
-        <source>Save</source>
-        <translation type="obsolete">Zapisz</translation>
-    </message>
-    <message>
-        <location filename="../connect.cpp" line="183"/>
-        <source>&amp;Cancel</source>
-        <translation type="obsolete">A&amp;nuluj</translation>
-    </message>
-    <message>
-        <location filename="../connect.cpp" line="141"/>
-        <source>&amp;AutoStart Museek Daemon</source>
-        <translation type="obsolete">Uruchom demona museeka &amp;automatycznie</translation>
-    </message>
-    <message>
-        <location filename="../connect.cpp" line="145"/>
-        <source>S&amp;hutDown Daemon on Exit</source>
-        <translation type="obsolete">&amp;Wyłącz demona podczas wyjścia</translation>
-    </message>
-    <message>
-        <location filename="../connect.cpp" line="89"/>
-        <source>Auto-Conn&amp;ect to Daemon</source>
-        <translation type="obsolete">Połącz z demon&amp;em automatycznie</translation>
-    </message>
-    <message>
-        <location filename="../connect.cpp" line="69"/>
-        <source>Clear</source>
-        <translation type="obsolete">Wyczyść</translation>
-    </message>
-    <message>
-        <location filename="../connect.cpp" line="154"/>
-        <source>Museek Daemon Config:
-(leave empty for default)</source>
-        <translation type="obsolete">Konfiguracja demona museeka:
-(zostaw puste dla domyślnej)</translation>
-    </message>
-</context>
-<context>
     <name>FileListView</name>
     <message>
         <location filename="../browser.cpp" line="598"/>
@@ -462,14 +362,9 @@
         <translation>museeq </translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="88"/>
-        <source>&amp;Connect...</source>
-        <translation type="obsolete">&amp;Podłącz...</translation>
-    </message>
-    <message>
         <location filename="../mainwin.cpp" line="106"/>
         <source>Check &amp;privileges</source>
-        <translation>Sprawdź &amp;przywileje</translation>
+        <translation>&amp;Sprawdź przywileje</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="110"/>
@@ -485,21 +380,6 @@
         <location filename="../mainwin.cpp" line="87"/>
         <source>&amp;File</source>
         <translation>&amp;Plik</translation>
-    </message>
-    <message>
-        <location filename="../mainwin.cpp" line="137"/>
-        <source>Pick &amp;Icon Theme... (Requires Restart)</source>
-        <translation type="obsolete">Wybierz motyw &amp;ikon... (wymagany restart)</translation>
-    </message>
-    <message>
-        <location filename="../mainwin.cpp" line="141"/>
-        <source>Show &amp;Tickers</source>
-        <translation type="obsolete">Pokaż &amp;brzęczyki</translation>
-    </message>
-    <message>
-        <location filename="../mainwin.cpp" line="141"/>
-        <source>Show &amp;Log</source>
-        <translation type="obsolete">Pokaż &amp;dziennik</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="127"/>
@@ -759,21 +639,6 @@
         <translation>Wyłącz Museeqa</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1279"/>
-        <source>&amp;Yes</source>
-        <translation type="obsolete">&amp;Tak</translation>
-    </message>
-    <message>
-        <location filename="../mainwin.cpp" line="1279"/>
-        <source>&amp;No</source>
-        <translation type="obsolete">&amp;Nie</translation>
-    </message>
-    <message>
-        <location filename="../mainwin.cpp" line="1267"/>
-        <source>The Museek Daemon was launched by Museeq and is still running, but will &lt;b&gt;not&lt;/b&gt; be shut down if you close Museeq. Are you sure you want to?</source>
-        <translation type="obsolete">Demon Museeka został uruchomiony przez Museeqa i ciągle działa, ale &lt;b&gt;nie&lt;/b&gt; zostanie wyłaczony jeśli zamkniesz Museeqa, na pewno chcesz to zrobić?</translation>
-    </message>
-    <message>
         <location filename="../mainwin.cpp" line="1170"/>
         <source>It&apos;s safe to close Museeq, but are you sure you want to?</source>
         <translation>Można bezpiecznie zamknąć Museeqa, ale czy na pewno chcesz to zrobić?</translation>
@@ -782,11 +647,6 @@
         <location filename="../mainwin.cpp" line="1199"/>
         <source>Load Script</source>
         <translation>Załaduj Skrypt</translation>
-    </message>
-    <message>
-        <location filename="../mainwin.cpp" line="146"/>
-        <source>Show T&amp;imestamps</source>
-        <translation type="obsolete">Pokaż &amp;stemple czasowe</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="805"/>
@@ -799,34 +659,14 @@
         <translation>Port:</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="151"/>
-        <source>Enable &amp;Trayicon</source>
-        <translation type="obsolete">Włącz &amp;ikonę zasobnika</translation>
-    </message>
-    <message>
-        <location filename="../mainwin.cpp" line="156"/>
-        <source>Auto-Connect to Daemon</source>
-        <translation type="obsolete">Podłącz do demona automatycznie</translation>
-    </message>
-    <message>
         <location filename="../mainwin.cpp" line="100"/>
         <source>Toggle &amp;away</source>
         <translation>Przełącz odd&amp;alenie</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="161"/>
-        <source>Show Exit Dialog</source>
-        <translation type="obsolete">Pokaż okienko dialogowe przy wyjściu</translation>
-    </message>
-    <message>
         <location filename="../mainwin.cpp" line="89"/>
         <source>Alt+C</source>
         <translation>Alt+C</translation>
-    </message>
-    <message>
-        <location filename="../mainwin.cpp" line="93"/>
-        <source>&amp;Disconnect...</source>
-        <translation type="obsolete">&amp;Rozłącz...</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="94"/>
@@ -857,11 +697,6 @@
         <location filename="../mainwin.cpp" line="131"/>
         <source>Alt+G</source>
         <translation>Alt+G</translation>
-    </message>
-    <message>
-        <location filename="../mainwin.cpp" line="153"/>
-        <source>Alt+T</source>
-        <translation type="obsolete">Alt+T</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="1081"/>
@@ -919,11 +754,6 @@
         <translation>&amp;Ok</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1261"/>
-        <source>The Museek Daemon is still running, and will be shut down if you close Museeq, are you sure you want to?</source>
-        <translation type="obsolete">Demon Museeka ciągle działa i zostanie wyłaczony jeśli zamkniesz Museeqa, na pewno chcesz to zrobić?</translation>
-    </message>
-    <message>
         <location filename="../mainwin.cpp" line="1161"/>
         <source>The Museek Daemon is still running. Do you want to close it?</source>
         <translation>Demon Museeka ciągle działa. Chcesz go zakończyć?</translation>
@@ -931,42 +761,42 @@
     <message>
         <location filename="../mainwin.cpp" line="88"/>
         <source>&amp;Connect to daemon</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Połącz z demonem</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="93"/>
         <source>&amp;Disconnect from daemon</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Rozłącz z demonem</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="1024"/>
         <source>New configuration file</source>
-        <translation type="unfinished"></translation>
+        <translation>Nowy plik konfiguracyjny</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="1024"/>
         <source>You have chosen a new configuration file for the daemon. Do you want to restart it now?</source>
-        <translation type="unfinished"></translation>
+        <translation>Wybrano nowy plik konfiguracyjny dla demona. Czy chcesz go zrestartować?</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="1239"/>
         <source>Connecting to daemon...</source>
-        <translation type="unfinished"></translation>
+        <translation>Łączenie z demonem...</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="1243"/>
         <source>Please, insert the museekd password:</source>
-        <translation type="unfinished"></translation>
+        <translation>Proszę podać hasło museekd:</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="1251"/>
         <source>&amp;Save Password</source>
-        <translation type="unfinished">&amp;Zapisz hasło</translation>
+        <translation>Zapisz &amp;hasło</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="1261"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Anuluj</translation>
     </message>
 </context>
 <context>
@@ -1549,11 +1379,6 @@
         <translation>Zaufani użytkownicy mogą wysyłać Ci pliki</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1244"/>
-        <source>Seperate Shares list for Buddies</source>
-        <translation type="obsolete">Oddzielna lista udziałów dla zaprzyjaźnionych użytkowników</translation>
-    </message>
-    <message>
         <location filename="../settingsdialog.cpp" line="1482"/>
         <source>Send automatic warnings to users via Private Chat</source>
         <translation>Wysyłaj użytkownikom automatyczne ostrzeżenia poprzez prywatną rozmowę</translation>
@@ -1639,16 +1464,6 @@
         <translation>Wybierz katalog do dodania do swoich zwykłych udziałów.</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="995"/>
-        <source>Select the museekd config file.</source>
-        <translation type="obsolete">Wybierz plik konfiguracyjny museekd.</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="996"/>
-        <source>XML files (*.xml)</source>
-        <translation type="obsolete">Pliki XML (*.xml)</translation>
-    </message>
-    <message>
         <location filename="../settingsdialog.cpp" line="1260"/>
         <source>Images (*.png *.gif *.jpg *.jpeg)</source>
         <translation>Obrazy (*.png *.gif *.jpg *.jpeg)</translation>
@@ -1657,11 +1472,6 @@
         <location filename="../settingsdialog.cpp" line="1389"/>
         <source>Museeq Settings</source>
         <translation>Ustawienia museeqa</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1155"/>
-        <source>Museekd Config:</source>
-        <translation type="obsolete">Konfiguracja museekd:</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1399"/>
@@ -1856,159 +1666,159 @@
     <message>
         <location filename="../settingsdialog.cpp" line="342"/>
         <source>Show &amp;Tickers</source>
-        <translation type="unfinished">Pokaż &amp;brzęczyki</translation>
+        <translation>Pokaż &amp;brzęczyki</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="607"/>
         <source>Daemon management:</source>
-        <translation type="unfinished"></translation>
+        <translation>Zarządzanie demonem:</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="612"/>
         <source>C&amp;onfigure the daemon (Musetup)</source>
-        <translation type="unfinished"></translation>
+        <translation>Sk&amp;onfiguruj demona (Musetup)</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="615"/>
         <source>&amp;Start Daemon</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Uruchom demona</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="618"/>
         <source>S&amp;top Daemon</source>
-        <translation type="unfinished"></translation>
+        <translation>Za&amp;trzymaj demona</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="636"/>
         <source>Daemon connection:</source>
-        <translation type="unfinished"></translation>
+        <translation>Połączenie z demonem:</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="645"/>
         <source>TCP</source>
-        <translation type="unfinished"></translation>
+        <translation>TCP</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="646"/>
         <source>Unix socket</source>
-        <translation type="unfinished"></translation>
+        <translation>Gniazdo uniksowe</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="667"/>
         <source>Password:</source>
-        <translation type="unfinished">Hasło:</translation>
+        <translation>Hasło:</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="673"/>
         <source>S&amp;ave Password</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapisz &amp;hasło</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="687"/>
         <source>&amp;Connect to daemon</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Połącz z demonem</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="691"/>
         <source>&amp;Disconnect from daemon</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Rozłącz z demonem</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="709"/>
         <source>Museek Daemon Config:
 (leave empty for default)</source>
-        <translation type="unfinished">Konfiguracja demona museeka:
+        <translation>Konfiguracja demona museeka:
 (zostaw puste dla domyślnej)</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="714"/>
         <source>Se&amp;lect...</source>
-        <translation type="unfinished">Wy&amp;bierz...</translation>
+        <translation>Wy&amp;bierz...</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="730"/>
         <source>Auto-sta&amp;rt museek daemon</source>
-        <translation type="unfinished"></translation>
+        <translation>Uruchom demona museeka &amp;automatycznie</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="734"/>
         <source>A&amp;uto-connect to daemon</source>
-        <translation type="unfinished"></translation>
+        <translation>Połącz z demon&amp;em automatycznie</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="738"/>
         <source>Don&apos;t show e&amp;xit dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie pokazuj okienka &amp;dialogowego przy wyjściu</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="742"/>
         <source>S&amp;hutdown daemon on exit</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Wyłącz demona przy wyjściu</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1440"/>
         <source>Daemon connection</source>
-        <translation type="unfinished"></translation>
+        <translation>Połączenie z demonem</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1487"/>
         <source>Host / path:</source>
-        <translation type="unfinished">Host / ścieżka:</translation>
+        <translation>Host / ścieżka:</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1546"/>
         <source>Musetup error</source>
-        <translation type="unfinished"></translation>
+        <translation>Błąd musetup</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1546"/>
         <source>Couldn&apos;t launch musetup-qt. Check that it is correctly installed. You can also launch musetup in a terminal using this command: &apos;musetup&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie udało się uruchomić musetup-qt. Sprawdź, czy jest zainstalowany poprawnie. Możesz także uruchomić musetup w terminalo za pomocą polecenia: &apos;musetup&apos;.</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1568"/>
         <source>Connection error</source>
-        <translation type="unfinished"></translation>
+        <translation>Błąd połączenia</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1553"/>
         <source>Couldn&apos;t connect to the daemon. Please, check daemon connection settings (wrong password?).</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie udało się połączyć z demonem. Proszę sprawdzić ustawienia połączenia z demonem (błędne hasło?).</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1554"/>
         <source>Couldn&apos;t connect to the daemon. Please, check daemon connection settings (wrong password?). Would you like to change museeq settings?</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie udało się połączyć z demonem. Proszę sprawdzić ustawienia połączenia z demonem (błędne hasło?). Czy chesz zmienić ustawienia museeqa?</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1567"/>
         <source>Couldn&apos;t connect or lost connection to the daemon. Please, check that the daemon is running and that it is listening at the given address.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie udało się połączyć lub utracono połączenie z demonem. Proszę sprawdzić czy demon jest uruchomiony oraz czy nasłuchuje pod podanym adresem.</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1568"/>
         <source>Couldn&apos;t connect or lost connection to the daemon. Please, check that the daemon is running and that it is listening at the given address. Would you like to change museeq settings?</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie udało się połączyć lub utracono połączenie z demonem. Proszę sprawdzić czy demon jest uruchomiony oraz czy nasłuchuje pod podanym adresem. Czy chesz zmienić ustawienia museeqa?</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="324"/>
         <source>Enable &amp;Trayicon</source>
-        <translation type="unfinished">Włącz &amp;ikonę zasobnika</translation>
+        <translation>Włącz &amp;ikonę zasobnika</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="327"/>
         <source>Show &amp;Log</source>
-        <translation type="unfinished">Pokaż &amp;dziennik</translation>
+        <translation>Pokaż &amp;dziennik</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="336"/>
         <source>Show T&amp;imestamps</source>
-        <translation type="unfinished">Pokaż &amp;stemple czasowe</translation>
+        <translation>Pokaż &amp;stemple czasowe</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="356"/>
         <source>Pick &amp;Icon Theme... (Requires Restart)</source>
-        <translation type="unfinished">Wybierz motyw &amp;ikon... (wymagany restart)</translation>
+        <translation>Wybierz motyw &amp;ikon... (wymagany restart)</translation>
     </message>
 </context>
 <context>
