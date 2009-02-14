@@ -250,11 +250,11 @@ Museek::Download::setState(TrState state)
         m_Museekd->downloads()->checkDownloads();
 
     if (changed && (state == TS_Finished))
-        m_Museekd->ifaces()->sendStatusMessage(true, std::string("Finishing download of '") + destinationPath() + std::string("' from ") + user());
+        m_Museekd->ifaces()->sendStatusMessage(true, std::string("Download finished: '") + destinationPath() + std::string("' from ") + user());
     else if (changed && (state == TS_Transferring))
-        m_Museekd->ifaces()->sendStatusMessage(true, std::string("Starting download of '") + destinationPath() + std::string("' from ") + user());
+        m_Museekd->ifaces()->sendStatusMessage(true, std::string("Download started: '") + destinationPath() + std::string("' from ") + user());
     else if (changed && ((state == TS_RemoteError) || (state == TS_CannotConnect) || (state == TS_ConnectionClosed) || (state == TS_LocalError)))
-        m_Museekd->ifaces()->sendStatusMessage(true, std::string("Failing download of '") + destinationPath() + std::string("' from ") + user());
+        m_Museekd->ifaces()->sendStatusMessage(true, std::string("Download failed: '") + destinationPath() + std::string("' from ") + user());
 }
 
 /**

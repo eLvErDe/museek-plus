@@ -129,11 +129,11 @@ Museek::Upload::setState(TrState state)
         m_Museekd->uploads()->checkUploads();
 
     if (state == TS_Finished)
-        m_Museekd->ifaces()->sendStatusMessage(true, std::string("Finishing upload of '") + localPath() + std::string("' to ") + user());
+        m_Museekd->ifaces()->sendStatusMessage(true, std::string("Upload finished: '") + localPath() + std::string("' to ") + user());
     else if (state == TS_Transferring)
-        m_Museekd->ifaces()->sendStatusMessage(true, std::string("Starting upload of '") + localPath() + std::string("' to ") + user());
+        m_Museekd->ifaces()->sendStatusMessage(true, std::string("Upload started: '") + localPath() + std::string("' to ") + user());
     else if ((state == TS_RemoteError) || (state == TS_CannotConnect) || (state == TS_ConnectionClosed) || (state == TS_LocalError))
-        m_Museekd->ifaces()->sendStatusMessage(true, std::string("Failing upload of '") + localPath() + std::string("' to ") + user());
+        m_Museekd->ifaces()->sendStatusMessage(true, std::string("Upload failed: '") + localPath() + std::string("' to ") + user());
 }
 
 /**
