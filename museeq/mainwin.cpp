@@ -1157,7 +1157,7 @@ void MainWindow::closeEvent(QCloseEvent * ev) {
     if ( museeq->settings()->value("ShowExitDialog", true).toBool()) {
         bool museekdRunning = Util::getMuseekdLock();
 		if (museekdRunning) {
-		    QMessageBox::StandardButton resp = QMessageBox::question(this, tr("Shutdown Museeq"), tr("The Museek Daemon is still running. Do you want to close it?"), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Cancel );
+		    QMessageBox::StandardButton resp = QMessageBox::question(this, tr("Shutdown Museeq"), tr("The Museek daemon is still running. Do you want to close it?"), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Cancel );
 			if (resp == QMessageBox::Cancel ) {
                 ev->ignore();
 				return;

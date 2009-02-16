@@ -65,7 +65,7 @@ public:
 
 	QPushButton* BSharesRefresh, * BSharesRescan, * BSharesAdd, * BSharesRemove, * BSharesUpdate;
 
-	QWidget * mSharesTab, * mUsersTab, * mServerTab, * mColorsAndFontsTab, * mAppearanceTab, * mConnectionsTab, * mLoggingTab, * mUserInfoTab, * mProtocolTab, * mDConnectionTab;
+	QWidget * mSharesTab, * mUsersTab, * mServerTab, * mColorsAndFontsTab, * mAppearanceTab, * mConnectionsTab, * mChatTab, * mUserInfoTab, * mProtocolTab, * mDConnectionTab;
 
 	QComboBox* SFileSystemEncoding, * SNetworkEncoding;
 	QLabel* fEncodingLabel, * nEncodingLabel;
@@ -171,7 +171,7 @@ protected:
 	QHBoxLayout* buttonsLayout;
 	QSpacerItem * spacer5, * protocolSpacer, * spacerServer;
 	QGridLayout* ServerGrid, * SharesGrid, *ConnectionsGrid, *UsersGrid,
-	*LoggingGrid, * UserInfoGrid, * buttonGroup1Layout, * ProtocolGrid,
+	*mChatGrid, * UserInfoGrid, * buttonGroup1Layout, * ProtocolGrid,
 	* ColorsGrid, * AppearanceGrid, * mDConnectionGrid;
 	QProcess* proc1;
 	QProcess * proc2;

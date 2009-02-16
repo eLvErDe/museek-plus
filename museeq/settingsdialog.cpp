@@ -321,10 +321,10 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Q
 	mMuseeqTabs->addTab( mAppearanceTab, "" );
 	AppearanceGrid = new QGridLayout( mAppearanceTab);
 
-	mToggleTrayicon = new QCheckBox(tr("Enable &Trayicon"), mAppearanceTab);
+	mToggleTrayicon = new QCheckBox(tr("Enable &trayicon"), mAppearanceTab);
 	AppearanceGrid->addWidget( mToggleTrayicon, 0, 0, 1, 2  );
 
-	mToggleLog = new QCheckBox(tr("Show &Log"), mAppearanceTab);
+	mToggleLog = new QCheckBox(tr("Show daemon &log"), mAppearanceTab);
 	AppearanceGrid->addWidget( mToggleLog, 1, 0, 1, 2  );
 
 	SOnlineAlerts = new QCheckBox( mAppearanceTab );
@@ -333,56 +333,57 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Q
 	SIPLog = new QCheckBox( mAppearanceTab);
 	AppearanceGrid->addWidget( SIPLog, 3, 0, 1, 2  );
 
-	mToggleTimestamps = new QCheckBox(tr("Show T&imestamps"), mAppearanceTab);
-	AppearanceGrid->addWidget( mToggleTimestamps, 4, 0, 1, 2  );
-
 	IconsAlignment = new QCheckBox( mAppearanceTab);
-	AppearanceGrid->addWidget( IconsAlignment, 5, 0, 1, 2  );
-
-    mToggleTickers = new QCheckBox(tr("Show &Tickers"), mAppearanceTab);
-	AppearanceGrid->addWidget( mToggleTickers, 6, 0, 1, 2  );
+	AppearanceGrid->addWidget( IconsAlignment, 4, 0, 1, 2  );
 
 	TickerLengthLabel = new QLabel(mAppearanceTab);
-	AppearanceGrid->addWidget( TickerLengthLabel, 7, 0);
+	AppearanceGrid->addWidget( TickerLengthLabel, 5, 0);
 
 	TickerLength = new QSpinBox( mAppearanceTab);
 	TickerLength->setMaximum( 500 );
 	TickerLength->setMinimum( 20 );
 	TickerLength->setValue( 20 );
-	AppearanceGrid->addWidget( TickerLength, 7, 1 );
-	AppearanceGrid->setColumnStretch(0, 8);
-	AppearanceGrid->setRowStretch(9, 11);
+	AppearanceGrid->addWidget( TickerLength, 5, 1 );
 
 	mIconTheme = new QPushButton(tr("Pick &Icon Theme... (Requires Restart)"), mAppearanceTab);
 	connect(mIconTheme, SIGNAL(clicked()), parent, SLOT(changeTheme()));
-	AppearanceGrid->addWidget( mIconTheme, 8, 0 );
+	AppearanceGrid->addWidget( mIconTheme, 6, 0 );
+
+	AppearanceGrid->setColumnStretch(0, 8);
+	AppearanceGrid->setRowStretch(7, 11);
+
 
 	// Logging
-	mLoggingTab = new QWidget( mMuseeqTabs);
-	mMuseeqTabs->addTab( mLoggingTab, "" );
-	LoggingGrid = new QGridLayout( mLoggingTab);
+	mChatTab = new QWidget( mMuseeqTabs);
+	mMuseeqTabs->addTab( mChatTab, "" );
+	mChatGrid = new QGridLayout( mChatTab);
 
-	LoggingPrivate = new QCheckBox( mLoggingTab );
-	LoggingGrid->addWidget( LoggingPrivate, 0, 0);
+	mToggleTimestamps = new QCheckBox(tr("Show t&imestamps"), mChatTab);
+	mChatGrid->addWidget( mToggleTimestamps, 0, 0 );
 
+    mToggleTickers = new QCheckBox(tr("Show &tickers"), mChatTab);
+	mChatGrid->addWidget( mToggleTickers, 1, 0 );
 
-	LoggingPrivateDir = new QLineEdit( mLoggingTab);
-	LoggingGrid->addWidget( LoggingPrivateDir, 1, 0);
+	LoggingPrivate = new QCheckBox( mChatTab );
+	mChatGrid->addWidget( LoggingPrivate, 2, 0);
 
-	LoggingPrivateButton = new QPushButton( mLoggingTab);
+	LoggingPrivateDir = new QLineEdit( mChatTab);
+	mChatGrid->addWidget( LoggingPrivateDir, 3, 0);
+
+	LoggingPrivateButton = new QPushButton( mChatTab);
 	LoggingPrivateButton->setIcon(IMG("open"));
-	LoggingGrid->addWidget( LoggingPrivateButton, 1, 1);
+	mChatGrid->addWidget( LoggingPrivateButton, 3, 1);
 
-	LoggingRooms = new QCheckBox( mLoggingTab);
-	LoggingGrid->addWidget( LoggingRooms, 2, 0);
+	LoggingRooms = new QCheckBox( mChatTab);
+	mChatGrid->addWidget( LoggingRooms, 4, 0);
 
-	LoggingRoomDir = new QLineEdit( mLoggingTab);
-	LoggingGrid->addWidget( LoggingRoomDir, 3, 0);
+	LoggingRoomDir = new QLineEdit( mChatTab);
+	mChatGrid->addWidget( LoggingRoomDir, 5, 0);
 
-	LoggingRoomButton = new QPushButton( mLoggingTab);
+	LoggingRoomButton = new QPushButton( mChatTab);
 	LoggingRoomButton->setIcon(IMG("open"));
-	LoggingGrid->addWidget( LoggingRoomButton, 3, 1);
-	LoggingGrid->setRowStretch(4, 10);
+	mChatGrid->addWidget( LoggingRoomButton, 5, 1);
+	mChatGrid->setRowStretch(6, 10);
 
 	// Userinfo
 	mUserInfoTab = new QWidget( mMuseekdTabs );
@@ -554,7 +555,7 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Q
 	connect( TimeFontButton, SIGNAL( clicked() ), this, SLOT( font_text_time() ) );
 
 	// signals and slots connections
-	connect( mOK, SIGNAL( clicked() ), this, SLOT( acceptSettings() ) );
+	connect( mOK, SIGNAL( clicked() ), this, SLOT( acceptSettings() ) ); // FIXME use standard buttons
 	connect( mSave, SIGNAL( clicked() ), this, SLOT( save() ) );
 	connect( mCancel, SIGNAL( clicked() ), this, SLOT( rejectSettings() ) );
 	connect( SConnect, SIGNAL( clicked() ), this, SLOT( SConnect_clicked() ) );
@@ -612,10 +613,10 @@ void SettingsDialog::populateDConnectionTab() {
 	mMusetupButton->setText( tr( "C&onfigure the daemon (Musetup)" ) );
 
 	mStartDaemonButton = new QPushButton( this);
-	mStartDaemonButton->setText( tr( "&Start Daemon" ) );
+	mStartDaemonButton->setText( tr( "&Start daemon" ) );
 
 	mStopDaemonButton = new QPushButton( this );
-	mStopDaemonButton->setText( tr( "S&top Daemon" ) );
+	mStopDaemonButton->setText( tr( "S&top daemon" ) );
 
 	QHBoxLayout* hLayout4 = new QHBoxLayout;
 	daemonLayout->addLayout(hLayout4);
@@ -706,7 +707,7 @@ void SettingsDialog::populateDConnectionTab() {
 
 
 	mConfigFileLabel = new QLabel( this);
-	mConfigFileLabel->setText( tr( "Museek Daemon Config:\n(leave empty for default)" ) );
+	mConfigFileLabel->setText( tr( "Museek daemon config:\n(leave empty for default)" ) );
 
 	mMuseekConfigFile = new QLineEdit( this );
 
@@ -1380,7 +1381,7 @@ SettingsDialog::~SettingsDialog()
  */
 void SettingsDialog::languageChange()
 {
-	setWindowTitle( tr( "Museeq Settings" ) );
+	setWindowTitle( tr( "Museeq settings" ) );
 	mOK->setText( tr( "Ok" ) );
 	mSave->setText( tr( "Save" ) );
 	mCancel->setText( tr( "Cancel" ) );
@@ -1405,78 +1406,78 @@ void SettingsDialog::languageChange()
 	mBrowse->setText( tr( "Select.." ) );
 
 
-	LoggingPrivate->setText( tr( "Log Private Chats" ) );
-	LoggingRooms->setText( tr( "Log Chat Rooms" ) );
+	LoggingPrivate->setText( tr( "Log private chats" ) );
+	LoggingRooms->setText( tr( "Log chat rooms" ) );
 	LoggingPrivateButton->setText( tr( "Select.." ) );
 	LoggingRoomButton->setText( tr( "Select.." ) );
 
-	fEncodingLabel->setText( tr( "Filesystem Encoding:" ) );
-	nEncodingLabel->setText( tr( "Network Encoding:" ) );
+	fEncodingLabel->setText( tr( "Filesystem encoding:" ) );
+	nEncodingLabel->setText( tr( "Network encoding:" ) );
 	SConnect->setText( tr( "Connect" ) );
 	SDisconnect->setText( tr( "Disconnect" ) );
-	serverPortLabel->setText( tr( "Server Port:" ) );
-	serverHostLabel->setText( tr( "Server Host:" ) );
-	usernamelabel->setText( tr( "Soulseek Username:" ) );
-	passwordLabel->setText( tr( "Soulseek Password:" ) );
+	serverPortLabel->setText( tr( "Server port:" ) );
+	serverHostLabel->setText( tr( "Server host:" ) );
+	usernamelabel->setText( tr( "Soulseek username:" ) );
+	passwordLabel->setText( tr( "Soulseek password:" ) );
 	SSoulseekPassword->setInputMask( QString::null );
 
 	mNewHandler->setText( tr( "New" ) );
 	mModifyHandler->setText( tr( "Modify" ) );
 	// Museekd Tabs
-	mTabHolder->setTabText( mTabHolder->indexOf(mMuseekdTabs), tr( "Museek Daemon" ) );
+	mTabHolder->setTabText( mTabHolder->indexOf(mMuseekdTabs), tr( "Museek daemon" ) );
 	mMuseekdTabs->setTabText( mMuseekdTabs->indexOf(mServerTab), tr( "Server" ) );
 	mMuseekdTabs->setTabText( mMuseekdTabs->indexOf(mSharesTab), tr( "Shares" ) );
 	mMuseekdTabs->setTabText( mMuseekdTabs->indexOf(mConnectionsTab), tr( "Connections" ) );
-	mMuseekdTabs->setTabText( mMuseekdTabs->indexOf(mUsersTab), tr( "User Options" ) );
-	mMuseekdTabs->setTabText( mMuseekdTabs->indexOf(mUserInfoTab), tr( "User Info" ) );
+	mMuseekdTabs->setTabText( mMuseekdTabs->indexOf(mUsersTab), tr( "User options" ) );
+	mMuseekdTabs->setTabText( mMuseekdTabs->indexOf(mUserInfoTab), tr( "User info" ) );
 	// Museeq tabs
 	mTabHolder->setTabText( mTabHolder->indexOf(mMuseeqTabs), tr( "Museeq" ) );
 	mMuseeqTabs->setTabText( mMuseeqTabs->indexOf(mDConnectionTab), tr( "Daemon connection" ) );
 	mMuseeqTabs->setTabText( mMuseeqTabs->indexOf(mAppearanceTab), tr("Appearance") );
-	mMuseeqTabs->setTabText( mMuseeqTabs->indexOf(mColorsAndFontsTab), tr("Fonts and Colors") );
-	mMuseeqTabs->setTabText( mMuseeqTabs->indexOf(mLoggingTab), tr( "Logging" ) );
+	mMuseeqTabs->setTabText( mMuseeqTabs->indexOf(mColorsAndFontsTab), tr("Fonts and colors") );
+	mMuseeqTabs->setTabText( mMuseeqTabs->indexOf(mChatTab), tr( "Chat" ) );
 	mMuseeqTabs->setTabText( mMuseeqTabs->indexOf(mProtocolTab), tr( "Protocol handlers" ) );
 	// Fonts and Colors
 
-	TimeFontLabel->setText( tr( "Time & Brackets Font" ) );
-	TimeFontButton->setText( tr( "Pick Font" ) );
-	TimeColorLabel->setText( tr( "Time & Brackets Text Color" ) );
-	MeColorLabel->setText( tr( "/Me Text" ) );
-	MeColorButton->setText( tr( "Pick Color" ) );
-	NicknameColorButton->setText( tr( "Pick Color" ) );
-	TimeColorButton->setText( tr( "Pick Color" ) );
-	MessageFontLabel->setText( tr( "Message Font" ) );
-	MessageFontButton->setText( tr( "Pick Font" ) );
-	BuddiedColorLabel->setText( tr( "Buddied Users" ) );
-	BuddiedColorButton->setText( tr( "Pick Color" ) );
-	LocalTextLabel->setText( tr( "My Text" ) );
-	TrustColorLabel->setText( tr( "Trusted Users" ) );
-	TrustColorButton->setText( tr( "Pick Color" ) );
-	BannedColorLabel->setText( tr( "Banned Users" ) );
-	BannedColorButton->setText( tr( "Pick Color" ) );
-	RemoteColorLabel->setText( tr( "Remote Text" ) );
-	RemoteColorButton->setText( tr( "Pick Color" ) );
+	TimeFontLabel->setText( tr( "Time & brackets font" ) );
+	TimeFontButton->setText( tr( "Pick font" ) );
+	TimeColorLabel->setText( tr( "Time & brackets text color" ) );
+	MeColorLabel->setText( tr( "/Me text" ) );
+	MeColorButton->setText( tr( "Pick color" ) );
+	NicknameColorButton->setText( tr( "Pick color" ) );
+	TimeColorButton->setText( tr( "Pick color" ) );
+	MessageFontLabel->setText( tr( "Message font" ) );
+	MessageFontButton->setText( tr( "Pick font" ) );
+	BuddiedColorLabel->setText( tr( "Buddied users" ) );
+	BuddiedColorButton->setText( tr( "Pick color" ) );
+	LocalTextLabel->setText( tr( "My text" ) );
+	TrustColorLabel->setText( tr( "Trusted users" ) );
+	TrustColorButton->setText( tr( "Pick color" ) );
+	BannedColorLabel->setText( tr( "Banned users" ) );
+	BannedColorButton->setText( tr( "Pick color" ) );
+	RemoteColorLabel->setText( tr( "Remote text" ) );
+	RemoteColorButton->setText( tr( "Pick color" ) );
 
 
 
 	// Connections and Ports
-	SActive->setText( tr( "Active Connections" ) );
-	SPassive->setText( tr( "Passive Connections" ) );
+	SActive->setText( tr( "Active connections" ) );
+	SPassive->setText( tr( "Passive connections" ) );
 	SDownloadButton->setText( tr( "Select.." ) );
-	downloadLabel->setText( tr( "Download Dir:" ) );
+	downloadLabel->setText( tr( "Download dir:" ) );
 	SIncompleteButton->setText( tr( "Select.." ) );
-	incompleteLabel->setText( tr( "Incomplete Dir:" ) );
+	incompleteLabel->setText( tr( "Incomplete dir:" ) );
 
 
-	SBuddiesPrivileged->setText( tr( "Buddies are Privileged" ) );
-	SOnlineAlerts->setText( tr( "Online Alerts in Log Window instead of popup" ) );
-	SShareBuddiesOnly->setText( tr( "Share to Buddies Only" ) );
-	STrustedUsers->setText( tr( "Trusted users can Send you Files" ) );
-	SBuddiesShares->setText( tr( "Additional Shares for Buddies" ) );
-	SUserWarnings->setText( tr( "Send automatic warnings to users via Private Chat" ) );
-	SIPLog->setText( tr( "IP addresses in Log Window instead of popup" ) );
+	SBuddiesPrivileged->setText( tr( "Buddies are privileged" ) );
+	SOnlineAlerts->setText( tr( "Display online alerts in daemon log instead of popup" ) );
+	SShareBuddiesOnly->setText( tr( "Share to buddies only" ) );
+	STrustedUsers->setText( tr( "Trusted users can send you files" ) );
+	SBuddiesShares->setText( tr( "Additional shares for buddies" ) );
+	SUserWarnings->setText( tr( "Send automatic warnings to users via private chat" ) );
+	SIPLog->setText( tr( "Display IP addresses in daemon log instead of popup" ) );
 	TickerLengthLabel->setText( tr( "Maximum length of ticker messages:" ) );
-	IconsAlignment->setText( tr( "Align Mode Icons Vertically" ) );
+	IconsAlignment->setText( tr( "Align mode icons vertically" ) );
 
 	mHostLabel->setText( tr( "Host / path:" ) );
 }
@@ -1565,7 +1566,7 @@ void SettingsDialog::slotError(QAbstractSocket::SocketError e) {
 
 void SettingsDialog::selectConfig() {
     QDir dir = QDir::home();
-    QFileDialog * fd = new QFileDialog(this, tr("Select a Museek Daemon Config File"), dir.path()+"/.museekd", "Museek Daemon Config (*.xml)");
+    QFileDialog * fd = new QFileDialog(this, tr("Select a museek daemon config file"), dir.path()+"/.museekd", "Museek daemon config (*.xml)");
     fd->setFileMode(QFileDialog::ExistingFile);
     if(fd->exec() == QDialog::Accepted && ! fd->selectedFiles().isEmpty())
         mMuseekConfigFile->setText(fd->selectedFiles().at(0));
