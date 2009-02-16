@@ -952,9 +952,8 @@ void SettingsDialog::BuddySharesRefresh() {
 }
 
 void SettingsDialog::BuddySharesAdd() {
-	QFileDialog * fd = new QFileDialog(this, QDir::homePath());
+	QFileDialog * fd = new QFileDialog(this, tr("Select a Directory to add to your Buddy Shares."), QDir::homePath());
 	fd->setFileMode(QFileDialog::Directory);
-	fd->setWindowTitle(tr("Select a Directory to add to your Buddy Shares."));
 	fd->setFilter(tr("All files (*)"));
 	if(fd->exec() == QDialog::Accepted && ! fd->selectedFiles().isEmpty())
 	{
@@ -1049,9 +1048,8 @@ void SettingsDialog::BuddySharesUpdate() {
 }
 
 void SettingsDialog::NormalSharesAdd() {
-	QFileDialog * fd = new QFileDialog(this, QDir::homePath());
+	QFileDialog * fd = new QFileDialog(this, tr("Select a Directory to add to your Normal Shares."), QDir::homePath());
 	fd->setFileMode(QFileDialog::Directory);
-	fd->setWindowTitle(tr("Select a Directory to add to your Normal Shares."));
 	fd->setFilter(tr("All files (*)"));
 	if(fd->exec() == QDialog::Accepted && ! fd->selectedFiles().isEmpty())
 	{
@@ -1229,9 +1227,8 @@ void SettingsDialog::save()
 
 void SettingsDialog::SDownload_clicked()
 {
-    QFileDialog * fd = new QFileDialog(this, QDir::homePath());
+    QFileDialog * fd = new QFileDialog(this, tr("Select a Directory to store your downloaded files."), QDir::homePath());
     fd->setFileMode(QFileDialog::Directory);
-    fd->setWindowTitle(tr("Select a Directory to store your downloaded files."));
     fd->setFilter(tr("All files (*)"));
     if(fd->exec() == QDialog::Accepted && ! fd->selectedFiles().isEmpty())
     {
@@ -1243,9 +1240,8 @@ void SettingsDialog::SDownload_clicked()
 
 void SettingsDialog::SIncomplete_clicked()
 {
-    QFileDialog * fd = new QFileDialog(this, QDir::homePath());
+    QFileDialog * fd = new QFileDialog(this, tr("Select a Directory to store your incomplete downloading files."), QDir::homePath());
     fd->setFileMode(QFileDialog::Directory);
-    fd->setWindowTitle(tr("Select a Directory to store your incomplete downloading files."));
     fd->setFilter(tr("All files (*)"));
     if(fd->exec() == QDialog::Accepted && ! fd->selectedFiles().isEmpty())
     {
@@ -1257,10 +1253,8 @@ void SettingsDialog::SIncomplete_clicked()
 
 void SettingsDialog::UserImageBrowse_clicked()
 {
-	QFileDialog * fd = new QFileDialog(this, QDir::homePath(), tr("Images (*.png *.gif *.jpg *.jpeg)"));
+	QFileDialog * fd = new QFileDialog(this, tr("Select an image for your User info"), QDir::homePath(), tr("Images (*.png *.gif *.jpg *.jpeg)"));
 	fd->setFileMode(QFileDialog::ExistingFile);
-	fd->setWindowTitle(tr("Select an image for your User info"));
-	fd->setFilter(tr("All files (*)"));
 	if(fd->exec() == QDialog::Accepted && ! fd->selectedFiles().isEmpty())
 	{
 		mImage->setText(fd->selectedFiles().at(0));
@@ -1571,8 +1565,7 @@ void SettingsDialog::slotError(QAbstractSocket::SocketError e) {
 
 void SettingsDialog::selectConfig() {
     QDir dir = QDir::home();
-    QFileDialog * fd = new QFileDialog(this, dir.path()+"/.museekd", "Museek Daemon Config (*.xml)");
-    fd->setWindowTitle("Select a Museek Daemon Config File");
+    QFileDialog * fd = new QFileDialog(this, tr("Select a Museek Daemon Config File"), dir.path()+"/.museekd", "Museek Daemon Config (*.xml)");
     fd->setFileMode(QFileDialog::ExistingFile);
     if(fd->exec() == QDialog::Accepted && ! fd->selectedFiles().isEmpty())
         mMuseekConfigFile->setText(fd->selectedFiles().at(0));

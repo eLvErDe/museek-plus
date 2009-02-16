@@ -399,8 +399,7 @@ void FolderListView::doDownloadFolderTo()
 {
 	if(mPopped) {
         QList<QTreeWidgetItem *> downloads = selectedItems ();
-        QFileDialog * fd = new QFileDialog(this, QDir::homePath());
-        fd->setWindowTitle(tr("Select a Directory for current download(s)"));
+        QFileDialog * fd = new QFileDialog(this, tr("Select a Directory for current download(s)"), QDir::homePath());
         fd->setFileMode(QFileDialog::Directory);
         if(fd->exec() == QDialog::Accepted){
             QString localpath = fd->directory().path();
@@ -780,8 +779,7 @@ void FileListView::doDownloadFiles() {
 
 void FileListView::doDownloadFilesTo() {
 	QList<QTreeWidgetItem *> downloads = selectedItems ();
-	QFileDialog * fd = new QFileDialog(this, QDir::homePath());
-	fd->setWindowTitle(tr("Select a Directory for current download(s)"));
+	QFileDialog * fd = new QFileDialog(this, tr("Select a Directory for current download(s)"), QDir::homePath());
 	fd->setFileMode(QFileDialog::Directory);
 	if(fd->exec() == QDialog::Accepted){
 		QString localpath = fd->directory().path();

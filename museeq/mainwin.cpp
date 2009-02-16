@@ -729,10 +729,9 @@ void MainWindow::slotAddressChanged(const QString& text) {
 }
 
 void MainWindow::changeTheme() {
-	QString _path = QString(DATADIR) + "/museek/museeq/themes";
+	QString _path = QString(DATADIR) + "/museek/museeq/themes/";
 	QDir dir  (_path);
-	QFileDialog * fd = new QFileDialog(this, dir.path());
-	fd->setWindowTitle(tr("Enter a Museeq Icon Theme Directory"));
+	QFileDialog * fd = new QFileDialog(this, tr("Enter a Museeq Icon Theme Directory"), dir.path());
 	fd->setFileMode(QFileDialog::DirectoryOnly);
 
 	if(fd->exec() == QDialog::Accepted && ! fd->selectedFiles().isEmpty()){
