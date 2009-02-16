@@ -41,6 +41,8 @@ class QSpinBox;
 class QRadioButton;
 class QCheckBox;
 class QCloseEvent;
+class QDialogButtonBox;
+class QAbstractButton;
 
 class SettingsDialog : public QDialog
 {
@@ -54,7 +56,6 @@ public:
 	void setSharesDirty(bool dirty) {mSharesDirty = dirty;};
 
 	QTabWidget* mTabHolder, * mMuseeqTabs, * mMuseekdTabs;
-	QPushButton* mOK, * mSave, * mCancel;
 	QPushButton* SConnect;
 	QPushButton* SDisconnect;
 	QPushButton* SIncompleteButton;
@@ -115,6 +116,8 @@ public:
     QLineEdit * mDPassword, * mMuseekConfigFile;
     QCheckBox * mAutoStartDaemon, * mDAutoConnect, * mShowExitDialog, * mShutDownDaemonOnExit, * mDSavePassword;
 
+    QDialogButtonBox * mButtonBox;
+
 public slots:
 	void SConnect_clicked();
 	void SDisconnect_clicked();
@@ -153,6 +156,8 @@ public slots:
     void loadSettings();
 
     void selectConfig();
+
+    void buttonClicked(QAbstractButton*);
 
 	virtual void color_text_me();
 	virtual void color_text_buddied();

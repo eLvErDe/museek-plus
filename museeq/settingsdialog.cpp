@@ -47,6 +47,7 @@
 #include <QCloseEvent>
 #include <QSettings>
 #include <QMessageBox>
+#include <QDialogButtonBox>
 
 SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Qt::WFlags fl )
     : QDialog( parent ), mSharesDirty(false)
@@ -62,27 +63,9 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Q
 	// Add tabs to vLayout
 	vLayout->addWidget(mTabHolder);
 
-	QHBoxLayout* buttonsLayout= new QHBoxLayout;
-
-	// Ok, Save, Cancel buttons
-	QSpacerItem* spacer5 = new QSpacerItem( 200, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
-	buttonsLayout->addItem( spacer5 );
-
-	mOK = new QPushButton( this );
-	mOK->setIcon(IMG("ok"));
-	buttonsLayout->addWidget(mOK);
-
-	mSave = new QPushButton( this );
-	mSave->setIcon(IMG("save"));
-	buttonsLayout->addWidget(mSave);
-
-	mCancel = new QPushButton( this);
-	mCancel->setIcon(IMG("cancel"));
-	mCancel->setDefault( TRUE );
-	buttonsLayout->addWidget(mCancel);
-
+    mButtonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Apply);
 	// Add buttons to vLayout
-	vLayout->addLayout(buttonsLayout);
+	vLayout->addWidget(mButtonBox);
 
 	mTabHolder->setTabPosition( QTabWidget::North );
 
@@ -555,9 +538,8 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Q
 	connect( TimeFontButton, SIGNAL( clicked() ), this, SLOT( font_text_time() ) );
 
 	// signals and slots connections
-	connect( mOK, SIGNAL( clicked() ), this, SLOT( acceptSettings() ) ); // FIXME use standard buttons
-	connect( mSave, SIGNAL( clicked() ), this, SLOT( save() ) );
-	connect( mCancel, SIGNAL( clicked() ), this, SLOT( rejectSettings() ) );
+    connect(mButtonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(buttonClicked(QAbstractButton*)));
+
 	connect( SConnect, SIGNAL( clicked() ), this, SLOT( SConnect_clicked() ) );
 	connect( SDisconnect, SIGNAL( clicked() ), this, SLOT( SDisconnect_clicked() ) );
 	connect( SDownloadButton, SIGNAL( clicked() ), this, SLOT( SDownload_clicked() ) );
@@ -852,6 +834,16 @@ void SettingsDialog::loadSettings() {
 	mDAddress->setCurrentIndex(mDAddress->count() - 1);
 }
 
+void SettingsDialog::buttonClicked(QAbstractButton* ab) {
+    int role = mButtonBox->standardButton(ab);
+    if ( role == QDialogButtonBox::Apply )
+        save();
+    else if (role == QDialogButtonBox::Ok)
+        acceptSettings();
+    else if (role == QDialogButtonBox::Cancel)
+        rejectSettings();
+}
+
 void SettingsDialog::acceptSettings() {
     save();
     hide();
@@ -859,6 +851,7 @@ void SettingsDialog::acceptSettings() {
 
 void SettingsDialog::rejectSettings() {
     loadSettings();
+    museeq->mainwin()->setTrayIconInitState();
     hide();
 }
 
@@ -1382,9 +1375,6 @@ SettingsDialog::~SettingsDialog()
 void SettingsDialog::languageChange()
 {
 	setWindowTitle( tr( "Museeq settings" ) );
-	mOK->setText( tr( "Ok" ) );
-	mSave->setText( tr( "Save" ) );
-	mCancel->setText( tr( "Cancel" ) );
 	NSharesRefresh->setText( tr( "Refresh list" ) );
 	NSharesUpdate->setText( tr( "Update" ) );
 	NSharesRescan->setText( tr( "Rescan" ) );
