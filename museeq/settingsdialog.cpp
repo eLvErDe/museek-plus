@@ -319,21 +319,12 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Q
 	IconsAlignment = new QCheckBox( mAppearanceTab);
 	AppearanceGrid->addWidget( IconsAlignment, 4, 0, 1, 2  );
 
-	TickerLengthLabel = new QLabel(mAppearanceTab);
-	AppearanceGrid->addWidget( TickerLengthLabel, 5, 0);
-
-	TickerLength = new QSpinBox( mAppearanceTab);
-	TickerLength->setMaximum( 500 );
-	TickerLength->setMinimum( 20 );
-	TickerLength->setValue( 20 );
-	AppearanceGrid->addWidget( TickerLength, 5, 1 );
-
 	mIconTheme = new QPushButton(tr("Pick &Icon Theme... (Requires Restart)"), mAppearanceTab);
 	connect(mIconTheme, SIGNAL(clicked()), parent, SLOT(changeTheme()));
-	AppearanceGrid->addWidget( mIconTheme, 6, 0 );
+	AppearanceGrid->addWidget( mIconTheme, 5, 0 );
 
 	AppearanceGrid->setColumnStretch(0, 8);
-	AppearanceGrid->setRowStretch(7, 11);
+	AppearanceGrid->setRowStretch(6, 11);
 
 
 	// Logging
@@ -347,26 +338,35 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Q
     mToggleTickers = new QCheckBox(tr("Show &tickers"), mChatTab);
 	mChatGrid->addWidget( mToggleTickers, 1, 0 );
 
+	TickerLengthLabel = new QLabel(mChatTab);
+	mChatGrid->addWidget( TickerLengthLabel, 2, 0);
+
+	TickerLength = new QSpinBox( mChatTab);
+	TickerLength->setMaximum( 500 );
+	TickerLength->setMinimum( 20 );
+	TickerLength->setValue( 20 );
+	mChatGrid->addWidget( TickerLength, 2, 1 );
+
 	LoggingPrivate = new QCheckBox( mChatTab );
-	mChatGrid->addWidget( LoggingPrivate, 2, 0);
+	mChatGrid->addWidget( LoggingPrivate, 3, 0);
 
 	LoggingPrivateDir = new QLineEdit( mChatTab);
-	mChatGrid->addWidget( LoggingPrivateDir, 3, 0);
+	mChatGrid->addWidget( LoggingPrivateDir, 4, 0);
 
 	LoggingPrivateButton = new QPushButton( mChatTab);
 	LoggingPrivateButton->setIcon(IMG("open"));
-	mChatGrid->addWidget( LoggingPrivateButton, 3, 1);
+	mChatGrid->addWidget( LoggingPrivateButton, 4, 1);
 
 	LoggingRooms = new QCheckBox( mChatTab);
-	mChatGrid->addWidget( LoggingRooms, 4, 0);
+	mChatGrid->addWidget( LoggingRooms, 5, 0);
 
 	LoggingRoomDir = new QLineEdit( mChatTab);
-	mChatGrid->addWidget( LoggingRoomDir, 5, 0);
+	mChatGrid->addWidget( LoggingRoomDir, 6, 0);
 
 	LoggingRoomButton = new QPushButton( mChatTab);
 	LoggingRoomButton->setIcon(IMG("open"));
-	mChatGrid->addWidget( LoggingRoomButton, 5, 1);
-	mChatGrid->setRowStretch(6, 10);
+	mChatGrid->addWidget( LoggingRoomButton, 6, 1);
+	mChatGrid->setRowStretch(7, 10);
 
 	// Userinfo
 	mUserInfoTab = new QWidget( mMuseekdTabs );
@@ -1467,7 +1467,7 @@ void SettingsDialog::languageChange()
 	SUserWarnings->setText( tr( "Send automatic warnings to users via private chat" ) );
 	SIPLog->setText( tr( "Display IP addresses in daemon log instead of popup" ) );
 	TickerLengthLabel->setText( tr( "Maximum length of ticker messages:" ) );
-	IconsAlignment->setText( tr( "Align mode icons vertically" ) );
+	IconsAlignment->setText( tr( "Align mode icons vertically (restart needed)" ) );
 
 	mHostLabel->setText( tr( "Host / path:" ) );
 }

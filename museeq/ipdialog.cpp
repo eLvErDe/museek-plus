@@ -23,7 +23,7 @@
 #include <QTreeWidget>
 #include <QPushButton>
 #include <QLayout>
-
+#include <QDialogButtonBox>
 
 IPDialog::IPDialog( QWidget* parent, const char* name, bool modal, Qt::WFlags fl )
     : QDialog( parent)
@@ -47,15 +47,16 @@ IPDialog::IPDialog( QWidget* parent, const char* name, bool modal, Qt::WFlags fl
 	mClear = new QPushButton( this );
 	IPDialogLayout->addWidget( mClear, 1, 1 );
 
-	mOK = new QPushButton( this);
-	IPDialogLayout->addWidget( mOK, 1, 2 );
+    mButtonBox = new QDialogButtonBox(QDialogButtonBox::Close);
+    mButtonBox->addButton(mClear, QDialogButtonBox::ActionRole);
+	IPDialogLayout->addWidget( mButtonBox, 1, 1 );
 
 	languageChange();
 	resize( QSize(400, 220).expandedTo(minimumSizeHint()) );
 
 	// signals and slots connections
 	connect( mClear, SIGNAL( clicked() ), mIPListView, SLOT( clear() ) );
-	connect( mOK, SIGNAL( clicked() ), this, SLOT( hide() ) );
+	connect( mButtonBox, SIGNAL( clicked(QAbstractButton*) ), this, SLOT( buttonClicked(QAbstractButton*) ) );
 }
 
 /*
@@ -65,7 +66,11 @@ IPDialog::IPDialog( QWidget* parent, const char* name, bool modal, Qt::WFlags fl
 void IPDialog::languageChange()
 {
     setWindowTitle( tr( "IP Addresses" ) );
-    mOK->setText( tr( "&Close" ) );
     mClear->setText( tr( "Clear" ) );
 }
 
+void IPDialog::buttonClicked(QAbstractButton* ab) {
+    int role = mButtonBox->standardButton(ab);
+    if ( role == QDialogButtonBox::Close )
+        hide();
+}

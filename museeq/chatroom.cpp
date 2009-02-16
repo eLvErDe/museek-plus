@@ -350,7 +350,7 @@ void ChatRoom::setAutoJoin(const QString& room, bool on) {
 }
 
 void ChatRoom::setTicker() {
-	TickerDialog * dlg = new TickerDialog();
+	TickerDialog * dlg = new TickerDialog(museeq->mainwin());
 	QString ticker;
 	if (mTicker->tickers().contains(museeq->nickname())) {
 		ticker = mTicker->tickers()[museeq->nickname()];

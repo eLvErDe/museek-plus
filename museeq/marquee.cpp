@@ -31,7 +31,7 @@ Marquee::Marquee(const QString& _t, QWidget* _p, const char* _n)
         : QWidget(_p), mPressed(false), mEntered(true) {
 
 	setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
-	mScroll = 0;
+	mScroll = 0 - width();
 
 	mTimer = new QTimer(this);
 	connect(mTimer, SIGNAL(timeout()), SLOT(timerTimeout()));
@@ -71,7 +71,7 @@ void Marquee::paintEvent(QPaintEvent*) {
             mScroll += 1;
 
             if(mScroll >= textWidth)
-                mScroll = 0;
+                mScroll = 0 - width();
 		} else
 			p.end();
 
@@ -80,17 +80,14 @@ void Marquee::paintEvent(QPaintEvent*) {
 }
 
 void Marquee::updateHeight() {
-	if(mText.isEmpty()) {
-		setMinimumHeight(0);
+    QPainter p;
+    QSize s = p.fontMetrics().size(Qt::TextSingleLine, QString::null);
+    setMinimumHeight(s.height() + 2);
 
+	if(mText.isEmpty())
 		mTimer->stop();
-	} else {
-		QPainter p;
-		QSize s = p.fontMetrics().size(Qt::TextSingleLine, QString::null);
-		setMinimumHeight(s.height() + 2);
-
+	else
 		mTimer->start(25);
-	}
 }
 
 void Marquee::invalidate() {

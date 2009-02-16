@@ -42,10 +42,12 @@ void ChatTicker::setText(const NTickers& _t) {
 	}
 	updateText();
 }
+
 void ChatTicker::setSize(uint size) {
 	mSize = size;
 	updateText();
 }
+
 void ChatTicker::updateText() {
 
 	QString t;

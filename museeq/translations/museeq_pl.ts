@@ -242,14 +242,14 @@
         <translation>Nazwa hosta</translation>
     </message>
     <message>
-        <location filename="../ipdialog.cpp" line="67"/>
+        <location filename="../ipdialog.cpp" line="68"/>
         <source>IP Addresses</source>
         <translation>Adresy IP</translation>
     </message>
     <message>
-        <location filename="../ipdialog.cpp" line="68"/>
+        <location filename="../ipdialog.cpp" line="74"/>
         <source>&amp;Close</source>
-        <translation>&amp;Zamknij</translation>
+        <translation type="obsolete">&amp;Zamknij</translation>
     </message>
     <message>
         <location filename="../ipdialog.cpp" line="69"/>
@@ -835,37 +835,37 @@
 <context>
     <name>OnlineAlert</name>
     <message>
-        <location filename="../onlinealert.cpp" line="66"/>
+        <location filename="../onlinealert.cpp" line="69"/>
         <source>Online alert</source>
         <translation>Alert online</translation>
     </message>
     <message>
-        <location filename="../onlinealert.cpp" line="68"/>
+        <location filename="../onlinealert.cpp" line="71"/>
         <source>&amp;Remove</source>
         <translation>&amp;Usuń</translation>
     </message>
     <message>
         <location filename="../onlinealert.cpp" line="69"/>
         <source>&amp;OK</source>
-        <translation>&amp;OK</translation>
+        <translation type="obsolete">&amp;OK</translation>
     </message>
     <message>
-        <location filename="../onlinealert.cpp" line="84"/>
+        <location filename="../onlinealert.cpp" line="86"/>
         <source>offline</source>
         <translation>poza siecią</translation>
     </message>
     <message>
-        <location filename="../onlinealert.cpp" line="84"/>
+        <location filename="../onlinealert.cpp" line="86"/>
         <source>away</source>
         <translation>oddalony</translation>
     </message>
     <message>
-        <location filename="../onlinealert.cpp" line="84"/>
+        <location filename="../onlinealert.cpp" line="86"/>
         <source>online</source>
         <translation>w sieci</translation>
     </message>
     <message>
-        <location filename="../onlinealert.cpp" line="86"/>
+        <location filename="../onlinealert.cpp" line="88"/>
         <source>%1 user %2 is now %3</source>
         <translation>%1 użytkownik %2 jest teraz %3</translation>
     </message>
@@ -1821,7 +1821,7 @@
         <translation type="obsolete">Pokaż &amp;stemple czasowe</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="331"/>
+        <location filename="../settingsdialog.cpp" line="322"/>
         <source>Pick &amp;Icon Theme... (Requires Restart)</source>
         <translation>Wybierz motyw &amp;ikon... (wymagany restart)</translation>
     </message>
@@ -1841,12 +1841,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="344"/>
+        <location filename="../settingsdialog.cpp" line="335"/>
         <source>Show t&amp;imestamps</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="347"/>
+        <location filename="../settingsdialog.cpp" line="338"/>
         <source>Show &amp;tickers</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2042,52 +2042,52 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1470"/>
-        <source>Align mode icons vertically</source>
+        <location filename="../settingsdialog.cpp" line="1559"/>
+        <source>Select a museek daemon config file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1559"/>
-        <source>Select a museek daemon config file</source>
+        <location filename="../settingsdialog.cpp" line="1470"/>
+        <source>Align mode icons vertically (restart needed)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>TickerDialog</name>
     <message>
-        <location filename="../tickerdialog.cpp" line="107"/>
+        <location filename="../tickerdialog.cpp" line="106"/>
         <source>Set ticker...</source>
         <translation>Ustaw brzęczyk...</translation>
     </message>
     <message>
-        <location filename="../tickerdialog.cpp" line="108"/>
+        <location filename="../tickerdialog.cpp" line="107"/>
         <source>Set ticker to:</source>
         <translation>Ustaw brzęczyk na:</translation>
     </message>
     <message>
-        <location filename="../tickerdialog.cpp" line="109"/>
+        <location filename="../tickerdialog.cpp" line="108"/>
         <source>Just this time</source>
         <translation>Tylko tym razem</translation>
     </message>
     <message>
-        <location filename="../tickerdialog.cpp" line="110"/>
+        <location filename="../tickerdialog.cpp" line="109"/>
         <source>Always for this room</source>
         <translation>Zawsze dla tego pokoju</translation>
     </message>
     <message>
-        <location filename="../tickerdialog.cpp" line="111"/>
+        <location filename="../tickerdialog.cpp" line="110"/>
         <source>Default for all rooms</source>
         <translation>Domyślnie dla wszytkich pokoi</translation>
     </message>
     <message>
         <location filename="../tickerdialog.cpp" line="112"/>
         <source>&amp;Cancel</source>
-        <translation>&amp;Anuluj</translation>
+        <translation type="obsolete">&amp;Anuluj</translation>
     </message>
     <message>
-        <location filename="../tickerdialog.cpp" line="114"/>
+        <location filename="../tickerdialog.cpp" line="113"/>
         <source>&amp;OK</source>
-        <translation>&amp;OK</translation>
+        <translation type="obsolete">&amp;OK</translation>
     </message>
 </context>
 <context>

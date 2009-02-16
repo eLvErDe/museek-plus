@@ -31,6 +31,8 @@ class QSpacerItem;
 class QRadioButton;
 class QLineEdit;
 class QPushButton;
+class QDialogButtonBox;
+class QAbstractButton;
 
 class TickerDialog : public QDialog
 {
@@ -45,8 +47,7 @@ public:
     QRadioButton* mAlways;
     QRadioButton* mDefault;
     QLineEdit* mMessage;
-    QPushButton* mCancel;
-    QPushButton* mOk;
+    QDialogButtonBox * mButtonBox;
 
 protected:
     QVBoxLayout* TickerDialogLayout;

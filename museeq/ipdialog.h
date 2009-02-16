@@ -28,6 +28,8 @@ class QTreeWidget;
 class QTreeWidgetItem;
 class QPushButton;
 class QGridLayout;
+class QDialogButtonBox;
+class QAbstractButton;
 
 class IPDialog : public QDialog
 {
@@ -38,8 +40,8 @@ public:
     ~IPDialog() {};
 
     QTreeWidget* mIPListView;
-    QPushButton* mOK;
     QPushButton* mClear;
+    QDialogButtonBox * mButtonBox;
 
 protected:
     QGridLayout* IPDialogLayout;
@@ -47,7 +49,7 @@ protected:
 
 protected slots:
     virtual void languageChange();
-
+    void buttonClicked(QAbstractButton*);
 };
 
 #endif // IPDIALOG_H

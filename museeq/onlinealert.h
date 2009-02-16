@@ -28,6 +28,8 @@ class QSpacerItem;
 class QLabel;
 class QFrame;
 class QPushButton;
+class QDialogButtonBox;
+class QAbstractButton;
 
 class OnlineAlert : public QDialog
 {
@@ -55,7 +57,7 @@ protected:
     QLabel* mLabel;
     QFrame* frame3;
     QPushButton* mRemove;
-    QPushButton* mOK;
+    QDialogButtonBox * mButtonBox;
 
 protected slots:
     virtual void languageChange();

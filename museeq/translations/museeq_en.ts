@@ -240,13 +240,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ipdialog.cpp" line="67"/>
-        <source>IP Addresses</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../ipdialog.cpp" line="68"/>
-        <source>&amp;Close</source>
+        <source>IP Addresses</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -827,37 +822,32 @@
 <context>
     <name>OnlineAlert</name>
     <message>
-        <location filename="../onlinealert.cpp" line="66"/>
+        <location filename="../onlinealert.cpp" line="69"/>
         <source>Online alert</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../onlinealert.cpp" line="68"/>
+        <location filename="../onlinealert.cpp" line="71"/>
         <source>&amp;Remove</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../onlinealert.cpp" line="69"/>
-        <source>&amp;OK</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../onlinealert.cpp" line="84"/>
+        <location filename="../onlinealert.cpp" line="86"/>
         <source>offline</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../onlinealert.cpp" line="84"/>
+        <location filename="../onlinealert.cpp" line="86"/>
         <source>away</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../onlinealert.cpp" line="84"/>
+        <location filename="../onlinealert.cpp" line="86"/>
         <source>online</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../onlinealert.cpp" line="86"/>
+        <location filename="../onlinealert.cpp" line="88"/>
         <source>%1 user %2 is now %3</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1574,7 +1564,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="331"/>
+        <location filename="../settingsdialog.cpp" line="322"/>
         <source>Pick &amp;Icon Theme... (Requires Restart)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1594,12 +1584,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="344"/>
+        <location filename="../settingsdialog.cpp" line="335"/>
         <source>Show t&amp;imestamps</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="347"/>
+        <location filename="../settingsdialog.cpp" line="338"/>
         <source>Show &amp;tickers</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1795,51 +1785,41 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1470"/>
-        <source>Align mode icons vertically</source>
+        <location filename="../settingsdialog.cpp" line="1559"/>
+        <source>Select a museek daemon config file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1559"/>
-        <source>Select a museek daemon config file</source>
+        <location filename="../settingsdialog.cpp" line="1470"/>
+        <source>Align mode icons vertically (restart needed)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>TickerDialog</name>
     <message>
-        <location filename="../tickerdialog.cpp" line="107"/>
+        <location filename="../tickerdialog.cpp" line="106"/>
         <source>Set ticker...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tickerdialog.cpp" line="108"/>
+        <location filename="../tickerdialog.cpp" line="107"/>
         <source>Set ticker to:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tickerdialog.cpp" line="109"/>
+        <location filename="../tickerdialog.cpp" line="108"/>
         <source>Just this time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tickerdialog.cpp" line="110"/>
+        <location filename="../tickerdialog.cpp" line="109"/>
         <source>Always for this room</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tickerdialog.cpp" line="111"/>
+        <location filename="../tickerdialog.cpp" line="110"/>
         <source>Default for all rooms</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../tickerdialog.cpp" line="112"/>
-        <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../tickerdialog.cpp" line="114"/>
-        <source>&amp;OK</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

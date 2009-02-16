@@ -25,6 +25,7 @@
 #include <QPushButton>
 #include <QGroupBox>
 #include <QLayout>
+#include <QDialogButtonBox>
 
 
 /*
@@ -72,22 +73,20 @@ TickerDialog::TickerDialog( QWidget* parent, const char* name, bool modal, Qt::W
 
 
 	layout1 = new QHBoxLayout;
+	TickerDialogLayout->addLayout( layout1 );
+
 	spacer2 = new QSpacerItem( 121, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
 	layout1->addItem( spacer2 );
 
-	mCancel = new QPushButton( this );
-	layout1->addWidget( mCancel );
+    mButtonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+	layout1->addWidget( mButtonBox);
 
-	mOk = new QPushButton( this );
-	mOk->setDefault( TRUE );
-	layout1->addWidget( mOk );
-	TickerDialogLayout->addLayout( layout1 );
 	languageChange();
 	resize( QSize(400, 152).expandedTo(minimumSizeHint()) );
 
 	// signals and slots connections
-	connect( mOk, SIGNAL( clicked() ), this, SLOT( accept() ) );
-	connect( mCancel, SIGNAL( clicked() ), this, SLOT( reject() ) );
+	connect( mButtonBox, SIGNAL( accepted() ), this, SLOT( accept() ) );
+	connect( mButtonBox, SIGNAL( rejected() ), this, SLOT( reject() ) );
 }
 
 /*
@@ -109,9 +108,5 @@ void TickerDialog::languageChange()
 	mThisTime->setText( tr( "Just this time" ) );
 	mAlways->setText( tr( "Always for this room" ) );
 	mDefault->setText( tr( "Default for all rooms" ) );
-	mCancel->setText( tr( "&Cancel" ) );
-
-	mOk->setText( tr( "&OK" ) );
-
 }
 

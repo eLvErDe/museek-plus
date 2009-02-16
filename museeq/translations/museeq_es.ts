@@ -532,14 +532,14 @@
         <translation>Nombre de Equipo</translation>
     </message>
     <message>
-        <location filename="../ipdialog.cpp" line="67"/>
+        <location filename="../ipdialog.cpp" line="68"/>
         <source>IP Addresses</source>
         <translation>Direcciones IP</translation>
     </message>
     <message>
-        <location filename="../ipdialog.cpp" line="68"/>
+        <location filename="../ipdialog.cpp" line="74"/>
         <source>&amp;Close</source>
-        <translation>&amp;Cerrar</translation>
+        <translation type="obsolete">&amp;Cerrar</translation>
     </message>
     <message>
         <location filename="" line="0"/>
@@ -1285,12 +1285,12 @@
 <context>
     <name>OnlineAlert</name>
     <message>
-        <location filename="../onlinealert.cpp" line="66"/>
+        <location filename="../onlinealert.cpp" line="69"/>
         <source>Online alert</source>
         <translation>Alerta de conexión</translation>
     </message>
     <message>
-        <location filename="../onlinealert.cpp" line="68"/>
+        <location filename="../onlinealert.cpp" line="71"/>
         <source>&amp;Remove</source>
         <translation>Elimina&amp;r</translation>
     </message>
@@ -1302,7 +1302,7 @@
     <message>
         <location filename="../onlinealert.cpp" line="69"/>
         <source>&amp;OK</source>
-        <translation>&amp;OK</translation>
+        <translation type="obsolete">&amp;OK</translation>
     </message>
     <message>
         <location filename="" line="0"/>
@@ -1310,22 +1310,22 @@
         <translation type="obsolete">Alt+O</translation>
     </message>
     <message>
-        <location filename="../onlinealert.cpp" line="84"/>
+        <location filename="../onlinealert.cpp" line="86"/>
         <source>offline</source>
         <translation>desconectado</translation>
     </message>
     <message>
-        <location filename="../onlinealert.cpp" line="84"/>
+        <location filename="../onlinealert.cpp" line="86"/>
         <source>away</source>
         <translation>ausente</translation>
     </message>
     <message>
-        <location filename="../onlinealert.cpp" line="84"/>
+        <location filename="../onlinealert.cpp" line="86"/>
         <source>online</source>
         <translation>conectado</translation>
     </message>
     <message>
-        <location filename="../onlinealert.cpp" line="86"/>
+        <location filename="../onlinealert.cpp" line="88"/>
         <source>%1 user %2 is now %3</source>
         <translation>%1 usuario %2 está %3</translation>
     </message>
@@ -2364,7 +2364,7 @@
         <translation type="obsolete">Mostrar sellos de t&amp;iempo</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="331"/>
+        <location filename="../settingsdialog.cpp" line="322"/>
         <source>Pick &amp;Icon Theme... (Requires Restart)</source>
         <translation type="unfinished">Elige Tema de &amp;Iconos... (Requiere Reiniciar)</translation>
     </message>
@@ -2384,12 +2384,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="344"/>
+        <location filename="../settingsdialog.cpp" line="335"/>
         <source>Show t&amp;imestamps</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="347"/>
+        <location filename="../settingsdialog.cpp" line="338"/>
         <source>Show &amp;tickers</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2585,47 +2585,47 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1470"/>
-        <source>Align mode icons vertically</source>
+        <location filename="../settingsdialog.cpp" line="1559"/>
+        <source>Select a museek daemon config file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1559"/>
-        <source>Select a museek daemon config file</source>
+        <location filename="../settingsdialog.cpp" line="1470"/>
+        <source>Align mode icons vertically (restart needed)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>TickerDialog</name>
     <message>
-        <location filename="../tickerdialog.cpp" line="107"/>
+        <location filename="../tickerdialog.cpp" line="106"/>
         <source>Set ticker...</source>
         <translation>Asignar ticker...</translation>
     </message>
     <message>
-        <location filename="../tickerdialog.cpp" line="108"/>
+        <location filename="../tickerdialog.cpp" line="107"/>
         <source>Set ticker to:</source>
         <translation>Asignar ticker a:</translation>
     </message>
     <message>
-        <location filename="../tickerdialog.cpp" line="109"/>
+        <location filename="../tickerdialog.cpp" line="108"/>
         <source>Just this time</source>
         <translation>Solo esta vez</translation>
     </message>
     <message>
-        <location filename="../tickerdialog.cpp" line="110"/>
+        <location filename="../tickerdialog.cpp" line="109"/>
         <source>Always for this room</source>
         <translation>Siempre para esta sala</translation>
     </message>
     <message>
-        <location filename="../tickerdialog.cpp" line="111"/>
+        <location filename="../tickerdialog.cpp" line="110"/>
         <source>Default for all rooms</source>
         <translation>Por defecto para todas las salas</translation>
     </message>
     <message>
         <location filename="../tickerdialog.cpp" line="112"/>
         <source>&amp;Cancel</source>
-        <translation>&amp;Cancelar</translation>
+        <translation type="obsolete">&amp;Cancelar</translation>
     </message>
     <message>
         <location filename="" line="0"/>
@@ -2633,9 +2633,9 @@
         <translation type="obsolete">Alt+C</translation>
     </message>
     <message>
-        <location filename="../tickerdialog.cpp" line="114"/>
+        <location filename="../tickerdialog.cpp" line="113"/>
         <source>&amp;OK</source>
-        <translation>&amp;OK</translation>
+        <translation type="obsolete">&amp;OK</translation>
     </message>
     <message>
         <location filename="" line="0"/>

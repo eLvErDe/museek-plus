@@ -25,6 +25,7 @@
 #include <QFrame>
 #include <QPushButton>
 #include <QDateTime>
+#include <QDialogButtonBox>
 
 OnlineAlert::OnlineAlert( QWidget* parent, const char* name, bool modal, Qt::WFlags fl )
     : QDialog( parent )
@@ -40,21 +41,23 @@ OnlineAlert::OnlineAlert( QWidget* parent, const char* name, bool modal, Qt::WFl
     OnlineAlertLayout->addWidget( frame3 );
 
     layout3 = new QHBoxLayout;
+    OnlineAlertLayout->addLayout( layout3 );
     spacer1 = new QSpacerItem( 111, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
     layout3->addItem( spacer1 );
 
     mRemove = new QPushButton( this );
     layout3->addWidget( mRemove );
 
-    mOK = new QPushButton( this );
-    layout3->addWidget( mOK );
-    OnlineAlertLayout->addLayout( layout3 );
+    mButtonBox = new QDialogButtonBox(QDialogButtonBox::Ok);
+    mButtonBox->addButton(mRemove, QDialogButtonBox::ActionRole);
+	layout3->addWidget( mButtonBox);
+
     languageChange();
     resize( QSize(281, 92).expandedTo(minimumSizeHint()) );
 
     // signals and slots connections
     connect( mRemove, SIGNAL( clicked() ), this, SLOT( slotRemoveAlert() ) );
-    connect( mOK, SIGNAL( clicked() ), this, SLOT( accept() ) );
+	connect( mButtonBox, SIGNAL( accepted() ), this, SLOT( accept() ) );
 }
 
 /*
@@ -66,7 +69,6 @@ void OnlineAlert::languageChange()
     setWindowTitle( tr( "Online alert" ) );
     mLabel->setText( QString::null );
     mRemove->setText( tr( "&Remove" ) );
-    mOK->setText( tr( "&OK" ) );
 }
 
 void OnlineAlert::setUser( const QString &user )
