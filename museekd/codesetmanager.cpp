@@ -54,34 +54,49 @@ Museek::CodesetManager::convert(const std::string & from, const std::string & to
   size_t buf_len = str.size() * 4 + 1;
   char * out_buf = new char[buf_len];
 
+  /* Fetch pointer to the source data. */
   size_t r, in_left, out_left;
+  in_left = str.size();
+  const char * inbuf = str.data();
+  char * out_ptr = out_buf;
+  out_left = buf_len;
+
+  /* Create the result string. */
+  std::string ret = std::string();
 
   while(1)
   {
-    /* Fetch pointer to the source data. */
-    const char * inbuf = str.data();
-    char * out_ptr = out_buf;
-    in_left = str.size();
-    out_left = buf_len;
-
     /* Try to convert the string. */
     r = iconv(context, (ICONV_INPUT_TYPE)&inbuf, &in_left, &out_ptr, &out_left);
-    if(r == (size_t)-1 && errno == E2BIG) // Output buffer not large enough
-    {
-      delete [] out_buf;
-      buf_len *= 2; // Try a buffer twice as large
-      out_buf = new char[buf_len];
-      continue;
+    if(r == (size_t)-1) {
+        if (errno == E2BIG) { // Output buffer not large enough
+            delete [] out_buf;
+            buf_len *= 2; // Try a buffer twice as large
+            out_buf = new char[buf_len];
+            in_left = str.size();
+            out_ptr = out_buf;
+            out_left = buf_len;
+            continue;
+        }
+        else if (errno == EILSEQ) { // Invalid input char
+            in_left--; // Move to the next char
+            inbuf++; // move the input buffer
+            ret.append(out_buf, buf_len - out_left);
+            ret.append(1, '?');
+            // reset out buffer
+            delete [] out_buf;
+            out_buf = new char[buf_len];
+            out_ptr = out_buf;
+            out_left = buf_len;
+            continue;
+        }
     }
-    /* FIXME: There should be additional error handling here, strings that
-              hold invalid characters will be truncated. */
+
     break;
   }
 
-  /* Create the result string. */
-  std::string ret;
   if(r != (size_t)-1 && in_left == 0)
-    ret.assign(out_buf, buf_len - out_left);
+    ret.append(out_buf, buf_len - out_left);
 
   // Free the output buffer.
   delete [] out_buf;
