@@ -13,14 +13,9 @@
         <translation>Komentarze</translation>
     </message>
     <message>
-        <location filename="../banlist.cpp" line="74"/>
-        <source>Comments for </source>
-        <translation type="obsolete">Komentarze dotyczące </translation>
-    </message>
-    <message>
         <location filename="../banlist.cpp" line="77"/>
         <source>Comments for %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Komentarze dotyczące %1</translation>
     </message>
 </context>
 <context>
@@ -69,14 +64,9 @@
         <translation>Komentarze</translation>
     </message>
     <message>
-        <location filename="../buddylist.cpp" line="73"/>
-        <source>Comments for </source>
-        <translation type="obsolete">Komentarze dotyczące </translation>
-    </message>
-    <message>
         <location filename="../buddylist.cpp" line="75"/>
         <source>Comments for %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Komentarze dotyczące %1</translation>
     </message>
 </context>
 <context>
@@ -257,11 +247,6 @@
         <translation>Adresy IP</translation>
     </message>
     <message>
-        <location filename="../ipdialog.cpp" line="74"/>
-        <source>&amp;Close</source>
-        <translation type="obsolete">&amp;Zamknij</translation>
-    </message>
-    <message>
         <location filename="../ipdialog.cpp" line="69"/>
         <source>Clear</source>
         <translation>Wyczyść</translation>
@@ -280,14 +265,9 @@
         <translation>Komentarze</translation>
     </message>
     <message>
-        <location filename="../ignorelist.cpp" line="73"/>
-        <source>Comments for </source>
-        <translation type="obsolete">Komentarze dotyczące </translation>
-    </message>
-    <message>
         <location filename="../ignorelist.cpp" line="75"/>
         <source>Comments for %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Komentarze dotyczące %1</translation>
     </message>
 </context>
 <context>
@@ -769,11 +749,6 @@
         <translation>&amp;Ok</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="1160"/>
-        <source>The Museek Daemon is still running. Do you want to close it?</source>
-        <translation type="obsolete">Demon Museeka ciągle działa. Chcesz go zakończyć?</translation>
-    </message>
-    <message>
         <location filename="../mainwin.cpp" line="88"/>
         <source>&amp;Connect to daemon</source>
         <translation>&amp;Połącz z demonem</translation>
@@ -816,7 +791,7 @@
     <message>
         <location filename="../mainwin.cpp" line="1160"/>
         <source>The Museek daemon is still running. Do you want to close it?</source>
-        <translation type="unfinished"></translation>
+        <translation>Demon Museeka ciągle działa. Chcesz go zakończyć?</translation>
     </message>
 </context>
 <context>
@@ -849,12 +824,12 @@
     <message>
         <location filename="../museeq.cpp" line="408"/>
         <source>Comments</source>
-        <translation type="unfinished">Komentarze</translation>
+        <translation>Komentarze</translation>
     </message>
     <message>
         <location filename="../museeq.cpp" line="408"/>
         <source>Comments for %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Komentarze dotyczące %1</translation>
     </message>
 </context>
 <context>
@@ -868,11 +843,6 @@
         <location filename="../onlinealert.cpp" line="71"/>
         <source>&amp;Remove</source>
         <translation>&amp;Usuń</translation>
-    </message>
-    <message>
-        <location filename="../onlinealert.cpp" line="69"/>
-        <source>&amp;OK</source>
-        <translation type="obsolete">&amp;OK</translation>
     </message>
     <message>
         <location filename="../onlinealert.cpp" line="86"/>
@@ -1299,31 +1269,6 @@
 <context>
     <name>SettingsDialog</name>
     <message>
-        <location filename="../settingsdialog.cpp" line="1396"/>
-        <source>Ok</source>
-        <translation type="obsolete">Ok</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1397"/>
-        <source>Save</source>
-        <translation type="obsolete">Zapisz</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1398"/>
-        <source>Cancel</source>
-        <translation type="obsolete">Anuluj</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1414"/>
-        <source>Filesystem Encoding:</source>
-        <translation type="obsolete">Kodowanie systemu plików:</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1415"/>
-        <source>Network Encoding:</source>
-        <translation type="obsolete">Kodowanie sieci:</translation>
-    </message>
-    <message>
         <location filename="../settingsdialog.cpp" line="1406"/>
         <source>Connect</source>
         <translation>Połacz</translation>
@@ -1332,26 +1277,6 @@
         <location filename="../settingsdialog.cpp" line="1407"/>
         <source>Disconnect</source>
         <translation>Rozłącz</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1418"/>
-        <source>Server Port:</source>
-        <translation type="obsolete">Port serwera:</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1419"/>
-        <source>Server Host:</source>
-        <translation type="obsolete">Host serwera:</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1420"/>
-        <source>Soulseek Username:</source>
-        <translation type="obsolete">Nazwa użytkownika Soulseeka:</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1421"/>
-        <source>Soulseek Password:</source>
-        <translation type="obsolete">Hasło Soulseeka:</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1418"/>
@@ -1364,59 +1289,9 @@
         <translation>Połączenia</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1464"/>
-        <source>Active Connections</source>
-        <translation type="obsolete">Aktywne połączenia</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1465"/>
-        <source>Passive Connections</source>
-        <translation type="obsolete">Pasywne połączenia</translation>
-    </message>
-    <message>
         <location filename="../settingsdialog.cpp" line="1458"/>
         <source>Select..</source>
         <translation>Wybierz..</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1467"/>
-        <source>Download Dir:</source>
-        <translation type="obsolete">Katalog pobierania:</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1469"/>
-        <source>Incomplete Dir:</source>
-        <translation type="obsolete">Katalog niekompletnych:</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1472"/>
-        <source>Buddies are Privileged</source>
-        <translation type="obsolete">Zaprzyjaźnieni użytkownicy są uprzywilejowani</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1473"/>
-        <source>Online Alerts in Log Window instead of popup</source>
-        <translation type="obsolete">Alerty online w oknie dziennika zamiast wyskakiwania</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1474"/>
-        <source>Share to Buddies Only</source>
-        <translation type="obsolete">Współdziel tylko z zaprzyjaźnionymi użytkownikami</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1475"/>
-        <source>Trusted users can Send you Files</source>
-        <translation type="obsolete">Zaufani użytkownicy mogą wysyłać Ci pliki</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1477"/>
-        <source>Send automatic warnings to users via Private Chat</source>
-        <translation type="obsolete">Wysyłaj użytkownikom automatyczne ostrzeżenia poprzez prywatną rozmowę</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1431"/>
-        <source>User Options</source>
-        <translation type="obsolete">Opcje użytkownika</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1224"/>
@@ -1432,11 +1307,6 @@
         <location filename="../settingsdialog.cpp" line="1237"/>
         <source>Select a Directory to store your incomplete downloading files.</source>
         <translation>Wybierz katalog do przechowywania swoich niekompletnych pobieranych plików.</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1478"/>
-        <source>IP addresses in Log Window instead of popup</source>
-        <translation type="obsolete">Adresy IP w oknie dziennika zamiast wyskakiwania</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="85"/>
@@ -1500,11 +1370,6 @@
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1384"/>
-        <source>Museeq Settings</source>
-        <translation type="obsolete">Ustawienia museeqa</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1384"/>
         <source>Refresh list</source>
         <translation>Odśwież listę</translation>
     </message>
@@ -1559,16 +1424,6 @@
         <translation>Wyślij:</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1409"/>
-        <source>Log Private Chats</source>
-        <translation type="obsolete">Zapisuj prywatne rozmowy</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1410"/>
-        <source>Log Chat Rooms</source>
-        <translation type="obsolete">Zapisuj pokoje czatu</translation>
-    </message>
-    <message>
         <location filename="../settingsdialog.cpp" line="1414"/>
         <source>New</source>
         <translation>Nowy</translation>
@@ -1579,19 +1434,9 @@
         <translation>Modyfikuj</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1427"/>
-        <source>Museek Daemon</source>
-        <translation type="obsolete">Demon museeka</translation>
-    </message>
-    <message>
         <location filename="../settingsdialog.cpp" line="1419"/>
         <source>Shares</source>
         <translation>Udziały</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1432"/>
-        <source>User Info</source>
-        <translation type="obsolete">Informacje o użytkowniku</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1424"/>
@@ -1604,74 +1449,9 @@
         <translation>Wygląd</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1437"/>
-        <source>Fonts and Colors</source>
-        <translation type="obsolete">Czcionki i kolory</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1438"/>
-        <source>Logging</source>
-        <translation type="obsolete">Zapisywanie</translation>
-    </message>
-    <message>
         <location filename="../settingsdialog.cpp" line="1429"/>
         <source>Protocol handlers</source>
         <translation>Programy obsługujące protokoły</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1442"/>
-        <source>Time &amp; Brackets Font</source>
-        <translation type="obsolete">Czcionka czasu i nawiasów</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1450"/>
-        <source>Pick Font</source>
-        <translation type="obsolete">Wybierz czcionkę</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1444"/>
-        <source>Time &amp; Brackets Text Color</source>
-        <translation type="obsolete">Kolor tekstu czasu i nawiasów</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1445"/>
-        <source>/Me Text</source>
-        <translation type="obsolete">Tekst /me</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1459"/>
-        <source>Pick Color</source>
-        <translation type="obsolete">Wybierz kolor</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1449"/>
-        <source>Message Font</source>
-        <translation type="obsolete">Czcionka wiadomości</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1451"/>
-        <source>Buddied Users</source>
-        <translation type="obsolete">Użytkownicy zaprzyjaźnieni</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1453"/>
-        <source>My Text</source>
-        <translation type="obsolete">Mój tekst</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1454"/>
-        <source>Trusted Users</source>
-        <translation type="obsolete">Użytkownicy zaufani</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1456"/>
-        <source>Banned Users</source>
-        <translation type="obsolete">Użytkownicy zbanowani</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1458"/>
-        <source>Remote Text</source>
-        <translation type="obsolete">Tekst zdalny</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1469"/>
@@ -1679,24 +1459,9 @@
         <translation>Maksymalna długość wiadomości brzęczyka:</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="1480"/>
-        <source>Align Mode Icons Vertically</source>
-        <translation type="obsolete">Wyrównaj ikony trybu w pionie</translation>
-    </message>
-    <message>
         <location filename="../settingsdialog.cpp" line="1250"/>
         <source>Select an image for your User info</source>
         <translation>Wybierz obraz dla informacji o sobie</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="1476"/>
-        <source>Additional Shares for Buddies</source>
-        <translation type="obsolete">Dodatkowe udziały dla zaprzyjaźnionych użytkowników</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="364"/>
-        <source>Show &amp;Tickers</source>
-        <translation type="obsolete">Pokaż &amp;brzęczyki</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="590"/>
@@ -1707,16 +1472,6 @@
         <location filename="../settingsdialog.cpp" line="595"/>
         <source>C&amp;onfigure the daemon (Musetup)</source>
         <translation>Sk&amp;onfiguruj demona (Musetup)</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="616"/>
-        <source>&amp;Start Daemon</source>
-        <translation type="obsolete">&amp;Uruchom demona</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="619"/>
-        <source>S&amp;top Daemon</source>
-        <translation type="obsolete">Za&amp;trzymaj demona</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="619"/>
@@ -1752,13 +1507,6 @@
         <location filename="../settingsdialog.cpp" line="674"/>
         <source>&amp;Disconnect from daemon</source>
         <translation>&amp;Rozłącz z demonem</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="710"/>
-        <source>Museek Daemon Config:
-(leave empty for default)</source>
-        <translation type="obsolete">Konfiguracja demona museeka:
-(zostaw puste dla domyślnej)</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="697"/>
@@ -1831,255 +1579,236 @@
         <translation>Nie udało się połączyć lub utracono połączenie z demonem. Proszę sprawdzić czy demon jest uruchomiony oraz czy nasłuchuje pod podanym adresem. Czy chesz zmienić ustawienia museeqa?</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="324"/>
-        <source>Enable &amp;Trayicon</source>
-        <translation type="obsolete">Włącz &amp;ikonę zasobnika</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="327"/>
-        <source>Show &amp;Log</source>
-        <translation type="obsolete">Pokaż &amp;dziennik</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="361"/>
-        <source>Show T&amp;imestamps</source>
-        <translation type="obsolete">Pokaż &amp;stemple czasowe</translation>
-    </message>
-    <message>
-        <location filename="../settingsdialog.cpp" line="322"/>
-        <source>Pick &amp;Icon Theme... (Requires Restart)</source>
-        <translation type="obsolete">Wybierz motyw &amp;ikon... (wymagany restart)</translation>
-    </message>
-    <message>
         <location filename="../settingsdialog.cpp" line="1428"/>
         <source>Chat</source>
-        <translation type="unfinished"></translation>
+        <translation>Czat</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="307"/>
         <source>Enable &amp;trayicon</source>
-        <translation type="unfinished"></translation>
+        <translation>Włącz &amp;ikonę zasobnika</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="310"/>
         <source>Show daemon &amp;log</source>
-        <translation type="unfinished"></translation>
+        <translation>Pokaż &amp;dziennik demona</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="335"/>
         <source>Show t&amp;imestamps</source>
-        <translation type="unfinished"></translation>
+        <translation>Pokaż &amp;stemple czasowe</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="338"/>
         <source>Show &amp;tickers</source>
-        <translation type="unfinished"></translation>
+        <translation>Pokaż &amp;brzęczyki</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="598"/>
         <source>&amp;Start daemon</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Uruchom demona</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="601"/>
         <source>S&amp;top daemon</source>
-        <translation type="unfinished"></translation>
+        <translation>Za&amp;trzymaj demona</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="692"/>
         <source>Museek daemon config:
 (leave empty for default)</source>
-        <translation type="unfinished"></translation>
+        <translation>Konfiguracja demona museeka:
+(zostaw puste dla domyślnej)</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1377"/>
         <source>Museeq settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Ustawienia museeqa</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1399"/>
         <source>Log private chats</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapisuj prywatne rozmowy</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1400"/>
         <source>Log chat rooms</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapisuj pokoje czatu</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1404"/>
         <source>Filesystem encoding:</source>
-        <translation type="unfinished"></translation>
+        <translation>Kodowanie systemu plików:</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1405"/>
         <source>Network encoding:</source>
-        <translation type="unfinished"></translation>
+        <translation>Kodowanie sieci:</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1408"/>
         <source>Server port:</source>
-        <translation type="unfinished"></translation>
+        <translation>Port serwera:</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1409"/>
         <source>Server host:</source>
-        <translation type="unfinished"></translation>
+        <translation>Host serwera:</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1410"/>
         <source>Soulseek username:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nazwa użytkownika Soulseeka:</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1411"/>
         <source>Soulseek password:</source>
-        <translation type="unfinished"></translation>
+        <translation>Hasło Soulseeka:</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1417"/>
         <source>Museek daemon</source>
-        <translation type="unfinished"></translation>
+        <translation>Demon museeka</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1421"/>
         <source>User options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opcje użytkownika</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1422"/>
         <source>User info</source>
-        <translation type="unfinished">Informacje o użytkowniku</translation>
+        <translation>Informacje o użytkowniku</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1427"/>
         <source>Fonts and colors</source>
-        <translation type="unfinished"></translation>
+        <translation>Czcionki i kolory</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1432"/>
         <source>Time &amp; brackets font</source>
-        <translation type="unfinished"></translation>
+        <translation>Czcionka czasu i nawiasów</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1440"/>
         <source>Pick font</source>
-        <translation type="unfinished"></translation>
+        <translation>Wybierz czcionkę</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1434"/>
         <source>Time &amp; brackets text color</source>
-        <translation type="unfinished"></translation>
+        <translation>Kolor tekstu czasu i nawiasów</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1435"/>
         <source>/Me text</source>
-        <translation type="unfinished"></translation>
+        <translation>Tekst /me</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1449"/>
         <source>Pick color</source>
-        <translation type="unfinished"></translation>
+        <translation>Wybierz kolor</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1439"/>
         <source>Message font</source>
-        <translation type="unfinished"></translation>
+        <translation>Czcionka wiadomości</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1441"/>
         <source>Buddied users</source>
-        <translation type="unfinished"></translation>
+        <translation>Użytkownicy zaprzyjaźnieni</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1443"/>
         <source>My text</source>
-        <translation type="unfinished"></translation>
+        <translation>Mój tekst</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1444"/>
         <source>Trusted users</source>
-        <translation type="unfinished"></translation>
+        <translation>Użytkownicy zaufani</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1446"/>
         <source>Banned users</source>
-        <translation type="unfinished"></translation>
+        <translation>Użytkownicy zbanowani</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1448"/>
         <source>Remote text</source>
-        <translation type="unfinished"></translation>
+        <translation>Tekst zdalny</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1454"/>
         <source>Active connections</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktywne połączenia</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1455"/>
         <source>Passive connections</source>
-        <translation type="unfinished"></translation>
+        <translation>Pasywne połączenia</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1457"/>
         <source>Download dir:</source>
-        <translation type="unfinished"></translation>
+        <translation>Katalog pobierania:</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1459"/>
         <source>Incomplete dir:</source>
-        <translation type="unfinished"></translation>
+        <translation>Katalog niekompletnych:</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1462"/>
         <source>Buddies are privileged</source>
-        <translation type="unfinished"></translation>
+        <translation>Zaprzyjaźnieni użytkownicy są uprzywilejowani</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1463"/>
         <source>Display online alerts in daemon log instead of popup</source>
-        <translation type="unfinished"></translation>
+        <translation>Wyświetlaj alerty online w dzienniku demona zamiast wyskakiwania</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1464"/>
         <source>Share to buddies only</source>
-        <translation type="unfinished"></translation>
+        <translation>Współdziel tylko z zaprzyjaźnionymi użytkownikami</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1465"/>
         <source>Trusted users can send you files</source>
-        <translation type="unfinished"></translation>
+        <translation>Zaufani użytkownicy mogą wysyłać Ci pliki</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1466"/>
         <source>Additional shares for buddies</source>
-        <translation type="unfinished"></translation>
+        <translation>Dodatkowe udziały dla zaprzyjaźnionych użytkowników</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1467"/>
         <source>Send automatic warnings to users via private chat</source>
-        <translation type="unfinished"></translation>
+        <translation>Wysyłaj użytkownikom automatyczne ostrzeżenia poprzez prywatną rozmowę</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1468"/>
         <source>Display IP addresses in daemon log instead of popup</source>
-        <translation type="unfinished"></translation>
+        <translation>Wyświetlaj adresy IP w dzienniku demona zamiast wyskakiwania</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1559"/>
         <source>Select a museek daemon config file</source>
-        <translation type="unfinished"></translation>
+        <translation>Wybierz plik konfiguracyjny demona museeka</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="322"/>
         <source>Pick &amp;icon theme... (requires restart)</source>
-        <translation type="unfinished"></translation>
+        <translation>Wybierz motyw &amp;ikon... (wymagany restart)</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1470"/>
         <source>Align mode icons vertically (requires restart)</source>
-        <translation type="unfinished"></translation>
+        <translation>Wyrównaj ikony trybu w pionie</translation>
     </message>
 </context>
 <context>
@@ -2108,16 +1837,6 @@
         <location filename="../tickerdialog.cpp" line="110"/>
         <source>Default for all rooms</source>
         <translation>Domyślnie dla wszytkich pokoi</translation>
-    </message>
-    <message>
-        <location filename="../tickerdialog.cpp" line="112"/>
-        <source>&amp;Cancel</source>
-        <translation type="obsolete">&amp;Anuluj</translation>
-    </message>
-    <message>
-        <location filename="../tickerdialog.cpp" line="113"/>
-        <source>&amp;OK</source>
-        <translation type="obsolete">&amp;OK</translation>
     </message>
 </context>
 <context>
@@ -2382,14 +2101,9 @@
         <translation>Komentarze</translation>
     </message>
     <message>
-        <location filename="../trustlist.cpp" line="73"/>
-        <source>Comments for </source>
-        <translation type="obsolete">Komentarze dotyczące </translation>
-    </message>
-    <message>
         <location filename="../trustlist.cpp" line="75"/>
         <source>Comments for %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Komentarze dotyczące %1</translation>
     </message>
 </context>
 <context>
