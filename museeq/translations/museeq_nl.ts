@@ -2381,7 +2381,7 @@
     <message>
         <location filename="../settingsdialog.cpp" line="322"/>
         <source>Pick &amp;Icon Theme... (Requires Restart)</source>
-        <translation type="unfinished">P&amp;ictogramthema... (vereist herstart)</translation>
+        <translation type="obsolete">P&amp;ictogramthema... (vereist herstart)</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1428"/>
@@ -2605,8 +2605,13 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../settingsdialog.cpp" line="322"/>
+        <source>Pick &amp;icon theme... (requires restart)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../settingsdialog.cpp" line="1470"/>
-        <source>Align mode icons vertically (restart needed)</source>
+        <source>Align mode icons vertically (requires restart)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

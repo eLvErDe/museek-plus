@@ -2071,7 +2071,7 @@
     <message>
         <location filename="../settingsdialog.cpp" line="322"/>
         <source>Pick &amp;Icon Theme... (Requires Restart)</source>
-        <translation>Choisir un thème d&apos;&amp;icônes... (Redémarrage Requis)</translation>
+        <translation type="obsolete">Choisir un thème d&apos;&amp;icônes... (Redémarrage Requis)</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1428"/>
@@ -2295,8 +2295,13 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../settingsdialog.cpp" line="322"/>
+        <source>Pick &amp;icon theme... (requires restart)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../settingsdialog.cpp" line="1470"/>
-        <source>Align mode icons vertically (restart needed)</source>
+        <source>Align mode icons vertically (requires restart)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -319,7 +319,7 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Q
 	IconsAlignment = new QCheckBox( mAppearanceTab);
 	AppearanceGrid->addWidget( IconsAlignment, 4, 0, 1, 2  );
 
-	mIconTheme = new QPushButton(tr("Pick &Icon Theme... (Requires Restart)"), mAppearanceTab);
+	mIconTheme = new QPushButton(tr("Pick &icon theme... (requires restart)"), mAppearanceTab);
 	connect(mIconTheme, SIGNAL(clicked()), parent, SLOT(changeTheme()));
 	AppearanceGrid->addWidget( mIconTheme, 5, 0 );
 
@@ -1467,7 +1467,7 @@ void SettingsDialog::languageChange()
 	SUserWarnings->setText( tr( "Send automatic warnings to users via private chat" ) );
 	SIPLog->setText( tr( "Display IP addresses in daemon log instead of popup" ) );
 	TickerLengthLabel->setText( tr( "Maximum length of ticker messages:" ) );
-	IconsAlignment->setText( tr( "Align mode icons vertically (restart needed)" ) );
+	IconsAlignment->setText( tr( "Align mode icons vertically (requires restart)" ) );
 
 	mHostLabel->setText( tr( "Host / path:" ) );
 }
