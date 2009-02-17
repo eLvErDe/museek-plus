@@ -90,16 +90,14 @@ void Usermenu::setup(const QString& user) {
 	ActionBan->setEnabled(connected);
 	ActionTrust->setEnabled(connected);
 	ActionIp->setEnabled(connected);
-	ActionAlert->setEnabled(museeq->isBuddy(user) && connected);
-	ActionComments->setEnabled((museeq->isBuddy(user)  ));
+	ActionAlert->setEnabled(connected);
+	ActionComments->setEnabled(museeq->isBuddy(user));
 
 	ActionBuddy->setChecked(museeq->isBuddy(user));
 	ActionTrust->setChecked(museeq->isTrusted(user));
 	ActionBan->setChecked(museeq->isBanned(user));
 	ActionIgnore->setChecked(museeq->isIgnored(user));
 	ActionAlert->setChecked(museeq->hasAlert(user));
-
-
 }
 
 void Usermenu::exec(const QString& user) {
@@ -120,50 +118,60 @@ void Usermenu::slotPrivateChat() {
 	printf("open private chat\n");
 	museeq->mainwin()->showPrivateChat(mUser);
 }
+
 void Usermenu::slotUserInfo() {
 	museeq->mainwin()->showUserInfo(mUser);
 }
+
 void Usermenu::slotBrowser() {
 	museeq->mainwin()->showBrowser(mUser);
 }
+
 void Usermenu::slotBuddy() {
 	if(! museeq->isBuddy(mUser))
 		museeq->addBuddy(mUser);
 	else
 		museeq->removeBuddy(mUser);
 }
+
 void Usermenu::slotTrusted() {
 	if(! museeq->isTrusted(mUser))
 		museeq->addTrusted(mUser);
 	else
 		museeq->removeTrusted(mUser);
 }
+
 void Usermenu::slotBanned() {
 	if(! museeq->isBanned(mUser))
 		museeq->addBanned(mUser);
 	else
 		museeq->removeBanned(mUser);
 }
+
 void Usermenu::slotIgnored() {
 	if(! museeq->isIgnored(mUser))
 		museeq->addIgnored(mUser);
 	else
 		museeq->removeIgnored(mUser);
 }
+
 void Usermenu::slotIP() {
 	museeq->mainwin()->showIPDialog(mUser);
 
 
 }
+
 void Usermenu::slotAlert() {
 	if(! museeq->hasAlert(mUser))
 		museeq->addAlert(mUser);
 	else
 		museeq->removeAlert(mUser);
 }
+
 void Usermenu::slotPrivileges() {
 	museeq->mainwin()->givePrivileges(mUser);
 }
+
 void Usermenu::slotComments() {
 	museeq->editComments(mUser);
 }

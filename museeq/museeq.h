@@ -58,7 +58,7 @@ public:
 
 	inline const QString& nickname() const { return mNickname; }
 
-	inline const QStringList& buddies() const { return mBuddies; }
+	inline const QMap<QString, QString>& buddies() const { return mBuddies; }
 	inline bool isBuddy(const QString& u) const { return mBuddies.contains(u); }
 
 	inline bool hasAlert(const QString& u) const { return isBuddy(u) && mAlerts.contains(u); }
@@ -289,7 +289,8 @@ private:
 	MuseekDriver* mDriver;
 	QSystemTrayIcon* mTray;
 	bool mConnected, mAway;
-	QStringList mBuddies, mBanned, mIgnored, mTrusted, mAutoJoin, mJoinedRooms, mLovedInterests, mHatedInterests, mWishlist;
+	QStringList mBanned, mIgnored, mTrusted, mAutoJoin, mJoinedRooms, mLovedInterests, mHatedInterests, mWishlist;
+	QMap<QString, QString> mBuddies;
 	QMap<QString, OnlineAlert *> mAlerts;
 
 	MainWindow* mMainWin;

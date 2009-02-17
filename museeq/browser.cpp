@@ -420,7 +420,7 @@ void FolderListView::doUploadFolder()
 	if(mPopped) {
         bool ok = false;
 
-        QStringList buddies = museeq->buddies();
+        QStringList buddies = museeq->buddies().uniqueKeys();
         const QString& user = QInputDialog::getItem(this, tr("Upload Folder"),
                      tr("Which user do you wish to upload this to?"),
                      buddies, 0, true, &ok);
@@ -816,7 +816,7 @@ void FileListView::doCopyURL() {
 void FileListView::doUploadFiles() {
 	bool ok = false;
 
-	QStringList buddies = museeq->buddies();
+	QStringList buddies = museeq->buddies().uniqueKeys();
 	const QString& user = QInputDialog::getItem(this, tr("Upload File(s)"),
 	             tr("Which user do you wish to upload these to?"),
 	             buddies, 0, true, &ok);

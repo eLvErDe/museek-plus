@@ -22,6 +22,7 @@
 #include "banlist.h"
 #include "userlistview.h"
 #include "userlistitem.h"
+#include "mainwin.h"
 
 #include <QLabel>
 #include <QLineEdit>
@@ -71,8 +72,11 @@ void BanList::editComments(const QString& n) {
 	UserListItem* item = mUserList->findItem(n);
 	if(item)
 		_c = item->comments();
-	QString c = QInputDialog::getText(0, tr("Comments"), tr("Comments for ") + n, QLineEdit::Normal, _c);
-	museeq->addBanned(n, c);
+
+    bool res;
+	QString c = QInputDialog::getText(museeq->mainwin(), tr("Comments"), tr("Comments for %1").arg(n), QLineEdit::Normal, _c, &res);
+	if (res)
+        museeq->addBanned(n, c);
 }
 
 void BanList::showEvent(QShowEvent*) {

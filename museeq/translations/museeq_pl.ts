@@ -3,19 +3,24 @@
 <context>
     <name>BanList</name>
     <message>
-        <location filename="../banlist.cpp" line="51"/>
+        <location filename="../banlist.cpp" line="52"/>
         <source>Add:</source>
         <translation>Dodaj:</translation>
     </message>
     <message>
-        <location filename="../banlist.cpp" line="74"/>
+        <location filename="../banlist.cpp" line="77"/>
         <source>Comments</source>
         <translation>Komentarze</translation>
     </message>
     <message>
         <location filename="../banlist.cpp" line="74"/>
         <source>Comments for </source>
-        <translation>Komentarze dotyczące </translation>
+        <translation type="obsolete">Komentarze dotyczące </translation>
+    </message>
+    <message>
+        <location filename="../banlist.cpp" line="77"/>
+        <source>Comments for %1</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -54,19 +59,24 @@
 <context>
     <name>BuddyList</name>
     <message>
-        <location filename="../buddylist.cpp" line="49"/>
+        <location filename="../buddylist.cpp" line="50"/>
         <source>Add:</source>
         <translation>Dodaj:</translation>
     </message>
     <message>
-        <location filename="../buddylist.cpp" line="73"/>
+        <location filename="../buddylist.cpp" line="75"/>
         <source>Comments</source>
         <translation>Komentarze</translation>
     </message>
     <message>
         <location filename="../buddylist.cpp" line="73"/>
         <source>Comments for </source>
-        <translation>Komentarze dotyczące </translation>
+        <translation type="obsolete">Komentarze dotyczące </translation>
+    </message>
+    <message>
+        <location filename="../buddylist.cpp" line="75"/>
+        <source>Comments for %1</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -260,19 +270,24 @@
 <context>
     <name>IgnoreList</name>
     <message>
-        <location filename="../ignorelist.cpp" line="49"/>
+        <location filename="../ignorelist.cpp" line="50"/>
         <source>Add:</source>
         <translation>Dodaj:</translation>
     </message>
     <message>
-        <location filename="../ignorelist.cpp" line="73"/>
+        <location filename="../ignorelist.cpp" line="75"/>
         <source>Comments</source>
         <translation>Komentarze</translation>
     </message>
     <message>
         <location filename="../ignorelist.cpp" line="73"/>
         <source>Comments for </source>
-        <translation>Komentarze dotyczące </translation>
+        <translation type="obsolete">Komentarze dotyczące </translation>
+    </message>
+    <message>
+        <location filename="../ignorelist.cpp" line="75"/>
+        <source>Comments for %1</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -831,6 +846,16 @@
         <source>Museeq</source>
         <translation>Museeq</translation>
     </message>
+    <message>
+        <location filename="../museeq.cpp" line="408"/>
+        <source>Comments</source>
+        <translation type="unfinished">Komentarze</translation>
+    </message>
+    <message>
+        <location filename="../museeq.cpp" line="408"/>
+        <source>Comments for %1</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>OnlineAlert</name>
@@ -936,27 +961,27 @@
         <translation>%1:%2:%3</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="895"/>
+        <location filename="../museeq.cpp" line="896"/>
         <source>Syntax: museeq [options]</source>
         <translation>Składnia: museeq [opcje]</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="896"/>
+        <location filename="../museeq.cpp" line="897"/>
         <source>Options:</source>
         <translation>Opcje:</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="897"/>
+        <location filename="../museeq.cpp" line="898"/>
         <source>-V --version<byte value="x9"/><byte value="x9"/>Display museeq version and quit</source>
         <translation>-V --version<byte value="x9"/>Wyświetl wersję museeqa i zakończ</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="898"/>
+        <location filename="../museeq.cpp" line="899"/>
         <source>-h --help<byte value="x9"/><byte value="x9"/>Display this message and quit</source>
         <translation>-h --help<byte value="x9"/>Wyświetl tę wiadomość i zakończ</translation>
     </message>
     <message>
-        <location filename="../museeq.cpp" line="899"/>
+        <location filename="../museeq.cpp" line="900"/>
         <source>--no-tray<byte value="x9"/><byte value="x9"/>Don&apos;t load TrayIcon</source>
         <translation>--no-tray<byte value="x9"/>Nie ładuj ikony zasobnika</translation>
     </message>
@@ -2342,19 +2367,24 @@
 <context>
     <name>TrustList</name>
     <message>
-        <location filename="../trustlist.cpp" line="49"/>
+        <location filename="../trustlist.cpp" line="50"/>
         <source>Add:</source>
         <translation>Dodaj:</translation>
     </message>
     <message>
-        <location filename="../trustlist.cpp" line="73"/>
+        <location filename="../trustlist.cpp" line="75"/>
         <source>Comments</source>
         <translation>Komentarze</translation>
     </message>
     <message>
         <location filename="../trustlist.cpp" line="73"/>
         <source>Comments for </source>
-        <translation>Komentarze dotyczące </translation>
+        <translation type="obsolete">Komentarze dotyczące </translation>
+    </message>
+    <message>
+        <location filename="../trustlist.cpp" line="75"/>
+        <source>Comments for %1</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2448,7 +2478,7 @@
         <translation>Komentarze</translation>
     </message>
     <message>
-        <location filename="../userlistitem.cpp" line="92"/>
+        <location filename="../userlistitem.cpp" line="91"/>
         <source>/s</source>
         <translation>/s</translation>
     </message>

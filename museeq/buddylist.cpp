@@ -22,6 +22,7 @@
 #include "buddylist.h"
 #include "userlistview.h"
 #include "userlistitem.h"
+#include "mainwin.h"
 
 #include <QLabel>
 #include <QLineEdit>
@@ -70,8 +71,10 @@ void BuddyList::editComments(const QString& n) {
 	if(item)
 		_c = item->comments();
 
-	QString c = QInputDialog::getText(0, tr("Comments"), tr("Comments for ") + n, QLineEdit::Normal, _c);
-	museeq->addBuddy(n, c);
+    bool res;
+	QString c = QInputDialog::getText(museeq->mainwin(), tr("Comments"), tr("Comments for %1").arg(n), QLineEdit::Normal, _c, &res);
+	if (res)
+        museeq->addBuddy(n, c);
 }
 
 void BuddyList::showEvent(QShowEvent*) {

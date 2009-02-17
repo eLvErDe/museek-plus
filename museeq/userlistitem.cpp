@@ -36,7 +36,6 @@ UserListItem::UserListItem(UserListView *_parent, const QString& _u, uint _s, ui
 	setSpeed(_sp);
 	setFiles(_f);
 	setComments(_c);
-// 	setDragEnabled(true);
 }
 void UserListItem::updateUserStatus() {
 	setStatus(mStatus);

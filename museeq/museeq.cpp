@@ -265,7 +265,7 @@ void Museeq::slotConfigState(const QMap<QString, QMap<QString, QString> >& _conf
 
 void Museeq::slotConfigSet(const QString& domain, const QString& key, const QString& value) {
 	if(domain == "buddies") {
-		mBuddies += key;
+		mBuddies[key] = value;
 		emit addedBuddy(key, value);
 		emit doUpdateStatus(key);
 	} else if(domain == "alerts") {
@@ -307,8 +307,8 @@ void Museeq::slotConfigSet(const QString& domain, const QString& key, const QStr
 
 void Museeq::slotConfigRemove(const QString& domain, const QString& key) {
 	if(domain == "buddies") {
-		if (mBuddies.indexOf(key) != -1)
-			mBuddies.removeAt(mBuddies.indexOf(key));
+		if (mBuddies.contains(key))
+			mBuddies.remove(key);
 		emit removedBuddy(key);
 		emit doUpdateStatus(key);
 		if(mAlerts.find(key) != mAlerts.end())
@@ -402,14 +402,15 @@ void Museeq::setAutoJoin(const QString& room, bool on) {
 }
 
 void Museeq::editComments(const QString& user) {
-
 	if (museeq->isBuddy(user)) {
-		QString c = QInputDialog::getText(0, "Comments", "Comments for " + user, QLineEdit::Normal, "");
-		if (c != "")
+	    QString current = mBuddies[user];
+	    bool res;
+		QString c = QInputDialog::getText(mainwin(), tr("Comments"), tr("Comments for %1").arg(user), QLineEdit::Normal, current, &res);
+		if (res)
 			addBuddy(user, c);
-		}
-
+    }
 }
+
 void Museeq::addBuddy(const QString& user, const QString& comments) {
 	mDriver->setConfig("buddies", user, comments);
 }
@@ -444,7 +445,7 @@ void Museeq::removeIgnored(const QString& user) {
 }
 
 void Museeq::addTrusted(const QString& user, const QString& comments) {
-	mDriver->setConfig("trusted", user, "");
+	mDriver->setConfig("trusted", user, comments);
 }
 
 void Museeq::removeTrusted(const QString& user) {
