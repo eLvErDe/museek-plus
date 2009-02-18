@@ -633,9 +633,6 @@ void SettingsDialog::populateDConnectionTab() {
 	mDAddress->setEditable( true );
 	mDAddress->setSizePolicy (QSizePolicy::Expanding,QSizePolicy::Preferred);
 
-	mDClearButton = new QPushButton( mDConnectionTab);
-	mDClearButton->setText( tr( "Clear" ) );
-
 	QHBoxLayout* hLayout = new QHBoxLayout;
 	connectLayout->addLayout(hLayout);
 	hLayout->setMargin(5);
@@ -643,7 +640,6 @@ void SettingsDialog::populateDConnectionTab() {
 	hLayout->addWidget( mHostLabel );
 	hLayout->addWidget( mDConnectType );
 	hLayout->addWidget( mDAddress );
-	hLayout->addWidget( mDClearButton );
     hLayout->addStretch(1);
 
 
@@ -732,7 +728,6 @@ void SettingsDialog::populateDConnectionTab() {
 	connect( mStartDaemonButton, SIGNAL( clicked() ), this, SLOT( startDaemon() ) );
 	connect( mStopDaemonButton, SIGNAL( clicked() ), this, SLOT( stopDaemon() ) );
 	connect( mConnectToDaemonButton, SIGNAL(clicked()), parent(), SLOT(connectToMuseek()));
-	connect( mDClearButton, SIGNAL( clicked() ), this, SLOT( clearSockets() ) );
 	//connect( mMusetupButton, SIGNAL( clicked() ), this, SLOT( launchMusetup() ) );
 	connect( mDSavePassword, SIGNAL(toggled(bool)), SLOT(toggleSavePassword(bool)) );
 	connect( mSelectConfigFileButton, SIGNAL( clicked() ), this, SLOT( selectConfig() ) );

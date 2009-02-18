@@ -112,7 +112,7 @@ public:
 	QTreeWidget* ListNormalShares, * ListBuddyShares;
 
     QComboBox * mDAddress, * mDConnectType;
-    QPushButton * mDClearButton, * mSelectConfigFileButton, * mStartDaemonButton, * mStopDaemonButton/*, * mMusetupButton*/, * mConnectToDaemonButton, * mDisconnectFromDaemonButton, * mIconTheme;
+    QPushButton * mSelectConfigFileButton, * mStartDaemonButton, * mStopDaemonButton/*, * mMusetupButton*/, * mConnectToDaemonButton, * mDisconnectFromDaemonButton, * mIconTheme;
     QLineEdit * mDPassword, * mMuseekConfigFile;
     QCheckBox * mAutoStartDaemon, * mDAutoConnect, * mShowExitDialog, * mShutDownDaemonOnExit, * mDSavePassword;
 
