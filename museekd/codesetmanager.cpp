@@ -82,7 +82,7 @@ Museek::CodesetManager::convert(const std::string & from, const std::string & to
             in_left--; // Move to the next char
             inbuf++; // move the input buffer
             ret.append(out_buf, buf_len - out_left);
-            ret.append(1, '?');
+            ret.append("�");
             // reset out buffer
             delete [] out_buf;
             out_buf = new char[buf_len];
