@@ -591,8 +591,9 @@ void SettingsDialog::populateDConnectionTab() {
     QVBoxLayout * daemonLayout = new QVBoxLayout;
     groupBox2->setLayout(daemonLayout);
 
-	mMusetupButton = new QPushButton( this );
-	mMusetupButton->setText( tr( "C&onfigure the daemon (Musetup)" ) );
+    // NOTE this button is not used since musetup-qt is not really up-to-date.
+	/*mMusetupButton = new QPushButton( this );
+	mMusetupButton->setText( tr( "C&onfigure the daemon (Musetup)" ) );*/
 
 	mStartDaemonButton = new QPushButton( this);
 	mStartDaemonButton->setText( tr( "&Start daemon" ) );
@@ -605,7 +606,7 @@ void SettingsDialog::populateDConnectionTab() {
 	hLayout4->setMargin(5);
 	hLayout4->setSpacing(5);
     hLayout4->addStretch(1);
-	hLayout4->addWidget( mMusetupButton );
+	//hLayout4->addWidget( mMusetupButton );
 	hLayout4->addWidget( mStartDaemonButton );
 	hLayout4->addWidget( mStopDaemonButton );
     hLayout4->addStretch(1);
@@ -732,7 +733,7 @@ void SettingsDialog::populateDConnectionTab() {
 	connect( mStopDaemonButton, SIGNAL( clicked() ), this, SLOT( stopDaemon() ) );
 	connect( mConnectToDaemonButton, SIGNAL(clicked()), parent(), SLOT(connectToMuseek()));
 	connect( mDClearButton, SIGNAL( clicked() ), this, SLOT( clearSockets() ) );
-	connect( mMusetupButton, SIGNAL( clicked() ), this, SLOT( launchMusetup() ) );
+	//connect( mMusetupButton, SIGNAL( clicked() ), this, SLOT( launchMusetup() ) );
 	connect( mDSavePassword, SIGNAL(toggled(bool)), SLOT(toggleSavePassword(bool)) );
 	connect( mSelectConfigFileButton, SIGNAL( clicked() ), this, SLOT( selectConfig() ) );
 	connect( mShowExitDialog, SIGNAL(toggled(bool)), mShutDownDaemonOnExit, SLOT(setEnabled(bool)) );
@@ -1508,7 +1509,7 @@ void SettingsDialog::clearSockets() {
 	mDAddress->clear();
 }
 
-void SettingsDialog::launchMusetup() {
+/*void SettingsDialog::launchMusetup() {
     if (mTabHolder->isTabEnabled(mTabHolder->indexOf(mMuseekdTabs))) {
         mTabHolder->setCurrentWidget(mMuseekdTabs);
     }
@@ -1519,7 +1520,7 @@ void SettingsDialog::launchMusetup() {
 
         mSetupProc->start( "musetup-qt", arguments );
     }
-}
+}*/
 
 void SettingsDialog::toggleSavePassword(bool on) {
     if (!on)
@@ -1527,9 +1528,9 @@ void SettingsDialog::toggleSavePassword(bool on) {
     mDPassword->setEnabled(on);
 }
 
-void SettingsDialog::musetupError( QProcess::ProcessError error) {
+/*void SettingsDialog::musetupError( QProcess::ProcessError error) {
 	QMessageBox::warning(this, tr("Musetup error"), tr("Couldn't launch musetup-qt. Check that it is correctly installed. You can also launch musetup in a terminal using this command: 'musetup'."));
-}
+}*/
 
 void SettingsDialog::loggedIn(bool success, const QString& msg) {
     mConnectToDaemonButton->setEnabled(!success);

@@ -112,7 +112,7 @@ public:
 	QTreeWidget* ListNormalShares, * ListBuddyShares;
 
     QComboBox * mDAddress, * mDConnectType;
-    QPushButton * mDClearButton, * mSelectConfigFileButton, * mStartDaemonButton, * mStopDaemonButton, * mMusetupButton, * mConnectToDaemonButton, * mDisconnectFromDaemonButton, * mIconTheme;
+    QPushButton * mDClearButton, * mSelectConfigFileButton, * mStartDaemonButton, * mStopDaemonButton/*, * mMusetupButton*/, * mConnectToDaemonButton, * mDisconnectFromDaemonButton, * mIconTheme;
     QLineEdit * mDPassword, * mMuseekConfigFile;
     QCheckBox * mAutoStartDaemon, * mDAutoConnect, * mShowExitDialog, * mShutDownDaemonOnExit, * mDSavePassword;
 
@@ -193,9 +193,9 @@ protected slots:
 	void acceptSettings();
 	void rejectSettings();
 	void clearSockets();
-	void launchMusetup();
+	//void launchMusetup();
 	void toggleSavePassword(bool);
-	void musetupError( QProcess::ProcessError);
+	//void musetupError( QProcess::ProcessError);
 	void loggedIn(bool, const QString&);
 	void slotDisconnected();
 	void slotError(QAbstractSocket::SocketError);
