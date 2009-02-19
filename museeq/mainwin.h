@@ -115,8 +115,6 @@ public slots:
 
 	void showWithRestoredSize();
 
-	void slotAddressActivated(const QString&);
-
 signals:
 	void showAllTickers();
 	void hideAllTickers();
@@ -136,8 +134,6 @@ private slots:
 	void slotConfigChanged(const QString&, const QString&, const QString&);
 	void slotUserAddress(const QString& user, const QString& ip, uint port);
 	void slotPrivilegesLeft(uint);
-
-	void slotAddressChanged(const QString&);
 
 protected slots:
 	void changePage(QListWidgetItem*, QListWidgetItem*);

@@ -25,6 +25,7 @@
 #include "mainwin.h"
 #include "util.h"
 #include "museekdriver.h"
+#include <system.h>
 
 #include <QMenu>
 #include <QPushButton>
@@ -724,7 +725,16 @@ void SettingsDialog::populateDConnectionTab() {
 
     vLayout->addStretch(1);
 
+	slotAddressActivated(mDAddress->currentText());
 
+#ifdef HAVE_SYS_UN_H
+	connect(mDAddress, SIGNAL(activated(const QString&)), SLOT(slotAddressActivated(const QString&)));
+	connect(mDAddress, SIGNAL(textChanged(const QString&)), SLOT(slotAddressChanged(const QString&)));
+#else
+    mDConnectType->removeItem(1);
+#endif
+
+    connect(mDConnectType, SIGNAL(currentIndexChanged(int)), this, SLOT(connectionTypeChanged(int)));
 	connect( mStartDaemonButton, SIGNAL( clicked() ), this, SLOT( startDaemon() ) );
 	connect( mStopDaemonButton, SIGNAL( clicked() ), this, SLOT( stopDaemon() ) );
 	connect( mConnectToDaemonButton, SIGNAL(clicked()), parent(), SLOT(connectToMuseek()));
@@ -818,6 +828,7 @@ void SettingsDialog::loadSettings() {
 		cServer = "localhost:2240";
 		mDAddress->addItem(cServer);
 		mDAddress->setFocus();
+
 #ifdef HAVE_SYS_UN_H
 # ifdef HAVE_PWD_H
 		struct passwd *pw = getpwuid(getuid());
@@ -842,6 +853,8 @@ void SettingsDialog::buttonClicked(QAbstractButton* ab) {
 
 void SettingsDialog::acceptSettings() {
     save();
+    loadSettings();
+    museeq->mainwin()->setTrayIconInitState();
     hide();
 }
 
@@ -1465,7 +1478,7 @@ void SettingsDialog::languageChange()
 	TickerLengthLabel->setText( tr( "Maximum length of ticker messages:" ) );
 	IconsAlignment->setText( tr( "Align mode icons vertically (requires restart)" ) );
 
-	mHostLabel->setText( tr( "Host / path:" ) );
+	mHostLabel->setText( tr( "Connexion type:" ) );
 }
 
 void SettingsDialog::closeEvent(QCloseEvent * ev) {
@@ -1558,4 +1571,57 @@ void SettingsDialog::selectConfig() {
         mMuseekConfigFile->setText(fd->selectedFiles().at(0));
 
     delete fd;
+}
+
+void SettingsDialog::connectionTypeChanged(int index) {
+    QString server = mDAddress->currentText();
+    if (index == 1) { // Unix socket
+        if( server.isEmpty() || (server[0] != '/')) {
+            for(int i = mDAddress->count(); i >= 0; i--)
+            {
+                QString s = mDAddress->itemText(i);
+                if (!s.isEmpty() && (s[0] == '/')) {
+                    mDAddress->blockSignals(true);
+                    mDAddress->setCurrentIndex(i);
+                    mDAddress->blockSignals(false);
+                    break;
+                }
+            }
+        }
+    }
+    else { // TCP socket
+        if( server.isEmpty() || (server[0] == '/'))
+            for(int i = mDAddress->count(); i >= 0; i--)
+            {
+                QString s = mDAddress->itemText(i);
+                if (!s.isEmpty() && (s[0] != '/')) {
+                    mDAddress->blockSignals(true);
+                    mDAddress->setCurrentIndex(i);
+                    mDAddress->blockSignals(false);
+                    break;
+                }
+            }
+    }
+}
+
+void SettingsDialog::slotAddressActivated(const QString& server) {
+#ifdef HAVE_SYS_UN_H
+    if (server.isEmpty())
+        return;
+
+	if ( (server[0] == '/') && (mDConnectType->currentIndex() != 1) )
+        mDConnectType->setCurrentIndex(1);
+	else if ( (server[0] != '/') && (mDConnectType->currentIndex() != 0) )
+        mDConnectType->setCurrentIndex(0);
+#endif
+}
+
+void SettingsDialog::slotAddressChanged(const QString& text) {
+	if(text.length() >= 1)
+	{
+		if ((text[0] == '/') && (mDConnectType->currentIndex() != 1))
+            mDConnectType->setCurrentIndex(1);
+		else if ((text[0] != '/') && (mDConnectType->currentIndex() != 0))
+            mDConnectType->setCurrentIndex(0);
+	}
 }

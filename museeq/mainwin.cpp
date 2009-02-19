@@ -208,17 +208,9 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(0, 0), m
 	mIPDialog = new IPDialog(this, "ipDialog");
 
 	mSettingsDialog = new SettingsDialog(this, "settingsDialog");
-	slotAddressActivated(mSettingsDialog->mDAddress->currentText());
 
 	QWidget * MainWidget = new QWidget(this);
 	setCentralWidget(MainWidget);
-
-#ifdef HAVE_SYS_UN_H
-	connect(mSettingsDialog->mDAddress, SIGNAL(activated(const QString&)), SLOT(slotAddressActivated(const QString&)));
-	connect(mSettingsDialog->mDAddress, SIGNAL(textChanged(const QString&)), SLOT(slotAddressChanged(const QString&)));
-#else
-    mSettingsDialog->mDConnectType->removeItem(1);
-#endif
 
 	connect( mSettingsDialog->mDisconnectFromDaemonButton, SIGNAL(clicked()), museeq->driver(), SLOT(disconnect()));
 
@@ -706,25 +698,6 @@ void MainWindow::showIPDialog(const QString& user) {
 	museeq->driver()->doGetIPAddress(user);
 	if (! museeq->mIPLog) {
 		mIPDialog->show();
-	}
-}
-
-void MainWindow::slotAddressActivated(const QString& server) {
-#ifdef HAVE_SYS_UN_H
-	if(! server.isEmpty() && server[0] == '/')
-        mSettingsDialog->mDConnectType->setCurrentIndex(1);
-	else
-        mSettingsDialog->mDConnectType->setCurrentIndex(0);
-#endif
-}
-
-void MainWindow::slotAddressChanged(const QString& text) {
-	if(text.length() == 1)
-	{
-		if(text[0] == '/')
-            mSettingsDialog->mDConnectType->setCurrentIndex(1);
-		else
-            mSettingsDialog->mDConnectType->setCurrentIndex(0);
 	}
 }
 

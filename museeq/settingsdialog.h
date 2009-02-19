@@ -158,6 +158,8 @@ public slots:
     void selectConfig();
 
     void buttonClicked(QAbstractButton*);
+	void slotAddressActivated(const QString&);
+	void slotAddressChanged(const QString&);
 
 	virtual void color_text_me();
 	virtual void color_text_buddied();
@@ -199,6 +201,7 @@ protected slots:
 	void loggedIn(bool, const QString&);
 	void slotDisconnected();
 	void slotError(QAbstractSocket::SocketError);
+	void connectionTypeChanged(int);
 
 protected:
 	void closeEvent(QCloseEvent *);
