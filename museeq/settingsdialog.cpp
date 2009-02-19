@@ -1470,7 +1470,7 @@ void SettingsDialog::languageChange()
 	TickerLengthLabel->setText( tr( "Maximum length of ticker messages:" ) );
 	IconsAlignment->setText( tr( "Align mode icons vertically (requires restart)" ) );
 
-	mHostLabel->setText( tr( "Connexion type:" ) );
+	mHostLabel->setText( tr( "Connection type:" ) );
 }
 
 void SettingsDialog::closeEvent(QCloseEvent * ev) {

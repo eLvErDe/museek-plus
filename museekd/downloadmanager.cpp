@@ -235,6 +235,8 @@ Museek::Download::setState(TrState state)
     if (m_State != state)
         changed = true;
 
+    TrState previous = m_State;
+
     m_State = state;
     if (state == TS_Finished)
         setPosition(size());
@@ -249,12 +251,22 @@ Museek::Download::setState(TrState state)
             && state != TS_Connecting)
         m_Museekd->downloads()->checkDownloads();
 
-    if (changed && (state == TS_Finished))
-        m_Museekd->ifaces()->sendStatusMessage(true, std::string("Download finished: '") + destinationPath() + std::string("' from ") + user());
-    else if (changed && (state == TS_Transferring))
-        m_Museekd->ifaces()->sendStatusMessage(true, std::string("Download started: '") + destinationPath() + std::string("' from ") + user());
+    if (changed && (state == TS_Finished)) {
+        if (previous != TS_Transferring)
+            m_Museekd->ifaces()->sendStatusMessage(true, std::string("Download already finished: '") + destinationPath() + std::string("' from ") + user());
+        else
+            m_Museekd->ifaces()->sendStatusMessage(true, std::string("Download finished: '") + destinationPath() + std::string("' from ") + user());
+    }
+    else if (changed && (state == TS_Transferring)) {
+        if (position() > 0)
+            m_Museekd->ifaces()->sendStatusMessage(true, std::string("Continuing download: '") + destinationPath() + std::string("' from ") + user());
+        else
+            m_Museekd->ifaces()->sendStatusMessage(true, std::string("Download started: '") + destinationPath() + std::string("' from ") + user());
+    }
     else if (changed && ((state == TS_RemoteError) || (state == TS_CannotConnect) || (state == TS_ConnectionClosed) || (state == TS_LocalError)))
         m_Museekd->ifaces()->sendStatusMessage(true, std::string("Download failed: '") + destinationPath() + std::string("' from ") + user());
+    else if (changed && (state == TS_Aborted))
+        m_Museekd->ifaces()->sendStatusMessage(true, std::string("Download aborted: '") + destinationPath() + std::string("' from ") + user());
 }
 
 /**

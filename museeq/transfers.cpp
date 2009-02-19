@@ -391,11 +391,8 @@ void Transfers::retrySelected() {
 		if (item)
             items += QPair<QString, QPair<QString, qint64> >(item->user(), QPair<QString, qint64>(item->path(), item->size()));
 	}
+
 	QList<QPair<QString, QPair<QString, qint64> > >::iterator sit = items.begin();
-	if (mPoppedUpload) {
-		QList<QPair<QString, QString> > items = findSelected(mPoppedUpload ? mUploads : mDownloads);
-		museeq->removeUploads(items);
-	}
 	for(; sit != items.end(); ++sit) {
 		if(mPoppedUpload)
 			museeq->uploadFile((*sit).first, (*sit).second.first);

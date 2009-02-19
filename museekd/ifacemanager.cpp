@@ -774,7 +774,7 @@ Museek::IfaceManager::onIfaceUploadFile(const IUploadFile * message)
     std::string error;
 
     if (museekd()->uploads()->isUploadable(user, pathInDb, &error))
-        museekd()->uploads()->add(user, path);
+        museekd()->uploads()->add(user, path, 0, false, true);
 }
 
 void

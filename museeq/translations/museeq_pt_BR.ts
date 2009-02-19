@@ -2451,7 +2451,7 @@
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1473"/>
-        <source>Connexion type:</source>
+        <source>Connection type:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

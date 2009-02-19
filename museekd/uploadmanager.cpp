@@ -130,10 +130,16 @@ Museek::Upload::setState(TrState state)
 
     if (state == TS_Finished)
         m_Museekd->ifaces()->sendStatusMessage(true, std::string("Upload finished: '") + localPath() + std::string("' to ") + user());
-    else if (state == TS_Transferring)
-        m_Museekd->ifaces()->sendStatusMessage(true, std::string("Upload started: '") + localPath() + std::string("' to ") + user());
+    else if (state == TS_Transferring) {
+        if (position() > 0)
+            m_Museekd->ifaces()->sendStatusMessage(true, std::string("Continuing upload: '") + localPath() + std::string("' to ") + user());
+        else
+            m_Museekd->ifaces()->sendStatusMessage(true, std::string("Upload started: '") + localPath() + std::string("' to ") + user());
+    }
     else if ((state == TS_RemoteError) || (state == TS_CannotConnect) || (state == TS_ConnectionClosed) || (state == TS_LocalError))
         m_Museekd->ifaces()->sendStatusMessage(true, std::string("Upload failed: '") + localPath() + std::string("' to ") + user());
+    else if (state == TS_Aborted)
+        m_Museekd->ifaces()->sendStatusMessage(true, std::string("Upload aborted: '") + localPath() + std::string("' to ") + user());
 }
 
 /**
@@ -548,7 +554,7 @@ void Museek::UploadManager::updateRates() {
   * The given path should be encoded with FS encoding. Separator should be the FS one.
   */
 void
-Museek::UploadManager::add(const std::string & user, const std::string & localPath, const uint & ticket, const bool caseProblem)
+Museek::UploadManager::add(const std::string & user, const std::string & localPath, const uint & ticket, const bool caseProblem, const bool forceEnqueue)
 {
     // Check if this upload already exits.
     Upload * upload = findUpload(user, localPath);
@@ -567,7 +573,7 @@ Museek::UploadManager::add(const std::string & user, const std::string & localPa
 
         upload->setState(TS_QueuedLocally);
     }
-    else if ((upload->state() != TS_Aborted) && (upload->state() != TS_LocalError))
+    else if (forceEnqueue || ((upload->state() != TS_Aborted) && (upload->state() != TS_LocalError)))
         upload->setState(TS_QueuedLocally);
 }
 
@@ -595,7 +601,7 @@ Museek::UploadManager::addFolder(const std::string & user, const std::string & l
                 std::string pathFile = dir + '\\' + fit->first;
                 NNLOG("museekd.up.debug", "Uploading the folder means uploading file %s", pathFile.c_str());
                 if (museekd()->uploads()->isUploadable(user, pathFile, &error))
-                    museekd()->uploads()->add(user, museekd()->codeset()->fromNetToFS(pathFile));
+                    museekd()->uploads()->add(user, museekd()->codeset()->fromNetToFS(pathFile), 0, false, true);
             }
         }
     }

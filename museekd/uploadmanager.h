@@ -139,7 +139,7 @@ namespace Museek
     const std::vector<NewNet::RefPtr<Upload> > & uploads() const { return m_Uploads; }
 
     /* Add a new upload or retry an existing one. */
-    void add(const std::string & user, const std::string & localPath, const uint & ticket = 0, const bool caseProblem = false);
+    void add(const std::string & user, const std::string & localPath, const uint & ticket = 0, const bool caseProblem = false, const bool forceEnqueue = false);
     /* Add a new folder to upload */
     void addFolder(const std::string & user, const std::string & localPath);
     /* Abort a upload. */
