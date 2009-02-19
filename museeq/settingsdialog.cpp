@@ -608,14 +608,25 @@ void SettingsDialog::populateDConnectionTab() {
 	daemonLayout->addLayout(hLayout4);
 	hLayout4->setMargin(5);
 	hLayout4->setSpacing(5);
-    hLayout4->addStretch(1);
 	//hLayout4->addWidget( mMusetupButton );
 	hLayout4->addWidget( mStartDaemonButton );
 	hLayout4->addWidget( mStopDaemonButton );
     hLayout4->addStretch(1);
 
-	vLayout->addWidget( groupBox2 );
+	mAutoStartDaemon = new QCheckBox( this);
+	mAutoStartDaemon->setText( tr( "Auto-sta&rt museek daemon" ) );
+	daemonLayout->addWidget(mAutoStartDaemon);
 
+	mShowExitDialog = new QCheckBox( this );
+	mShowExitDialog->setText( tr( "Don't show e&xit dialog" ) );
+	daemonLayout->addWidget(mShowExitDialog);
+
+	mShutDownDaemonOnExit = new QCheckBox( this );
+	mShutDownDaemonOnExit->setText( tr( "&Stop daemon on exit" ) );
+	daemonLayout->addWidget(mShutDownDaemonOnExit);
+
+
+	vLayout->addWidget( groupBox2 );
 
     vLayout->addSpacing(15);
 
@@ -638,16 +649,6 @@ void SettingsDialog::populateDConnectionTab() {
 	mDAddress->setSizePolicy (QSizePolicy::Expanding,QSizePolicy::Preferred);
 	mDAddress->setToolTip(tr("Choose or enter the address to connect to the daemon.\nFor unix sockets, always use absolute paths.\nLeaving the default is usually a good choice when Museeq and the daemon are running on the same machine."));
 
-	QHBoxLayout* hLayout = new QHBoxLayout;
-	connectLayout->addLayout(hLayout);
-	hLayout->setMargin(5);
-	hLayout->setSpacing(5);
-	hLayout->addWidget( mHostLabel );
-	hLayout->addWidget( mDConnectType );
-	hLayout->addWidget( mDAddress );
-    hLayout->addStretch(1);
-
-
 	mDPasswordLabel = new QLabel(mDConnectionTab);
 	mDPasswordLabel->setText( tr( "Password:" ) );
 
@@ -656,16 +657,19 @@ void SettingsDialog::populateDConnectionTab() {
 	mDPassword->setToolTip(tr("Enter the daemon password.\n(The one defined in musetup, NOT your soulseek account password)"));
 
 	mDSavePassword = new QCheckBox( this );
-	mDSavePassword->setText( tr( "S&ave Password" ) );
+	mDSavePassword->setText( tr( "S&ave password" ) );
 
-	QHBoxLayout* hLayout2 = new QHBoxLayout;
-	connectLayout->addLayout(hLayout2);
-	hLayout2->setMargin(5);
-	hLayout2->setSpacing(5);
-	hLayout2->addWidget( mDPasswordLabel );
-	hLayout2->addWidget( mDPassword );
-	hLayout2->addWidget( mDSavePassword );
-    hLayout2->addStretch(1);
+	QGridLayout* gridLayout = new QGridLayout;
+	connectLayout->addLayout(gridLayout);
+	gridLayout->setMargin(5);
+	gridLayout->setSpacing(5);
+	gridLayout->addWidget( mHostLabel, 0, 0 );
+	gridLayout->addWidget( mDConnectType, 0, 1 );
+	gridLayout->addWidget( mDAddress, 0, 2 );
+	gridLayout->addWidget( mDPasswordLabel, 1, 0 );
+	gridLayout->addWidget( mDPassword, 1, 1 );
+	gridLayout->addWidget( mDSavePassword, 1, 2 );
+    gridLayout->setColumnStretch(3, 1);
 
 	vLayout->addWidget( groupBox );
 
@@ -682,10 +686,14 @@ void SettingsDialog::populateDConnectionTab() {
 	connectLayout->addLayout(hLayout5);
 	hLayout5->setMargin(5);
 	hLayout5->setSpacing(5);
-    hLayout5->addStretch(1);
 	hLayout5->addWidget( mConnectToDaemonButton );
 	hLayout5->addWidget( mDisconnectFromDaemonButton );
     hLayout5->addStretch(1);
+
+
+	mDAutoConnect = new QCheckBox(this);
+	mDAutoConnect->setText( tr( "A&uto-connect to daemon" ) );
+	connectLayout->addWidget(mDAutoConnect);
 
 
     vLayout->addSpacing(15);
@@ -707,26 +715,6 @@ void SettingsDialog::populateDConnectionTab() {
 	hLayout3->addWidget( mConfigFileLabel );
 	hLayout3->addWidget( mMuseekConfigFile );
 	hLayout3->addWidget( mSelectConfigFileButton );
-
-
-    vLayout->addSpacing(15);
-
-
-	mAutoStartDaemon = new QCheckBox( this);
-	mAutoStartDaemon->setText( tr( "Auto-sta&rt museek daemon" ) );
-	vLayout->addWidget(mAutoStartDaemon);
-
-	mDAutoConnect = new QCheckBox(this);
-	mDAutoConnect->setText( tr( "A&uto-connect to daemon" ) );
-	vLayout->addWidget(mDAutoConnect);
-
-	mShowExitDialog = new QCheckBox( this );
-	mShowExitDialog->setText( tr( "Don't show e&xit dialog" ) );
-	vLayout->addWidget(mShowExitDialog);
-
-	mShutDownDaemonOnExit = new QCheckBox( this );
-	mShutDownDaemonOnExit->setText( tr( "S&hutdown daemon on exit" ) );
-	vLayout->addWidget(mShutDownDaemonOnExit);
 
     vLayout->addStretch(1);
 
