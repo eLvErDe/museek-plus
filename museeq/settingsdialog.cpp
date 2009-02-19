@@ -626,10 +626,12 @@ void SettingsDialog::populateDConnectionTab() {
 	mDConnectType->setSizePolicy (QSizePolicy::Expanding,QSizePolicy::Preferred);
 	mDConnectType->addItem(tr( "TCP" ));
 	mDConnectType->addItem(tr( "Unix socket" ));
+	mDConnectType->setToolTip(tr("Choose the type of connection between Museeq and the daemon.\nLeaving the default value is usually a good choice when Museeq and the daemon are running on the same machine."));
 
 	mDAddress = new QComboBox(mDConnectionTab);
 	mDAddress->setEditable( true );
 	mDAddress->setSizePolicy (QSizePolicy::Expanding,QSizePolicy::Preferred);
+	mDAddress->setToolTip(tr("Choose or enter the address to connect to the daemon.\nFor unix sockets, always use absolute paths.\nLeaving the default is usually a good choice when Museeq and the daemon are running on the same machine."));
 
 	QHBoxLayout* hLayout = new QHBoxLayout;
 	connectLayout->addLayout(hLayout);
@@ -646,6 +648,7 @@ void SettingsDialog::populateDConnectionTab() {
 
 	mDPassword = new QLineEdit;
 	mDPassword->setEchoMode( QLineEdit::Password );
+	mDPassword->setToolTip(tr("Enter the daemon password.\n(The one defined in musetup, NOT your soulseek account password)"));
 
 	mDSavePassword = new QCheckBox( this );
 	mDSavePassword->setText( tr( "S&ave Password" ) );
