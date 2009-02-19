@@ -923,11 +923,6 @@ void MainWindow::saveSettings() {
 	else
         museeq->setConfig("transfers", "trusting_uploads", "false");
 
-	if(mSettingsDialog->SUserWarnings->isChecked())
-		museeq->setConfig("transfers", "user_warnings", "true");
-	else
-        museeq->setConfig("transfers", "user_warnings", "false");
-
 	// listen ports
 	QVariant ps (mSettingsDialog->CPortStart->value());
 	museeq->setConfig("clients.bind", "first", ps.toString());

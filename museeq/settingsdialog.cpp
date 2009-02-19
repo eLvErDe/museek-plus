@@ -292,10 +292,7 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Q
 	STrustedUsers = new QCheckBox( mUsersTab);
 	UsersGrid->addWidget( STrustedUsers, 2, 0);
 
-	SUserWarnings = new QCheckBox( mUsersTab );
-	UsersGrid->addWidget( SUserWarnings, 3, 0);
-
-	UsersGrid->setRowStretch(4, 10);
+	UsersGrid->setRowStretch(3, 10);
 
 
     // Populate museeq tab
@@ -765,7 +762,6 @@ void SettingsDialog::loadSettings() {
     SShareBuddiesOnly->setChecked(museeq->config("transfers", "only_buddies") == "true");
     SBuddiesPrivileged->setChecked(museeq->config("transfers", "privilege_buddies") == "true");
     STrustedUsers->setChecked(museeq->config("transfers", "trusting_uploads") == "true");
-    SUserWarnings->setChecked(museeq->config("transfers", "user_warnings") == "true");
     SActive->setChecked(museeq->config("clients", "connectmode") == "active");
 
     // museeq settings
@@ -888,9 +884,6 @@ void SettingsDialog::slotConfigChanged(const QString& domain, const QString& key
 	} else if(domain == "transfers" && key == "trusting_uploads") {
 		if (value == "true") STrustedUsers->setChecked(true);
 		else if ( value == "false") STrustedUsers->setChecked(false);
-	} else if(domain == "transfers" && key == "user_warnings") {
-		if (value == "true") SUserWarnings->setChecked(true);
-		else if ( value == "false") SUserWarnings->setChecked(false);
 	} else if(domain == "transfers" && key == "download-dir") {
 		SDownDir->setText(value);
 	} else if(domain == "transfers" && key == "incomplete-dir") {
@@ -1473,7 +1466,6 @@ void SettingsDialog::languageChange()
 	SShareBuddiesOnly->setText( tr( "Share to buddies only" ) );
 	STrustedUsers->setText( tr( "Trusted users can send you files" ) );
 	SBuddiesShares->setText( tr( "Additional shares for buddies" ) );
-	SUserWarnings->setText( tr( "Send automatic warnings to users via private chat" ) );
 	SIPLog->setText( tr( "Display IP addresses in daemon log instead of popup" ) );
 	TickerLengthLabel->setText( tr( "Maximum length of ticker messages:" ) );
 	IconsAlignment->setText( tr( "Align mode icons vertically (requires restart)" ) );
