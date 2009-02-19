@@ -64,7 +64,7 @@ SearchListView::SearchListView(SearchFilter* filter, QWidget* parent, const char
 	connect(ActionDownloadFiles, SIGNAL(triggered()), this, SLOT(downloadFiles()));
 	mPopupMenu->addAction(ActionDownloadFiles);
 
-	ActionDownloadFilesTo = new QAction(tr("Download file(s) to.."), this);
+	ActionDownloadFilesTo = new QAction(tr("Download file(s) to..."), this);
 	connect(ActionDownloadFilesTo, SIGNAL(triggered()), this, SLOT(downloadFilesTo()));
 	mPopupMenu->addAction(ActionDownloadFilesTo);
 
@@ -135,7 +135,7 @@ void SearchListView::downloadFiles() {
 
 void SearchListView::downloadFilesTo() {
 	QTreeWidgetItemIterator it(this, QTreeWidgetItemIterator::Selected | QTreeWidgetItemIterator::NotHidden);
-	QFileDialog * fd = new QFileDialog(this, tr("Select a Directory for current download(s)"), QDir::homePath());
+	QFileDialog * fd = new QFileDialog(this, tr("Select a directory for current download(s)"), QDir::homePath());
 	fd->setFileMode(QFileDialog::Directory);
 	if(fd->exec() == QDialog::Accepted){
 		QString localpath = fd->directory().path();

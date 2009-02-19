@@ -109,6 +109,7 @@ void ChatRoom::sendMessage(const QString& line_) {
 	QString line = line_;
 	if(line.isEmpty())
 		return;
+
 	if(line.startsWith("//"))
 		line = line.mid(1);
 	else if(line[0] == '/') {
@@ -134,9 +135,8 @@ void ChatRoom::sendMessage(const QString& line_) {
 				museeq->mainwin()->changePMode();
 		else if(cmd == "transfers" || cmd == "transfer")
 			museeq->mainwin()->changeTMode();
-		else if(cmd == "clear") {
+		else if(cmd == "clear")
 			mChatPanel->clear();
-		}
 		else if(cmd == "s" || cmd == "search")
 			if(! s.empty())
 				museeq->mainwin()->startSearch(s.join(" "));
@@ -186,7 +186,7 @@ void ChatRoom::sendMessage(const QString& line_) {
 			museeq->mainwin()->toggleLog();
 		else if(cmd == "ticker" || cmd == "tickers" || cmd == "t")
 			museeq->mainwin()->toggleTickers();
-		else if(cmd == "colors" || cmd == "fonts" || cmd == "c" || cmd == "f")
+		else if(cmd == "colors" || cmd == "fonts" || cmd == "f")
 			museeq->mainwin()->changeColors();
 		else if(cmd == "p" || cmd== "part" || cmd == "l" || cmd == "leave") {
 			if(! s.empty())

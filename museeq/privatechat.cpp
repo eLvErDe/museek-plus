@@ -111,98 +111,104 @@ void PrivateChat::logMessage(const QString& user, uint ts, const QString& speake
 
 void PrivateChat::slotSend(const QString& line_) {
 	QString line = line_;
-	if (! line.isEmpty()) {
+	if (line.isEmpty())
+		return;
 
-		if(line.startsWith("//")) {
-			line = line.mid(1);
-		} else if(line[0] == '/') {
-			QStringList s;
-			QString cmd("");
-			if(line.length() > 1)
-			{
-				s = line.mid(1).split(' ', QString::KeepEmptyParts);
-				cmd = s[0].toLower();
-				s.pop_front();
-			}
-
-			if(cmd == "me") {
-				museeq->sayPrivate(user(), line);
-				mChatPanel->append(QString::null, line);
-			} else if(cmd == "ip" ) {
-				if (s.empty())
-					museeq->mainwin()->showIPDialog(user());
-				else
-					museeq->mainwin()->showIPDialog(s.join(" "));
-			} else if((cmd == "c" || cmd == "chat")  &&  s.empty())
-				museeq->mainwin()->changeCMode();
-			else if(cmd == "pm" || cmd == "private") {
-				if(! s.empty())
-					museeq->mainwin()->showPrivateChat(s.join(" "));
-				else
-					museeq->mainwin()->changePMode();
-			} else if(cmd == "transfers" || cmd == "transfer")
-				museeq->mainwin()->changeTMode();
-			else if(cmd == "s" || cmd == "search") {
-				if(! s.empty())
-					museeq->mainwin()->startSearch(s.join(" "));
-				else
-					museeq->mainwin()->changeSMode();
-			} else if(cmd == "u" || cmd == "userinfo") {
-				if(! s.empty())
-					museeq->mainwin()->showUserInfo(s.join(" "));
-				else
-					museeq->mainwin()->showUserInfo(user());
-			} else if(cmd == "b" || cmd == "browse") {
-				if(! s.empty())
-					museeq->mainwin()->showBrowser(s.join(" "));
-				else
-					museeq->mainwin()->showBrowser(user());
-			} else if(cmd == "commands")
-				museeq->mainwin()->displayCommandsDialog();
-			else if(cmd == "about")
-				museeq->mainwin()->displayAboutDialog();
-			else if(cmd == "help")
-				museeq->mainwin()->displayHelpDialog();
-			else if(cmd == "ban" && s.empty())
-				museeq->addBanned(user(), "");
-			else if(cmd == "unban" && s.empty())
-				museeq->removeBanned(user());
-			else if(cmd == "ignore" &&  s.empty())
-				museeq->addIgnored(user(), "");
-			else if(cmd == "unignore" && s.empty())
-				museeq->removeIgnored(user());
-			else if(cmd == "buddy" && s.empty())
-				museeq->addBuddy(user(), "");
-			else if(cmd == "unbuddy" && s.empty())
-				museeq->removeBuddy(user());
-			else if(cmd == "trust" &&  s.empty())
-				museeq->addTrusted(user(), "");
-			else if(cmd == "distrust" &&  s.empty())
-				museeq->removeTrusted(user());
-			else if(cmd == "slap" && s.empty()) {
-				museeq->sayPrivate(user(), "/me slaps "+user()+" around with a large trout");
-				mChatPanel->append(QString::null, "/me slaps "+user()+" around with a large trout");
-			} else if((cmd == "j" || cmd == "join") && ! s.empty())
-				museeq->joinRoom(s.join(" "));
-			else if(cmd == "settings")
-				museeq->mainwin()->changeSettings();
-			else if(cmd == "log")
-				museeq->mainwin()->toggleLog();
-			else if(cmd == "ticker" || cmd == "tickers" || cmd == "t")
-				museeq->mainwin()->toggleTickers();
-			else if(cmd == "colors" || cmd == "fonts" || cmd == "c" || cmd == "f")
-				museeq->mainwin()->changeColors();
-			else
-				mChatPanel->entry()->setText(line);
-			return;
-			}
-		museeq->sayPrivate(user(), line);
-
-        QStringList lines = line.split("\n");
-        QStringList::iterator it, end = lines.end();
-        for(it = lines.begin(); it != end; ++it) {
-            logMessage(user(), museeq->nickname(), *it);
-            mChatPanel->append(QString::null, *it);
+    if(line.startsWith("//")) {
+        line = line.mid(1);
+    } else if(line[0] == '/') {
+        QStringList s;
+        QString cmd("");
+        if(line.length() > 1)
+        {
+            s = line.mid(1).split(' ', QString::KeepEmptyParts);
+            cmd = s[0].toLower();
+            s.pop_front();
         }
-	}
+
+        if(cmd == "me") {
+            museeq->sayPrivate(user(), line);
+            mChatPanel->append(QString::null, line);
+        } else if(cmd == "ip" ) {
+            if (s.empty())
+                museeq->mainwin()->showIPDialog(user());
+            else
+                museeq->mainwin()->showIPDialog(s.join(" "));
+        } else if((cmd == "c" || cmd == "chat")  &&  s.empty())
+            museeq->mainwin()->changeCMode();
+        else if(cmd == "pm" || cmd == "private") {
+            if(! s.empty())
+                museeq->mainwin()->showPrivateChat(s.join(" "));
+            else
+                museeq->mainwin()->changePMode();
+        } else if(cmd == "transfers" || cmd == "transfer")
+            museeq->mainwin()->changeTMode();
+		else if(cmd == "clear")
+			mChatPanel->clear();
+        else if(cmd == "s" || cmd == "search") {
+            if(! s.empty())
+                museeq->mainwin()->startSearch(s.join(" "));
+            else
+                museeq->mainwin()->changeSMode();
+        } else if(cmd == "u" || cmd == "userinfo") {
+            if(! s.empty())
+                museeq->mainwin()->showUserInfo(s.join(" "));
+            else
+                museeq->mainwin()->showUserInfo(user());
+        } else if(cmd == "b" || cmd == "browse") {
+            if(! s.empty())
+                museeq->mainwin()->showBrowser(s.join(" "));
+            else
+                museeq->mainwin()->showBrowser(user());
+        } else if(cmd == "commands")
+            museeq->mainwin()->displayCommandsDialog();
+        else if(cmd == "about")
+            museeq->mainwin()->displayAboutDialog();
+        else if(cmd == "help")
+            museeq->mainwin()->displayHelpDialog();
+        else if(cmd == "ban" && s.empty())
+            museeq->addBanned(user(), "");
+        else if(cmd == "unban" && s.empty())
+            museeq->removeBanned(user());
+        else if(cmd == "ignore" &&  s.empty())
+            museeq->addIgnored(user(), "");
+        else if(cmd == "unignore" && s.empty())
+            museeq->removeIgnored(user());
+        else if(cmd == "buddy" && s.empty())
+            museeq->addBuddy(user(), "");
+        else if(cmd == "unbuddy" && s.empty())
+            museeq->removeBuddy(user());
+        else if(cmd == "trust" &&  s.empty())
+            museeq->addTrusted(user(), "");
+        else if(cmd == "distrust" &&  s.empty())
+            museeq->removeTrusted(user());
+        else if(cmd == "slap" && s.empty()) {
+            museeq->sayPrivate(user(), "/me slaps "+user()+" around with a large trout");
+            mChatPanel->append(QString::null, "/me slaps "+user()+" around with a large trout");
+        } else if((cmd == "j" || cmd == "join") && ! s.empty())
+            museeq->joinRoom(s.join(" "));
+        else if(cmd == "settings")
+            museeq->mainwin()->changeSettings();
+        else if(cmd == "log")
+            museeq->mainwin()->toggleLog();
+        else if(cmd == "ticker" || cmd == "tickers" || cmd == "t")
+            museeq->mainwin()->toggleTickers();
+        else if(cmd == "colors" || cmd == "fonts" || cmd == "f")
+            museeq->mainwin()->changeColors();
+		else if(cmd == "p" || cmd== "part" || cmd == "l" || cmd == "leave") {
+			if(! s.empty())
+				museeq->leaveRoom(s.join(" "));
+			}
+        else
+            mChatPanel->entry()->setText(line);
+        return;
+        }
+    museeq->sayPrivate(user(), line);
+
+    QStringList lines = line.split("\n");
+    QStringList::iterator it, end = lines.end();
+    for(it = lines.begin(); it != end; ++it) {
+        logMessage(user(), museeq->nickname(), *it);
+        mChatPanel->append(QString::null, *it);
+    }
 }

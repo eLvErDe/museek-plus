@@ -245,11 +245,13 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Q
 	mConnectionsTab = new QWidget( mMuseekdTabs );
 	mMuseekdTabs->addTab( mConnectionsTab, "" );
 	ConnectionsGrid = new QGridLayout( mConnectionsTab);
-	QGroupBox * connectionsBox = new QGroupBox(tr("Peer Connections"), mConnectionsTab);
+	QGroupBox * connectionsBox = new QGroupBox(tr("Peer connections"), mConnectionsTab);
 	ConnectionsGrid->addWidget(connectionsBox, 0, 0, 1, 4);
 	QHBoxLayout * cboxLayout = new QHBoxLayout(connectionsBox);
 	SActive = new QRadioButton( mConnectionsTab );
+	SActive->setToolTip(tr("Choose active if museekd cannot receive direct connections.\nChoose passive if you're unsure."));
 	SPassive = new QRadioButton( SActive);
+	SActive->setToolTip(tr("Choose passive if museekd can receive direct connections.\nChoose passive if you're unsure."));
 
 	cboxLayout->addWidget(SActive);
 	cboxLayout->addWidget(SPassive);
@@ -318,6 +320,7 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Q
 	AppearanceGrid->addWidget( IconsAlignment, 4, 0, 1, 2  );
 
 	mIconTheme = new QPushButton(tr("Pick &icon theme... (requires restart)"), mAppearanceTab);
+	mIconTheme->setIcon(QIcon(IMG("open")));
 	connect(mIconTheme, SIGNAL(clicked()), parent, SLOT(changeTheme()));
 	AppearanceGrid->addWidget( mIconTheme, 5, 0 );
 
@@ -595,9 +598,11 @@ void SettingsDialog::populateDConnectionTab() {
 
 	mStartDaemonButton = new QPushButton( this);
 	mStartDaemonButton->setText( tr( "&Start daemon" ) );
+	mStartDaemonButton->setIcon(QIcon(IMG("start")));
 
 	mStopDaemonButton = new QPushButton( this );
 	mStopDaemonButton->setText( tr( "S&top daemon" ) );
+	mStopDaemonButton->setIcon(QIcon(IMG("stop")));
 
 	QHBoxLayout* hLayout4 = new QHBoxLayout;
 	daemonLayout->addLayout(hLayout4);
@@ -951,7 +956,7 @@ void SettingsDialog::BuddySharesRefresh() {
 }
 
 void SettingsDialog::BuddySharesAdd() {
-	QFileDialog * fd = new QFileDialog(this, tr("Select a Directory to add to your Buddy Shares."), QDir::homePath());
+	QFileDialog * fd = new QFileDialog(this, tr("Select a directory to add to your buddy shares."), QDir::homePath());
 	fd->setFileMode(QFileDialog::Directory);
 	fd->setFilter(tr("All files (*)"));
 	if(fd->exec() == QDialog::Accepted && ! fd->selectedFiles().isEmpty())
@@ -981,7 +986,7 @@ void SettingsDialog::PrivateDirSelect() {
 	QString path = LoggingPrivateDir->text();
 	if (path.isEmpty())
 		path = QDir::homePath();
-	QFileDialog * fd = new QFileDialog(this, tr("Select a Directory to write Private Chat log files."), path);
+	QFileDialog * fd = new QFileDialog(this, tr("Select a directory to write private chat log files."), path);
 	fd->setFileMode(QFileDialog::Directory);
 	fd->setViewMode(QFileDialog::Detail);
 	fd->setFilter(tr("All files (*)"));
@@ -998,7 +1003,7 @@ void SettingsDialog::RoomDirSelect() {
 	QString  path = LoggingRoomDir->text();
 	if (path.isEmpty())
 		path = QDir::homePath();
-	QFileDialog * fd = new QFileDialog(this, tr("Select a Directory to write Chat Room log files."), path);
+	QFileDialog * fd = new QFileDialog(this, tr("Select a directory to write chat room log files."), path);
 	fd->setFileMode(QFileDialog::Directory);
 	fd->setViewMode(QFileDialog::Detail);
 
@@ -1047,7 +1052,7 @@ void SettingsDialog::BuddySharesUpdate() {
 }
 
 void SettingsDialog::NormalSharesAdd() {
-	QFileDialog * fd = new QFileDialog(this, tr("Select a Directory to add to your Normal Shares."), QDir::homePath());
+	QFileDialog * fd = new QFileDialog(this, tr("Select a directory to add to your normal shares."), QDir::homePath());
 	fd->setFileMode(QFileDialog::Directory);
 	fd->setFilter(tr("All files (*)"));
 	if(fd->exec() == QDialog::Accepted && ! fd->selectedFiles().isEmpty())
@@ -1239,7 +1244,7 @@ void SettingsDialog::SDownload_clicked()
 
 void SettingsDialog::SIncomplete_clicked()
 {
-    QFileDialog * fd = new QFileDialog(this, tr("Select a Directory to store your incomplete downloading files."), QDir::homePath());
+    QFileDialog * fd = new QFileDialog(this, tr("Select a directory to store your incomplete downloading files."), QDir::homePath());
     fd->setFileMode(QFileDialog::Directory);
     fd->setFilter(tr("All files (*)"));
     if(fd->exec() == QDialog::Accepted && ! fd->selectedFiles().isEmpty())
@@ -1252,7 +1257,7 @@ void SettingsDialog::SIncomplete_clicked()
 
 void SettingsDialog::UserImageBrowse_clicked()
 {
-	QFileDialog * fd = new QFileDialog(this, tr("Select an image for your User info"), QDir::homePath(), tr("Images (*.png *.gif *.jpg *.jpeg)"));
+	QFileDialog * fd = new QFileDialog(this, tr("Select an image for your user info"), QDir::homePath(), tr("Images (*.png *.gif *.jpg *.jpeg)"));
 	fd->setFileMode(QFileDialog::ExistingFile);
 	if(fd->exec() == QDialog::Accepted && ! fd->selectedFiles().isEmpty())
 	{
@@ -1398,13 +1403,13 @@ void SettingsDialog::languageChange()
 	mClear->setText( tr( "Clear" ) );
 	mDontTouch->setText( tr( "Don't touch" ) );
 	mUpload->setText( tr( "Upload:" ) );
-	mBrowse->setText( tr( "Select.." ) );
+	mBrowse->setText( tr( "Select..." ) );
 
 
 	LoggingPrivate->setText( tr( "Log private chats" ) );
 	LoggingRooms->setText( tr( "Log chat rooms" ) );
-	LoggingPrivateButton->setText( tr( "Select.." ) );
-	LoggingRoomButton->setText( tr( "Select.." ) );
+	LoggingPrivateButton->setText( tr( "Select..." ) );
+	LoggingRoomButton->setText( tr( "Select..." ) );
 
 	fEncodingLabel->setText( tr( "Filesystem encoding:" ) );
 	nEncodingLabel->setText( tr( "Network encoding:" ) );
@@ -1458,9 +1463,9 @@ void SettingsDialog::languageChange()
 	// Connections and Ports
 	SActive->setText( tr( "Active connections" ) );
 	SPassive->setText( tr( "Passive connections" ) );
-	SDownloadButton->setText( tr( "Select.." ) );
+	SDownloadButton->setText( tr( "Select..." ) );
 	downloadLabel->setText( tr( "Download dir:" ) );
-	SIncompleteButton->setText( tr( "Select.." ) );
+	SIncompleteButton->setText( tr( "Select..." ) );
 	incompleteLabel->setText( tr( "Incomplete dir:" ) );
 
 

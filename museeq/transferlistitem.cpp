@@ -135,7 +135,7 @@ void TransferListItem::update(const NTransfer& transfer, bool force) {
 			setForeground(2, QBrush(QColor(15,15,15)));
 			break;
 		case 10:
-			setText(2, TransferListView::tr("User Offline"));
+			setText(2, TransferListView::tr("User offline"));
 			setBackground(2, QBrush(QColor(200,200,200)));
 			setForeground(2, QBrush(QColor(15,15,15)));
 			break;

@@ -19,6 +19,7 @@
  */
 
 #include "ipdialog.h"
+#include "images.h"
 
 #include <QTreeWidget>
 #include <QPushButton>
@@ -46,6 +47,7 @@ IPDialog::IPDialog( QWidget* parent, const char* name, bool modal, Qt::WFlags fl
 
 	mClear = new QPushButton( this );
 	IPDialogLayout->addWidget( mClear, 1, 1 );
+	mClear->setIcon(QIcon(IMG("remove")));
 
     mButtonBox = new QDialogButtonBox(QDialogButtonBox::Close);
     mButtonBox->addButton(mClear, QDialogButtonBox::ActionRole);
@@ -65,7 +67,7 @@ IPDialog::IPDialog( QWidget* parent, const char* name, bool modal, Qt::WFlags fl
  */
 void IPDialog::languageChange()
 {
-    setWindowTitle( tr( "IP Addresses" ) );
+    setWindowTitle( tr( "IP addresses" ) );
     mClear->setText( tr( "Clear" ) );
 }
 

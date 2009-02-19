@@ -136,7 +136,7 @@ void Browser::setShares(const NShares& shares) {
 		mFileCount->setText(p.toString()+ " "+  tr("directories"));
 		}
 	else
-		mFileCount->setText(tr("Sharing nothing.."));
+		mFileCount->setText(tr("Sharing nothing..."));
 	mCurrentResult = mShares.begin();
 	mFolders->setShares(mShares);
 	mFolders->setEnabled(true);
@@ -251,15 +251,15 @@ FolderListView::FolderListView(const QString& user, QWidget* parent, const char*
 
 	QAction * ActionDownloadFolder, * ActionDownloadFolderTo, * ActionUploadFolder, * ActionCopyURL;
 
-	ActionDownloadFolder = new QAction( tr("Download Folder"), this);
+	ActionDownloadFolder = new QAction( tr("Download folder"), this);
 	connect(ActionDownloadFolder, SIGNAL(triggered()), this, SLOT(doDownloadFolder()));
 	mPopupMenu->addAction(ActionDownloadFolder);
 
-	ActionDownloadFolderTo = new QAction( tr("Download Folder to..."), this);
+	ActionDownloadFolderTo = new QAction( tr("Download folder to..."), this);
 	connect(ActionDownloadFolderTo, SIGNAL(triggered()), this, SLOT(doDownloadFolderTo()));
 	mPopupMenu->addAction(ActionDownloadFolderTo);
 
-	ActionUploadFolder = new QAction( tr("Upload Folder"), this);
+	ActionUploadFolder = new QAction( tr("Upload folder"), this);
 	connect(ActionUploadFolder, SIGNAL(triggered()), this, SLOT(doUploadFolder()));
 	if (museeq->nickname() == mUser)
 		mPopupMenu->addAction(ActionUploadFolder);
@@ -399,7 +399,7 @@ void FolderListView::doDownloadFolderTo()
 {
 	if(mPopped) {
         QList<QTreeWidgetItem *> downloads = selectedItems ();
-        QFileDialog * fd = new QFileDialog(this, tr("Select a Directory for current download(s)"), QDir::homePath());
+        QFileDialog * fd = new QFileDialog(this, tr("Select a directory for current download(s)"), QDir::homePath());
         fd->setFileMode(QFileDialog::Directory);
         if(fd->exec() == QDialog::Accepted){
             QString localpath = fd->directory().path();
@@ -421,7 +421,7 @@ void FolderListView::doUploadFolder()
         bool ok = false;
 
         QStringList buddies = museeq->buddies().uniqueKeys();
-        const QString& user = QInputDialog::getItem(this, tr("Upload Folder"),
+        const QString& user = QInputDialog::getItem(this, tr("Upload folder"),
                      tr("Which user do you wish to upload this to?"),
                      buddies, 0, true, &ok);
         if(ok && ! user.isEmpty()) {
@@ -612,7 +612,7 @@ FileListView::FileListView(const QString& user, QWidget* parent, const char* nam
 	connect(ActionDownloadFiles, SIGNAL(triggered()), this, SLOT(doDownloadFiles()));
 	mPopupMenu->addAction(ActionDownloadFiles);
 
-	ActionDownloadFilesTo = new QAction( tr("Download files to.."), this);
+	ActionDownloadFilesTo = new QAction( tr("Download files to..."), this);
 	connect(ActionDownloadFilesTo, SIGNAL(triggered()), this, SLOT(doDownloadFilesTo()));
 	mPopupMenu->addAction(ActionDownloadFilesTo);
 
@@ -779,7 +779,7 @@ void FileListView::doDownloadFiles() {
 
 void FileListView::doDownloadFilesTo() {
 	QList<QTreeWidgetItem *> downloads = selectedItems ();
-	QFileDialog * fd = new QFileDialog(this, tr("Select a Directory for current download(s)"), QDir::homePath());
+	QFileDialog * fd = new QFileDialog(this, tr("Select a directory for current download(s)"), QDir::homePath());
 	fd->setFileMode(QFileDialog::Directory);
 	if(fd->exec() == QDialog::Accepted){
 		QString localpath = fd->directory().path();
@@ -817,7 +817,7 @@ void FileListView::doUploadFiles() {
 	bool ok = false;
 
 	QStringList buddies = museeq->buddies().uniqueKeys();
-	const QString& user = QInputDialog::getItem(this, tr("Upload File(s)"),
+	const QString& user = QInputDialog::getItem(this, tr("Upload file(s)"),
 	             tr("Which user do you wish to upload these to?"),
 	             buddies, 0, true, &ok);
 	if(ok && ! user.isEmpty()) {

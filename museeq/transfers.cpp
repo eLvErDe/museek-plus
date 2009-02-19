@@ -148,7 +148,7 @@ Transfers::Transfers(QWidget* _p, const char* _n)
 	connect(ActionAbort, SIGNAL(triggered()), this, SLOT(abortSelected()));
 	mTransferMenu->addAction(ActionAbort);
 
-	ActionCheckPosition = new QAction(tr("Check Place"), this);
+	ActionCheckPosition = new QAction(tr("Check place"), this);
 	connect(ActionCheckPosition, SIGNAL(triggered()), this, SLOT(updateSelected()));
 	mTransferMenu->addAction(ActionCheckPosition);
 

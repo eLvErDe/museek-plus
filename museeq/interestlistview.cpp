@@ -53,7 +53,7 @@ InterestListView::InterestListView( const QString& caption,  QWidget* _p, bool r
 	connect(ActionRecommendations, SIGNAL(triggered()), this, SLOT(slotItemRecommendations()));
 	mPopup->addAction(ActionRecommendations);
 
-	ActionItemSimilarUsers = new QAction(tr("Similar Users for this Item"), this);
+	ActionItemSimilarUsers = new QAction(tr("Similar users for this Item"), this);
 	connect(ActionItemSimilarUsers, SIGNAL(triggered()), this, SLOT(slotItemSimilarUsers()));
 	mPopup->addAction(ActionItemSimilarUsers);
 

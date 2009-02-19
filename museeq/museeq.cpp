@@ -154,7 +154,7 @@ Museeq::Museeq(QApplication * app)
 
 	mTrayMenu = new QMenu();
 	mTrayMenu->addAction(tr("&Restore"), mMainWin , SLOT( showNormal() ) );
-	mTrayMenu->addAction(tr("&Museek Settings"),  mMainWin , SLOT( changeSettings()) );
+	mTrayMenu->addAction(tr("&Museek settings"),  mMainWin , SLOT( changeSettings()) );
 	mTrayMenu->addAction(tr("&Hide"),  mMainWin , SLOT( hide()  ) );
 	mTrayMenu->addSeparator();
 	mTrayMenu->addAction( tr("&Quit"),  mMainWin , SLOT( slotClose() ) );

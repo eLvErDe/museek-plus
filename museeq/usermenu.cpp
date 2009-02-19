@@ -71,7 +71,7 @@ Usermenu::Usermenu(QWidget* parent, const char* name)
 	connect(ActionAlert, SIGNAL(triggered()), this, SLOT(slotAlert()));
 	addAction(ActionAlert);
 
-	ActionComments = new QAction(IMG("comments"), tr("Edit Comments"), this);
+	ActionComments = new QAction(IMG("comments"), tr("Edit comments"), this);
 	connect(ActionComments, SIGNAL(triggered()), this, SLOT(slotComments()));
 	addAction(ActionComments);
 }

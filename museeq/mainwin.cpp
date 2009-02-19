@@ -107,7 +107,7 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(0, 0), m
 	connect(ActionCheckPrivileges, SIGNAL(triggered()), this, SLOT(checkPrivileges()));
 	mMenuFile->addAction(ActionCheckPrivileges);
 
-	ActionBrowseMyShares = new QAction(IMG("browser-small"), tr("&Browse My Shares"), this);
+	ActionBrowseMyShares = new QAction(IMG("browser-small"), tr("&Browse my shares"), this);
 	ActionBrowseMyShares->setShortcut(tr("Alt+B"));
 	connect(ActionBrowseMyShares, SIGNAL(triggered()), this, SLOT(getOwnShares()));
 	mMenuFile->addAction(ActionBrowseMyShares);
@@ -136,11 +136,11 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(0, 0), m
 
 	mMenuModes = menuBar()->addMenu(tr("&Modes"));
 
-	ActionChatRooms = new QAction(IMG("chatroom-small"), tr("&Chat Rooms"), this);
+	ActionChatRooms = new QAction(IMG("chatroom-small"), tr("&Chat rooms"), this);
 	connect(ActionChatRooms, SIGNAL(triggered()), this, SLOT(changeCMode()));
 	mMenuModes->addAction(ActionChatRooms);
 
-	ActionPrivateChat = new QAction(IMG("privatechat-small"), tr("&Private Chat"), this);
+	ActionPrivateChat = new QAction(IMG("privatechat-small"), tr("&Private chat"), this);
 	connect(ActionPrivateChat, SIGNAL(triggered()), this, SLOT(changePMode()));
 	mMenuModes->addAction(ActionPrivateChat);
 
@@ -152,11 +152,11 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(0, 0), m
 	connect(ActionSearch, SIGNAL(triggered()), this, SLOT(changeSMode()));
 	mMenuModes->addAction(ActionSearch);
 
-	ActionUserInfo = new QAction(IMG("userinfo-small"), tr("&User Info"), this);
+	ActionUserInfo = new QAction(IMG("userinfo-small"), tr("&User info"), this);
 	connect(ActionUserInfo, SIGNAL(triggered()), this, SLOT(changeUMode()));
 	mMenuModes->addAction(ActionUserInfo);
 
-	ActionBrowseShares = new QAction(IMG("browser-small"), tr("&Browse Shares"), this);
+	ActionBrowseShares = new QAction(IMG("browser-small"), tr("&Browse shares"), this);
 	connect(ActionBrowseShares, SIGNAL(triggered()), this, SLOT(changeBMode()));
 	mMenuModes->addAction(ActionBrowseShares);
 
@@ -403,9 +403,9 @@ void MainWindow::doDaemon() {
 void MainWindow::stopDaemon() {
 	if (Util::getMuseekdLock()) {
 		QProcess::startDetached("killall museekd");
-		messageLabel->setText(tr("Terminating Museek Daemon..."));
+		messageLabel->setText(tr("Terminating museek daemon..."));
 	} else {
-		messageLabel->setText(tr("Museek Daemon not running, no need to stop it..."));
+		messageLabel->setText(tr("Museek daemon not running, no need to stop it..."));
 	}
 
 }
@@ -704,7 +704,7 @@ void MainWindow::showIPDialog(const QString& user) {
 void MainWindow::changeTheme() {
 	QString _path = QString(DATADIR) + "/museek/museeq/themes/";
 	QDir dir  (_path);
-	QFileDialog * fd = new QFileDialog(this, tr("Enter a Museeq Icon Theme Directory"), dir.path());
+	QFileDialog * fd = new QFileDialog(this, tr("Enter a Museeq icon theme directory"), dir.path());
 	fd->setFileMode(QFileDialog::DirectoryOnly);
 
 	if(fd->exec() == QDialog::Accepted && ! fd->selectedFiles().isEmpty()){
@@ -1016,7 +1016,7 @@ void MainWindow::changeSettings() {
 
 
 void MainWindow::displayAboutDialog() {
-	QDialog * about = new QDialog;
+	QDialog * about = new QDialog(this);
 	about->setWindowTitle( tr("About Museeq"));
 	about->setMinimumSize( QSize( 400, 200 ) );
 	QVBoxLayout * aboutLayout = new QVBoxLayout(about);
@@ -1048,13 +1048,11 @@ void MainWindow::displayAboutQt() {
 	QMessageBox::aboutQt(this, tr("About Qt"));
 }
 void MainWindow::displayCommandsDialog() {
-	QMessageBox::information(this, tr("Museeq Commands"), tr("<h3>While in a chat window, such as a Chat Room, or a Private Chat, there are a number of commands available for use.</h3><b>/c /chat</b>   <i>(Switch to Chat Rooms)</i><br><b>/pm /private</b> &lt;nothing | username&gt;  <i>(Switch to Private Chat and start chatting with a user, if inputed)</i><br><b>/transfers</b>   <i>(Switch to Transfers)</i><br><b>/s /search</b> &lt;nothing | query>   <i>(Switch to Searchs and start a Search with &lt;query&gt; if inputed)</i><br><b>/u /userinfo</b> &lt;username&gt;   <i>(Switch to userinfo, and attempt to get a user's info, if inputed)</i><br><b>/b /browse</b> &lt;username&gt;    <i>(Switch to Browse and initate browsing a user, if inputed)</i><br><b>/ip</b> &lt;username&gt;   <i>(Get the IP of a user)</i><br><b>/log</b>    <i>(Toggle displaying the Special Message Log)</i><br><b>/t /ticker /tickers</b>   <i>(Toggle the showing of Tickers)</i> <br><b>/f /fonts /c /colors</b>   <i>(Open the Fonts and Colors settings dialog)</i><br><b>/ban /unban</b> &lt;username&gt;   <i>(Disallow/Allow a user to recieve your shares and download from you)</i><br><b>/ignore /unignore</b> &lt;username&gt;    <i>(Block/Unblock chat messages from a user)</i><br><b>/buddy /unbuddy</b> &lt;username&gt;   <i>(Add/Remove a user to keep track of it and add comments about it)</i><br><b>/trust /distrust</b> &lt;username&gt;    <i>(Add/Remove a user to the optional list of users who can send files to you)</i><br><b>/me</b> <does something>    <i>(Say something in the Third-Person)</i><br><b>/slap</b> &lt;username&gt;   <i>(Typical Trout-slapping)</i><br><b>/j /join</b> &lt;room&gt;    <i>(Join a Chat Room)</i><br><b>/l /p /leave /part</b> &lt;nothing | room&gt;    <i>(Leave the current room or inputed room)</i><br><b>/about /help /commands</b>    <i>(Display information)</i><br><br>Do not type the brackets, they are there only to make clear that something (or nothing) can be typed after the /command."));
+	QMessageBox::information(this, tr("Museeq commands"), tr("<h3>While in a chat window, such as a chat room, or a private chat, there are a number of commands available for use.</h3><b>/c /chat</b>   <i>(Switch to chat rooms)</i><br><b>/pm /private</b> &lt;nothing | username&gt;  <i>(Switch to private chat and start chatting with a user, if inputed)</i><br><b>/transfers</b>   <i>(Switch to transfers)</i><br><b>/s /search</b> &lt;nothing | query>   <i>(Switch to searches and start a search with &lt;query&gt; if inputed)</i><br><b>/u /userinfo</b> &lt;username&gt;   <i>(Switch to user info, and attempt to get a user's info, if inputed)</i><br><b>/b /browse</b> &lt;username&gt;    <i>(Switch to browse and initate browsing a user, if inputed)</i><br><b>/ip</b> &lt;username&gt;   <i>(Get the IP of a user)</i><br><b>/log</b>    <i>(Toggle displaying the special message Log)</i><br><b>/t /ticker /tickers</b>   <i>(Toggle the showing of tickers)</i><br><b>/setticker</b> &lt;short text&gt; <i>(Set the inputed text as ticker for the current room)</i> <br><b>/f /fonts /colors</b>   <i>(Open the fonts and colors settings dialog)</i><br><b>/clear</b><i> (Clear the chat history)</i><br><b>/ban /unban</b> &lt;username&gt;   <i>(Disallow/allow a user to receive your shares and download from you)</i><br><b>/ignore /unignore</b> &lt;username&gt;    <i>(Block/unblock chat messages from a user)</i><br><b>/buddy /unbuddy</b> &lt;username&gt;   <i>(Add/remove a user to keep track of it and add comments about it)</i><br><b>/trust /distrust</b> &lt;username&gt;    <i>(Add/remove a user to the optional list of users who can send files to you)</i><br><b>/me</b> <does something>    <i>(Say something in the third-person)</i><br><b>/slap</b> &lt;username&gt;   <i>(Typical trout-slapping)</i><br><b>/j /join</b> &lt;room&gt;    <i>(Join a chat room)</i><br><b>/l /p /leave /part</b> &lt;nothing | room&gt;    <i>(Leave the current room or inputed room)</i><br><b>/about /help /commands</b>    <i>(Display information)</i><br><b>/settings</b>    <i>(Display settings dialog)</i><br><br>Do not type the brackets, they are there only to make clear that something (or nothing) can be typed after the /command."));
 }
 
 void MainWindow::displayHelpDialog() {
-	QMessageBox::information(this, tr("Museeq Help"), tr("<h3>What's going on? I can't connect to a Soulseek Server with museeq!</h3> You connect to museekd with museeq, so you need to have <b>museekd</b> configured, running <u>and</u> connected to a <b>Soulseek</b> or Soulfind server. <br> <h3>Running for the first time?</h3> Before you start museekd for the first time, you need to configure <b>museekd</b> with <b>musetup</b>,  a command-line configuration script.<br><br> In musetup you <b>MUST</b> configure the following items: Server, Username, Password, Interface Password, Download Dir<br> Also, take note of your interfaces, if you change them from the default localhost:2240 and /tmp/museek.<tt>USERNAME</tt>, you'll need to know them for logging in with museeq. <br><br> When you start museeq or choose File->Connect from the menu, you are asked to input the host and port, or Unix Socket of museekd, <b>not</b> the Server.<br> <h3>Want to send someone a file?</h3> Browse yourself, select file(s), and right-click->Upload. Input their name in the dialog box, and the upload should start, but it depends on if the user has place you on their \"trusted\" or \"uploads\" users list .<br>Once you're connected to museekd, change museekd options via Settings->Museek"));
-
-
+	QMessageBox::information(this, tr("Museeq help"), tr("<h3>What's going on? I can't connect to a Soulseek server with museeq!</h3>You connect to museekd with museeq, so you need to have <b>museekd</b> configured, running <u>and</u> connected to a <b>Soulseek</b> or Soulfind server. <br> <h3>Running for the first time?</h3> Before you start museekd for the first time, you need to configure <b>museekd</b> with <b>musetup</b>,  a command-line configuration script.<br><br> In musetup you <b>MUST</b> configure the following items: Server, Username, Password, Interface Password, Download Dir.<br> Also, take note of your interfaces, if you change them from the default localhost:2240 and /tmp/museek.<tt>USERNAME</tt>, you'll need to know them for logging in with museeq. <br><br> When you start museeq or choose Settings->Configure... from the menu, you are asked to input the host and port, or Unix Socket of museekd, <b>not</b> the server.<br>Once you're connected to museekd, change museekd options via Settings->Museek daemon. <h3>Want to send someone a file?</h3> Browse yourself, select file(s), and right-click->Upload. Input their name in the dialog box, and the upload should start, but it depends on if the user has place you on their \"trusted\" or \"uploads\" users list."));
 }
 
  // added by d ^^
@@ -1094,7 +1092,7 @@ void MainWindow::getOwnShares() {
 void MainWindow::slotPrivilegesLeft(uint seconds) {
 	if(mWaitingPrivs) {
 		mWaitingPrivs = false;
-		QMessageBox::information(this, tr("Museeq - Soulseek Privileges"), QString(tr("You have %1 days, %2 hours, %3 minutes and %4 seconds of privileges left")).arg(seconds/(24*60*60)).arg((seconds/(60*60)) % 24).arg((seconds / 60) % 60).arg(seconds % 60));
+		QMessageBox::information(this, tr("Soulseek network privileges"), QString(tr("You have %1 days, %2 hours, %3 minutes and %4 seconds of privileges left")).arg(seconds/(24*60*60)).arg((seconds/(60*60)) % 24).arg((seconds / 60) % 60).arg(seconds % 60));
 	}
 }
 
@@ -1125,7 +1123,7 @@ void MainWindow::closeEvent(QCloseEvent * ev) {
     if ( museeq->settings()->value("ShowExitDialog", true).toBool()) {
         bool museekdRunning = Util::getMuseekdLock();
 		if (museekdRunning) {
-		    QMessageBox::StandardButton resp = QMessageBox::question(this, tr("Shutdown Museeq"), tr("The Museek daemon is still running. Do you want to close it?"), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Cancel );
+		    QMessageBox::StandardButton resp = QMessageBox::question(this, tr("Close Museeq"), tr("The Museek daemon is still running. Do you want to close it?"), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Cancel );
 			if (resp == QMessageBox::Cancel ) {
                 ev->ignore();
 				return;
@@ -1134,7 +1132,7 @@ void MainWindow::closeEvent(QCloseEvent * ev) {
 			    shutdownDaemon = (resp == QMessageBox::Yes);
 		}
 		else {
-			if ( QMessageBox::question(this, tr("Shutdown Museeq"), tr("It's safe to close Museeq, but are you sure you want to?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::No ) ==  QMessageBox::No) {
+			if ( QMessageBox::question(this, tr("Close Museeq"), tr("It's safe to close Museeq, but are you sure you want to?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::No ) ==  QMessageBox::No) {
                 ev->ignore();
 				return;
 			}
@@ -1163,7 +1161,7 @@ void MainWindow::slotClose() {
 
 void MainWindow::loadScript() {
 #ifdef HAVE_QTSCRIPT
-	QString fn = QFileDialog::getOpenFileName(this, tr("Load Script"), "", "*.qs");
+	QString fn = QFileDialog::getOpenFileName(this, tr("Load script"), "", "*.qs");
 	if(! fn.isEmpty())
         museeq->loadScript(fn);
 #endif // HAVE_QTSCRIPT
@@ -1215,7 +1213,7 @@ bool MainWindow::askPassword(QString & pass) {
 	vLayout->addWidget(password);
 
 	QCheckBox * savePassword = new QCheckBox( askPass );
-	savePassword->setText( tr( "&Save Password" ) );
+	savePassword->setText( tr( "&Save password" ) );
 	vLayout->addWidget(savePassword);
 
 	QHBoxLayout * buttonLayout = new QHBoxLayout;
