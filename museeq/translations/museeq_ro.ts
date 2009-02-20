@@ -2019,12 +2019,12 @@
         <translation type="obsolete">*Caută*</translation>
     </message>
     <message>
-        <location filename="../searches.cpp" line="96"/>
+        <location filename="../searches.cpp" line="94"/>
         <source>*Interests*</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../searches.cpp" line="101"/>
+        <location filename="../searches.cpp" line="99"/>
         <source>*Wishlist*</source>
         <translation type="unfinished"></translation>
     </message>

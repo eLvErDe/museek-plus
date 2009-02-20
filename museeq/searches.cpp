@@ -82,8 +82,6 @@ Searches::Searches(QWidget* parent, const char* name)
 
 	searchModeSelected();
 	connect(mEntry->lineEdit(), SIGNAL(returnPressed()), SLOT(doSearch()));
-	connect(mEntry, SIGNAL(highlighted(const QString&)), SLOT(setSearchText(const QString&)));
-	connect(mUserEntry, SIGNAL(highlighted(const QString&)), SLOT(setUserSearchText(const QString&)));
 	connect(mUserEntry->lineEdit(), SIGNAL(returnPressed()), SLOT(doSearch()));
 	connect(mUser, SIGNAL(toggled(bool)), SLOT(searchModeSelected()));
 	connect(mSearch, SIGNAL(clicked()), SLOT(doSearch()));
