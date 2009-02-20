@@ -251,7 +251,7 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Q
 	SActive = new QRadioButton( mConnectionsTab );
 	SActive->setToolTip(tr("Choose active if museekd cannot receive direct connections.\nChoose passive if you're unsure."));
 	SPassive = new QRadioButton( SActive);
-	SActive->setToolTip(tr("Choose passive if museekd can receive direct connections.\nChoose passive if you're unsure."));
+	SActive->setToolTip(tr("Choose passive if museekd can receive direct connections, or if you're unsure."));
 
 	cboxLayout->addWidget(SActive);
 	cboxLayout->addWidget(SPassive);

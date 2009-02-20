@@ -550,29 +550,29 @@ void MainWindow::connectToMuseekPS(const QString& server, const QString& passwor
 	if(mSettingsDialog->mDConnectType->currentIndex() == 0) {
 		int ix = server.indexOf(':');
 		quint16 port = server.mid(ix+1).toUInt();
-		qDebug("Connecting to museek... Looking up host");
-		messageLabel->setText(tr("Connecting to museek... Looking up host"));
+		qDebug("Connecting to the daemon... Looking up host");
+		messageLabel->setText(tr("Connecting to the daemon... Looking up host"));
 		museeq->driver()->connectToHost(server.left(ix), port, password);
 	} else {
-		qDebug("Connecting to museek...");
-		messageLabel->setText(tr("Connecting to museek..."));
+		qDebug("Connecting to the daemon...");
+		messageLabel->setText(tr("Connecting to the daemon..."));
 		museeq->driver()->connectToUnix(server, password);
 	}
 }
 
 void MainWindow::slotHostFound() {
-	qDebug("Connecting to museek... Connecting");
-	messageLabel->setText(tr("Connecting to museek... Connecting"));
+	qDebug("Connecting to the daemon... Connecting");
+	messageLabel->setText(tr("Connecting to the daemon... Connecting"));
 }
 
 void MainWindow::slotConnected() {
-	qDebug("Connecting to museek... Logging in");
-	messageLabel->setText(tr("Connecting to museek... Logging in"));
+	qDebug("Connecting to the daemon... Logging in");
+	messageLabel->setText(tr("Connecting to the daemon... Logging in"));
 }
 
 void MainWindow::slotDisconnected() {
 	centralWidget()->setEnabled(false);
-	messageLabel->setText(tr("Disconnected from museek"));
+	messageLabel->setText(tr("Disconnected from the daemon"));
 	statusLabel->setText(tr("Status:")+" "+tr("Disconnected"));
 	ActionConnect->setEnabled(true);
 	ActionDisconnect->setEnabled(false);
@@ -586,10 +586,10 @@ void MainWindow::slotDisconnected() {
 void MainWindow::slotError(QAbstractSocket::SocketError e) {
 	switch(e) {
 	case QAbstractSocket::ConnectionRefusedError:
-		messageLabel->setText(tr("Cannot connect to museek... Connection refused"));
+		messageLabel->setText(tr("Cannot connect to the daemon... Connection refused"));
 		break;
 	case QAbstractSocket::HostNotFoundError:
-		messageLabel->setText(tr("Cannot connect to museek... Host not found"));
+		messageLabel->setText(tr("Cannot connect to the daemon... Host not found"));
 		break;
 	default:
 		messageLabel->setText(tr("socket error"));
@@ -605,7 +605,7 @@ void MainWindow::slotError(QAbstractSocket::SocketError e) {
 
 void MainWindow::slotLoggedIn(bool success, const QString& msg) {
 	if(success) {
-		messageLabel->setText(tr("Logged in to museek"));
+		messageLabel->setText(tr("Logged in to the daemon"));
 		statusLabel->setText(tr("Status:")+" "+tr("Connected"));
 		centralWidget()->setEnabled(true);
 		mSettingsDialog->mTabHolder->setTabEnabled(mSettingsDialog->mTabHolder->indexOf(mSettingsDialog->mMuseekdTabs), true);

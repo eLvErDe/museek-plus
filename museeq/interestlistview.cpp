@@ -49,11 +49,11 @@ InterestListView::InterestListView( const QString& caption,  QWidget* _p, bool r
         mPopup->addAction(ActionRemove);
     }
 
-	ActionRecommendations = new QAction(tr("Recommendations for this Item"), this);
+	ActionRecommendations = new QAction(tr("Recommendations for this item"), this);
 	connect(ActionRecommendations, SIGNAL(triggered()), this, SLOT(slotItemRecommendations()));
 	mPopup->addAction(ActionRecommendations);
 
-	ActionItemSimilarUsers = new QAction(tr("Similar users for this Item"), this);
+	ActionItemSimilarUsers = new QAction(tr("Similar users for this item"), this);
 	connect(ActionItemSimilarUsers, SIGNAL(triggered()), this, SLOT(slotItemSimilarUsers()));
 	mPopup->addAction(ActionItemSimilarUsers);
 

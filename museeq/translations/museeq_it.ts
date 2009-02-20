@@ -471,7 +471,7 @@
     <message>
         <location filename="../interestlistview.cpp" line="52"/>
         <source>Recommendations for this Item</source>
-        <translation>Raccomandazioni per questo oggetto</translation>
+        <translation type="obsolete">Raccomandazioni per questo oggetto</translation>
     </message>
     <message>
         <location filename="../interestlistview.cpp" line="56"/>
@@ -479,8 +479,13 @@
         <translation type="obsolete">Utenti simili per questo oggetto</translation>
     </message>
     <message>
+        <location filename="../interestlistview.cpp" line="52"/>
+        <source>Recommendations for this item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../interestlistview.cpp" line="56"/>
-        <source>Similar users for this Item</source>
+        <source>Similar users for this item</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -677,42 +682,42 @@
     <message>
         <location filename="../mainwin.cpp" line="554"/>
         <source>Connecting to museek... Looking up host</source>
-        <translation>Connessione a museek... Ricerca host</translation>
+        <translation type="obsolete">Connessione a museek... Ricerca host</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="558"/>
         <source>Connecting to museek...</source>
-        <translation>Connessione a museek...</translation>
+        <translation type="obsolete">Connessione a museek...</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="565"/>
         <source>Connecting to museek... Connecting</source>
-        <translation>Connessione a museek... Connessione</translation>
+        <translation type="obsolete">Connessione a museek... Connessione</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="570"/>
         <source>Connecting to museek... Logging in</source>
-        <translation>Connessione a museek... Log in</translation>
+        <translation type="obsolete">Connessione a museek... Log in</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="575"/>
         <source>Disconnected from museek</source>
-        <translation>Disconnesso da museek</translation>
+        <translation type="obsolete">Disconnesso da museek</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="589"/>
         <source>Cannot connect to museek... Connection refused</source>
-        <translation>Non può connettersi a museek... Connessione rifiutata</translation>
+        <translation type="obsolete">Non può connettersi a museek... Connessione rifiutata</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="592"/>
         <source>Cannot connect to museek... Host not found</source>
-        <translation>Non può connettersi a museek... Host non trovato</translation>
+        <translation type="obsolete">Non può connettersi a museek... Host non trovato</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="608"/>
         <source>Logged in to museek</source>
-        <translation>Connesso a museek</translation>
+        <translation type="obsolete">Connesso a museek</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="618"/>
@@ -1094,6 +1099,46 @@
     <message>
         <location filename="../mainwin.cpp" line="1051"/>
         <source>&lt;h3&gt;While in a chat window, such as a chat room, or a private chat, there are a number of commands available for use.&lt;/h3&gt;&lt;b&gt;/c /chat&lt;/b&gt;   &lt;i&gt;(Switch to chat rooms)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/pm /private&lt;/b&gt; &amp;lt;nothing | username&amp;gt;  &lt;i&gt;(Switch to private chat and start chatting with a user, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/transfers&lt;/b&gt;   &lt;i&gt;(Switch to transfers)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/s /search&lt;/b&gt; &amp;lt;nothing | query&gt;   &lt;i&gt;(Switch to searches and start a search with &amp;lt;query&amp;gt; if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/u /userinfo&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Switch to user info, and attempt to get a user&apos;s info, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/b /browse&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Switch to browse and initate browsing a user, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ip&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Get the IP of a user)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/log&lt;/b&gt;    &lt;i&gt;(Toggle displaying the special message Log)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/t /ticker /tickers&lt;/b&gt;   &lt;i&gt;(Toggle the showing of tickers)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/setticker&lt;/b&gt; &amp;lt;short text&amp;gt; &lt;i&gt;(Set the inputed text as ticker for the current room)&lt;/i&gt; &lt;br&gt;&lt;b&gt;/f /fonts /colors&lt;/b&gt;   &lt;i&gt;(Open the fonts and colors settings dialog)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/clear&lt;/b&gt;&lt;i&gt; (Clear the chat history)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ban /unban&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Disallow/allow a user to receive your shares and download from you)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ignore /unignore&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Block/unblock chat messages from a user)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/buddy /unbuddy&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Add/remove a user to keep track of it and add comments about it)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/trust /distrust&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Add/remove a user to the optional list of users who can send files to you)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/me&lt;/b&gt; &lt;does something&gt;    &lt;i&gt;(Say something in the third-person)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/slap&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Typical trout-slapping)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/j /join&lt;/b&gt; &amp;lt;room&amp;gt;    &lt;i&gt;(Join a chat room)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/l /p /leave /part&lt;/b&gt; &amp;lt;nothing | room&amp;gt;    &lt;i&gt;(Leave the current room or inputed room)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/about /help /commands&lt;/b&gt;    &lt;i&gt;(Display information)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/settings&lt;/b&gt;    &lt;i&gt;(Display settings dialog)&lt;/i&gt;&lt;br&gt;&lt;br&gt;Do not type the brackets, they are there only to make clear that something (or nothing) can be typed after the /command.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwin.cpp" line="554"/>
+        <source>Connecting to the daemon... Looking up host</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwin.cpp" line="558"/>
+        <source>Connecting to the daemon...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwin.cpp" line="570"/>
+        <source>Connecting to the daemon... Logging in</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwin.cpp" line="575"/>
+        <source>Disconnected from the daemon</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwin.cpp" line="565"/>
+        <source>Connecting to the daemon... Connecting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwin.cpp" line="589"/>
+        <source>Cannot connect to the daemon... Connection refused</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwin.cpp" line="592"/>
+        <source>Cannot connect to the daemon... Host not found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwin.cpp" line="608"/>
+        <source>Logged in to the daemon</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2388,12 +2433,6 @@ Choose passive if you&apos;re unsure.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="254"/>
-        <source>Choose passive if museekd can receive direct connections.
-Choose passive if you&apos;re unsure.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../settingsdialog.cpp" line="660"/>
         <source>S&amp;ave password</source>
         <translation type="unfinished"></translation>
@@ -2431,6 +2470,11 @@ Choose passive if you&apos;re unsure.</source>
     <message>
         <location filename="../settingsdialog.cpp" line="1456"/>
         <source>Select...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settingsdialog.cpp" line="254"/>
+        <source>Choose passive if museekd can receive direct connections, or if you&apos;re unsure.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
