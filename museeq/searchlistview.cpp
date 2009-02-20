@@ -309,6 +309,13 @@ SearchListItem::SearchListItem(QTreeWidget* parent, quint64 n, const QString& us
 		setText(7, Util::makeTime(mLength));
 	if(mBitrate)
 		setText(8, Util::makeBitrate(mBitrate, mVBR));
+
+    if (!mFree) {
+        QBrush brush = QBrush(QApplication::palette().color(QPalette::Disabled, QPalette::Text));
+        for (int i = 0; i < 10; ++i) {
+            setForeground(i, brush);
+        }
+    }
 }
 
 bool SearchListItem::operator<(const QTreeWidgetItem & other_) const {
