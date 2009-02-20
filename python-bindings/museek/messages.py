@@ -783,7 +783,7 @@ class DownloadFile(BaseMessage):
 		return self.pack_uint(self.code) + \
 			self.pack_string(self.user) + \
 			self.pack_string(self.path) + \
-			self.pack_off(self.path)
+			self.pack_off(self.size)
 
 class GetFolderContents(BaseMessage):
 	code = 0x0504
