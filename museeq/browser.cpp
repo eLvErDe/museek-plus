@@ -141,11 +141,14 @@ void Browser::setShares(const NShares& shares) {
 	mFolders->setShares(mShares);
 	mFolders->setEnabled(true);
 	mFiles->setEnabled(true);
+    mRefresh->setEnabled(true);
 	emit(highlight(1));
     mLoading = false;
 }
 
 void Browser::getShares() {
+    mFileCount->setText(tr("Haven't received shares"));
+    mRefresh->setEnabled(false);
 	museeq->getUserShares(mUser);
 }
 
