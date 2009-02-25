@@ -202,6 +202,7 @@ protected slots:
 	void slotDisconnected();
 	void slotError(QAbstractSocket::SocketError);
 	void connectionTypeChanged(int);
+	void slotConnectedToServer(bool);
 
 protected:
 	void closeEvent(QCloseEvent *);

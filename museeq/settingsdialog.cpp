@@ -579,6 +579,8 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Q
 
 	connect(museeq, SIGNAL(configChanged(const QString&, const QString&, const QString&)), SLOT(slotConfigChanged(const QString&, const QString&, const QString&)));
 
+	connect(museeq, SIGNAL(connectedToServer(bool)), SLOT(slotConnectedToServer(bool)));
+
     loadSettings();
 }
 
@@ -1612,4 +1614,9 @@ void SettingsDialog::slotAddressChanged(const QString& text) {
 		else if ((text[0] != '/') && (mDConnectType->currentIndex() != 0))
             mDConnectType->setCurrentIndex(0);
 	}
+}
+
+void SettingsDialog::slotConnectedToServer(bool connected) {
+    SDisconnect->setEnabled(connected);
+    SConnect->setEnabled(!connected);
 }
