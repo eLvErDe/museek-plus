@@ -375,7 +375,7 @@ Shares Museek::SharesDatabase::folder_contents(const std::string& _f) {
 
 	std::map<std::string, DirEntry*>::iterator it = mRecoded.folders.begin();
 	for(; it != mRecoded.folders.end(); ++it) {
-		if((*it).first == q || (*it).first.substr(0, q.size()+1) == q + '\\' || (*it).first.substr(0, q.size()) == q )
+		if(((*it).first == q) || ((*it).first.substr(0, q.size()+1) == q + '\\'))
 			{
 			r_map[(*it).first ] = (*it).second->files;
 			}

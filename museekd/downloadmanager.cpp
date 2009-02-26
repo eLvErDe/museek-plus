@@ -455,6 +455,12 @@ void Museek::DownloadManager::addFolderContents(const std::string & user, const 
         for (sit = fit->second.begin(); sit != fit->second.end(); sit++) {
             // Remote path where the file is located (=remotePath without the filename)
             std::string remotePathDir = museekd()->codeset()->fromPeer(user, sit->first);
+
+            // Some clients (official one for example) sends us files from folder /example/folder2 when asking only for /example/folder
+            // Just throw away the wrongly sent files
+            if (std::string(remotePathDir + '\\').find(remotePathBase + '\\') != 0)
+                continue;
+
             std::string localPath; // Complete local path of the file
             // Construct destination path
             if (localPathBase != std::string())
