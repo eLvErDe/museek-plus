@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="1.1" language="en">
+<defaultcodec></defaultcodec>
 <context>
     <name>BanList</name>
     <message>
@@ -150,9 +151,9 @@
     <message numerus="yes">
         <location filename="../browser.cpp" line="711"/>
         <source>%n file(s)</source>
-        <translation type="unfinished">
+        <translation>
             <numerusform>%n file</numerusform>
-            <numerusform>%n file(s)</numerusform>
+            <numerusform>%n files</numerusform>
         </translation>
     </message>
     <message>
@@ -191,7 +192,7 @@
     <message numerus="yes">
         <location filename="../browser.cpp" line="348"/>
         <source>%n folder(s)</source>
-        <translation type="unfinished">
+        <translation>
             <numerusform>%n folder</numerusform>
             <numerusform>%n folders</numerusform>
         </translation>
@@ -1184,7 +1185,7 @@
     <message numerus="yes">
         <location filename="../searchlistview.cpp" line="266"/>
         <source>%n search result(s)</source>
-        <translation type="unfinished">
+        <translation>
             <numerusform>%n search result</numerusform>
             <numerusform>%n search results</numerusform>
         </translation>
@@ -1192,7 +1193,7 @@
     <message numerus="yes">
         <location filename="../searchlistview.cpp" line="266"/>
         <source> (%n user(s))</source>
-        <translation type="unfinished">
+        <translation>
             <numerusform> (%n user)</numerusform>
             <numerusform> (%n users)</numerusform>
         </translation>
@@ -1958,7 +1959,7 @@ Choose passive if you&apos;re unsure.</source>
     <message numerus="yes">
         <location filename="../transferlistview.cpp" line="290"/>
         <source>%n transfer(s)</source>
-        <translation type="unfinished">
+        <translation>
             <numerusform>%n transfer</numerusform>
             <numerusform>%n transfers</numerusform>
         </translation>
@@ -1966,7 +1967,7 @@ Choose passive if you&apos;re unsure.</source>
     <message numerus="yes">
         <location filename="../transferlistview.cpp" line="290"/>
         <source> (%n user(s))</source>
-        <translation type="unfinished">
+        <translation>
             <numerusform> (%n user)</numerusform>
             <numerusform> (%n users)</numerusform>
         </translation>
