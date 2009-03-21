@@ -181,6 +181,29 @@ Museek::Download::setPosition(uint64 position)
 }
 
 /**
+  * Set the position in the downloaded file looking at the possibly existing incomplete file
+  */
+void
+Museek::Download::setPositionFromIncompleteFile()
+{
+    std::string temppath = incompletePath();
+
+    if(temppath == std::string()) // No incomplete path set
+        return;
+
+    uint64 position = 0;
+
+    std::ifstream ifs(temppath.c_str(), std::ifstream::in);
+    if (!ifs.fail()) {
+        ifs.seekg (0, std::ios_base::end);
+        position = ifs.tellg();
+        ifs.seekg (0, std::ios_base::beg);
+    }
+    ifs.close();
+    setPosition(position);
+}
+
+/**
   * Called when some data has been received from the peer
   */
 void
@@ -709,6 +732,7 @@ Museek::DownloadManager::add(const std::string & user, const std::string & path,
 
     download->setEnqueued(false); // Ensure we're gonna enqueue it even it has already been done previously (useful when we want to retry)
     download->setState(TS_QueuedRemotely);
+    download->setPositionFromIncompleteFile();
 
     // Check that we don't already have this file downloaded in destination dir
     std::ifstream file(download->destinationPath().c_str(), std::fstream::in | std::fstream::binary);
@@ -1028,7 +1052,7 @@ void Museek::DownloadManager::loadDownloads() {
 
 	while(n) {
 		uint32 state;
-		uint64 size, position = 0;
+		uint64 size;
 		std::string user, path, localpath, temppath;
 		if(!read_int(&file, &state) ||
 		   !read_str(&file, user) ||
@@ -1053,14 +1077,7 @@ void Museek::DownloadManager::loadDownloads() {
                 dl->setSize(size);
                 dl->setIncompletePath(temppath);
 
-                std::ifstream ifs(temppath.c_str(), std::ifstream::in);
-                if (!ifs.fail()) {
-                    ifs.seekg (0, std::ios_base::end);
-                    position = ifs.tellg();
-                    ifs.seekg (0, std::ios_base::beg);
-                }
-                ifs.close();
-                dl->setPosition(position);
+                dl->setPositionFromIncompleteFile();
             }
 		}
 		else

@@ -78,6 +78,7 @@ namespace Museek
     void setSize(uint64 size);
     uint64 position() const { return m_Position; }
     void setPosition(uint64 position);
+    void setPositionFromIncompleteFile();
 
     void received(uint bytes);
 
