@@ -52,6 +52,10 @@ static QString _list[] = {
 	"CP1257",
 	"CP1258",
 	"CP874",
+	"EUC-KR",
+	"EUC-JP",
+	"EUC-CN",
+	"Big5",
 	QString::null // Empty string, important!
 };
 
