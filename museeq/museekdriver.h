@@ -148,6 +148,7 @@ protected:
 
 protected slots:
 	void dataReady();
+	void readMessage();
 
 private:
 	QTcpSocket* mSocket;

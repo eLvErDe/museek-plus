@@ -97,28 +97,7 @@ void MuseekDriver::disconnect() {
 	}
 }
 
-void MuseekDriver::dataReady() {
-
-	if(! mSocket) { return; }
-	if(! mHaveSize) {
-		if(mSocket->bytesAvailable() < 4)
-			return;
-
-		unsigned char buf[4];
-		if(mSocket->read((char *)buf, 4) != 4)
-			printf("FAILURE TO READ MsgSize\n");
-
-		mHaveSize = true;
-		mMsgSize = 0;
-
-		for(int i = 0; i < 4; i++)
-			mMsgSize += buf[i] << (i * 8);
-
-	}
-
-	if(mSocket->bytesAvailable() < mMsgSize)
-		return;
-
+void MuseekDriver::readMessage() {
 	mHaveSize = false;
 	unsigned char buf[4];
 	if(mSocket->read((char *)buf, 4) != 4)
@@ -368,9 +347,31 @@ void MuseekDriver::dataReady() {
 	default:
 		qDebug() << "Unknown message " << mtype;
 	}
+}
 
-	dataReady();
+void MuseekDriver::dataReady() {
 
+	while (mSocket) {
+		if(! mHaveSize) {
+			if(mSocket->bytesAvailable() < 4)
+				break;
+
+			unsigned char buf[4];
+			if(mSocket->read((char *)buf, 4) != 4)
+				printf("FAILURE TO READ MsgSize\n");
+
+			mHaveSize = true;
+			mMsgSize = 0;
+
+			for(int i = 0; i < 4; i++)
+				mMsgSize += buf[i] << (i * 8);
+		}
+
+		if(mSocket->bytesAvailable() < mMsgSize)
+			break;
+
+		readMessage();
+	}
 }
 
 void MuseekDriver::send(const MuseekMessage& m) {
