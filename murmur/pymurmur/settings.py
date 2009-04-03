@@ -3441,7 +3441,7 @@ class Settings( gtk.Dialog):
 			self.app.Muscan.GetConfig()
 			
 			self.CONFIG_PATH = self.app.Muscan.configfile
-
+			config = self.config
 			self.EntryServerHost.set_text(self.config["server"]["host"])
 			self.ServerPort.set_value(int(self.config["server"]["port"]))
 			self.EntryServerPassword.set_text(self.config["server"]["password"])
@@ -3491,9 +3491,12 @@ class Settings( gtk.Dialog):
 				self.user_warnings_Check.set_active(False)
 			self.uploadSlots.set_value(int(self.config["transfers"]["upload_slots"]))
 			self.uploadRate.set_value(int(self.config["transfers"]["upload_rate"]))
-			self.downloadSlots.set_value(int(self.config["transfers"]["download_slots"]))
-			self.downloadRate.set_value(int(self.config["transfers"]["download_rate"]))
-			self.EntryDownloadDIr.set_text(str(self.config["transfers"]["download-dir"]))
+			if "download_slots" in config["transfers"].keys():
+				self.downloadSlots.set_value(int(self.config["transfers"]["download_slots"]))
+			if "download_rate" in config["transfers"].keys():
+				self.downloadRate.set_value(int(self.config["transfers"]["download_rate"]))
+			if "download-dir" in config["transfers"].keys():
+				self.EntryDownloadDIr.set_text(str(self.config["transfers"]["download-dir"]))
 			self.EntryIncompleteDir.set_text(str(self.config["transfers"]["incomplete-dir"]))
 			self.EntryDownloadsDBase.set_text(str(self.config["transfers"]["downloads"]))
 			# Chat rooms
