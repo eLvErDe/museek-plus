@@ -774,7 +774,7 @@ class TransferRemove(BaseMessage):
 class DownloadFile(BaseMessage):
 	code = 0x0503
 	
-	def __init__(self, user = None, path = None, size = None):
+	def __init__(self, user = None, path = None, size = 0):
 		self.user = user
 		self.path = path
 		self.size = size
@@ -837,7 +837,7 @@ class UploadFile(BaseMessage):
 class DownloadFileTo(BaseMessage):
 	code = 0x0507
 	
-	def __init__(self, user = None, path = None, dpath = None, size = None):
+	def __init__(self, user = None, path = None, dpath = None, size = 0):
 		self.user = user
 		self.path = path
 		self.dpath = dpath
