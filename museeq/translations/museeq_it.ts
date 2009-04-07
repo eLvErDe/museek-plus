@@ -385,32 +385,32 @@
         <translation>&amp;Modi</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="183"/>
+        <location filename="../mainwin.cpp" line="165"/>
         <source>&amp;Commands...</source>
         <translation>&amp;Comandi...</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="187"/>
+        <location filename="../mainwin.cpp" line="169"/>
         <source>&amp;Help...</source>
         <translation>&amp;Aiuto...</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="181"/>
+        <location filename="../mainwin.cpp" line="163"/>
         <source>&amp;Help</source>
         <translation>&amp;Aiuto</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="166"/>
+        <location filename="../mainwin.cpp" line="186"/>
         <source>&amp;Load script...</source>
         <translation>&amp;Carica script...</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="170"/>
+        <location filename="../mainwin.cpp" line="190"/>
         <source>&amp;Unload script</source>
         <translation>&amp;Rimuovi script</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="164"/>
+        <location filename="../mainwin.cpp" line="184"/>
         <source>Sc&amp;ripts</source>
         <translation>Sc&amp;ript</translation>
     </message>
@@ -582,7 +582,7 @@
         <translation>Riguardo a Qt</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="197"/>
+        <location filename="../mainwin.cpp" line="179"/>
         <source>&amp;About Museeq</source>
         <translation>Rigu&amp;ardo a Museeq</translation>
     </message>

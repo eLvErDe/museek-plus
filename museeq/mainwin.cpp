@@ -160,24 +160,6 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(0, 0), m
 	connect(ActionBrowseShares, SIGNAL(triggered()), this, SLOT(changeBMode()));
 	mMenuModes->addAction(ActionBrowseShares);
 
-#ifdef HAVE_QTSCRIPT
-    mMenuScripts = menuBar()->addMenu(tr("Sc&ripts"));
-
-    ActionLoadScript = new QAction(tr("&Load script..."), this);
-	connect(ActionLoadScript, SIGNAL(triggered()), this, SLOT(loadScript()));
-
-    mMenuScripts->addAction(ActionLoadScript);
-	mMenuUnloadScripts = mMenuScripts->addMenu(tr("&Unload script"));
-
-    mMenuScripts->addSeparator();
-
-    museeq->registerMenu("File", mMenuFile);
-    museeq->registerMenu("Settings", mMenuSettings);
-    museeq->registerMenu("Modes", mMenuModes);
-    museeq->registerMenu("Scripts", mMenuScripts);
-    museeq->registerMenu("Help", mMenuHelp);
-#endif // HAVE_QTSCRIPT
-
 	mMenuHelp = menuBar()->addMenu(tr("&Help"));
 
 	ActionCommands = new QAction(IMG("help"), tr("&Commands..."), this);
@@ -197,6 +179,24 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(0, 0), m
 	ActionAbout = new QAction(IMG("help"), tr("&About Museeq"), this);
 	connect(ActionAbout, SIGNAL(triggered()), this, SLOT(displayAboutDialog()));
 	mMenuHelp->addAction(ActionAbout);
+
+#ifdef HAVE_QTSCRIPT
+    mMenuScripts = menuBar()->addMenu(tr("Sc&ripts"));
+
+    ActionLoadScript = new QAction(tr("&Load script..."), this);
+	connect(ActionLoadScript, SIGNAL(triggered()), this, SLOT(loadScript()));
+
+    mMenuScripts->addAction(ActionLoadScript);
+	mMenuUnloadScripts = mMenuScripts->addMenu(tr("&Unload script"));
+
+    mMenuScripts->addSeparator();
+
+    museeq->registerMenu("File", mMenuFile);
+    museeq->registerMenu("Settings", mMenuSettings);
+    museeq->registerMenu("Modes", mMenuModes);
+    museeq->registerMenu("Scripts", mMenuScripts);
+    museeq->registerMenu("Help", mMenuHelp);
+#endif // HAVE_QTSCRIPT
 
 	statusLabel = new QLabel(this);
 	messageLabel = new QLabel(this);

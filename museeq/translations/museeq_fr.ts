@@ -390,32 +390,32 @@
         <translation>&amp;Onglets</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="183"/>
+        <location filename="../mainwin.cpp" line="165"/>
         <source>&amp;Commands...</source>
         <translation>&amp;Commandes...</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="187"/>
+        <location filename="../mainwin.cpp" line="169"/>
         <source>&amp;Help...</source>
         <translation>&amp;Aide...</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="181"/>
+        <location filename="../mainwin.cpp" line="163"/>
         <source>&amp;Help</source>
         <translation>&amp;Aide</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="166"/>
+        <location filename="../mainwin.cpp" line="186"/>
         <source>&amp;Load script...</source>
         <translation>&amp;Démarrer un script...</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="170"/>
+        <location filename="../mainwin.cpp" line="190"/>
         <source>&amp;Unload script</source>
         <translation>&amp;Arrêter un script</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="164"/>
+        <location filename="../mainwin.cpp" line="184"/>
         <source>Sc&amp;ripts</source>
         <translation>&amp;Scripts</translation>
     </message>
@@ -582,7 +582,7 @@
         <translation>À propos de Qt</translation>
     </message>
     <message>
-        <location filename="../mainwin.cpp" line="197"/>
+        <location filename="../mainwin.cpp" line="179"/>
         <source>&amp;About Museeq</source>
         <translation>&amp;À propos de Museeq</translation>
     </message>
