@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'chatroom.ui'
 #
-# Created: Thu Jul  2 11:22:56 2009
+# Created: Thu Jul  2 16:15:19 2009
 #      by: PyQt4 UI code generator 4.5.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -37,16 +37,20 @@ class Ui_Room(object):
         self.splitter.setSizePolicy(sizePolicy)
         self.splitter.setOrientation(QtCore.Qt.Vertical)
         self.splitter.setObjectName("splitter")
-        self.StatusLog = QtGui.QTextBrowser(self.splitter)
+        self.StatusLog = QtGui.QTextEdit(self.splitter)
+        self.StatusLog.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.StatusLog.setReadOnly(True)
+        self.StatusLog.setObjectName("StatusLog")
+        self.ChatLog = QtGui.QTextEdit(self.splitter)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.StatusLog.sizePolicy().hasHeightForWidth())
-        self.StatusLog.setSizePolicy(sizePolicy)
-        self.StatusLog.setMinimumSize(QtCore.QSize(0, 100))
-        self.StatusLog.setMaximumSize(QtCore.QSize(16777215, 200))
-        self.StatusLog.setObjectName("StatusLog")
-        self.ChatLog = QtGui.QTextBrowser(self.splitter)
+        sizePolicy.setHeightForWidth(self.ChatLog.sizePolicy().hasHeightForWidth())
+        self.ChatLog.setSizePolicy(sizePolicy)
+        self.ChatLog.setMinimumSize(QtCore.QSize(0, 100))
+        self.ChatLog.setMaximumSize(QtCore.QSize(16777215, 200))
+        self.ChatLog.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.ChatLog.setReadOnly(True)
         self.ChatLog.setObjectName("ChatLog")
         self.verticalLayout_2.addWidget(self.splitter)
         self.ChatEntry = QtGui.QLineEdit(self.widget)

@@ -48,7 +48,6 @@ class Networking(driver.Driver, QtCore.QThread):
 				#if type(arg) is str:
 					#arg = arg.split("\n")
 				message += str(arg) + " "
-		print message
 		self.emit(QtCore.SIGNAL("Log(PyQt_PyObject)"), message)
 		
 	def connect_to_museekd(self, string):
@@ -112,14 +111,13 @@ class Networking(driver.Driver, QtCore.QThread):
 		
 		try:
 			message = "Logging in to Museek..."
-			print message
 			#gobject.idle_add(self.frame.AppendToLogWindow, message)
 		except Exception,e:
 			if DEBUG: self.Output("RECEIVED: cb_login_ok ERROR", e)
 		self.connected = True
 		
 	def disconnect(self, string=""):
-		
+		print "disconnect"
 		try:
 			if self.socket != None:
 				#self.timer.cancel()
@@ -149,8 +147,8 @@ class Networking(driver.Driver, QtCore.QThread):
 			self.frame.status = 2
 			self.config = {}
 
-			self.frame.ChatRooms.ConnClose()
-
+			#self.frame.ChatRooms.ConnClose()
+			self.emit(QtCore.SIGNAL("ConnClose()"))
 			self.connected = False
 			if self.timer is not None: self.timer.cancel()
 		except Exception, e:
@@ -919,7 +917,6 @@ class Networking(driver.Driver, QtCore.QThread):
 	# @param room A Room you are in
 	# @param message text
 	def SayRoom(self, room, message):
-		print room, message
 		message = messages.SayRoom(room, message )
 		self.SendMessage(message)
 	## Leave a Room

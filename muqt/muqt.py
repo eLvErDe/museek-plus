@@ -292,8 +292,11 @@ class ChatRooms:
 		#print room, users
 		#print self.frame.ui.ChatRooms
 		#print Chatroom
-		self.joinedrooms[room] = Chatroom(self, room, users)
-		self.frame.ui.ChatRooms.addTab(self.joinedrooms[room], room)
+		if room not in self.joinedrooms:
+			self.joinedrooms[room] = Chatroom(self, room, users)
+			self.frame.ui.ChatRooms.addTab(self.joinedrooms[room], room)
+		else:
+			self.joinedrooms[room].Rejoined(users)
 		
 	def LeaveRoom(self, room):
 		roomwidget = self.joinedrooms[room]
@@ -323,7 +326,10 @@ class ChatRooms:
 		for room in self.joinedrooms.values():
 			if user in room.users.keys():
 				room.GetUserStatus(user, status)
-				 
+	def ConnClose(self):
+		for room in self.joinedrooms.values():
+			room.ConnClose()
+		
 class Chatroom(QtGui.QWidget):
 	def __init__(self, chatrooms=None, room=None, users=None):
 		self.lines = []
@@ -341,6 +347,12 @@ class Chatroom(QtGui.QWidget):
 		self.ui.UserList.setColumnWidth(2, 80)
 		self.ui.UserList.setColumnWidth(3, 50)
 		self.ui.UserList.setColumnCount(4);
+		self.ui.UserList.sortItems(1, Qt.AscendingOrder);
+		self.tag_remote = self.makecolour(self.ui.UserList, "chatremote")
+		self.tag_local = self.makecolour(self.ui.UserList, "chatlocal")
+		self.tag_me = self.makecolour(self.ui.UserList, "chatme")
+		self.tag_hilite = self.makecolour(self.ui.UserList, "chathilite")
+		
 		self.users = {}
 		for username,stats in users.items():
 			self.users[username] = QTreeWidgetItem(self.ui.UserList.invisibleRootItem())
@@ -360,6 +372,29 @@ class Chatroom(QtGui.QWidget):
 		self.connect(self.ui.ChatEntry, SIGNAL("returnPressed()" ), self.SayRoom)
 		self.connect(self.ui.Close, SIGNAL("clicked()"), self.LeaveRoom)
 		self.tag_log = None
+		
+	def ConnClose(self):
+		self.ui.UserList.clear()
+		self.users.clear()
+		
+	def Rejoined(self, users):
+		self.ui.UserList.clear()
+		self.users.clear()
+		for username,stats in users.items():
+			self.users[username] = QTreeWidgetItem(self.ui.UserList.invisibleRootItem())
+			status, speed, downloads, files, dirs = self.frame.user_stats[username] = [stats[0], stats[1], stats[2], stats[3], stats[4]]
+			hspeed = self.frame.HSpeed(speed)
+			hfiles = self.frame.Humanize(files)
+			#print self.frame.user_stats[user]
+			self.users[username].setIcon(0, self.frame.GetStatusImage(username, status))
+			self.users[username].setText(1, username)
+			self.users[username].setText(2, hspeed)
+			self.users[username].setText(3, hfiles)
+			self.users[username].setText(4, str(status))
+			self.users[username].setData(5, 0, QVariant(speed))
+			self.users[username].setData(6, 0, QVariant(files))
+			
+		
 	def LeaveRoom(self):
 		self.frame.Networking.LeaveRoom(self.room)
 		
@@ -388,7 +423,7 @@ class Chatroom(QtGui.QWidget):
 		#self.usersmodel.set(self.users[user], 0, img, 4, status)
 			
 	def SayInChatRoom(self, user, line):
-
+		#line = line.replace("<", "<pre><")
 		#if len(self.lines) >= 400:
 			#buffer = self.chatview.get_buffer()
 			#start = buffer.get_start_iter()
@@ -398,31 +433,47 @@ class Chatroom(QtGui.QWidget):
 		
 		# Display /me messages as "* username message"
 		if line[:4] == "/me ":
-			message = "* %s %s"  % (user, line[4:])
-			#tag = self.tag_me
+			message = "* %s %s"  % (user,line[4:])
+			tag = Qt.green
 		else:
-			message = "[%s] %s" % (user, line)
-			#if user == self.frame.username:
-				#tag = self.tag_local
-			#elif line.upper().find(self.frame.username.upper()) > -1:
-				#tag = self.tag_hilite
-			#else:
-				#tag = self.tag_remote
-
+			message = "[%s] %s" % (user, line.replace("<", "\\<"))
+			if user == self.frame.username:
+				tag = self.tag_local
+			elif line.upper().find(self.frame.username.upper()) > -1:
+				tag = self.tag_hilite
+			else:
+				tag = self.tag_remote
 		message = "\n-- ".join(message.split("\n"))
-		message = "%s %s" % (recode(time.strftime("%H:%M:%S")), message)
+		#message = "%s %s" % (recode(time.strftime("%H:%M:%S")), message)
 		#if user in self.tag_users.keys():
 			#usertag = self.tag_users[user]
 		#else:
 			#usertag = self.tag_users[user] = self.makecolour(self.chatview.get_buffer(), color, username=user)
 		#self.lines.append(AppendLine(self.chatview, message, tag=tag, username=user, usertag=usertag))
-		AppendLine(self.ui.ChatLog, message)
+		AppendLine(self.ui.ChatLog, message, tag)
 		#if self.frame.username is not None:
 			#if user != self.frame.username and self.frame.username in message:
 				#self.chatrooms.request_hilite(self.Main)
 			#else:
 				#self.chatrooms.request_changed(self.Main)
 			#self.frame.RequestIcon(self.frame.ChatRoomLabel)
+			
+	def makecolour(self, buffer, colour, username=None):
+		color = self.frame.Config["ui"][colour]
+		if color:
+			tag = QtGui.QBrush( QColor(color) )
+		else:
+			tag = QtGui.QBrush(  )
+			
+	def changecolour(self, tag, colour):
+		if self.frame.Config["ui"].has_key(colour):
+			color = self.frame.Config["ui"][colour]
+		else:
+			color = ""
+		#font = self.frame.Config["ui"]["chatfont"]
+		if color:
+			tag = QtGui.QBrush(  QColor(color)  )
+			
 			
 	def UserJoinedRoom(self, username):
 		if self.users.has_key(username):
@@ -462,9 +513,18 @@ class Chatroom(QtGui.QWidget):
 			#self.changecolour(self.tag_users[username], color)
 			
 def AppendLine(logwindow, message, tag=None):
+	if tag is None:
+		tag = QtGui.QBrush()
+	
 	message = "\n-- ".join(message.split("\n"))
-	message = "%s %s" % (recode(time.strftime("%H:%M:%S")), message)
-	logwindow.append(message)
+	cursor = QtGui.QTextCursor( logwindow.document() )
+	cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)
+	charformat = QtGui.QTextCharFormat()
+	charformat.setForeground( QtGui.QBrush())
+	cursor.insertText("%s " % (recode(time.strftime("%H:%M:%S")) ), charformat)
+
+	charformat.setForeground(tag)
+	cursor.insertText(message+"\n", charformat)
 	
 if __name__ == "__main__":
 	app = QtGui.QApplication(sys.argv)

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'muqt.ui'
 #
-# Created: Thu Jul  2 11:22:55 2009
+# Created: Thu Jul  2 16:15:19 2009
 #      by: PyQt4 UI code generator 4.5.1
 #
 # WARNING! All changes made in this file will be lost!

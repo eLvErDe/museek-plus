@@ -44,7 +44,15 @@
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
-         <widget class="QTextBrowser" name="StatusLog">
+         <widget class="QTextEdit" name="StatusLog">
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QTextEdit" name="ChatLog">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
             <horstretch>0</horstretch>
@@ -63,8 +71,13 @@
             <height>200</height>
            </size>
           </property>
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
          </widget>
-         <widget class="QTextBrowser" name="ChatLog"/>
         </widget>
        </item>
        <item>
