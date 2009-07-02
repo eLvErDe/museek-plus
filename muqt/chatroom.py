@@ -1,0 +1,93 @@
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'chatroom.ui'
+#
+# Created: Thu Jul  2 00:15:19 2009
+#      by: PyQt4 UI code generator 4.5.1
+#
+# WARNING! All changes made in this file will be lost!
+
+from PyQt4 import QtCore, QtGui
+
+class Ui_Room(object):
+    def setupUi(self, Room):
+        Room.setObjectName("Room")
+        Room.resize(559, 432)
+        self.verticalLayout_3 = QtGui.QVBoxLayout(Room)
+        self.verticalLayout_3.setObjectName("verticalLayout_3")
+        self.splitter_2 = QtGui.QSplitter(Room)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.splitter_2.sizePolicy().hasHeightForWidth())
+        self.splitter_2.setSizePolicy(sizePolicy)
+        self.splitter_2.setLineWidth(1)
+        self.splitter_2.setOrientation(QtCore.Qt.Horizontal)
+        self.splitter_2.setHandleWidth(3)
+        self.splitter_2.setObjectName("splitter_2")
+        self.widget = QtGui.QWidget(self.splitter_2)
+        self.widget.setObjectName("widget")
+        self.verticalLayout_2 = QtGui.QVBoxLayout(self.widget)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.splitter = QtGui.QSplitter(self.widget)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.splitter.sizePolicy().hasHeightForWidth())
+        self.splitter.setSizePolicy(sizePolicy)
+        self.splitter.setOrientation(QtCore.Qt.Vertical)
+        self.splitter.setObjectName("splitter")
+        self.StatusLog = QtGui.QTextBrowser(self.splitter)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.MinimumExpanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.StatusLog.sizePolicy().hasHeightForWidth())
+        self.StatusLog.setSizePolicy(sizePolicy)
+        self.StatusLog.setMinimumSize(QtCore.QSize(0, 100))
+        self.StatusLog.setMaximumSize(QtCore.QSize(16777215, 200))
+        self.StatusLog.setObjectName("StatusLog")
+        self.ChatLog = QtGui.QTextBrowser(self.splitter)
+        self.ChatLog.setObjectName("ChatLog")
+        self.verticalLayout_2.addWidget(self.splitter)
+        self.ChatEntry = QtGui.QLineEdit(self.widget)
+        self.ChatEntry.setObjectName("ChatEntry")
+        self.verticalLayout_2.addWidget(self.ChatEntry)
+        self.widget1 = QtGui.QWidget(self.splitter_2)
+        self.widget1.setObjectName("widget1")
+        self.verticalLayout = QtGui.QVBoxLayout(self.widget1)
+        self.verticalLayout.setSpacing(2)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.UserList = QtGui.QTreeWidget(self.widget1)
+        self.UserList.setUniformRowHeights(True)
+        self.UserList.setAllColumnsShowFocus(False)
+        self.UserList.setColumnCount(4)
+        self.UserList.setObjectName("UserList")
+        self.UserList.headerItem().setText(0, "1")
+        self.UserList.headerItem().setText(1, "2")
+        self.UserList.headerItem().setText(2, "3")
+        self.UserList.headerItem().setText(3, "4")
+        self.verticalLayout.addWidget(self.UserList)
+        self.Log = QtGui.QCheckBox(self.widget1)
+        self.Log.setObjectName("Log")
+        self.verticalLayout.addWidget(self.Log)
+        self.Autojoin = QtGui.QCheckBox(self.widget1)
+        self.Autojoin.setObjectName("Autojoin")
+        self.verticalLayout.addWidget(self.Autojoin)
+        self.comboBox = QtGui.QComboBox(self.widget1)
+        self.comboBox.setObjectName("comboBox")
+        self.verticalLayout.addWidget(self.comboBox)
+        self.Close = QtGui.QPushButton(self.widget1)
+        self.Close.setObjectName("Close")
+        self.verticalLayout.addWidget(self.Close)
+        self.verticalLayout_3.addWidget(self.splitter_2)
+
+        self.retranslateUi(Room)
+        QtCore.QMetaObject.connectSlotsByName(Room)
+
+    def retranslateUi(self, Room):
+        Room.setWindowTitle(QtGui.QApplication.translate("Room", "Form", None, QtGui.QApplication.UnicodeUTF8))
+        self.UserList.setSortingEnabled(True)
+        self.Log.setText(QtGui.QApplication.translate("Room", "Log", None, QtGui.QApplication.UnicodeUTF8))
+        self.Autojoin.setText(QtGui.QApplication.translate("Room", "Autojoin", None, QtGui.QApplication.UnicodeUTF8))
+        self.Close.setText(QtGui.QApplication.translate("Room", "Close", None, QtGui.QApplication.UnicodeUTF8))
+
