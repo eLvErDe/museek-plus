@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'chatroom.ui'
 #
-# Created: Thu Jul  2 00:15:19 2009
+# Created: Thu Jul  2 11:22:56 2009
 #      by: PyQt4 UI code generator 4.5.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -68,12 +68,15 @@ class Ui_Room(object):
         self.UserList.headerItem().setText(3, "4")
         self.verticalLayout.addWidget(self.UserList)
         self.Log = QtGui.QCheckBox(self.widget1)
+        self.Log.setEnabled(False)
         self.Log.setObjectName("Log")
         self.verticalLayout.addWidget(self.Log)
         self.Autojoin = QtGui.QCheckBox(self.widget1)
+        self.Autojoin.setEnabled(True)
         self.Autojoin.setObjectName("Autojoin")
         self.verticalLayout.addWidget(self.Autojoin)
         self.comboBox = QtGui.QComboBox(self.widget1)
+        self.comboBox.setEnabled(False)
         self.comboBox.setObjectName("comboBox")
         self.verticalLayout.addWidget(self.comboBox)
         self.Close = QtGui.QPushButton(self.widget1)
@@ -85,7 +88,7 @@ class Ui_Room(object):
         QtCore.QMetaObject.connectSlotsByName(Room)
 
     def retranslateUi(self, Room):
-        Room.setWindowTitle(QtGui.QApplication.translate("Room", "Form", None, QtGui.QApplication.UnicodeUTF8))
+        Room.setWindowTitle(QtGui.QApplication.translate("Room", "Room", None, QtGui.QApplication.UnicodeUTF8))
         self.UserList.setSortingEnabled(True)
         self.Log.setText(QtGui.QApplication.translate("Room", "Log", None, QtGui.QApplication.UnicodeUTF8))
         self.Autojoin.setText(QtGui.QApplication.translate("Room", "Autojoin", None, QtGui.QApplication.UnicodeUTF8))

@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Room</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
@@ -115,6 +115,9 @@
        </item>
        <item>
         <widget class="QCheckBox" name="Log">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
           <string>Log</string>
          </property>
@@ -122,13 +125,20 @@
        </item>
        <item>
         <widget class="QCheckBox" name="Autojoin">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
          <property name="text">
           <string>Autojoin</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="comboBox"/>
+        <widget class="QComboBox" name="comboBox">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QPushButton" name="Close">

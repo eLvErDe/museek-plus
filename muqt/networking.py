@@ -579,13 +579,10 @@ class Networking(driver.Driver, QtCore.QThread):
 		
 		
 	def cb_room_left(self, room):
-		if DEBUG: self.Output("Leave room", room)
-		
 		if DEBUG: self.Output("RECEIVED: cb_room_left %s"% room)
 		try:
-			pass
 			#gobject.idle_add(self.frame.ChatRooms.LeaveRoom, room)
-			self.emit(QtCore.SIGNAL("LeaveRoom(PyQt_PyObject"), room)
+			self.emit(QtCore.SIGNAL("LeaveRoom(PyQt_PyObject)"), room)
 		except Exception, e:
 			if DEBUG: self.Output("Leave room bug", e)
 		
@@ -698,7 +695,7 @@ class Networking(driver.Driver, QtCore.QThread):
 		
 	def cb_server_status_set(self, status):
 		
-		if DEBUG: self.Output("RECEIVED: cb_server_status_set ", status)
+		#if DEBUG: self.Output("RECEIVED: cb_server_status_set ", status)
 		try:
 			
 			if status != self.frame.status:
@@ -768,6 +765,7 @@ class Networking(driver.Driver, QtCore.QThread):
 				self.frame.user_stats[user] = [status, 0, 0, 0, 0]
 			
 			## Update Lists with new status information
+			self.emit(QtCore.SIGNAL("UserStatus(PyQt_PyObject, PyQt_PyObject)"), user, status)
 			#gobject.idle_add(self.frame.ChatRooms.GetUserStatus, user, status)
 			#gobject.idle_add(self.frame.userlists.updateStatus, user, status)
 			#gobject.idle_add(self.frame.PrivateChats.updateStatus, user, status)

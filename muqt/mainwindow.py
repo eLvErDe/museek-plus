@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'muqt.ui'
 #
-# Created: Thu Jul  2 00:15:19 2009
+# Created: Thu Jul  2 11:22:55 2009
 #      by: PyQt4 UI code generator 4.5.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,7 +12,7 @@ from PyQt4 import QtCore, QtGui
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(724, 666)
+        MainWindow.resize(792, 666)
         self.centralwidget = QtGui.QWidget(MainWindow)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -51,13 +51,6 @@ class Ui_MainWindow(object):
         self.verticalLayout_4.setObjectName("verticalLayout_4")
         self.verticalLayout_3 = QtGui.QVBoxLayout()
         self.verticalLayout_3.setObjectName("verticalLayout_3")
-        self.ChatRooms = QtGui.QTabWidget(self.ChatRoomsLabel)
-        self.ChatRooms.setObjectName("ChatRooms")
-        self.tab = QtGui.QWidget()
-        self.tab.setEnabled(True)
-        self.tab.setObjectName("tab")
-        self.ChatRooms.addTab(self.tab, "")
-        self.verticalLayout_3.addWidget(self.ChatRooms)
         self.verticalLayout_4.addLayout(self.verticalLayout_3)
         self.MainNotebook.addTab(self.ChatRoomsLabel, "")
         self.PrivateChatLabel = QtGui.QWidget()
@@ -74,7 +67,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.addWidget(self.splitter)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 724, 27))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 792, 27))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
@@ -99,7 +92,7 @@ class Ui_MainWindow(object):
         self.actionDisconnect_from_daemon.setEnabled(False)
         self.actionDisconnect_from_daemon.setObjectName("actionDisconnect_from_daemon")
         self.actionToggle_Away = QtGui.QAction(MainWindow)
-        self.actionToggle_Away.setEnabled(False)
+        self.actionToggle_Away.setEnabled(True)
         self.actionToggle_Away.setObjectName("actionToggle_Away")
         self.actionCheck_my_privileges = QtGui.QAction(MainWindow)
         self.actionCheck_my_privileges.setEnabled(False)
@@ -140,13 +133,11 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         self.MainNotebook.setCurrentIndex(0)
-        self.ChatRooms.setCurrentIndex(0)
         QtCore.QObject.connect(self.actionExit, QtCore.SIGNAL("activated()"), MainWindow.close)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "MuQT", None, QtGui.QApplication.UnicodeUTF8))
-        self.ChatRooms.setTabText(self.ChatRooms.indexOf(self.tab), QtGui.QApplication.translate("MainWindow", "Tab 1", None, QtGui.QApplication.UnicodeUTF8))
         self.MainNotebook.setTabText(self.MainNotebook.indexOf(self.ChatRoomsLabel), QtGui.QApplication.translate("MainWindow", "Chat Rooms", None, QtGui.QApplication.UnicodeUTF8))
         self.MainNotebook.setTabText(self.MainNotebook.indexOf(self.PrivateChatLabel), QtGui.QApplication.translate("MainWindow", "Private Chat", None, QtGui.QApplication.UnicodeUTF8))
         self.menuFile.setTitle(QtGui.QApplication.translate("MainWindow", "File", None, QtGui.QApplication.UnicodeUTF8))

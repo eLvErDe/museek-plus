@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>724</width>
+    <width>792</width>
     <height>666</height>
    </rect>
   </property>
@@ -69,23 +69,7 @@
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_4">
          <item>
-          <layout class="QVBoxLayout" name="verticalLayout_3">
-           <item>
-            <widget class="QTabWidget" name="ChatRooms">
-             <property name="currentIndex">
-              <number>0</number>
-             </property>
-             <widget class="QWidget" name="tab">
-              <property name="enabled">
-               <bool>true</bool>
-              </property>
-              <attribute name="title">
-               <string>Tab 1</string>
-              </attribute>
-             </widget>
-            </widget>
-           </item>
-          </layout>
+          <layout class="QVBoxLayout" name="verticalLayout_3"/>
          </item>
         </layout>
        </widget>
@@ -118,7 +102,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>724</width>
+     <width>792</width>
      <height>27</height>
     </rect>
    </property>
@@ -190,7 +174,7 @@
   </action>
   <action name="actionToggle_Away">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Toggle away</string>
