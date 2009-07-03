@@ -7,6 +7,7 @@ from PyQt4.QtGui import *
 from mainwindow import Ui_MainWindow
 from chatroom import Ui_Room
 from privatechat import Ui_Private
+from settings import Ui_SettingsWindow
 import imagedata
 
 from networking import Networking
@@ -192,6 +193,7 @@ class MuQT(QtGui.QMainWindow):
 		self.Networking = Networking(self)
 		self.Downloads = Downloads(self)
 		self.Uploads = Uploads(self)
+		self.Settings = Settings(self)
 		
 		# Networking signals
 		self.connect(self.Networking, SIGNAL("JoinRoom(PyQt_PyObject, PyQt_PyObject)"), self.ChatRooms.JoinRoom)
@@ -209,9 +211,13 @@ class MuQT(QtGui.QMainWindow):
 		self.connect(self.ui.actionAbout_Qt, SIGNAL("activated()"), self.OnAbout)
 		self.connect(self.ui.actionConnect_to_daemon, SIGNAL("activated()"), self.OnConnect)
 		self.connect(self.ui.actionDisconnect_from_daemon, SIGNAL("activated()"), self.OnDisconnect)
+		self.connect(self.ui.actionConfigure, SIGNAL("activated()"), self.OnConfigure)
 		
 		self.Networking.start()
 	
+	def OnConfigure(self):
+		self.Settings.show()
+		
 	def OnDisconnect(self):
 		self.Networking.disconnect("")
 	def OnConnect(self):
@@ -239,7 +245,7 @@ class MuQT(QtGui.QMainWindow):
 
 	def InitialiseColumns(self, treeview, *args):
 		i = 0
-		treeview.setIndentation(0)
+		
 		cols = []
 		labels = [label[0] for label in args]
 		treeview.setHeaderLabels(labels )
@@ -349,7 +355,61 @@ class MuQT(QtGui.QMainWindow):
 		#font = self.frame.Config["ui"]["chatfont"]
 		if color:
 			tag = QtGui.QBrush(  QColor(color)  )
-	
+
+class Settings(QtGui.QDialog):
+	def __init__(self, parent):
+		self.frame = parent
+		QtGui.QDialog.__init__(self, self.frame)
+		self.ui = Ui_SettingsWindow()
+		self.ui.setupUi(self)
+		
+		#self.ui.SettingsList.
+		self.frame.InitialiseColumns(self.ui.SettingsList, [_("Settings"), 170, "text"])
+		
+		self.pages = {}
+		
+		for page in ['GUI', 'Museek Daemon']:
+			self.pages[page] = QTreeWidgetItem(self.ui.SettingsList.invisibleRootItem())
+			self.pages[page].setText(0, page)
+			self.pages[page].setExpanded(True)
+		for page in ["Login", "Appearance"]:
+			self.pages[page] = QTreeWidgetItem()
+			self.pages[page].setText(0, page)
+			self.pages["GUI"].addChild(self.pages[page])
+		for page in ["Server", "Client Interfaces", "Transfers", "Chat Rooms", "Users", "Userinfo", "Shares"]:
+			#self.pages[page] = QTreeWidgetItem(self.pages["Museek Daemon"])
+			self.pages[page] = QTreeWidgetItem()
+			self.pages[page].setText(0, page)
+			self.pages["Museek Daemon"].addChild(self.pages[page])
+		
+		
+		self.ui.stackedWidget.setCurrentWidget(self.ui.PageShares)
+		self.connect(self.ui.SettingsList, SIGNAL("itemSelectionChanged()"), self.OnSelection)
+		
+	def OnSelection(self):
+		widget = self.ui.SettingsList.selectedItems()
+		if widget[0] is self.pages["Login"]:
+			newpage = self.ui.PageLogin
+		elif widget[0] is self.pages["Appearance"]:
+			newpage = self.ui.PageAppearance
+		elif widget[0] is self.pages["Server"]:
+			newpage = self.ui.PageServer
+		elif widget[0] is self.pages["Client Interfaces"]:
+			newpage = self.ui.PageClients
+		elif widget[0] is self.pages["Transfers"]:
+			newpage = self.ui.PageTransfers
+		elif widget[0] is self.pages["Chat Rooms"]:
+			newpage = self.ui.PageChatRooms
+		elif widget[0] is self.pages["Users"]:
+			newpage = self.ui.PageUsers
+		elif widget[0] is self.pages["Userinfo"]:
+			newpage = self.ui.PageUserinfo
+		elif widget[0] is self.pages["Shares"]:
+			newpage = self.ui.PageShares
+		else:
+			newpage = self.ui.PageBlank
+		self.ui.stackedWidget.setCurrentWidget(newpage)
+		
 class Downloads:
 	def __init__(self, parent=None):
 		self.frame = parent
@@ -362,6 +422,7 @@ class Downloads:
 		[_("Size"), 80, "text"], #5
 		[_("Path"), 350, "text"], #6
 		)
+		self.frame.ui.Downloads.setIndentation(0)
 		#print cols
 
 		
@@ -377,7 +438,7 @@ class Uploads:
 		[_("Size"), 80, "text"], #5
 		[_("Path"), 350, "text"], #6
 		)
-		
+		self.frame.ui.Uploads.setIndentation(0)
 class PrivateChats(QtGui.QTabWidget):
 	def __init__(self, parent=None):
 		self.frame=parent
@@ -496,7 +557,6 @@ class PrivateChat(QtGui.QWidget):
 		
 		if text[:2] == "//":
 			text = text[1:]
-		print text
 		self.SendMessage(text)
 		self.frame.Networking.PrivateMessage(0, self.user, text)
 		self.ui.ChatEntry.clear()

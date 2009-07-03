@@ -1,1 +1,5 @@
-pyuic4  mainwindow.ui > mainwindow.py && pyuic4  privatechat.ui > privatechat.py && pyuic4  chatroom.ui > chatroom.py && echo "Converted Qt Designer UI files to Python code"
+pyuic4  mainwindow.ui > mainwindow.py
+pyuic4  privatechat.ui > privatechat.py
+pyuic4  chatroom.ui > chatroom.py
+pyuic4  settings.ui > settings.py
+echo "Converted Qt Designer UI files to Python code"

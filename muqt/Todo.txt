@@ -1,0 +1,18 @@
+To Do:
+
+Major Features:
+ * Transfers
+ * Search
+ * User Info
+ * User Browse
+ * Interests
+ * Buddy list (and ignore, ban)
+ * Settings for GUI and Daemon
+ * Room list
+ * Logging
+
+Missing functionality:
+ * Popup menus in Chatrooms
+ * Allow joining of rooms
+ * AutoScroll chat/status log windows
+ * Lots of other stuff

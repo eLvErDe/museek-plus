@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'privatechat.ui'
 #
-# Created: Fri Jul  3 11:40:33 2009
+# Created: Fri Jul  3 17:50:21 2009
 #      by: PyQt4 UI code generator 4.5.1
 #
 # WARNING! All changes made in this file will be lost!

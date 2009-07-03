@@ -212,6 +212,7 @@
     <addaction name="separator"/>
     <addaction name="actionToggle_Away"/>
     <addaction name="actionCheck_my_privileges"/>
+    <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuSettings">
@@ -222,7 +223,7 @@
    </widget>
    <widget class="QMenu" name="menuModes">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="title">
      <string>Modes</string>
@@ -321,7 +322,7 @@
   </action>
   <action name="actionConfigure">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Configure</string>

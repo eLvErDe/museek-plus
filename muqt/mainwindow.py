@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Fri Jul  3 11:40:33 2009
+# Created: Fri Jul  3 17:50:21 2009
 #      by: PyQt4 UI code generator 4.5.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -131,7 +131,7 @@ class Ui_MainWindow(object):
         self.menuSettings = QtGui.QMenu(self.menubar)
         self.menuSettings.setObjectName("menuSettings")
         self.menuModes = QtGui.QMenu(self.menubar)
-        self.menuModes.setEnabled(False)
+        self.menuModes.setEnabled(True)
         self.menuModes.setObjectName("menuModes")
         self.menuScripts = QtGui.QMenu(self.menubar)
         self.menuScripts.setEnabled(False)
@@ -168,13 +168,14 @@ class Ui_MainWindow(object):
         self.actionAbout_Museeq.setEnabled(False)
         self.actionAbout_Museeq.setObjectName("actionAbout_Museeq")
         self.actionConfigure = QtGui.QAction(MainWindow)
-        self.actionConfigure.setEnabled(False)
+        self.actionConfigure.setEnabled(True)
         self.actionConfigure.setObjectName("actionConfigure")
         self.menuFile.addAction(self.actionConnect_to_daemon)
         self.menuFile.addAction(self.actionDisconnect_from_daemon)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionToggle_Away)
         self.menuFile.addAction(self.actionCheck_my_privileges)
+        self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionExit)
         self.menuSettings.addAction(self.actionConfigure)
         self.menuHelp.addAction(self.actionCommands)
