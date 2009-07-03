@@ -52,6 +52,7 @@ public:
 		pack(d.files);
 		pack(d.dirs);
 		pack((unsigned char)d.slotsfull);
+		pack(d.country);
 	}
 
 	inline void pack(const FileEntry& fe) {
@@ -88,14 +89,15 @@ public:
 		pack((uint32)upload->rate());
 	}
 
-	inline UserData unpack_userdata() {
+	inline UserData unpack_userdata() { // Not used
 		UserData r;
 		r.status = unpack_int();
 		r.avgspeed = unpack_int();
 		r.downloadnum = unpack_int();
 		r.files = unpack_int();
 		r.dirs = unpack_int();
-		r.slotsfull = unpack_char();
+		r.slotsfull = (unpack_char() != 0);
+		r.country = unpack_string();
 		return r;
 	}
 
@@ -325,6 +327,29 @@ IFACEMESSAGE(IDebugMessage, 0x0011)
 END
 
 
+IFACEMESSAGE(INewPassword, 0x0012)
+/*
+	New password -- Change the soulseek account password
+
+	cipher newPass -- new password
+
+	cipher newPass -- the newly registered password
+*/
+
+	INewPassword(CipherContext* ctx, const std::string& _p) : context(ctx), newPass(_p) { }
+	INewPassword(CipherContext* ctx) : context(ctx) { }
+
+	MAKE
+		cipher(context, newPass);
+	END_MAKE
+
+	PARSE
+		newPass = decipher(context);
+	END_PARSE
+
+	CipherContext* context;
+	std::string newPass;
+END
 
 // Configuration messages
 
@@ -516,16 +541,18 @@ IFACEMESSAGE(IPeerStats, 0x0203)
 	uint numdirs -- User's directory-count
 */
 
-	IPeerStats(const std::string _u, uint32 _a, uint32 _n, uint32 _f, uint32 _d)
-	  : user(_u), speed(_a), downloads(_n), files(_f), dirs(_d) { }
+	IPeerStats(const std::string _u, UserData _d)
+	  : user(_u), userdata(_d) { }
 	IPeerStats() { }
 
 	MAKE
 		pack(user);
-		pack(speed);
-		pack(downloads);
-		pack(files);
-		pack(dirs);
+		pack(userdata.avgspeed);
+		pack((uint32) userdata.downloadnum); // Slsk protocol uses 64bit int. It would be a good idea to do the same in museek protocol one day.
+		pack(userdata.files);
+		pack(userdata.dirs);
+		pack((unsigned char)userdata.slotsfull);
+		pack(userdata.country);
 	END_MAKE
 
 	PARSE
@@ -533,7 +560,7 @@ IFACEMESSAGE(IPeerStats, 0x0203)
 	END_PARSE
 
 	std::string user;
-	uint32 speed, downloads, files, dirs;
+	UserData userdata;
 END
 
 IFACEMESSAGE(IUserInfo, 0x0204)
@@ -667,7 +694,8 @@ END
 
 // Chat messages
 
-IFACEMESSAGE(IRoomState, 0x0300)
+// IRoomStateCompat is deprecated. Use IRoomList, IPrivRoomList, IRoomMembers and IRoomsTickers instead.
+IFACEMESSAGE(IRoomStateCompat, 0x0300)
 /*
 	Room state -- List of rooms and joined rooms and their users
 
@@ -690,33 +718,38 @@ IFACEMESSAGE(IRoomState, 0x0300)
 			string message -- Contents of the ticker
 */
 
-	IRoomState(const std::map<std::string, uint32>& _l, const std::map<std::string, RoomData>& _r, const std::map<std::string, Tickers>& _t)
+	IRoomStateCompat(const RoomList& _l, const std::map<std::string, RoomData>& _r, const std::map<std::string, Tickers>& _t)
                   : roomlist(_l), rooms(_r), tickers(_t) {}
 
 	MAKE
 		pack((uint32)roomlist.size());
-		RoomList::const_iterator rit = roomlist.begin();
-		for(; rit != roomlist.end(); ++rit) {
-			pack((*rit).first);
-			pack((*rit).second);
+		RoomList::const_iterator rlit = roomlist.begin();
+		for(; rlit != roomlist.end(); ++rlit) {
+			pack(rlit->first);
+            pack(rlit->second);
 		}
 
 		pack((uint32)rooms.size());
 		std::map<std::string, RoomData>::const_iterator it = rooms.begin();
 		for(; it != rooms.end(); ++it) {
-			pack((*it).first);
-			pack((uint32)(*it).second.size());
-			RoomData::const_iterator rit = (*it).second.begin();
-			for(; rit != (*it).second.end(); ++rit) {
-				pack((*rit).first);
-				pack((*rit).second);
+			pack(it->first);
+			pack((uint32)it->second.size());
+			RoomData::const_iterator rit = it->second.begin();
+			for(; rit != it->second.end(); ++rit) {
+				pack(rit->first);
+                pack(rit->second.status);
+                pack(rit->second.avgspeed);
+                pack((uint32)rit->second.downloadnum);
+                pack(rit->second.files);
+                pack(rit->second.dirs);
+                pack((unsigned char)rit->second.slotsfull);
 			}
-			const Tickers& tick = tickers[(*it).first];
+			const Tickers& tick = tickers[it->first];
 			pack((uint32)tick.size());
 			Tickers::const_iterator tit = tick.begin();
 			for(; tit != tick.end(); ++tit) {
-				pack((*tit).first);
-				pack((*tit).second);
+				pack(tit->first);
+				pack(tit->second);
 			}
 		}
 	END_MAKE
@@ -793,16 +826,21 @@ IFACEMESSAGE(IJoinRoom, 0x0303)
 	Join room -- Join(ed) a room
 
 	string room -- The name of the room to join
+    bool isPrivate
 
 	string room -- The name of the room we joined
 	uint numusers -- Number of users in this room
 	*repeat numusers*
 		string username -- Name of the user
 		userdata data -- User's statistics
+    string owner name
+    int number of ops
+    *repeat numops*
+        string op name
 */
 
 	IJoinRoom() {}
-	IJoinRoom(const std::string& _r, const RoomData& _u) : room(_r), users(_u) {}
+	IJoinRoom(const std::string& _r, const RoomData& _u, const std::string& _owner, const std::vector<std::string>& _ops) : room(_r), users(_u), owner(_owner), operators(_ops) {}
 
 	MAKE
 		pack(room);
@@ -812,13 +850,29 @@ IFACEMESSAGE(IJoinRoom, 0x0303)
 			pack((*rit).first);
 			pack((*rit).second);
 		}
+
+        bool priv = !owner.empty();
+        pack((unsigned char) priv);
+        if (priv) {
+            pack(owner);
+            std::vector<std::string>::const_iterator opit = operators.begin();
+            pack((uint32) operators.size());
+            for (; opit != operators.end(); opit++) {
+                pack(*opit);
+            }
+        }
 	END_MAKE
 
 	PARSE
 		room = unpack_string();
+		priv = false;
+		if(! buffer.empty())
+            priv = unpack_char() != 0;
 	END_PARSE
 
-	std::string room;
+	std::string room, owner;
+	std::vector<std::string> operators;
+	bool priv;
 	RoomData users;
 END
 
@@ -979,7 +1033,444 @@ IFACEMESSAGE(IRoomTickerSet, 0x0309)
 	std::string room, user, message;
 END
 
+IFACEMESSAGE(IMessageUsers, 0x0310)
+/*
+	Message users -- Send a private message to a list of users
 
+	uint numusers -- How many users in the list
+	*repeat numusers*
+		string username -- The user to send a message to
+	string message -- The actual message
+
+    Not sent to clients
+*/
+
+	IMessageUsers() { }
+
+	PARSE
+		uint32 n = unpack_int();
+		while(n) {
+			users.push_back(unpack_string());
+			n--;
+		}
+		msg = unpack_string();
+	END_PARSE
+
+	std::vector<std::string> users;
+	std::string msg;
+END
+
+IFACEMESSAGE(IMessageBuddies, 0x0311)
+/*
+	Message buddies -- Send a private message to the buddies
+
+	string message -- The actual message
+
+    Not sent to clients
+*/
+
+	IMessageBuddies() { }
+
+	PARSE
+		msg = unpack_string();
+	END_PARSE
+
+	std::string msg;
+END
+
+IFACEMESSAGE(IMessageDownloading, 0x0312)
+/*
+	Message downloading -- Send a private message to every user currently downloading
+
+	string message -- The actual message
+
+    Not sent to clients
+*/
+
+	IMessageDownloading() { }
+
+	PARSE
+		msg = unpack_string();
+	END_PARSE
+
+	std::string msg;
+END
+
+IFACEMESSAGE(IAskPublicChat, 0x0313)
+/*
+	Ask public chat -- Ask public chat
+
+	empty
+
+	empty
+*/
+
+	IAskPublicChat() {}
+
+	MAKE
+	END_MAKE
+
+	PARSE
+	END_PARSE
+
+END
+
+IFACEMESSAGE(IStopPublicChat, 0x0314)
+/*
+	Stop public chat -- Stop public chat
+
+	empty
+
+	empty
+*/
+
+	IStopPublicChat() {}
+
+	MAKE
+	END_MAKE
+
+	PARSE
+	END_PARSE
+
+END
+
+IFACEMESSAGE(IPublicChat, 0x0315)
+/*
+	Public chat -- Public chat message
+
+	Not received from clients
+
+	string room
+	string user
+	string message
+*/
+
+	IPublicChat(std::string _r, std::string _u, std::string _m) : room(_r), user(_u), message(_m) {}
+
+	MAKE
+        pack(room);
+        pack(user);
+        pack(message);
+	END_MAKE
+
+    std::string room, user, message;
+END
+
+IFACEMESSAGE(IPrivRoomToggle, 0x0320)
+/*
+	Toggle private room -- Enable or disable private room
+
+	bool enabled -- Private room state
+
+	bool enabled -- Private room state
+*/
+
+	IPrivRoomToggle() {}
+	IPrivRoomToggle(bool _e) : enabled(_e) {}
+
+	MAKE
+		pack((unsigned char)enabled);
+	END_MAKE
+
+	PARSE
+		enabled = unpack_char() != 0;
+	END_PARSE
+
+	bool enabled;
+END
+
+IFACEMESSAGE(IPrivRoomList, 0x0321)
+/*
+	Private room list -- refresh private room list
+
+	not received from clients
+
+	uint numrooms -- Number of rooms in the room list
+	*repeat numrooms*
+		string roomname -- Name of the room
+		uint numusers -- Number of users in this room
+		uint status -- Our status in the room (0=>member, 1=>operator, 2=>owner)
+*/
+
+	IPrivRoomList() { }
+	IPrivRoomList(const PrivRoomList& _r) : roomlist(_r) { }
+
+	MAKE
+		pack((uint32)roomlist.size());
+		PrivRoomList::const_iterator rit = roomlist.begin();
+		for(; rit != roomlist.end(); ++rit) {
+			pack((*rit).first);
+			pack((*rit).second.first);
+			pack((*rit).second.second);
+		}
+	END_MAKE
+
+	PrivRoomList roomlist;
+END
+
+IFACEMESSAGE(IPrivRoomAddUser, 0x0322)
+/*
+	Add a user to a private room
+
+	string room
+	string user
+
+	string room
+	string user
+*/
+
+	IPrivRoomAddUser() {}
+	IPrivRoomAddUser(const std::string& _r, const std::string& _u) : room(_r), user(_u) {}
+
+	MAKE
+		pack(room);
+		pack(user);
+	END_MAKE
+
+	PARSE
+		room = unpack_string();
+		user = unpack_string();
+	END_PARSE
+
+	std::string room, user;
+END
+
+IFACEMESSAGE(IPrivRoomRemoveUser, 0x0323)
+/*
+	Remove a user from a private room
+
+	string room
+	string user
+
+	string room
+	string user
+*/
+
+	IPrivRoomRemoveUser() {}
+	IPrivRoomRemoveUser(const std::string& _r, const std::string& _u) : room(_r), user(_u) {}
+
+	MAKE
+		pack(room);
+		pack(user);
+	END_MAKE
+
+	PARSE
+		room = unpack_string();
+		user = unpack_string();
+	END_PARSE
+
+	std::string room, user;
+END
+
+IFACEMESSAGE(IRoomMembers, 0x0324)
+/*
+    Room members -- List of members of joined rooms.
+
+    *not received*
+
+	uint numrooms -- Number of rooms in the room list
+	*repeat numrooms*
+		string roomname -- Name of the room
+		uint numusers -- Number of users in this room
+		*repeat numusers*
+			string username -- Name of the user
+			userdata data -- User's statistics
+			uint status -- 0=>Member, 1=>Operator, 2=>Owner
+*/
+
+	IRoomMembers(const std::map<std::string, RoomData>& _r, const PrivRoomOperators& _o, const PrivRoomOwners& _ow)
+                  : rooms(_r), operators(_o), owners(_ow) {}
+
+	MAKE
+		pack((uint32)rooms.size());
+		std::map<std::string, RoomData>::const_iterator it = rooms.begin();
+		for(; it != rooms.end(); ++it) {
+		    std::string roomname = it->first;
+			pack(roomname);
+			pack((uint32)it->second.size());
+			RoomData::const_iterator rit = it->second.begin();
+			for(; rit != it->second.end(); ++rit) {
+                std::string username = rit->first;
+				pack(username);
+				pack(rit->second);
+				uint32 status = 0;
+				PrivRoomOwners::const_iterator owit = owners.find(roomname);
+				PrivRoomOperators::const_iterator opit = operators.find(roomname);
+				if (opit != operators.end()) {
+				    if (std::find(opit->second.begin(), opit->second.end(), username) != opit->second.end())
+                        status = 1;
+				}
+				if (owit != owners.end()) {
+				    if (owit->second == username)
+                        status = 2;
+				}
+				pack(status);
+			}
+		}
+	END_MAKE
+
+	std::map<std::string, RoomData> rooms;
+	PrivRoomOperators operators;
+	PrivRoomOwners owners;
+END
+
+IFACEMESSAGE(IRoomsTickers, 0x0325)
+/*
+	Rooms tickers -- List of tickers set for all room
+
+	*not sent*
+
+	uint numrooms -- Number of rooms in the room list
+	*repeat numrooms*
+        string room -- Which room the tickers are reported for
+        uint numtickers -- How many tickers are set
+        *repeat numtickers*
+            string user -- The user that this ticker belongs to
+            string message -- The actual ticker message
+*/
+
+	IRoomsTickers(const std::map<std::string, Tickers>& _t) : tickers(_t) {}
+
+	MAKE
+		pack((uint32)tickers.size());
+		std::map<std::string, Tickers>::const_iterator lit = tickers.begin();
+		for(; lit!=tickers.end(); lit++) {
+		    pack(lit->first);
+			pack((uint32)lit->second.size());
+            Tickers::const_iterator it = lit->second.begin();
+            for(; it != lit->second.end(); ++it) {
+                pack((*it).first);
+                pack((*it).second);
+            }
+		}
+	END_MAKE
+
+	std::map<std::string, Tickers> tickers;
+END
+
+IFACEMESSAGE(IPrivRoomAlterableMembers, 0x0326)
+
+	IPrivRoomAlterableMembers(const std::string& _r, const std::vector<std::string>& _m) : room(_r), members(_m) {}
+
+	MAKE
+		pack(room);
+		pack((uint32)members.size());
+		std::vector<std::string>::const_iterator it = members.begin();
+		for (; it != members.end(); it++) {
+            pack(*it);
+		}
+	END_MAKE
+
+    std::string room;
+	std::vector<std::string> members;
+END
+
+IFACEMESSAGE(IPrivRoomAlterableOperators, 0x0327)
+
+	IPrivRoomAlterableOperators(const std::string& _r, const std::vector<std::string>& _m) : room(_r), operators(_m) {}
+
+	MAKE
+		pack(room);
+		pack((uint32)operators.size());
+		std::vector<std::string>::const_iterator it = operators.begin();
+		for (; it != operators.end(); it++) {
+            pack(*it);
+		}
+	END_MAKE
+
+    std::string room;
+	std::vector<std::string> operators;
+END
+
+IFACEMESSAGE(IPrivRoomAddOperator, 0x0328)
+/*
+	Add an operator to a private room
+
+	string room
+	string user
+
+	string room
+	string user
+*/
+
+	IPrivRoomAddOperator() {}
+	IPrivRoomAddOperator(const std::string& _r, const std::string& _u) : room(_r), user(_u) {}
+
+	MAKE
+		pack(room);
+		pack(user);
+	END_MAKE
+
+	PARSE
+		room = unpack_string();
+		user = unpack_string();
+	END_PARSE
+
+	std::string room, user;
+END
+
+IFACEMESSAGE(IPrivRoomRemoveOperator, 0x0329)
+/*
+	Remove an operator from a private room
+
+	string room
+	string user
+
+	string room
+	string user
+*/
+
+	IPrivRoomRemoveOperator() {}
+	IPrivRoomRemoveOperator(const std::string& _r, const std::string& _u) : room(_r), user(_u) {}
+
+	MAKE
+		pack(room);
+		pack(user);
+	END_MAKE
+
+	PARSE
+		room = unpack_string();
+		user = unpack_string();
+	END_PARSE
+
+	std::string room, user;
+END
+
+IFACEMESSAGE(IPrivRoomDismember, 0x0330)
+/*
+	Stop being a member of a private room
+
+	string room
+
+    not sent
+*/
+
+	IPrivRoomDismember() {}
+
+	PARSE
+		room = unpack_string();
+	END_PARSE
+
+	std::string room;
+END
+
+IFACEMESSAGE(IPrivRoomDisown, 0x0331)
+/*
+	Stop being the owner of a private room
+
+	string room
+
+    not sent
+*/
+
+	IPrivRoomDisown() {}
+
+	PARSE
+		room = unpack_string();
+	END_PARSE
+
+	std::string room;
+END
 
 
 // Search messages
@@ -1034,7 +1525,7 @@ IFACEMESSAGE(ISearchReply, 0x0402)
 		pack(username);
 		pack((unsigned char)slotfree);
 		pack(speed);
-		pack(queue);
+		pack(queue); // Slsk protocol uses 64bit int. It would be a good idea to do the same in museek protocol one day.
 		pack((uint32)results.size());
 		Folder::const_iterator it = results.begin();
 		for(; it != results.end(); ++it) {
