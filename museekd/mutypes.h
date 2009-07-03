@@ -100,7 +100,10 @@ typedef std::map<std::string, int32> Recommendations;
 typedef std::map<std::string, uint32> SimilarUsers;
 typedef std::map<std::string, std::pair<std::string, uint32> > NetInfo;
 typedef std::map<std::string, uint32> RoomList;
+typedef std::map<std::string, std::pair<uint32, uint32> > PrivRoomList;
 typedef std::map<std::string, UserData> RoomData;
+typedef std::map<std::string, std::vector<std::string> > PrivRoomOperators;
+typedef std::map<std::string, std::string> PrivRoomOwners;
 
 typedef std::map<std::string, FileEntry> Folder;
 typedef std::map<std::wstring, FileEntry> WFolder;

@@ -137,6 +137,7 @@ namespace Museek
     void addPrivilegedUser(const std::string & user);
     void setPrivilegedUsers(const std::vector<std::string> & users);
     void sendSharedNumber();
+    bool isEnabledPrivRoom();
 
   private:
     /* Our strong references to the various components. */

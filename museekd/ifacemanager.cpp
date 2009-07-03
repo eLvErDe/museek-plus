@@ -105,6 +105,14 @@ Museek::IfaceManager::IfaceManager(Museekd * museekd) : m_Museekd(museekd)
   museekd->server()->itemSimilarUsersReceivedEvent.connect(this, &IfaceManager::onServerItemSimilarUsersReceived);
   museekd->server()->userInterestsReceivedEvent.connect(this, &IfaceManager::onServerUserInterestsReceived);
 
+  museekd->server()->privRoomToggleReceivedEvent.connect(this, &IfaceManager::onServerPrivRoomToggled);
+  museekd->server()->privRoomAlterableMembersReceivedEvent.connect(this, &IfaceManager::onServerPrivRoomAlterableMembers);
+  museekd->server()->privRoomAlterableOperatorsReceivedEvent.connect(this, &IfaceManager::onServerPrivRoomAlterableOperators);
+  museekd->server()->privRoomAddedUserEvent.connect(this, &IfaceManager::onServerPrivRoomAddedUser);
+  museekd->server()->privRoomRemovedUserEvent.connect(this, &IfaceManager::onServerPrivRoomRemovedUser);
+  museekd->server()->privRoomAddedOperatorEvent.connect(this, &IfaceManager::onServerPrivRoomAddedOperator);
+  museekd->server()->privRoomRemovedOperatorEvent.connect(this, &IfaceManager::onServerPrivRoomRemovedOperator);
+
   museekd->downloads()->downloadAddedEvent.connect(this, &IfaceManager::onDownloadUpdated);
   museekd->downloads()->downloadUpdatedEvent.connect(this, &IfaceManager::onDownloadUpdated);
   museekd->downloads()->downloadRemovedEvent.connect(this, &IfaceManager::onDownloadRemoved);
@@ -276,6 +284,14 @@ Museek::IfaceManager::onIfaceAccepted(IfaceSocket * socket)
   socket->leaveRoomEvent.connect(this, &IfaceManager::onIfaceLeaveRoom);
   socket->sayRoomEvent.connect(this, &IfaceManager::onIfaceSayRoom);
   socket->setRoomTickerEvent.connect(this, &IfaceManager::onIfaceSetRoomTicker);
+  socket->privRoomToggleEvent.connect(this, &IfaceManager::onIfacePrivRoomToggle);
+  socket->privRoomAddUserEvent.connect(this, &IfaceManager::onIfacePrivRoomAddUser);
+  socket->privRoomRemoveUserEvent.connect(this, &IfaceManager::onIfacePrivRoomRemoveUser);
+  socket->privRoomAddOperatorEvent.connect(this, &IfaceManager::onIfacePrivRoomAddOperator);
+  socket->privRoomRemoveOperatorEvent.connect(this, &IfaceManager::onIfacePrivRoomRemoveOperator);
+  socket->privRoomDismemberEvent.connect(this, &IfaceManager::onIfacePrivRoomDismember);
+  socket->privRoomDisownEvent.connect(this, &IfaceManager::onIfacePrivRoomDisown);
+
   socket->startGlobalSearchEvent.connect(this, &IfaceManager::onIfaceStartSearch);
   socket->startUserSearchEvent.connect(this, &IfaceManager::onIfaceStartUserSearch);
   socket->startWishListSearchEvent.connect(this, &IfaceManager::onIfaceStartWishListSearch);
@@ -384,6 +400,20 @@ Museek::IfaceManager::onIfaceLogin(const ILogin * message)
     SEND_MESSAGE(socket, IServerState(museekd()->server()->loggedIn(), museekd()->server()->username()));
     if(socket->mask() & EM_CHAT) {
       SEND_MESSAGE(socket, IRoomStateCompat(m_RoomList, m_RoomData, m_TickerData)); // For compatibility with old clients (deprecated since 0.3)
+      SEND_MESSAGE(socket, IRoomList(m_RoomList));
+      SEND_MESSAGE(socket, IPrivRoomList(m_PrivRoomList));
+      SEND_MESSAGE(socket, IRoomMembers(m_RoomData, m_PrivRoomOperators, m_PrivRoomOwners));
+      SEND_MESSAGE(socket, IRoomsTickers(m_TickerData));
+      SEND_MESSAGE(socket, IPrivRoomToggle(museekd()->isEnabledPrivRoom()));
+
+      std::map<std::string, std::vector<std::string> >::iterator altMembIt = m_PrivRoomAlterableMembers.begin();
+      std::map<std::string, std::vector<std::string> >::iterator altOpIt = m_PrivRoomAlterableOperators.begin();
+      for (; altMembIt != m_PrivRoomAlterableMembers.end(); altMembIt++) {
+        SEND_MESSAGE(socket, IPrivRoomAlterableMembers(altMembIt->first, altMembIt->second));
+      }
+      for (; altOpIt != m_PrivRoomAlterableOperators.end(); altOpIt++) {
+        SEND_MESSAGE(socket, IPrivRoomAlterableOperators(altOpIt->first, altOpIt->second));
+      }
     }
     if(socket->mask() & EM_TRANSFERS) {
       SEND_MESSAGE(socket, ITransferState(&museekd()->downloads()->downloads()));
@@ -572,7 +602,7 @@ Museek::IfaceManager::onIfaceGetRoomList(const IRoomList * message)
 void
 Museek::IfaceManager::onIfaceJoinRoom(const IJoinRoom * message)
 {
-  SEND_MESSAGE(museekd()->server(), SJoinRoom(message->room));
+  SEND_MESSAGE(museekd()->server(), SJoinRoom(message->room, message->priv));
 }
 
 void
@@ -602,6 +632,52 @@ Museek::IfaceManager::onIfaceSetRoomTicker(const IRoomTickerSet * message)
   std::string ticker = museekd()->codeset()->toRoom(message->room, message->message);
   ticker = str_replace(ticker, '\n', ' ');
   SEND_MESSAGE(museekd()->server(), SSetRoomTicker(message->room, ticker));
+}
+
+void
+Museek::IfaceManager::onIfacePrivRoomToggle(const IPrivRoomToggle * message)
+{
+    bool oldConfig = museekd()->isEnabledPrivRoom();
+    if (oldConfig == message->enabled)
+        return;
+
+    museekd()->config()->set("priv_rooms", "enable_priv_room", message->enabled);
+    SEND_MASK(EM_CHAT, IPrivRoomToggle(message->enabled)); // Needed as the server doesn't always confirm
+    SEND_MESSAGE(museekd()->server(), SPrivRoomToggle(message->enabled));
+}
+
+void
+Museek::IfaceManager::onIfacePrivRoomAddUser(const IPrivRoomAddUser * message)
+{
+  SEND_MESSAGE(museekd()->server(), SPrivRoomAddUser(message->room, message->user));
+}
+
+void
+Museek::IfaceManager::onIfacePrivRoomRemoveUser(const IPrivRoomRemoveUser * message)
+{
+  SEND_MESSAGE(museekd()->server(), SPrivRoomRemoveUser(message->room, message->user));
+}
+
+void
+Museek::IfaceManager::onIfacePrivRoomAddOperator(const IPrivRoomAddOperator * message)
+{
+  SEND_MESSAGE(museekd()->server(), SPrivRoomAddOperator(message->room, message->user));
+}
+
+void
+Museek::IfaceManager::onIfacePrivRoomRemoveOperator(const IPrivRoomRemoveOperator * message)
+{
+  SEND_MESSAGE(museekd()->server(), SPrivRoomRemoveOperator(message->room, message->user));
+}
+
+void
+Museek::IfaceManager::onIfacePrivRoomDismember(const IPrivRoomDismember * message) {
+    SEND_MESSAGE(museekd()->server(), SPrivRoomDismember(message->room));
+}
+
+void
+Museek::IfaceManager::onIfacePrivRoomDisown(const IPrivRoomDisown * message) {
+    SEND_MESSAGE(museekd()->server(), SPrivRoomDisown(message->room));
 }
 
 void
@@ -805,7 +881,10 @@ Museek::IfaceManager::onServerLoggedInStateChanged(bool loggedIn)
   {
     m_AwayState = 0;
     m_RoomList.clear();
+    m_PrivRoomList.clear();
     m_RoomData.clear();
+    m_PrivRoomOwners.clear();
+    m_PrivRoomOperators.clear();
     m_TickerData.clear();
     m_PrivateMessages.clear();
     sendStatusMessage(true, std::string("Disconnected from the server"));
@@ -896,24 +975,39 @@ Museek::IfaceManager::onServerRoomMessageReceived(const SSayRoom * message)
 void
 Museek::IfaceManager::onServerRoomJoined(const SJoinRoom * message)
 {
-  if(m_RoomData.find(message->room) != m_RoomData.end())
-    return;
-  m_RoomData[message->room] = message->users;
-  m_TickerData[message->room];
-  SEND_MASK(EM_CHAT, IJoinRoom(message->room, message->users));
+    if(m_RoomData.find(message->room) != m_RoomData.end())
+        return;
+
+    m_RoomData[message->room] = message->users;
+    m_TickerData[message->room];
+    if (message->isPrivate) {
+        m_PrivRoomOwners[message->room] = message->owner;
+        m_PrivRoomOperators[message->room] = message->ops;
+    }
+
+    SEND_MASK(EM_CHAT, IJoinRoom(message->room, message->users, message->owner, message->ops));
 }
 
 void
 Museek::IfaceManager::onServerRoomLeft(const SLeaveRoom * message)
 {
-  std::map<std::string, RoomData>::iterator it = m_RoomData.find(message->value);
-  if(it == m_RoomData.end())
-    return;
-  m_RoomData.erase(it);
-  std::map<std::string, Tickers>::iterator tit = m_TickerData.find(message->value);
-  if (tit != m_TickerData.end())
-    m_TickerData.erase(tit);
-  SEND_MASK(EM_CHAT, ILeaveRoom(message->value));
+    std::map<std::string, RoomData>::iterator it = m_RoomData.find(message->value);
+    if(it != m_RoomData.end())
+        m_RoomData.erase(it);
+
+    PrivRoomOperators::iterator opit = m_PrivRoomOperators.find(message->value);
+    if(opit != m_PrivRoomOperators.end())
+        m_PrivRoomOperators.erase(opit);
+
+    PrivRoomOwners::iterator wit = m_PrivRoomOwners.find(message->value);
+    if(wit != m_PrivRoomOwners.end())
+        m_PrivRoomOwners.erase(wit);
+
+    std::map<std::string, Tickers>::iterator tit = m_TickerData.find(message->value);
+    if (tit != m_TickerData.end())
+        m_TickerData.erase(tit);
+
+    SEND_MASK(EM_CHAT, ILeaveRoom(message->value));
 }
 
 void
@@ -946,7 +1040,9 @@ void
 Museek::IfaceManager::onServerRoomListReceived(const SRoomList * message)
 {
   m_RoomList = message->roomlist;
+  m_PrivRoomList = message->privroomlist;
   SEND_MASK(EM_CHAT, IRoomList(message->roomlist));
+  SEND_MASK(EM_CHAT, IPrivRoomList(message->privroomlist));
 }
 
 void
@@ -972,6 +1068,74 @@ Museek::IfaceManager::onServerRoomTickerAdded(const SRoomTickerAdd * message)
   std::string ticker = museekd()->codeset()->fromRoom(message->room, message->ticker);
   m_TickerData[message->room][message->user] = ticker;
   SEND_MASK(EM_CHAT, IRoomTickerSet(message->room, message->user, ticker));
+}
+
+void
+Museek::IfaceManager::onServerPrivRoomToggled(const SPrivRoomToggle * message)
+{
+    SEND_MASK(EM_CHAT, IPrivRoomToggle(message->enabled));
+
+    bool oldConfig = museekd()->isEnabledPrivRoom();
+    if (oldConfig == message->enabled)
+        return;
+
+    museekd()->config()->set("priv_rooms", "enable_priv_room", message->enabled);
+}
+
+void
+Museek::IfaceManager::onServerPrivRoomAlterableMembers(const SPrivRoomAlterableMembers * message)
+{
+    m_PrivRoomAlterableMembers[message->room] = message->users;
+
+    SEND_MASK(EM_CHAT, IPrivRoomAlterableMembers(message->room, message->users));
+}
+
+void
+Museek::IfaceManager::onServerPrivRoomAddedUser(const SPrivRoomAddUser * message)
+{
+    m_PrivRoomAlterableMembers[message->room].push_back(message->user);
+
+    SEND_MASK(EM_CHAT, IPrivRoomAddUser(message->room, message->user));
+}
+
+void
+Museek::IfaceManager::onServerPrivRoomRemovedUser(const SPrivRoomRemoveUser * message)
+{
+
+    std::vector<std::string>::iterator it = std::find(m_PrivRoomAlterableMembers[message->room].begin(), m_PrivRoomAlterableMembers[message->room].end(), message->user);
+    if (it != m_PrivRoomAlterableMembers[message->room].end()) {
+        m_PrivRoomAlterableMembers[message->room].erase(it);
+
+        SEND_MASK(EM_CHAT, IPrivRoomRemoveUser(message->room, message->user));
+    }
+}
+
+void
+Museek::IfaceManager::onServerPrivRoomAddedOperator(const SPrivRoomAddOperator * message)
+{
+    m_PrivRoomAlterableOperators[message->room].push_back(message->op);
+
+    SEND_MASK(EM_CHAT, IPrivRoomAddOperator(message->room, message->op));
+}
+
+void
+Museek::IfaceManager::onServerPrivRoomRemovedOperator(const SPrivRoomRemoveOperator * message)
+{
+
+    std::vector<std::string>::iterator it = std::find(m_PrivRoomAlterableOperators[message->room].begin(), m_PrivRoomAlterableOperators[message->room].end(), message->op);
+    if (it != m_PrivRoomAlterableOperators[message->room].end()) {
+        m_PrivRoomAlterableOperators[message->room].erase(it);
+
+        SEND_MASK(EM_CHAT, IPrivRoomRemoveOperator(message->room, message->op));
+    }
+}
+
+void
+Museek::IfaceManager::onServerPrivRoomAlterableOperators(const SPrivRoomAlterableOperators * message)
+{
+    m_PrivRoomAlterableOperators[message->room] = message->ops;
+
+    SEND_MASK(EM_CHAT, IPrivRoomAlterableOperators(message->room, message->ops));
 }
 
 void

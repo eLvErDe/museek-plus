@@ -107,6 +107,16 @@ namespace Museek
     void onIfaceLeaveRoom(const ILeaveRoom * message);
     void onIfaceSayRoom(const ISayRoom * message);
     void onIfaceSetRoomTicker(const IRoomTickerSet * message);
+    void onIfaceAskPublicChat(const IAskPublicChat * message);
+    void onIfaceStopPublicChat(const IStopPublicChat * message);
+    void onIfacePrivRoomToggle(const IPrivRoomToggle * message);
+    void onIfacePrivRoomAddUser(const IPrivRoomAddUser * message);
+    void onIfacePrivRoomRemoveUser(const IPrivRoomRemoveUser * message);
+    void onIfacePrivRoomAddOperator(const IPrivRoomAddOperator * message);
+    void onIfacePrivRoomRemoveOperator(const IPrivRoomRemoveOperator * message);
+    void onIfacePrivRoomDismember(const IPrivRoomDismember * message);
+    void onIfacePrivRoomDisown(const IPrivRoomDisown * message);
+
     void onIfaceStartSearch(const ISearch * message);
     void onIfaceStartUserSearch(const IUserSearch * message);
     void onIfaceStartWishListSearch(const IWishListSearch * message);
@@ -159,6 +169,14 @@ namespace Museek
     void onServerItemSimilarUsersReceived(const SGetItemSimilarUsers * message);
     void onServerUserInterestsReceived(const SUserInterests * message);
 
+    void onServerPrivRoomToggled(const SPrivRoomToggle * message);
+    void onServerPrivRoomAlterableMembers(const SPrivRoomAlterableMembers * message);
+    void onServerPrivRoomAlterableOperators(const SPrivRoomAlterableOperators * message);
+    void onServerPrivRoomAddedUser(const SPrivRoomAddUser * message);
+    void onServerPrivRoomRemovedUser(const SPrivRoomRemoveUser * message);
+    void onServerPrivRoomAddedOperator(const SPrivRoomAddOperator * message);
+    void onServerPrivRoomRemovedOperator(const SPrivRoomRemoveOperator * message);
+
     // Peer event handlers:
     void onPeerSocketUnavailable(std::string user);
     void onPeerSocketReady(PeerSocket * socket);
@@ -187,8 +205,14 @@ namespace Museek
     uint32 m_AwayState;
 
     RoomList m_RoomList;
+    PrivRoomList m_PrivRoomList;
+    PrivRoomOperators m_PrivRoomOperators;
+    PrivRoomOwners m_PrivRoomOwners;
     std::map<std::string, RoomData> m_RoomData;
     std::map<std::string, Tickers> m_TickerData;
+
+    std::map<std::string, std::vector<std::string> > m_PrivRoomAlterableMembers;
+    std::map<std::string, std::vector<std::string> > m_PrivRoomAlterableOperators;
 
     struct PrivateMessage
     {

@@ -299,6 +299,8 @@ Museek::ServerManager::onLoggedIn(const SLogin * message)
     }
 
     museekd()->sendSharedNumber();
+
+    SEND_MESSAGE(SPrivRoomToggle(museekd()->isEnabledPrivRoom()));
   }
 }
 

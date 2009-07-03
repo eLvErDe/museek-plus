@@ -152,3 +152,7 @@ void Museek::Museekd::sendSharedNumber() {
 	    server()->sendMessage(msg.make_network_packet());
 	}
 }
+
+bool Museek::Museekd::isEnabledPrivRoom() {
+    return config()->getBool("priv_rooms", "enable_priv_room", false);
+}
