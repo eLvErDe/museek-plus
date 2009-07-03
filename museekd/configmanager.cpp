@@ -190,10 +190,13 @@ Museek::ConfigManager::updateConfigFile() {
         uint port = getUint("server", "port");
         if ((host == "server.slsknet.org") && (port != 2242))
             set("server", "port", 2242);
-
-        // Setting the new version
-        set("museekd", "version", "0.2.0");
     }
+    else if (version == "0.2.0") {
+        // Nothing special to do.
+        // One new config key: "priv_rooms"/"enable_priv_room" -> false if not present
+    }
+    // Setting the new version
+    set("museekd", "version", "0.3.0");
 }
 
 std::string
