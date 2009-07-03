@@ -37,6 +37,7 @@ struct _UserData {
   uint32 status, avgspeed, files, dirs;
   uint64 downloadnum;
   bool slotsfull;
+  std::string country;
 };
 
 enum _TrState {

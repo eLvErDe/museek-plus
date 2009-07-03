@@ -40,7 +40,7 @@ Museek::SearchManager::SearchManager(Museekd * museekd) : m_Museekd(museekd)
     museekd->server()->fileSearchRequestedEvent.connect(this, &SearchManager::onFileSearchRequested);
     museekd->peers()->peerSocketReadyEvent.connect(this, &SearchManager::onPeerSocketReady);
     museekd->peers()->peerSocketUnavailableEvent.connect(this, &SearchManager::onPeerSocketUnavailable);
-    museekd->server()->userStatsReceivedEvent.connect(this, &SearchManager::onUserStatsReceived);
+    museekd->server()->addUserReceivedEvent.connect(this, &SearchManager::onAddUserReceived);
     museekd->server()->wishlistIntervalReceivedEvent.connect(this, &SearchManager::onWishlistIntervalReceived);
     museekd->config()->keySetEvent.connect(this, &SearchManager::onConfigKeySet);
     museekd->config()->keyRemovedEvent.connect(this, &SearchManager::onConfigKeyRemoved);
@@ -291,10 +291,10 @@ void Museek::SearchManager::onFileSearchRequested(const SFileSearch * msg) {
 /**
   * The server sends us a SAddUser response: see if there's something interesting
   */
-void Museek::SearchManager::onUserStatsReceived(const SGetUserStats * msg) {
+void Museek::SearchManager::onAddUserReceived(const SAddUser * msg) {
     if (msg->user == museekd()->server()->username()) {
-        NNLOG("museekd.peers.debug", "Our transfer speed is %d", msg->avgspeed);
-        setTransferSpeed(msg->avgspeed);
+        NNLOG("museekd.peers.debug", "Our transfer speed is %d", msg->userdata.avgspeed);
+        setTransferSpeed(msg->userdata.avgspeed);
     }
 }
 
@@ -434,7 +434,7 @@ void Museek::SearchManager::onPeerSocketReady(PeerSocket * socket) {
 
         std::map<uint, Folder>::const_iterator it;
         for (it = m_PendingResults[username].begin(); it != m_PendingResults[username].end(); it++) {
-            PSearchReply msg(it->first, username, it->second, transferSpeed(), museekd()->uploads()->queueTotalLength(), museekd()->uploads()->hasFreeSlots());
+            PSearchReply msg(it->first, username, it->second, transferSpeed(), (uint64) museekd()->uploads()->queueTotalLength(), museekd()->uploads()->hasFreeSlots());
             socket->sendMessage(msg.make_network_packet());
         }
 
@@ -513,8 +513,7 @@ Museek::SearchManager::onServerLoggedInStateChanged(bool loggedIn)
         museekd()->server()->sendMessage(msgAccept.make_network_packet());
 
         // We want to know our own transfer speed. Ask the server for it.
-        SAddUser msg(museekd()->server()->username());
-        museekd()->server()->sendMessage(msg.make_network_packet());
+        museekd()->peers()->requestUserData(museekd()->server()->username());
     }
     else if(!parent()) {
         // If we're the root of our branch and we get disconnected, we should disconnect from our children to let them go on a living branch
@@ -541,8 +540,8 @@ Museek::SearchManager::onPeerSocketUnavailable(std::string user)
 }
 
 void
-Museek::SearchManager::searchReplyReceived(uint ticket, const std::string & user, bool slotfree, uint avgspeed, uint queuelen, const Folder & folders) {
-    museekd()->ifaces()->onSearchReply(ticket, user, slotfree, avgspeed, queuelen, folders);
+Museek::SearchManager::searchReplyReceived(uint ticket, const std::string & user, bool slotfree, uint avgspeed, uint64 queuelen, const Folder & folders) {
+    museekd()->ifaces()->onSearchReply(ticket, user, slotfree, avgspeed, (uint) queuelen, folders);
 }
 
 void

@@ -74,7 +74,7 @@ namespace Museek
     uint transferSpeed() {return m_TransferSpeed;};
     void setTransferSpeed(uint speed) {m_TransferSpeed = speed;};
 
-    void searchReplyReceived(uint ticket, const std::string & user, bool slotfree, uint avgspeed, uint queuelen, const Folder & folders);
+    void searchReplyReceived(uint ticket, const std::string & user, bool slotfree, uint avgspeed, uint64 queuelen, const Folder & folders);
     void branchLevelReceived(DistributedSocket * socket, uint level);
 
     void transmitSearch(uint unknown, const std::string & username, uint ticket, const std::string & query);
@@ -96,7 +96,7 @@ namespace Museek
     void onNetInfoReceived(const SNetInfo * msg);
     void onSearchRequested(const SSearchRequest * msg);
     void onFileSearchRequested(const SFileSearch * msg);
-    void onUserStatsReceived(const SGetUserStats * msg);
+    void onAddUserReceived(const SAddUser * msg);
     void onWishlistIntervalReceived(const SWishlistInterval * msg);
     void onPeerSocketReady(PeerSocket * socket);
     void onParentDisconnected(NewNet::ClientSocket * socket_);

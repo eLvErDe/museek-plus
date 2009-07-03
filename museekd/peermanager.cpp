@@ -41,7 +41,7 @@ Museek::PeerManager::PeerManager(Museekd * museekd) : m_Museekd(museekd)
   museekd->server()->cannotConnectNotifyReceivedEvent.connect(this, &PeerManager::onCannotConnectNotify);
   museekd->server()->connectToPeerRequestedEvent.connect(this, &PeerManager::onServerConnectToPeerRequested);
   museekd->server()->userStatusReceivedEvent.connect(this, &PeerManager::onServerUserStatusReceived);
-  museekd->server()->userStatsReceivedEvent.connect(this, &PeerManager::onServerUserStatsReceived);
+  museekd->server()->addUserReceivedEvent.connect(this, &PeerManager::onServerAddUserReceived);
 
   firewallPiercedEvent.connect(this, &PeerManager::onFirewallPierced);
 
@@ -132,25 +132,9 @@ Museek::PeerManager::peerSocket(const std::string & user, bool force) {
 
         if(museekd()->server()->loggedIn()) {
             std::map<std::string, uint32>::iterator it = m_UserStatus.find(user);
-            if (m_UserStatus.find(user) == m_UserStatus.end()) {
-                // This is a new user, tell the server we want to watch him
-                // We don't need to send another SGetStatus if we've just sent one
-                struct timeval now;
-                gettimeofday(&now, NULL);
-                std::map<std::string, struct timeval >::iterator tit;
-                tit = m_LastStatusTime.find(user);
-                if(tit == m_LastStatusTime.end() || difftime(now, (*tit).second) > 10000.0) {
-                    NNLOG("museekd.peers.debug", "No peer socket to %s, requesting status.", user.c_str());
-                    m_LastStatusTime[user] = now;
-
-                    // Let the server know we want to track the status of this user.
-                    SAddUser msg(user);
-                    museekd()->server()->sendMessage(msg.make_network_packet());
-
-                    // Ask the server for this user's status. Once we get that a connection will be established.
-                    SGetStatus msgS(user);
-                    museekd()->server()->sendMessage(msgS.make_network_packet());
-                }
+            if (it == m_UserStatus.end()) {
+                NNLOG("museekd.peers.debug", "No peer socket to %s, requesting status.", user.c_str());
+                requestUserData(user);
             }
             else if (isUserConnected(user)) {
                 // We know user is connected to server, create the socket
@@ -170,6 +154,26 @@ Museek::PeerManager::peerSocket(const std::string & user, bool force) {
     }
     else
         peerSocketReadyEvent((*it).second);
+}
+
+/**
+  * Ask the server to give us the given user existence, status and stats
+  */
+void Museek::PeerManager::requestUserData(const std::string& user) {
+    // Tell the server we want to watch this user
+    // We don't need to send another SAddUser if we've just sent one
+    struct timeval now;
+    gettimeofday(&now, NULL);
+    std::map<std::string, struct timeval >::iterator tit;
+    tit = m_LastStatusTime.find(user);
+    if(tit == m_LastStatusTime.end() || difftime(now, (*tit).second) > 10000.0) {
+        NNLOG("museekd.peers.debug", "Asking server for existence, status and stats of user %s", user.c_str());
+        m_LastStatusTime[user] = now;
+
+        // Let the server know we want to track the status of this user.
+        SAddUser msg(user);
+        museekd()->server()->sendMessage(msg.make_network_packet());
+    }
 }
 
 /**
@@ -222,21 +226,7 @@ void Museek::PeerManager::removePeerSocket(const std::string & user, bool discon
 void
 Museek::PeerManager::onServerUserStatusReceived(const SGetStatus * message)
 {
-    m_UserStatus[message->user] = message->status; // Store status for future ifaces
-
-    // Is the user online?
-    if(message->status > 0) {
-        NNLOG("museekd.peers.debug", "User %s is online", message->user.c_str());
-
-        createPeerSocket(message->user);
-    }
-    else {
-        NNLOG("museekd.peers.debug", "User %s is offline", message->user.c_str());
-
-        // Don't disconnect the peer socket if it exists: it will be disconnected if the user is completely offline.
-        // If he's only disconnected from the server, we can still talk to him directly.
-        peerOfflineEvent(message->user);
-    }
+    setUserStatus(message->user, message->status); // Store status for future ifaces
 }
 
 /**
@@ -277,9 +267,28 @@ Museek::PeerManager::createPeerSocket(const std::string& user) {
   * We have received stats of an user
   */
 void
-Museek::PeerManager::onServerUserStatsReceived(const SGetUserStats * message)
+Museek::PeerManager::onServerAddUserReceived(const SAddUser * message)
 {
-    m_UserStats[message->user] = *message; // Store stats for future ifaces
+    if (!message->exists)
+        return;
+
+    m_UserStats[message->user] = message->userdata; // Store stats for future ifaces
+
+    setUserStatus(message->user, message->userdata.status); // Store status for future ifaces
+
+    // Is the user online?
+    if(message->userdata.status > 0) {
+        NNLOG("museekd.peers.debug", "User %s is online", message->user.c_str());
+
+        createPeerSocket(message->user);
+    }
+    else {
+        NNLOG("museekd.peers.debug", "User %s is offline", message->user.c_str());
+
+        // Don't disconnect the peer socket if it exists: it will be disconnected if the user is completely offline.
+        // If he's only disconnected from the server, we can still talk to him directly.
+        peerOfflineEvent(message->user);
+    }
 }
 
 /**
@@ -287,7 +296,7 @@ Museek::PeerManager::onServerUserStatsReceived(const SGetUserStats * message)
   */
 bool Museek::PeerManager::isUserConnected(const std::string& user) {
     std::map<std::string, uint32>::iterator it = m_UserStatus.find(user);
-    if (m_UserStatus.find(user) == m_UserStatus.end())
+    if (it == m_UserStatus.end())
         return false;
     else
         return (it->second > 0);

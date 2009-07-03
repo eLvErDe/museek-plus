@@ -67,10 +67,11 @@ namespace Museek
     void addPeerSocket(PeerSocket * socket);
     void removePeerSocket(const std::string & user, bool disconnect = false);
 
-    std::map<std::string, SGetUserStats> *userStats() {return &m_UserStats;};
+    std::map<std::string, UserData> *userStats() {return &m_UserStats;};
     std::map<std::string, uint32> *userStatus() {return &m_UserStatus;};
     bool isUserConnected(const std::string&);
 
+    void requestUserData(const std::string& user);
     void setUserStatus(const std::string& user, uint32 status);
 
     void waitingPassiveConnection(UserSocket * socket);
@@ -92,7 +93,7 @@ namespace Museek
     void onCannotConnectNotify(const SCannotConnect * msg);
     void onServerConnectToPeerRequested(const SConnectToPeer * message);
     void onServerUserStatusReceived(const SGetStatus * message);
-    void onServerUserStatsReceived(const SGetUserStats * message);
+    void onServerAddUserReceived(const SAddUser * message);
     void onPeerCannotConnect(NewNet::ClientSocket * socket_);
     void onDisconnected(NewNet::ClientSocket * socket_);
     void onConnected(NewNet::ClientSocket * socket_);
@@ -104,7 +105,7 @@ namespace Museek
 
     std::map<std::string, struct timeval >                  m_LastStatusTime;   // When did we ask for status of each user?
     std::map<std::string, NewNet::WeakRefPtr<PeerSocket> >  m_Peers;            // List of all the peer sockets
-    std::map<std::string, SGetUserStats>                    m_UserStats;        // User stats
+    std::map<std::string, UserData>                         m_UserStats;        // User stats
     std::map<std::string, uint32>                           m_UserStatus;       // User status
     std::map<uint, NewNet::RefPtr<UserSocket> >             m_PassiveConnects;  // Sockets trying to establish a passive connection
   };

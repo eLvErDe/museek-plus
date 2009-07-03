@@ -25,6 +25,7 @@
 #include "museekd.h"
 #include "codesetmanager.h"
 #include "configmanager.h"
+#include "peermanager.h"
 #include <NewNet/nnreactor.h>
 #include <NewNet/nnlog.h>
 #include <iostream>
@@ -222,7 +223,9 @@ Museek::ServerManager::onMessageReceived(const TcpMessageSocket::MessageData * d
     #undef MAP_MESSAGE
 
     default:
-      NNLOG("museekd.server.warn", "Received unknown server message, type: %u, length: %u", data->type, data->length);
+        NNLOG("museekd.server.warn", "Received unknown server message, type: %u, length: %u", data->type, data->length);
+        NetworkMessage msg;
+        msg.parse_network_packet(data->data, data->length);
   }
 }
 
@@ -236,11 +239,7 @@ Museek::ServerManager::onConfigKeySet(const ConfigManager::ChangeNotify * data)
     else if(data->domain == "interests.hate")
       SEND_MESSAGE(SInterestHatedAdd(data->key));
     else if(data->domain == "buddies" || data->domain == "trusted" || data->domain == "ignored" || data->domain == "banned")
-    {
-      SEND_MESSAGE(SAddUser(data->key));
-      SEND_MESSAGE(SGetStatus(data->key));
-      SEND_MESSAGE(SGetUserStats(data->key));
-    }
+      museekd()->peers()->requestUserData(data->key);
   }
 }
 
@@ -268,9 +267,7 @@ Museek::ServerManager::onLoggedIn(const SLogin * message)
   setLoggedIn(message->success);
   if(message->success)
   {
-    SEND_MESSAGE(SAddUser(username()));
-    SEND_MESSAGE(SGetStatus(username()));
-    SEND_MESSAGE(SGetUserStats(username()));
+    museekd()->peers()->requestUserData(username());
     std::vector<std::string>::const_iterator it, end = m_JoinedRooms.end();
     for(it = m_JoinedRooms.begin(); it != end; ++it)
       SEND_MESSAGE(SJoinRoom(*it));
@@ -298,9 +295,7 @@ Museek::ServerManager::onLoggedIn(const SLogin * message)
     std::sort(users.begin(), users.end());
     std::unique(users.begin(), users.end());
     for(it = users.begin(); it != users.end(); ++it) {
-      SEND_MESSAGE(SAddUser(*it));
-      SEND_MESSAGE(SGetStatus(*it));
-      SEND_MESSAGE(SGetUserStats(*it));
+      museekd()->peers()->requestUserData(*it);
     }
 
     museekd()->sendSharedNumber();

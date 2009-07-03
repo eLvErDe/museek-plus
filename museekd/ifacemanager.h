@@ -139,9 +139,8 @@ namespace Museek
     void onServerLoggedInStateChanged(bool loggedIn);
     void onServerKicked(const SKicked* message);
     void onServerPeerAddressReceived(const SGetPeerAddress * message);
-    void onServerUserExistsReceived(const SAddUser * message);
+    void onServerAddUserReceived(const SAddUser * message);
     void onServerUserStatusReceived(const SGetStatus * message);
-    void onServerUserStatsReceived(const SGetUserStats * message);
     void onServerPrivateMessageReceived(const SPrivateMessage * message);
     void onServerRoomMessageReceived(const SSayRoom * message);
     void onServerRoomJoined(const SJoinRoom * message);

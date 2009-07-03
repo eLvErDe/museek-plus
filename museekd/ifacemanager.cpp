@@ -85,9 +85,8 @@ Museek::IfaceManager::IfaceManager(Museekd * museekd) : m_Museekd(museekd)
   museekd->server()->loggedInEvent.connect(this, &IfaceManager::onServerLoggedIn);
   museekd->server()->kickedEvent.connect(this, &IfaceManager::onServerKicked);
   museekd->server()->peerAddressReceivedEvent.connect(this, &IfaceManager::onServerPeerAddressReceived);
-  museekd->server()->userExistsReceivedEvent.connect(this, &IfaceManager::onServerUserExistsReceived);
+  museekd->server()->addUserReceivedEvent.connect(this, &IfaceManager::onServerAddUserReceived);
   museekd->server()->userStatusReceivedEvent.connect(this, &IfaceManager::onServerUserStatusReceived);
-  museekd->server()->userStatsReceivedEvent.connect(this, &IfaceManager::onServerUserStatsReceived);
   museekd->server()->privateMessageReceivedEvent.connect(this, &IfaceManager::onServerPrivateMessageReceived);
   museekd->server()->roomMessageReceivedEvent.connect(this, &IfaceManager::onServerRoomMessageReceived);
   museekd->server()->roomJoinedEvent.connect(this, &IfaceManager::onServerRoomJoined);
@@ -383,8 +382,9 @@ Museek::IfaceManager::onIfaceLogin(const ILogin * message)
     socket->setCipherKey(password);
     SEND_MESSAGE(socket, ILogin(true, std::string(), std::string()));
     SEND_MESSAGE(socket, IServerState(museekd()->server()->loggedIn(), museekd()->server()->username()));
-    if(socket->mask() & EM_CHAT)
-      SEND_MESSAGE(socket, IRoomState(m_RoomList, m_RoomData, m_TickerData));
+    if(socket->mask() & EM_CHAT) {
+      SEND_MESSAGE(socket, IRoomStateCompat(m_RoomList, m_RoomData, m_TickerData)); // For compatibility with old clients (deprecated since 0.3)
+    }
     if(socket->mask() & EM_TRANSFERS) {
       SEND_MESSAGE(socket, ITransferState(&museekd()->downloads()->downloads()));
       SEND_MESSAGE(socket, ITransferState(&museekd()->uploads()->uploads()));
@@ -399,10 +399,10 @@ Museek::IfaceManager::onIfaceLogin(const ILogin * message)
     if (socket->mask() & EM_USERINFO) {
         // send peers stats
         // copy the maps to avoid invalid iterator when they are modified elsewhere
-        std::map<std::string, SGetUserStats> userStats(*(museekd()->peers()->userStats()));
-        std::map<std::string, SGetUserStats>::const_iterator it = userStats.begin();
+        std::map<std::string, UserData> userStats(*(museekd()->peers()->userStats()));
+        std::map<std::string, UserData>::const_iterator it = userStats.begin();
         for(; it != userStats.end(); it++) {
-            SEND_MESSAGE(socket, IPeerStats(it->second.user, it->second.avgspeed, it->second.downloadnum, it->second.files, it->second.dirs));
+            SEND_MESSAGE(socket, IPeerStats(it->first, it->second));
         }
 
         std::map<std::string, uint32> userStatus(*(museekd()->peers()->userStatus()));
@@ -463,19 +463,34 @@ Museek::IfaceManager::onIfaceSetUserImage(const IConfigSetUserImage * message) {
 void
 Museek::IfaceManager::onIfaceGetPeerExists(const IPeerExists * message)
 {
-  SEND_MESSAGE(museekd()->server(), SAddUser(message->user));
+    std::map<std::string, uint32> userStatus(*(museekd()->peers()->userStatus()));
+    std::map<std::string, uint32>::iterator it = userStatus.find(message->user);
+    if (it == userStatus.end())
+        museekd()->peers()->requestUserData(message->user); // Maybe the user doesn't exist, maybe we haven't seen him yet. Ask the server
+    else
+        SEND_ALL(IPeerExists(message->user, true)); // We're sure he exists
 }
 
 void
 Museek::IfaceManager::onIfaceGetPeerStatus(const IPeerStatus * message)
 {
-  SEND_MESSAGE(museekd()->server(), SGetStatus(message->user));
+    std::map<std::string, uint32> userStatus(*(museekd()->peers()->userStatus()));
+    std::map<std::string, uint32>::iterator it = userStatus.find(message->user);
+    if (it == userStatus.end())
+        museekd()->peers()->requestUserData(message->user);
+    else
+        SEND_ALL(IPeerStatus(message->user, it->second));
 }
 
 void
 Museek::IfaceManager::onIfaceGetPeerStats(const IPeerStats * message)
 {
-  SEND_MESSAGE(museekd()->server(), SGetUserStats(message->user));
+    std::map<std::string, UserData> userStats(*(museekd()->peers()->userStats()));
+    std::map<std::string, UserData>::iterator it = userStats.find(message->user);
+    if (it == userStats.end())
+        museekd()->peers()->requestUserData(message->user);
+    else
+        SEND_ALL(IPeerStats(message->user, it->second));
 }
 
 void
@@ -817,9 +832,23 @@ Museek::IfaceManager::onServerPeerAddressReceived(const SGetPeerAddress * messag
 }
 
 void
-Museek::IfaceManager::onServerUserExistsReceived(const SAddUser * message)
+Museek::IfaceManager::onServerAddUserReceived(const SAddUser * message)
 {
   SEND_ALL(IPeerExists(message->user, message->exists));
+
+  if (!message->exists)
+    return;
+
+  std::map<std::string, RoomData>::iterator it, end = m_RoomData.end();
+  for(it = m_RoomData.begin(); it != end; ++it)
+  {
+    RoomData::iterator u_it = (*it).second.find(message->user);
+    if(u_it == (*it).second.end())
+      continue;
+    (*u_it).second = message->userdata;
+  }
+  SEND_ALL(IPeerStats(message->user, message->userdata));
+  SEND_ALL(IPeerStatus(message->user, message->userdata.status));
 }
 
 void
@@ -839,23 +868,6 @@ Museek::IfaceManager::onServerUserStatusReceived(const SGetStatus * message)
     m_AwayState = message->status & 1;
     SEND_ALL(ISetStatus(m_AwayState));
   }
-}
-
-void
-Museek::IfaceManager::onServerUserStatsReceived(const SGetUserStats * message)
-{
-  std::map<std::string, RoomData>::iterator it, end = m_RoomData.end();
-  for(it = m_RoomData.begin(); it != end; ++it)
-  {
-    RoomData::iterator u_it = (*it).second.find(message->user);
-    if(u_it == (*it).second.end())
-      continue;
-    (*u_it).second.avgspeed = message->avgspeed;
-    (*u_it).second.downloadnum = message->downloadnum;
-    (*u_it).second.files = message->files;
-    (*u_it).second.dirs = message->dirs;
-  }
-  SEND_ALL(IPeerStats(message->user, message->avgspeed, message->downloadnum, message->files, message->dirs));
 }
 
 void
@@ -990,7 +1002,11 @@ Museek::IfaceManager::onServerGlobalRecommendationsReceived(const SGetGlobalReco
 void
 Museek::IfaceManager::onServerSimilarUsersReceived(const SGetSimilarUsers * message)
 {
-  SEND_MASK(EM_INTERESTS, IGetSimilarUsers(message->users));
+    SEND_MASK(EM_INTERESTS, IGetSimilarUsers(message->users));
+    SimilarUsers::const_iterator it = message->users.begin();
+    for(; it != message->users.end(); ++it) {
+        SEND_MESSAGE(museekd()->server(), SAddUser(it->first));
+    }
 }
 
 void
@@ -1159,5 +1175,5 @@ Museek::IfaceManager::onUploadRemoved(Upload * upload)
 void
 Museek::IfaceManager::onSearchReply(uint ticket, const std::string & user, bool slotfree, uint avgspeed, uint queuelen, const Folder & folders)
 {
-  SEND_ALL(ISearchReply(ticket, user,slotfree, avgspeed, queuelen, folders));
+  SEND_ALL(ISearchReply(ticket, user, slotfree, avgspeed, queuelen, folders));
 }
