@@ -105,6 +105,7 @@ Museek::IfaceManager::IfaceManager(Museekd * museekd) : m_Museekd(museekd)
   museekd->server()->itemSimilarUsersReceivedEvent.connect(this, &IfaceManager::onServerItemSimilarUsersReceived);
   museekd->server()->userInterestsReceivedEvent.connect(this, &IfaceManager::onServerUserInterestsReceived);
   museekd->server()->newPasswordReceivedEvent.connect(this, &IfaceManager::onServerNewPasswordSet);
+  museekd->server()->publicChatReceivedEvent.connect(this, &IfaceManager::onServerPublicChatReceived);
 
   museekd->server()->privRoomToggleReceivedEvent.connect(this, &IfaceManager::onServerPrivRoomToggled);
   museekd->server()->privRoomAlterableMembersReceivedEvent.connect(this, &IfaceManager::onServerPrivRoomAlterableMembers);
@@ -286,6 +287,11 @@ Museek::IfaceManager::onIfaceAccepted(IfaceSocket * socket)
   socket->leaveRoomEvent.connect(this, &IfaceManager::onIfaceLeaveRoom);
   socket->sayRoomEvent.connect(this, &IfaceManager::onIfaceSayRoom);
   socket->setRoomTickerEvent.connect(this, &IfaceManager::onIfaceSetRoomTicker);
+  socket->messageUsersEvent.connect(this, &IfaceManager::onIfaceMessageUsers);
+  socket->messageBuddiesEvent.connect(this, &IfaceManager::onIfaceMessageBuddies);
+  socket->messageDownloadingEvent.connect(this, &IfaceManager::onIfaceMessageDownloading);
+  socket->askPublicChatEvent.connect(this, &IfaceManager::onIfaceAskPublicChat);
+  socket->stopPublicChatEvent.connect(this, &IfaceManager::onIfaceStopPublicChat);
   socket->privRoomToggleEvent.connect(this, &IfaceManager::onIfacePrivRoomToggle);
   socket->privRoomAddUserEvent.connect(this, &IfaceManager::onIfacePrivRoomAddUser);
   socket->privRoomRemoveUserEvent.connect(this, &IfaceManager::onIfacePrivRoomRemoveUser);
@@ -640,6 +646,50 @@ Museek::IfaceManager::onIfaceSetRoomTicker(const IRoomTickerSet * message)
   std::string ticker = museekd()->codeset()->toRoom(message->room, message->message);
   ticker = str_replace(ticker, '\n', ' ');
   SEND_MESSAGE(museekd()->server(), SSetRoomTicker(message->room, ticker));
+}
+
+void
+Museek::IfaceManager::onIfaceMessageUsers(const IMessageUsers * message)
+{
+    SEND_MESSAGE(museekd()->server(), SMessageUsers(message->users, message->msg));
+    std::string userList = "";
+    std::vector<std::string>::const_iterator it = message->users.begin();
+    for (; it != message->users.end(); it++) {
+        if (it != message->users.begin())
+            userList = userList + std::string(", ");
+        userList = userList + *it;
+    }
+    sendStatusMessage(true, std::string("Sent message '") + message->msg + std::string("' to users: ") + userList);
+}
+
+void
+Museek::IfaceManager::onIfaceMessageBuddies(const IMessageBuddies * message)
+{
+    std::vector<std::string> buddies = museekd()->config()->keys("buddies");
+    SEND_MESSAGE(museekd()->server(), SMessageUsers(buddies, message->msg));
+    sendStatusMessage(true, std::string("Sent message '") + message->msg + std::string("' to buddies."));
+}
+
+void
+Museek::IfaceManager::onIfaceMessageDownloading(const IMessageDownloading * message)
+{
+    std::vector<std::string> users = museekd()->uploads()->getAllUsersWithUpload();
+    SEND_MESSAGE(museekd()->server(), SMessageUsers(users, message->msg));
+    sendStatusMessage(true, std::string("Sent message '") + message->msg + std::string("' to downloading users."));
+}
+
+void
+Museek::IfaceManager::onIfaceAskPublicChat(const IAskPublicChat * message)
+{
+  SEND_MESSAGE(museekd()->server(), SAskPublicChat());
+  SEND_MASK(EM_CHAT, IAskPublicChat());
+}
+
+void
+Museek::IfaceManager::onIfaceStopPublicChat(const IStopPublicChat * message)
+{
+  SEND_MESSAGE(museekd()->server(), SStopPublicChat());
+  SEND_MASK(EM_CHAT, IStopPublicChat());
 }
 
 void
@@ -1081,6 +1131,11 @@ Museek::IfaceManager::onServerRoomTickerAdded(const SRoomTickerAdd * message)
 void
 Museek::IfaceManager::onServerNewPasswordSet(const SNewPassword * message) {
     SEND_C_MASK(EM_CONFIG, INewPassword((*it)->cipherContext(), message->newPassword));
+}
+
+void
+Museek::IfaceManager::onServerPublicChatReceived(const SPublicChat * message) {
+    SEND_MASK(EM_CHAT, IPublicChat(message->room, message->user, message->message));
 }
 
 void

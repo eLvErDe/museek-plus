@@ -491,6 +491,21 @@ Museek::Upload * Museek::UploadManager::isUploadingTo(const std::string & user) 
 }
 
 /**
+  * Returns the list of users in the upload queue (currently downloading or in not)
+  */
+std::vector<std::string> Museek::UploadManager::getAllUsersWithUpload() {
+    std::vector<std::string> res;
+    std::vector<NewNet::RefPtr<Upload> >::const_iterator it = m_Uploads.begin();
+    for (; it != m_Uploads.end(); it++) {
+        if (std::find(res.begin(), res.end(), (*it)->user()) == res.end()) {
+            res.push_back((*it)->user());
+        }
+    }
+
+    return res;
+}
+
+/**
   * Are we already initiating an upload to this user?
   */
 Museek::Upload * Museek::UploadManager::isInitiatingTo(const std::string & user) {

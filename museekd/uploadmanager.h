@@ -171,6 +171,9 @@ namespace Museek
 
     Upload * isUploadingTo(const std::string & user);
 
+    /* Returns the list of users in the upload queue (currently downloading or in not) */
+    std::vector<std::string> getAllUsersWithUpload();
+
     void onUploadAdded(Upload * upload);
     void onUploadUpdated(Upload * upload);
     void onUploadRemoved(Upload * upload);

@@ -108,6 +108,9 @@ namespace Museek
     void onIfaceLeaveRoom(const ILeaveRoom * message);
     void onIfaceSayRoom(const ISayRoom * message);
     void onIfaceSetRoomTicker(const IRoomTickerSet * message);
+    void onIfaceMessageUsers(const IMessageUsers * message);
+    void onIfaceMessageBuddies(const IMessageBuddies * message);
+    void onIfaceMessageDownloading(const IMessageDownloading * message);
     void onIfaceAskPublicChat(const IAskPublicChat * message);
     void onIfaceStopPublicChat(const IStopPublicChat * message);
     void onIfacePrivRoomToggle(const IPrivRoomToggle * message);
@@ -170,6 +173,7 @@ namespace Museek
     void onServerItemSimilarUsersReceived(const SGetItemSimilarUsers * message);
     void onServerUserInterestsReceived(const SUserInterests * message);
     void onServerNewPasswordSet(const SNewPassword * message);
+    void onServerPublicChatReceived(const SPublicChat * message);
 
     void onServerPrivRoomToggled(const SPrivRoomToggle * message);
     void onServerPrivRoomAlterableMembers(const SPrivRoomAlterableMembers * message);
