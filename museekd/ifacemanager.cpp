@@ -104,6 +104,7 @@ Museek::IfaceManager::IfaceManager(Museekd * museekd) : m_Museekd(museekd)
   museekd->server()->itemRecommendationsReceivedEvent.connect(this, &IfaceManager::onServerItemRecommendationsReceived);
   museekd->server()->itemSimilarUsersReceivedEvent.connect(this, &IfaceManager::onServerItemSimilarUsersReceived);
   museekd->server()->userInterestsReceivedEvent.connect(this, &IfaceManager::onServerUserInterestsReceived);
+  museekd->server()->newPasswordReceivedEvent.connect(this, &IfaceManager::onServerNewPasswordSet);
 
   museekd->server()->privRoomToggleReceivedEvent.connect(this, &IfaceManager::onServerPrivRoomToggled);
   museekd->server()->privRoomAlterableMembersReceivedEvent.connect(this, &IfaceManager::onServerPrivRoomAlterableMembers);
@@ -267,6 +268,7 @@ Museek::IfaceManager::onIfaceAccepted(IfaceSocket * socket)
   socket->loginEvent.connect(this, &IfaceManager::onIfaceLogin);
   socket->checkPrivilegesEvent.connect(this, &IfaceManager::onIfaceCheckPrivileges);
   socket->setStatusEvent.connect(this, &IfaceManager::onIfaceSetStatus);
+  socket->newPasswordEvent.connect(this, &IfaceManager::onIfaceNewPassword);
   socket->setConfigEvent.connect(this, &IfaceManager::onIfaceSetConfig);
   socket->removeConfigEvent.connect(this, &IfaceManager::onIfaceRemoveConfig);
   socket->setUserImageEvent.connect(this, &IfaceManager::onIfaceSetUserImage);
@@ -461,6 +463,12 @@ Museek::IfaceManager::onIfaceSetStatus(const ISetStatus * message)
   SEND_ALL(ISetStatus(m_AwayState));
   museekd()->peers()->setUserStatus(museekd()->server()->username(), message->status ? 1 : 2);
   SEND_ALL(IPeerStatus(museekd()->server()->username(), message->status ? 1 : 2));
+}
+
+void
+Museek::IfaceManager::onIfaceNewPassword(const INewPassword * message)
+{
+  SEND_MESSAGE(museekd()->server(), SNewPassword(message->newPass));
 }
 
 void
@@ -1068,6 +1076,11 @@ Museek::IfaceManager::onServerRoomTickerAdded(const SRoomTickerAdd * message)
   std::string ticker = museekd()->codeset()->fromRoom(message->room, message->ticker);
   m_TickerData[message->room][message->user] = ticker;
   SEND_MASK(EM_CHAT, IRoomTickerSet(message->room, message->user, ticker));
+}
+
+void
+Museek::IfaceManager::onServerNewPasswordSet(const SNewPassword * message) {
+    SEND_C_MASK(EM_CONFIG, INewPassword((*it)->cipherContext(), message->newPassword));
 }
 
 void

@@ -90,6 +90,7 @@ namespace Museek
     void onIfaceLogin(const ILogin * message);
     void onIfaceCheckPrivileges(const ICheckPrivileges * message);
     void onIfaceSetStatus(const ISetStatus * message);
+    void onIfaceNewPassword(const INewPassword * message);
     void onIfaceSetConfig(const IConfigSet * message);
     void onIfaceRemoveConfig(const IConfigRemove * message);
     void onIfaceSetUserImage(const IConfigSetUserImage * message);
@@ -168,6 +169,7 @@ namespace Museek
     void onServerItemRecommendationsReceived(const SGetItemRecommendations * message);
     void onServerItemSimilarUsersReceived(const SGetItemSimilarUsers * message);
     void onServerUserInterestsReceived(const SUserInterests * message);
+    void onServerNewPasswordSet(const SNewPassword * message);
 
     void onServerPrivRoomToggled(const SPrivRoomToggle * message);
     void onServerPrivRoomAlterableMembers(const SPrivRoomAlterableMembers * message);

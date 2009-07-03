@@ -22,6 +22,7 @@ MAP_MESSAGE(0x0000, IPing, pingEvent)
 MAP_MESSAGE(0x0002, ILogin, loginEvent)
 MAP_MESSAGE(0x0004, ICheckPrivileges, checkPrivilegesEvent)
 MAP_MESSAGE(0x0005, ISetStatus, setStatusEvent)
+MAP_C_MESSAGE(0x0012, INewPassword, newPasswordEvent)
 
 // These messages require the crypto context
 MAP_C_MESSAGE(0x0101, IConfigSet, setConfigEvent)
