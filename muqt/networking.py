@@ -120,15 +120,13 @@ class Networking(driver.Driver, QtCore.QThread):
 		print "disconnect"
 		try:
 			if self.socket != None:
-				#self.timer.cancel()
-				#driver.Driver.close(self)
 				self.close()
 				self.connected = False
 				self.config = {}
-				self.frame.downloads.Clear()
-				self.frame.uploads.Clear()
+				self.frame.ui.Downloads.clear()
+				self.frame.ui.Uploads.clear()
 			if self.timer is not None: self.timer.cancel()
-			
+			self.cb_disconnected()
 		except Exception,e:
 			if DEBUG: self.Output("disconnect ERROR", e)
 		
@@ -614,15 +612,15 @@ class Networking(driver.Driver, QtCore.QThread):
 
 	def cb_private_message(self, direction, timestamp, user, message):
 		
-		if DEBUG: self.Output("RECEIVED: cb_private_message", user)
+		#if DEBUG: self.Output("RECEIVED: cb_private_message", user)
 		#
-		if DEBUG: self.Output(direction, timestamp, user, message)
+		#if DEBUG: self.Output(direction, timestamp, user, message)
 		try:
 			
 			
 
 			#gobject.idle_add(self.frame.PrivateChats.ShowMessage, direction, user, message)
-			self.emit(QtCore.SIGNAL("PrivateMessage(PyQt_PyObject,PyQt_PyObject, PyQt_PyObject)"), direction, user, messages)
+			self.emit(QtCore.SIGNAL("ShowMessage(PyQt_PyObject,PyQt_PyObject, PyQt_PyObject)"), direction, user, message)
 			##gobject.idle_add(self.frame.Logging.PrivateChatLog, direction, user, message)
 			
 			if DEBUG:

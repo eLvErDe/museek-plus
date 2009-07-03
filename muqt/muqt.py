@@ -6,6 +6,7 @@ from PyQt4.QtGui import *
 
 from mainwindow import Ui_MainWindow
 from chatroom import Ui_Room
+from privatechat import Ui_Private
 import imagedata
 
 from networking import Networking
@@ -180,12 +181,17 @@ class MuQT(QtGui.QMainWindow):
 		#gc.collect()
 		#self.MurmurWindow.set_icon(self.images["icon"])
 		
-		self.ui.ChatRooms = QtGui.QTabWidget(self.ui.ChatRoomsLabel)
-		self.ui.ChatRooms.setObjectName("ChatRooms")
-		self.ui.verticalLayout_3.addWidget(self.ui.ChatRooms)
+		#self.ui.ChatRooms = QtGui.QTabWidget(self.ui.ChatRoomsLabel)
+		#self.ui.ChatRooms.setObjectName("ChatRooms")
+		
 		
 		self.ChatRooms = ChatRooms(self)
+		self.ui.ChatRoomsLayout.addWidget(self.ChatRooms)
+		self.PrivateChats = PrivateChats(self)
+		self.ui.PrivateChatsLayout.addWidget(self.PrivateChats)
 		self.Networking = Networking(self)
+		self.Downloads = Downloads(self)
+		self.Uploads = Uploads(self)
 		
 		# Networking signals
 		self.connect(self.Networking, SIGNAL("JoinRoom(PyQt_PyObject, PyQt_PyObject)"), self.ChatRooms.JoinRoom)
@@ -194,14 +200,22 @@ class MuQT(QtGui.QMainWindow):
 		self.connect(self.Networking, SIGNAL("SayChatRoom(PyQt_PyObject,PyQt_PyObject, PyQt_PyObject)"), self.ChatRooms.SayChatRoom)
 		#self.connect(self.Networking, SIGNAL("SayChatRoom(PyQt_PyObject, PyQt_PyObject, PyQt_PyObject)"), self.PrivateChat.SayPrivate)
 		self.connect(self.Networking, SIGNAL("Log(PyQt_PyObject)"), self.AppendToLogWindow)
-		self.connect(self.Networking, SIGNAL("PrivateMessage(PyQt_PyObject,PyQt_PyObject, PyQt_PyObject)"), self.Networking.PrivateMessage)
+		self.connect(self.Networking, SIGNAL("ShowMessage(PyQt_PyObject,PyQt_PyObject, PyQt_PyObject)"), self.PrivateChats.ShowMessage)
 		self.connect(self.Networking, SIGNAL("UserJoinedRoom(PyQt_PyObject, PyQt_PyObject)"), self.ChatRooms.UserJoinedRoom)
 		self.connect(self.Networking, SIGNAL("UserLeftRoom(PyQt_PyObject, PyQt_PyObject)"), self.ChatRooms.UserLeftRoom)
+		self.connect(self.Networking, SIGNAL("ConnClose()"), self.ChatRooms.ConnClose)
 		# Main Menu actions
 		self.connect(self.ui.actionToggle_Away, SIGNAL("activated()"), self.away_toggle)
 		self.connect(self.ui.actionAbout_Qt, SIGNAL("activated()"), self.OnAbout)
+		self.connect(self.ui.actionConnect_to_daemon, SIGNAL("activated()"), self.OnConnect)
+		self.connect(self.ui.actionDisconnect_from_daemon, SIGNAL("activated()"), self.OnDisconnect)
 		
 		self.Networking.start()
+	
+	def OnDisconnect(self):
+		self.Networking.disconnect("")
+	def OnConnect(self):
+		self.Networking.connect_to_museekd("") 
 		
 	def OnAbout(self):
 		QMessageBox.aboutQt(self)
@@ -222,7 +236,20 @@ class MuQT(QtGui.QMainWindow):
 
 		except Exception,e:
 			if DEBUG: Output("away_toggle ERROR", e)
-			
+
+	def InitialiseColumns(self, treeview, *args):
+		i = 0
+		treeview.setIndentation(0)
+		cols = []
+		labels = [label[0] for label in args]
+		treeview.setHeaderLabels(labels )
+		treeview.setColumnCount(len(labels))
+		for c in args:
+			if c[2] == "text":
+				pass
+			treeview.setColumnWidth(i, c[1])
+			i += 1
+
 	def GetStatusImage(self, user, num):
 		bud = self.Networking.config.has_key("buddies") and  self.Networking.config["buddies"].has_key(user)
 		ban = self.Networking.config.has_key("banned") and  self.Networking.config["banned"].has_key(user)
@@ -259,34 +286,243 @@ class MuQT(QtGui.QMainWindow):
 		else:
 			return v[:i+2]
 		
-	def HSpeed(self, speed):
-		return _("%s KB/s") % self.numfmt(float(speed) / 1024.0)
-	
-	def Humanize(self, size):
-		if size is None:
-			return None
-
+	def HumanSize(self, number):
 		try:
-			s = int(size)
+			s = float(int(number))
 			if s >= 1000*1024*1024:
-				r = _("%s GB") % self.numfmt(float(s) / 1073741824.0 )
+				r = _("%.2f GiB") % (s / (1024.0*1024.0*1024.0))
 			elif s >= 1000*1024:
-				r = _("%s MB") % self.numfmt(float(s) / 1048576.0)
+				r = _("%.2f MiB") % (s / (1024.0*1024.0))
 			elif s >= 1000:
-				r = _("%s KB") % self.numfmt(float(s) / 1024.0)
+				r = _("%.2f KiB") % (s / 1024.0)
 			else:
-				r = _("%s  B") % self.numfmt(float(s) )
+				r = _("%d Bytes") % s
 			return r
 		except Exception, e:
-			Output(e)
-			return size 
+			return number
+			
+	def HumanSpeed(self, number):
+		try:
+			s = float(int(number))
+			if s >= 1000*1024*1024:
+				r = _("%.2f GiB/s") % (s / (1024.0*1024.0*1024.0))
+			elif s >= 1000*1024:
+				r = _("%.2f MiB/s") % (s / (1024.0*1024.0))
+			elif s >= 1000:
+				r = _("%.2f KiB/s") % (s / 1024.0)
+			else:
+				r = _("%d B/s") % (number)
+			return r
+		except Exception, e:
+			return number
+			
+	def Humanize(self, number):
+		fashion = self.Config["ui"]["decimalsep"]
+		if fashion == "" or fashion == "<None>":
+			return str(number)
+		elif fashion == "<space>":
+			fashion = " "
+		number = str(number)
+		if number[0] == "-":
+			neg = "-"
+			number = number[1:]
+		else:
+			neg = ""
+		ret = ""
+		while number[-3:]:
+			part, number = number[-3:], number[:-3]
+			ret = "%s%s%s" % (part, fashion, ret)
+		return neg + ret[:-1]
+		
+	def makecolour(self, buffer, colour, username=None):
+		color = self.Config["ui"][colour]
+		if color:
+			tag = QtGui.QBrush( QColor(color) )
+		else:
+			tag = QtGui.QBrush(  )
+			
+	def changecolour(self, tag, colour):
+		if self.Config["ui"].has_key(colour):
+			color = self.Config["ui"][colour]
+		else:
+			color = ""
+		#font = self.frame.Config["ui"]["chatfont"]
+		if color:
+			tag = QtGui.QBrush(  QColor(color)  )
+	
+class Downloads:
+	def __init__(self, parent=None):
+		self.frame = parent
+		cols = self.frame.InitialiseColumns(self.frame.ui.Downloads,
+		[_("Username"), 100, "text"], #0
+		[_("Filename"), 250, "text"], #1
+		[_("Speed"), 80, "text"], #2
+		[_("Status"), 80, "text"], #3
+		[_("Pos"), 50, "text"], #4
+		[_("Size"), 80, "text"], #5
+		[_("Path"), 350, "text"], #6
+		)
+		#print cols
+
+		
+class Uploads:
+	def __init__(self, parent=None):
+		self.frame = parent
+		cols = self.frame.InitialiseColumns(self.frame.ui.Uploads,
+		[_("Username"), 100, "text"], #0
+		[_("Filename"), 250, "text"], #1
+		[_("Speed"), 80, "text"], #2
+		[_("Status"), 80, "text"], #3
+		[_("Pos"), 50, "text"], #4
+		[_("Size"), 80, "text"], #5
+		[_("Path"), 350, "text"], #6
+		)
+		
+class PrivateChats(QtGui.QTabWidget):
+	def __init__(self, parent=None):
+		self.frame=parent
+		self.users = {}
+		QtGui.QTabWidget.__init__(self, self.frame.ui.PrivateChatsLabel)
+		user = "daelstorm"
 		
 		
-class ChatRooms:
+	def SendMessage(self, user, text = None, direction = None):
+		if not self.users.has_key(user):
+			self.users[user] = PrivateChat(self, user)
+			self.addTab(self.users[user], user)
+
+		#if direction:
+			#if self.get_current_page() != self.page_num(self.users[user].Main):
+				#self.set_current_page(self.page_num(self.users[user].Main))
+		if text is not None:
+			self.users[user].SendMessage(text)
+	
+	def ShowMessage(self, direction, user, text):
+		if self.frame.Networking.config.has_key("ignored") and self.frame.Networking.config["ignored"].has_key(user):
+			return
+		ctcpversion = 0
+		if text == "\x01VERSION\x01":
+			ctcpversion = 1
+			text = "CTCP VERSION"
+		self.SendMessage(user, None)
+		tab = self.users[user]
+		tab.ShowMessage(direction, text)
+		#if ctcpversion and self.frame.np.config.sections["server"]["ctcpmsgs"] == 0:
+			#self.SendMessage(msg.user, "Nicotine %s" % version)
+		#self.request_changed(tab.Main)
+		#self.frame.RequestIcon(self.frame.PrivateChatTabLabel)
+		#if self.get_current_page() != self.page_num(self.users[msg.user].Main) or self.frame.notebook1.get_current_page() != 1:
+			#if msg.user not in self.frame.tray_status["hilites"]["private"]:
+				#self.frame.tray_status["hilites"]["private"].append(msg.user)
+				#self.frame.SetImage(None)
+		#self.request_changed(self.users[user].Main)
+		
+	def OnClose(self, user):
+		tab = self.users[user]
+		self.removeTab(self.indexOf(tab))
+		#if room.logfile is not None:
+			#room.logfile.close()
+			#room.logfile = None
+		tab.destroy()
+		del self.users[user]
+		
+class PrivateChat(QtGui.QWidget):
+	def __init__(self, chats, user):
+		self.chats  = chats
+		self.frame = chats.frame
+		self.user = user
+		self.Status = 0
+		QtGui.QWidget.__init__(self, None)
+		self.ui = Ui_Private()
+		self.ui.setupUi(self)
+		self.tag_remote = self.frame.makecolour(self.ui.ChatLog, "chatremote")
+		self.tag_local = self.frame.makecolour(self.ui.ChatLog, "chatlocal")
+		self.tag_me = self.frame.makecolour(self.ui.ChatLog, "chatme")
+		self.tag_hilite = self.frame.makecolour(self.ui.ChatLog, "chathilite")
+		if self.frame.user_stats.has_key(self.user):
+			status = self.frame.user_stats[self.user][0]
+			if status == 1:
+				color = "useraway"
+			elif status == 2:
+				color = "useronline"
+			else:
+				color = "useroffline"
+		else:
+			color = "useroffline"
+		self.tag_username = self.frame.makecolour(self.ui.ChatLog, color)
+		self.connect(self.ui.ChatEntry, SIGNAL("returnPressed()" ), self.OnEnter)
+		self.connect(self.ui.Close, SIGNAL("clicked()"), self.OnClose)
+		
+	def ShowMessage(self, direction, text):
+		if self.user == self.frame.username:
+			tag = self.tag_local
+		elif text.upper().find(self.frame.username.upper()) > -1:
+			tag = self.tag_hilite
+		else:
+			tag = self.tag_remote
+		
+		if direction == 0:
+			username = self.user
+		else:
+			username = self.frame.username
+				
+		if text[:4] == "/me ":
+			line = "* %s %s" % (username, text[4:])
+			tag = self.tag_me
+		else:
+			line = "[%s] %s" % (username, text)
+		#self.frame.RequestIcon(self.frame.PrivateChatLabel)
+		AppendLine(self.ui.ChatLog, line, tag, "%c", username=self.user, usertag=self.tag_username)
+		#if self.z:
+			#self.z = 0
+			#self.tag_username.set_property("foreground", "#00FF00")
+		#else:
+			#self.z = 1
+			#self.tag_username.set_property("foreground", "#FF0000")
+		#if self.Log.get_active():
+			#self.logfile = WriteLog(self.logfile, self.frame.Config["logging"]["logsdir"], self.user, line)
+			#self.frame.Logging.PrivateChatLog( direction, self.user, text)
+		
+		#autoreply = self.frame.np.config.sections["server"]["autoreply"]
+		#if self.frame.away and not self.autoreplied and autoreply:
+			#self.SendMessage("[Auto-Message] %s" % autoreply)
+			#self.autoreplied = 1
+	def OnClose(self):
+		self.chats.OnClose(self.user)
+
+		
+	def OnEnter(self):
+		text = str(self.ui.ChatEntry.text())
+		
+		if text[:2] == "//":
+			text = text[1:]
+		print text
+		self.SendMessage(text)
+		self.frame.Networking.PrivateMessage(0, self.user, text)
+		self.ui.ChatEntry.clear()
+		
+	def SendMessage(self, text):
+		
+		if text[:4] == "/me ":
+			line = "* %s %s" % (self.frame.username, text[4:])
+			tag = self.tag_me
+		else:
+			
+			if text == "\x01VERSION\x01":
+				line = "CTCP VERSION"
+			else:
+				line = "[%s] %s" % (self.frame.username, text)
+			tag = self.tag_local
+			
+		AppendLine(self.ui.ChatLog, line, tag, "%c", username=self.user, usertag= self.tag_username)
+		#if self.Log.get_active():
+			#self.frame.Logging.PrivateChatLog( 1, self.user, text)
+			
+class ChatRooms(QtGui.QTabWidget):
 	def __init__(self, parent=None):
 		self.frame=parent
 		self.joinedrooms = {}
-
+		QtGui.QTabWidget.__init__(self, self.frame.ui.ChatRoomsLabel)
 		
 	def JoinRoom(self, room, users):
 		#print room, users
@@ -294,13 +530,13 @@ class ChatRooms:
 		#print Chatroom
 		if room not in self.joinedrooms:
 			self.joinedrooms[room] = Chatroom(self, room, users)
-			self.frame.ui.ChatRooms.addTab(self.joinedrooms[room], room)
+			self.addTab(self.joinedrooms[room], room)
 		else:
 			self.joinedrooms[room].Rejoined(users)
 		
 	def LeaveRoom(self, room):
 		roomwidget = self.joinedrooms[room]
-		self.frame.ui.ChatRooms.removeTab(self.frame.ui.ChatRooms.indexOf(roomwidget))
+		self.removeTab(self.frame.ui.ChatRooms.indexOf(roomwidget))
 		#if room.logfile is not None:
 			#room.logfile.close()
 			#room.logfile = None
@@ -340,31 +576,34 @@ class Chatroom(QtGui.QWidget):
 		self.ui = Ui_Room()
 		self.ui.setupUi(self)
 		#self.connect(self, SIGNAL("PrivateMessage(PyQt_PyObject,PyQt_PyObject, PyQt_PyObject)"), self.frame.Networking.PrivateMessage)
-		self.ui.UserList.setHeaderLabels(("Status", "User", "Speed", "Files"))
+		self.ui.UserList.setHeaderLabels(("", "User", "Speed", "Files"))
 		self.ui.UserList.setIndentation(0)
 		self.ui.UserList.setColumnWidth(0, 20)
-		self.ui.UserList.setColumnWidth(1, 150)
-		self.ui.UserList.setColumnWidth(2, 80)
+		self.ui.UserList.setColumnWidth(1, 100)
+		self.ui.UserList.setColumnWidth(2, 100)
 		self.ui.UserList.setColumnWidth(3, 50)
 		self.ui.UserList.setColumnCount(4);
+		
 		self.ui.UserList.sortItems(1, Qt.AscendingOrder);
-		self.tag_remote = self.makecolour(self.ui.UserList, "chatremote")
-		self.tag_local = self.makecolour(self.ui.UserList, "chatlocal")
-		self.tag_me = self.makecolour(self.ui.UserList, "chatme")
-		self.tag_hilite = self.makecolour(self.ui.UserList, "chathilite")
+		self.tag_remote = self.frame.makecolour(self.ui.UserList, "chatremote")
+		self.tag_local = self.frame.makecolour(self.ui.UserList, "chatlocal")
+		self.tag_me = self.frame.makecolour(self.ui.UserList, "chatme")
+		self.tag_hilite = self.frame.makecolour(self.ui.UserList, "chathilite")
 		
 		self.users = {}
 		for username,stats in users.items():
 			self.users[username] = QTreeWidgetItem(self.ui.UserList.invisibleRootItem())
 			
 			status, speed, downloads, files, dirs = self.frame.user_stats[username] = [stats[0], stats[1], stats[2], stats[3], stats[4]]
-			hspeed = self.frame.HSpeed(speed)
+			hspeed = self.frame.HumanSpeed(speed)
 			hfiles = self.frame.Humanize(files)
 			#print self.frame.user_stats[user]
 			self.users[username].setIcon(0, self.frame.GetStatusImage(username, status))
 			self.users[username].setText(1, username)
 			self.users[username].setText(2, hspeed)
+			self.users[username].setTextAlignment(2, Qt.AlignRight)
 			self.users[username].setText(3, hfiles)
+			self.users[username].setTextAlignment(3, Qt.AlignRight)
 			self.users[username].setText(4, str(status))
 			self.users[username].setData(5, 0, QVariant(speed))
 			self.users[username].setData(6, 0, QVariant(files))
@@ -372,7 +611,10 @@ class Chatroom(QtGui.QWidget):
 		self.connect(self.ui.ChatEntry, SIGNAL("returnPressed()" ), self.SayRoom)
 		self.connect(self.ui.Close, SIGNAL("clicked()"), self.LeaveRoom)
 		self.tag_log = None
-		
+		self.ui.UserList.resizeColumnToContents(0)
+		#self.ui.UserList.resizeColumnToContents(1)
+		self.ui.UserList.resizeColumnToContents(2)
+		#self.ui.Close.setIcon(self.frame.images["close"])
 	def ConnClose(self):
 		self.ui.UserList.clear()
 		self.users.clear()
@@ -383,13 +625,15 @@ class Chatroom(QtGui.QWidget):
 		for username,stats in users.items():
 			self.users[username] = QTreeWidgetItem(self.ui.UserList.invisibleRootItem())
 			status, speed, downloads, files, dirs = self.frame.user_stats[username] = [stats[0], stats[1], stats[2], stats[3], stats[4]]
-			hspeed = self.frame.HSpeed(speed)
+			hspeed = self.frame.HumanSpeed(speed)
 			hfiles = self.frame.Humanize(files)
 			#print self.frame.user_stats[user]
 			self.users[username].setIcon(0, self.frame.GetStatusImage(username, status))
 			self.users[username].setText(1, username)
 			self.users[username].setText(2, hspeed)
+			self.users[username].setTextAlignment(2, Qt.AlignRight)
 			self.users[username].setText(3, hfiles)
+			self.users[username].setTextAlignment(3, Qt.AlignRight)
 			self.users[username].setText(4, str(status))
 			self.users[username].setData(5, 0, QVariant(speed))
 			self.users[username].setData(6, 0, QVariant(files))
@@ -458,21 +702,7 @@ class Chatroom(QtGui.QWidget):
 				#self.chatrooms.request_changed(self.Main)
 			#self.frame.RequestIcon(self.frame.ChatRoomLabel)
 			
-	def makecolour(self, buffer, colour, username=None):
-		color = self.frame.Config["ui"][colour]
-		if color:
-			tag = QtGui.QBrush( QColor(color) )
-		else:
-			tag = QtGui.QBrush(  )
-			
-	def changecolour(self, tag, colour):
-		if self.frame.Config["ui"].has_key(colour):
-			color = self.frame.Config["ui"][colour]
-		else:
-			color = ""
-		#font = self.frame.Config["ui"]["chatfont"]
-		if color:
-			tag = QtGui.QBrush(  QColor(color)  )
+	
 			
 			
 	def UserJoinedRoom(self, username):
@@ -482,16 +712,20 @@ class Chatroom(QtGui.QWidget):
 		status, speed, downloads, files, dirs = self.frame.user_stats[username]
 		AppendLine(self.ui.StatusLog, _("%s joined the room") % username) #, self.tag_log)
 		img = self.frame.GetStatusImage(username, status)
-		hspeed = self.frame.HSpeed(speed)
+		hspeed = self.frame.HumanSpeed(speed)
 		hfiles = self.frame.Humanize(files)
 		self.users[username] = QTreeWidgetItem(self.ui.UserList.invisibleRootItem())
+		hspeed = self.frame.HumanSpeed(speed)
+		hfiles = self.frame.Humanize(files)
+		self.users[username].setIcon(0, self.frame.GetStatusImage(username, status))
 		self.users[username].setText(1, username)
-		#status, speed, downloads, files, dirs = self.frame.user_stats[username] = [stats[0], stats[1], stats[2], stats[3], stats[4]]
-		#print self.frame.user_stats[user]
-		self.users[username].setIcon(0,  self.frame.GetStatusImage(username, status))
+		self.users[username].setText(2, hspeed)
+		self.users[username].setTextAlignment(2, Qt.AlignRight)
+		self.users[username].setText(3, hfiles)
+		self.users[username].setTextAlignment(3, Qt.AlignRight)
 		self.users[username].setText(4, str(status))
-		self.users[username].setData(2, 0, QVariant(speed))
-		self.users[username].setData(3, 0, QVariant(files))
+		self.users[username].setData(5, 0, QVariant(speed))
+		self.users[username].setData(6, 0, QVariant(files))
 		#iter = username.ui.append([img, username, hfiles, hspeed, status])
 		#self.users[username] = iter
 		#color = self.getUserStatusColor(status)
@@ -512,7 +746,7 @@ class Chatroom(QtGui.QWidget):
 			#color = self.getUserStatusColor(-1)
 			#self.changecolour(self.tag_users[username], color)
 			
-def AppendLine(logwindow, message, tag=None):
+def AppendLine(logwindow, message, tag=None, timestamp = "%H:%M:%S", username=None, usertag=None, scroll=True):
 	if tag is None:
 		tag = QtGui.QBrush()
 	
