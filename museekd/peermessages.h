@@ -33,6 +33,8 @@ namespace Museek
 
 class PeerMessage : public NetworkMessage
 {
+protected:
+    void default_garbage_collector() { }
 public:
 	void setPeerSocket(Museek::PeerSocket * peerSocket)
 	{
@@ -129,7 +131,7 @@ END
 
 PEERMESSAGE(PSearchReply, 9)
 	PSearchReply() {};
-	PSearchReply(uint _t, const std::string& _u, const Folder& _r, uint _spe, uint _que, bool _fre)
+	PSearchReply(uint _t, const std::string& _u, const Folder& _r, uint _spe, uint64 _que, bool _fre)
                     : user(_u), results(_r), ticket(_t), avgspeed(_spe), queuelen(_que), slotfree(_fre) {}
 
 	MAKE
@@ -177,14 +179,15 @@ PEERMESSAGE(PSearchReply, 9)
 			results[fn] = fe;
 			n--;
 		}
-		slotfree = unpack_char();
+		slotfree = (unpack_char() != 0);
 		avgspeed = unpack_int();
-		queuelen = unpack_int();
+		queuelen = unpack_off();
 	END_PARSE
 
 	std::string user;
 	Folder results;
-	uint ticket, avgspeed, queuelen;
+	uint ticket, avgspeed;
+	uint64 queuelen;
 	bool slotfree;
 END
 
@@ -215,7 +218,7 @@ PEERMESSAGE(PInfoReply, 16)
 
 	PARSE
 		description = unpack_string();
-		bool has_picture = unpack_char();
+		bool has_picture = (unpack_char() != 0);
 		if (has_picture)
 			picture = unpack_vector();
 		totalupl = unpack_int();
@@ -390,7 +393,7 @@ PEERMESSAGE(PTransferReply, 41)
 
 	PARSE
 		ticket = unpack_int();
-		allowed = unpack_char() == 1;
+		allowed = (unpack_char() != 0);
 		if (buffer.count()) {
 			if (allowed)
 				filesize = unpack_off();

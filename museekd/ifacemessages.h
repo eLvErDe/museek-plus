@@ -33,6 +33,8 @@ namespace Museek
 }
 
 class IfaceMessage : public NetworkMessage {
+protected:
+    void default_garbage_collector() { }
 public:
 	Museek::IfaceSocket * ifaceSocket() const { return m_IfaceSocket; }
 	void setIfaceSocket(Museek::IfaceSocket * socket) { m_IfaceSocket = socket; }

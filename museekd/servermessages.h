@@ -23,7 +23,10 @@
 
 #include "networkmessage.h"
 
-class ServerMessage : public NetworkMessage {};
+class ServerMessage : public NetworkMessage {
+protected:
+    void default_garbage_collector() { }
+};
 #define SERVERMESSAGE(mtype, m_id) NETWORKMESSAGE(ServerMessage, mtype, m_id)
 
 #define SINTEGERMESSAGE(mtype, m_id) \
@@ -75,8 +78,8 @@ class ServerMessage : public NetworkMessage {};
 
 SERVERMESSAGE(SLogin, 1)
 	SLogin(const std::string& _username = "", const std::string& _password = "") :
-		greet(""), username(_username), password(_password)
-		{ success = 0; };
+		greet(""), username(_username), password(_password), success(0), publicip("")
+		{};
 
 	MAKE
 		pack(username);
@@ -85,11 +88,12 @@ SERVERMESSAGE(SLogin, 1)
 	END_MAKE
 
 	PARSE
-		success = unpack_char();
+		success = (unpack_char() != 0);
 		greet = unpack_string();
+		publicip = unpack_ip();
 	END_PARSE
 
-	std::string greet, username, password;
+	std::string greet, username, password, publicip;
 	uchar success;
 END
 
@@ -122,11 +126,18 @@ SERVERMESSAGE(SAddUser, 5)
 
 	PARSE
 		user = unpack_string();
-		exists = unpack_char();
+		exists = (unpack_char() != 0);
+		userdata.status = unpack_int();
+		userdata.avgspeed = unpack_int();
+		userdata.downloadnum = unpack_off();
+		userdata.files = unpack_int();
+		userdata.dirs = unpack_int();
+		userdata.country = unpack_string();
 	END_PARSE
 
 	std::string user;
 	bool exists;
+	UserData userdata;
 END
 
 SERVERMESSAGE(SGetStatus, 7)
@@ -140,10 +151,12 @@ SERVERMESSAGE(SGetStatus, 7)
 	PARSE
 		user = unpack_string();
 		status = unpack_int();
+		privileged = (unpack_char() != 0); // Not used (SAddPrivileged and SPrivilegedUsers should do the trick)
 	END_PARSE
 
 	std::string user;
 	uint32 status;
+	bool privileged;
 END
 
 SERVERMESSAGE(SSayRoom, 13)
@@ -168,7 +181,7 @@ SERVERMESSAGE(SJoinRoom, 14)
 	MAKE
 		pack(room);
 		if (isPrivate)
-            pack(isPrivate);
+            pack(1);
 	END_MAKE
 
 	PARSE
@@ -184,6 +197,8 @@ SERVERMESSAGE(SJoinRoom, 14)
 			_data.status = unpack_int();
 			_d.push_back(_data);
 		}
+
+		// User data for each user
 		unpack_int();
 		std::vector<UserData>::iterator it = _d.begin();
 		for(; it != _d.end(); ++it) {
@@ -192,16 +207,36 @@ SERVERMESSAGE(SJoinRoom, 14)
 			(*it).files = unpack_int();
 			(*it).dirs = unpack_int();
 		}
+
+		// Slotsfull for each user
+		unpack_int();
 		for(it = _d.begin(); it != _d.end(); ++it)
 			(*it).slotsfull = unpack_int();
 
+
+        // Country code for each user
+		unpack_int();
+		for(it = _d.begin(); it != _d.end(); ++it)
+			(*it).country = unpack_string();
+
+		// Create user list
 		it = _d.begin();
 		std::vector<std::string>::iterator sit = _u.begin();
 		for(; it != _d.end(); ++it, ++sit )
 			users[*sit] = *it;
+
+		if(! buffer.empty()) {
+		    isPrivate = true;
+            owner = unpack_string();
+
+            uint32 no = unpack_int();
+            for(uint32 io = 0; io < no; io++)
+                ops.push_back(unpack_string());
+		}
 	END_PARSE
 
-	std::string room;
+	std::string room, owner;
+	std::vector<std::string> ops;
 	bool isPrivate;
 	RoomData users;
 END
@@ -218,6 +253,7 @@ SERVERMESSAGE(SUserJoinedRoom, 16)
 		userdata.files = unpack_int();
 		userdata.dirs = unpack_int();
 		userdata.slotsfull = unpack_int();
+		userdata.country = unpack_string();
 	END_PARSE
 
 	std::string room, user;
@@ -249,10 +285,12 @@ SERVERMESSAGE(SConnectToPeer, 18)
 		ip = unpack_ip();
 		port = unpack_int();
 		token = unpack_int();
+		privileged = (unpack_char() != 0);
 	END_PARSE
 
 	std::string user, type, ip;
 	uint32 port, token;
+	bool privileged;
 END
 
 SERVERMESSAGE(SPrivateMessage, 22)
@@ -269,10 +307,13 @@ SERVERMESSAGE(SPrivateMessage, 22)
 		timestamp = unpack_int();
 		user = unpack_string();
 		message = unpack_string();
+		if(! buffer.empty())
+            isAdmin = (unpack_char() != 0);
 	END_PARSE
 
 	std::string user, message;
 	uint32 ticket, timestamp;
+	bool isAdmin;
 END
 
 SINTEGERMESSAGE(SAckPrivateMessage, 23)
@@ -308,7 +349,7 @@ SERVERMESSAGE(SPing, 32)
 END
 
 
-/* DEPRECIATED in 2005 */
+/* DEPRECATED in 2005 */
 SERVERMESSAGE(SSendSpeed, 34)
 	SSendSpeed(const std::string& _u, uint32 _s) : user(_u), speed(_s) { };
 
@@ -332,6 +373,7 @@ SERVERMESSAGE(SSharedFoldersFiles, 35)
 	uint32 dirs, files;
 END
 
+// Deprecated. See SAddUser
 SERVERMESSAGE(SGetUserStats, 36)
 	SGetUserStats() {};
 	SGetUserStats(const std::string& _u) : user(_u) {};
@@ -481,9 +523,44 @@ SERVERMESSAGE(SRoomList, 64)
 		std::vector<std::string>::iterator it = rooms.begin();
 		for(; it != rooms.end(); ++it)
 			roomlist[*it] = unpack_int();
+
+        // Get rooms owned by us
+		uint32 no = unpack_int();
+		std::vector<std::string> privroomsOwned;
+		while(no) {
+			privroomsOwned.push_back(unpack_string());
+			no--;
+		}
+		unpack_int();
+		std::vector<std::string>::iterator ito = privroomsOwned.begin();
+		for(; ito != privroomsOwned.end(); ++ito)
+			privroomlist[*ito] = std::pair<uint32, uint32>(unpack_int(), 2);
+
+        // Get rooms where we're member
+		uint32 nm = unpack_int();
+		std::vector<std::string> privroomsMember;
+		while(nm) {
+			privroomsMember.push_back(unpack_string());
+			nm--;
+		}
+		unpack_int();
+		std::vector<std::string>::iterator itp = privroomsMember.begin();
+		for(; itp != privroomsMember.end(); ++itp)
+			privroomlist[*itp] = std::pair<uint32, uint32>(unpack_int(), 0);
+
+        // Get rooms where we're operator (no users nb as it is given in rooms where we're member)
+		uint32 np = unpack_int();
+		std::vector<std::string> privrooms;
+		while(np) {
+		    std::string opedRoom = unpack_string();
+		    if (privroomlist.find(opedRoom) != privroomlist.end())
+                privroomlist[opedRoom].second = 1;
+			np--;
+		}
 	END_PARSE
 
-	std::map<std::string, uint32> roomlist;
+	RoomList roomlist;
+	PrivRoomList privroomlist; // [name[users, status]] with status : { 0 => member, 1 => operator, 2 => owner}
 END
 
 SERVERMESSAGE(SExactFileSearch, 65)
@@ -527,9 +604,9 @@ SERVERMESSAGE(SParentIP, 73)
 	std::string ip;
 END
 
-SINTEGERMESSAGE(SMsg83, 83)
+SINTEGERMESSAGE(SParentMinSpeed, 83)
 
-SINTEGERMESSAGE(SMsg84, 84)
+SINTEGERMESSAGE(SParentSpeedRatio, 84)
 
 SINTEGERMESSAGE(SParentInactivityTimeout, 86)
 
@@ -632,7 +709,7 @@ SERVERMESSAGE(SGetSimilarUsers, 110)
 		}
 	END_PARSE
 
-	std::map<std::string, uint32>  users;
+	SimilarUsers users;
 END
 
 SERVERMESSAGE(SGetItemRecommendations, 111)
@@ -676,7 +753,7 @@ SERVERMESSAGE(SGetItemSimilarUsers, 112)
 	END_PARSE
 
 	std::string item;
-	std::map<std::string, uint32> users;
+	SimilarUsers users;
 END
 
 SERVERMESSAGE(SRoomTickers, 113)
@@ -842,6 +919,256 @@ SERVERMESSAGE(SChildDepth, 129)
 	uint32 depth;
 END
 
+SERVERMESSAGE(SPrivRoomAlterableMembers, 133)
+    // These users are those that can be dismembered/oped by us
+	SPrivRoomAlterableMembers() {}
+
+	PARSE
+		room = unpack_string();
+		n = unpack_int();
+		while(n) {
+			users.push_back(unpack_string());
+			n--;
+		}
+	END_PARSE
+
+    std::string room;
+	uint32 n;
+	std::vector<std::string> users;
+END
+
+SERVERMESSAGE(SPrivRoomAddUser, 134)
+    // Received when an alterable user has been removed from a private room
+	SPrivRoomAddUser() {}
+	SPrivRoomAddUser(const std::string& _r, const std::string& _u) : room(_r), user(_u) { };
+
+	MAKE
+		pack(room);
+		pack(user);
+	END_MAKE
+
+	PARSE
+		room = unpack_string();
+		user = unpack_string();
+	END_PARSE
+
+    std::string room, user;
+END
+
+SERVERMESSAGE(SPrivRoomRemoveUser, 135)
+	SPrivRoomRemoveUser() {}
+	SPrivRoomRemoveUser(std::string _r, std::string _u) : room(_r), user(_u) {}
+
+	MAKE
+		pack(room);
+		pack(user);
+	END_MAKE
+
+	PARSE
+		room = unpack_string();
+		user = unpack_string();
+	END_PARSE
+
+    std::string room, user;
+END
+
+SERVERMESSAGE(SPrivRoomDismember, 136)
+	SPrivRoomDismember(std::string _r) : room(_r) {}
+
+	MAKE
+		pack(room);
+	END_MAKE
+
+    std::string room;
+END
+
+SERVERMESSAGE(SPrivRoomDisown, 137)
+	SPrivRoomDisown(std::string _r) : room(_r) {}
+
+	MAKE
+		pack(room);
+	END_MAKE
+
+    std::string room;
+END
+
+SERVERMESSAGE(SPrivRoomUnknown138, 138)
+	SPrivRoomUnknown138() {}
+	SPrivRoomUnknown138(std::string _r) : room(_r) {}
+
+	MAKE
+		pack(room);
+	END_MAKE
+
+	PARSE
+		room = unpack_string();
+	END_PARSE
+
+    std::string room;
+END
+
+SERVERMESSAGE(SPrivRoomAdded, 139)
+    // This is received from the server (never sent to the server) when we get added as member to a room by someone else. This is not used in museek as this is redundant with SPrivRoomAlterableMembers and SPrivRoomAlterableOperators which are always sent by the server just after this message.
+	SPrivRoomAdded() {}
+
+	PARSE
+		room = unpack_string();
+	END_PARSE
+
+    std::string room;
+END
+
+SERVERMESSAGE(SPrivRoomRemoved, 140)
+    // This is received from the server (never sent to the server) when we get removed from a room where we were member by someone else. This is not used in museek as this is redundant with SPrivRoomAlterableMembers and SPrivRoomAlterableOperators which are always sent by the server just after this message.
+	SPrivRoomRemoved() {}
+
+	PARSE
+		room = unpack_string();
+	END_PARSE
+
+    std::string room;
+END
+
+SERVERMESSAGE(SPrivRoomToggle, 141)
+	SPrivRoomToggle() {}
+	SPrivRoomToggle(bool _e) : enabled(_e) {}
+
+	MAKE
+		pack((uchar)enabled);
+	END_MAKE
+
+	PARSE
+		enabled = (unpack_char() != 0);
+	END_PARSE
+
+    bool enabled;
+END
+
+SERVERMESSAGE(SNewPassword, 142)
+	SNewPassword() {}
+	SNewPassword(std::string _p) : newPassword(_p) {}
+
+	MAKE
+		pack(newPassword);
+	END_MAKE
+
+	PARSE
+		newPassword = unpack_string();
+	END_PARSE
+
+    std::string newPassword;
+END
+
+SERVERMESSAGE(SPrivRoomAddOperator, 143)
+	SPrivRoomAddOperator() {}
+	SPrivRoomAddOperator(std::string _r, std::string _o) : room(_r), op(_o) {}
+
+	MAKE
+		pack(room);
+		pack(op);
+	END_MAKE
+
+	PARSE
+		room = unpack_string();
+		op = unpack_string();
+	END_PARSE
+
+    std::string room, op;
+END
+
+SERVERMESSAGE(SPrivRoomRemoveOperator, 144)
+	SPrivRoomRemoveOperator() {}
+	SPrivRoomRemoveOperator(std::string _r, std::string _o) : room(_r), op(_o) {}
+
+	MAKE
+		pack(room);
+		pack(op);
+	END_MAKE
+
+	PARSE
+		room = unpack_string();
+		op = unpack_string();
+	END_PARSE
+
+    std::string room, op;
+END
+
+SERVERMESSAGE(SPrivRoomOperatorAdded, 145)
+    // This is received from the server (never sent to the server) when we get added as an operator to a room by someone else. This is not used in museek as this is redundant with SPrivRoomAlterableMembers and SPrivRoomAlterableOperators which are always sent by the server just after this message.
+	SPrivRoomOperatorAdded() {}
+
+	PARSE
+		room = unpack_string();
+	END_PARSE
+
+    std::string room;
+END
+
+SERVERMESSAGE(SPrivRoomOperatorRemoved, 146)
+    // This is received from the server (never sent to the server) when we get removed from a room where we were operator by someone else. This is not used in museek as this is redundant with SPrivRoomAlterableMembers and SPrivRoomAlterableOperators which are always sent by the server just after this message.
+	SPrivRoomOperatorRemoved() {}
+
+	PARSE
+		room = unpack_string();
+	END_PARSE
+
+    std::string room;
+END
+
+SERVERMESSAGE(SPrivRoomAlterableOperators, 148)
+    // These operators are those that can be disoped by us
+	SPrivRoomAlterableOperators() {}
+
+	PARSE
+		room = unpack_string();
+		n = unpack_int();
+		while(n) {
+			ops.push_back(unpack_string());
+			n--;
+		}
+	END_PARSE
+
+    std::string room;
+	uint32 n;
+	std::vector<std::string> ops;
+END
+
+SERVERMESSAGE(SMessageUsers, 149)
+	SMessageUsers(const std::vector<std::string>& _u, std::string _m) : users(_u), message(_m) {}
+
+	MAKE
+        pack((uint32)users.size());
+        std::vector<std::string>::iterator it = users.begin();
+        for(; it != users.end(); ++it)
+            pack(*it);
+		pack(message);
+	END_MAKE
+
+	std::vector<std::string> users;
+    std::string message;
+END
+
+SERVERMESSAGE(SAskPublicChat, 150)
+	MAKE
+	END_MAKE
+END
+
+SERVERMESSAGE(SStopPublicChat, 151)
+	MAKE
+	END_MAKE
+END
+
+SERVERMESSAGE(SPublicChat, 152)
+	SPublicChat() {}
+
+	PARSE
+		room = unpack_string();
+		user = unpack_string();
+		message = unpack_string();
+	END_PARSE
+
+    std::string room, user, message;
+END
 
 SERVERMESSAGE(SCannotConnect, 1001)
 	SCannotConnect() {};
