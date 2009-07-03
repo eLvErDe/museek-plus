@@ -42,6 +42,8 @@ public:
 	{
 		return m_DistributedSocket;
 	}
+protected:
+    void default_garbage_collector() { }
 private:
 	Museek::DistributedSocket * m_DistributedSocket;
 };
@@ -52,6 +54,8 @@ private:
   { \
   private: \
     uchar get_type() { return m_id; } \
+  protected: \
+    std::string get_name() { return #mtype ; } \
   public:
 #define END };
 

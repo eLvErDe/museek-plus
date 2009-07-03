@@ -49,7 +49,7 @@ class GenericMessage
 #define END_MAKE return buffer; };
 /* Voodoo magic preprocessing: extract values from a buffer. */
 #define PARSE virtual void unsafe_parse_network_packet() {
-#define END_PARSE };
+#define END_PARSE garbage_collector();};
 
 /* NetworkMessage class. Base class for all networked messages and provides
    handy functions for packing and unpacking values and compressing and
@@ -64,8 +64,9 @@ public:
   MAKE
   END_MAKE
 
-  /* Default unsafe_parse_network_packet. Parses nothing. */
+  /* Default unsafe_parse_network_packet. Parse raw data. */
   PARSE
+    default_garbage_collector(); // This is used when an unknown message is received
   END_PARSE
 
   /* Wrapper around unsafe_parse_network_packet: catch out of memory
@@ -106,6 +107,8 @@ protected:
   std::string unpack_string();
   /* Unpack raw data. */
   std::vector<uchar> unpack_vector();
+  /* Unpack raw data of the rest of the message. */
+  std::vector<uchar> unpack_raw_message();
   /* Unpack an IP address. */
   std::string unpack_ip();
   /* Unpack a 32bit unsigned integer. */
@@ -137,6 +140,18 @@ protected:
   /* Decompress the message. */
   void decompress();
 
+  /* Handle unexpected data in messages */
+  void garbage_collector();
+
+  /* Handle unexploited data */
+  virtual void default_garbage_collector();
+
+  /* Return the message name. */
+  virtual std::string get_name()
+  {
+    return std::string();
+  }
+
 private:
   /* Return the message type identifier. Note that if you use the MAKE and
      END_MAKE macros in your own messages you can redefine get_type to be of
@@ -153,6 +168,8 @@ private:
   { \
   private: \
     uint32 get_type() { return m_id; } \
+  protected: \
+    std::string get_name() { return #mtype ; } \
   public:
 #define END };
 

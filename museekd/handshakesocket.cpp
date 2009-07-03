@@ -120,7 +120,9 @@ Museek::HandshakeSocket::onMessageReceived(const MessageData * data)
       return;
     }
     default:
-      NNLOG("museekd.hand.warn", "Received unknown peer handshake message, type: %u, length: %u", data->type, data->length);
+        NNLOG("museekd.hand.warn", "Received unknown peer handshake message, type: %u, length: %u", data->type, data->length);
+        NetworkMessage msg;
+        msg.parse_network_packet(data->data, data->length);
   }
 }
 

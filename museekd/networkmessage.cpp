@@ -24,6 +24,8 @@
 #include "networkmessage.h"
 #include <cstdio>
 #include <zlib.h>
+#include <sstream>
+#include <iomanip>
 
 /* Pack a string. trslash indicates wether / to \ translation is in order,
    used to convert unix paths to slsk (win32) paths. */
@@ -217,6 +219,25 @@ std::vector<uchar> NetworkMessage::unpack_vector()
   return vec;
 }
 
+/* Unpack a raw data array of the rest of the message. */
+std::vector<uchar> NetworkMessage::unpack_raw_message()
+{
+  std::vector<uchar> vec;
+
+  // We need at least 4 bytes of data for the length.
+  if(buffer.count() == 0)
+    return vec;
+
+  // Unpack the array length.
+  uint32 len = buffer.count();
+
+  // Copy the array data.
+  for(uint32 i = 0; i < len; i++)
+    vec.push_back(unpack_char());
+
+  return vec;
+}
+
 /* Compress the message using zlib. */
 void NetworkMessage::compress()
 {
@@ -330,3 +351,31 @@ void NetworkMessage::decompress()
   buffer.append(output_buffer.data(), output_buffer.count());
 }
 #undef DEFAULTALLOC
+
+void NetworkMessage::garbage_collector() {
+    std::vector<uchar> raw = unpack_raw_message();
+    if (raw.size() > 0) {
+        std::vector<uchar>::const_iterator itraw = raw.begin();
+        std::stringstream hexContent;
+        hexContent.setf(std::ios_base::hex, std::ios::basefield);
+        hexContent.setf(std::ios_base::uppercase);
+        hexContent.fill('0');
+        for (; itraw != raw.end(); itraw++) {
+            hexContent << ' ' << std::setw(2) << (uint16_t) *itraw;
+        }
+        NNLOG("protocol.warn", "Unexpected message content for message %s: %s", get_name().c_str(), hexContent.str().c_str());
+    }
+}
+
+void NetworkMessage::default_garbage_collector() {
+    std::vector<uchar> raw = unpack_raw_message();
+    std::vector<uchar>::const_iterator itraw = raw.begin();
+    std::stringstream hexContent;
+    hexContent.setf(std::ios_base::hex, std::ios::basefield);
+    hexContent.setf(std::ios_base::uppercase);
+    hexContent.fill('0');
+    for (; itraw != raw.end(); itraw++) {
+        hexContent << ' ' << std::setw(2) << (uint16_t) *itraw;
+    }
+    NNLOG("protocol.warn", "Unexploited data in message: %s", hexContent.str().c_str());
+}

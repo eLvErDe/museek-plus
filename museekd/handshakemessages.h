@@ -23,7 +23,10 @@
 
 #include "networkmessage.h"
 
-class HandshakeMessage : public NetworkMessage {};
+class HandshakeMessage : public NetworkMessage {
+protected:
+    void default_garbage_collector() { }
+};
 
 class HInitiate : public HandshakeMessage {
 public:

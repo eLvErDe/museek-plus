@@ -93,7 +93,9 @@ Museek::IfaceSocket::onMessageReceived(const MessageData * data)
     #undef MAP_C_MESSAGE
 
     default:
-      NNLOG("museekd.iface.warn", "Received unknown interface message, type: %u, length: %u", data->type, data->length);
+        NNLOG("museekd.iface.warn", "Received unknown interface message, type: %u, length: %u", data->type, data->length);
+        NetworkMessage msg;
+        msg.parse_network_packet(data->data, data->length);
   }
 }
 
