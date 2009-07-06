@@ -128,6 +128,7 @@ SET(MUSEEQ_SOURCES
   prefix.c
   privatechat.cpp
   privatechats.cpp
+  publicchat.cpp
   recommendsitem.cpp
   recommendsview.cpp
   roomlist.cpp
@@ -183,6 +184,7 @@ SET(MUSEEQ_MOC_HEADERS
   onlinealert.h
   privatechat.h
   privatechats.h
+  publicchat.h
   recommendsview.h
   roomlist.h
   roomlistview.h

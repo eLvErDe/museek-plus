@@ -18,41 +18,36 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef ROOMLIST_H
-#define ROOMLIST_H
+#ifndef PUBLICCHAT_H
+#define PUBLICCHAT_H
 
 #include "museeqtypes.h"
 
 #include <QWidget>
 
-class QLineEdit;
-class QCheckBox;
-class RoomListView;
-class QShowEvent;
-class QPushButton;
+class ChatText;
 
-class RoomList : public QWidget {
+class PublicChat : public QWidget {
 	Q_OBJECT
 public:
-	RoomList(QWidget* = 0, const char* = 0);
+	PublicChat(QWidget * = 0);
 
-protected:
-	void showEvent(QShowEvent*);
+	int highlighted() const {return mHighlight;};
+
+public slots:
+	// Somebody said something
+	void append(const QString&, const QString&, const QString&);
+	void setHighlighted(int newH) {mHighlight = newH;};
+
+signals:
+	void highlight(int, QWidget*);
 
 protected slots:
-	void slotJoinRoom();
-	void slotPublicChatToggle();
-	void askedPublicChat();
-	void stoppedPublicChat();
-	void doTogglePublicChat();
-
+	void logMessage(const QString&, const QString& , const QString& );
+	void logMessage(uint, const QString&, const QString&, const QString&);
 private:
-	QLineEdit *mEntry;
-	QCheckBox *mPrivate;
-	QPushButton *mCreate, *mPublicChatToggle;
-	RoomListView *mRoomList;
-
-	bool mPublicChatStarted;
+	int mHighlight;
+	ChatText *mChatText;
 };
 
-#endif // ROOMLIST_H
+#endif // PUBLICCHAT_H

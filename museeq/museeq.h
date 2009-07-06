@@ -151,6 +151,9 @@ public slots:
 	void setTicker(const QString&, const QString&);
 	void slotUserExists(const QString&);
 
+	void askPublicChat();
+	void stopPublicChat();
+
 	void privRoomListReceived(const NPrivRoomList&);
 
 	void updateTransfer(const QString&, const QString&);
@@ -246,6 +249,10 @@ signals:
 	void showAllTickers();
 	void hideAllTickers();
 	void privateMessage(uint, uint, const QString&, const QString&);
+
+	void askedPublicChat();
+	void stoppedPublicChat();
+	void receivedPublicChat(const QString&, const QString&, const QString&);
 
 	void privRoomToggled(bool);
 	void privRoomList(const NPrivRoomList&);

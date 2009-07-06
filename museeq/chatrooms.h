@@ -60,6 +60,8 @@ protected slots:
 	void userJoined(const QString&, const QString&, const NUserData&);
 	void userLeft(const QString&, const QString&);
 
+	void askedPublicChat();
+
 private:
 	RoomList* mRoomList;
 	QString mNickname;

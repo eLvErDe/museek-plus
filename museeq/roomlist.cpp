@@ -29,7 +29,7 @@
 #include <QPushButton>
 
 RoomList::RoomList(QWidget* _p, const char* _n)
-         : QWidget(_p) {
+         : QWidget(_p), mPublicChatStarted(false) {
 
 	mRoomList = new RoomListView(this);
 
@@ -54,9 +54,15 @@ RoomList::RoomList(QWidget* _p, const char* _n)
 
     layout->addStretch();
 
+	mPublicChatToggle = new QPushButton(tr("Show public chat"), this);
+	layout->addWidget(mPublicChatToggle);
 
 	connect(mEntry, SIGNAL(returnPressed()), SLOT(slotJoinRoom()));
 	connect(mCreate, SIGNAL(clicked()), SLOT(slotJoinRoom()));
+	connect(mPublicChatToggle, SIGNAL(clicked()), SLOT(slotPublicChatToggle()));
+
+	connect(museeq, SIGNAL(askedPublicChat()), SLOT(askedPublicChat()));
+	connect(museeq, SIGNAL(stoppedPublicChat()), SLOT(stoppedPublicChat()));
 }
 
 void RoomList::slotJoinRoom() {
@@ -67,6 +73,37 @@ void RoomList::slotJoinRoom() {
 	museeq->joinRoom(s, mPrivate->isChecked());
 }
 
+void RoomList::slotPublicChatToggle() {
+    if (!mPublicChatStarted) {
+        museeq->askPublicChat();
+    }
+    else
+        museeq->stopPublicChat();
+
+    doTogglePublicChat();
+}
+
+void RoomList::doTogglePublicChat() {
+    if (mPublicChatStarted)
+        mPublicChatToggle->setText(tr("Show public chat"));
+    else
+        mPublicChatToggle->setText(tr("Stop public chat"));
+
+    mPublicChatStarted = !mPublicChatStarted;
+}
+
 void RoomList::showEvent(QShowEvent*) {
 	mEntry->setFocus();
+}
+
+void RoomList::askedPublicChat() {
+    if (!mPublicChatStarted) { // Avoid infinite loops
+        doTogglePublicChat();
+    }
+}
+
+void RoomList::stoppedPublicChat() {
+    if (mPublicChatStarted) { // Avoid infinite loops
+        doTogglePublicChat();
+    }
 }

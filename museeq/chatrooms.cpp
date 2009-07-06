@@ -19,6 +19,7 @@
  */
 
 #include "museeq.h"
+#include "publicchat.h"
 #include "chatrooms.h"
 #include "roomlist.h"
 #include "chatroom.h"
@@ -40,12 +41,27 @@ ChatRooms::ChatRooms(QWidget* parent, const char* name)
 	connect(museeq, SIGNAL(roomTickers(const QString&, const NTickers&)), SLOT(setTickers(const QString&, const NTickers&)));
 	connect(museeq, SIGNAL(roomsTickers(const NTickerMap&)), SLOT(setTickersForAllRooms(const NTickerMap&)));
 	connect(museeq, SIGNAL(roomTickerSet(const QString&, const QString&, const QString&)), SLOT(setTicker(const QString&, const QString&, const QString&)));
+	connect(museeq, SIGNAL(askedPublicChat()), SLOT(askedPublicChat()));
 	connect(this, SIGNAL(currentChanged(QWidget*)), SLOT(doCurrentChanged(QWidget*)));
 }
 
 void ChatRooms::clear() {
 	while(count() > 1)
 		delete widget(1);
+}
+
+void ChatRooms::askedPublicChat() {
+	for(int ix = 1; ix < count(); ++ix) {
+		PublicChat* _room = dynamic_cast<PublicChat*>(widget(ix));
+		if(_room)
+			return; // Already exists, nothing to do
+	}
+
+	PublicChat* _room = new PublicChat(this);
+	addTab(_room, tr("*Public Chat*"));
+	setCurrentWidget(_room);
+	connect(_room, SIGNAL(highlight(int, QWidget*)), this, SIGNAL(highlight(int)));
+	connect(_room, SIGNAL(highlight(int, QWidget*)), this, SLOT(setHighlight(int, QWidget*)));
 }
 
 void ChatRooms::joined(const QString& room, const NRoom& r, const QString& owner, const QStringList& ops) {
@@ -113,6 +129,13 @@ void ChatRooms::closeCurrent() {
 	ChatRoom* room = dynamic_cast<ChatRoom*>(currentWidget());
 	if (room)
         museeq->leaveRoom(room->room());
+    else {
+        PublicChat* pchat = dynamic_cast<PublicChat*>(currentWidget());
+        if (pchat) {
+            museeq->stopPublicChat();
+            delete pchat;
+        }
+    }
 }
 
 void ChatRooms::setTickers(const QString& room, const NTickers& tickers) {
@@ -155,25 +178,35 @@ void ChatRooms::doCurrentChanged(QWidget* widget) {
 void ChatRooms::setHighlight(int highlight, QWidget* chatwidget) {
 
 	ChatRoom * uw = dynamic_cast<ChatRoom*>(chatwidget);
+	PublicChat * pc = dynamic_cast<PublicChat*>(chatwidget);
 
-    if (!uw)
+    if (!uw && !pc)
         return;
 
-	int pos = indexOf(uw);
-	if(( currentIndex() != pos) && highlight > uw->highlighted() )
+	int pos;
+	int tabHighlighted;
+	if (uw) {
+        pos = indexOf(uw);
+        tabHighlighted = uw->highlighted();
+	}
+	else {
+	    pos = indexOf(pc);
+        tabHighlighted = pc->highlighted();
+	}
+
+	if(( currentIndex() != pos) && highlight > tabHighlighted )
 	{
-		uw->setHighlighted(highlight);
+        if (uw)
+            uw->setHighlighted(highlight);
+        else
+            pc->setHighlighted(highlight);
 
-		if (uw->highlighted() > 0) {
-			// Icon on tab
+		if (highlight > 0)// Icon on tab
 			tabBar()->setTabIcon(pos, QIcon(IMG("online")));
-		}
-		if (uw->highlighted() > 1) {
-			// Red tab
+		if (highlight > 1)// Red tab
 			tabBar()->setTabTextColor(pos, QColor(255, 0, 0));
-		}
 
-	} else if (uw->highlighted() == 0){
+	} else if (highlight == 0){
 		tabBar()->setTabTextColor(pos, tabBar()->palette().buttonText().color());
 		tabBar()->setTabIcon(pos, QIcon());
 	}
@@ -186,5 +219,12 @@ void ChatRooms::selected(QWidget* chatwidget) {
 	if(uw && uw->highlighted() != 0) {
 		uw->setHighlighted(0);
 		setHighlight(uw->highlighted(), uw );
+	}
+	else if (!uw) {
+        PublicChat * pc = dynamic_cast<PublicChat*>(chatwidget);
+        if(pc && pc->highlighted() != 0) {
+            pc->setHighlighted(0);
+            setHighlight(pc->highlighted(), pc );
+        }
 	}
 }

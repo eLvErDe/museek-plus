@@ -37,10 +37,14 @@ void ChatText::append(const QString& _u, const QString& _l) {
 	append(QDateTime::currentDateTime().toTime_t(), _u, _l);
 }
 
+void ChatText::append(const QString& _room, const QString& _u, const QString& _l) {
+	append(QDateTime::currentDateTime().toTime_t(), _room, _u, _l);
+}
+
 /**
   * Append general information (not specific to a single user)
   */
-void ChatText::append(uint ts,  const QString& _l) {
+void ChatText::append(uint ts, const QString& _l) {
 	QString line ="";
 	QDateTime _t;
 	_t.setTime_t(ts);
@@ -55,9 +59,14 @@ void ChatText::append(uint ts,  const QString& _l) {
 }
 
 void ChatText::append(uint ts, const QString& _u, const QString& _l) {
+    append(ts, QString::null, _u, _l);
+}
+
+void ChatText::append(uint ts, const QString& _room, const QString& _u, const QString& _l) {
 	QString line,
 	        l(_l),
-		u(_u.isEmpty() ? mNickname : _u);
+            u(_u.isEmpty() ? mNickname : _u);
+
 	QDateTime _t;
 	_t.setTime_t(ts);
 
@@ -77,6 +86,9 @@ void ChatText::append(uint ts, const QString& _u, const QString& _l) {
 			line = QString("<span style='"+fontTime+";color:"+colorTime+";'>%1</span>").arg(_t.toString(mTimeFormat));
 	} else
 		line = "";
+
+    if (!_room.isEmpty()) // For public chat
+        line += " <span style='"+fontTime+";color:"+colorTime+";'>[" + Qt::escape(_room) + "]</span> ";
 
 	if(_l.startsWith("/me ")) {
 		line += "<span style='" + fontMessage + ";color:"+colorMe+";'> * " + Qt::escape(u) + " ";

@@ -110,6 +110,10 @@ Museeq::Museeq(QApplication * app)
 
 	connect(mDriver, SIGNAL(transferRemove(bool, const QString&, const QString&)), SLOT(slotTransferRemoved(bool, const QString&, const QString&)));
 
+	connect(mDriver, SIGNAL(askedPublicChat()), SIGNAL(askedPublicChat()));
+	connect(mDriver, SIGNAL(stoppedPublicChat()), SIGNAL(stoppedPublicChat()));
+	connect(mDriver, SIGNAL(receivedPublicChat(const QString&, const QString&, const QString&)), SIGNAL(receivedPublicChat(const QString&, const QString&, const QString&)));
+
 	connect(mDriver, SIGNAL(privRoomToggled(bool)), SIGNAL(privRoomToggled(bool)));
 	connect(mDriver, SIGNAL(privRoomList(const NPrivRoomList&)), SLOT(privRoomListReceived(const NPrivRoomList&)));
 	connect(mDriver, SIGNAL(privRoomAlterableMembers(const QString&, const QStringList&)), SLOT(receivedPrivRoomAlterableMembers(const QString&, const QStringList&)));
@@ -201,6 +205,14 @@ void Museeq::slotError(QAbstractSocket::SocketError err) {
 
 void Museeq::slotUserExists(const QString& user) {
 	mDriver->getUserExists(user);
+}
+
+void Museeq::askPublicChat() {
+	mDriver->askPublicChat();
+}
+
+void Museeq::stopPublicChat() {
+	mDriver->stopPublicChat();
 }
 
 void Museeq::slotLoggedIn(bool success, const QString& msg) {
