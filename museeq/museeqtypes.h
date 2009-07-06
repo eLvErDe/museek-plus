@@ -24,6 +24,7 @@
 #include <QList>
 #include <QMap>
 #include <QString>
+#include <QPair>
 
 typedef struct {
 	qint64 size;
@@ -33,9 +34,9 @@ typedef struct {
 } NFileData;
 
 typedef struct {
-	uint status;
-	uint speed;
-	uint files;
+	uint status, speed, downloadnum, files, dirs;
+	bool slotsfull;
+	QString country;
 } NUserData;
 
 typedef struct {
@@ -53,6 +54,9 @@ typedef QMap<QString, NFolder> NShares;
 typedef QMap<QString, NUserData> NRoom;
 typedef QMap<QString, NRoom> NRooms;
 typedef QMap<QString, uint> NRoomList;
+typedef QMap<QString, QString> NPrivRoomOwners;
+typedef QMap<QString, QStringList> NPrivRoomOperators;
+typedef QMap<QString, QPair<uint, uint> > NPrivRoomList;
 typedef QMap<QString, int> NGlobalRecommendations;
 typedef QMap<QString, int> NRecommendations;
 typedef QMap<QString, int> NItemRecommendations;

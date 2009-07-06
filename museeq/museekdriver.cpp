@@ -149,19 +149,193 @@ void MuseekDriver::readMessage() {
 		emit serverState(m.connected, m.username);
 		break;
 	}
+	case 0x0004: {
+		NCheckPrivileges m(data);
+		emit privilegesLeft(m.secondsleft);
+		break;
+	}
+	case 0x0005: {
+		NSetStatus m(data);
+		emit statusSet(m.status);
+		break;
+	}
 	case 0x0010: {
 		NStatusMessage m(data);
 		emit statusMessage(m.type, m.message);
 		break;
 	}
+	case 0x0012: {
+	    NNewPassword m(&mContext, data);
+		emit newPasswordSet(m.newPass);
+	    break;
+	}
+	case 0x0100: {
+		NConfigState m(&mContext, data);
+		emit configState(m.config);
+		break;
+	}
+	case 0x0101: {
+		NConfigSet m(&mContext, data);
+		emit configSet(m.domain, m.key, m.value);
+		break;
+	}
+	case 0x0102: {
+		NConfigRemove m(&mContext, data);
+		emit configRemove(m.domain, m.key);
+		break;
+	}
+	case 0x0201: {
+		NUserExists m(data);
+		emit userExists(m.user, m.exists);
+		break;
+	}
+	case 0x0202: {
+		NUserStatus m(data);
+		emit userStatus(m.user, m.status);
+		break;
+	}
+	case 0x0203: {
+		NUserStats m(data);
+		emit userData(m.user, m.speed, m.files, m.country);
+		break;
+	}
+	case 0x0204: {
+		NUserInfo m(data);
+		emit userInfo(m.username, m.info, m.picture, m.upslots, m.queue, m.slotsfree);
+		break;
+	}
+	case 0x0205: {
+		NUserShares m(data);
+		emit userShares(m.username, m.shares);
+		break;
+	}
+	case 0x0206: {
+		NUserAddress m(data);
+		emit userAddress(m.user, m.ip, m.port);
+		break;
+	}
 	case 0x0300: {
-		NRoomState m(data);
-		emit roomState(m.roomlist, m.rooms, m.tickers);
+		// Do nothing as this message (NRoomState) is deprecated since 0.3
 		break;
 	}
 	case 0x0301: {
 		NGetRoomList m(data);
 		emit roomList(m.roomlist);
+		break;
+	}
+	case 0x0302: {
+		NPrivateMessage m(data);
+		emit privateMessage(m.direction, m.timestamp, m.username, m.message);
+		break;
+	}
+	case 0x0303: {
+		NJoinRoom m(data);
+		emit joinRoom(m.room, m.users, m.owner, m.operators);
+		break;
+	}
+	case 0x0304: {
+		NLeaveRoom m(data);
+		emit leaveRoom(m.room);
+		break;
+	}
+	case 0x0305: {
+		NUserJoined m(data);
+		emit userJoined(m.room, m.username, m.userdata);
+		break;
+	}
+	case 0x0306: {
+		NUserLeft m(data);
+		emit userLeft(m.room, m.username);
+		break;
+	}
+	case 0x0307: {
+		NSayChatroom m(data);
+		emit sayChatroom(m.room, m.user, m.line);
+		break;
+	}
+	case 0x0308: {
+		NRoomTickers m(data);
+		emit roomTickers(m.room, m.tickers);
+		break;
+	}
+	case 0x0309: {
+		NRoomTickerSet m(data);
+		emit roomTickerSet(m.room, m.user, m.message);
+		break;
+	}
+	case 0x0313: {
+		NAskPublicChat m(data);
+		emit askedPublicChat();
+		break;
+	}
+	case 0x0314: {
+		NStopPublicChat m(data);
+		emit stoppedPublicChat();
+		break;
+	}
+	case 0x0315: {
+		NPublicChat m(data);
+		emit receivedPublicChat(m.room, m.user, m.message);
+		break;
+	}
+	case 0x0320: {
+		NPrivRoomToggle m(data);
+		emit privRoomToggled(m.enabled);
+		break;
+	}
+	case 0x0321: {
+		NGetPrivRoomList m(data);
+		emit privRoomList(m.roomlist);
+		break;
+	}
+	case 0x0322: {
+		NPrivRoomAddUser m(data);
+		emit privRoomAddedUser(m.room, m.user);
+		break;
+	}
+	case 0x0323: {
+		NPrivRoomRemoveUser m(data);
+		emit privRoomRemovedUser(m.room, m.user);
+		break;
+	}
+	case 0x0324: {
+		NRoomMembers m(data);
+		emit roomMembers(m.rooms, m.operators, m.owners);
+		break;
+	}
+	case 0x0325: {
+		NRoomsTickers m(data);
+		emit roomsTickers(m.tickers);
+		break;
+	}
+	case 0x0326: {
+		NPrivRoomAlterableMembers m(data);
+		emit privRoomAlterableMembers(m.room, m.members);
+		break;
+	}
+	case 0x0327: {
+		NPrivRoomAlterableOperators m(data);
+		emit privRoomAlterableOperators(m.room, m.operators);
+		break;
+	}
+	case 0x0328: {
+		NPrivRoomAddOperator m(data);
+		emit privRoomAddedOperator(m.room, m.user);
+		break;
+	}
+	case 0x0329: {
+		NPrivRoomRemoveOperator m(data);
+		emit privRoomRemovedOperator(m.room, m.user);
+		break;
+	}
+	case 0x0401: {
+		NSearchRequest m(data);
+		emit searchToken(m.query, m.token);
+		break;
+	}
+	case 0x0402: {
+		NSearchResults m(data);
+		emit searchResults(m.token, m.username, m.slotsfree, m.speed, m.queue, m.results);
 		break;
 	}
 	case 0x0406: {
@@ -172,6 +346,21 @@ void MuseekDriver::readMessage() {
 	case 0x0407: {
 		NRemoveWishItem m(data);
 		emit removeInterest(m.query);
+		break;
+	}
+	case 0x0500: {
+		NTransferState m(data);
+		emit transferState(m.downloads, m.uploads);
+		break;
+	}
+	case 0x0501: {
+		NTransferUpdate m(data);
+		emit transferUpdate(m.isUpload, m.transfer);
+		break;
+	}
+	case 0x0502: {
+		NTransferRemove m(data);
+		emit transferRemove(m.isUpload, m.user, m.path);
 		break;
 	}
 	case 0x0600: {
@@ -204,14 +393,14 @@ void MuseekDriver::readMessage() {
 		emit addInterest(m.interest);
 		break;
 	}
-	case 0x0612: {
-		NAddHatedInterest m(data);
-		emit addHatedInterest(m.interest);
-		break;
-	}
 	case 0x0611: {
 		NRemoveInterest m(data);
 		emit removeInterest(m.interest);
+		break;
+	}
+	case 0x0612: {
+		NAddHatedInterest m(data);
+		emit addHatedInterest(m.interest);
 		break;
 	}
 	case 0x0613: {
@@ -222,126 +411,6 @@ void MuseekDriver::readMessage() {
 	case 0x0614: {
 		NUserInterests m(data);
 		emit userInterests(m.user, m.likes, m.hates);
-		break;
-	}
-	case 0x0004: {
-		NCheckPrivileges m(data);
-		emit privilegesLeft(m.secondsleft);
-		break;
-	}
-	case 0x0005: {
-		NSetStatus m(data);
-		emit statusSet(m.status);
-		break;
-	}
-	case 0x0401: {
-		NSearchRequest m(data);
-		emit searchToken(m.query, m.token);
-		break;
-	}
-	case 0x0402: {
-		NSearchResults m(data);
-		emit searchResults(m.token, m.username, m.slotsfree, m.speed, m.queue, m.results);
-		break;
-	}
-	case 0x0307: {
-		NSayChatroom m(data);
-		emit sayChatroom(m.room, m.user, m.line);
-		break;
-	}
-	case 0x0303: {
-		NJoinRoom m(data);
-		emit joinRoom(m.room, m.users);
-		break;
-	}
-	case 0x0304: {
-		NLeaveRoom m(data);
-		emit leaveRoom(m.room);
-		break;
-	}
-	case 0x0305: {
-		NUserJoined m(data);
-		emit userJoined(m.room, m.username, m.userdata);
-		break;
-	}
-	case 0x0306: {
-		NUserLeft m(data);
-		emit userLeft(m.room, m.username);
-		break;
-	}
-	case 0x0308: {
-		NRoomTickers m(data);
-		emit roomTickers(m.room, m.tickers);
-		break;
-	}
-	case 0x0309: {
-		NRoomTickerSet m(data);
-		emit roomTickerSet(m.room, m.user, m.message);
-		break;
-	}
-	case 0x0302: {
-		NPrivateMessage m(data);
-		emit privateMessage(m.direction, m.timestamp, m.username, m.message);
-		break;
-	}
-	case 0x0204: {
-		NUserInfo m(data);
-		emit userInfo(m.username, m.info, m.picture, m.upslots, m.queue, m.slotsfree);
-		break;
-	}
-	case 0x0205: {
-		NUserShares m(data);
-		emit userShares(m.username, m.shares);
-		break;
-	}
-	case 0x0500: {
-		NTransferState m(data);
-		emit transferState(m.downloads, m.uploads);
-		break;
-	}
-	case 0x0501: {
-		NTransferUpdate m(data);
-		emit transferUpdate(m.isUpload, m.transfer);
-		break;
-	}
-	case 0x0201: {
-		NUserExists m(data);
-		emit userExists(m.user, m.exists);
-		break;
-	}
-	case 0x0202: {
-		NUserStatus m(data);
-		emit userStatus(m.user, m.status);
-		break;
-	}
-	case 0x0203: {
-		NUserStats m(data);
-		emit userData(m.user, m.speed, m.files);
-		break;
-	}
-	case 0x0206: {
-		NUserAddress m(data);
-		emit userAddress(m.user, m.ip, m.port);
-		break;
-	}
-	case 0x0100: {
-		NConfigState m(&mContext, data);
-		emit configState(m.config);
-		break;
-	}
-	case 0x0101: {
-		NConfigSet m(&mContext, data);
-		emit configSet(m.domain, m.key, m.value);
-		break;
-	}
-	case 0x0102: {
-		NConfigRemove m(&mContext, data);
-		emit configRemove(m.domain, m.key);
-		break;
-	}
-	case 0x0502: {
-		NTransferRemove m(data);
-		emit transferRemove(m.isUpload, m.user, m.path);
 		break;
 	}
 	default:
@@ -406,6 +475,18 @@ void MuseekDriver::doSendPrivateMessage(const QString& user, const QString& msg)
 	send(NPrivateMessage(user, msg));
 }
 
+void MuseekDriver::doMessageBuddies(const QString& message) {
+	send(NMessageBuddies(message));
+}
+
+void MuseekDriver::doMessageDownloadingUsers(const QString& message) {
+	send(NMessageDownloading(message));
+}
+
+void MuseekDriver::doMessageUsers(const QString& message, const QStringList& users) {
+	send(NMessageUsers(users, message));
+}
+
 void MuseekDriver::doStartSearch(uint type, const QString& query) {
 	send(NSearchRequest(type, query));
 }
@@ -426,8 +507,8 @@ void MuseekDriver::doRemoveWishItem(const QString& query) {
 	send(NRemoveWishItem(query));
 }
 
-void MuseekDriver::doJoinRoom(const QString& room) {
-	send(NJoinRoom(room));
+void MuseekDriver::doJoinRoom(const QString& room, bool priv) {
+	send(NJoinRoom(room, priv));
 }
 
 void MuseekDriver::doLeaveRoom(const QString& room) {
@@ -474,12 +555,20 @@ void MuseekDriver::getUserExists(const QString& user) {
 	send(NUserExists(user));
 }
 
+void MuseekDriver::askPublicChat() {
+    send(NAskPublicChat());
+}
+
+void MuseekDriver::stopPublicChat() {
+    send(NStopPublicChat());
+}
+
 void MuseekDriver::getUserStatus(const QString& user) {
 	send(NUserStatus(user));
 }
 
-void MuseekDriver::getUserData(const QString& user) {
-	send(NUserStatus(user));
+void MuseekDriver::setNewPassword(const QString& newPass) {
+	send(NNewPassword(&mContext, newPass));
 }
 
 void MuseekDriver::setConfig(const QString& domain, const QString& key, const QString& value) {
@@ -574,5 +663,33 @@ void MuseekDriver::givePrivileges(const QString& user, uint days) {
 
 void MuseekDriver::setTicker(const QString& room, const QString& message) {
 	send(NRoomTickerSet(room, message));
+}
+
+void MuseekDriver::doPrivRoomToggle(bool enabled) {
+    send(NPrivRoomToggle(enabled));
+}
+
+void MuseekDriver::doPrivRoomAddUser(const QString& room, const QString& user) {
+    send(NPrivRoomAddUser(room, user));
+}
+
+void MuseekDriver::doPrivRoomRemoveUser(const QString& room, const QString& user) {
+    send(NPrivRoomRemoveUser(room, user));
+}
+
+void MuseekDriver::doPrivRoomDismember(const QString& room) {
+    send(NPrivRoomDismember(room));
+}
+
+void MuseekDriver::doPrivRoomDisown(const QString& room) {
+    send(NPrivRoomDisown(room));
+}
+
+void MuseekDriver::doPrivRoomAddOperator(const QString& room, const QString& user) {
+    send(NPrivRoomAddOperator(room, user));
+}
+
+void MuseekDriver::doPrivRoomRemoveOperator(const QString& room, const QString& user) {
+    send(NPrivRoomRemoveOperator(room, user));
 }
 

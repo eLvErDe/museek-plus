@@ -49,7 +49,6 @@ signals:
 	void statusSet(uint);
 	void serverState(bool, const QString&);
 	void statusMessage(bool, const QString&);
-	void roomState(const NRoomList&, const NRooms&, const NTickerMap&);
 	void roomList(const NRoomList&);
 
 	void Recommendations(const NGlobalRecommendations&);
@@ -69,12 +68,20 @@ signals:
 	void searchToken(const QString&, uint);
 	void searchResults(uint, const QString&, bool, uint, uint, const NFolder&);
 	void sayChatroom(const QString&, const QString&, const QString&);
-	void joinRoom(const QString&, const NRoom&);
+	void joinRoom(const QString&, const NRoom&, const QString&, const QStringList&);
 	void leaveRoom(const QString&);
 	void userJoined(const QString&, const QString&, const NUserData&);
 	void userLeft(const QString&, const QString&);
 	void roomTickers(const QString&, const NTickers&);
 	void roomTickerSet(const QString&, const QString&, const QString&);
+	void roomMembers(const NRooms&, const NPrivRoomOperators&, const NPrivRoomOwners&);
+	void roomsTickers(const NTickerMap&);
+	void privRoomAlterableMembers(const QString&, const QStringList&);
+	void privRoomAlterableOperators(const QString&, const QStringList&);
+	void privRoomAddedUser(const QString&, const QString&);
+	void privRoomRemovedUser(const QString&, const QString&);
+	void privRoomAddedOperator(const QString&, const QString&);
+	void privRoomRemovedOperator(const QString&, const QString&);
 	void privateMessage(uint, uint, const QString&, const QString&);
 	void userInfo(const QString&, const QString&, const QByteArray&, uint, uint, bool);
 	void userInterests(const QString&, const QStringList&, const QStringList&);
@@ -84,11 +91,19 @@ signals:
 	void transferRemove(bool, const QString&, const QString&);
 	void userExists(const QString&, bool);
 	void userStatus(const QString&, uint);
-	void userData(const QString&, uint, uint);
+	void userData(const QString&, uint, uint, const QString&);
 	void userAddress(const QString&, const QString&, uint);
+	void newPasswordSet(const QString&);
 	void configState(const QMap<QString, QMap<QString, QString> >&);
 	void configSet(const QString&, const QString&, const QString&);
 	void configRemove(const QString&, const QString&);
+
+	void askedPublicChat();
+	void stoppedPublicChat();
+	void receivedPublicChat(const QString&, const QString&, const QString&);
+
+	void privRoomToggled(bool);
+	void privRoomList(const NPrivRoomList&);
 
 public slots:
 	void disconnect();
@@ -106,6 +121,9 @@ public slots:
 	void getItemSimilarUsers(const QString&);
 	void doSayChatroom(const QString&, const QString&);
 	void doSendPrivateMessage(const QString&, const QString&);
+	void doMessageBuddies(const QString&);
+	void doMessageDownloadingUsers(const QString&);
+	void doMessageUsers(const QString&, const QStringList&);
 	void doStartSearch(uint, const QString&);
 	void doStartUserSearch(const QString&, const QString&);
 	void doStartWishListSearch(const QString&);
@@ -119,7 +137,7 @@ public slots:
 	void doRemoveInterest(const QString&);
 	void doRemoveHatedInterest(const QString&);
 
-	void doJoinRoom(const QString&);
+	void doJoinRoom(const QString&, bool);
 	void doLeaveRoom(const QString&);
 	void getUserInfo(const QString&);
 	void getUserInterests(const QString&);
@@ -132,8 +150,10 @@ public slots:
 	void doUploadFolder(const QString&, const QString&);
 	void doUploadFile(const QString&, const QString&);
 	void getUserExists(const QString&);
+	void askPublicChat();
+	void stopPublicChat();
 	void getUserStatus(const QString&);
-	void getUserData(const QString&);
+	void setNewPassword(const QString&);
 	void setConfig(const QString&, const QString&, const QString&);
 	void removeConfig(const QString&, const QString&);
 	void doRemoveTransfer(bool, const QString&, const QString&);
@@ -142,6 +162,14 @@ public slots:
 	void setUserImage(const QByteArray&);
 	void updateTransfer(const QString&, const QString&);
 	void setTicker(const QString&, const QString&);
+
+    void doPrivRoomToggle(bool);
+    void doPrivRoomAddUser(const QString&, const QString&);
+    void doPrivRoomRemoveUser(const QString&, const QString&);
+    void doPrivRoomDismember(const QString&);
+    void doPrivRoomDisown(const QString&);
+    void doPrivRoomAddOperator(const QString&, const QString&);
+    void doPrivRoomRemoveOperator(const QString&, const QString&);
 
 protected:
 	void send(const MuseekMessage&);

@@ -123,10 +123,11 @@ public:
 		NUserData r;
 		r.status = unpack_uint();
 		r.speed = unpack_uint();
-		unpack_uint();
+		r.downloadnum = unpack_uint();
 		r.files = unpack_uint();
-		unpack_uint();
-		unpack();
+		r.dirs = unpack_uint();
+		r.slotsfull = (unpack() != 0);
+		r.country = unpack_str();
 		return r;
 	}
 
@@ -301,17 +302,6 @@ MESSAGE(NServerState, 0x0003)
 	END
 END
 
-
-MESSAGE(NStatusMessage, 0x0010)
-	bool type;
-	QString message;
-
-	PARSE
-		type = unpack() != 0;
-		message = unpack_str();
-	END
-END
-
 MESSAGE(NCheckPrivileges, 0x0004)
 	uint secondsleft;
 
@@ -332,26 +322,193 @@ MESSAGE(NSetStatus, 0x0005)
 	END
 END
 
-MESSAGE(NRoomState, 0x0300)
-	NRoomList roomlist;
-	NRooms rooms;
-	NTickerMap tickers;
+MESSAGE(NStatusMessage, 0x0010)
+	bool type;
+	QString message;
 
 	PARSE
+		type = unpack() != 0;
+		message = unpack_str();
+	END
+END
+
+CMESSAGE(NConfigState, 0x0100)
+	QMap<QString, QMap<QString, QString> > config;
+
+	CPARSE
 		uint n = unpack_uint();
 		while(n) {
-			QString r = unpack_str();
-			roomlist[r] = unpack_uint();
-			--n;
-		}
-		n = unpack_uint();
-		while(n) {
-			QString r = unpack_str();
-			rooms[r] = unpack_room();
-			tickers[r] = unpack_tickers();
+			QString domain = decipher(context);
+			config[domain];
+			uint o = unpack_uint();
+			while(o) {
+				QString key = decipher(context);
+				QString val = decipher(context);
+				config[domain][key] = val;
+				o--;
+			}
 			n--;
 		}
 	END
+END
+
+
+CMESSAGE(NNewPassword, 0x0012)
+    QString newPass;
+
+	NNewPassword(CipherContext* context, const QString& _pass) {
+	    cipher(context, _pass);
+	}
+
+	CPARSE
+		newPass = decipher(context);
+	END
+END
+
+CMESSAGE(NConfigSet, 0x0101)
+	QString domain, key, value;
+
+	NConfigSet(CipherContext* context, const QString& _domain, const QString& _key, const QString& _value) {
+		cipher(context, _domain);
+		cipher(context, _key);
+		cipher(context, _value);
+	}
+
+	CPARSE
+		domain = decipher(context);
+		key = decipher(context);
+		value = decipher(context);
+	END
+END
+
+CMESSAGE(NConfigRemove, 0x0102)
+	QString domain, key;
+
+	NConfigRemove(CipherContext* context, const QString& _domain, const QString& _key) {
+		cipher(context, _domain);
+		cipher(context, _key);
+	}
+
+	CPARSE
+		domain = decipher(context);
+		key = decipher(context);
+	END
+END
+
+MESSAGE(NConfigSetUserImage, 0x103)
+	NConfigSetUserImage(const QByteArray& d) {
+		pack(d);
+	}
+END
+
+MESSAGE(NUserExists, 0x0201)
+	QString user;
+	bool exists;
+
+	NUserExists(const QString& _user) {
+		pack(_user);
+	}
+
+	PARSE
+		user = unpack_str();
+		exists = unpack() != 0;
+	END
+END
+
+MESSAGE(NUserStatus, 0x0202)
+	QString user;
+	uint status;
+
+	NUserStatus(const QString& _user) {
+		pack(_user);
+	}
+
+	PARSE
+		user = unpack_str();
+		status = unpack_uint();
+	END
+END
+
+MESSAGE(NUserStats, 0x0203)
+	QString user, country;
+	uint speed, downloads, files, dirs;
+	bool slotsfull;
+
+	NUserStats(const QString& _user) {
+		pack(_user);
+	}
+
+	PARSE
+		user = unpack_str();
+		speed = unpack_uint();
+		downloads = unpack_uint();
+		files = unpack_uint();
+		dirs = unpack_uint();
+		slotsfull = (unpack() != 0);
+		country = unpack_str();
+	END
+END
+
+MESSAGE(NUserInfo, 0x0204)
+	QString username, info;
+	QByteArray picture;
+	uint upslots;
+	uint queue;
+	bool slotsfree;
+
+	NUserInfo(const QString& _user) {
+		pack(_user);
+	}
+
+	PARSE
+		username = unpack_str();
+		info = unpack_str();
+		picture = unpack_array();
+		upslots = unpack_uint();
+		queue = unpack_uint();
+		slotsfree = unpack() != 0;
+	END
+END
+
+MESSAGE(NUserShares, 0x0205)
+	QString username;
+	NShares shares;
+
+	NUserShares(const QString& _user) {
+		pack(_user);
+	}
+
+	PARSE
+		username = unpack_str();
+		uint n = unpack_uint();
+		while(n) {
+			QString folder = unpack_str();
+			shares[folder] = unpack_folder();
+			n--;
+		}
+	END
+END
+
+MESSAGE(NUserAddress, 0x0206)
+	QString user, ip;
+	uint port;
+
+	NUserAddress(const QString& _user) {
+		pack(_user);
+	}
+
+	PARSE
+		user = unpack_str();
+		ip = unpack_str();
+		port = unpack_uint();
+	END
+END
+
+MESSAGE(NGivePrivileges, 0x0207)
+	NGivePrivileges(const QString& _user, uint _days) {
+		pack(_user);
+		pack(_days);
+	}
 END
 
 MESSAGE(NGetRoomList, 0x0301)
@@ -367,8 +524,509 @@ MESSAGE(NGetRoomList, 0x0301)
 	END
 END
 
-MESSAGE(NGetGlobalRecommendations, 0x0601)
-	NGlobalRecommendations recommendations;
+MESSAGE(NPrivateMessage, 0x0302)
+	uint direction, timestamp;
+	QString username, message;
+
+	NPrivateMessage(const QString& _user, const QString& _message) {
+		pack(_user);
+		pack(_message);
+	}
+
+	PARSE
+		direction = unpack_uint();
+		timestamp = unpack_uint();
+		username = unpack_str();
+		message = unpack_str();
+	END
+END
+
+MESSAGE(NJoinRoom, 0x0303)
+	QString room, owner;
+	QStringList operators;
+	bool isPrivate;
+	NRoom users;
+
+	NJoinRoom(const QString& _room, bool priv) {
+		pack(_room);
+		if (priv)
+            pack((unsigned char)priv);
+	}
+
+	PARSE
+		room = unpack_str();
+		users = unpack_room();
+		isPrivate = (unpack() != 0);
+		if (isPrivate) {
+		    owner = unpack_str();
+		    operators = unpack_stringList();
+		}
+	END
+END
+
+MESSAGE(NLeaveRoom, 0x0304)
+	QString room;
+
+	NLeaveRoom(const QString& _room) {
+		pack(_room);
+	}
+
+	PARSE
+		room = unpack_str();
+	END
+END
+
+MESSAGE(NUserJoined, 0x0305)
+	QString room, username;
+	NUserData userdata;
+
+	PARSE
+		room = unpack_str();
+		username = unpack_str();
+		userdata = unpack_user();
+	END
+END
+
+MESSAGE(NUserLeft, 0x0306)
+	QString room, username;
+
+	PARSE
+		room = unpack_str();
+		username = unpack_str();
+	END
+END
+
+MESSAGE(NSayChatroom, 0x0307)
+	QString room, user;
+	QString line;
+
+	NSayChatroom(const QString& _room, const QString& _line) {
+		pack(_room);
+		pack(_line);
+	}
+
+	PARSE
+		room = unpack_str();
+		user = unpack_str();
+		line = unpack_str();
+	END
+END
+
+MESSAGE(NRoomTickers, 0x0308)
+	QString room;
+	NTickers tickers;
+
+	PARSE
+		room = unpack_str();
+		tickers = unpack_tickers();
+	END
+END
+
+MESSAGE(NRoomTickerSet, 0x0309)
+	QString room, user, message;
+
+	NRoomTickerSet(const QString& _room, const QString& _message) {
+		pack(_room);
+		pack(_message);
+	}
+
+	PARSE
+		room = unpack_str();
+		user = unpack_str();
+		message = unpack_str();
+	END
+END
+
+MESSAGE(NMessageUsers, 0x0310)
+	NMessageUsers(QStringList _users, QString _msg) {
+	    if (!_users.empty()) {
+            pack(static_cast<uint>(_users.size()));
+            QStringList::iterator it = _users.begin();
+            for(; it != _users.end(); ++it) {
+                pack(*it);
+            }
+	    }
+	    else {
+	        pack(static_cast<uint>(0));
+	    }
+        pack(_msg);
+    }
+END
+
+MESSAGE(NMessageBuddies, 0x0311)
+	NMessageBuddies(QString _msg) {
+        pack(_msg);
+	}
+END
+
+MESSAGE(NMessageDownloading, 0x0312)
+	NMessageDownloading(QString _msg) {
+        pack(_msg);
+	}
+END
+
+MESSAGE(NAskPublicChat, 0x0313)
+END
+
+MESSAGE(NStopPublicChat, 0x0314)
+END
+
+MESSAGE(NPublicChat, 0x0315)
+    QString room, user, message;
+
+	PARSE
+        room = unpack_str();
+        user = unpack_str();
+        message = unpack_str();
+	END
+END
+
+MESSAGE(NPrivRoomToggle, 0x0320)
+	bool enabled;
+
+	NPrivRoomToggle(bool _e) {
+		pack((unsigned char)_e);
+	}
+
+	PARSE
+		enabled = unpack() != 0;
+	END
+END
+
+MESSAGE(NGetPrivRoomList, 0x0321)
+	NPrivRoomList roomlist;
+
+	PARSE
+		uint n = unpack_uint();
+		while(n) {
+			QString r = unpack_str();
+			roomlist[r].first = unpack_uint();
+			roomlist[r].second = unpack_uint();
+			--n;
+		}
+	END
+END
+
+MESSAGE(NPrivRoomAddUser, 0x0322)
+	QString room, user;
+
+	NPrivRoomAddUser(QString _r, QString _u) {
+		pack(_r);
+		pack(_u);
+	}
+
+	PARSE
+		room = unpack_str();
+		user = unpack_str();
+	END
+END
+
+MESSAGE(NPrivRoomRemoveUser, 0x0323)
+	QString room, user;
+
+	NPrivRoomRemoveUser(QString _r, QString _u) {
+		pack(_r);
+		pack(_u);
+	}
+
+	PARSE
+		room = unpack_str();
+		user = unpack_str();
+	END
+END
+
+MESSAGE(NRoomMembers, 0x0324)
+	NRooms rooms;
+	NPrivRoomOperators operators;
+	NPrivRoomOwners owners;
+
+	PARSE
+		uint n = unpack_uint();
+		while(n) {
+			QString r = unpack_str();
+
+            NRoom data;
+            uint nu = unpack_uint();
+            while(nu) {
+                QString s = unpack_str();
+                data[s] = unpack_user();
+                uint status = unpack_uint();
+                if (status == 1) {
+                    operators[r].push_back(s);
+                }
+                else if (status == 2) {
+                    owners[r] = s;
+                }
+                --nu;
+            }
+
+			rooms[r] = data;
+			n--;
+		}
+	END
+END
+
+MESSAGE(NRoomsTickers, 0x0325)
+	NTickerMap tickers;
+
+	PARSE
+		uint n = unpack_uint();
+		while(n) {
+			QString r = unpack_str();
+			tickers[r] = unpack_tickers();
+			n--;
+		}
+	END
+END
+
+MESSAGE(NPrivRoomAlterableMembers, 0x0326)
+    QString room;
+	QStringList members;
+
+	PARSE
+		room = unpack_str();
+		members = unpack_stringList();
+	END
+END
+
+MESSAGE(NPrivRoomAlterableOperators, 0x0327)
+    QString room;
+	QStringList operators;
+
+	PARSE
+		room = unpack_str();
+		operators = unpack_stringList();
+	END
+END
+
+MESSAGE(NPrivRoomAddOperator, 0x0328)
+	QString room, user;
+
+	NPrivRoomAddOperator(QString _r, QString _u) {
+		pack(_r);
+		pack(_u);
+	}
+
+	PARSE
+		room = unpack_str();
+		user = unpack_str();
+	END
+END
+
+MESSAGE(NPrivRoomRemoveOperator, 0x0329)
+	QString room, user;
+
+	NPrivRoomRemoveOperator(QString _r, QString _u) {
+		pack(_r);
+		pack(_u);
+	}
+
+	PARSE
+		room = unpack_str();
+		user = unpack_str();
+	END
+END
+
+MESSAGE(NPrivRoomDismember, 0x0330)
+	QString room;
+
+	NPrivRoomDismember(QString _r) {
+		pack(_r);
+	}
+END
+
+MESSAGE(NPrivRoomDisown, 0x0331)
+	QString room;
+
+	NPrivRoomDisown(QString _r) {
+		pack(_r);
+	}
+END
+
+MESSAGE(NSearchRequest, 0x0401)
+	QString query;
+	uint token;
+
+	NSearchRequest(uint _type, QString _query) {
+		pack(_type);
+		pack(_query);
+	}
+
+	PARSE
+		query = unpack_str();
+		token = unpack_uint();
+	END
+END
+
+MESSAGE(NSearchResults, 0x0402)
+	uint token;
+	QString username;
+	bool slotsfree;
+	uint speed;
+	uint queue;
+	NFolder results;
+
+	NSearchResults(uint _token) {
+		pack(_token);
+	}
+
+	PARSE
+		token = unpack_uint();
+		username = unpack_str();
+		slotsfree = unpack() != 0;
+		speed = unpack_uint();
+		queue = unpack_uint();
+		results = unpack_folder();
+	END
+END
+
+MESSAGE(NUserSearchRequest, 0x0403)
+
+	NUserSearchRequest(QString _user, QString _query) {
+		pack(_user);
+		pack(_query);
+	}
+END
+
+MESSAGE(NWishListSearchRequest, 0x0405)
+	QString query;
+
+	NWishListSearchRequest(QString _query) {
+		pack(_query);
+	}
+END
+
+MESSAGE(NAddWishItem, 0x0406)
+	QString query;
+	uint lastSearched;
+
+	NAddWishItem(const QString& _query) {
+		pack(_query);
+	}
+
+	PARSE
+		query = unpack_str();
+		lastSearched = unpack_uint();
+	END
+END
+
+MESSAGE(NRemoveWishItem, 0x0407)
+	QString query;
+
+	NRemoveWishItem(const QString& _query) {
+		pack(_query);
+	}
+
+	PARSE
+		query = unpack_str();
+	END
+END
+
+MESSAGE(NTransferState, 0x0500)
+	NTransfers downloads, uploads;
+
+	PARSE
+		uint n = unpack_uint();
+		while(n) {
+			unsigned char upl = unpack() != 0;
+			NTransfer transfer = unpack_transfer();
+			if(upl)
+				uploads.push_back(transfer);
+			else
+				downloads.push_back(transfer);
+			n--;
+		}
+	END
+END
+
+MESSAGE(NTransferUpdate, 0x0501)
+	bool isUpload;
+	NTransfer transfer;
+
+	NTransferUpdate(const QString& _user, const QString& _path) {
+		pack(_user);
+		pack(_path);
+	}
+
+	PARSE
+		isUpload = unpack() != 0;
+		transfer = unpack_transfer();
+	END
+END
+
+MESSAGE(NTransferRemove, 0x0502)
+	bool isUpload;
+	QString user, path;
+
+	NTransferRemove(bool _upload, const QString& _user, const QString& _path) {
+		pack((unsigned char)_upload);
+		pack(_user);
+		pack(_path);
+	}
+
+	PARSE
+		isUpload = unpack() != 0;
+		user = unpack_str();
+		path = unpack_str();
+	END
+END
+
+MESSAGE(NDownloadFile, 0x0503)
+	NDownloadFile(const QString& _user, const QString& _path, qint64 _size) {
+		pack(_user);
+		pack(_path);
+		pack(_size);
+	}
+END
+
+MESSAGE(NFolderContents, 0x0504)
+	NFolderContents(const QString& _user, const QString& _path) {
+		pack(_user);
+		pack(_path);
+	}
+END
+
+MESSAGE(NTransferAbort, 0x0505)
+	NTransferAbort(bool _upload, const QString& _user, const QString& _path) {
+		pack((unsigned char)_upload);
+		pack(_user);
+		pack(_path);
+	}
+END
+
+MESSAGE(NUploadFile, 0x0506)
+	NUploadFile(const QString& _user, const QString& _path) {
+		pack(_user);
+		pack(_path);
+	}
+END
+
+MESSAGE(NDownloadFileTo, 0x0507)
+	NDownloadFileTo(const QString& _user, const QString& _path, const QString& _local, qint64 _size) {
+		pack(_user);
+		pack(_path);
+		pack(_local);
+		pack(_size);
+	}
+END
+
+MESSAGE(NDownloadFolderTo, 0x0508)
+	NDownloadFolderTo(const QString& _user, const QString& _path, const QString& _local) {
+		pack(_user);
+		pack(_path);
+		pack(_local);
+	}
+END
+
+MESSAGE(NUploadFolder, 0x0509)
+	NUploadFolder(const QString& _user, const QString& _path) {
+		pack(_user);
+		pack(_path);
+	}
+END
+
+MESSAGE(NGetRecommendations, 0x0600)
+	NRecommendations recommendations;
 
 	PARSE
 		uint n = unpack_uint();
@@ -380,8 +1038,8 @@ MESSAGE(NGetGlobalRecommendations, 0x0601)
 	END
 END
 
-MESSAGE(NGetRecommendations, 0x0600)
-	NRecommendations recommendations;
+MESSAGE(NGetGlobalRecommendations, 0x0601)
+	NGlobalRecommendations recommendations;
 
 	PARSE
 		uint n = unpack_uint();
@@ -508,455 +1166,6 @@ MESSAGE(NUserInterests, 0x0614)
 		likes = unpack_stringList();
 		hates = unpack_stringList();
 	END
-END
-
-MESSAGE(NSearchRequest, 0x0401)
-	QString query;
-	uint token;
-
-	NSearchRequest(uint _type, QString _query) {
-		pack(_type);
-		pack(_query);
-	}
-
-	PARSE
-		query = unpack_str();
-		token = unpack_uint();
-	END
-END
-
-MESSAGE(NSearchResults, 0x0402)
-	uint token;
-	QString username;
-	bool slotsfree;
-	uint speed;
-	uint queue;
-	NFolder results;
-
-	NSearchResults(uint _token) {
-		pack(_token);
-	}
-
-	PARSE
-		token = unpack_uint();
-		username = unpack_str();
-		slotsfree = unpack() != 0;
-		speed = unpack_uint();
-		queue = unpack_uint();
-		results = unpack_folder();
-	END
-END
-
-MESSAGE(NUserSearchRequest, 0x0403)
-
-	NUserSearchRequest(QString _user, QString _query) {
-		pack(_user);
-		pack(_query);
-	}
-END
-
-MESSAGE(NWishListSearchRequest, 0x0405)
-	QString query;
-
-	NWishListSearchRequest(QString _query) {
-		pack(_query);
-	}
-END
-
-MESSAGE(NAddWishItem, 0x0406)
-	QString query;
-	uint lastSearched;
-
-	NAddWishItem(const QString& _query) {
-		pack(_query);
-	}
-
-	PARSE
-		query = unpack_str();
-		lastSearched = unpack_uint();
-	END
-END
-
-MESSAGE(NRemoveWishItem, 0x0407)
-	QString query;
-
-	NRemoveWishItem(const QString& _query) {
-		pack(_query);
-	}
-
-	PARSE
-		query = unpack_str();
-	END
-END
-
-MESSAGE(NSayChatroom, 0x0307)
-	QString room, user;
-	QString line;
-
-	NSayChatroom(const QString& _room, const QString& _line) {
-		pack(_room);
-		pack(_line);
-	}
-
-	PARSE
-		room = unpack_str();
-		user = unpack_str();
-		line = unpack_str();
-	END
-END
-
-MESSAGE(NJoinRoom, 0x0303)
-	QString room;
-	NRoom users;
-
-	NJoinRoom(const QString& _room) {
-		pack(_room);
-	}
-
-	PARSE
-		room = unpack_str();
-		users = unpack_room();
-	END
-END
-
-MESSAGE(NLeaveRoom, 0x0304)
-	QString room;
-
-	NLeaveRoom(const QString& _room) {
-		pack(_room);
-	}
-
-	PARSE
-		room = unpack_str();
-	END
-END
-
-MESSAGE(NUserJoined, 0x0305)
-	QString room, username;
-	NUserData userdata;
-
-	PARSE
-		room = unpack_str();
-		username = unpack_str();
-		userdata = unpack_user();
-	END
-END
-
-MESSAGE(NUserLeft, 0x0306)
-	QString room, username;
-
-	PARSE
-		room = unpack_str();
-		username = unpack_str();
-	END
-END
-
-MESSAGE(NRoomTickers, 0x0308)
-	QString room;
-	NTickers tickers;
-
-	PARSE
-		room = unpack_str();
-		tickers = unpack_tickers();
-	END
-END
-
-MESSAGE(NRoomTickerSet, 0x0309)
-	QString room, user, message;
-
-	NRoomTickerSet(const QString& _room, const QString& _message) {
-		pack(_room);
-		pack(_message);
-	}
-
-	PARSE
-		room = unpack_str();
-		user = unpack_str();
-		message = unpack_str();
-	END
-END
-
-MESSAGE(NPrivateMessage, 0x0302)
-	uint direction, timestamp;
-	QString username, message;
-
-	NPrivateMessage(const QString& _user, const QString& _message) {
-		pack(_user);
-		pack(_message);
-	}
-
-	PARSE
-		direction = unpack_uint();
-		timestamp = unpack_uint();
-		username = unpack_str();
-		message = unpack_str();
-	END
-END
-
-MESSAGE(NUserInfo, 0x0204)
-	QString username, info;
-	QByteArray picture;
-	uint upslots;
-	uint queue;
-	bool slotsfree;
-
-	NUserInfo(const QString& _user) {
-		pack(_user);
-	}
-
-	PARSE
-		username = unpack_str();
-		info = unpack_str();
-		picture = unpack_array();
-		upslots = unpack_uint();
-		queue = unpack_uint();
-		slotsfree = unpack() != 0;
-	END
-END
-
-MESSAGE(NUserShares, 0x0205)
-	QString username;
-	NShares shares;
-
-	NUserShares(const QString& _user) {
-		pack(_user);
-	}
-
-	PARSE
-		username = unpack_str();
-		uint n = unpack_uint();
-		while(n) {
-			QString folder = unpack_str();
-			shares[folder] = unpack_folder();
-			n--;
-		}
-	END
-END
-
-MESSAGE(NTransferState, 0x0500)
-	NTransfers downloads, uploads;
-
-	PARSE
-		uint n = unpack_uint();
-		while(n) {
-			unsigned char upl = unpack() != 0;
-			NTransfer transfer = unpack_transfer();
-			if(upl)
-				uploads.push_back(transfer);
-			else
-				downloads.push_back(transfer);
-			n--;
-		}
-	END
-END
-
-MESSAGE(NTransferUpdate, 0x0501)
-	bool isUpload;
-	NTransfer transfer;
-
-	NTransferUpdate(const QString& _user, const QString& _path) {
-		pack(_user);
-		pack(_path);
-	}
-
-	PARSE
-		isUpload = unpack() != 0;
-		transfer = unpack_transfer();
-	END
-END
-
-MESSAGE(NTransferRemove, 0x0502)
-	bool isUpload;
-	QString user, path;
-
-	NTransferRemove(bool _upload, const QString& _user, const QString& _path) {
-		pack((unsigned char)_upload);
-		pack(_user);
-		pack(_path);
-	}
-
-	PARSE
-		isUpload = unpack() != 0;
-		user = unpack_str();
-		path = unpack_str();
-	END
-END
-
-MESSAGE(NDownloadFile, 0x0503)
-	NDownloadFile(const QString& _user, const QString& _path, qint64 _size) {
-		pack(_user);
-		pack(_path);
-		pack(_size);
-	}
-END
-
-MESSAGE(NDownloadFileTo, 0x0507)
-	NDownloadFileTo(const QString& _user, const QString& _path, const QString& _local, qint64 _size) {
-		pack(_user);
-		pack(_path);
-		pack(_local);
-		pack(_size);
-	}
-END
-
-MESSAGE(NFolderContents, 0x0504)
-	NFolderContents(const QString& _user, const QString& _path) {
-		pack(_user);
-		pack(_path);
-	}
-END
-
-MESSAGE(NDownloadFolderTo, 0x0508)
-	NDownloadFolderTo(const QString& _user, const QString& _path, const QString& _local) {
-		pack(_user);
-		pack(_path);
-		pack(_local);
-	}
-END
-
-MESSAGE(NUploadFolder, 0x0509)
-	NUploadFolder(const QString& _user, const QString& _path) {
-		pack(_user);
-		pack(_path);
-	}
-END
-
-MESSAGE(NUploadFile, 0x0506)
-	NUploadFile(const QString& _user, const QString& _path) {
-		pack(_user);
-		pack(_path);
-	}
-END
-
-MESSAGE(NTransferAbort, 0x0505)
-	NTransferAbort(bool _upload, const QString& _user, const QString& _path) {
-		pack((unsigned char)_upload);
-		pack(_user);
-		pack(_path);
-	}
-END
-
-MESSAGE(NUserExists, 0x0201)
-	QString user;
-	bool exists;
-
-	NUserExists(const QString& _user) {
-		pack(_user);
-	}
-
-	PARSE
-		user = unpack_str();
-		exists = unpack() != 0;
-	END
-END
-
-MESSAGE(NUserStatus, 0x0202)
-	QString user;
-	uint status;
-
-	NUserStatus(const QString& _user) {
-		pack(_user);
-	}
-
-	PARSE
-		user = unpack_str();
-		status = unpack_uint();
-	END
-END
-
-MESSAGE(NUserStats, 0x0203)
-	QString user;
-	uint speed, downloads, files, dirs;
-
-	NUserStats(const QString& _user) {
-		pack(_user);
-	}
-
-	PARSE
-		user = unpack_str();
-		speed = unpack_uint();
-		downloads = unpack_uint();
-		files = unpack_uint();
-		dirs = unpack_uint();
-	END
-END
-
-MESSAGE(NUserAddress, 0x0206)
-	QString user, ip;
-	uint port;
-
-	NUserAddress(const QString& _user) {
-		pack(_user);
-	}
-
-	PARSE
-		user = unpack_str();
-		ip = unpack_str();
-		port = unpack_uint();
-	END
-END
-
-CMESSAGE(NConfigState, 0x0100)
-	QMap<QString, QMap<QString, QString> > config;
-
-	CPARSE
-		uint n = unpack_uint();
-		while(n) {
-			QString domain = decipher(context);
-			config[domain];
-			uint o = unpack_uint();
-			while(o) {
-				QString key = decipher(context);
-				QString val = decipher(context);
-				config[domain][key] = val;
-				o--;
-			}
-			n--;
-		}
-	END
-END
-
-CMESSAGE(NConfigSet, 0x0101)
-	QString domain, key, value;
-
-	NConfigSet(CipherContext* context, const QString& _domain, const QString& _key, const QString& _value) {
-		cipher(context, _domain);
-		cipher(context, _key);
-		cipher(context, _value);
-	}
-
-	CPARSE
-		domain = decipher(context);
-		key = decipher(context);
-		value = decipher(context);
-	END
-END
-
-CMESSAGE(NConfigRemove, 0x0102)
-	QString domain, key;
-
-	NConfigRemove(CipherContext* context, const QString& _domain, const QString& _key) {
-		cipher(context, _domain);
-		cipher(context, _key);
-	}
-
-	CPARSE
-		domain = decipher(context);
-		key = decipher(context);
-	END
-END
-
-MESSAGE(NConfigSetUserImage, 0x103)
-	NConfigSetUserImage(const QByteArray& d) {
-		pack(d);
-	}
-END
-
-MESSAGE(NGivePrivileges, 0x0207)
-	NGivePrivileges(const QString& _user, uint _days) {
-		pack(_user);
-		pack(_days);
-	}
 END
 
 MESSAGE(NConnectServer, 0x0700)
