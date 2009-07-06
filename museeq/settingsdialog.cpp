@@ -307,25 +307,28 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Q
 	mToggleTrayicon = new QCheckBox(tr("Enable &trayicon"), mAppearanceTab);
 	AppearanceGrid->addWidget( mToggleTrayicon, 0, 0, 1, 2  );
 
+	mToggleCountry = new QCheckBox(tr("Show users' &country"), mAppearanceTab);
+	AppearanceGrid->addWidget( mToggleCountry, 1, 0, 1, 2  );
+
 	mToggleLog = new QCheckBox(tr("Show daemon &log"), mAppearanceTab);
-	AppearanceGrid->addWidget( mToggleLog, 1, 0, 1, 2  );
+	AppearanceGrid->addWidget( mToggleLog, 2, 0, 1, 2  );
 
 	SOnlineAlerts = new QCheckBox( mAppearanceTab );
-	AppearanceGrid->addWidget( SOnlineAlerts, 2, 0, 1, 2  );
+	AppearanceGrid->addWidget( SOnlineAlerts, 3, 0, 1, 2  );
 
 	SIPLog = new QCheckBox( mAppearanceTab);
-	AppearanceGrid->addWidget( SIPLog, 3, 0, 1, 2  );
+	AppearanceGrid->addWidget( SIPLog, 4, 0, 1, 2  );
 
 	IconsAlignment = new QCheckBox( mAppearanceTab);
-	AppearanceGrid->addWidget( IconsAlignment, 4, 0, 1, 2  );
+	AppearanceGrid->addWidget( IconsAlignment, 5, 0, 1, 2  );
 
 	mIconTheme = new QPushButton(tr("Pick &icon theme... (requires restart)"), mAppearanceTab);
 	mIconTheme->setIcon(QIcon(IMG("open")));
 	connect(mIconTheme, SIGNAL(clicked()), parent, SLOT(changeTheme()));
-	AppearanceGrid->addWidget( mIconTheme, 5, 0 );
+	AppearanceGrid->addWidget( mIconTheme, 6, 0 );
 
 	AppearanceGrid->setColumnStretch(0, 8);
-	AppearanceGrid->setRowStretch(6, 11);
+	AppearanceGrid->setRowStretch(7, 11);
 
 
 	// Logging
@@ -773,6 +776,7 @@ void SettingsDialog::loadSettings() {
  	mToggleTickers->setChecked(museeq->settings()->value("showTickers", true).toBool());
  	mToggleTimestamps->setChecked(museeq->settings()->value("showTimestamps", true).toBool());
  	museeq->mShowTimestamps = museeq->settings()->value("showTimestamps", true).toBool();
+ 	mToggleCountry->setChecked(museeq->settings()->value("showCountries", false).toBool());
  	mToggleLog->setChecked(museeq->settings()->value("showStatusLog", false).toBool());
 
 	IconsAlignment->setChecked(museeq->settings()->value("VerticalIconBox").toBool());

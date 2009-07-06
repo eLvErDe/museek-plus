@@ -830,6 +830,10 @@ void MainWindow::saveSettings() {
 	else
 		emit showAllTickers();
 
+    bool showCountries = mSettingsDialog->mToggleCountry->isChecked();
+    museeq->settings()->setValue("showCountries", showCountries);
+    emit toggleCountries(showCountries);
+
     bool showLog = mSettingsDialog->mToggleLog->isChecked();
     museeq->settings()->setValue("showStatusLog", showLog);
     if (!showLog)

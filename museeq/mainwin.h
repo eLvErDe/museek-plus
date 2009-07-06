@@ -118,6 +118,8 @@ public slots:
 signals:
 	void showAllTickers();
 	void hideAllTickers();
+	void toggleCountries(bool);
+
 private slots:
 	void loadScript();
 	void unloadScript(QAction*);

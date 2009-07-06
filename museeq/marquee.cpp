@@ -65,7 +65,7 @@ void Marquee::paintEvent(QPaintEvent*) {
  			p.setBackground(palette().color(QPalette::Background));
 			p.setFont(font());
 			p.setPen(palette().color(QPalette::Foreground));
-			p.drawText(0 - mScroll, height() - p.fontMetrics().descent() - 2, mText);
+			p.drawText(0 - mScroll, height() - fontMetrics().descent() - 2, mText);
 			p.end();
 
             mScroll += 1;
@@ -80,8 +80,7 @@ void Marquee::paintEvent(QPaintEvent*) {
 }
 
 void Marquee::updateHeight() {
-    QPainter p;
-    QSize s = p.fontMetrics().size(Qt::TextSingleLine, QString::null);
+    QSize s = fontMetrics().size(Qt::TextSingleLine, QString::null);
     setMinimumHeight(s.height() + 2);
 
 	if(mText.isEmpty())

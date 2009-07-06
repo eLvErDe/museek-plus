@@ -43,10 +43,12 @@ public:
 	uint speed(const QString&);
 	uint files(const QString&);
 	QString comments(const QString&);
+	QString country(const QString&);
 
 public slots:
 	void setComments(const QString&, const QString&);
-	void add(const QString&, uint = 0, uint = 0, uint = 0, const QString& = QString::null);
+	void setCountry(const QString&, const QString&);
+	void add(const QString&, uint = 0, uint = 0, uint = 0, const QString& = QString::null, const QString& = QString::null);
 	void add(const QString&, const QString&);
 	void remove(const QString&);
 	void sorting(bool);
@@ -67,11 +69,12 @@ protected slots:
 	void keyboardSearch(const QString&);
 	void updateStatus(const QString&);
 	void setStatus(const QString&, uint);
-	void setData(const QString&, uint, uint);
+	void setData(const QString&, uint, uint, const QString&);
 	void slotActivate(QTreeWidgetItem*);
 	void slotActivate(QTreeWidgetItem*,  int);
 	void slotContextMenu(const QPoint&);
 	void slotContextMenu(QTreeWidgetItem*, const QPoint&, int);
+	void countryToggled(bool);
 
 private:
 	Usermenu* mUsermenu;

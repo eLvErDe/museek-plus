@@ -88,7 +88,7 @@ void ChatRooms::userJoined(const QString& room, const QString& user, const NUser
 	for(int ix = 1; ix < count(); ++ix) {
 		ChatRoom* _room = dynamic_cast<ChatRoom*>(widget(ix));
 		if(_room && _room->room() == room) {
-			_room->userJoined(user, data.status, data.speed, data.files);
+			_room->userJoined(user, data);
 			return;
 		}
 	}
@@ -136,6 +136,7 @@ void ChatRooms::updateTickers() {
             _room->updateTickers(museeq->mTickerLength);
 	}
 }
+
 void ChatRooms::doCurrentChanged(QWidget* widget) {
 	selected(widget);
 }

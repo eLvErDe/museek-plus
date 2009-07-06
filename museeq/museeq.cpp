@@ -127,6 +127,9 @@ Museeq::Museeq(QApplication * app)
 	mSettings->endGroup();
 	mMainWin = new MainWindow(0);
 
+	connect(mMainWin, SIGNAL(toggleCountries(bool)), SIGNAL(toggleCountries(bool)));
+	emit toggleCountries(settings()->value("showCountries", false).toBool());
+
 	emit disconnectedFromServer();
 	emit connectedToServer(false);
 

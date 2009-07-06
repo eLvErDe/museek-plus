@@ -26,7 +26,7 @@
 
 #include <QIcon>
 
-UserListItem::UserListItem(UserListView *_parent, const QString& _u, uint _s, uint _sp, uint _f, const QString& _c)
+UserListItem::UserListItem(UserListView *_parent, const QString& _u, uint _s, uint _sp, uint _f, const QString& _c, const QString& _co)
 	     : QTreeWidgetItem(static_cast<QTreeWidget *>(_parent)), mUser(_u) {
 
 	setText(1, mUser);
@@ -36,6 +36,7 @@ UserListItem::UserListItem(UserListView *_parent, const QString& _u, uint _s, ui
 	setSpeed(_sp);
 	setFiles(_f);
 	setComments(_c);
+	setCountry(_co);
 }
 void UserListItem::updateUserStatus() {
 	setStatus(mStatus);
@@ -98,14 +99,20 @@ void UserListItem::setFiles(uint f) {
 
 void UserListItem::setComments(const QString& _c) {
 	mComments = _c;
-	setText(4, mComments);
+	setText(5, mComments);
 }
 
-void UserListItem::setAll(uint st, uint sp, uint f, const QString& c) {
+void UserListItem::setCountry(const QString& _c) {
+	mCountry = _c;
+	setText(4, mCountry);
+}
+
+void UserListItem::setAll(uint st, uint sp, uint f, const QString& c, const QString& co) {
 	setStatus(st);
 	setSpeed(sp);
 	setFiles(f);
 	setComments(c);
+	setCountry(co);
 }
 
 uint UserListItem::status() const {
@@ -126,6 +133,10 @@ uint UserListItem::files() const {
 
 QString UserListItem::comments() const {
 	return mComments;
+}
+
+QString UserListItem::country() const {
+	return mCountry;
 }
 
 bool UserListItem::operator<(const QTreeWidgetItem & other_) const {
@@ -153,6 +164,8 @@ bool UserListItem::operator<(const QTreeWidgetItem & other_) const {
 			return user() < other->user();
 		return files() < other->files();
 	case 4:
+		return country().toLower() < other->country().toLower();
+	case 5:
 		return comments().toLower() < other->comments().toLower();
 
 	}

@@ -240,7 +240,6 @@ void ChatRoom::logMessage(uint ts, const QString& user, const QString& _l) {
 
 }
 
-
 void ChatRoom::setUsers(const NRoom& r) {
 	mUserList->clear();
 	mStatus.clear();
@@ -251,14 +250,14 @@ void ChatRoom::setUsers(const NRoom& r) {
 	for(; it != r.end(); ++it) {
 		users << it.key();
 		mStatus[it.key()] = (*it).status;
-		mUserList->add(it.key(), (*it).status, (*it).speed, (*it).files, "");
+		mUserList->add(it.key(), (*it).status, (*it).speed, (*it).files, "", it->country);
 		museeq->flush();
 	}
 	mUserList->sorting(true);
 	mChatPanel->entry()->setCompletors(users);
 }
 
-void ChatRoom::userJoined(const QString& _u, int _s, unsigned int _sp, unsigned int _f) {
+void ChatRoom::userJoined(const QString& _u, const NUserData& _data) {
 	if(mUserList->findItem(_u))
 		return;
 	if (! museeq->isIgnored(_u)) {
@@ -267,16 +266,10 @@ void ChatRoom::userJoined(const QString& _u, int _s, unsigned int _sp, unsigned 
 		else
 			mLog->append( QString("<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+ tr("%1 joined the room")+"</span>" ).arg(Qt::escape(_u) ) ) ;
 	}
-	if(museeq->isBuddy(_u)) {
-		mUserList->add(_u , _s, _sp, _f);
-	} else if(museeq->isBanned(_u)) {
-		mUserList->add(_u, _s, _sp, _f);
-	} else {
-		mUserList->add(_u, _s, _sp, _f);
-	}
 
+	mUserList->add(_u , _data.status, _data.speed, _data.files, QString::null, _data.country);
 
-	mStatus[_u] = _s;
+	mStatus[_u] = _data.status;
 
 	mChatPanel->entry()->addCompletor(_u);
 }

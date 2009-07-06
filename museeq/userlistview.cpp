@@ -22,6 +22,7 @@
 #include "userlistitem.h"
 #include "usermenu.h"
 #include "museeq.h"
+#include "mainwin.h"
 #include "images.h"
 #include "util.h"
 
@@ -42,13 +43,13 @@ UserListView::UserListView(bool comments, QWidget * parent, const char * name)
     setAcceptDrops(true);
 	setDragEnabled(true);
 	setSelectionMode(QAbstractItemView::SingleSelection);
-	setColumnCount(4);
+	setColumnCount(5);
 
 	QStringList headers;
-	headers  << QString::null << tr("User") << tr("Speed") << tr("Files");
+	headers  << QString::null << tr("User") << tr("Speed") << tr("Files") << tr("Country");
 	if(comments) {
 		headers << (tr("Comments"));
-        setColumnCount(5);
+        setColumnCount(6);
 	}
 	setHeaderLabels(headers);
 
@@ -56,10 +57,13 @@ UserListView::UserListView(bool comments, QWidget * parent, const char * name)
 	setSortingEnabled(true);
 	sortItems(1, Qt::AscendingOrder);
 	QPixmap& p(IMG("online"));
-	setColumnWidth (0, p.width()+5);
+	int iconColumnWidth = (p.width()/p.height()) * size().height();
+	setColumnWidth (0, iconColumnWidth);
 	setColumnWidth ( 1, 100 );
-	setColumnWidth ( 2, 100 );
-	setColumnWidth ( 3, 100 );
+	setColumnWidth ( 2, 90 );
+	setColumnWidth ( 3, 90 );
+	setColumnWidth ( 4, 70 );
+
 	setAllColumnsShowFocus(true);
 	setRootIsDecorated(false);
 	setContextMenuPolicy(Qt::CustomContextMenu);
@@ -71,7 +75,8 @@ UserListView::UserListView(bool comments, QWidget * parent, const char * name)
 	connect(museeq, SIGNAL(sortingEnabled(bool)), this, SLOT(sorting(bool)));
 	connect(museeq, SIGNAL(userStatus(const QString&, uint)), SLOT(setStatus(const QString&, uint)));
 	connect(museeq, SIGNAL(doUpdateStatus(const QString&)), SLOT(updateStatus(const QString&)));
-	connect(museeq, SIGNAL(userData(const QString&, uint, uint)), SLOT(setData(const QString&, uint, uint)));
+	connect(museeq, SIGNAL(userData(const QString&, uint, uint, const QString&)), SLOT(setData(const QString&, uint, uint, const QString&)));
+	connect(museeq, SIGNAL(toggleCountries(bool)), this, SLOT(countryToggled(bool)));
 }
 
 void UserListView::sorting(bool sort) {
@@ -115,6 +120,13 @@ QString UserListView::comments(const QString& _u) {
 	return item->comments();
 }
 
+QString UserListView::country(const QString& _u) {
+	UserListItem* item = findItem(_u);
+	if(! item)
+		return 0;
+	return item->country();
+}
+
 void UserListView::setStatus(const QString& _u, uint _s) {
 	UserListItem *item = findItem(_u);
 	if(! item)
@@ -129,12 +141,13 @@ void UserListView::updateStatus(const QString& _u) {
 	item->updateUserStatus();
 }
 
-void UserListView::setData(const QString& _u, uint _s, uint _f) {
+void UserListView::setData(const QString& _u, uint _s, uint _f, const QString& _c) {
 	UserListItem *item = findItem(_u);
 	if(! item)
 		return;
 	item->setSpeed(_s);
 	item->setFiles(_f);
+	item->setCountry(_c);
 }
 
 void UserListView::setComments(const QString& _u, const QString& _c) {
@@ -144,13 +157,21 @@ void UserListView::setComments(const QString& _u, const QString& _c) {
 	item->setComments(_c);
 }
 
-void UserListView::add(const QString& _u, uint _st, uint _s, uint _f, const QString& _c) {
+void UserListView::setCountry(const QString& _u, const QString& _c) {
+	UserListItem *item = findItem(_u);
+	if(! item)
+		return;
+	item->setCountry(_c);
+}
+
+
+void UserListView::add(const QString& _u, uint _st, uint _s, uint _f, const QString& _c, const QString& _co) {
 	UserListItem *item = findItem(_u);
 	if(item) {
-		item->setAll(_st, _s, _f, _c);
+		item->setAll(_st, _s, _f, _c, _co);
 		return;
 	}
-	new UserListItem(this, _u, _st, _s, _f, _c);
+	new UserListItem(this, _u, _st, _s, _f, _c, _co);
 
 }
 
@@ -160,7 +181,7 @@ void UserListView::add(const QString& _u, const QString& _c) {
 		item->setComments(_c);
 		return;
 	}
-	new UserListItem(this, _u, 0, 0, 0, _c);
+	new UserListItem(this, _u, 0, 0, 0, _c, QString::null);
 
 }
 
@@ -380,4 +401,8 @@ void UserListView::slotContextMenu(QTreeWidgetItem* item, const QPoint& pos, int
     UserListItem * _item = dynamic_cast<UserListItem *>(item);
 	if(_item)
         mUsermenu->exec(_item->user(), pos);
+}
+
+void UserListView::countryToggled(bool t) {
+    setColumnHidden(4, !t);
 }

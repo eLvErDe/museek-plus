@@ -27,7 +27,7 @@ class UserListView;
 
 class UserListItem : public QTreeWidgetItem {
 public:
-	UserListItem(UserListView *, const QString&, uint, uint, uint, const QString&);
+	UserListItem(UserListView *, const QString&, uint, uint, uint, const QString&, const QString&);
 
 	uint status() const;
 	void updateUserStatus();
@@ -35,16 +35,18 @@ public:
 	uint speed() const;
 	uint files() const;
 	QString comments() const;
+	QString country() const;
 
 	void setStatus(uint);
 	void setSpeed(uint);
 	void setFiles(uint);
 	void setComments(const QString&);
-	void setAll(uint, uint, uint, const QString&);
+	void setCountry(const QString&);
+	void setAll(uint, uint, uint, const QString&, const QString&);
 	bool operator<(const QTreeWidgetItem & other) const;
 private:
 	uint mStatus;
-	QString mUser, mComments;
+	QString mUser, mComments, mCountry;
 	uint mSpeed, mFiles;
 };
 
