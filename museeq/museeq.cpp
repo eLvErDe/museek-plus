@@ -69,6 +69,7 @@ Museeq::Museeq(QApplication * app)
 	connect(mDriver, SIGNAL(loggedIn(bool, const QString&)), SLOT(slotLoggedIn(bool, const QString&)));
 	connect(mDriver, SIGNAL(serverState(bool, const QString&)), SLOT(slotServerState(bool, const QString&)));
 	connect(mDriver, SIGNAL(statusSet(uint)), SLOT(slotStatusSet(uint)));
+	connect(mDriver, SIGNAL(newPasswordSet(const QString&)), SIGNAL(newPasswordSet(const QString&)));
 
 	connect(mDriver, SIGNAL(transferState(const NTransfers&, const NTransfers&)), SLOT(slotTransferState(const NTransfers&, const NTransfers&)));
 	connect(mDriver, SIGNAL(transferUpdate(bool, const NTransfer&)), SLOT(slotTransferUpdate(bool, const NTransfer&)));
@@ -671,6 +672,10 @@ void Museeq::privRoomRemovedOperator(const QString& room, const QString& user) {
 
 void Museeq::setConfig(const QString& domain, const QString& key, const QString& value) {
 	mDriver->setConfig(domain, key, value);
+}
+
+void Museeq::setNewPassword(const QString& newPass) {
+    mDriver->setNewPassword(newPass);
 }
 
 void Museeq::removeConfig(const QString& domain, const QString& key) {

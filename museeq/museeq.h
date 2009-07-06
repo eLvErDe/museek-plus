@@ -184,6 +184,7 @@ public slots:
 	void getUserInfo(const QString&);
 	void getUserInterests(const QString&);
 	void getUserShares(const QString&);
+	void setNewPassword(const QString&);
 
 	void setConfig(const QString&, const QString&, const QString&);
 	void removeConfig(const QString&, const QString&);
@@ -212,6 +213,7 @@ signals:
 	void disconnectedFromServer();
 	void connectedToServer(bool);
 	void nicknameChanged(const QString&);
+	void newPasswordSet(const QString&);
 
 	// User status and statistics
 	void userStatus(const QString&, uint);

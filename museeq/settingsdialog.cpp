@@ -49,6 +49,7 @@
 #include <QSettings>
 #include <QMessageBox>
 #include <QDialogButtonBox>
+#include <QInputDialog>
 
 SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Qt::WFlags fl )
     : QDialog( parent ), mSharesDirty(false), mPrivRoomEnabled(false)
@@ -118,6 +119,14 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Q
 	SSoulseekPassword = new QLineEdit( mServerTab );
 	SSoulseekPassword->setEchoMode(QLineEdit::Password);
 	ServerGrid->addWidget( SSoulseekPassword, 3, 1, 1, 1 );
+
+	// Change server password
+	SSoulseekChangePassword = new QPushButton( mServerTab );
+	SSoulseekChangePassword->setText(tr("Change password"));
+	ServerGrid->addWidget( SSoulseekChangePassword, 4, 0 );
+
+    changePasswordLabel = new QLabel( mServerTab );
+	ServerGrid->addWidget( changePasswordLabel, 4, 1, 1, 1 );
 
 	// Connect / Disconnect
 	QHBoxLayout * SideLayout = new QHBoxLayout;
@@ -547,6 +556,8 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Q
 	// signals and slots connections
     connect(mButtonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(buttonClicked(QAbstractButton*)));
 
+	connect( SSoulseekChangePassword, SIGNAL( clicked() ), this, SLOT( changeSlskPassword() ) );
+
 	connect( SConnect, SIGNAL( clicked() ), this, SLOT( SConnect_clicked() ) );
 	connect( SDisconnect, SIGNAL( clicked() ), this, SLOT( SDisconnect_clicked() ) );
 	connect( SDownloadButton, SIGNAL( clicked() ), this, SLOT( SDownload_clicked() ) );
@@ -583,6 +594,7 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Q
 	connect( mNewHandler, SIGNAL( clicked() ), this, SLOT( mNewHandler_clicked() ) );
 	connect( mModifyHandler, SIGNAL( clicked() ), this, SLOT( mModifyHandler_clicked() ) );
 
+    connect(museeq, SIGNAL(newPasswordSet(const QString&)), SLOT(slotNewPasswordSet(const QString&)));
 	connect(museeq, SIGNAL(configChanged(const QString&, const QString&, const QString&)), SLOT(slotConfigChanged(const QString&, const QString&, const QString&)));
 
 	connect(museeq, SIGNAL(connectedToServer(bool)), SLOT(slotConnectedToServer(bool)));
@@ -867,6 +879,12 @@ void SettingsDialog::rejectSettings() {
     loadSettings();
     museeq->mainwin()->setTrayIconInitState();
     hide();
+}
+
+void SettingsDialog::slotNewPasswordSet(const QString& newPass) {
+    changePasswordLabel->setText(tr("Password successfully changed!"));
+    SSoulseekPassword->setText(newPass);
+    museeq->setConfig("server", "password", SSoulseekPassword->text());
 }
 
 void SettingsDialog::slotConfigChanged(const QString& domain, const QString& key, const QString& value) {
@@ -1215,6 +1233,29 @@ void SettingsDialog::finishedBuddy( int exitCode, QProcess::ExitStatus exitStatu
 	BuddySharesRefresh();
 }
 
+void SettingsDialog::changeSlskPassword() {
+    bool res1;
+	QString p1 = QInputDialog::getText(museeq->mainwin(), tr("New Soulseek account password"), tr("Please enter the new password for user %1 on the Soulseek server:").arg(museeq->nickname()), QLineEdit::Password, QString::null, &res1);
+	if (!res1 || p1.isEmpty()) {
+	    changePasswordLabel->setText(tr(""));
+        return;
+	}
+
+    bool res2;
+	QString p2 = QInputDialog::getText(museeq->mainwin(), tr("Confirm new Soulseek account password"), tr("Please confirm the new password for user %1 on the Soulseek server:").arg(museeq->nickname()), QLineEdit::Password, QString::null, &res2);
+	if (!res2) {
+	    changePasswordLabel->setText(tr(""));
+	    return;
+	}
+    else if (p2 != p1) {
+	    changePasswordLabel->setText(tr("Failed confirming the new password, please retry..."));
+        return;
+	}
+
+    changePasswordLabel->setText(tr("Changing the password, please wait."));
+    museeq->setNewPassword(p1);
+}
+
 void SettingsDialog::SConnect_clicked()
 {
     museeq->connectServer();
@@ -1513,6 +1554,7 @@ void SettingsDialog::showEvent( QShowEvent * event ) {
         mStartDaemonButton->setDisabled(false);
         mStopDaemonButton->setDisabled(true);
     }
+    changePasswordLabel->setText("");
 }
 
 void SettingsDialog::clearSockets() {
@@ -1631,4 +1673,18 @@ void SettingsDialog::slotAddressChanged(const QString& text) {
 void SettingsDialog::slotConnectedToServer(bool connected) {
     SDisconnect->setEnabled(connected);
     SConnect->setEnabled(!connected);
+    SSoulseekChangePassword->setEnabled(connected);
+}
+
+void SettingsDialog::setPrivRoomEnabled(bool enabled) {
+    mPrivRoomEnabled = enabled;
+}
+
+void SettingsDialog::setPrivRoomEnabledFromServer(bool enabled) {
+    setPrivRoomEnabled(enabled);
+    SPrivRoom->setChecked(enabled);
+}
+
+bool SettingsDialog::getPrivRoomEnabled() {
+    return mPrivRoomEnabled;
 }

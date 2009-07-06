@@ -74,6 +74,7 @@ public:
 	QLabel* serverHostLabel;
 	QLabel* usernamelabel, *configLabel;
 	QLabel* passwordLabel;
+	QLabel* changePasswordLabel;
 	QLabel* instructionsLabel;
 	QLabel* downloadLabel;
 	QLabel* incompleteLabel;
@@ -95,6 +96,7 @@ public:
 	QRadioButton* SPassive;
 	QLineEdit* SSoulseekPassword;
 	QLineEdit* SSoulseekUsername;
+	QPushButton * SSoulseekChangePassword;
 	QLineEdit* SServerHost;
 	QLineEdit* SDownDir;
 	QLineEdit* SIncompleteDir;
@@ -119,6 +121,7 @@ public:
     QDialogButtonBox * mButtonBox;
 
 public slots:
+    void changeSlskPassword();
 	void SConnect_clicked();
 	void SDisconnect_clicked();
 	void save();
@@ -146,6 +149,7 @@ public slots:
 	void mModifyHandler_clicked();
 	void mProtocols_itemDelete();
 
+	void slotNewPasswordSet(const QString&);
 	void slotConfigChanged(const QString&, const QString&, const QString&);
 	void SBuddiesSharesToggled(bool);
 	void readNormal();
