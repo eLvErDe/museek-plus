@@ -51,7 +51,7 @@
 #include <QDialogButtonBox>
 
 SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Qt::WFlags fl )
-    : QDialog( parent ), mSharesDirty(false)
+    : QDialog( parent ), mSharesDirty(false), mPrivRoomEnabled(false)
 {
 	// Layout Containing everything
 	QVBoxLayout* vLayout= new QVBoxLayout( this);
@@ -294,7 +294,10 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Q
 	STrustedUsers = new QCheckBox( mUsersTab);
 	UsersGrid->addWidget( STrustedUsers, 2, 0);
 
-	UsersGrid->setRowStretch(3, 10);
+	SPrivRoom = new QCheckBox( mUsersTab);
+	UsersGrid->addWidget( SPrivRoom, 3, 0);
+
+	UsersGrid->setRowStretch(4, 10);
 
 
     // Populate museeq tab
@@ -584,6 +587,8 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Q
 
 	connect(museeq, SIGNAL(connectedToServer(bool)), SLOT(slotConnectedToServer(bool)));
 
+	connect(museeq, SIGNAL(privRoomToggled(bool)), SLOT(setPrivRoomEnabledFromServer(bool)));
+
     loadSettings();
 }
 
@@ -764,6 +769,8 @@ void SettingsDialog::loadSettings() {
     SBuddiesPrivileged->setChecked(museeq->config("transfers", "privilege_buddies") == "true");
     STrustedUsers->setChecked(museeq->config("transfers", "trusting_uploads") == "true");
     SActive->setChecked(museeq->config("clients", "connectmode") == "active");
+
+    SPrivRoom->setChecked(mPrivRoomEnabled);
 
     // museeq settings
     mMuseekConfigFile->setText(museeq->settings()->value("MuseekConfigFile").toString());
@@ -1467,6 +1474,7 @@ void SettingsDialog::languageChange()
 	SOnlineAlerts->setText( tr( "Display online alerts in daemon log instead of popup" ) );
 	SShareBuddiesOnly->setText( tr( "Share to buddies only" ) );
 	STrustedUsers->setText( tr( "Trusted users can send you files" ) );
+	SPrivRoom->setText( tr( "Allow being added to private rooms" ) );
 	SBuddiesShares->setText( tr( "Additional shares for buddies" ) );
 	SIPLog->setText( tr( "Display IP addresses in daemon log instead of popup" ) );
 	TickerLengthLabel->setText( tr( "Maximum length of ticker messages:" ) );

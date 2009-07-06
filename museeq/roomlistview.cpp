@@ -19,6 +19,7 @@
  */
 
 #include "museeq.h"
+#include "mainwin.h"
 #include "roomlistview.h"
 #include "roomlistitem.h"
 
@@ -26,10 +27,10 @@
 
 RoomListView::RoomListView(QWidget* _p, const char* _n)
              : QTreeWidget(_p) {
-	setColumnCount(2);
+	setColumnCount(3);
 
 	QStringList headers;
-	headers << tr("Room") << tr("Users");
+	headers << tr("Room") << tr("Users") << tr("Status");
 	setHeaderLabels(headers);
 	setSortingEnabled(true);
 	setRootIsDecorated(false);
@@ -49,10 +50,19 @@ RoomListView::RoomListView(QWidget* _p, const char* _n)
 
 	mPopup->addSeparator();
 
+	mActionDisown = new QAction(tr("Give up ownership"), this);
+	connect(mActionDisown, SIGNAL(triggered()), this, SLOT(slotDisown()));
+	mPopup->addAction(mActionDisown);
+
+	mActionDismember = new QAction(tr("Give up membership"), this);
+	connect(mActionDismember, SIGNAL(triggered()), this, SLOT(slotDismember()));
+	mPopup->addAction(mActionDismember);
+
+	mPopup->addSeparator();
+
 	ActionRefresh = new QAction(tr("Refresh"), this);
 	connect(ActionRefresh, SIGNAL(triggered()), this, SLOT(slotRefresh()));
 	mPopup->addAction(ActionRefresh);
-
 
 	setContextMenuPolicy(Qt::CustomContextMenu);
 	connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), SLOT(slotActivate(QTreeWidgetItem*, int)));
@@ -60,17 +70,41 @@ RoomListView::RoomListView(QWidget* _p, const char* _n)
 	connect(this, SIGNAL(itemActivated(QTreeWidgetItem*, int)), SLOT(slotActivate(QTreeWidgetItem*, int)));
 
 	connect(museeq, SIGNAL(roomList(const NRoomList&)), SLOT(setRooms(const NRoomList&)));
+	connect(museeq, SIGNAL(privRoomList(const NPrivRoomList&)), SLOT(setPrivRooms(const NPrivRoomList&)));
 	connect(museeq, SIGNAL(disconnected()), SLOT(clear()));
 }
 
 void RoomListView::setRooms(const NRoomList& _r) {
+	m_roomListCache = _r;
+
+	setRoomsFromCache();
+}
+
+void RoomListView::setPrivRooms(const NPrivRoomList& _r) {
+	setRoomsFromCache();
+}
+
+void RoomListView::setRoomsFromCache() {
 	clear();
 
-	QMap<QString, unsigned int>::const_iterator it = _r.begin();
-	for(; it != _r.end(); ++it)
-		new RoomListItem(this, it.key(), it.value());
+	QMap<QString, unsigned int>::const_iterator it = m_roomListCache.begin();
+	for(; it != m_roomListCache.end(); ++it)
+		new RoomListItem(this, it.key(), it.value(), tr("Public"));
+
+    NPrivRoomList privRoomListCache = museeq->getPrivRoomList();
+	NPrivRoomList::const_iterator itp = privRoomListCache.begin();
+	for(; itp != privRoomListCache.end(); ++itp) {
+	    QStringList role;
+	    role << tr("member") << tr("operator") << tr("owner") << tr("unknown");
+	    uint intRole = itp.value().second;
+	    if (intRole >= role.size())
+            intRole = role.size() -1;
+		new RoomListItem(this, itp.key(), itp.value().first, tr("Private (%1)").arg(role[intRole]));
+	}
+
 	resizeColumnToContents(0);
 	sortItems(0, Qt::AscendingOrder);
+	sortItems(2, Qt::AscendingOrder);
 }
 
 void RoomListView::slotJoin() {
@@ -79,6 +113,14 @@ void RoomListView::slotJoin() {
 
 void RoomListView::slotLeave() {
 	museeq->leaveRoom(mPopped);
+}
+
+void RoomListView::slotDisown() {
+	museeq->mainwin()->doPrivRoomDisown(mPopped);
+}
+
+void RoomListView::slotDismember() {
+	museeq->mainwin()->doPrivRoomDismember(mPopped);
 }
 
 void RoomListView::slotRefresh() {
@@ -95,16 +137,19 @@ void RoomListView::slotContextMenu(const QPoint& pos) {
 	RoomListItem* item = dynamic_cast<RoomListItem*>(itemAt(pos));
 
 	if (! item ) {
-
 		mPopped = QString::null;
 		ActionJoin->setEnabled(false);
 		ActionLeave->setEnabled(false);
+		mActionDisown->setEnabled(false);
+		mActionDismember->setEnabled(false);
 		ActionRefresh->setEnabled(museeq->isConnected());
 
 	} else {
 		mPopped = item->room();
 		ActionJoin->setEnabled(! museeq->isJoined(mPopped));
 		ActionLeave->setEnabled(museeq->isJoined(mPopped));
+        mActionDisown->setEnabled(museeq->isRoomOwned(mPopped));
+        mActionDismember->setEnabled(museeq->isRoomPrivate(mPopped) && !museeq->isRoomOwned(mPopped));
 		ActionRefresh->setEnabled(museeq->isConnected());
 	}
 

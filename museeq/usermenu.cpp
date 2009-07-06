@@ -62,6 +62,16 @@ Usermenu::Usermenu(QWidget* parent, const char* name)
 	connect(ActionIgnore, SIGNAL(triggered()), this, SLOT(slotIgnored()));
 	addAction(ActionIgnore);
 	addSeparator();
+
+	mMenuPrivMember = addMenu(tr("Member of private rooms"));
+    connect(mMenuPrivMember, SIGNAL(triggered(QAction*)), this, SLOT(switchPrivMember(QAction*)));
+	mMenuPrivOperator = addMenu(tr("Operator of private rooms"));
+    connect(mMenuPrivOperator, SIGNAL(triggered(QAction*)), this, SLOT(switchPrivOperator(QAction*)));
+	mMenuPrivOwner = addMenu(tr("Owner of private rooms"));
+    connect(mMenuPrivOwner, SIGNAL(triggered(QAction*)), this, SLOT(switchPrivOwner(QAction*)));
+
+	addSeparator();
+
 	ActionIp = new QAction(IMG("ip"), tr("Show IP"), this);
 	connect(ActionIp, SIGNAL(triggered()), this, SLOT(slotIP()));
 	addAction(ActionIp);
@@ -98,6 +108,54 @@ void Usermenu::setup(const QString& user) {
 	ActionBan->setChecked(museeq->isBanned(user));
 	ActionIgnore->setChecked(museeq->isIgnored(user));
 	ActionAlert->setChecked(museeq->hasAlert(user));
+
+    // Fill private rooms stuff
+	mMenuPrivMember->clear();
+	mMenuPrivOperator->clear();
+	mMenuPrivOwner->clear();
+	mMenuPrivMember->setEnabled(false);
+	mMenuPrivOperator->setEnabled(false);
+	mMenuPrivOwner->setEnabled(false);
+
+	bool ourSelf = (mUser == museeq->nickname());
+	if (connected) {
+	    NPrivRoomList privRoomList = museeq->getPrivRoomList();
+	    NPrivRoomList::const_iterator it = privRoomList.begin();
+        for (; it != privRoomList.end(); it++) {
+            QString roomName = it.key();
+
+            bool noAuthority = (it->second == 0);
+            bool canAddAsMember = museeq->canAddAsMember(roomName, mUser);
+            bool canDismember = museeq->canDismember(roomName, mUser);
+            bool canAddAsOperator = museeq->canAddAsOperator(roomName, mUser);
+            bool canDisop = museeq->canDisop(roomName, mUser);
+            bool canDisown = museeq->isRoomOwned(roomName);
+
+            if (canAddAsMember || canDismember || (ourSelf && !canDisop && !canDisown && noAuthority)) {
+                QAction * addedAction = mMenuPrivMember->addAction(roomName);
+                addedAction->setCheckable(true);
+                addedAction->setChecked(!canAddAsMember);
+                mMenuPrivMember->setEnabled(true);
+            }
+
+            if (canAddAsOperator || canDisop || (ourSelf && !noAuthority && !canDisown)) {
+                QAction * addedAction = mMenuPrivOperator->addAction(roomName);
+                addedAction->setCheckable(true);
+                addedAction->setChecked(!canAddAsOperator);
+                mMenuPrivOperator->setEnabled(true);
+            }
+
+            if (!ourSelf)
+                continue;
+
+            if (it->second == 2) { // Room owned by us
+                QAction * addedAction = mMenuPrivOwner->addAction(roomName);
+                addedAction->setCheckable(true);
+                addedAction->setChecked(true);
+                mMenuPrivOwner->setEnabled(true);
+            }
+        }
+	}
 }
 
 void Usermenu::exec(const QString& user) {
@@ -176,3 +234,25 @@ void Usermenu::slotComments() {
 	museeq->editComments(mUser);
 }
 
+void Usermenu::switchPrivMember(QAction* action) {
+    if (action->isChecked())
+        museeq->mainwin()->doPrivRoomAddUser(action->text(), mUser);
+    else if (mUser == museeq->nickname())
+        museeq->mainwin()->doPrivRoomDismember(action->text());
+    else
+        museeq->mainwin()->doPrivRoomRemoveUser(action->text(), mUser);
+}
+
+void Usermenu::switchPrivOperator(QAction* action) {
+    if (action->isChecked())
+        museeq->mainwin()->doPrivRoomAddOperator(action->text(), mUser);
+    else if (mUser == museeq->nickname())
+        museeq->mainwin()->doPrivRoomDisown(action->text());
+    else
+        museeq->mainwin()->doPrivRoomRemoveOperator(action->text(), mUser);
+}
+
+void Usermenu::switchPrivOwner(QAction* action) {
+    if (!action->isChecked())
+        museeq->mainwin()->doPrivRoomDisown(action->text());
+}

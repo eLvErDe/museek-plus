@@ -27,7 +27,7 @@
 #include <QIcon>
 
 UserListItem::UserListItem(UserListView *_parent, const QString& _u, uint _s, uint _sp, uint _f, const QString& _c, const QString& _co)
-	     : QTreeWidgetItem(static_cast<QTreeWidget *>(_parent)), mUser(_u) {
+	     : QTreeWidgetItem(static_cast<QTreeWidget *>(_parent)), mUser(_u), mIsOperator(false), mIsOwner(false) {
 
 	setText(1, mUser);
 	setTextAlignment(2, Qt::AlignRight|Qt::AlignVCenter);
@@ -107,6 +107,21 @@ void UserListItem::setCountry(const QString& _c) {
 	setText(4, mCountry);
 }
 
+void UserListItem::setOperator(bool _o) {
+	mIsOperator = _o;
+	QFont oldFont = font(1);
+	oldFont.setUnderline(_o);
+	setFont(1, oldFont);
+}
+
+void UserListItem::setOwner(bool _o) {
+	mIsOwner = _o;
+	QFont oldFont = font(1);
+	oldFont.setUnderline(_o);
+	oldFont.setBold(_o);
+	setFont(1, oldFont);
+}
+
 void UserListItem::setAll(uint st, uint sp, uint f, const QString& c, const QString& co) {
 	setStatus(st);
 	setSpeed(sp);
@@ -137,6 +152,14 @@ QString UserListItem::comments() const {
 
 QString UserListItem::country() const {
 	return mCountry;
+}
+
+bool UserListItem::isOperator() const {
+	return mIsOperator;
+}
+
+bool UserListItem::isOwner() const {
+	return mIsOwner;
 }
 
 bool UserListItem::operator<(const QTreeWidgetItem & other_) const {

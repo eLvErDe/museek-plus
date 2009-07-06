@@ -49,12 +49,13 @@ protected slots:
 	void clear();
 	void closeCurrent();
 	void doCurrentChanged(QWidget *);
-	void joined(const QString&, const NRoom&);
+	void joined(const QString&, const NRoom&, const QString&, const QStringList&);
 	void left(const QString&);
 	void append(const QString&, const QString&, const QString&);
 
-	void setTickers(const QString&, const NTickers&);
 	void setTicker(const QString&, const QString&, const QString&);
+	void setTickers(const QString&, const NTickers&);
+	void setTickersForAllRooms(const NTickerMap&);
 
 	void userJoined(const QString&, const QString&, const NUserData&);
 	void userLeft(const QString&, const QString&);

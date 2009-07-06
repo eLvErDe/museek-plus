@@ -39,16 +39,22 @@ signals:
 
 protected slots:
 	void setRooms(const NRoomList&);
+	void setPrivRooms(const NPrivRoomList&);
+	void setRoomsFromCache();
 	void slotJoin();
 	void slotLeave();
+	void slotDisown();
+	void slotDismember();
 	void slotRefresh();
 	void slotActivate(QTreeWidgetItem*,  int);
 	void slotContextMenu(const QPoint&);
 
 protected:
-	QAction * ActionJoin, * ActionLeave, * ActionRefresh;
+	QAction * ActionJoin, * ActionLeave, * ActionRefresh, * mActionDisown, * mActionDismember;
 	QMenu *mPopup;
 	QString mPopped;
+
+	NRoomList m_roomListCache;
 };
 
 #endif // ROOMLISTVIEW_H

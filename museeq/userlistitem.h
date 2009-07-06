@@ -36,16 +36,21 @@ public:
 	uint files() const;
 	QString comments() const;
 	QString country() const;
+	bool isOperator() const;
+	bool isOwner() const;
 
 	void setStatus(uint);
 	void setSpeed(uint);
 	void setFiles(uint);
 	void setComments(const QString&);
 	void setCountry(const QString&);
+	void setOperator(bool);
+	void setOwner(bool);
 	void setAll(uint, uint, uint, const QString&, const QString&);
 	bool operator<(const QTreeWidgetItem & other) const;
 private:
 	uint mStatus;
+	bool mIsOperator, mIsOwner;
 	QString mUser, mComments, mCountry;
 	uint mSpeed, mFiles;
 };

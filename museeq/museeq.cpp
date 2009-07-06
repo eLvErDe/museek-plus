@@ -76,9 +76,8 @@ Museeq::Museeq(QApplication * app)
 	connect(mDriver, SIGNAL(configSet(const QString&, const QString&, const QString&)), SLOT(slotConfigSet(const QString&, const QString&, const QString&)));
 	connect(mDriver, SIGNAL(configRemove(const QString&, const QString&)), SLOT(slotConfigRemove(const QString&, const QString&)));
 	connect(mDriver, SIGNAL(userStatus(const QString&, uint)), SIGNAL(userStatus(const QString&, uint)));
-	connect(mDriver, SIGNAL(userData(const QString&, uint, uint)), SIGNAL(userData(const QString&, uint, uint)));
-	connect(mDriver, SIGNAL(joinRoom(const QString&, const NRoom&)), SIGNAL(joinedRoom(const QString&, const NRoom&)));
-	connect(mDriver, SIGNAL(joinRoom(const QString&, const NRoom&)), SLOT(slotJoinedRoom(const QString&, const NRoom&)));
+	connect(mDriver, SIGNAL(userData(const QString&, uint, uint, const QString&)), SIGNAL(userData(const QString&, uint, uint, const QString&)));
+	connect(mDriver, SIGNAL(joinRoom(const QString&, const NRoom&, const QString&, const QStringList&)), SIGNAL(joinedRoom(const QString&, const NRoom&, const QString&, const QStringList&)));
 	connect(mDriver, SIGNAL(leaveRoom(const QString&)), SIGNAL(leftRoom(const QString&)));
 	connect(mDriver, SIGNAL(leaveRoom(const QString&)), SLOT(slotLeftRoom(const QString&)));
 	connect(mDriver, SIGNAL(userJoined(const QString&, const QString&, const NUserData&)), SIGNAL(userJoinedRoom(const QString&, const QString&, const NUserData&)));
@@ -106,8 +105,19 @@ Museeq::Museeq(QApplication * app)
 
 	connect(mDriver, SIGNAL(roomTickers(const QString&, const NTickers&)), SIGNAL(roomTickers(const QString&, const NTickers&)));
 	connect(mDriver, SIGNAL(roomTickerSet(const QString&, const QString&, const QString&)), SIGNAL(roomTickerSet(const QString&, const QString&, const QString&)));
+	connect(mDriver, SIGNAL(roomMembers(const NRooms&, const NPrivRoomOperators&, const NPrivRoomOwners&)), SLOT(slotRoomMembers(const NRooms&, const NPrivRoomOperators&, const NPrivRoomOwners&)));
+	connect(mDriver, SIGNAL(roomsTickers(const NTickerMap&)), SIGNAL(roomsTickers(const NTickerMap&)));
 
 	connect(mDriver, SIGNAL(transferRemove(bool, const QString&, const QString&)), SLOT(slotTransferRemoved(bool, const QString&, const QString&)));
+
+	connect(mDriver, SIGNAL(privRoomToggled(bool)), SIGNAL(privRoomToggled(bool)));
+	connect(mDriver, SIGNAL(privRoomList(const NPrivRoomList&)), SLOT(privRoomListReceived(const NPrivRoomList&)));
+	connect(mDriver, SIGNAL(privRoomAlterableMembers(const QString&, const QStringList&)), SLOT(receivedPrivRoomAlterableMembers(const QString&, const QStringList&)));
+	connect(mDriver, SIGNAL(privRoomAlterableOperators(const QString&, const QStringList&)), SLOT(receivedPrivRoomAlterableOperators(const QString&, const QStringList&)));
+	connect(mDriver, SIGNAL(privRoomAddedUser(const QString&, const QString&)), SLOT(privRoomAddedUser(const QString&, const QString&)));
+	connect(mDriver, SIGNAL(privRoomRemovedUser(const QString&, const QString&)), SLOT(privRoomRemovedUser(const QString&, const QString&)));
+	connect(mDriver, SIGNAL(privRoomAddedOperator(const QString&, const QString&)), SLOT(privRoomAddedOperator(const QString&, const QString&)));
+	connect(mDriver, SIGNAL(privRoomRemovedOperator(const QString&, const QString&)), SLOT(privRoomRemovedOperator(const QString&, const QString&)));
 
 	QString s = mSettings->value("IconTheme").toString();
 	if (s.isEmpty())
@@ -615,6 +625,38 @@ void Museeq::slotTransferRemoved(bool isUpload, const QString& user, const QStri
 		emit downloadRemoved(user, path);
 }
 
+void Museeq::receivedPrivRoomAlterableMembers(const QString& room, const QStringList& members) {
+    mPrivRoomAlterableMembers[room] = members;
+}
+
+void Museeq::receivedPrivRoomAlterableOperators(const QString& room, const QStringList& operators) {
+    mPrivRoomAlterableOperators[room] = operators;
+}
+
+void Museeq::privRoomAddedUser(const QString& room, const QString& user) {
+    mPrivRoomAlterableMembers[room].push_back(user);
+}
+
+void Museeq::privRoomRemovedUser(const QString& room, const QString& user) {
+    int index = mPrivRoomAlterableMembers[room].indexOf(user);
+    if ((index < 0) || index >= mPrivRoomAlterableMembers[room].size()) // Didn't find
+        return;
+
+    mPrivRoomAlterableMembers[room].removeAt(index);
+}
+
+void Museeq::privRoomAddedOperator(const QString& room, const QString& user) {
+    mPrivRoomAlterableOperators[room].push_back(user);
+}
+
+void Museeq::privRoomRemovedOperator(const QString& room, const QString& user) {
+    int index = mPrivRoomAlterableOperators[room].indexOf(user);
+    if ((index < 0) || index >= mPrivRoomAlterableOperators[room].size()) // Didn't find
+        return;
+
+    mPrivRoomAlterableOperators[room].removeAt(index);
+}
+
 void Museeq::setConfig(const QString& domain, const QString& key, const QString& value) {
 	mDriver->setConfig(domain, key, value);
 }
@@ -923,4 +965,45 @@ int main(int argc, char **argv) {
 
 	return app.exec();
 
+}
+
+void Museeq::privRoomListReceived(const NPrivRoomList& list) {
+    m_privRoomListCache = list;
+    emit privRoomList(list);
+}
+
+NPrivRoomList Museeq::getPrivRoomList() {
+    return m_privRoomListCache;
+}
+
+bool Museeq::isRoomOperated(const QString& room) {
+    return (m_privRoomListCache.contains(room) && (m_privRoomListCache[room].second >= 1));
+}
+
+bool Museeq::isRoomOwned(const QString& room) {
+    return (m_privRoomListCache.contains(room) && (m_privRoomListCache[room].second == 2));
+}
+
+bool Museeq::isRoomPrivate(const QString& room) {
+    return (m_privRoomListCache.contains(room));
+}
+
+bool Museeq::canAddAsMember(const QString& room, const QString& user) { // A room where we're op without this user or if user == ourself
+    bool ourSelf = (user == nickname());
+    return (isRoomOperated(room) && !ourSelf && !mPrivRoomAlterableMembers[room].contains(user));
+}
+
+bool Museeq::canDismember(const QString& room, const QString& user) { // A room where we're op with this user as simple member (not op) or with this user != ourself
+    bool ourSelf = (user == nickname());
+    return (!ourSelf && isRoomOperated(room) && mPrivRoomAlterableMembers[room].contains(user) && !mPrivRoomAlterableOperators[room].contains(user));
+}
+
+bool Museeq::canAddAsOperator(const QString& room, const QString& user) { // A room where we're op with this user as simple member (not op)
+    bool ourSelf = (user == nickname());
+    return (!ourSelf && isRoomOwned(room) && mPrivRoomAlterableMembers[room].contains(user) && !mPrivRoomAlterableOperators[room].contains(user));
+}
+
+bool Museeq::canDisop(const QString& room, const QString& user) { // A room where we're op with this user as op or with this user == ourself
+    bool ourSelf = (user == nickname());
+    return (!ourSelf && isRoomOperated(room) && mPrivRoomAlterableOperators[room].contains(user));
 }

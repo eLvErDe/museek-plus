@@ -108,7 +108,7 @@ public:
 	QLineEdit* SRemoteText, * SNicknameText, * STrustedText, * SBannedText, * STimeText, * SMessageFont, * SMeText, * STimeFont, * SBuddiedText;
 
 	QSpinBox* CPortStart, * CPortEnd, * TickerLength;
-	QCheckBox* SBuddiesPrivileged, * SOnlineAlerts,* SShareBuddiesOnly, * STrustedUsers, * SBuddiesShares, * SIPLog, * LoggingPrivate, * LoggingRooms, * IconsAlignment, * mToggleTickers, * mToggleCountry, * mToggleLog, * mToggleTimestamps, * mToggleTrayicon;
+	QCheckBox* SBuddiesPrivileged, * SOnlineAlerts,* SShareBuddiesOnly, * STrustedUsers, * SPrivRoom, * SBuddiesShares, * SIPLog, * LoggingPrivate, * LoggingRooms, * IconsAlignment, * mToggleTickers, * mToggleCountry, * mToggleLog, * mToggleTimestamps, * mToggleTrayicon;
 	QTreeWidget* ListNormalShares, * ListBuddyShares;
 
     QComboBox * mDAddress, * mDConnectType;
@@ -161,6 +161,10 @@ public slots:
 	void slotAddressActivated(const QString&);
 	void slotAddressChanged(const QString&);
 
+	bool getPrivRoomEnabled();
+	void setPrivRoomEnabled(bool);
+	void setPrivRoomEnabledFromServer(bool);
+
 	virtual void color_text_me();
 	virtual void color_text_buddied();
 	virtual void color_text_nickname();
@@ -208,7 +212,7 @@ protected:
 	void closeEvent(QCloseEvent *);
 
 private:
-    bool mSharesDirty;
+    bool mSharesDirty, mPrivRoomEnabled;
     QLabel * mHostLabel, * mDPasswordLabel, * mConfigFileLabel;
     QProcess * mSetupProc;
 };

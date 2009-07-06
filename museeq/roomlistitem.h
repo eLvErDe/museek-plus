@@ -27,12 +27,12 @@ class RoomListView;
 
 class RoomListItem : public QTreeWidgetItem {
 public:
-	RoomListItem(RoomListView*, const QString&, unsigned int);
+	RoomListItem(RoomListView*, const QString&, unsigned int, const QString&);
 
 	QString room() const;
 	bool operator<(const QTreeWidgetItem & other) const;
 private:
-	QString mRoom;
+	QString mRoom, mStatus;
 	unsigned int mUsers;
 };
 

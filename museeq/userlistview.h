@@ -48,6 +48,8 @@ public:
 public slots:
 	void setComments(const QString&, const QString&);
 	void setCountry(const QString&, const QString&);
+	void setOperator(const QString&, bool);
+	void setOwner(const QString&, bool);
 	void add(const QString&, uint = 0, uint = 0, uint = 0, const QString& = QString::null, const QString& = QString::null);
 	void add(const QString&, const QString&);
 	void remove(const QString&);

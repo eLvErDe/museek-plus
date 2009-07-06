@@ -76,6 +76,15 @@ public:
 	inline const QStringList& joinedRooms() const { return mJoinedRooms; }
 	inline bool isJoined(const QString& r) const { return mJoinedRooms.contains(r); }
 
+    bool isRoomOperated(const QString&);
+    bool isRoomOwned(const QString&);
+    bool isRoomPrivate(const QString&);
+    NPrivRoomList getPrivRoomList();
+    bool canAddAsMember(const QString&, const QString&);
+    bool canDismember(const QString&, const QString&);
+    bool canAddAsOperator(const QString&, const QString&);
+    bool canDisop(const QString&, const QString&);
+
 	const QMap<QString, QString>& protocolHandlers() const { return mProtocolHandlers; }
 	QString mColorBanned, mColorBuddied, mColorTime, mColorMe, mColorNickname, mColorTrusted, mColorRemote, mFontTime, mFontMessage, mIconTheme, mPrivateLogDir, mRoomLogDir;
 	bool isAway() const { return mAway; }
@@ -141,6 +150,8 @@ public slots:
 	void messageUsers(const QString&, const QStringList&);
 	void setTicker(const QString&, const QString&);
 	void slotUserExists(const QString&);
+
+	void privRoomListReceived(const NPrivRoomList&);
 
 	void updateTransfer(const QString&, const QString&);
 	void downloadFile(const QString&, const QString&, qint64);
@@ -220,7 +231,7 @@ signals:
 
 	// Chat related signals
 	void roomList(const NRoomList&);
-	void joinedRoom(const QString&, const NRoom&);
+	void joinedRoom(const QString&, const NRoom&, const QString&, const QStringList&);
 	void leftRoom(const QString&);
 
 	void userJoinedRoom(const QString&, const QString&, const NUserData&);
@@ -230,9 +241,14 @@ signals:
 	void autoJoin(const QString&, bool);
 	void roomTickers(const QString&, const NTickers&);
 	void roomTickerSet(const QString&, const QString&, const QString&);
+	void roomMembers(const NRooms&, const NPrivRoomOperators&, const NPrivRoomOwners&);
+	void roomsTickers(const NTickerMap&);
 	void showAllTickers();
 	void hideAllTickers();
 	void privateMessage(uint, uint, const QString&, const QString&);
+
+	void privRoomToggled(bool);
+	void privRoomList(const NPrivRoomList&);
 
 	// Interests & Recommendations
 	void Recommendations(const NGlobalRecommendations&);
@@ -263,23 +279,31 @@ signals:
 	void userInterests(const QString&, const QStringList&, const QStringList&);
 	void userShares(const QString&, const NShares&);
 
+	void toggleCountries(bool);
+
 protected slots:
 	void slotConnectionClosed();
 	void slotError(QAbstractSocket::SocketError);
 
 	void slotLoggedIn(bool, const QString&);
 	void slotServerState(bool, const QString&);
-	void slotRoomState(const NRoomList&, const NRooms&, const NTickerMap&);
+	void slotRoomMembers(const NRooms&, const NPrivRoomOperators&, const NPrivRoomOwners&);
 	void slotTransferState(const NTransfers&, const NTransfers&);
 	void slotTransferUpdate(bool, const NTransfer&);
 	void slotConfigState(const QMap<QString, QMap<QString, QString> >&);
 	void slotConfigSet(const QString&, const QString&, const QString&);
 	void slotConfigRemove(const QString&, const QString&);
-	void slotJoinedRoom(const QString&, const NRoom&);
 	void slotLeftRoom(const QString&);
 
 	void slotTransferRemoved(bool, const QString&, const QString&);
 	void slotStatusSet(uint);
+
+    void receivedPrivRoomAlterableMembers(const QString&, const QStringList&);
+    void receivedPrivRoomAlterableOperators(const QString&, const QStringList&);
+    void privRoomAddedUser(const QString&, const QString&);
+    void privRoomRemovedUser(const QString&, const QString&);
+    void privRoomAddedOperator(const QString&, const QString&);
+    void privRoomRemovedOperator(const QString&, const QString&);
 
 	void slotTrayIconActivated(QSystemTrayIcon::ActivationReason);
 
@@ -295,6 +319,9 @@ private:
 	QStringList mBanned, mIgnored, mTrusted, mAutoJoin, mJoinedRooms, mLovedInterests, mHatedInterests, mWishlist;
 	QMap<QString, QString> mBuddies;
 	QMap<QString, OnlineAlert *> mAlerts;
+
+	NPrivRoomList m_privRoomListCache;
+	QMap<QString, QStringList> mPrivRoomAlterableMembers, mPrivRoomAlterableOperators;
 
 	MainWindow* mMainWin;
 

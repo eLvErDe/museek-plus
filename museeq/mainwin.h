@@ -102,6 +102,13 @@ public slots:
 
 	void givePrivileges(const QString&);
 
+	void doPrivRoomAddUser(const QString& room, const QString& user);
+	void doPrivRoomRemoveUser(const QString& room, const QString& user);
+	void doPrivRoomDismember(const QString& room);
+	void doPrivRoomDisown(const QString& room);
+	void doPrivRoomAddOperator(const QString& room, const QString& user);
+	void doPrivRoomRemoveOperator(const QString& room, const QString& user);
+
 	void startSearch(const QString&);
 	void showPrivateChat(const QString&);
 	void showUserInfo(const QString&);

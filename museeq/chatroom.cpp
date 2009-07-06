@@ -257,6 +257,17 @@ void ChatRoom::setUsers(const NRoom& r) {
 	mChatPanel->entry()->setCompletors(users);
 }
 
+void ChatRoom::setOperators(const QStringList& ops) {
+    QStringList::const_iterator it = ops.begin();
+    for (; it != ops.end(); it++) {
+        mUserList->setOperator(*it, true);
+    }
+}
+
+void ChatRoom::setOwner(const QString& ow) {
+    mUserList->setOwner(ow, true);
+}
+
 void ChatRoom::userJoined(const QString& _u, const NUserData& _data) {
 	if(mUserList->findItem(_u))
 		return;

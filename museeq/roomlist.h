@@ -26,8 +26,10 @@
 #include <QWidget>
 
 class QLineEdit;
+class QCheckBox;
 class RoomListView;
 class QShowEvent;
+class QPushButton;
 
 class RoomList : public QWidget {
 	Q_OBJECT
@@ -42,6 +44,8 @@ protected slots:
 
 private:
 	QLineEdit *mEntry;
+	QCheckBox *mPrivate;
+	QPushButton *mCreate;
 	RoomListView *mRoomList;
 };
 

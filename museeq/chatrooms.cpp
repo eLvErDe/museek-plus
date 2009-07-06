@@ -32,13 +32,15 @@ ChatRooms::ChatRooms(QWidget* parent, const char* name)
 
 	connect(museeq, SIGNAL(disconnected()), SLOT(clear()));
 
-	connect(museeq, SIGNAL(joinedRoom(const QString&, const NRoom&)), SLOT(joined(const QString&, const NRoom&)));
+	connect(museeq, SIGNAL(joinedRoom(const QString&, const NRoom&, const QString&, const QStringList&)), SLOT(joined(const QString&, const NRoom&, const QString&, const QStringList&)));
 	connect(museeq, SIGNAL(leftRoom(const QString&)), SLOT(left(const QString&)));
 	connect(museeq, SIGNAL(saidChatroom(const QString&, const QString&, const QString&)), SLOT(append(const QString&, const QString&, const QString&)));
 	connect(museeq, SIGNAL(userJoinedRoom(const QString&, const QString&, const NUserData&)), SLOT(userJoined(const QString&, const QString&, const NUserData&)));
 	connect(museeq, SIGNAL(userLeftRoom(const QString&, const QString&)), SLOT(userLeft(const QString&, const QString&)));
 	connect(museeq, SIGNAL(roomTickers(const QString&, const NTickers&)), SLOT(setTickers(const QString&, const NTickers&)));
+	connect(museeq, SIGNAL(roomsTickers(const NTickerMap&)), SLOT(setTickersForAllRooms(const NTickerMap&)));
 	connect(museeq, SIGNAL(roomTickerSet(const QString&, const QString&, const QString&)), SLOT(setTicker(const QString&, const QString&, const QString&)));
+	connect(this, SIGNAL(currentChanged(QWidget*)), SLOT(doCurrentChanged(QWidget*)));
 }
 
 void ChatRooms::clear() {
@@ -46,22 +48,25 @@ void ChatRooms::clear() {
 		delete widget(1);
 }
 
-void ChatRooms::joined(const QString& room, const NRoom& r) {
+void ChatRooms::joined(const QString& room, const NRoom& r, const QString& owner, const QStringList& ops) {
 	for(int ix = 1; ix < count(); ++ix) {
 		ChatRoom* _room = dynamic_cast<ChatRoom*>(widget(ix));
 		if(_room && _room->room() == room) {
 			_room->setUsers(r);
+			_room->setOperators(ops);
+			_room->setOwner(owner);
 			return;
 		}
 	}
 
 	ChatRoom* _room = new ChatRoom(room, this, false);
 	addTab(_room, room);
+	setCurrentWidget(_room);
 	connect(_room, SIGNAL(highlight(int, QWidget*)), this, SIGNAL(highlight(int)));
 	_room->setUsers(r);
+    _room->setOperators(ops);
+    _room->setOwner(owner);
 	connect(_room, SIGNAL(highlight(int, QWidget*)), this, SLOT(setHighlight(int, QWidget*)));
-
-	connect(this, SIGNAL(currentChanged(QWidget*)), SLOT(doCurrentChanged(QWidget*)));
 }
 
 void ChatRooms::left(const QString& room) {
@@ -118,6 +123,12 @@ void ChatRooms::setTickers(const QString& room, const NTickers& tickers) {
 			break;
 		}
 	}
+}
+
+void ChatRooms::setTickersForAllRooms(const NTickerMap& tickers) {
+    NTickerMap::const_iterator it = tickers.begin();
+	for(; it != tickers.end(); ++it)
+		setTickers(it.key(), it.value());
 }
 
 void ChatRooms::setTicker(const QString& room, const QString& user, const QString& message) {

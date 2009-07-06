@@ -45,6 +45,8 @@ public slots:
 
 	// Userlist slots
 	void setUsers(const NRoom&);
+	void setOperators(const QStringList&);
+	void setOwner(const QString&);
 	void userJoined(const QString&, const NUserData&);
 	void userLeft(const QString&);
 

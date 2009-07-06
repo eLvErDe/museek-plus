@@ -164,6 +164,19 @@ void UserListView::setCountry(const QString& _u, const QString& _c) {
 	item->setCountry(_c);
 }
 
+void UserListView::setOperator(const QString& _u, bool _o) {
+	UserListItem *item = findItem(_u);
+	if(! item)
+		return;
+	item->setOperator(_o);
+}
+
+void UserListView::setOwner(const QString& _u, bool _o) {
+	UserListItem *item = findItem(_u);
+	if(! item)
+		return;
+	item->setOwner(_o);
+}
 
 void UserListView::add(const QString& _u, uint _st, uint _s, uint _f, const QString& _c, const QString& _co) {
 	UserListItem *item = findItem(_u);

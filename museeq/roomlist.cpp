@@ -25,6 +25,8 @@
 #include <QLayout>
 #include <QLabel>
 #include <QLineEdit>
+#include <QCheckBox>
+#include <QPushButton>
 
 RoomList::RoomList(QWidget* _p, const char* _n)
          : QWidget(_p) {
@@ -37,13 +39,24 @@ RoomList::RoomList(QWidget* _p, const char* _n)
 	QHBoxLayout *layout = new QHBoxLayout;
 	MainLayout->addLayout(layout);
 
-	QLabel *label = new QLabel(tr("Create:"), this);
+	QLabel *label = new QLabel(tr("Create a new room:"), this);
 	layout->addWidget(label);
 	mEntry = new QLineEdit(this);
+	mEntry->setMaxLength(24);
 	layout->addWidget(mEntry);
+
+    mPrivate = new QCheckBox(tr("Private"), this);
+    mPrivate->setChecked(false);
+	layout->addWidget(mPrivate);
+
+	mCreate = new QPushButton(tr("Create"), this);
+	layout->addWidget(mCreate);
+
+    layout->addStretch();
 
 
 	connect(mEntry, SIGNAL(returnPressed()), SLOT(slotJoinRoom()));
+	connect(mCreate, SIGNAL(clicked()), SLOT(slotJoinRoom()));
 }
 
 void RoomList::slotJoinRoom() {
@@ -51,7 +64,7 @@ void RoomList::slotJoinRoom() {
 	if(s.isEmpty())
 		return;
 	mEntry->setText(QString::null);
-	museeq->joinRoom(s);
+	museeq->joinRoom(s, mPrivate->isChecked());
 }
 
 void RoomList::showEvent(QShowEvent*) {

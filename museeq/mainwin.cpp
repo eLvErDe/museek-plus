@@ -320,8 +320,8 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(0, 0), m
 	QObject::connect(mIcons, SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), SLOT(changePage(QListWidgetItem*, QListWidgetItem*)));
 
 	connect(museeq->driver(), SIGNAL(userStatus(const QString&, uint)), SLOT(slotUserStatus(const QString&, uint)));
-	mLog = new QTextEdit(split);
 
+	mLog = new QTextEdit(split);
 	mLog->setReadOnly(true);
 	mLog->setAcceptRichText(true);
 	mLog->setFocusPolicy(Qt::NoFocus);
@@ -927,6 +927,11 @@ void MainWindow::saveSettings() {
 	else
         museeq->setConfig("transfers", "trusting_uploads", "false");
 
+    if (mSettingsDialog->SPrivRoom->isChecked() != mSettingsDialog->getPrivRoomEnabled()) {
+        mSettingsDialog->setPrivRoomEnabled(mSettingsDialog->SPrivRoom->isChecked());
+        museeq->driver()->doPrivRoomToggle(mSettingsDialog->getPrivRoomEnabled());
+    }
+
 	// listen ports
 	QVariant ps (mSettingsDialog->CPortStart->value());
 	museeq->setConfig("clients.bind", "first", ps.toString());
@@ -1052,7 +1057,7 @@ void MainWindow::displayAboutQt() {
 	QMessageBox::aboutQt(this, tr("About Qt"));
 }
 void MainWindow::displayCommandsDialog() {
-	QMessageBox::information(this, tr("Museeq commands"), tr("<h3>While in a chat window, such as a chat room, or a private chat, there are a number of commands available for use.</h3><b>/c /chat</b>   <i>(Switch to chat rooms)</i><br><b>/pm /private</b> &lt;nothing | username&gt;  <i>(Switch to private chat and start chatting with a user, if inputed)</i><br><b>/transfers</b>   <i>(Switch to transfers)</i><br><b>/s /search</b> &lt;nothing | query>   <i>(Switch to searches and start a search with &lt;query&gt; if inputed)</i><br><b>/u /userinfo</b> &lt;username&gt;   <i>(Switch to user info, and attempt to get a user's info, if inputed)</i><br><b>/b /browse</b> &lt;username&gt;    <i>(Switch to browse and initate browsing a user, if inputed)</i><br><b>/ip</b> &lt;username&gt;   <i>(Get the IP of a user)</i><br><b>/log</b>    <i>(Toggle displaying the special message Log)</i><br><b>/t /ticker /tickers</b>   <i>(Toggle the showing of tickers)</i><br><b>/setticker</b> &lt;short text&gt; <i>(Set the inputed text as ticker for the current room)</i> <br><b>/f /fonts /colors</b>   <i>(Open the fonts and colors settings dialog)</i><br><b>/clear</b><i> (Clear the chat history)</i><br><b>/ban /unban</b> &lt;username&gt;   <i>(Disallow/allow a user to receive your shares and download from you)</i><br><b>/ignore /unignore</b> &lt;username&gt;    <i>(Block/unblock chat messages from a user)</i><br><b>/buddy /unbuddy</b> &lt;username&gt;   <i>(Add/remove a user to keep track of it and add comments about it)</i><br><b>/trust /distrust</b> &lt;username&gt;    <i>(Add/remove a user to the optional list of users who can send files to you)</i><br><b>/me</b> <does something>    <i>(Say something in the third-person)</i><br><b>/slap</b> &lt;username&gt;   <i>(Typical trout-slapping)</i><br><b>/j /join</b> &lt;room&gt;    <i>(Join a chat room)</i><br><b>/l /p /leave /part</b> &lt;nothing | room&gt;    <i>(Leave the current room or inputed room)</i><br><b>/about /help /commands</b>    <i>(Display information)</i><br><b>/settings</b>    <i>(Display settings dialog)</i><br><br>Do not type the brackets, they are there only to make clear that something (or nothing) can be typed after the /command."));
+	QMessageBox::information(this, tr("Museeq commands"), tr("<h3>While in a chat window, such as a chat room, or a private chat, there are a number of commands available for use.</h3><b>/c /chat</b>   <i>(Switch to chat rooms)</i><br><b>/pm /private</b> &lt;nothing | username&gt;  <i>(Switch to private chat and start chatting with a user, if inputed)</i><br><b>/transfers</b>   <i>(Switch to transfers)</i><br><b>/s /search</b> &lt;nothing | query>   <i>(Switch to searches and start a search with &lt;query&gt; if inputed)</i><br><b>/u /userinfo</b> &lt;username&gt;   <i>(Switch to user info, and attempt to get a user's info, if inputed)</i><br><b>/b /browse</b> &lt;username&gt;    <i>(Switch to browse and initate browsing a user, if inputed)</i><br><b>/ip</b> &lt;username&gt;   <i>(Get the IP of a user)</i><br><b>/log</b>    <i>(Toggle displaying the special message Log)</i><br><b>/t /ticker /tickers</b>   <i>(Toggle the showing of tickers)</i><br><b>/setticker</b> &lt;short text&gt; <i>(Set the inputed text as ticker for the current room)</i> <br><b>/f /fonts /colors</b>   <i>(Open the fonts and colors settings dialog)</i><br><b>/clear</b><i> (Clear the chat history)</i><br><b>/ban /unban</b> &lt;username&gt;   <i>(Disallow/allow a user to receive your shares and download from you)</i><br><b>/ignore /unignore</b> &lt;username&gt;    <i>(Block/unblock chat messages from a user)</i><br><b>/buddy /unbuddy</b> &lt;username&gt;   <i>(Add/remove a user to keep track of it and add comments about it)</i><br><b>/trust /distrust</b> &lt;username&gt;    <i>(Add/remove a user to the optional list of users who can send files to you)</i><br><b>/me</b> <does something>    <i>(Say something in the third-person)</i><br><b>/slap</b> &lt;username&gt;   <i>(Typical trout-slapping)</i><br><b>/j /join</b> &lt;room&gt;    <i>(Join a chat room)</i><br><b>/jp /joinpriv</b> &lt;room&gt;    <i>(Join a private chat room)</i><br><b>/l /p /leave /part</b> &lt;nothing | room&gt;    <i>(Leave the current room or inputed room)</i><br><b>/about /help /commands</b>    <i>(Display information)</i><br><b>/settings</b>    <i>(Display settings dialog)</i><br><br>Do not type the brackets, they are there only to make clear that something (or nothing) can be typed after the /command."));
 }
 
 void MainWindow::displayHelpDialog() {
@@ -1091,6 +1096,36 @@ void MainWindow::checkPrivileges() {
 
 void MainWindow::getOwnShares() {
 	showBrowser(museeq->nickname());
+}
+
+void MainWindow::doPrivRoomAddUser(const QString& room, const QString& user)
+{
+    museeq->driver()->doPrivRoomAddUser(room, user);
+}
+
+void MainWindow::doPrivRoomRemoveUser(const QString& room, const QString& user)
+{
+    museeq->driver()->doPrivRoomRemoveUser(room, user);
+}
+
+void MainWindow::doPrivRoomDismember(const QString& room)
+{
+    museeq->driver()->doPrivRoomDismember(room);
+}
+
+void MainWindow::doPrivRoomDisown(const QString& room)
+{
+    museeq->driver()->doPrivRoomDisown(room);
+}
+
+void MainWindow::doPrivRoomAddOperator(const QString& room, const QString& user)
+{
+    museeq->driver()->doPrivRoomAddOperator(room, user);
+}
+
+void MainWindow::doPrivRoomRemoveOperator(const QString& room, const QString& user)
+{
+    museeq->driver()->doPrivRoomRemoveOperator(room, user);
 }
 
 void MainWindow::slotPrivilegesLeft(uint seconds) {

@@ -187,6 +187,8 @@ void PrivateChat::slotSend(const QString& line_) {
             mChatPanel->append(QString::null, "/me slaps "+user()+" around with a large trout");
         } else if((cmd == "j" || cmd == "join") && ! s.empty())
             museeq->joinRoom(s.join(" "));
+        else if((cmd == "jp" || cmd == "joinpriv") && ! s.empty()) // Private room
+            museeq->joinRoom(s.join(" "), true);
         else if(cmd == "settings")
             museeq->mainwin()->changeSettings();
         else if(cmd == "log")

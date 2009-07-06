@@ -30,6 +30,7 @@ public:
 	QString user() const;
 	void setup(const QString&);
 	QAction * ActionPrivate, * ActionUserInfo, * ActionUserShares, * ActionGivePrivileges, * ActionBuddy, * ActionBan, * ActionTrust, * ActionIgnore, * ActionIp, * ActionAlert, * ActionComments;
+	QMenu *mMenuPrivMember, *mMenuPrivOperator, *mMenuPrivOwner;
 public slots:
 	void exec(const QString&);
 	void exec(const QString&, const QPoint&);
@@ -46,6 +47,9 @@ protected slots:
 	void slotAlert();
 	void slotPrivileges();
 	void slotComments();
+	void switchPrivMember(QAction*);
+	void switchPrivOperator(QAction*);
+	void switchPrivOwner(QAction*);
 
 private:
 	QString mUser;
