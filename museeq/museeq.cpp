@@ -70,7 +70,6 @@ Museeq::Museeq(QApplication * app)
 	connect(mDriver, SIGNAL(serverState(bool, const QString&)), SLOT(slotServerState(bool, const QString&)));
 	connect(mDriver, SIGNAL(statusSet(uint)), SLOT(slotStatusSet(uint)));
 
-	connect(mDriver, SIGNAL(roomState(const NRoomList&, const NRooms&, const NTickerMap&)), SLOT(slotRoomState(const NRoomList&, const NRooms&, const NTickerMap&)));
 	connect(mDriver, SIGNAL(transferState(const NTransfers&, const NTransfers&)), SLOT(slotTransferState(const NTransfers&, const NTransfers&)));
 	connect(mDriver, SIGNAL(transferUpdate(bool, const NTransfer&)), SLOT(slotTransferUpdate(bool, const NTransfer&)));
 	connect(mDriver, SIGNAL(configState(const QMap<QString, QMap<QString, QString> >&)), SLOT(slotConfigState(const QMap<QString, QMap<QString, QString> >&)));
@@ -210,20 +209,14 @@ void Museeq::slotServerState(bool connected, const QString& nick) {
 	}
 }
 
-void Museeq::slotRoomState(const NRoomList& list, const NRooms& rooms, const NTickerMap& tickers) {
-	emit roomList(list);
-
+void Museeq::slotRoomMembers(const NRooms& rooms, const NPrivRoomOperators& operators, const NPrivRoomOwners& owners) {
 	mJoinedRooms.clear();
 
 	NRooms::const_iterator it = rooms.begin();
 	for(; it != rooms.end(); ++it) {
 		mJoinedRooms << it.key();
-		emit joinedRoom(it.key(), it.value());
+		emit joinedRoom(it.key(), it.value(), owners[it.key()], operators[it.key()]);
 	}
-
-	NTickerMap::const_iterator tit = tickers.begin();
-	for(; tit != tickers.end(); ++tit)
-		emit roomTickers(tit.key(), tit.value());
 }
 
 void Museeq::slotTransferState(const NTransfers& downloads, const NTransfers& uploads) {
@@ -353,17 +346,15 @@ void Museeq::slotConfigRemove(const QString& domain, const QString& key) {
 	}
 }
 
-void Museeq::slotJoinedRoom(const QString& room, const NRoom&) {
-	mJoinedRooms << room;
-}
-
 void Museeq::slotLeftRoom(const QString& room) {
 	if (mJoinedRooms.indexOf(room) != -1)
 		mJoinedRooms.removeAt(mJoinedRooms.indexOf(room));
 }
+
 void Museeq::startDaemon() {
 	mMainWin->doDaemon();
 }
+
 void Museeq::stopDaemon() {
     driver()->disconnect();
 	mMainWin->stopDaemon();
@@ -452,8 +443,8 @@ void Museeq::removeTrusted(const QString& user) {
 	mDriver->removeConfig("trusted", user);
 }
 
-void Museeq::joinRoom(const QString& room) {
-	mDriver->doJoinRoom(room);
+void Museeq::joinRoom(const QString& room, bool priv) {
+	mDriver->doJoinRoom(room, priv);
 }
 
 void Museeq::leaveRoom(const QString& room) {
@@ -496,6 +487,21 @@ void Museeq::sayPrivate(const QString& user, const QString& line) {
 #endif //HAVE_QTSCRIPT
 	if(! _line.isEmpty())
 		mDriver->doSendPrivateMessage(user, _line);
+}
+
+void Museeq::messageBuddies(const QString& line) {
+	if(! line.isEmpty())
+		mDriver->doMessageBuddies(line);
+}
+
+void Museeq::messageDownloadingUsers(const QString& line) {
+	if(! line.isEmpty())
+		mDriver->doMessageDownloadingUsers(line);
+}
+
+void Museeq::messageUsers(const QString& line, const QStringList& users) {
+	if(! line.isEmpty())
+		mDriver->doMessageUsers(line, users);
 }
 
 void Museeq::downloadFile(const QString& user, const QString& path, qint64 size) {

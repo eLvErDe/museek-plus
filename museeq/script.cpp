@@ -236,7 +236,7 @@ void Script::addInputHandler(const QString& callback) {
   */
 QString Script::handleInput(bool privateMessage, const QString& target, QString line) {
 #ifdef HAVE_QTSCRIPT
-    QList<QString>::iterator it, end = mInputHandlers.end();
+    QStringList::iterator it, end = mInputHandlers.end();
     for(it = mInputHandlers.begin(); it != end; ++it)
     {
         QScriptValueList args;

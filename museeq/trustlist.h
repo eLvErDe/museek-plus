@@ -26,6 +26,7 @@
 class QShowEvent;
 class UserListView;
 class QLineEdit;
+class QPushButton;
 class QUrl;
 
 class TrustList : public QWidget {
@@ -43,10 +44,13 @@ protected slots:
 	void addTrusted();
 	void editComments(const QString&);
 	void slotDropSlsk(const QList<QUrl>&);
+	void sendMessageToAll();
+	void trustListChanged();
 
 private:
 	UserListView* mUserList;
 	QLineEdit* mEntry;
+	QPushButton * mAdd, * mSendMessageToAll;
 };
 
 #endif // TRUSTLIST_H

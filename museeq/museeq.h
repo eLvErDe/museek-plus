@@ -114,7 +114,7 @@ public slots:
 	void removeTrusted(const QString&);
 	void editComments(const QString&);
 
-	void joinRoom(const QString&);
+	void joinRoom(const QString&, bool = false);
 	void leaveRoom(const QString&);
 
 	void addWishItem(const QString&);
@@ -136,6 +136,9 @@ public slots:
 	void setAutoJoin(const QString&, bool);
 	void sayRoom(const QString&, const QString&);
 	void sayPrivate(const QString&, const QString&);
+	void messageBuddies(const QString&);
+	void messageDownloadingUsers(const QString&);
+	void messageUsers(const QString&, const QStringList&);
 	void setTicker(const QString&, const QString&);
 	void slotUserExists(const QString&);
 
@@ -199,7 +202,7 @@ signals:
 	// User status and statistics
 	void userStatus(const QString&, uint);
 	void doUpdateStatus(const QString&);
-	void userData(const QString&, uint, uint);
+	void userData(const QString&, uint, uint, const QString&);
 
 	// Buddy list signals
 	void sortingEnabled(bool);

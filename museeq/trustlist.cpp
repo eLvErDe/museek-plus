@@ -26,6 +26,7 @@
 
 #include <QLabel>
 #include <QLineEdit>
+#include <QPushButton>
 #include <QInputDialog>
 #include <QUrl>
 #include <QLayout>
@@ -39,6 +40,8 @@ TrustList::TrustList(QWidget* _p, const char* _n)
 	connect(mUserList, SIGNAL(dropSlsk(const QList<QUrl>&)), SLOT(slotDropSlsk(const QList<QUrl>&)));
 	connect(museeq, SIGNAL(addedTrusted(const QString&, const QString&)), mUserList, SLOT(add(const QString&, const QString&)));
 	connect(museeq, SIGNAL(removedTrusted(const QString&)), mUserList, SLOT(remove(const QString&)));
+	connect(museeq, SIGNAL(addedTrusted(const QString&, const QString&)), this, SLOT(trustListChanged()));
+	connect(museeq, SIGNAL(removedTrusted(const QString&)), this, SLOT(trustListChanged()));
 	connect(museeq, SIGNAL(disconnected()), mUserList, SLOT(clear()));
 
 	QVBoxLayout *MainLayout = new QVBoxLayout(this);
@@ -47,12 +50,27 @@ TrustList::TrustList(QWidget* _p, const char* _n)
 	QHBoxLayout *layout = new QHBoxLayout;
 	MainLayout->addLayout(layout);
 
-	QLabel *label = new QLabel(tr("Add:"), this);
+	QLabel *label = new QLabel(tr("Trust a new user:"), this);
 	layout->addWidget(label);
 	mEntry = new QLineEdit(this);
 	layout->addWidget(mEntry);
 
+	mAdd = new QPushButton(tr("Add"), this);
+	layout->addWidget(mAdd);
+
+    layout->addStretch();
+
+	mSendMessageToAll = new QPushButton(tr("Send a message to all trusted users"), this);
+	mSendMessageToAll->setEnabled(false);
+	layout->addWidget(mSendMessageToAll);
+
 	connect(mEntry, SIGNAL(returnPressed()), SLOT(addTrusted()));
+	connect(mAdd, SIGNAL(clicked()), SLOT(addTrusted()));
+	connect(mSendMessageToAll, SIGNAL(clicked()), SLOT(sendMessageToAll()));
+}
+
+void TrustList::trustListChanged() {
+    mSendMessageToAll->setEnabled(museeq->trusted().size() > 0);
 }
 
 void TrustList::addTrusted() {
@@ -64,6 +82,14 @@ void TrustList::addTrusted() {
 
 	editComments(n);
 }
+
+void TrustList::sendMessageToAll() {
+    bool res;
+	QString m = QInputDialog::getText(museeq->mainwin(), tr("Send a message to all trusted users"), tr("Write the message you want to send to all users in your trusted list"), QLineEdit::Normal, QString::null, &res);
+	if (res && !m.isEmpty())
+        museeq->messageUsers(m, museeq->trusted());
+}
+
 
 void TrustList::editComments(const QString& n) {
 	QString _c;

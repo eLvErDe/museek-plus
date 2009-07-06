@@ -26,6 +26,7 @@
 
 #include <QLabel>
 #include <QLineEdit>
+#include <QPushButton>
 #include <QInputDialog>
 #include <QLayout>
 #include <QUrl>
@@ -39,6 +40,8 @@ IgnoreList::IgnoreList(QWidget* _p, const char* _n)
 	connect(mUserList, SIGNAL(dropSlsk(const QList<QUrl>&)), SLOT(slotDropSlsk(const QList<QUrl>&)));
 	connect(museeq, SIGNAL(addedIgnored(const QString&, const QString&)), mUserList, SLOT(add(const QString&, const QString&)));
 	connect(museeq, SIGNAL(removedIgnored(const QString&)), mUserList, SLOT(remove(const QString&)));
+	connect(museeq, SIGNAL(addedIgnored(const QString&, const QString&)), this, SLOT(ignoreListChanged()));
+	connect(museeq, SIGNAL(removedIgnored(const QString&)), this, SLOT(ignoreListChanged()));
 	connect(museeq, SIGNAL(disconnected()), mUserList, SLOT(clear()));
 
 	QVBoxLayout *MainLayout = new QVBoxLayout(this);
@@ -47,12 +50,27 @@ IgnoreList::IgnoreList(QWidget* _p, const char* _n)
 	QHBoxLayout *layout = new QHBoxLayout;
 	MainLayout->addLayout(layout);
 
-	QLabel *label = new QLabel(tr("Add:"), this);
+	QLabel *label = new QLabel(tr("Ignore a new user:"), this);
 	layout->addWidget(label);
 	mEntry = new QLineEdit(this);
 	layout->addWidget(mEntry);
 
+	mAdd = new QPushButton(tr("Add"), this);
+	layout->addWidget(mAdd);
+
+    layout->addStretch();
+
+	mSendMessageToAll = new QPushButton(tr("Send a message to all ignored users"), this);
+	mSendMessageToAll->setEnabled(false);
+	layout->addWidget(mSendMessageToAll);
+
 	connect(mEntry, SIGNAL(returnPressed()), SLOT(addIgnored()));
+	connect(mAdd, SIGNAL(clicked()), SLOT(addIgnored()));
+	connect(mSendMessageToAll, SIGNAL(clicked()), SLOT(sendMessageToAll()));
+}
+
+void IgnoreList::ignoreListChanged() {
+    mSendMessageToAll->setEnabled(museeq->ignored().size() > 0);
 }
 
 void IgnoreList::addIgnored() {
@@ -63,6 +81,13 @@ void IgnoreList::addIgnored() {
 		return;
 
 	editComments(n);
+}
+
+void IgnoreList::sendMessageToAll() {
+    bool res;
+	QString m = QInputDialog::getText(museeq->mainwin(), tr("Send a message to all ignored users"), tr("Write the message you want to send to all users in your ignored list"), QLineEdit::Normal, QString::null, &res);
+	if (res && !m.isEmpty())
+        museeq->messageUsers(m, museeq->ignored());
 }
 
 void IgnoreList::editComments(const QString& n) {

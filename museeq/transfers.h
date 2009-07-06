@@ -60,6 +60,7 @@ protected slots:
 
 	void retrySelected();
 	void updateSelected();
+	void messageDownloadingUsers();
 	void abortSelected();
 	void clearSelected();
 	void clearAwaiting();
@@ -78,7 +79,7 @@ protected slots:
 	void setupUsers();
 
 private:
-	QAction * ActionRetry, * ActionAbort, * ActionCheckPosition, * ActionClearSelected, * ActionClearFinished, * ActionClearAborted, * ActionClearAwaiting, * ActionClearCruft, * ActionClearQueued, * ActionClearFinishedAborted;
+	QAction * ActionRetry, * ActionAbort, * ActionCheckPosition, * ActionClearSelected, * ActionClearFinished, * ActionClearAborted, * ActionClearAwaiting, * ActionClearCruft, * ActionClearQueued, * ActionClearFinishedAborted, *ActionMessageDownloading;
 	TransferListView* mUploads,
 	                * mDownloads;
 

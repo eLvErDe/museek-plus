@@ -25,6 +25,7 @@
 
 class UserListView;
 class QLineEdit;
+class QPushButton;
 class QShowEvent;
 class QUrl;
 
@@ -43,10 +44,13 @@ protected slots:
 	void addIgnored();
 	void editComments(const QString&);
 	void slotDropSlsk(const QList<QUrl>&);
+	void sendMessageToAll();
+	void ignoreListChanged();
 
 private:
 	UserListView* mUserList;
 	QLineEdit* mEntry;
+	QPushButton * mAdd, * mSendMessageToAll;
 };
 
 #endif // IGNORELIST_H

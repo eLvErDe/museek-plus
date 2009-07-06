@@ -25,6 +25,7 @@
 
 class UserListView;
 class QLineEdit;
+class QPushButton;
 class QUrl;
 
 class BanList : public QWidget {
@@ -42,10 +43,13 @@ protected slots:
 	void addBanned();
 	void editComments(const QString&);
 	void slotDropSlsk(const QList<QUrl>&);
+	void sendMessageToAll();
+	void bannedListChanged();
 
 private:
 	UserListView* mUserList;
 	QLineEdit* mEntry;
+	QPushButton * mAdd, * mSendMessageToAll;
 };
 
 #endif // IGNORELIST_H

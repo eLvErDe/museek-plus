@@ -23,6 +23,7 @@
 #include "transferlistitem.h"
 #include "museeq.h"
 #include "usermenu.h"
+#include "mainwin.h"
 
 #include <QLabel>
 #include <QCheckBox>
@@ -33,6 +34,7 @@
 #include <QSplitter>
 #include <QLayout>
 #include <QSettings>
+#include <QInputDialog>
 
 Transfers::Transfers(QWidget* _p, const char* _n)
           : QWidget(_p) {
@@ -148,9 +150,14 @@ Transfers::Transfers(QWidget* _p, const char* _n)
 	connect(ActionAbort, SIGNAL(triggered()), this, SLOT(abortSelected()));
 	mTransferMenu->addAction(ActionAbort);
 
+
 	ActionCheckPosition = new QAction(tr("Check place"), this);
 	connect(ActionCheckPosition, SIGNAL(triggered()), this, SLOT(updateSelected()));
 	mTransferMenu->addAction(ActionCheckPosition);
+
+	ActionMessageDownloading = new QAction(tr("Message downloading users"), this);
+	connect(ActionMessageDownloading, SIGNAL(triggered()), this, SLOT(messageDownloadingUsers()));
+	mTransferMenu->addAction(ActionMessageDownloading);
 
 	mClearMenu = mTransferMenu->addMenu(tr("Clear"));
 
@@ -291,7 +298,7 @@ void Transfers::dropSlsk(const QList<QUrl>& l) {
 void Transfers::setupUsers() {
 	mUsersMenu->clear();
 
-	QList<QString> users;
+	QStringList users;
 	QTreeWidgetItemIterator it(mPoppedUpload ? mUploads : mDownloads, QTreeWidgetItemIterator::Selected );
 	for(; *it; ++it) {
 		TransferListItem* item = dynamic_cast<TransferListItem*>(*it);
@@ -307,18 +314,37 @@ void Transfers::setupUsers() {
 }
 
 void Transfers::popupUploads(const QPoint& pos) {
-	ActionRetry->setEnabled(true);
-	ActionAbort->setEnabled(true);
+    bool hasItems = (mUploads->topLevelItemCount() > 0);
+    bool hasSelectedItems = (mUploads->selectedItems().size() > 0);
+
+	ActionRetry->setEnabled(hasSelectedItems);
+	ActionAbort->setEnabled(hasSelectedItems);
+	ActionCheckPosition->setVisible(false);
+	ActionClearSelected->setEnabled(hasSelectedItems);
+	mClearMenu->setEnabled(hasItems);
+	ActionMessageDownloading->setEnabled(hasItems);
+	ActionMessageDownloading->setVisible(true);
 	mPoppedUpload = true;
 	setupUsers();
+	mUsersMenu->setEnabled(hasSelectedItems);
 	mTransferMenu->exec(mUploads->mapToGlobal(pos));
 }
 
 void Transfers::popupDownloads(const QPoint& pos) {
-	ActionRetry->setEnabled(true);
-	ActionAbort->setEnabled(true);
+    bool hasItems = (mDownloads->topLevelItemCount() > 0);
+    bool hasSelectedItems = (mDownloads->selectedItems().size() > 0);
+
+	ActionRetry->setEnabled(hasSelectedItems);
+	ActionAbort->setEnabled(hasSelectedItems);
+	ActionCheckPosition->setVisible(true);
+	ActionCheckPosition->setEnabled(hasSelectedItems);
+	ActionClearSelected->setEnabled(hasSelectedItems);
+	mClearMenu->setEnabled(hasItems);
+	ActionMessageDownloading->setEnabled(false);
+	ActionMessageDownloading->setVisible(false);
 	mPoppedUpload = false;
 	setupUsers();
+	mUsersMenu->setEnabled(hasSelectedItems);
 	mTransferMenu->exec(mDownloads->mapToGlobal(pos));
 }
 
@@ -412,6 +438,13 @@ void Transfers::updateSelected() {
 	QList<QPair<QString, QString> >::iterator sit = items.begin();
 	for(; sit != items.end(); ++sit)
 		museeq->updateTransfer((*sit).first, (*sit).second);
+}
+
+void Transfers::messageDownloadingUsers() {
+    bool res;
+	QString m = QInputDialog::getText(museeq->mainwin(), tr("Send a message to all downloading users"), tr("Write the message you want to send to all users currently downloading from you"), QLineEdit::Normal, QString::null, &res);
+	if (res && !m.isEmpty())
+        museeq->messageDownloadingUsers(m);
 }
 
 QList<QPair<QString, QString> > Transfers::findByState(TransferListView* l, uint state) {

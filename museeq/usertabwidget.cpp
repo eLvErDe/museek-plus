@@ -48,9 +48,9 @@ UserTabWidget::UserTabWidget(QWidget* _p, const char* _n)
 		connect(mBanList, SIGNAL(activated(const QString&)), SLOT(setPage(const QString&)));
 		connect(mIgnoreList, SIGNAL(activated(const QString&)), SLOT(setPage(const QString&)));
 		connect(mTrustList, SIGNAL(activated(const QString&)), SLOT(setPage(const QString&)));
-		addTab(mIgnoreList, tr("*Ignored*"));
-		addTab(mBanList, tr("*Banned*"));
 		addTab(mTrustList, tr("*Trusted*"));
+		addTab(mBanList, tr("*Banned*"));
+		addTab(mIgnoreList, tr("*Ignored*"));
 		tabBar()->setTabData(1, QVariant("1"));
 		tabBar()->setTabData(2, QVariant("1"));
 		tabBar()->setTabData(3, QVariant("1"));

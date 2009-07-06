@@ -105,7 +105,7 @@ void SearchListView::slotActivate(QTreeWidgetItem* item, int column) {
 void SearchListView::setupUsers() {
 	mUsersMenu->clear();
 
-	QList<QString> users;
+	QStringList users;
 	QTreeWidgetItemIterator it(this, QTreeWidgetItemIterator::Selected | QTreeWidgetItemIterator::NotHidden);
 
 	while (*it) {

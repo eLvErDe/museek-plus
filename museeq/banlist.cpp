@@ -26,6 +26,7 @@
 
 #include <QLabel>
 #include <QLineEdit>
+#include <QPushButton>
 #include <QInputDialog>
 #include <QLayout>
 #include <QUrl>
@@ -40,6 +41,8 @@ BanList::BanList(QWidget* _p, const char* _n)
 	connect(mUserList, SIGNAL(dropSlsk(const QList<QUrl>&)), SLOT(slotDropSlsk(const QList<QUrl>&)));
 	connect(museeq, SIGNAL(addedBanned(const QString&, const QString&)), mUserList, SLOT(add(const QString&, const QString&)));
 	connect(museeq, SIGNAL(removedBanned(const QString&)), mUserList, SLOT(remove(const QString&)));
+	connect(museeq, SIGNAL(addedBanned(const QString&, const QString&)), this, SLOT(bannedListChanged()));
+	connect(museeq, SIGNAL(removedBanned(const QString&)), this, SLOT(bannedListChanged()));
 	connect(museeq, SIGNAL(disconnected()), mUserList, SLOT(clear()));
 
 
@@ -49,12 +52,27 @@ BanList::BanList(QWidget* _p, const char* _n)
 	QHBoxLayout *layout = new QHBoxLayout;
 	MainLayout->addLayout(layout);
 
-	QLabel *label = new QLabel(tr("Add:"), this);
+	QLabel *label = new QLabel(tr("Ban a new user:"), this);
 	layout->addWidget(label);
 	mEntry = new QLineEdit(this);
 	layout->addWidget(mEntry);
 
+	mAdd = new QPushButton(tr("Add"), this);
+	layout->addWidget(mAdd);
+
+    layout->addStretch();
+
+	mSendMessageToAll = new QPushButton(tr("Send a message to all banned users"), this);
+	mSendMessageToAll->setEnabled(false);
+	layout->addWidget(mSendMessageToAll);
+
 	connect(mEntry, SIGNAL(returnPressed()), SLOT(addBanned()));
+	connect(mAdd, SIGNAL(clicked()), SLOT(addBanned()));
+	connect(mSendMessageToAll, SIGNAL(clicked()), SLOT(sendMessageToAll()));
+}
+
+void BanList::bannedListChanged() {
+    mSendMessageToAll->setEnabled(museeq->banned().size() > 0);
 }
 
 void BanList::addBanned() {
@@ -65,6 +83,13 @@ void BanList::addBanned() {
 		return;
 
 	editComments(n);
+}
+
+void BanList::sendMessageToAll() {
+    bool res;
+	QString m = QInputDialog::getText(museeq->mainwin(), tr("Send a message to all banned users"), tr("Write the message you want to send to all users in your banned list"), QLineEdit::Normal, QString::null, &res);
+	if (res && !m.isEmpty())
+        museeq->messageUsers(m, museeq->banned());
 }
 
 void BanList::editComments(const QString& n) {

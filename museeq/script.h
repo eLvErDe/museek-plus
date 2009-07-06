@@ -74,7 +74,7 @@ private:
 	QScriptEngine* mEngine; // Engine for this script
 	QScriptValue mSelf; //
 	QMap<int, QString> mCallbacks; // List of callbacks : <menu id, callback function name>
-	QList<QString> mInputHandlers; // Script functions that will be called when we send some text (room/private) (QString is function name.)
+	QStringList mInputHandlers; // Script functions that will be called when we send some text (room/private) (QString is function name.)
 #endif //HAVE_QTSCRIPT
 };
 
