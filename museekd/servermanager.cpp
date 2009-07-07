@@ -156,6 +156,7 @@ void
 Museek::ServerManager::onCannotConnect(NewNet::ClientSocket * socket)
 {
   // We'll try to reconnect in a few seconds
+  bool wasAuto = m_AutoConnect;
   if (m_AutoConnect) {
       int length = 2000;
       if (m_ConnectionTries >= 2)
@@ -171,6 +172,7 @@ Museek::ServerManager::onCannotConnect(NewNet::ClientSocket * socket)
 
   setLoggedIn(false);
   disconnect();
+  m_AutoConnect = wasAuto; // Restore m_AutoConnect as disconnect() will always set it to false
 }
 
 void
