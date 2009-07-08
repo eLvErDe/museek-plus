@@ -10,23 +10,23 @@
     <message>
         <location filename="../banlist.cpp" line="55"/>
         <source>Ban a new user:</source>
-        <translation type="unfinished"></translation>
+        <translation>Zbanuj nowego użytkownika:</translation>
     </message>
     <message>
         <location filename="../banlist.cpp" line="60"/>
         <source>Add</source>
-        <translation type="unfinished">Dodaj</translation>
+        <translation>Dodaj</translation>
     </message>
     <message>
         <location filename="../banlist.cpp" line="65"/>
         <location filename="../banlist.cpp" line="90"/>
         <source>Send a message to all banned users</source>
-        <translation type="unfinished"></translation>
+        <translation>Wyślij wiadomość do wszystkich zbanowanych użytkowników</translation>
     </message>
     <message>
         <location filename="../banlist.cpp" line="90"/>
         <source>Write the message you want to send to all users in your banned list</source>
-        <translation type="unfinished"></translation>
+        <translation>Napisz wiadomość, którą chcesz wysłać do wszystkich użytkowników na twojej liście zbanowanych</translation>
     </message>
     <message>
         <location filename="../banlist.cpp" line="102"/>
@@ -82,23 +82,23 @@
     <message>
         <location filename="../buddylist.cpp" line="53"/>
         <source>Add a new buddy:</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../buddylist.cpp" line="58"/>
         <source>Add</source>
-        <translation type="unfinished">Dodaj</translation>
+        <translation>Dodaj</translation>
     </message>
     <message>
         <location filename="../buddylist.cpp" line="63"/>
         <location filename="../buddylist.cpp" line="88"/>
         <source>Send a message to all buddies</source>
-        <translation type="unfinished"></translation>
+        <translation>Wyślij wiadomość do wszystkich zaprzyjaźnionych użytkowników</translation>
     </message>
     <message>
         <location filename="../buddylist.cpp" line="88"/>
         <source>Write the message you want to send to all users in your buddy list</source>
-        <translation type="unfinished"></translation>
+        <translation>Napisz wiadomość, którą chcesz wysłać do wszystkich użytkowników na twojej liście zaprzyjaźnionych</translation>
     </message>
     <message>
         <location filename="../buddylist.cpp" line="100"/>
@@ -151,7 +151,7 @@
     <message>
         <location filename="../chatrooms.cpp" line="61"/>
         <source>*Public Chat*</source>
-        <translation type="unfinished"></translation>
+        <translation>*Czat publiczny*</translation>
     </message>
 </context>
 <context>
@@ -311,23 +311,23 @@
     <message>
         <location filename="../ignorelist.cpp" line="53"/>
         <source>Ignore a new user:</source>
-        <translation type="unfinished"></translation>
+        <translation>Ignoruj nowego użytkownika:</translation>
     </message>
     <message>
         <location filename="../ignorelist.cpp" line="58"/>
         <source>Add</source>
-        <translation type="unfinished">Dodaj</translation>
+        <translation>Dodaj</translation>
     </message>
     <message>
         <location filename="../ignorelist.cpp" line="63"/>
         <location filename="../ignorelist.cpp" line="88"/>
         <source>Send a message to all ignored users</source>
-        <translation type="unfinished"></translation>
+        <translation>Wyślij wiadomość do wszystkich ignorowanych użytkowników</translation>
     </message>
     <message>
         <location filename="../ignorelist.cpp" line="88"/>
         <source>Write the message you want to send to all users in your ignored list</source>
-        <translation type="unfinished"></translation>
+        <translation>Napisz wiadomość, którą chcesz wysłać do wszystkich użytkowników na twojej liście ignorowanych</translation>
     </message>
     <message>
         <location filename="../ignorelist.cpp" line="100"/>
@@ -812,7 +812,7 @@
     <message>
         <location filename="../mainwin.cpp" line="1060"/>
         <source>&lt;h3&gt;While in a chat window, such as a chat room, or a private chat, there are a number of commands available for use.&lt;/h3&gt;&lt;b&gt;/c /chat&lt;/b&gt;   &lt;i&gt;(Switch to chat rooms)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/pm /private&lt;/b&gt; &amp;lt;nothing | username&amp;gt;  &lt;i&gt;(Switch to private chat and start chatting with a user, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/transfers&lt;/b&gt;   &lt;i&gt;(Switch to transfers)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/s /search&lt;/b&gt; &amp;lt;nothing | query&gt;   &lt;i&gt;(Switch to searches and start a search with &amp;lt;query&amp;gt; if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/u /userinfo&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Switch to user info, and attempt to get a user&apos;s info, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/b /browse&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Switch to browse and initate browsing a user, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ip&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Get the IP of a user)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/log&lt;/b&gt;    &lt;i&gt;(Toggle displaying the special message Log)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/t /ticker /tickers&lt;/b&gt;   &lt;i&gt;(Toggle the showing of tickers)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/setticker&lt;/b&gt; &amp;lt;short text&amp;gt; &lt;i&gt;(Set the inputed text as ticker for the current room)&lt;/i&gt; &lt;br&gt;&lt;b&gt;/f /fonts /colors&lt;/b&gt;   &lt;i&gt;(Open the fonts and colors settings dialog)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/clear&lt;/b&gt;&lt;i&gt; (Clear the chat history)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ban /unban&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Disallow/allow a user to receive your shares and download from you)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ignore /unignore&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Block/unblock chat messages from a user)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/buddy /unbuddy&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Add/remove a user to keep track of it and add comments about it)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/trust /distrust&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Add/remove a user to the optional list of users who can send files to you)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/me&lt;/b&gt; &lt;does something&gt;    &lt;i&gt;(Say something in the third-person)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/slap&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Typical trout-slapping)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/j /join&lt;/b&gt; &amp;lt;room&amp;gt;    &lt;i&gt;(Join a chat room)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/jp /joinpriv&lt;/b&gt; &amp;lt;room&amp;gt;    &lt;i&gt;(Join a private chat room)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/l /p /leave /part&lt;/b&gt; &amp;lt;nothing | room&amp;gt;    &lt;i&gt;(Leave the current room or inputed room)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/about /help /commands&lt;/b&gt;    &lt;i&gt;(Display information)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/settings&lt;/b&gt;    &lt;i&gt;(Display settings dialog)&lt;/i&gt;&lt;br&gt;&lt;br&gt;Do not type the brackets, they are there only to make clear that something (or nothing) can be typed after the /command.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;h3&gt;Kiedy jesteś w oknie czatu, takim jak pokój lub prywatna rozmowa, istnieją komendy dostępne do użytku&lt;/h3&gt;&lt;b&gt;/c /chat&lt;/b&gt;   &lt;i&gt;(Przełącz do pokoi czatu)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/pm /private&lt;/b&gt; &amp;lt;nic | nazwa użytkownika&amp;gt;  &lt;i&gt;(Przełącz na prywatną rozmowę i zacznij rozmawiać z użytkownikiem, jeśli wpisana)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/transfers&lt;/b&gt;   &lt;i&gt;(Przełącz na transfery)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/s /search&lt;/b&gt; &amp;lt;nic | zapytanie&gt;   &lt;i&gt;(Przełącz na szukanie i rozpocznij szukanie &amp;lt;zapytania&amp;gt; jeśli wpisana)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/u /userinfo&lt;/b&gt; &amp;lt;nazwa użytkownika&amp;gt;   &lt;i&gt;(Przełącz na informacje o użytkowniku, i spróbuj uzyskać informacje, jeśli wpisana)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/b /browse&lt;/b&gt; &amp;lt;nazwa użytkownika&amp;gt;    &lt;i&gt;(Przełącz na przeglądanie i zacznij przeglądanie plików użytkownika, jeśli wpisana)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ip&lt;/b&gt; &amp;lt;nazwa użytkownika&amp;gt;   &lt;i&gt;(Pobierz IP użytkownika)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/log&lt;/b&gt;    &lt;i&gt;(Przełącz wyświetlanie dziennika specjalnych wiadomości)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/t /ticker /tickers&lt;/b&gt;   &lt;i&gt;(Przełącz pokazywanie brzęczyków)&lt;/i&gt; &lt;br&gt;&lt;b&gt;/f /fonts /c /colors&lt;/b&gt;   &lt;i&gt;(Otwórz okno ustawień kolorów i czcionek)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ban /unban&lt;/b&gt; &amp;lt;nazwa użytkownika&amp;gt;   &lt;i&gt;(Zabroń/Pozwól użytkownikowi zobaczyć twoje udziały i pobierać od ciebie pliki)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ignore /unignore&lt;/b&gt; &amp;lt;nazwa użytkownika&amp;gt;    &lt;i&gt;(Blokuj/Odblokuj odbieranie wiadomości od użytkownika)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/buddy /unbuddy&lt;/b&gt; &amp;lt;nazwa użytkownika&amp;gt;   &lt;i&gt;(Dodaj/Usuń użytkownika aby śledzić jego i komentarze o nim)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/trust /distrust&lt;/b&gt; &amp;lt;nazwa użytkownika&amp;gt;    &lt;i&gt;(Dodaj/Usuń użytkownika do opcjonalnej listy użytkowników mogących wysyłać ci pliki)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/me&lt;/b&gt; &lt;robi coś&gt;    &lt;i&gt;(Powiedz coś w trzeciej osobie&lt;/i&gt;&lt;br&gt;&lt;b&gt;/slap&lt;/b&gt; &amp;lt;nazwa użytkownika&amp;gt;   &lt;i&gt;(Typowe slapowanie)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/j /join&lt;/b&gt; &amp;lt;pokój&amp;gt;    &lt;i&gt;(Wejdź do pokoju czatu)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/jp /joinpriv&lt;/b&gt; &amp;lt;room&amp;gt;    &lt;i&gt;(Wejdź do prywatnego pokoju czatu)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/l /p /leave /part&lt;/b&gt; &amp;lt;nic | pokój&amp;gt;    &lt;i&gt;(Wyjdź z bieżącego lub podanego pokoju)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/about /help /commands&lt;/b&gt;    &lt;i&gt;(Pokaż informacje)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/settings&lt;/b&gt;    &lt;i&gt;(Pokaż okno ustawień)&lt;/i&gt;&lt;br&gt;&lt;br&gt;Nie wpisuj nawiasów, one są tylko po to aby pokazać że coś (albo nic) może być wpisane po /komendzie.</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="1064"/>
@@ -1078,28 +1078,28 @@
     <message>
         <location filename="../roomlist.cpp" line="42"/>
         <source>Create a new room:</source>
-        <translation type="unfinished"></translation>
+        <translation>Stwórz nowy pokój:</translation>
     </message>
     <message>
         <location filename="../roomlist.cpp" line="48"/>
         <source>Private</source>
-        <translation type="unfinished"></translation>
+        <translation>Prywatny</translation>
     </message>
     <message>
         <location filename="../roomlist.cpp" line="52"/>
         <source>Create</source>
-        <translation type="unfinished"></translation>
+        <translation>Stwórz</translation>
     </message>
     <message>
         <location filename="../roomlist.cpp" line="57"/>
         <location filename="../roomlist.cpp" line="88"/>
         <source>Show public chat</source>
-        <translation type="unfinished"></translation>
+        <translation>Pokaż czat publiczny</translation>
     </message>
     <message>
         <location filename="../roomlist.cpp" line="90"/>
         <source>Stop public chat</source>
-        <translation type="unfinished"></translation>
+        <translation>Zatrzymaj czat publiczny</translation>
     </message>
 </context>
 <context>
@@ -1117,7 +1117,7 @@
     <message>
         <location filename="../roomlistview.cpp" line="33"/>
         <source>Status</source>
-        <translation type="unfinished">Stan</translation>
+        <translation>Stan</translation>
     </message>
     <message>
         <location filename="../roomlistview.cpp" line="43"/>
@@ -1132,12 +1132,12 @@
     <message>
         <location filename="../roomlistview.cpp" line="53"/>
         <source>Give up ownership</source>
-        <translation type="unfinished"></translation>
+        <translation>Porzuć własność</translation>
     </message>
     <message>
         <location filename="../roomlistview.cpp" line="57"/>
         <source>Give up membership</source>
-        <translation type="unfinished"></translation>
+        <translation>Porzuć członkostwo</translation>
     </message>
     <message>
         <location filename="../roomlistview.cpp" line="63"/>
@@ -1147,32 +1147,32 @@
     <message>
         <location filename="../roomlistview.cpp" line="92"/>
         <source>Public</source>
-        <translation type="unfinished"></translation>
+        <translation>Publiczny</translation>
     </message>
     <message>
         <location filename="../roomlistview.cpp" line="98"/>
         <source>member</source>
-        <translation type="unfinished"></translation>
+        <translation>członek</translation>
     </message>
     <message>
         <location filename="../roomlistview.cpp" line="98"/>
         <source>operator</source>
-        <translation type="unfinished"></translation>
+        <translation>operator</translation>
     </message>
     <message>
         <location filename="../roomlistview.cpp" line="98"/>
         <source>owner</source>
-        <translation type="unfinished"></translation>
+        <translation>właściciel</translation>
     </message>
     <message>
         <location filename="../roomlistview.cpp" line="98"/>
         <source>unknown</source>
-        <translation type="unfinished">nieznany</translation>
+        <translation>nieznany</translation>
     </message>
     <message>
         <location filename="../roomlistview.cpp" line="102"/>
         <source>Private (%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Prywatny (%1)</translation>
     </message>
 </context>
 <context>
@@ -1692,7 +1692,7 @@
     <message>
         <location filename="../settingsdialog.cpp" line="125"/>
         <source>Change password</source>
-        <translation type="unfinished"></translation>
+        <translation>Zmień hasło</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="319"/>
@@ -1702,7 +1702,7 @@
     <message>
         <location filename="../settingsdialog.cpp" line="322"/>
         <source>Show users&apos; &amp;country</source>
-        <translation type="unfinished"></translation>
+        <translation>Pokaż &amp;kraj użytkownika</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="325"/>
@@ -1739,37 +1739,37 @@
     <message>
         <location filename="../settingsdialog.cpp" line="885"/>
         <source>Password successfully changed!</source>
-        <translation type="unfinished"></translation>
+        <translation>Hasło zmieniono pomyślnie!</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1238"/>
         <source>New Soulseek account password</source>
-        <translation type="unfinished"></translation>
+        <translation>Nowe hasło konta Soulseek</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1238"/>
         <source>Please enter the new password for user %1 on the Soulseek server:</source>
-        <translation type="unfinished"></translation>
+        <translation>Proszę podać nowe hasło dla użytkownika %1 na serwerze Soulseek:</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1245"/>
         <source>Confirm new Soulseek account password</source>
-        <translation type="unfinished"></translation>
+        <translation>Potwierdź nowe hasło konta Soulseek</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1245"/>
         <source>Please confirm the new password for user %1 on the Soulseek server:</source>
-        <translation type="unfinished"></translation>
+        <translation>Proszę potwierdzić nowe hasło dla użytkownika %1 na serwerze Soulseek:</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1251"/>
         <source>Failed confirming the new password, please retry...</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie udało się potwierdzić nowego hasła, proszę spróbować ponownie...</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1255"/>
         <source>Changing the password, please wait.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zmienianie hasła, proszę czekać.</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1429"/>
@@ -1941,7 +1941,7 @@
     <message>
         <location filename="../settingsdialog.cpp" line="1518"/>
         <source>Allow being added to private rooms</source>
-        <translation type="unfinished"></translation>
+        <translation>Pozwól dodawać się do prywatnych pokoi</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1519"/>
@@ -2292,7 +2292,7 @@ Wybierz pasywne jeśli nie masz pewności.</translation>
     <message>
         <location filename="../transfers.cpp" line="158"/>
         <source>Message downloading users</source>
-        <translation type="unfinished"></translation>
+        <translation>Wyślij wiadomość do pobierających użytkowników</translation>
     </message>
     <message>
         <location filename="../transfers.cpp" line="164"/>
@@ -2332,12 +2332,12 @@ Wybierz pasywne jeśli nie masz pewności.</translation>
     <message>
         <location filename="../transfers.cpp" line="445"/>
         <source>Send a message to all downloading users</source>
-        <translation type="unfinished"></translation>
+        <translation>Wyślij wiadomość do wszystkich pobierających użytkowników</translation>
     </message>
     <message>
         <location filename="../transfers.cpp" line="445"/>
         <source>Write the message you want to send to all users currently downloading from you</source>
-        <translation type="unfinished"></translation>
+        <translation>Napisz wiadomość, którą chcesz wysłać do wszystkich użytkowników obecnie od ciebie pobierających</translation>
     </message>
     <message>
         <location filename="../transfers.cpp" line="162"/>
@@ -2370,23 +2370,23 @@ Wybierz pasywne jeśli nie masz pewności.</translation>
     <message>
         <location filename="../trustlist.cpp" line="53"/>
         <source>Trust a new user:</source>
-        <translation type="unfinished"></translation>
+        <translation>Zaufaj nowemu użytkownikowi:</translation>
     </message>
     <message>
         <location filename="../trustlist.cpp" line="58"/>
         <source>Add</source>
-        <translation type="unfinished">Dodaj</translation>
+        <translation>Dodaj</translation>
     </message>
     <message>
         <location filename="../trustlist.cpp" line="63"/>
         <location filename="../trustlist.cpp" line="88"/>
         <source>Send a message to all trusted users</source>
-        <translation type="unfinished"></translation>
+        <translation>Wyślij wiadomość do wszystkich zaufanych użytkowników</translation>
     </message>
     <message>
         <location filename="../trustlist.cpp" line="88"/>
         <source>Write the message you want to send to all users in your trusted list</source>
-        <translation type="unfinished"></translation>
+        <translation>Napisz wiadomość, którą chcesz wysłać do wszystkich użytkowników na twojej liście zaufanych</translation>
     </message>
     <message>
         <location filename="../trustlist.cpp" line="101"/>
@@ -2489,7 +2489,7 @@ Wybierz pasywne jeśli nie masz pewności.</translation>
     <message>
         <location filename="../userlistview.cpp" line="49"/>
         <source>Country</source>
-        <translation type="unfinished"></translation>
+        <translation>Kraj</translation>
     </message>
     <message>
         <location filename="../userlistview.cpp" line="51"/>
@@ -2579,17 +2579,17 @@ Wybierz pasywne jeśli nie masz pewności.</translation>
     <message>
         <location filename="../usermenu.cpp" line="66"/>
         <source>Member of private rooms</source>
-        <translation type="unfinished"></translation>
+        <translation>Członek prywatnych pokoi</translation>
     </message>
     <message>
         <location filename="../usermenu.cpp" line="68"/>
         <source>Operator of private rooms</source>
-        <translation type="unfinished"></translation>
+        <translation>Operator prywatnych pokoi</translation>
     </message>
     <message>
         <location filename="../usermenu.cpp" line="70"/>
         <source>Owner of private rooms</source>
-        <translation type="unfinished"></translation>
+        <translation>Właściciel prywatnych pokoi</translation>
     </message>
     <message>
         <location filename="../usermenu.cpp" line="75"/>
