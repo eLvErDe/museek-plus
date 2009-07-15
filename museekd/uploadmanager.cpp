@@ -128,8 +128,12 @@ Museek::Upload::setState(TrState state)
             && state != TS_Connecting)
         m_Museekd->uploads()->checkUploads();
 
-    if (state == TS_Finished)
+    if (state == TS_Finished) {
         m_Museekd->ifaces()->sendStatusMessage(true, std::string("Upload finished: '") + localPath() + std::string("' to ") + user());
+
+        if (m_Museekd->autoClearFinishedUploads())
+            m_Museekd->uploads()->remove(user(), localPath());
+    }
     else if (state == TS_Transferring) {
         if (position() > 0)
             m_Museekd->ifaces()->sendStatusMessage(true, std::string("Continuing upload: '") + localPath() + std::string("' to ") + user());

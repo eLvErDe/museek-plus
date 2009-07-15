@@ -279,6 +279,9 @@ Museek::Download::setState(TrState state)
             m_Museekd->ifaces()->sendStatusMessage(true, std::string("Download already finished: '") + destinationPath() + std::string("' from ") + user());
         else
             m_Museekd->ifaces()->sendStatusMessage(true, std::string("Download finished: '") + destinationPath() + std::string("' from ") + user());
+
+        if (m_Museekd->autoClearFinishedDownloads())
+            m_Museekd->downloads()->remove(user(), remotePath());
     }
     else if (changed && (state == TS_Transferring)) {
         if (position() > 0)

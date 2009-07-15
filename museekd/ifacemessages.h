@@ -840,7 +840,7 @@ IFACEMESSAGE(IJoinRoom, 0x0303)
 */
 
 	IJoinRoom() {}
-	IJoinRoom(const std::string& _r, const RoomData& _u, const std::string& _owner, const std::vector<std::string>& _ops) : room(_r), users(_u), owner(_owner), operators(_ops) {}
+	IJoinRoom(const std::string& _r, const RoomData& _u, const std::string& _owner, const std::vector<std::string>& _ops) : room(_r), owner(_owner), operators(_ops), users(_u) {}
 
 	MAKE
 		pack(room);

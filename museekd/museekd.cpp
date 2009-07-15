@@ -113,6 +113,14 @@ bool Museek::Museekd::trustingUploads() {
     return config()->getBool("transfers", "trusting_uploads", false);
 }
 
+bool Museek::Museekd::autoClearFinishedDownloads() {
+    return config()->getBool("transfers", "autoclear_finished_downloads", false);
+}
+
+bool Museek::Museekd::autoClearFinishedUploads() {
+    return config()->getBool("transfers", "autoclear_finished_uploads", false);
+}
+
 bool Museek::Museekd::privilegeBuddies() {
     return config()->getBool("transfers", "privilege_buddies", false);
 }

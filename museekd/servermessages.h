@@ -78,7 +78,7 @@ protected:
 
 SERVERMESSAGE(SLogin, 1)
 	SLogin(const std::string& _username = "", const std::string& _password = "") :
-		greet(""), username(_username), password(_password), success(0), publicip("")
+		greet(""), username(_username), password(_password), publicip(""), success(0)
 		{};
 
 	MAKE

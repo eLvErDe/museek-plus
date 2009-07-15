@@ -131,6 +131,8 @@ namespace Museek
     bool toBuddiesOnly();
     bool haveBuddyShares();
     bool trustingUploads();
+    bool autoClearFinishedDownloads();
+    bool autoClearFinishedUploads();
     bool privilegeBuddies();
     uint upSlots();
     uint downSlots();
