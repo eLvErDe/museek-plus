@@ -306,7 +306,13 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Q
 	SPrivRoom = new QCheckBox( mUsersTab);
 	UsersGrid->addWidget( SPrivRoom, 3, 0);
 
-	UsersGrid->setRowStretch(4, 10);
+	mAutoClearFinishedDownloads = new QCheckBox( mUsersTab);
+	UsersGrid->addWidget( mAutoClearFinishedDownloads, 4, 0);
+
+	mAutoClearFinishedUploads = new QCheckBox( mUsersTab);
+	UsersGrid->addWidget( mAutoClearFinishedUploads, 5, 0);
+
+	UsersGrid->setRowStretch(6, 10);
 
 
     // Populate museeq tab
@@ -780,6 +786,8 @@ void SettingsDialog::loadSettings() {
     SShareBuddiesOnly->setChecked(museeq->config("transfers", "only_buddies") == "true");
     SBuddiesPrivileged->setChecked(museeq->config("transfers", "privilege_buddies") == "true");
     STrustedUsers->setChecked(museeq->config("transfers", "trusting_uploads") == "true");
+    mAutoClearFinishedDownloads->setChecked(museeq->config("transfers", "autoclear_finished_downloads") == "true");
+    mAutoClearFinishedUploads->setChecked(museeq->config("transfers", "autoclear_finished_uploads") == "true");
     SActive->setChecked(museeq->config("clients", "connectmode") == "active");
 
     SPrivRoom->setChecked(mPrivRoomEnabled);
@@ -911,6 +919,12 @@ void SettingsDialog::slotConfigChanged(const QString& domain, const QString& key
 	} else if(domain == "transfers" && key == "trusting_uploads") {
 		if (value == "true") STrustedUsers->setChecked(true);
 		else if ( value == "false") STrustedUsers->setChecked(false);
+	} else if(domain == "transfers" && key == "autoclear_finished_downloads") {
+		if (value == "true") mAutoClearFinishedDownloads->setChecked(true);
+		else if ( value == "false") mAutoClearFinishedDownloads->setChecked(false);
+	} else if(domain == "transfers" && key == "autoclear_finished_uploads") {
+		if (value == "true") mAutoClearFinishedUploads->setChecked(true);
+		else if ( value == "false") mAutoClearFinishedUploads->setChecked(false);
 	} else if(domain == "transfers" && key == "download-dir") {
 		SDownDir->setText(value);
 	} else if(domain == "transfers" && key == "incomplete-dir") {
@@ -1515,6 +1529,8 @@ void SettingsDialog::languageChange()
 	SOnlineAlerts->setText( tr( "Display online alerts in daemon log instead of popup" ) );
 	SShareBuddiesOnly->setText( tr( "Share to buddies only" ) );
 	STrustedUsers->setText( tr( "Trusted users can send you files" ) );
+	mAutoClearFinishedDownloads->setText( tr( "Automatically clear finished downloads" ) );
+	mAutoClearFinishedUploads->setText( tr( "Automatically clear finished uploads" ) );
 	SPrivRoom->setText( tr( "Allow being added to private rooms" ) );
 	SBuddiesShares->setText( tr( "Additional shares for buddies" ) );
 	SIPLog->setText( tr( "Display IP addresses in daemon log instead of popup" ) );
