@@ -29,6 +29,7 @@
 #include <NewNet/nnreactor.h>
 #include <NewNet/nnlog.h>
 #include <iostream>
+#include <sstream>
 #include <NewNet/util.h>
 
 Museek::ServerManager::ServerManager(Museekd * museekd) : m_Museekd(museekd), m_LoggedIn(false)
@@ -44,9 +45,12 @@ Museek::ServerManager::ServerManager(Museekd * museekd) : m_Museekd(museekd), m_
     privilegedUsersReceivedEvent.connect(this, & ServerManager::onPrivilegedUsersReceived);
     privilegedUserAddedEvent.connect(this, & ServerManager::onPrivilegedUserAddedReceived);
     kickedEvent.connect(this, & ServerManager::onKicked);
+    privateMessageReceivedEvent.connect(this, &ServerManager::onServerPrivateMessageReceived);
 
     m_ConnectionTries = 0;
     m_AutoConnect = true;
+    mServerTimeDiff = 0.0L;
+    mTestingServerTime = false;
 }
 
 Museek::ServerManager::~ServerManager()
@@ -266,6 +270,9 @@ Museek::ServerManager::onLoggedIn(const SLogin * message)
 
   m_PingTimeout = museekd()->reactor()->addTimeout(60000, this, &ServerManager::pingServer);
 
+  launchServerTimeTest(0.0L);
+  museekd()->reactor()->addTimeout(10000, this, &ServerManager::serverTimeTestFailed); // Server time test needs to work in the first 10 seconds.
+
   setLoggedIn(message->success);
   if(message->success)
   {
@@ -304,6 +311,44 @@ Museek::ServerManager::onLoggedIn(const SLogin * message)
 
     SEND_MESSAGE(SPrivRoomToggle(museekd()->isEnabledPrivRoom()));
   }
+}
+
+void
+Museek::ServerManager::launchServerTimeTest(long) {
+    gettimeofday(&mLastServerTimeTestTime, 0);
+    std::ostringstream oss;
+    oss << "Testing server time " << mLastServerTimeTestTime.tv_sec << " " << mLastServerTimeTestTime.tv_usec;
+    mLastServerTimeTestString = oss.str();
+    SEND_MESSAGE(SPrivateMessage(username(), mLastServerTimeTestString));
+    mTestingServerTime = true;
+}
+
+void
+Museek::ServerManager::serverTimeTestFailed(long) {
+    if (mServerTimeDiff <= 0)
+        mServerTimeDiff = 0;
+    NNLOG("museekd.server.debug", "The server time diff is considered as %ld.", mServerTimeDiff);
+    //mTestingServerTime = true; // Keep it to true to avoid showing the test message if the server finally answers after a moment
+    museekd()->reactor()->addTimeout(21600000, this, &ServerManager::launchServerTimeTest); // New test in 6 hours
+    receivedServerTimeDiff(mServerTimeDiff);
+}
+
+bool
+Museek::ServerManager::isServerTimeTestMessage(const std::string& user, const std::string& message) {
+    return ((user == username()) && (mLastServerTimeTestString == message));
+}
+
+void
+Museek::ServerManager::onServerPrivateMessageReceived(const SPrivateMessage * message)
+{
+    if (mTestingServerTime && isServerTimeTestMessage(message->user, message->message)) {
+        mServerTimeDiff = message->timestamp - mLastServerTimeTestTime.tv_sec;
+        NNLOG("museekd.server.debug", "The server time diff is %ld.", mServerTimeDiff);
+        mTestingServerTime = false;
+        SEND_MESSAGE(SAckPrivateMessage(message->ticket));
+        museekd()->reactor()->addTimeout(21600000, this, &ServerManager::launchServerTimeTest); // New test in 6 hours
+        receivedServerTimeDiff(mServerTimeDiff);
+    }
 }
 
 /**

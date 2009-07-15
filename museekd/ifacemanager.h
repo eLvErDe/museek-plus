@@ -151,6 +151,7 @@ namespace Museek
     // Server event handlers:
     void onServerLoggedIn(const SLogin * message);
     void onServerLoggedInStateChanged(bool loggedIn);
+    void onServerTimeDiffReceived(long);
     void onServerKicked(const SKicked* message);
     void onServerPeerAddressReceived(const SGetPeerAddress * message);
     void onServerAddUserReceived(const SAddUser * message);
@@ -219,6 +220,8 @@ namespace Museek
 
     std::map<std::string, std::vector<std::string> > m_PrivRoomAlterableMembers;
     std::map<std::string, std::vector<std::string> > m_PrivRoomAlterableOperators;
+
+    bool m_ReceivedTimeDiff;
 
     struct PrivateMessage
     {

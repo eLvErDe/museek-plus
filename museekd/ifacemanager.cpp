@@ -75,6 +75,7 @@ static std::string challenge()
 Museek::IfaceManager::IfaceManager(Museekd * museekd) : m_Museekd(museekd)
 {
   m_AwayState = 0;
+  m_ReceivedTimeDiff = false;
 
   NNLOG.logEvent.connect(this, &IfaceManager::onLog);
 
@@ -82,6 +83,7 @@ Museek::IfaceManager::IfaceManager(Museekd * museekd) : m_Museekd(museekd)
   museekd->config()->keyRemovedEvent.connect(this, &IfaceManager::onConfigKeyRemoved);
 
   museekd->server()->loggedInStateChangedEvent.connect(this, &IfaceManager::onServerLoggedInStateChanged);
+  museekd->server()->receivedServerTimeDiff.connect(this, &IfaceManager::onServerTimeDiffReceived);
   museekd->server()->loggedInEvent.connect(this, &IfaceManager::onServerLoggedIn);
   museekd->server()->kickedEvent.connect(this, &IfaceManager::onServerKicked);
   museekd->server()->peerAddressReceivedEvent.connect(this, &IfaceManager::onServerPeerAddressReceived);
@@ -226,7 +228,7 @@ Museek::IfaceManager::onConfigKeyRemoved(const ConfigManager::RemoveNotify * dat
 void
 Museek::IfaceManager::flushPrivateMessages()
 {
-  if(m_PrivateMessages.empty() || m_Ifaces.empty())
+  if(m_PrivateMessages.empty() || m_Ifaces.empty() || !m_ReceivedTimeDiff)
     return;
 
   bool sent = false;
@@ -250,6 +252,19 @@ Museek::IfaceManager::flushPrivateMessages()
     SEND_MESSAGE(museekd()->server(), SAckPrivateMessage((*it).ticket));
 
   m_PrivateMessages.clear();
+}
+
+void
+Museek::IfaceManager::onServerTimeDiffReceived(long diff) {
+    if (!m_ReceivedTimeDiff) { // First time received
+        std::vector<PrivateMessage>::iterator it, end = m_PrivateMessages.end();
+        for(it = m_PrivateMessages.begin(); it != end; ++it) {
+            it->timestamp = it->timestamp - museekd()->server()->getServerTimeDiff();
+        }
+    }
+
+    m_ReceivedTimeDiff = true;
+    flushPrivateMessages();
 }
 
 void
@@ -1010,10 +1025,10 @@ Museek::IfaceManager::onServerUserStatusReceived(const SGetStatus * message)
 void
 Museek::IfaceManager::onServerPrivateMessageReceived(const SPrivateMessage * message)
 {
-    if (!museekd()->isIgnored(message->user)) {
+    if (!museekd()->isIgnored(message->user) && !museekd()->server()->isServerTimeTestMessage(message->user, message->message)) {
         PrivateMessage msg;
         msg.ticket = message->ticket;
-        msg.timestamp = message->timestamp - 9600; // Server's timestamps are wrong
+        msg.timestamp = message->timestamp - museekd()->server()->getServerTimeDiff(); // Server's timestamps are wrong
         msg.user = message->user;
         msg.message = museekd()->codeset()->fromPeer(msg.user, message->message);
         m_PrivateMessages.push_back(msg);

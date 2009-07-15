@@ -65,6 +65,10 @@ namespace Museek
       return m_LoggedIn;
     }
 
+    long getServerTimeDiff() const {
+        return mServerTimeDiff;
+    }
+
     void connect();
     void disconnect();
 
@@ -74,6 +78,10 @@ namespace Museek
 
     // Emitted when the login state changes
     NewNet::Event<bool> loggedInStateChangedEvent;
+
+    NewNet::Event<long> receivedServerTimeDiff;
+
+    bool isServerTimeTestMessage(const std::string&, const std::string&);
 
     #define MAP_MESSAGE(ID, TYPE, EVENT) NewNet::Event<const TYPE *> EVENT;
     #include "servereventtable.h"
@@ -102,10 +110,13 @@ namespace Museek
     void onPrivilegedUsersReceived(const SPrivilegedUsers * message);
     void onPrivilegedUserAddedReceived(const SAddPrivileged * message);
     void onKicked(const SKicked * message);
+    void onServerPrivateMessageReceived(const SPrivateMessage * message);
 
   private:
     void pingServer(long);
     void reconnect(long);
+    void launchServerTimeTest(long);
+    void serverTimeTestFailed(long);
 
     NewNet::WeakRefPtr<Museekd> m_Museekd;
 
@@ -117,7 +128,10 @@ namespace Museek
     std::vector<std::string> m_JoinedRooms;
     NewNet::WeakRefPtr<NewNet::Event<long>::Callback> m_PingTimeout, m_ReconnectTimeout;
     int m_ConnectionTries;
-    struct timeval mLastSentMessage;
+    struct timeval mLastSentMessage, mLastServerTimeTestTime;
+    std::string mLastServerTimeTestString;
+    long mServerTimeDiff;
+    bool mTestingServerTime;
   };
 }
 
