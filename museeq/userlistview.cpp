@@ -34,11 +34,15 @@
 #include <QApplication>
 #include <QDrag>
 #include <QMouseEvent>
+#include <QHeaderView>
+#include <QSettings>
 
-UserListView::UserListView(bool comments, QWidget * parent, const char * name)
+UserListView::UserListView(bool comments, QWidget * parent, const QString& name)
 	: QTreeWidget(parent) {
 
 	mUsermenu = new Usermenu(this);
+
+	mName = name;
 
     setAcceptDrops(true);
 	setDragEnabled(true);
@@ -67,23 +71,35 @@ UserListView::UserListView(bool comments, QWidget * parent, const char * name)
 	setAllColumnsShowFocus(true);
 	setRootIsDecorated(false);
 	setContextMenuPolicy(Qt::CustomContextMenu);
+
+    if (museeq->settings()->value("saveAllLayouts", false).toBool()) {
+        QString optionName = mName+"_Layout";
+        header()->restoreState(museeq->settings()->value(optionName).toByteArray());
+    }
+
 	connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), SLOT(slotActivate(QTreeWidgetItem*, int)));
 	connect(this, SIGNAL(itemActivated(QTreeWidgetItem*, int)), SLOT(slotActivate(QTreeWidgetItem*, int)));
 	connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), SLOT(slotContextMenu(const QPoint&)));
-
 
 	connect(museeq, SIGNAL(sortingEnabled(bool)), this, SLOT(sorting(bool)));
 	connect(museeq, SIGNAL(userStatus(const QString&, uint)), SLOT(setStatus(const QString&, uint)));
 	connect(museeq, SIGNAL(doUpdateStatus(const QString&)), SLOT(updateStatus(const QString&)));
 	connect(museeq, SIGNAL(userData(const QString&, uint, uint, const QString&)), SLOT(setData(const QString&, uint, uint, const QString&)));
 	connect(museeq, SIGNAL(toggleCountries(bool)), this, SLOT(countryToggled(bool)));
+	connect(museeq, SIGNAL(closingMuseeq()), this, SLOT(onClosingMuseeq()));
+}
+
+void UserListView::onClosingMuseeq() {
+    if (museeq->settings()->value("saveAllLayouts", false).toBool()) {
+        QString optionName = mName+"_Layout";
+        museeq->settings()->setValue(optionName, header()->saveState());
+    }
 }
 
 void UserListView::sorting(bool sort) {
 	setSortingEnabled(sort);
-	if (sort)
-		resizeColumnToContents(1);
 }
+
 UserListItem* UserListView::findItem(const QString& _u) {
 	QList<QTreeWidgetItem *> items = findItems(_u, Qt::MatchExactly, 1);
 	if (!items.isEmpty())
@@ -132,6 +148,8 @@ void UserListView::setStatus(const QString& _u, uint _s) {
 	if(! item)
 		return;
 	item->setStatus(_s);
+
+	adaptColumnSize(0);
 }
 
 void UserListView::updateStatus(const QString& _u) {
@@ -139,6 +157,8 @@ void UserListView::updateStatus(const QString& _u) {
 	if(! item)
 		return;
 	item->updateUserStatus();
+
+	adaptColumnSize(0);
 }
 
 void UserListView::setData(const QString& _u, uint _s, uint _f, const QString& _c) {
@@ -148,6 +168,10 @@ void UserListView::setData(const QString& _u, uint _s, uint _f, const QString& _
 	item->setSpeed(_s);
 	item->setFiles(_f);
 	item->setCountry(_c);
+
+	adaptColumnSize(2);
+	adaptColumnSize(3);
+	adaptColumnSize(4);
 }
 
 void UserListView::setComments(const QString& _u, const QString& _c) {
@@ -162,6 +186,8 @@ void UserListView::setCountry(const QString& _u, const QString& _c) {
 	if(! item)
 		return;
 	item->setCountry(_c);
+
+	adaptColumnSize(4);
 }
 
 void UserListView::setOperator(const QString& _u, bool _o) {
@@ -169,6 +195,8 @@ void UserListView::setOperator(const QString& _u, bool _o) {
 	if(! item)
 		return;
 	item->setOperator(_o);
+
+	adaptColumnSize(1);
 }
 
 void UserListView::setOwner(const QString& _u, bool _o) {
@@ -176,6 +204,8 @@ void UserListView::setOwner(const QString& _u, bool _o) {
 	if(! item)
 		return;
 	item->setOwner(_o);
+
+	adaptColumnSize(1);
 }
 
 void UserListView::add(const QString& _u, uint _st, uint _s, uint _f, const QString& _c, const QString& _co) {
@@ -186,6 +216,11 @@ void UserListView::add(const QString& _u, uint _st, uint _s, uint _f, const QStr
 	}
 	new UserListItem(this, _u, _st, _s, _f, _c, _co);
 
+	adaptColumnSize(0);
+	adaptColumnSize(1);
+	adaptColumnSize(2);
+	adaptColumnSize(3);
+	adaptColumnSize(4);
 }
 
 void UserListView::add(const QString& _u, const QString& _c) {
@@ -196,6 +231,11 @@ void UserListView::add(const QString& _u, const QString& _c) {
 	}
 	new UserListItem(this, _u, 0, 0, 0, _c, QString::null);
 
+	adaptColumnSize(0);
+	adaptColumnSize(1);
+	adaptColumnSize(2);
+	adaptColumnSize(3);
+	adaptColumnSize(4);
 }
 
 void UserListView::remove(const QString& _u) {
@@ -205,6 +245,12 @@ void UserListView::remove(const QString& _u) {
 		return;
 	}
 	delete item;
+
+	adaptColumnSize(0);
+	adaptColumnSize(1);
+	adaptColumnSize(2);
+	adaptColumnSize(3);
+	adaptColumnSize(4);
 }
 
 void UserListView::slotActivate(QTreeWidgetItem* item, int column) {
@@ -418,4 +464,9 @@ void UserListView::slotContextMenu(QTreeWidgetItem* item, const QPoint& pos, int
 
 void UserListView::countryToggled(bool t) {
     setColumnHidden(4, !t);
+}
+
+void UserListView::adaptColumnSize(int column) {
+    if (!museeq->mainwin()->isSavingAllLayouts())
+        resizeColumnToContents(column);
 }

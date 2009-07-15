@@ -35,6 +35,7 @@ class QMenu;
 class QResizeEvent;
 class QCloseEvent;
 class QMoveEvent;
+class QSplitter;
 
 class IPDialog;
 class SettingsDialog;
@@ -54,6 +55,9 @@ public:
 	const QSize & lastSize() const { return mLastSize; }
 	ChatRooms* chatRooms() { return mChatRooms;}
 	bool askPassword(QString & pass);
+	bool isSavingTransfersLayout() const {return mSaveTransfersLayout;}
+	bool isSavingAllLayouts() const {return mSaveAllLayouts;}
+
 	QMenu* mMenuFile, *  mMenuSettings, * mMenuModes;
 	QString  mVersion;
 	QTextEdit *mLog;
@@ -126,6 +130,7 @@ signals:
 	void showAllTickers();
 	void hideAllTickers();
 	void toggleCountries(bool);
+	void closingMuseeq();
 
 private slots:
 	void loadScript();
@@ -157,6 +162,7 @@ private:
 	bool mCloseFromMenu;
 	IconListBox* mIcons;
 	QStackedWidget* mStack;
+	QSplitter *mSplit;
 	QLabel* mTitle;
 	QLabel* statusLabel, * messageLabel;
 	QMenu* mMenuScripts, * mMenuUnloadScripts,  * mMenuHelp;
@@ -173,6 +179,7 @@ private:
 	int mMoves;
 	QPoint mLastPos;
 	QSize mLastSize;
+	bool mSaveTransfersLayout, mSaveAllLayouts;
 };
 
 #endif // MAINWINDOW_H

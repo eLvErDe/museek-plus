@@ -31,10 +31,10 @@
 #include <QLayout>
 #include <QUrl>
 
-BuddyList::BuddyList(QWidget* _p, const char* _n)
+BuddyList::BuddyList(QWidget* _p, const QString& _n)
           : QWidget(_p) {
 
-	mUserList = new UserListView(true, this, "userlist");
+	mUserList = new UserListView(true, this, _n);
     mUserList->setAcceptDrops(true);
 	connect(mUserList, SIGNAL(activated(const QString&)), SIGNAL(activated(const QString&)));
 	connect(mUserList, SIGNAL(dropSlsk(const QList<QUrl>&)), SLOT(slotDropSlsk(const QList<QUrl>&)));

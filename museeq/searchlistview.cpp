@@ -335,26 +335,16 @@ bool SearchListItem::operator<(const QTreeWidgetItem & other_) const {
 	case 2:
 		return text(2) < other->text(2);
 	case 3:
-		if(size() == other->size())
-			return user() < other->user();
 		return size() < other->size();
 	case 4:
-		if(speed() == other->speed())
-			return user() < other->user();
 		return speed() < other->speed();
 	case 5:
-		if(inQueue() == other->inQueue())
-			return user() < other->user();
 		return inQueue() < other->inQueue();
 	case 6:
 		return freeSlot();
 	case 7:
-		if(length() == other->length())
-			return user() < other->user();
 		return length() < other->length();
 	case 8:
-		if(bitrate() == other->bitrate())
-			return user() < other->user();
 		return bitrate() < other->bitrate();
 	case 9:
 		return dir() < other->dir() ;

@@ -32,7 +32,7 @@ class QUrl;
 class BuddyList : public QWidget {
 	Q_OBJECT
 public:
-	BuddyList(QWidget* = 0, const char* = 0);
+	BuddyList(QWidget* = 0, const QString& = QString::null);
 
 signals:
 	void activated(const QString&);

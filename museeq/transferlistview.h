@@ -38,7 +38,7 @@ public:
 		None,
 	} GroupMode;
 
-	TransferListView(bool place, QWidget* = 0, const char* = 0);
+	TransferListView(bool place, QWidget* = 0, const QString& = QString::null);
 
 	GroupMode groupMode() const;
 
@@ -52,6 +52,7 @@ public slots:
 	void remove(const QString&, const QString&);
 	void setGroupMode(GroupMode);
 	void updateParentsStats();
+	void onClosingMuseeq();
 
 protected:
 	void dragEnterEvent(QDragEnterEvent*);
@@ -64,6 +65,7 @@ private:
 	GroupMode mGroupMode;
 	QPoint mDragStartPosition;
 	TransferListItemProgress *mProgressBar;
+	QString mName;
 };
 
 

@@ -43,11 +43,16 @@ Transfers::Transfers(QWidget* _p, const char* _n)
 	QVBoxLayout *MainBox = new QVBoxLayout(this);
 	MainBox->setMargin(0);
 	MainBox->setSpacing(0);
-	QSplitter * transferSplitter = new QSplitter(this);
+	transferSplitter = new QSplitter(this);
 	MainBox->addWidget(transferSplitter);
 	downloadsWidget = new QWidget(transferSplitter);
 	uploadsWidget = new QWidget(transferSplitter);
 	transferSplitter->setOrientation(Qt::Vertical);
+
+    if (museeq->settings()->value("saveTransfersLayout", false).toBool()) {
+        QString optionName = "transferSplitter_Layout";
+        transferSplitter->restoreState(museeq->settings()->value(optionName).toByteArray());
+    }
 
 	// Downloads
 	QVBoxLayout *downloadVbox = new QVBoxLayout(downloadsWidget);
@@ -88,7 +93,7 @@ Transfers::Transfers(QWidget* _p, const char* _n)
 	downloadHbox->addWidget(mGroupDownloads);
 	connect(mGroupDownloads, SIGNAL(toggled(bool)), SLOT(groupDownloadsSet(bool)));
 
-	mDownloads = new TransferListView(true, downloadsWidget);
+	mDownloads = new TransferListView(true, downloadsWidget, "downloads");
  	downloadVbox->addWidget(mDownloads);
 	mDownloads->setAcceptDrops(true);
 	connect(museeq, SIGNAL(downloadUpdated(const NTransfer&)), mDownloads, SLOT(update(const NTransfer&)));
@@ -135,7 +140,7 @@ Transfers::Transfers(QWidget* _p, const char* _n)
 	uploadHbox->addWidget(mGroupUploads);
 	connect(mGroupUploads, SIGNAL(toggled(bool)), SLOT(groupUploadsSet(bool)));
 
-	mUploads = new TransferListView(false, uploadsWidget);
+	mUploads = new TransferListView(false, uploadsWidget, "uploads");
 	uploadVbox->addWidget(mUploads);
 	connect(museeq, SIGNAL(uploadUpdated(const NTransfer&)), mUploads, SLOT(update(const NTransfer&)));
 	connect(museeq, SIGNAL(uploadRemoved(const QString&, const QString&)), mUploads, SLOT(remove(const QString&, const QString&)));
@@ -203,6 +208,15 @@ Transfers::Transfers(QWidget* _p, const char* _n)
     groupDownloads(museeq->settings()->value("groupDownloads", false).toBool());
     groupUploads(museeq->settings()->value("groupUploads", false).toBool());
 	mUpGroupingChanging = mDownGroupingChanging = false;
+
+	connect(museeq, SIGNAL(closingMuseeq()), this, SLOT(onClosingMuseeq()));
+}
+
+void Transfers::onClosingMuseeq() {
+    if (museeq->settings()->value("saveTransfersLayout", false).toBool()) {
+        QString optionName = "transferSplitter_Layout";
+        museeq->settings()->setValue(optionName, transferSplitter->saveState());
+    }
 }
 
 TransferListView* Transfers::uploads() const {

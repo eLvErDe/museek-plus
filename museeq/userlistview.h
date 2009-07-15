@@ -35,7 +35,7 @@ class QMouseEvent;
 class UserListView : public QTreeWidget {
 	Q_OBJECT
 public:
-	UserListView(bool, QWidget * = 0, const char * = 0);
+	UserListView(bool, QWidget * = 0, const QString& = QString::null);
 
 	UserListItem* findItem(const QString&);
 
@@ -54,6 +54,9 @@ public slots:
 	void add(const QString&, const QString&);
 	void remove(const QString&);
 	void sorting(bool);
+	void adaptColumnSize(int);
+	void onClosingMuseeq();
+
 signals:
 	void activated(const QString&);
 	void activated(const QString&, const QString&);
@@ -80,7 +83,7 @@ protected slots:
 
 private:
 	Usermenu* mUsermenu;
-	QString mLastSearch;
+	QString mLastSearch, mName;
 
 	uint mSearchPosition;
 	QPoint mDragStartPosition;

@@ -66,8 +66,6 @@ bool WishListItem::operator<(const QTreeWidgetItem & other_) const {
     case 0:
       return mQuery.toLower() < other->mQuery.toLower();
     case 1:
-      if(mLastSearched == other->mLastSearched)
-        return mQuery < other->mQuery;
       return mLastSearched < other->mLastSearched;
 
   }

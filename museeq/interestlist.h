@@ -26,6 +26,7 @@
 class InterestListView;
 class QLineEdit;
 class QMenu;
+class QPushButton;
 
 class InterestList : public QWidget {
 	Q_OBJECT
@@ -48,6 +49,7 @@ private:
 
 protected:
 	QMenu *mPopup;
+	QPushButton * mAdd;
 	QString mPopped;
 	InterestListView *mListView ;
 	bool mReadOnly;

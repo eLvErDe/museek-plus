@@ -27,7 +27,7 @@
 #include <QIcon>
 
 UserListItem::UserListItem(UserListView *_parent, const QString& _u, uint _s, uint _sp, uint _f, const QString& _c, const QString& _co)
-	     : QTreeWidgetItem(static_cast<QTreeWidget *>(_parent)), mUser(_u), mIsOperator(false), mIsOwner(false) {
+	     : QTreeWidgetItem(static_cast<QTreeWidget *>(_parent)), mIsOperator(false), mIsOwner(false), mUser(_u) {
 
 	setText(1, mUser);
 	setTextAlignment(2, Qt::AlignRight|Qt::AlignVCenter);
@@ -173,18 +173,12 @@ bool UserListItem::operator<(const QTreeWidgetItem & other_) const {
 
 	switch(col) {
 	case 0:
-		if(status() == other->status())
-			return user().toLower() < other->user().toLower();
 		return status() < other->status();
 	case 1:
 		return user().toLower() < other->user().toLower();
 	case 2:
-		if(speed() == other->speed())
-			return user().toLower() < other->user().toLower();
 		return speed() < other->speed();
 	case 3:
-		if(files() == other->files())
-			return user() < other->user();
 		return files() < other->files();
 	case 4:
 		return country().toLower() < other->country().toLower();

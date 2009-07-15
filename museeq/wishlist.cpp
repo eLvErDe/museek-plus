@@ -26,6 +26,7 @@
 #include <QLayout>
 #include <QLabel>
 #include <QLineEdit>
+#include <QPushButton>
 
 WishList::WishList(QWidget* _p, const char* _n)
          : QWidget(_p) {
@@ -43,7 +44,11 @@ WishList::WishList(QWidget* _p, const char* _n)
 	mEntry = new QLineEdit(this);
 	layout->addWidget(mEntry);
 
+	mAdd = new QPushButton(tr("Add"), this);
+	layout->addWidget(mAdd);
+
 	connect(mEntry, SIGNAL(returnPressed()), SLOT(slotAddWish()));
+	connect(mAdd, SIGNAL(clicked()), SLOT(slotAddWish()));
 	connect(museeq, SIGNAL(addedWishItem(const QString&, uint)), SLOT(added(const QString&, uint)));
 	connect(museeq, SIGNAL(removedWishItem(const QString& )), SLOT(removed(const QString& )));
 }
@@ -63,8 +68,10 @@ void WishList::added(const QString& item, uint lastSearched) {
         if (itemFound)
             itemFound->setLastSearched(lastSearched);
 	}
-	else
+	else {
 	    new WishListItem(mWishList, item, lastSearched);
+	    mWishList->adaptColumnSize(0);
+	}
 }
 
 void WishList::removed(const QString& item) {
@@ -75,6 +82,7 @@ void WishList::removed(const QString& item) {
 	if (! i)
 		return;
 	delete i;
+    mWishList->adaptColumnSize(0);
 }
 
 void WishList::showEvent(QShowEvent*) {

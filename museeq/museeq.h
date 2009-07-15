@@ -206,6 +206,8 @@ signals:
 	void connected();
 	void disconnected();
 
+	void closingMuseeq();
+
 	void configChanged(const QString& domain, const QString& key, const QString& value);
 
 	// Server related signals

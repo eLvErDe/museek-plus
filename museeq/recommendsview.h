@@ -44,7 +44,8 @@ protected slots:
 	void slotContextMenu(const QPoint&);
 	void slotActivate(QTreeWidgetItem*);
 	void slotActivate(QTreeWidgetItem*,  int);
-
+	void adaptColumnSize(int);
+	void onClosingMuseeq();
 
 protected:
 	QAction * ActionAddHate, * ActionAddLike;

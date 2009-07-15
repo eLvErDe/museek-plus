@@ -110,7 +110,7 @@ public:
 	QLineEdit* SRemoteText, * SNicknameText, * STrustedText, * SBannedText, * STimeText, * SMessageFont, * SMeText, * STimeFont, * SBuddiedText;
 
 	QSpinBox* CPortStart, * CPortEnd, * TickerLength;
-	QCheckBox* SBuddiesPrivileged, * SOnlineAlerts,* SShareBuddiesOnly, * STrustedUsers, * SPrivRoom, * SBuddiesShares, * SIPLog, * LoggingPrivate, * LoggingRooms, * IconsAlignment, * mToggleTickers, * mToggleCountry, * mToggleLog, * mToggleTimestamps, * mToggleTrayicon, * mAutoClearFinishedDownloads, * mAutoClearFinishedUploads;
+	QCheckBox* SBuddiesPrivileged, * SOnlineAlerts,* SShareBuddiesOnly, * STrustedUsers, * SPrivRoom, * SBuddiesShares, * SIPLog, * LoggingPrivate, * LoggingRooms, * IconsAlignment, * mToggleTickers, * mToggleCountry, * mToggleSaveTransfersLayout, * mToggleSaveAllLayouts, * mToggleLog, * mToggleTimestamps, * mToggleTrayicon, * mAutoClearFinishedDownloads, * mAutoClearFinishedUploads;
 	QTreeWidget* ListNormalShares, * ListBuddyShares;
 
     QComboBox * mDAddress, * mDConnectType;

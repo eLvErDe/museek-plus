@@ -581,12 +581,8 @@ bool FileListItem::operator<(const QTreeWidgetItem & other_) const {
     case 0:
       return filename().toLower() < other->filename().toLower();
     case 1:
-      if(data().size == other->data().size)
-        return filename().toLower() < other->filename().toLower();
       return data().size < other->data().size;
     case 2:
-      if(data().bitrate == other->data().bitrate)
-        return filename().toLower() < other->filename().toLower();
       return data().bitrate < other->data().bitrate;
 
   }

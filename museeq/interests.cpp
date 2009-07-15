@@ -29,6 +29,7 @@
 #include <QSplitter>
 #include <QLabel>
 #include <QLayout>
+#include <QSettings>
 
 Interests::Interests(QWidget* parent, const char* name)
           : QWidget(parent) {
@@ -63,9 +64,9 @@ Interests::Interests(QWidget* parent, const char* name)
 	connect(museeq, SIGNAL(connectedToServer(bool)), mSimilar, SLOT(setEnabled(bool)));
 	connect(mSimilar, SIGNAL(clicked()), SLOT(getSimilarUsers()));
 
-	QSplitter* split = new QSplitter(this);
-	MainLayout->addWidget(split);
-	QWidget * interestsWidget = new QWidget(split);
+	mSplit = new QSplitter(this);
+	MainLayout->addWidget(mSplit);
+	QWidget * interestsWidget = new QWidget(mSplit);
 	QVBoxLayout* box = new QVBoxLayout(interestsWidget);
 	box->setSpacing(5);
 	box->setMargin(0);
@@ -75,9 +76,14 @@ Interests::Interests(QWidget* parent, const char* name)
 	mIHate = new InterestList(tr("I hate:"));
 	box->addWidget(mIHate);
 
-	mRecommendsList = new RecommendsView(split);
+	mRecommendsList = new RecommendsView(mSplit);
 
-	mUserList = new UserListView(false, split);
+	mUserList = new UserListView(false, mSplit, "interestsUserlist");
+
+    if (museeq->settings()->value("saveAllLayouts", false).toBool()) {
+        QString optionName = "interestsSplitter_Layout";
+        mSplit->restoreState(museeq->settings()->value(optionName).toByteArray());
+    }
 
 	connect(museeq, SIGNAL(addedInterest(const QString& )), SLOT(gAddInterest(const QString& )));
 	connect(museeq, SIGNAL(addedHatedInterest(const QString& )), SLOT(gAddHatedInterest(const QString& )));
@@ -85,8 +91,14 @@ Interests::Interests(QWidget* parent, const char* name)
 	connect(museeq, SIGNAL(removedHatedInterest(const QString& )), SLOT(gRemoveHatedInterest(const QString& )));
 	connect(museeq, SIGNAL(similarUsers(const NSimilarUsers& )), SLOT(addUsers(const NSimilarUsers&)));
 	connect(museeq, SIGNAL(itemSimilarUsers(const QString&, const NItemSimilarUsers& )), SLOT(addItemUsers(const QString&, const NItemSimilarUsers&)));
+	connect(museeq, SIGNAL(closingMuseeq()), this, SLOT(onClosingMuseeq()));
+}
 
-
+void Interests::onClosingMuseeq() {
+    if (museeq->settings()->value("saveAllLayouts", false).toBool()) {
+        QString optionName = "interestsSplitter_Layout";
+        museeq->settings()->setValue(optionName, mSplit->saveState());
+    }
 }
 
 void Interests::getGlobalRecommendations() {
@@ -99,6 +111,7 @@ void Interests::getRecommendations() {
 void Interests::getSimilarUsers() {
 	museeq->updateSimilarUsers();
 }
+
 void Interests::addUsers(const NSimilarUsers& _list) {
 
 	mUserList->clear();
@@ -107,11 +120,8 @@ void Interests::addUsers(const NSimilarUsers& _list) {
 		if(! it.key().isEmpty())
 			mUserList->add( (it.key()),  (it.value()));
 	}
-	mUserList->resizeColumnToContents(0);
-	mUserList->resizeColumnToContents(1);
-	mUserList->setSortingEnabled(true);
-	mUserList->sortItems(1, Qt::AscendingOrder);
 }
+
 void Interests::addItemUsers(const QString& _item, const NItemSimilarUsers& _list) {
 
 	mUserList->clear();
@@ -119,11 +129,8 @@ void Interests::addItemUsers(const QString& _item, const NItemSimilarUsers& _lis
 	for(; it != _list.end(); ++it)
 		if(! it.key().isEmpty())
 			mUserList->add( (it.key()),  (it.value()));
-	mUserList->resizeColumnToContents(0);
-	mUserList->resizeColumnToContents(1);
-	mUserList->setSortingEnabled(true);
-	mUserList->sortItems(1, Qt::AscendingOrder);
 }
+
 void Interests::gAddInterest(const QString& interest) {
 	mILove->added(interest);
 }

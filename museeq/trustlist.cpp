@@ -34,7 +34,7 @@
 TrustList::TrustList(QWidget* _p, const char* _n)
           : QWidget() {
 
-	mUserList = new UserListView(true, this, "userlist");
+	mUserList = new UserListView(true, this, "trustlist");
 	mUserList->setAcceptDrops(true);
 	connect(mUserList, SIGNAL(activated(const QString&)), SIGNAL(activated(const QString&)));
 	connect(mUserList, SIGNAL(dropSlsk(const QList<QUrl>&)), SLOT(slotDropSlsk(const QList<QUrl>&)));

@@ -19,11 +19,14 @@
  */
 
 #include "museeq.h"
+#include "mainwin.h"
 #include "recommendsview.h"
 #include "recommendsitem.h"
 #include "images.h"
 
 #include <QMenu>
+#include <QHeaderView>
+#include <QSettings>
 
 RecommendsView::RecommendsView(QWidget* _p, const char* _n)
              : QTreeWidget(_p) {
@@ -32,6 +35,8 @@ RecommendsView::RecommendsView(QWidget* _p, const char* _n)
 	setHeaderLabels(headers);
 	setSortingEnabled(true);
 	sortByColumn(1, Qt::DescendingOrder);
+	setColumnWidth(0, 200);
+
 	setRootIsDecorated(false);
 
  	setAllColumnsShowFocus(true);
@@ -47,6 +52,11 @@ RecommendsView::RecommendsView(QWidget* _p, const char* _n)
 	connect(ActionAddHate, SIGNAL(triggered()), this, SLOT(slotAddHate()));
 	mPopup->addAction(ActionAddHate);
 
+    if (museeq->settings()->value("saveAllLayouts", false).toBool()) {
+        QString optionName = "recommends_Layout";
+        header()->restoreState(museeq->settings()->value(optionName).toByteArray());
+    }
+
 	setContextMenuPolicy(Qt::CustomContextMenu);
 	connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), SLOT(slotContextMenu(const QPoint&)));
 	connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), SLOT(slotActivate(QTreeWidgetItem*, int)));
@@ -58,6 +68,14 @@ RecommendsView::RecommendsView(QWidget* _p, const char* _n)
 	connect(museeq, SIGNAL(itemRecommendations(const QString&, const NItemRecommendations&)), SLOT(setItemRecs(const QString&, const NItemRecommendations&)));
 
 	connect(museeq, SIGNAL(disconnected()), SLOT(clear()));
+	connect(museeq, SIGNAL(closingMuseeq()), this, SLOT(onClosingMuseeq()));
+}
+
+void RecommendsView::onClosingMuseeq() {
+    if (museeq->settings()->value("saveAllLayouts", false).toBool()) {
+        QString optionName = "recommends_Layout";
+        museeq->settings()->setValue(optionName, header()->saveState());
+    }
 }
 
 void RecommendsView::setGlobalRecs(const NGlobalRecommendations& _r) {
@@ -114,8 +132,14 @@ void RecommendsView::slotContextMenu(const QPoint& pos) {
 void RecommendsView::slotActivate(QTreeWidgetItem* item, int column) {
 	slotActivate( item);
 }
+
 void RecommendsView::slotActivate(QTreeWidgetItem* item) {
 	RecommendsItem* _item = dynamic_cast<RecommendsItem*>(item);
 	if(item)
 		museeq->joinRoom(_item->interest());
+}
+
+void RecommendsView::adaptColumnSize(int column) {
+    if (!museeq->mainwin()->isSavingAllLayouts())
+        resizeColumnToContents(column);
 }

@@ -48,6 +48,8 @@ protected slots:
 	void slotRefresh();
 	void slotActivate(QTreeWidgetItem*,  int);
 	void slotContextMenu(const QPoint&);
+	void adaptColumnSize(int);
+	void onClosingMuseeq();
 
 protected:
 	QAction * ActionJoin, * ActionLeave, * ActionRefresh, * mActionDisown, * mActionDismember;

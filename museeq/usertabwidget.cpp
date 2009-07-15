@@ -35,7 +35,7 @@ UserTabWidget::UserTabWidget(QWidget* _p, const char* _n)
 	setCanDrop(false);
 
 	const QString& Name = _n ;
-	mBuddyList = new BuddyList(this, "buddyList");
+	mBuddyList = new BuddyList(this, "buddyList-"+Name);
 	// No popup
 	connect(mBuddyList, SIGNAL(activated(const QString&)), SLOT(setPage(const QString&)));
 	connect(mTabBar, SIGNAL(dropSlsk(const QList<QUrl>&)), SLOT(dropSlsk(const QList<QUrl>&)));

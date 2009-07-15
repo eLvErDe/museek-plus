@@ -24,6 +24,8 @@
 #include "interestlist.h"
 
 #include <QMenu>
+#include <QHeaderView>
+#include <QSettings>
 
 InterestListView::InterestListView( const QString& caption,  QWidget* _p, bool readOnly )
              : QTreeWidget(_p), mReadOnly(readOnly) {
@@ -42,11 +44,17 @@ InterestListView::InterestListView( const QString& caption,  QWidget* _p, bool r
 
         if ( caption == tr("I like:") ) {
             connect(ActionRemove, SIGNAL(triggered()), this, SLOT(slotRemoveInterest()));
+            mStateOptionName = "likeInterests_Layout";
         }
         else if ( caption == tr("I hate:") ) {
             connect(ActionRemove, SIGNAL(triggered()), this, SLOT(slotRemoveHatedInterest()));
+            mStateOptionName = "hateInterests_Layout";
         }
         mPopup->addAction(ActionRemove);
+
+        if (museeq->settings()->value("saveAllLayouts", false).toBool()) {
+            header()->restoreState(museeq->settings()->value(mStateOptionName).toByteArray());
+        }
     }
 
 	ActionRecommendations = new QAction(tr("Recommendations for this item"), this);
@@ -63,10 +71,15 @@ InterestListView::InterestListView( const QString& caption,  QWidget* _p, bool r
 	connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), SLOT(slotActivate(QTreeWidgetItem*, int)));
 	connect(this, SIGNAL(itemActivated(QTreeWidgetItem*, int)), SLOT(slotActivate(QTreeWidgetItem*, int)));
 
-
 	connect(museeq, SIGNAL(disconnected()), SLOT(clear()));
+	connect(museeq, SIGNAL(closingMuseeq()), this, SLOT(onClosingMuseeq()));
 }
 
+void InterestListView::onClosingMuseeq() {
+    if (!mReadOnly && museeq->settings()->value("saveAllLayouts", false).toBool() && !mStateOptionName.isEmpty()) {
+        museeq->settings()->setValue(mStateOptionName, header()->saveState());
+    }
+}
 
 void InterestListView::slotRemoveInterest() {
 	museeq->removeInterest(mPopped);

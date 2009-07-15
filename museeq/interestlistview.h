@@ -41,11 +41,12 @@ protected slots:
 	void slotContextMenu(const QPoint&);
 	void slotActivate(QTreeWidgetItem*);
 	void slotActivate(QTreeWidgetItem*,  int);
+	void onClosingMuseeq();
 
 protected:
 	QAction * ActionRemove, * ActionRecommendations, * ActionItemSimilarUsers;
 	QMenu *mPopup;
-	QString mPopped;
+	QString mPopped, mStateOptionName;
 	bool mReadOnly;
 };
 

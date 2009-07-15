@@ -28,6 +28,7 @@
 class QLineEdit;
 class WishListView;
 class QShowEvent;
+class QPushButton;
 
 class WishList : public QWidget {
 	Q_OBJECT
@@ -47,6 +48,7 @@ public slots:
 private:
 	QLineEdit *mEntry;
 	WishListView *mWishList;
+	QPushButton * mAdd;
 };
 
 #endif // WISHLIST_H

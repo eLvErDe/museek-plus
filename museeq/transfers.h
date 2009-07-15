@@ -31,6 +31,7 @@ class QMenu;
 class QCheckBox;
 class QSpinBox;
 class QUrl;
+class QSplitter;
 
 class Transfers : public QWidget {
 	Q_OBJECT
@@ -77,6 +78,7 @@ protected slots:
 	void setUprate(const QString&);
 	void setSorting(bool);
 	void setupUsers();
+	void onClosingMuseeq();
 
 private:
 	QAction * ActionRetry, * ActionAbort, * ActionCheckPosition, * ActionClearSelected, * ActionClearFinished, * ActionClearAborted, * ActionClearAwaiting, * ActionClearCruft, * ActionClearQueued, * ActionClearFinishedAborted, *ActionMessageDownloading;
@@ -91,6 +93,7 @@ private:
 	QCheckBox* mGroupDownloads, * mGroupUploads;
 	QSpinBox* mDownslots, *mDownrate, *mUpslots, *mUprate;
 	QWidget * downloadsWidget, * uploadsWidget;
+	QSplitter * transferSplitter;
 };
 
 #endif

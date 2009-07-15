@@ -24,6 +24,8 @@
 #include "roomlistitem.h"
 
 #include <QMenu>
+#include <QHeaderView>
+#include <QSettings>
 
 RoomListView::RoomListView(QWidget* _p, const char* _n)
              : QTreeWidget(_p) {
@@ -36,6 +38,11 @@ RoomListView::RoomListView(QWidget* _p, const char* _n)
 	setRootIsDecorated(false);
  	setAllColumnsShowFocus(true);
 
+
+    if (museeq->settings()->value("saveAllLayouts", false).toBool()) {
+        QString optionName = "roomList_Layout";
+        header()->restoreState(museeq->settings()->value(optionName).toByteArray());
+    }
 
 	mPopup = new QMenu(this);
 
@@ -72,6 +79,14 @@ RoomListView::RoomListView(QWidget* _p, const char* _n)
 	connect(museeq, SIGNAL(roomList(const NRoomList&)), SLOT(setRooms(const NRoomList&)));
 	connect(museeq, SIGNAL(privRoomList(const NPrivRoomList&)), SLOT(setPrivRooms(const NPrivRoomList&)));
 	connect(museeq, SIGNAL(disconnected()), SLOT(clear()));
+	connect(museeq, SIGNAL(closingMuseeq()), this, SLOT(onClosingMuseeq()));
+}
+
+void RoomListView::onClosingMuseeq() {
+    if (museeq->settings()->value("saveAllLayouts", false).toBool()) {
+        QString optionName = "roomList_Layout";
+        museeq->settings()->setValue(optionName, header()->saveState());
+    }
 }
 
 void RoomListView::setRooms(const NRoomList& _r) {
@@ -97,14 +112,18 @@ void RoomListView::setRoomsFromCache() {
 	    QStringList role;
 	    role << tr("member") << tr("operator") << tr("owner") << tr("unknown");
 	    uint intRole = itp.value().second;
-	    if (intRole >= role.size())
+	    if ((int) intRole >= role.size())
             intRole = role.size() -1;
 		new RoomListItem(this, itp.key(), itp.value().first, tr("Private (%1)").arg(role[intRole]));
 	}
 
-	resizeColumnToContents(0);
-	sortItems(0, Qt::AscendingOrder);
-	sortItems(2, Qt::AscendingOrder);
+    if (!museeq->mainwin()->isSavingAllLayouts()) {
+        sortItems(0, Qt::AscendingOrder);
+        sortItems(2, Qt::AscendingOrder);
+    }
+
+	adaptColumnSize(0);
+	adaptColumnSize(1);
 }
 
 void RoomListView::slotJoin() {
@@ -156,3 +175,7 @@ void RoomListView::slotContextMenu(const QPoint& pos) {
 	mPopup->exec(mapToGlobal(pos));
 }
 
+void RoomListView::adaptColumnSize(int column) {
+    if (!museeq->mainwin()->isSavingAllLayouts())
+        resizeColumnToContents(column);
+}

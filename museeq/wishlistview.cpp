@@ -25,6 +25,8 @@
 #include "mainwin.h"
 
 #include <QMenu>
+#include <QHeaderView>
+#include <QSettings>
 
 WishListView::WishListView(QWidget* _p, const char* _n)
              : QTreeWidget(_p) {
@@ -39,6 +41,11 @@ WishListView::WishListView(QWidget* _p, const char* _n)
 	setRootIsDecorated(false);
  	setAllColumnsShowFocus(true);
 
+    if (museeq->settings()->value("saveAllLayouts", false).toBool()) {
+        QString optionName = "wishlist_Layout";
+        header()->restoreState(museeq->settings()->value(optionName).toByteArray());
+    }
+
 	mPopup = new QMenu(this);
 	ActionRemove = new QAction(IMG("remove"), tr("Remove"), this);
 	connect(ActionRemove, SIGNAL(triggered()), this, SLOT(slotRemove()));
@@ -50,6 +57,14 @@ WishListView::WishListView(QWidget* _p, const char* _n)
 	connect(this, SIGNAL(itemActivated(QTreeWidgetItem*, int)), SLOT(slotActivate(QTreeWidgetItem*, int)));
 
 	connect(museeq, SIGNAL(disconnected()), SLOT(clear()));
+	connect(museeq, SIGNAL(closingMuseeq()), this, SLOT(onClosingMuseeq()));
+}
+
+void WishListView::onClosingMuseeq() {
+    if (museeq->settings()->value("saveAllLayouts", false).toBool()) {
+        QString optionName = "wishlist_Layout";
+        museeq->settings()->setValue(optionName, header()->saveState());
+    }
 }
 
 void WishListView::slotRemove() {
@@ -77,3 +92,7 @@ void WishListView::slotContextMenu(const QPoint& pos) {
 	mPopup->exec(mapToGlobal(pos));
 }
 
+void WishListView::adaptColumnSize(int column) {
+    if (!museeq->mainwin()->isSavingAllLayouts())
+        resizeColumnToContents(column);
+}

@@ -46,8 +46,6 @@ bool RecommendsItem::operator<(const QTreeWidgetItem & other_) const {
     case 0:
       return interest() < other->interest();
     case 1:
-      if(mNum == other->mNum)
-        return interest() < other->interest();
       return mNum < other->mNum;
 
   }

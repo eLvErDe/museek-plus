@@ -26,6 +26,7 @@
 #include <QLineEdit>
 #include <QLayout>
 #include <QLabel>
+#include <QPushButton>
 
 InterestList::InterestList(const QString& caption, QWidget* parent, bool readOnly)
              : QWidget(parent), mReadOnly(readOnly) {
@@ -43,10 +44,17 @@ InterestList::InterestList(const QString& caption, QWidget* parent, bool readOnl
         mEntry = new QLineEdit(this);
         hbox->addWidget(mEntry);
 
-        if ( caption == tr("I like:") )
+        mAdd = new QPushButton(tr("Add"), this);
+        hbox->addWidget(mAdd);
+
+        if ( caption == tr("I like:") ) {
             connect(mEntry, SIGNAL(returnPressed()), SLOT(slotDoAddInterest()));
-        else if ( caption == tr("I hate:") )
+            connect(mAdd, SIGNAL(clicked()), SLOT(slotDoAddInterest()));
+        }
+        else if ( caption == tr("I hate:") ) {
             connect(mEntry, SIGNAL(returnPressed()), SLOT(slotDoAddHatedInterest()));
+            connect(mAdd, SIGNAL(clicked()), SLOT(slotDoAddHatedInterest()));
+        }
 	}
 }
 

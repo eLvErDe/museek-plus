@@ -28,9 +28,13 @@
 #include <QList>
 #include <QUrl>
 #include <QPainter>
+#include <QHeaderView>
+#include <QSettings>
 
-TransferListView::TransferListView(bool place, QWidget* _p, const char* _n)
+TransferListView::TransferListView(bool place, QWidget* _p, const QString& _name)
                  : QTreeWidget(_p), mGroupMode(None) {
+
+	mName = _name;
 
 	QStringList headers;
 	headers << tr("User") << tr("File") << tr("Status") << tr("Progress") << tr("Place") << tr("Position") << tr("Size") << tr("Speed") << tr("Time Left") << tr("Path") << QString::null;
@@ -53,16 +57,29 @@ TransferListView::TransferListView(bool place, QWidget* _p, const char* _n)
 	setColumnWidth ( 5, 75 );
 	setColumnWidth ( 6, 75 );
 	setColumnWidth ( 7, 75 );
-	setColumnWidth ( 8, 75 );
-	setColumnWidth ( 9, 250 );
+	setColumnWidth ( 8, 95 );
+	setColumnWidth ( 9, 230 );
 	setColumnWidth ( 10, 0 );
 
     // Define the progress bar for the progress column
     mProgressBar = new TransferListItemProgress(this);
     setItemDelegateForColumn( 3, mProgressBar );
 
+    if (museeq->settings()->value("saveTransfersLayout", false).toBool()) {
+        QString optionName = "transfers-"+mName+"_Layout";
+        header()->restoreState(museeq->settings()->value(optionName).toByteArray());
+    }
+
 	setContextMenuPolicy(Qt::CustomContextMenu);
 	connect(museeq, SIGNAL(disconnected()), SLOT(clear()));
+	connect(museeq, SIGNAL(closingMuseeq()), this, SLOT(onClosingMuseeq()));
+}
+
+void TransferListView::onClosingMuseeq() {
+    if (museeq->settings()->value("saveTransfersLayout", false).toBool()) {
+        QString optionName = "transfers-"+mName+"_Layout";
+        museeq->settings()->setValue(optionName, header()->saveState());
+    }
 }
 
 TransferListItem* TransferListView::findTransfer(const QString& _u, const QString& _p) {

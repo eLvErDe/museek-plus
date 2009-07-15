@@ -23,7 +23,7 @@
 #include "util.h"
 
 RoomListItem::RoomListItem(RoomListView* _p, const QString& _r, unsigned int _n, const QString& _s)
-                 : QTreeWidgetItem(_p), mRoom(_r), mUsers(_n), mStatus(_s) {
+                 : QTreeWidgetItem(_p), mRoom(_r), mStatus(_s), mUsers(_n) {
 	setText(0, mRoom);
 	setText(1, QString("%1").arg(mUsers));
 	setText(2, mStatus);
@@ -47,12 +47,8 @@ bool RoomListItem::operator<(const QTreeWidgetItem & other_) const {
     case 0:
       return mRoom.toLower() < other->mRoom.toLower();
     case 1:
-      /*if(mUsers == other->mUsers)
-        return mRoom < other->mRoom;*/
       return mUsers < other->mUsers;
     case 2:
-      /*if(mStatus == other->mStatus)
-        return mRoom < other->mRoom;*/
       return mStatus < other->mStatus;
 
   }

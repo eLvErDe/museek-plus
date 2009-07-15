@@ -29,6 +29,7 @@ class UserListView;
 class RecommendsView;
 class QPushButton;
 class InterestList;
+class QSplitter;
 
 class Interests : public QWidget {
 	Q_OBJECT
@@ -46,6 +47,7 @@ public slots:
 	void gAddHatedInterest(const QString&);
 	void gRemoveInterest(const QString&);
 	void gRemoveHatedInterest(const QString&);
+	void onClosingMuseeq();
 
 
 protected slots:
@@ -57,7 +59,7 @@ private:
 	RecommendsView* mRecommendsList ;
 
 	QPushButton* mGlobal,* mRecommend,* mSimilar;
-
+	QSplitter* mSplit;
 };
 
 #endif // INTERESTS_H

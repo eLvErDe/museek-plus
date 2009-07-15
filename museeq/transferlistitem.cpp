@@ -329,36 +329,20 @@ bool TransferListItem::operator<(const QTreeWidgetItem & other_) const {
 	case 1:
 		return text(1) < other->text(1);
 	case 2:
-		if(text(2) == other->text(2))
-			return user() < other->user();
 		return text(2) < other->text(2);
     case 3:
-		if(data( 3, Qt::DisplayRole ).toInt() == other->data( 3, Qt::DisplayRole ).toInt())
-			return user() < other->user();
 		return data( 3, Qt::DisplayRole ).toInt() < other->data( 3, Qt::DisplayRole ).toInt();
 	case 4:
-		if(mPlaceInQueue == other->mPlaceInQueue)
-			return user() < other->user();
 		return mPlaceInQueue < other->mPlaceInQueue;
 	case 5:
-		if(position() == other->position())
-			return user() < other->user();
 		return position() < other->position();
 	case 6:
-		if(size() == other->size())
-			return user() < other->user();
 		return size() < other->size();
 	case 7:
-		if(rate() == other->rate())
-			return user() < other->user();
 		return rate() < other->rate();
 	case 8:
-		if(timeLeft() == other->timeLeft())
-			return user() < other->user();
 		return timeLeft() < other->timeLeft();
 	case 9:
-		if(path() == other->path())
-			return user() < other->user();
 		return path() < other->path();
 
 	}

@@ -32,10 +32,14 @@ class WishListView : public QTreeWidget {
 public:
 	WishListView(QWidget* = 0, const char* = 0);
 
+public slots:
+	void adaptColumnSize(int);
+
 protected slots:
 	void slotRemove();
 	void slotActivate(QTreeWidgetItem*,  int);
 	void slotContextMenu(const QPoint&);
+	void onClosingMuseeq();
 
 protected:
 	QAction * ActionRemove;

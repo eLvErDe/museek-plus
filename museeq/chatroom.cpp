@@ -79,7 +79,7 @@ ChatRoom::ChatRoom(const QString _r, QWidget * parent, const QString name)
 
 	vbox->setSpacing(2);
 	vbox->setMargin(2);
-	mUserList = new UserListView(false, rightSide, "userlist");
+	mUserList = new UserListView(false, rightSide, "roomsUserlist");
 	vbox->addWidget(mUserList);
 	mUserList->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
 

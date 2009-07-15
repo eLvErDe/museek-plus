@@ -81,8 +81,9 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(0, 0), m
 	connect(museeq->driver(), SIGNAL(statusSet(uint)), SLOT(slotStatusSet(uint)));
 	connect(museeq, SIGNAL(configChanged(const QString&, const QString&, const QString&)), SLOT(slotConfigChanged(const QString&, const QString&, const QString&)));
 
-
     mCloseFromMenu = false;
+ 	mSaveTransfersLayout = museeq->settings()->value("saveTransfersLayout", false).toBool();
+ 	mSaveAllLayouts = museeq->settings()->value("saveAllLayouts", false).toBool();
 
 	mMenuFile = menuBar()->addMenu(tr("&File"));
 	ActionConnect = new QAction(IMG("connect"), tr("&Connect to daemon"), this);
@@ -278,17 +279,17 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(0, 0), m
 	header->addWidget(frame);
 	frame->setFrameShape(QFrame::HLine);
 
-	QSplitter *split = new QSplitter(MainWidget);
-	split->setOrientation(Qt::Vertical);
-	header->addWidget(split);
+	mSplit = new QSplitter(MainWidget);
+	mSplit->setOrientation(Qt::Vertical);
+	header->addWidget(mSplit);
 
-	mStack = new QStackedWidget(split);
+	mStack = new QStackedWidget(mSplit);
 	mStack->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 	header->setStretchFactor(mStack, 10);
 	mChatRooms = new ChatRooms(MainWidget);
 
 	mStack->addWidget(mChatRooms);
-	mPrivateChats = new PrivateChats(MainWidget);
+	mPrivateChats = new PrivateChats(MainWidget, "privateChats");
 
 	mStack->addWidget(mPrivateChats);
 
@@ -301,7 +302,7 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(0, 0), m
 	mUserInfos = new UserInfos(MainWidget, "userInfo");
 	mStack->addWidget(mUserInfos);
 
-	mBrowsers = new Browsers(MainWidget);
+	mBrowsers = new Browsers(MainWidget, "browser");
 	mStack->addWidget(mBrowsers);
 
 	connect(mChatRooms, SIGNAL(highlight(int)), chatIcon, SLOT(setHighlight(int)));
@@ -321,7 +322,7 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(0, 0), m
 
 	connect(museeq->driver(), SIGNAL(userStatus(const QString&, uint)), SLOT(slotUserStatus(const QString&, uint)));
 
-	mLog = new QTextEdit(split);
+	mLog = new QTextEdit(mSplit);
 	mLog->setReadOnly(true);
 	mLog->setAcceptRichText(true);
 	mLog->setFocusPolicy(Qt::NoFocus);
@@ -335,6 +336,11 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(0, 0), m
 	mSettingsDialog->mTabHolder->setTabEnabled(mSettingsDialog->mTabHolder->indexOf(mSettingsDialog->mMuseekdTabs), false);
 
 	changeCMode();
+
+    if (museeq->settings()->value("saveAllLayouts", false).toBool()) {
+        QString optionName = "logSplitter_Layout";
+        mSplit->restoreState(museeq->settings()->value(optionName).toByteArray());
+    }
 }
 
 void MainWindow::showWithRestoredSize() {
@@ -834,6 +840,12 @@ void MainWindow::saveSettings() {
     museeq->settings()->setValue("showCountries", showCountries);
     emit toggleCountries(showCountries);
 
+    mSaveTransfersLayout = mSettingsDialog->mToggleSaveTransfersLayout->isChecked();
+    museeq->settings()->setValue("saveTransfersLayout", mSaveTransfersLayout);
+
+    mSaveAllLayouts = mSettingsDialog->mToggleSaveAllLayouts->isChecked();
+    museeq->settings()->setValue("saveAllLayouts", mSaveAllLayouts);
+
     bool showLog = mSettingsDialog->mToggleLog->isChecked();
     museeq->settings()->setValue("showStatusLog", showLog);
     if (!showLog)
@@ -1194,11 +1206,19 @@ void MainWindow::closeEvent(QCloseEvent * ev) {
 	museeq->settings()->setValue("Height", mLastSize.height());
 	museeq->settings()->setValue("Maximized", isMaximized());
 
+    if (museeq->settings()->value("saveAllLayouts", false).toBool()) {
+        QString optionName = "logSplitter_Layout";
+        museeq->settings()->setValue(optionName, mSplit->saveState());
+    }
+
+	emit closingMuseeq();
+
     museeq->settings()->sync();
 
 	if ( shutdownDaemon )
 		stopDaemon();
 	ev->accept();
+
 	QApplication::instance()->quit();
 }
 
