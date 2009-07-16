@@ -3442,23 +3442,32 @@ class Settings( gtk.Dialog):
 			
 			self.CONFIG_PATH = self.app.Muscan.configfile
 			config = self.config
-			self.EntryServerHost.set_text(self.config["server"]["host"])
-			self.ServerPort.set_value(int(self.config["server"]["port"]))
-			self.EntryServerPassword.set_text(self.config["server"]["password"])
-			self.EntryServerUsername.set_text(self.config["server"]["username"])
+			if "host" in self.config["server"]:
+				self.EntryServerHost.set_text(self.config["server"]["host"])
+			if "port" in self.config["server"]:
+				self.ServerPort.set_value(int(self.config["server"]["port"]))
+			if "password" in self.config["server"]:
+				self.EntryServerPassword.set_text(self.config["server"]["password"])
+			if "username" in self.config["server"]:
+				self.EntryServerUsername.set_text(self.config["server"]["username"])
 			if "filesystem" in self.config["encoding"]:
 				self.filesystemEncoding.child.set_text(self.config["encoding"]["filesystem"])
 			if "network" in self.config["encoding"]:
 				self.networkEncoding.child.set_text(self.config["encoding"]["network"])
-			self.LastPort.set_value(int(self.config["clients.bind"]["last"]))
-			self.FirstPort.set_value(int(self.config["clients.bind"]["first"]))
-			self.LogMethod.set_active(int(self.config["logging"]["output"]))
+			if "last" in self.config["clients.bind"]:
+				self.LastPort.set_value(int(self.config["clients.bind"]["last"]))
+			if "first" in self.config["clients.bind"]:
+				self.FirstPort.set_value(int(self.config["clients.bind"]["first"]))
+			if "output" in self.config["logging"]:
+				self.LogMethod.set_active(int(self.config["logging"]["output"]))
 			# Museek Clients
-			self.interfacePassword.set_text(str(self.config["interfaces"]["password"]))
+			if "password" in self.config["interfaces"]:
+				self.interfacePassword.set_text(str(self.config["interfaces"]["password"]))
 			self.createTreeFor( self.interfacesTreestore, self.interfacesTreeview, "interfaces.bind")	
 
 			# Transfers
-			self.connectMode.child.set_text(str(self.config["clients"]["connectmode"]))
+			if "connectmode" in self.config["clients"]:
+				self.connectMode.child.set_text(str(self.config["clients"]["connectmode"]))
 
 			if str(self.config["transfers"]["privilege_buddies"]) == "true":
 				self.privilege_buddies_Check.set_active(True)
@@ -3489,16 +3498,20 @@ class Settings( gtk.Dialog):
 					self.user_warnings_Check.set_active(False)
 			else:
 				self.user_warnings_Check.set_active(False)
-			self.uploadSlots.set_value(int(self.config["transfers"]["upload_slots"]))
-			self.uploadRate.set_value(int(self.config["transfers"]["upload_rate"]))
+			if "upload_slots" in self.config["transfers"]:
+				self.uploadSlots.set_value(int(self.config["transfers"]["upload_slots"]))
+			if "upload_rate" in self.config["transfers"]:
+				self.uploadRate.set_value(int(self.config["transfers"]["upload_rate"]))
 			if "download_slots" in config["transfers"].keys():
 				self.downloadSlots.set_value(int(self.config["transfers"]["download_slots"]))
 			if "download_rate" in config["transfers"].keys():
 				self.downloadRate.set_value(int(self.config["transfers"]["download_rate"]))
 			if "download-dir" in config["transfers"].keys():
 				self.EntryDownloadDIr.set_text(str(self.config["transfers"]["download-dir"]))
-			self.EntryIncompleteDir.set_text(str(self.config["transfers"]["incomplete-dir"]))
-			self.EntryDownloadsDBase.set_text(str(self.config["transfers"]["downloads"]))
+			if "incomplete-dir" in self.config["transfers"]:
+				self.EntryIncompleteDir.set_text(str(self.config["transfers"]["incomplete-dir"]))
+			if "downloads" in self.config["transfers"]:
+				self.EntryDownloadsDBase.set_text(str(self.config["transfers"]["downloads"]))
 			# Chat rooms
 			if "default-ticker" in self.config:
 				if "ticker" in self.config["default-ticker"]:
@@ -3521,19 +3534,23 @@ class Settings( gtk.Dialog):
 			e = self.userinfoBuffer.get_end_iter()
 			self.userinfoBuffer.delete(s, e)
 
-			self.userinfoImage.set_from_file(str(self.config["userinfo"]["image"]))
-			self.EntryImage.set_text(str(self.config["userinfo"]["image"]))
+			if "image" in config["userinfo"].keys():
+				self.userinfoImage.set_from_file(str(self.config["userinfo"]["image"]))
+				self.EntryImage.set_text(str(self.config["userinfo"]["image"]))
 
 			s= self.userinfoBuffer.get_start_iter()
-			self.userinfoBuffer.insert(s, str(self.config["userinfo"]["text"]))
+			if "text" in config["userinfo"].keys():
+				self.userinfoBuffer.insert(s, str(self.config["userinfo"]["text"]))
 			self.importinguserinfo =0
 			# Shares DBs
 			
 	
-			self.EntryNormalShares.set_text(str(self.config["shares"]["database"]))
+			if "database" in self.config["shares"]:
+				self.EntryNormalShares.set_text(str(self.config["shares"]["database"]))
 			if "buddy.shares" not in self.config:
 				self.config["buddy.shares"] = {"database": config_path+".buddyshares"}
-			self.EntryBuddyOnlyShares.set_text(str(self.config["buddy.shares"]["database"]))
+			if "database" in self.config["buddy.shares"]:
+				self.EntryBuddyOnlyShares.set_text(str(self.config["buddy.shares"]["database"]))
 			# Alerts
 			self.createTreeFor( self.AlertsTreestore, self.AlertsTreeview, "alerts")
 			self.OnRefreshNormalDirs(None)
