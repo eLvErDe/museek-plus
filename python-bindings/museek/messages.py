@@ -109,6 +109,19 @@ class BaseMessage:
 	def pack_cipher(self, s):
 		return self.pack_uint(len(s)) + self.cipher.cipher(s)
 	
+
+class Transfer:
+	def __init__(self, is_upload, user, path, state, error, filepos, filesize, rate, place):
+		self.is_upload = is_upload
+		self.user = user
+		self.path = path
+		self.state = state
+		self.error = error
+		self.filepos = filepos
+		self.filesize = filesize
+		self.rate = rate
+		self.place = place
+
 class Ping(BaseMessage):
 	code = 0x0000
 	def __init__(self, id = None):
@@ -218,6 +231,87 @@ class DebugMessage(BaseMessage):
 		self.domain, data = self.unpack_string(data)
 		self.message, data = self.unpack_string(data)
 		return self
+
+class ChangePasword(BaseMessage):
+	code = 0x0012
+	
+	def __init__(self, password = None):
+		self.password = password
+	
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_cipher(self.password)
+	
+	def parse(self, data):
+		self.password, data = self.unpack_cipher(data)
+		return self
+
+class ConfigState(BaseMessage):
+	code = 0x0100
+	
+	def __init__(self):
+		self.config = None
+		
+	def parse(self, data):
+		self.config = {}
+		domains, data = self.unpack_uint(data)
+		for i in range(domains):
+			domain, data = self.unpack_cipher(data)
+			values = {}
+			keys, data = self.unpack_uint(data)
+			for j in range(keys):
+				key, data = self.unpack_cipher(data)
+				value, data = self.unpack_cipher(data)
+				values[key] = value
+			self.config[domain] = values
+		return self
+
+class ConfigSet(BaseMessage):
+	code = 0x0101
+	
+	def __init__(self, domain = None, key = None, value = None):
+		self.domain = domain
+		self.key = key
+		self.value = value
+	
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_cipher(self.domain) + \
+			self.pack_cipher(self.key) + \
+			self.pack_cipher(self.value)
+	
+	def parse(self, data):
+		self.domain, data = self.unpack_cipher(data)
+		self.key, data = self.unpack_cipher(data)
+		self.value, data = self.unpack_cipher(data)
+		return self
+
+class ConfigRemove(BaseMessage):
+	code = 0x0102
+	
+	def __init__(self, domain = None, key = None):
+		self.domain = domain
+		self.key = key
+	
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_cipher(self.domain) + \
+			self.pack_cipher(self.key)
+	
+	def parse(self, data):
+		self.domain, data = self.unpack_cipher(data)
+		self.key, data = self.unpack_cipher(data)
+		return self
+
+class ConfigSetUserImage(BaseMessage):
+	code = 0x0103
+	
+	def __init__(self, image = ""):
+		self.image = image
+	
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.image)
 	
 class PeerExists(BaseMessage):
 	code = 0x0201
@@ -233,24 +327,6 @@ class PeerExists(BaseMessage):
 	def parse(self, data):
 		self.user, data = self.unpack_string(data)
 		self.exists = ord(data[0])
-		return self
-
-class PeerAddress(BaseMessage):
-	code = 0x0206
-	
-	def __init__(self, user = None):
-		self.user = user
-		self.ip = None
-		self.port = None
-	
-	def make(self):
-		return self.pack_uint(self.code) + \
-			self.pack_string(self.user)
-	
-	def parse(self, data):
-		self.user, data = self.unpack_string(data)
-		self.ip, data = self.unpack_string(data)
-		self.port, data = self.unpack_uint(data)
 		return self
 	
 class PeerStatus(BaseMessage):
@@ -278,6 +354,8 @@ class PeerStats(BaseMessage):
 		self.numdownloads = None
 		self.numfiles = None
 		self.numdirs = None
+		self.slotsfull = None
+		self.country = None
 	
 	def make(self):
 		return self.pack_uint(self.code) + \
@@ -289,7 +367,612 @@ class PeerStats(BaseMessage):
 		self.numdownloads, data = self.unpack_uint(data)
 		self.numfiles, data = self.unpack_uint(data)
 		self.numdirs, data = self.unpack_uint(data)
+		self.slotsfull, data = ord(data[0]), data[1:]
+		self.country, data = self.unpack_string(data)
 		return self
+
+class UserInfo(BaseMessage):
+	code = 0x0204
+	
+	def __init__(self, user = None):
+		self.user = user
+		self.info = None
+		self.picture = None
+		self.uploads = None
+		self.queue = None
+		self.slotsfree = None
+
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.user)
+
+	def parse(self, data):
+		self.user, data = self.unpack_string(data)
+		self.info, data = self.unpack_string(data)
+		self.picture, data = self.unpack_string(data)
+		self.uploads, data = self.unpack_uint(data)
+		self.queue, data = self.unpack_uint(data)
+		self.slotsfree, data = ord(data[0]), data[1:]
+		return self
+
+class UserShares(BaseMessage):
+	code = 0x0205
+	
+	def __init__(self, user = None):
+		self.user = user
+		self.shares = None
+
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.user)
+
+	def parse(self, data):
+		self.shares = {}
+		pos = 0
+		
+		self.user, pos = self.unpack_pos_string(data, pos)
+		dirs, pos = self.unpack_pos_uint(data, pos)
+		for i in range(dirs):
+			dir, pos = self.unpack_pos_string(data, pos)
+
+			self.shares[dir] = {}
+			
+			files, pos = self.unpack_pos_uint(data, pos)
+
+			for j in range(files):
+				filename, pos = self.unpack_pos_string(data, pos)
+				size, pos = self.unpack_pos_off(data, pos)
+				extension, pos = self.unpack_pos_string(data, pos)
+				attrs, pos = self.unpack_pos_uint(data, pos)
+				attributes = []
+				for k in range(attrs):
+					a, pos = self.unpack_pos_uint(data, pos)
+					attributes.append(a)
+					
+				self.shares[dir][filename] = [size, extension, attributes]
+		return self
+
+class PeerAddress(BaseMessage):
+	code = 0x0206
+	
+	def __init__(self, user = None):
+		self.user = user
+		self.ip = None
+		self.port = None
+	
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.user)
+	
+	def parse(self, data):
+		self.user, data = self.unpack_string(data)
+		self.ip, data = self.unpack_string(data)
+		self.port, data = self.unpack_uint(data)
+		return self
+
+
+class GivePrivileges(BaseMessage):
+	code = 0x0207
+
+	def __init__(self, user = None, days=None):
+		self.user = user
+		self.days = days
+
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.user) + \
+			self.pack_uint(self.days)
+
+
+class RoomState(BaseMessage): # deprecated since 0.3
+	code = 0x0300
+	
+	def __init__(self):
+		self.roomlist = None
+		self.joined_rooms = None
+		self.tickers = None
+
+	def parse(self, data):
+		self.roomlist = {}
+		pos = 0
+ 
+		nr, pos = self.unpack_pos_uint(data, pos)
+		for i in range(nr):
+			room, pos = self.unpack_pos_string(data, pos)
+			users, pos = self.unpack_pos_uint(data, pos)
+			self.roomlist[room] = users
+
+		self.joined_rooms = {}
+		self.tickers = {}
+		n, pos = self.unpack_pos_uint(data, pos)
+		for i in range(n):
+			room, pos = self.unpack_pos_string(data, pos)
+			self.joined_rooms[room] = {}
+			n2, pos = self.unpack_pos_uint(data, pos) 
+			for j in range(n2):
+				user, pos = self.unpack_pos_string(data, pos)
+				status, pos = self.unpack_pos_uint(data, pos)
+				avgspeed, pos = self.unpack_pos_uint(data, pos)
+				downloadnum, pos = self.unpack_pos_uint(data, pos)
+				files, pos = self.unpack_pos_uint(data, pos)
+				dirs, pos = self.unpack_pos_uint(data, pos)
+
+				slotsfull = ord(data[pos]); pos += 1
+				self.joined_rooms[room][user] = [status, avgspeed, downloadnum, files, dirs, slotsfull]
+				
+			n3, pos = self.unpack_pos_uint(data, pos) 
+			self.tickers[room] = {}
+			for j in range(n3):
+				user, pos = self.unpack_pos_string(data, pos)
+				message, pos = self.unpack_pos_string(data, pos)
+				self.tickers[room][user] = message
+		return self
+
+class RoomList(BaseMessage):
+	code = 0x0301
+	
+	def __init__(self):
+		self.roomlist = None
+	
+	def make(self):
+		return self.pack_uint(self.code)
+	
+	def parse(self, data):
+		self.roomlist = {}
+		n, data = self.unpack_uint(data);
+		for i in range (n):
+			r, data = self.unpack_string(data)
+			u, data = self.unpack_uint(data)
+			self.roomlist[r] = u
+		return self
+
+class PrivateMessage(BaseMessage):
+	code = 0x0302
+	
+	def __init__(self, direction = None, user = None, message = None):
+		self.direction = direction
+		self.timestamp = None
+		self.user = user
+		self.message = message
+
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.user) + \
+			self.pack_string(self.message)
+
+	def parse(self, data):
+		self.direction, data = self.unpack_uint(data)
+		self.timestamp, data = self.unpack_uint(data)
+		self.user, data = self.unpack_string(data)
+		self.message, data = self.unpack_string(data)
+		return self
+
+class JoinRoom(BaseMessage):
+	code = 0x0303
+	
+	def __init__(self, room = None, private = None):
+		self.room = room
+		self.private = private
+		self.users = None
+		self.owner = None
+		self.operators = []
+
+	def make(self):
+		if self.private:
+			private = chr(1)
+		else:
+			private = chr(0)
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.room) + \
+			private
+
+	def parse(self, data):
+		self.users = {}
+		pos = 0
+		self.room, pos = self.unpack_pos_string(data, pos)
+		n, pos = self.unpack_pos_uint(data, pos)
+		for i in range(n):
+			user, pos = self.unpack_pos_string(data, pos)
+			status, pos = self.unpack_pos_uint(data, pos)
+			avgspeed, pos = self.unpack_pos_uint(data, pos)
+			downloadnum, pos = self.unpack_pos_uint(data, pos)
+			files, pos = self.unpack_pos_uint(data, pos)
+			dirs, pos = self.unpack_pos_uint(data, pos)
+
+			free = ord(data[pos]); pos += 1
+			self.users[user] = [status, avgspeed, downloadnum, files, dirs, free]
+		self.private = False
+		self.owner = ''
+		self.operators = {}
+		if len(data) > 0:
+			self.private = True
+			self.owner, pos = self.unpack_pos_string(data, pos)
+			no, pos = self.unpack_pos_uint(data, pos)
+			for i in range(no):
+				operator, pos = self.unpack_pos_string(data, pos)
+				self.operators.append(operator)
+		return self
+
+class LeaveRoom(BaseMessage):
+	code = 0x0304
+	
+	def __init__(self, room = None):
+		self.room = room
+
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.room)
+
+	def parse(self, data):
+		self.room, data = self.unpack_string(data)
+		return self
+
+class UserJoinedRoom(BaseMessage):
+	code = 0x0305
+	
+	def __init__(self):
+		self.room = None
+		self.user = None
+		self.userdata = None
+
+	def parse(self, data):
+		self.room, data = self.unpack_string(data)
+		self.user, data = self.unpack_string(data)
+		status, data = self.unpack_uint(data)
+		avgspeed, data = self.unpack_uint(data)
+		downloadnum, data = self.unpack_uint(data)
+		files, data = self.unpack_uint(data)
+		dirs, data = self.unpack_uint(data)
+		free, data = ord(data[0]), data[1:]
+		self.userdata = [status, avgspeed, downloadnum, files, dirs, free]
+		return self
+
+class UserLeftRoom(BaseMessage):
+	code = 0x0306
+	
+	def __init__(self):
+		self.room = None
+		self.user = None
+
+	def parse(self, data):
+		self.room, data = self.unpack_string(data)
+		self.user, data = self.unpack_string(data)
+		return self
+	
+class SayRoom(BaseMessage):
+	code = 0x0307
+	
+	def __init__(self, room = None, line = None):
+		self.room = room
+		self.user = None
+		self.line = line
+
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.room) + \
+			self.pack_string(self.line)
+
+	def parse(self, data):
+		self.room, data = self.unpack_string(data)
+		self.user, data = self.unpack_string(data)
+		self.line, data = self.unpack_string(data)
+		return self
+
+class RoomTickers(BaseMessage):
+	code = 0x0308
+	
+	def __init__(self, room = None, tickers = None):
+		self.room = room
+		self.tickers = None
+	def make(self):
+		return self.pack_uint(self.code)
+
+	def parse(self, data):
+		self.room, data = self.unpack_string(data)
+		self.tickers = {}
+		numtickers, data = self.unpack_uint(data)
+		for i in range(numtickers):
+			message, data = self.unpack_string(data)
+			user, data = self.unpack_string(data)
+			self.tickers[user] = message
+		return self
+
+class RoomTickerSet(BaseMessage):
+	code = 0x0309
+	
+	def __init__(self, room = None, message = None):
+		self.room = room
+		self.message = message
+		self.user = None
+	
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.room) + \
+			self.pack_string(self.message)
+	
+	def parse(self, data):
+		self.room, data = self.unpack_string(data)
+		self.user, data = self.unpack_string(data)
+		self.message, data = self.unpack_string(data)
+		return self
+
+class MessageUsers(BaseMessage):
+	code = 0x0310
+	
+	def __init__(self, users = None, message = None):
+		self.users = users
+		self.message = message
+	
+	def make(self):
+		for u in self.users:
+			user_list += self.pack_string(u);
+		return self.pack_uint(self.code) + \
+			self.pack_uint(self.users.len()) + \
+			user_list + \
+			self.pack_string(self.message)
+
+class MessageBuddies(BaseMessage):
+	code = 0x0311
+	
+	def __init__(self, message = None):
+		self.message = message
+	
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.message)
+
+class MessageDownloading(BaseMessage):
+	code = 0x0312
+	
+	def __init__(self, message = None):
+		self.message = message
+	
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.message)
+
+class AskPublicChat(BaseMessage):
+	code = 0x0313
+	
+	def __init__(self):
+		pass
+	
+	def make(self):
+		return self.pack_uint(self.code)
+
+	def parse(self, data):
+		return self
+
+class StopPublicChat(BaseMessage):
+	code = 0x0314
+	
+	def __init__(self):
+		pass
+	
+	def make(self):
+		return self.pack_uint(self.code)
+
+	def parse(self, data):
+		return self
+
+class PublicChat(BaseMessage):
+	code = 0x0315
+	
+	def __init__(self):
+		self.room = None
+		self.user = None
+		self.message = None
+	
+	def parse(self, data):
+		self.room, data = self.unpack_string(data)
+		self.user, data = self.unpack_string(data)
+		self.message, data = self.unpack_string(data)
+		return self
+
+class PrivateRoomToggle(BaseMessage):
+	code = 0x0320
+	
+	def __init__(self, enabled = None):
+		self.enabled = enabled
+
+	def make(self):
+		if self.enabled:
+			enabled = chr(1)
+		else:
+			enabled = chr(0)
+		return self.pack_uint(self.code) + \
+			self.pack_uint(self.enabled) + \
+			enabled
+	
+	def parse(self, data):
+		self.enabled, data = ord(data[0]), data[1:]
+		return self
+
+class PrivateRoomList(BaseMessage):
+	code = 0x0321
+	
+	def __init__(self):
+		self.rooms = None
+	
+	def parse(self, data):
+		n, data = self.unpack_uint(data)
+		self.rooms = []
+		for i in range(n):
+			room, data = self.unpack_string(data)
+			numusers, data = self.unpack_uint(data)
+			status, data = self.unpack_uint(data)
+			self.rooms[room] = (numusers, status)
+		return self
+
+class PrivateRoomAddUser(BaseMessage):
+	code = 0x0322
+	
+	def __init__(self, room = None, user = None):
+		self.room = room
+		self.user = user
+
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.room) + \
+			self.pack_string(self.user)
+	
+	def parse(self, data):
+		self.room, data = self.unpack_string(data)
+		self.user, data = self.unpack_string(data)
+		return self
+
+class PrivateRoomRemoveUser(BaseMessage):
+	code = 0x0323
+	
+	def __init__(self, room = None, user = None):
+		self.room = room
+		self.user = user
+
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.room) + \
+			self.pack_string(self.user)
+	
+	def parse(self, data):
+		self.room, data = self.unpack_string(data)
+		self.user, data = self.unpack_string(data)
+		return self
+
+class RoomMembers(BaseMessage):
+	code = 0x0324
+	
+	def __init__(self):
+		self.roomlist = None
+	
+	def parse(self, data):
+		self.roomlist = {}
+		pos = 0
+
+		n, pos = self.unpack_pos_uint(data, pos)
+		for i in range(n):
+			room, pos = self.unpack_pos_string(data, pos)
+			self.roomlist[room] = {}
+			n2, pos = self.unpack_pos_uint(data, pos) 
+			for j in range(n2):
+				user, pos = self.unpack_pos_string(data, pos)
+				status, pos = self.unpack_pos_uint(data, pos)
+				avgspeed, pos = self.unpack_pos_uint(data, pos)
+				downloadnum, pos = self.unpack_pos_uint(data, pos)
+				files, pos = self.unpack_pos_uint(data, pos)
+				dirs, pos = self.unpack_pos_uint(data, pos)
+				country, pos = self.unpack_pos_string(data, pos)
+
+				slotsfull = ord(data[pos]); pos += 1
+				self.roomlist[room][user] = [status, avgspeed, downloadnum, files, dirs, slotsfull, country]
+		return self
+
+class RoomsTickers(BaseMessage):
+	code = 0x0325
+	
+	def __init__(self):
+		self.tickers = None
+	
+	def parse(self, data):
+		self.tickers = {}
+		pos = 0
+
+		n, pos = self.unpack_pos_uint(data, pos)
+		for i in range(n):
+			room, pos = self.unpack_pos_string(data, pos)
+			n2, pos = self.unpack_pos_uint(data, pos) 
+
+			self.tickers[room] = {}
+			for j in range(n2):
+				user, pos = self.unpack_pos_string(data, pos)
+				message, pos = self.unpack_pos_string(data, pos)
+				self.tickers[room][user] = message
+		return self
+
+class PrivateRoomAlterableMembers(BaseMessage):
+	code = 0x0326
+	
+	def __init__(self):
+		self.members = None
+	
+	def parse(self, data):
+		room, data = self.unpack_string(data)
+		n, data = self.unpack_uint(data)
+		self.members = []
+		self.members[room] = {}
+		for i in range(n):
+			member, data = self.unpack_string(data)
+			self.members[room].append(member)
+		return self
+
+class PrivateRoomAlterableOperators(BaseMessage):
+	code = 0x0327
+	
+	def __init__(self):
+		self.operators = None
+	
+	def parse(self, data):
+		room, data = self.unpack_string(data)
+		n, data = self.unpack_uint(data)
+		self.operators = []
+		self.operators[room] = {}
+		for i in range(n):
+			operator, data = self.unpack_string(data)
+			self.operators[room].append(operator)
+		return self
+
+class PrivateRoomAddOperator(BaseMessage):
+	code = 0x0328
+	
+	def __init__(self, room = None, user = None):
+		self.room = room
+		self.user = user
+
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.room) + \
+			self.pack_string(self.user)
+	
+	def parse(self, data):
+		self.room, data = self.unpack_string(data)
+		self.user, data = self.unpack_string(data)
+		return self
+
+class PrivateRoomRemoveOperator(BaseMessage):
+	code = 0x0329
+	
+	def __init__(self, room = None, user = None):
+		self.room = room
+		self.user = user
+
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.room) + \
+			self.pack_string(self.user)
+	
+	def parse(self, data):
+		self.room, data = self.unpack_string(data)
+		self.user, data = self.unpack_string(data)
+		return self
+
+class PrivateRoomDismember(BaseMessage):
+	code = 0x0330
+	
+	def __init__(self, room = None):
+		self.room = room
+
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.room)
+
+class PrivateRoomDisown(BaseMessage):
+	code = 0x0331
+	
+	def __init__(self, room = None):
+		self.room = room
+
+	def make(self):
+		return self.pack_uint(self.code) + \
+			self.pack_string(self.room)
 		
 class Search(BaseMessage):
 	code = 0x0401
@@ -396,307 +1079,6 @@ class RemoveWishListItem(BaseMessage):
 	def parse(self, data):
 		self.query, data = self.unpack_string(data)
 		return self
-
-
-class RoomState(BaseMessage):
-	code = 0x0300
-	
-	def __init__(self):
-		self.roomlist = None
-		self.joined_rooms = None
-		self.tickers = None
-
-	def parse(self, data):
-		self.roomlist = {}
-		pos = 0
- 
-		nr, pos = self.unpack_pos_uint(data, pos)
-		for i in range(nr):
-			room, pos = self.unpack_pos_string(data, pos)
-			users, pos = self.unpack_pos_uint(data, pos)
-			self.roomlist[room] = users
-
-		self.joined_rooms = {}
-		self.tickers = {}
-		n, pos = self.unpack_pos_uint(data, pos)
-		for i in range(n):
-			room, pos = self.unpack_pos_string(data, pos)
-			self.joined_rooms[room] = {}
-			n2, pos = self.unpack_pos_uint(data, pos) 
-			for j in range(n2):
-				user, pos = self.unpack_pos_string(data, pos)
-				status, pos = self.unpack_pos_uint(data, pos)
-				avgspeed, pos = self.unpack_pos_uint(data, pos)
-				downloadnum, pos = self.unpack_pos_uint(data, pos)
-				files, pos = self.unpack_pos_uint(data, pos)
-				dirs, pos = self.unpack_pos_uint(data, pos)
-
-				slotsfull = ord(data[pos]); pos += 1
-				self.joined_rooms[room][user] = [status, avgspeed, downloadnum, files, dirs, slotsfull]
-				
-			n3, pos = self.unpack_pos_uint(data, pos) 
-			self.tickers[room] = {}
-			for j in range(n3):
-				user, pos = self.unpack_pos_string(data, pos)
-				message, pos = self.unpack_pos_string(data, pos)
-				self.tickers[room][user] = message
-		return self
-
-class RoomList(BaseMessage):
-	code = 0x0301
-	
-	def __init__(self):
-		self.roomlist = None
-	
-	def make(self):
-		return self.pack_uint(self.code)
-	
-	def parse(self, data):
-		self.roomlist = {}
-		n, data = self.unpack_uint(data);
-		for i in range (n):
-			r, data = self.unpack_string(data)
-			u, data = self.unpack_uint(data)
-			self.roomlist[r] = u
-		return self
-	
-class SayRoom(BaseMessage):
-	code = 0x0307
-	
-	def __init__(self, room = None, line = None):
-		self.room = room
-		self.user = None
-		self.line = line
-
-	def make(self):
-		return self.pack_uint(self.code) + \
-			self.pack_string(self.room) + \
-			self.pack_string(self.line)
-
-	def parse(self, data):
-		self.room, data = self.unpack_string(data)
-		self.user, data = self.unpack_string(data)
-		self.line, data = self.unpack_string(data)
-		return self
-
-class JoinRoom(BaseMessage):
-	code = 0x0303
-	
-	def __init__(self, room = None):
-		self.room = room
-		self.users = None
-
-	def make(self):
-		return self.pack_uint(self.code) + \
-			self.pack_string(self.room)
-
-	def parse(self, data):
-		self.users = {}
-		pos = 0
-		self.room, pos = self.unpack_pos_string(data, pos)
-		n, pos = self.unpack_pos_uint(data, pos) 
-		for i in range(n):
-			user, pos = self.unpack_pos_string(data, pos)
-			status, pos = self.unpack_pos_uint(data, pos)
-			avgspeed, pos = self.unpack_pos_uint(data, pos)
-			downloadnum, pos = self.unpack_pos_uint(data, pos)
-			files, pos = self.unpack_pos_uint(data, pos)
-			dirs, pos = self.unpack_pos_uint(data, pos)
-
-			free = ord(data[pos]); pos += 1
-			self.users[user] = [status, avgspeed, downloadnum, files, dirs, free]
-		return self
-
-class LeaveRoom(BaseMessage):
-	code = 0x0304
-	
-	def __init__(self, room = None):
-		self.room = room
-
-	def make(self):
-		return self.pack_uint(self.code) + \
-			self.pack_string(self.room)
-
-	def parse(self, data):
-		self.room, data = self.unpack_string(data)
-		return self
-
-class UserJoinedRoom(BaseMessage):
-	code = 0x0305
-	
-	def __init__(self):
-		self.room = None
-		self.user = None
-		self.userdata = None
-
-	def parse(self, data):
-		self.room, data = self.unpack_string(data)
-		self.user, data = self.unpack_string(data)
-		status, data = self.unpack_uint(data)
-		avgspeed, data = self.unpack_uint(data)
-		downloadnum, data = self.unpack_uint(data)
-		files, data = self.unpack_uint(data)
-		dirs, data = self.unpack_uint(data)
-		free, data = ord(data[0]), data[1:]
-		self.userdata = [status, avgspeed, downloadnum, files, dirs, free]
-		return self
-
-class UserLeftRoom(BaseMessage):
-	code = 0x0306
-	
-	def __init__(self):
-		self.room = None
-		self.user = None
-
-	def parse(self, data):
-		self.room, data = self.unpack_string(data)
-		self.user, data = self.unpack_string(data)
-		return self
-
-class RoomTickers(BaseMessage):
-	code = 0x0308
-	
-	def __init__(self, room = None, tickers = None):
-		self.room = room
-		self.tickers = None
-	def make(self):
-		return self.pack_uint(self.code)
-
-	def parse(self, data):
-		self.room, data = self.unpack_string(data)
-		self.tickers = {}
-		numtickers, data = self.unpack_uint(data)
-		for i in range(numtickers):
-			message, data = self.unpack_string(data)
-			user, data = self.unpack_string(data)
-			self.tickers[user] = message
-		return self
-
-class RoomTickerSet(BaseMessage):
-	code = 0x0309
-	
-	def __init__(self, room = None, message = None):
-		self.room = room
-		self.message = message
-		self.user = None
-	
-	def make(self):
-		return self.pack_uint(self.code) + \
-			self.pack_string(self.room) + \
-			self.pack_string(self.message)
-	
-	def parse(self, data):
-		self.room, data = self.unpack_string(data)
-		self.user, data = self.unpack_string(data)
-		self.message, data = self.unpack_string(data)
-		return self
-
-class PrivateMessage(BaseMessage):
-	code = 0x0302
-	
-	def __init__(self, direction = None, user = None, message = None):
-		self.direction = direction
-		self.timestamp = None
-		self.user = user
-		self.message = message
-
-	def make(self):
-		return self.pack_uint(self.code) + \
-			self.pack_string(self.user) + \
-			self.pack_string(self.message)
-
-	def parse(self, data):
-		self.direction, data = self.unpack_uint(data)
-		self.timestamp, data = self.unpack_uint(data)
-		self.user, data = self.unpack_string(data)
-		self.message, data = self.unpack_string(data)
-		return self
-
-class UserInfo(BaseMessage):
-	code = 0x0204
-	
-	def __init__(self, user = None):
-		self.user = user
-		self.info = None
-		self.picture = None
-		self.uploads = None
-		self.queue = None
-		self.slotsfree = None
-
-	def make(self):
-		return self.pack_uint(self.code) + \
-			self.pack_string(self.user)
-
-	def parse(self, data):
-		self.user, data = self.unpack_string(data)
-		self.info, data = self.unpack_string(data)
-		self.picture, data = self.unpack_string(data)
-		self.uploads, data = self.unpack_uint(data)
-		self.queue, data = self.unpack_uint(data)
-		self.slotsfree, data = ord(data[0]), data[1:]
-		return self
-
-class UserShares(BaseMessage):
-	code = 0x0205
-	
-	def __init__(self, user = None):
-		self.user = user
-		self.shares = None
-
-	def make(self):
-		return self.pack_uint(self.code) + \
-			self.pack_string(self.user)
-
-	def parse(self, data):
-		self.shares = {}
-		pos = 0
-		
-		self.user, pos = self.unpack_pos_string(data, pos)
-		dirs, pos = self.unpack_pos_uint(data, pos)
-		for i in range(dirs):
-			dir, pos = self.unpack_pos_string(data, pos)
-
-			self.shares[dir] = {}
-			
-			files, pos = self.unpack_pos_uint(data, pos)
-
-			for j in range(files):
-				filename, pos = self.unpack_pos_string(data, pos)
-				size, pos = self.unpack_pos_off(data, pos)
-				extension, pos = self.unpack_pos_string(data, pos)
-				attrs, pos = self.unpack_pos_uint(data, pos)
-				attributes = []
-				for k in range(attrs):
-					a, pos = self.unpack_pos_uint(data, pos)
-					attributes.append(a)
-					
-				self.shares[dir][filename] = [size, extension, attributes]
-		return self
-
-
-class GivePrivileges(BaseMessage):
-	code = 0x0207
-
-	def __init__(self, user = None, days=None):
-		self.user = user
-		self.days = days
-
-	def make(self):
-		return self.pack_uint(self.code) + \
-			self.pack_string(self.user) + \
-			self.pack_uint(self.days)
-
-class Transfer:
-	def __init__(self, is_upload, user, path, state, error, filepos, filesize, rate, place):
-		self.is_upload = is_upload
-		self.user = user
-		self.path = path
-		self.state = state
-		self.error = error
-		self.filepos = filepos
-		self.filesize = filesize
-		self.rate = rate
-		self.place = place
 
 class TransferState(BaseMessage):
 	code = 0x0500
@@ -875,73 +1257,6 @@ class UploadFolder(BaseMessage):
 		return self.pack_uint(self.code) + \
 			self.pack_string(self.user) + \
 			self.pack_string(self.path)
-
-class ConfigState(BaseMessage):
-	code = 0x0100
-	
-	def __init__(self):
-		self.config = None
-		
-	def parse(self, data):
-		self.config = {}
-		domains, data = self.unpack_uint(data)
-		for i in range(domains):
-			domain, data = self.unpack_cipher(data)
-			values = {}
-			keys, data = self.unpack_uint(data)
-			for j in range(keys):
-				key, data = self.unpack_cipher(data)
-				value, data = self.unpack_cipher(data)
-				values[key] = value
-			self.config[domain] = values
-		return self
-
-class ConfigSet(BaseMessage):
-	code = 0x0101
-	
-	def __init__(self, domain = None, key = None, value = None):
-		self.domain = domain
-		self.key = key
-		self.value = value
-	
-	def make(self):
-		return self.pack_uint(self.code) + \
-			self.pack_cipher(self.domain) + \
-			self.pack_cipher(self.key) + \
-			self.pack_cipher(self.value)
-	
-	def parse(self, data):
-		self.domain, data = self.unpack_cipher(data)
-		self.key, data = self.unpack_cipher(data)
-		self.value, data = self.unpack_cipher(data)
-		return self
-
-class ConfigRemove(BaseMessage):
-	code = 0x0102
-	
-	def __init__(self, domain = None, key = None):
-		self.domain = domain
-		self.key = key
-	
-	def make(self):
-		return self.pack_uint(self.code) + \
-			self.pack_cipher(self.domain) + \
-			self.pack_cipher(self.key)
-	
-	def parse(self, data):
-		self.domain, data = self.unpack_cipher(data)
-		self.key, data = self.unpack_cipher(data)
-		return self
-
-class ConfigSetUserImage(BaseMessage):
-	code = 0x0103
-	
-	def __init__(self, image = ""):
-		self.image = image
-	
-	def make(self):
-		return self.pack_uint(self.code) + \
-			self.pack_string(self.image)
 
 	
 class GetRecommendations(BaseMessage):
