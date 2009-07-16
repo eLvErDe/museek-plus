@@ -18,7 +18,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-Version = "0.2.0"
+Version = "0.3.0"
 
 import struct, socket, sys, time, urllib, os, select, getopt, ConfigParser
 try:
@@ -924,7 +924,7 @@ class museekcontrol(driver.Driver):
 		if want == "iproom":
 			print "%s  IP: %s Port: %s"  % (username, str(ip), str(port))
 					
-	def cb_peer_stats(self, username, avgspeed, numdownloads, numfiles, numdirs):
+	def cb_peer_stats(self, username, avgspeed, numdownloads, numfiles, numdirs, slotsfull, country):
 		if want == "stats":
 			if user == username:
 				output("Peer Stats for: %s \nSpeed: %s \tDownloads: %s \nFiles: %s \tDirectories: %s" % (user,  avgspeed, numdownloads, numfiles, numdirs))

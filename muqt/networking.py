@@ -560,7 +560,7 @@ class Networking(driver.Driver, QtCore.QThread):
 
 		
 		
-	def cb_room_joined(self, room, list_of_users):
+	def cb_room_joined(self, room, list_of_users, private, owner, operators):
 		
 		if DEBUG:
 			self.Output("Joined room: %s" % room)
@@ -727,7 +727,7 @@ class Networking(driver.Driver, QtCore.QThread):
 			if DEBUG: self.Output("RECEIVED: cb_peer_exists ERROR", e)
 		#
                 
-	def cb_peer_stats(self, user, speed, downloads, files, dirs):
+	def cb_peer_stats(self, user, speed, downloads, files, dirs, slotsfull, country):
 		#if DEBUG: self.Output("RECEIVED: cb_peer_stats", user, speed, downloads,) files, dirs
 
 		try:

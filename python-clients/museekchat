@@ -208,7 +208,7 @@ class museekdchat(driver.Driver):
 			msg = "%s: %s" % (user, text)
 		self.say("[%s] %s" % (room, msg))
 	
-	def cb_room_joined(self, room, users):
+	def cb_room_joined(self, room, users, private, owner, operators):
 		self.say("Joined room %s (%i users)" % (room, len(users)))
 		self.rooms[room] = users;
 		self.joined.append(room)

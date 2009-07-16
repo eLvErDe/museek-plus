@@ -10,7 +10,7 @@ import time, stat, string, shutil
 
 from time import sleep
 from utils import _
-REQUIRE_PYMUSEEK = '0.2.0'
+REQUIRE_PYMUSEEK = '0.3.0'
 
 def versionCheck(version):
 	build = 255

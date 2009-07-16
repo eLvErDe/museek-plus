@@ -37,7 +37,7 @@ except ImportError:
 		print "WARNING: The Mucipher Module for Python wasn't found and neither was PyCrypto. One of these is necessary to allow Mucous to connect to the Museek Daemon.\nDownload mucipher here: http://thegraveyard.org/files/pymucipher-0.0.1.tar.gz\nExtract the tarball, and as Root or sudo, run:\npython setup.py install\nYou'll need GCC, Python and SWIG.\nOr download PyCrypto from here: http://www.amk.ca/python/code/crypto.html"
 		sys.exit()
 		
-REQUIRE_PYMUSEEK = '0.2.0'
+REQUIRE_PYMUSEEK = '0.3.0'
 
 def versionCheck(version):
 	build = 255

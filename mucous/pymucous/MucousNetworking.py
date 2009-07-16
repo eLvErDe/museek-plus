@@ -411,7 +411,7 @@ class Networking(driver.Driver):
 	# @param self Networking (Driver Class)
 	# @param room Room name
 	# @param users Dict of users in the room
-	def cb_room_joined(self, room, users):
+	def cb_room_joined(self, room, users, private, owner, operators):
 		try:
 			self.mucous.ChatRooms.Joined(room, users)
 
@@ -558,7 +558,7 @@ class Networking(driver.Driver):
 	# @param numdownloads Number of files user has downloaded
 	# @param numfiles Number of files share
 	# @param numdirs Number of directories shared
-	def cb_peer_stats(self, user, avgspeed, numdownloads, numfiles, numdirs):
+	def cb_peer_stats(self, user, avgspeed, numdownloads, numfiles, numdirs, slotsfull, country):
 		try:
 			self.mucous.user["statistics"][user] = avgspeed, numdownloads, numfiles, numdirs
 			if user in self.mucous.requests["statistics"]:
