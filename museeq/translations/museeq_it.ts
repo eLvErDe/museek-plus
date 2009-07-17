@@ -1010,8 +1010,12 @@
     </message>
     <message>
         <location filename="../util.cpp" line="45"/>
+        <source>%1 PiB</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>%1 PB</source>
-        <translation>%1 PB</translation>
+        <translation type="obsolete">%1 PB</translation>
     </message>
     <message>
         <location filename="../util.cpp" line="61"/>
@@ -1057,9 +1061,13 @@
         <translation>Interessi</translation>
     </message>
     <message>
-        <location filename="../recommendsview.cpp" line="34"/>
         <source>Num</source>
-        <translation>Num</translation>
+        <translation type="obsolete">Num</translation>
+    </message>
+    <message>
+        <location filename="../recommendsview.cpp" line="34"/>
+        <source>Number</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../recommendsview.cpp" line="47"/>

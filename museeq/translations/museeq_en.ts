@@ -993,7 +993,7 @@
     </message>
     <message>
         <location filename="../util.cpp" line="45"/>
-        <source>%1 PB</source>
+        <source>%1 PiB</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1041,7 +1041,7 @@
     </message>
     <message>
         <location filename="../recommendsview.cpp" line="34"/>
-        <source>Num</source>
+        <source>Number</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

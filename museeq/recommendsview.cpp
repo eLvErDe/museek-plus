@@ -31,7 +31,7 @@
 RecommendsView::RecommendsView(QWidget* _p, const char* _n)
              : QTreeWidget(_p) {
 	QStringList headers;
-	headers << tr("Interests") << tr("Num");
+	headers << tr("Interests") << tr("Number");
 	setHeaderLabels(headers);
 	setSortingEnabled(true);
 	sortByColumn(1, Qt::DescendingOrder);

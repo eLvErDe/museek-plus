@@ -42,7 +42,7 @@ QString Util::makeSize(qint64 i) {
 	if(d < 1024)
 		return QString(QObject::tr("%1 TiB")).arg(d, 0, 'f', 2);
 	d /= 1024;
-	return QString(QObject::tr("%1 PB")).arg(d, 0, 'f', 2);
+	return QString(QObject::tr("%1 PiB")).arg(d, 0, 'f', 2);
 }
 
 int Util::cmp(qint64 a, qint64 b) {

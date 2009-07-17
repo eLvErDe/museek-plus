@@ -10,23 +10,23 @@
     <message>
         <location filename="../banlist.cpp" line="55"/>
         <source>Ban a new user:</source>
-        <translation type="unfinished"></translation>
+        <translation>Bannir un utilisateur :</translation>
     </message>
     <message>
         <location filename="../banlist.cpp" line="60"/>
         <source>Add</source>
-        <translation type="unfinished">Ajouter</translation>
+        <translation>Ajouter</translation>
     </message>
     <message>
         <location filename="../banlist.cpp" line="65"/>
         <location filename="../banlist.cpp" line="90"/>
         <source>Send a message to all banned users</source>
-        <translation type="unfinished"></translation>
+        <translation>Envoyer un message aux bannis</translation>
     </message>
     <message>
         <location filename="../banlist.cpp" line="90"/>
         <source>Write the message you want to send to all users in your banned list</source>
-        <translation type="unfinished"></translation>
+        <translation>Écrivez le message à envoyer à tous les utilisateurs que vous avez bannis</translation>
     </message>
     <message>
         <location filename="../banlist.cpp" line="102"/>
@@ -82,23 +82,23 @@
     <message>
         <location filename="../buddylist.cpp" line="53"/>
         <source>Add a new buddy:</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajouter un ami :</translation>
     </message>
     <message>
         <location filename="../buddylist.cpp" line="58"/>
         <source>Add</source>
-        <translation type="unfinished">Ajouter</translation>
+        <translation>Ajouter</translation>
     </message>
     <message>
         <location filename="../buddylist.cpp" line="63"/>
         <location filename="../buddylist.cpp" line="88"/>
         <source>Send a message to all buddies</source>
-        <translation type="unfinished"></translation>
+        <translation>Envoyer un message aux amis</translation>
     </message>
     <message>
         <location filename="../buddylist.cpp" line="88"/>
         <source>Write the message you want to send to all users in your buddy list</source>
-        <translation type="unfinished"></translation>
+        <translation>Écrivez le message à envoyer à tous vos amis</translation>
     </message>
     <message>
         <location filename="../buddylist.cpp" line="100"/>
@@ -151,7 +151,7 @@
     <message>
         <location filename="../chatrooms.cpp" line="61"/>
         <source>*Public Chat*</source>
-        <translation type="unfinished"></translation>
+        <translation>*Discussion publique*</translation>
     </message>
 </context>
 <context>
@@ -309,23 +309,23 @@
     <message>
         <location filename="../ignorelist.cpp" line="53"/>
         <source>Ignore a new user:</source>
-        <translation type="unfinished"></translation>
+        <translation>Ignorer un utilisateur :</translation>
     </message>
     <message>
         <location filename="../ignorelist.cpp" line="58"/>
         <source>Add</source>
-        <translation type="unfinished">Ajouter</translation>
+        <translation>Ajouter</translation>
     </message>
     <message>
         <location filename="../ignorelist.cpp" line="63"/>
         <location filename="../ignorelist.cpp" line="88"/>
         <source>Send a message to all ignored users</source>
-        <translation type="unfinished"></translation>
+        <translation>Envoyer un message aux ignorés</translation>
     </message>
     <message>
         <location filename="../ignorelist.cpp" line="88"/>
         <source>Write the message you want to send to all users in your ignored list</source>
-        <translation type="unfinished"></translation>
+        <translation>Écrivez le message à envoyer à tous les utilisateurs que vous ignorez</translation>
     </message>
     <message>
         <location filename="../ignorelist.cpp" line="100"/>
@@ -348,7 +348,7 @@
     <message>
         <location filename="../interestlist.cpp" line="47"/>
         <source>Add</source>
-        <translation type="unfinished">Ajouter</translation>
+        <translation>Ajouter</translation>
     </message>
     <message>
         <location filename="../interestlist.cpp" line="50"/>
@@ -815,7 +815,7 @@
     <message>
         <location filename="../mainwin.cpp" line="1082"/>
         <source>&lt;h3&gt;While in a chat window, such as a chat room, or a private chat, there are a number of commands available for use.&lt;/h3&gt;&lt;b&gt;/c /chat&lt;/b&gt;   &lt;i&gt;(Switch to chat rooms)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/pm /private&lt;/b&gt; &amp;lt;nothing | username&amp;gt;  &lt;i&gt;(Switch to private chat and start chatting with a user, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/transfers&lt;/b&gt;   &lt;i&gt;(Switch to transfers)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/s /search&lt;/b&gt; &amp;lt;nothing | query&gt;   &lt;i&gt;(Switch to searches and start a search with &amp;lt;query&amp;gt; if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/u /userinfo&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Switch to user info, and attempt to get a user&apos;s info, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/b /browse&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Switch to browse and initate browsing a user, if inputed)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ip&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Get the IP of a user)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/log&lt;/b&gt;    &lt;i&gt;(Toggle displaying the special message Log)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/t /ticker /tickers&lt;/b&gt;   &lt;i&gt;(Toggle the showing of tickers)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/setticker&lt;/b&gt; &amp;lt;short text&amp;gt; &lt;i&gt;(Set the inputed text as ticker for the current room)&lt;/i&gt; &lt;br&gt;&lt;b&gt;/f /fonts /colors&lt;/b&gt;   &lt;i&gt;(Open the fonts and colors settings dialog)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/clear&lt;/b&gt;&lt;i&gt; (Clear the chat history)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ban /unban&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Disallow/allow a user to receive your shares and download from you)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ignore /unignore&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Block/unblock chat messages from a user)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/buddy /unbuddy&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Add/remove a user to keep track of it and add comments about it)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/trust /distrust&lt;/b&gt; &amp;lt;username&amp;gt;    &lt;i&gt;(Add/remove a user to the optional list of users who can send files to you)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/me&lt;/b&gt; &lt;does something&gt;    &lt;i&gt;(Say something in the third-person)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/slap&lt;/b&gt; &amp;lt;username&amp;gt;   &lt;i&gt;(Typical trout-slapping)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/j /join&lt;/b&gt; &amp;lt;room&amp;gt;    &lt;i&gt;(Join a chat room)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/jp /joinpriv&lt;/b&gt; &amp;lt;room&amp;gt;    &lt;i&gt;(Join a private chat room)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/l /p /leave /part&lt;/b&gt; &amp;lt;nothing | room&amp;gt;    &lt;i&gt;(Leave the current room or inputed room)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/about /help /commands&lt;/b&gt;    &lt;i&gt;(Display information)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/settings&lt;/b&gt;    &lt;i&gt;(Display settings dialog)&lt;/i&gt;&lt;br&gt;&lt;br&gt;Do not type the brackets, they are there only to make clear that something (or nothing) can be typed after the /command.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;h3&gt;Dans une fenêtre de discussion, qu&apos;il s&apos;agisse d&apos;un salon ou d&apos;une discussion privée, il y a certaines commandes que vous pouvez utiliser.&lt;/h3&gt;&lt;b&gt;/c /chat&lt;/b&gt;   &lt;i&gt;(Aller à l&apos;onglet Salons de discussion)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/pm /private&lt;/b&gt; &amp;lt;rien | utilisateur&amp;gt;  &lt;i&gt;(Aller à l&apos;onglet Discussions privées et démarrer une discussion avec l&apos;utilisateur spécifié)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/transfers&lt;/b&gt;   &lt;i&gt;(Aller à l&apos;onglet Transferts)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/s /search&lt;/b&gt; &amp;lt;rien | mots clefs&gt;   &lt;i&gt;(Aller à l&apos;onglet Recherche et démarrer une rechercher sur les mots clefs spécifiés)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/u /userinfo&lt;/b&gt; &amp;lt;utilisateur&amp;gt;   &lt;i&gt;(Aller à l&apos;onglet Utilisateur et afficher les infos de l&apos;utilisateur spécifié)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/b /browse&lt;/b&gt; &amp;lt;utilisateur&amp;gt;   &lt;i&gt;(Aller à l&apos;onglet Partages et afficher les fichiers partagés de l&apos;utilisateur spécifié)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ip&lt;/b&gt; &amp;lt;utilisateur&amp;gt;   &lt;i&gt;(Afficher l&apos;adresse IP de l&apos;utilisateur)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/log&lt;/b&gt;   &lt;i&gt;(Activer/Désactiver l&apos;affichage des messages du démon dans la fenêtre de log)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/t /ticker /tickers&lt;/b&gt;   &lt;i&gt;(Activer/Désactiver l&apos;affichage des messages défilants)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/setticker &amp;lt;court texte&amp;gt;&lt;/b&gt;   &lt;i&gt;(Afficher le texte spécifié comme message défilant)&lt;/i&gt;  &lt;br&gt;&lt;b&gt;/f /fonts /c /colors&lt;/b&gt;   &lt;i&gt;(Afficher la fenêtre de configurations des couleurs et polices)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/clear&lt;/b&gt;   &lt;i&gt;(Efface le contenu de la fenêtre de discussion)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ban /unban&lt;/b&gt; &amp;lt;utilisateur&amp;gt;   &lt;i&gt;(Bannir/Débannir l&apos;utilisateur spécifié)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/ignore /unignore&lt;/b&gt; &amp;lt;utilisateur&amp;gt;   &lt;i&gt;(Ignorer/Ne plus ignorer l&apos;utilisateur spécifié)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/buddy /unbuddy&lt;/b&gt; &amp;lt;utilisateur&amp;gt;   &lt;i&gt;(Ajouter/Supprimer l&apos;utilisateur spécifié de ma liste d&apos;amis)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/trust /distrust&lt;/b&gt; &amp;lt;utilisateur&amp;gt;   &lt;i&gt;(Ajouter/Supprimer l&apos;utilisateur spécifié de la liste d&apos;utilisateurs autorisés à m&apos;envoyer des fichiers)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/me&lt;/b&gt; &lt;texte&gt;   &lt;i&gt;(Dire le texte spécifié à la troisième personne)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/slap&lt;/b&gt; &amp;lt;utilisateur&amp;gt;   &lt;i&gt;(Slap l&apos;utilisateur spécifié)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/j /join&lt;/b&gt; &amp;lt;salon&amp;gt;   &lt;i&gt;(Rejoindre le salon spécifié)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/jp /joinpriv&lt;/b&gt; &amp;lt;salon&amp;gt;    &lt;i&gt;(rejoindre le salon privé spécifié)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/l /p /leave /part&lt;/b&gt; &amp;lt;rien | salon&amp;gt;   (Quitter la room actuelle ou la room spécifiée)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/about /help /commands&lt;/b&gt;   &lt;i&gt;(Affiche l&apos;aide)&lt;/i&gt;&lt;br&gt;&lt;b&gt;/settings&lt;/b&gt;   &lt;i&gt;(Afficher la fenêtre de configurations de Museeq)&lt;/i&gt;&lt;br&gt;&lt;br&gt;Ne tappez pas &amp;lt; &amp;gt; ! Ces symboles sont utilisés pour indiquer qu&apos;un paramètre est requis pour certaines commandes.</translation>
     </message>
     <message>
         <location filename="../mainwin.cpp" line="1086"/>
@@ -1010,8 +1010,12 @@
     </message>
     <message>
         <location filename="../util.cpp" line="45"/>
-        <source>%1 PB</source>
+        <source>%1 PiB</source>
         <translation>%1 Pio</translation>
+    </message>
+    <message>
+        <source>%1 PB</source>
+        <translation type="obsolete">%1 Pio</translation>
     </message>
     <message>
         <location filename="../util.cpp" line="61"/>
@@ -1057,8 +1061,12 @@
         <translation>Centres d&apos;intérêt</translation>
     </message>
     <message>
-        <location filename="../recommendsview.cpp" line="34"/>
         <source>Num</source>
+        <translation type="obsolete">Nombre</translation>
+    </message>
+    <message>
+        <location filename="../recommendsview.cpp" line="34"/>
+        <source>Number</source>
         <translation>Nombre</translation>
     </message>
     <message>
@@ -1081,28 +1089,28 @@
     <message>
         <location filename="../roomlist.cpp" line="42"/>
         <source>Create a new room:</source>
-        <translation type="unfinished"></translation>
+        <translation>Créer un nouveau salon :</translation>
     </message>
     <message>
         <location filename="../roomlist.cpp" line="48"/>
         <source>Private</source>
-        <translation type="unfinished"></translation>
+        <translation>Privé</translation>
     </message>
     <message>
         <location filename="../roomlist.cpp" line="52"/>
         <source>Create</source>
-        <translation type="unfinished"></translation>
+        <translation>Créer</translation>
     </message>
     <message>
         <location filename="../roomlist.cpp" line="57"/>
         <location filename="../roomlist.cpp" line="88"/>
         <source>Show public chat</source>
-        <translation type="unfinished"></translation>
+        <translation>Afficher les discussions publiques</translation>
     </message>
     <message>
         <location filename="../roomlist.cpp" line="90"/>
         <source>Stop public chat</source>
-        <translation type="unfinished"></translation>
+        <translation>Arrêter l&apos;affichage des discussions publiques</translation>
     </message>
 </context>
 <context>
@@ -1120,7 +1128,7 @@
     <message>
         <location filename="../roomlistview.cpp" line="35"/>
         <source>Status</source>
-        <translation type="unfinished">État</translation>
+        <translation>État</translation>
     </message>
     <message>
         <location filename="../roomlistview.cpp" line="50"/>
@@ -1135,12 +1143,12 @@
     <message>
         <location filename="../roomlistview.cpp" line="60"/>
         <source>Give up ownership</source>
-        <translation type="unfinished"></translation>
+        <translation>Ne plus être propriétaire</translation>
     </message>
     <message>
         <location filename="../roomlistview.cpp" line="64"/>
         <source>Give up membership</source>
-        <translation type="unfinished"></translation>
+        <translation>Ne plus être membre</translation>
     </message>
     <message>
         <location filename="../roomlistview.cpp" line="70"/>
@@ -1150,32 +1158,32 @@
     <message>
         <location filename="../roomlistview.cpp" line="107"/>
         <source>Public</source>
-        <translation type="unfinished"></translation>
+        <translation>Publique</translation>
     </message>
     <message>
         <location filename="../roomlistview.cpp" line="113"/>
         <source>member</source>
-        <translation type="unfinished"></translation>
+        <translation>membre</translation>
     </message>
     <message>
         <location filename="../roomlistview.cpp" line="113"/>
         <source>operator</source>
-        <translation type="unfinished"></translation>
+        <translation>opérateur</translation>
     </message>
     <message>
         <location filename="../roomlistview.cpp" line="113"/>
         <source>owner</source>
-        <translation type="unfinished"></translation>
+        <translation>propriétaire</translation>
     </message>
     <message>
         <location filename="../roomlistview.cpp" line="113"/>
         <source>unknown</source>
-        <translation type="unfinished">inconnu</translation>
+        <translation>inconnu</translation>
     </message>
     <message>
         <location filename="../roomlistview.cpp" line="117"/>
         <source>Private (%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Privé (%1)</translation>
     </message>
 </context>
 <context>
@@ -1487,7 +1495,7 @@
     <message>
         <location filename="../settingsdialog.cpp" line="331"/>
         <source>Save transfer panel layout</source>
-        <translation type="unfinished"></translation>
+        <translation>Se rappeler de la disposition des transferts</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="438"/>
@@ -1700,7 +1708,7 @@
     <message>
         <location filename="../settingsdialog.cpp" line="125"/>
         <source>Change password</source>
-        <translation type="unfinished"></translation>
+        <translation>Changer de mot de passe</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="325"/>
@@ -1710,12 +1718,12 @@
     <message>
         <location filename="../settingsdialog.cpp" line="328"/>
         <source>Show users&apos; &amp;country</source>
-        <translation type="unfinished"></translation>
+        <translation>Afficher le &amp;pays des utilisateurs</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="334"/>
         <source>Save all layouts except transfer panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Se rappeler de la disposition des fenêtres (sauf les transferts)</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="337"/>
@@ -1752,37 +1760,37 @@
     <message>
         <location filename="../settingsdialog.cpp" line="900"/>
         <source>Password successfully changed!</source>
-        <translation type="unfinished"></translation>
+        <translation>Mot de passe changé avec succès !</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1259"/>
         <source>New Soulseek account password</source>
-        <translation type="unfinished"></translation>
+        <translation>Nouveau mot de passe Soulseek</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1259"/>
         <source>Please enter the new password for user %1 on the Soulseek server:</source>
-        <translation type="unfinished"></translation>
+        <translation>Indiquez le nouveau mot de passe pour l&apos;utilisateur %1 sur le serveur Soulseek :</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1266"/>
         <source>Confirm new Soulseek account password</source>
-        <translation type="unfinished"></translation>
+        <translation>Confirmez le nouveau mot de passe Soulseek</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1266"/>
         <source>Please confirm the new password for user %1 on the Soulseek server:</source>
-        <translation type="unfinished"></translation>
+        <translation>Confirmez le nouveau mot de passe pour l&apos;utilisateur %1 sur le serveur Soulseek :</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1272"/>
         <source>Failed confirming the new password, please retry...</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de la confirmation du nouveau mot de passe, veuillez réessayer...</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1276"/>
         <source>Changing the password, please wait.</source>
-        <translation type="unfinished"></translation>
+        <translation>Changement de mot de passe en cours, veuillez patienter.</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1450"/>
@@ -1954,17 +1962,17 @@
     <message>
         <location filename="../settingsdialog.cpp" line="1539"/>
         <source>Automatically clear finished downloads</source>
-        <translation type="unfinished"></translation>
+        <translation>Effacer automatiquement les téléchargements terminés</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1540"/>
         <source>Automatically clear finished uploads</source>
-        <translation type="unfinished"></translation>
+        <translation>Effacer automatiquement les envois terminés</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1541"/>
         <source>Allow being added to private rooms</source>
-        <translation type="unfinished"></translation>
+        <translation>Autoriser les invitations à des salons privés</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1542"/>
@@ -2302,7 +2310,7 @@ Choisissez passive si vous ne savez pas lequel choisir.</translation>
     <message>
         <location filename="../transfers.cpp" line="163"/>
         <source>Message downloading users</source>
-        <translation type="unfinished"></translation>
+        <translation>Envoyer un message aux téléchargeurs</translation>
     </message>
     <message>
         <location filename="../transfers.cpp" line="169"/>
@@ -2342,12 +2350,12 @@ Choisissez passive si vous ne savez pas lequel choisir.</translation>
     <message>
         <location filename="../transfers.cpp" line="459"/>
         <source>Send a message to all downloading users</source>
-        <translation type="unfinished"></translation>
+        <translation>Envoyer un message aux téléchargeurs</translation>
     </message>
     <message>
         <location filename="../transfers.cpp" line="459"/>
         <source>Write the message you want to send to all users currently downloading from you</source>
-        <translation type="unfinished"></translation>
+        <translation>Écrivez le message aux utilisateurs qui téléchargent un de vos fichiers</translation>
     </message>
     <message>
         <location filename="../transfers.cpp" line="167"/>
@@ -2391,23 +2399,23 @@ Choisissez passive si vous ne savez pas lequel choisir.</translation>
     <message>
         <location filename="../trustlist.cpp" line="53"/>
         <source>Trust a new user:</source>
-        <translation type="unfinished"></translation>
+        <translation>Faire confiance à un utilisateur :</translation>
     </message>
     <message>
         <location filename="../trustlist.cpp" line="58"/>
         <source>Add</source>
-        <translation type="unfinished">Ajouter</translation>
+        <translation>Ajouter</translation>
     </message>
     <message>
         <location filename="../trustlist.cpp" line="63"/>
         <location filename="../trustlist.cpp" line="88"/>
         <source>Send a message to all trusted users</source>
-        <translation type="unfinished"></translation>
+        <translation>Envoyer un message aux utilisateurs de confiance</translation>
     </message>
     <message>
         <location filename="../trustlist.cpp" line="88"/>
         <source>Write the message you want to send to all users in your trusted list</source>
-        <translation type="unfinished"></translation>
+        <translation>Écrivez le message à envoyer à tous les utilisateurs à qui vous faites confiance</translation>
     </message>
     <message>
         <location filename="../trustlist.cpp" line="101"/>
@@ -2510,7 +2518,7 @@ Choisissez passive si vous ne savez pas lequel choisir.</translation>
     <message>
         <location filename="../userlistview.cpp" line="53"/>
         <source>Country</source>
-        <translation type="unfinished"></translation>
+        <translation>Pays</translation>
     </message>
     <message>
         <location filename="../userlistview.cpp" line="55"/>
@@ -2599,17 +2607,17 @@ Choisissez passive si vous ne savez pas lequel choisir.</translation>
     <message>
         <location filename="../usermenu.cpp" line="66"/>
         <source>Member of private rooms</source>
-        <translation type="unfinished"></translation>
+        <translation>Membre des salons privés</translation>
     </message>
     <message>
         <location filename="../usermenu.cpp" line="68"/>
         <source>Operator of private rooms</source>
-        <translation type="unfinished"></translation>
+        <translation>Opérateur des salons privés</translation>
     </message>
     <message>
         <location filename="../usermenu.cpp" line="70"/>
         <source>Owner of private rooms</source>
-        <translation type="unfinished"></translation>
+        <translation>Propriétaire des salons privés</translation>
     </message>
     <message>
         <location filename="../usermenu.cpp" line="75"/>
@@ -2637,7 +2645,7 @@ Choisissez passive si vous ne savez pas lequel choisir.</translation>
     <message>
         <location filename="../wishlist.cpp" line="47"/>
         <source>Add</source>
-        <translation type="unfinished">Ajouter</translation>
+        <translation>Ajouter</translation>
     </message>
 </context>
 <context>
