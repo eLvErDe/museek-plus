@@ -45,6 +45,7 @@ TransferListView::TransferListView(bool place, QWidget* _p, const QString& _name
 	sortItems(0, Qt::AscendingOrder);
 	setDragEnabled(true);
 	setSelectionMode(QAbstractItemView::ExtendedSelection);
+	setAutoScroll(false);
 
 	if(! place)
 		setColumnHidden(4, true);

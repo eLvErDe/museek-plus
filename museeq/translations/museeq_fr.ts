@@ -2237,7 +2237,7 @@ Choisissez passive si vous ne savez pas lequel choisir.</translation>
         <translation>/s</translation>
     </message>
     <message numerus="yes">
-        <location filename="../transferlistview.cpp" line="307"/>
+        <location filename="../transferlistview.cpp" line="308"/>
         <source>%n transfer(s)</source>
         <translation>
             <numerusform>%n transfert</numerusform>
@@ -2245,7 +2245,7 @@ Choisissez passive si vous ne savez pas lequel choisir.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../transferlistview.cpp" line="307"/>
+        <location filename="../transferlistview.cpp" line="308"/>
         <source> (%n user(s))</source>
         <translation>
             <numerusform>(%n utilisateur)</numerusform>
