@@ -124,7 +124,7 @@ Version: %s
 	-c,	--config <file>	Use a different config file
 	-l,	--log <dir>	Use a different logging directory
 	-v,	--version	Display version and quit
-
+	-d,	--debug		Debug mode
 	-p,	--profile	Use the python profiler
 	-g,	--pycallgraph	Use pycallgraph
 	-h,	--help		Display this help and exit
@@ -132,17 +132,20 @@ Version: %s
 	sys.exit(2)
 	
 try:
-	opts, args = getopt.getopt(sys.argv[1:], "hc:vl:pg", ["profile", "pycallgraph", "help", "config=", "version", "log="])
+	opts, args = getopt.getopt(sys.argv[1:], "hc:vdl:pg", ["profile", "pycallgraph", "help", "config=", "version", "log=", "debug"])
 except getopt.GetoptError:
 	usage()
 	sys.exit(2)
 profile = 0
+debug=False
 for opts, args in opts:
 
 	if opts in ("-p", "--profile"):
 		profile = 1
 	elif opts in ("-g", "--pycallgraph"):
 		pcg = 1
+	elif opts in ("-d", "--debug"):
+		debug = True
 	elif opts in ("-h", "--help"):
 		usage()
 		sys.exit()
@@ -475,6 +478,7 @@ class Mucous:
 		## @var stdscr
 		# Curses screen Startup
 		self.stdscr = curses.initscr()
+		curses.def_shell_mode()
 		#curses.flushinp()
 		#curses.setupterm()
 		#self.log["help"].append(str(curses.termattrs() ) )
@@ -569,9 +573,10 @@ class Mucous:
 		self.run()
 		
 	def run(self):
+		curses.noecho()
+		curses.cbreak()
 		while self._run:
-			curses.noecho()
-			curses.cbreak()
+			
 			try:
 				self.line = self.Build()
 			except Exception, e:
@@ -784,6 +789,8 @@ class Mucous:
 			self.Muscan.timer.cancel()
 			self.timers["retry"].cancel()
 			self.timers["clear"].cancel()
+			for timer in self.timers:
+				timer.cancel()
 		except Exception, e:
 			self.Help.Log("debug", "shutdown: " + str(e))
 		try:
@@ -1705,6 +1712,13 @@ class Mucous:
 			self.Help.Log("debug", "ThreadTransfersClear: " + str(e))
 
 try:
+		import ctypes
+		# Linux style
+		libc = ctypes.CDLL('libc.so.6')
+		libc.prctl(15, 'mucous', 0, 0, 0)
+except:
+		pass
+try:
 	if pcg:
 		import pycallgraph
 		pycallgraph.start_trace()
@@ -1723,8 +1737,45 @@ try:
 	else:
 		Mucous()
 except Exception, e:
+	curses.nocbreak()
+	curses.noecho()
+	curses.endwin()
+	sys.stdout.flush()
 	print e
+else:
+	e = ""
 if pcg:
 	pycallgraph.make_dot_graph('calltrace.png')
 
+
+
+if debug:
+	debug_log = open("mucous_debug.log", 'a')
+	log = [e]
+	tbe = sys.exc_info()
+	ex = "BUG "
+	for line in tbe:
+		#if line is tbe[0]:
+		log.append("TB: %s" % (line) )
+	tb= traceback.extract_tb(sys.exc_info()[2])
+
+	for line in tb:
+		if type(line) is tuple:
+			xline = ""
+			for item in line:
+				xline += str(item) + " "
+			line = xline
+
+		newline = ""
+		for character in line:
+			if curses.ascii.isctrl(character):
+				character = curses.ascii.unctrl(character)
+			newline += character
+		if line is tb[0]:
+			log.append( "%s%s" % (ex,newline))
+		else:
+			log.append( "%s%s" % (ex,newline))
+	for line in log:
+		debug_log.write(str(line)+"\n")
+	debug_log.close()
 sys.exit()

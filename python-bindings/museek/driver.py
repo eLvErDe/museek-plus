@@ -57,7 +57,7 @@ for _message in dir(messages):
 	MSGTAB[message.code] = message
 
 class Driver:
-	def __init__(self):
+	def __init__(self, callback=None):
 		self.socket = None
 		self.connected = False
 		self.loggedin = False
@@ -65,7 +65,7 @@ class Driver:
 		self.mask = None
 		self.cipher = None
 		self.sync_id = 0
-	
+		self.callback = callback
 	# Connect to museekd, host in the form of "/tmp/museekd.user" for unix sockets
 	# or "somehostname:port" for TCP sockets. Mask is an event mask (see messages.py)
 	def connect(self, host, password, mask = 0):
@@ -131,8 +131,18 @@ class Driver:
 		## Parse message with the message's class parse function
 		m = MSGTAB[code]()
 		m.cipher = self.cipher
-		return m.parse(data)
-	
+		try:
+			newmessage = m.parse(data)
+		except Exception, e:
+			self.PassError(e)
+			return None
+		else:
+			return newmessage
+			
+	def PassError(self, message):
+		if self.callback is not None:
+			self.callback(message)
+			
 	# Send a message to museekd
 	def send(self, message):
 		message.cipher = self.cipher

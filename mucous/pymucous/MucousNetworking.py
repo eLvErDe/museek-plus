@@ -19,7 +19,7 @@ class Networking(driver.Driver):
 	# @param self Networking (Driver Class)
 	# @param mucous Mucous (Class)
 	def __init__(self, mucous):
-		driver.Driver.__init__(self)
+		driver.Driver.__init__(self, self.Error)
 		## @var mucous
 		# Mucous (Class)
 		self.mucous = mucous
@@ -65,6 +65,8 @@ class Networking(driver.Driver):
 			if self.mucous.timers["nick"] != None:
 				self.mucous.timers["nick"].cancel()
 
+	def Error(self, message):
+		self.mucous.Help.Log("debug", message)
 		
 	## Recieve Messages from Museekd and collect new key presses
 	# @param self Networking (Driver Class)
@@ -80,7 +82,7 @@ class Networking(driver.Driver):
 			if self.socket in read:
 				self.process()
 		
-			time.sleep(0.001)
+			time.sleep(0.05)
 
 	## Recieved Ping from museekd
 	# @param self Networking (Driver Class)

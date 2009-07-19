@@ -17,7 +17,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 import struct
-
+import sys
 # Event mask
 EM_CHAT		= 1 << 0
 EM_PRIVATE	= 1 << 1
@@ -796,7 +796,7 @@ class PrivateRoomList(BaseMessage):
 	
 	def parse(self, data):
 		n, data = self.unpack_uint(data)
-		self.rooms = []
+		self.rooms = {}
 		for i in range(n):
 			room, data = self.unpack_string(data)
 			numusers, data = self.unpack_uint(data)
@@ -863,6 +863,7 @@ class RoomMembers(BaseMessage):
 				country, pos = self.unpack_pos_string(data, pos)
 
 				slotsfull = ord(data[pos]); pos += 1
+				
 				self.roomlist[room][user] = [status, avgspeed, downloadnum, files, dirs, slotsfull, country]
 		return self
 
@@ -897,7 +898,7 @@ class PrivateRoomAlterableMembers(BaseMessage):
 	def parse(self, data):
 		room, data = self.unpack_string(data)
 		n, data = self.unpack_uint(data)
-		self.members = []
+		self.members = {}
 		self.members[room] = {}
 		for i in range(n):
 			member, data = self.unpack_string(data)
@@ -913,7 +914,7 @@ class PrivateRoomAlterableOperators(BaseMessage):
 	def parse(self, data):
 		room, data = self.unpack_string(data)
 		n, data = self.unpack_uint(data)
-		self.operators = []
+		self.operators = {}
 		self.operators[room] = {}
 		for i in range(n):
 			operator, data = self.unpack_string(data)
