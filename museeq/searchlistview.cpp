@@ -114,13 +114,35 @@ void SearchListView::setupUsers() {
 		if(item && users.indexOf(item->user()) == -1)
 		{
 			users << item->user();
-			Usermenu *m = new Usermenu(mUsersMenu);
-			m->setup(item->user());
-			QAction * usermenu = mUsersMenu->addMenu(dynamic_cast<QMenu*>(m));
-			usermenu->setText(item->user());
 		}
 		++it;
 	}
+
+
+    int numusers = users.size();
+    mPopupMenu->removeAction(mUsersMenu->menuAction());
+    delete mUsersMenu;
+    if (numusers <= 0) {
+        mUsersMenu = mPopupMenu->addMenu(tr("Users"));
+        return;
+    }
+    else if (numusers == 1) {
+        mUsersMenu = new Usermenu(mPopupMenu);
+        dynamic_cast<Usermenu*>(mUsersMenu)->setup(users.first());
+        QAction * usermenu = mPopupMenu->addMenu(mUsersMenu);
+        usermenu->setText(tr("User '%1'").arg(users.first()));
+    }
+    else {
+        QStringListIterator usersIt(users);
+        mUsersMenu = mPopupMenu->addMenu(tr("Users"));
+        while (usersIt.hasNext()) {
+            QString username = usersIt.next();
+            Usermenu *m = new Usermenu(mUsersMenu);
+            m->setup(username);
+            QAction * usermenu = mUsersMenu->addMenu(static_cast<QMenu*>(m));
+            usermenu->setText(username);
+        }
+    }
 }
 
 void SearchListView::downloadFiles() {

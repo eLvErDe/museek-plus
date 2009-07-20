@@ -1339,26 +1339,33 @@
     </message>
     <message>
         <location filename="../searchlistview.cpp" line="76"/>
+        <location filename="../searchlistview.cpp" line="126"/>
+        <location filename="../searchlistview.cpp" line="137"/>
         <source>Users</source>
         <translation>Utenti</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="307"/>
+        <location filename="../searchlistview.cpp" line="133"/>
+        <source>User &apos;%1&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../searchlistview.cpp" line="329"/>
         <source>Y</source>
         <translation>S</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="307"/>
+        <location filename="../searchlistview.cpp" line="329"/>
         <source>N</source>
         <translation>N</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="305"/>
+        <location filename="../searchlistview.cpp" line="327"/>
         <source>/s</source>
         <translation>/s</translation>
     </message>
     <message numerus="yes">
-        <location filename="../searchlistview.cpp" line="266"/>
+        <location filename="../searchlistview.cpp" line="288"/>
         <source>%n search result(s)</source>
         <translation>
             <numerusform>%n risultato ricerca        </numerusform>
@@ -1366,7 +1373,7 @@
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../searchlistview.cpp" line="266"/>
+        <location filename="../searchlistview.cpp" line="288"/>
         <source> (%n user(s))</source>
         <translation>
             <numerusform>(%n utente)        </numerusform>
@@ -1379,7 +1386,7 @@
         <translation>Scarica file in...</translation>
     </message>
     <message>
-        <location filename="../searchlistview.cpp" line="138"/>
+        <location filename="../searchlistview.cpp" line="160"/>
         <source>Select a directory for current download(s)</source>
         <translation>Seleziona una cartella per gli scaricamenti correnti</translation>
     </message>
@@ -2346,12 +2353,17 @@ Scegli passivo se non sei sicuro.</translation>
         <translation>In coda</translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="459"/>
+        <location filename="../transfers.cpp" line="336"/>
+        <source>User &apos;%1&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transfers.cpp" line="480"/>
         <source>Send a message to all downloading users</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../transfers.cpp" line="459"/>
+        <location filename="../transfers.cpp" line="480"/>
         <source>Write the message you want to send to all users currently downloading from you</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2362,6 +2374,8 @@ Scegli passivo se non sei sicuro.</translation>
     </message>
     <message>
         <location filename="../transfers.cpp" line="201"/>
+        <location filename="../transfers.cpp" line="329"/>
+        <location filename="../transfers.cpp" line="340"/>
         <source>Users</source>
         <translation>Utenti</translation>
     </message>
