@@ -289,10 +289,28 @@ Museek::Download::setState(TrState state)
         else
             m_Museekd->ifaces()->sendStatusMessage(true, std::string("Download started: '") + destinationPath() + std::string("' from ") + user());
     }
-    else if (changed && ((state == TS_RemoteError) || (state == TS_CannotConnect) || (state == TS_ConnectionClosed) || (state == TS_LocalError)))
-        m_Museekd->ifaces()->sendStatusMessage(true, std::string("Download failed: '") + destinationPath() + std::string("' from ") + user());
+    else if (changed && ((state == TS_RemoteError) || (state == TS_CannotConnect) || (state == TS_ConnectionClosed) || (state == TS_LocalError))) {
+        std::string retryMsg = "";
+        if (m_Museekd->autoRetryDownloads()) {
+            long timeout = 30000; // 30 seconds
+            museekd()->reactor()->addTimeout(timeout, this, &Download::retry);
+            std::stringstream msg;
+            msg << ". Will retry in " << timeout/1000 << "s.";
+            retryMsg = msg.str();
+        }
+        m_Museekd->ifaces()->sendStatusMessage(true, std::string("Download failed: '") + destinationPath() + std::string("' from ") + user() + retryMsg);
+    }
     else if (changed && (state == TS_Aborted))
         m_Museekd->ifaces()->sendStatusMessage(true, std::string("Download aborted: '") + destinationPath() + std::string("' from ") + user());
+}
+
+/**
+  * Retry the download if it in a failed state
+  */
+void
+Museek::Download::retry(long) {
+    m_Museekd->ifaces()->sendStatusMessage(true, std::string("Download retried: '") + destinationPath() + std::string("' from ") + user());
+    museekd()->downloads()->add(user(), remotePath()); // Re-adding ourself is a convenient way to retry a download
 }
 
 /**

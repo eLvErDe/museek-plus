@@ -949,6 +949,11 @@ void MainWindow::saveSettings() {
 	else
         museeq->setConfig("transfers", "autoclear_finished_uploads", "false");
 
+	if(mSettingsDialog->mAutoRetryDownloads->isChecked())
+		museeq->setConfig("transfers", "autoretry_downloads", "true");
+	else
+        museeq->setConfig("transfers", "autoretry_downloads", "false");
+
     if (mSettingsDialog->SPrivRoom->isChecked() != mSettingsDialog->getPrivRoomEnabled()) {
         mSettingsDialog->setPrivRoomEnabled(mSettingsDialog->SPrivRoom->isChecked());
         museeq->driver()->doPrivRoomToggle(mSettingsDialog->getPrivRoomEnabled());

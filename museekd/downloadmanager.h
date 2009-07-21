@@ -87,6 +87,8 @@ namespace Museek
     const std::string & error() const { return m_Error; }
     void setRemoteError(const std::string & error);
 
+    void retry(long);
+
     uint rate() const { return m_Rate; }
     uint place() const { return m_Place; }
     void setPlace(uint place);

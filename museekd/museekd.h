@@ -133,6 +133,7 @@ namespace Museek
     bool trustingUploads();
     bool autoClearFinishedDownloads();
     bool autoClearFinishedUploads();
+    bool autoRetryDownloads();
     bool privilegeBuddies();
     uint upSlots();
     uint downSlots();

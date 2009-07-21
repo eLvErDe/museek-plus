@@ -117,6 +117,10 @@ bool Museek::Museekd::autoClearFinishedDownloads() {
     return config()->getBool("transfers", "autoclear_finished_downloads", false);
 }
 
+bool Museek::Museekd::autoRetryDownloads() {
+    return config()->getBool("transfers", "autoretry_downloads", false);
+}
+
 bool Museek::Museekd::autoClearFinishedUploads() {
     return config()->getBool("transfers", "autoclear_finished_uploads", false);
 }
