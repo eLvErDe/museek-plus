@@ -227,6 +227,18 @@ void
 Museek::PeerManager::onServerUserStatusReceived(const SGetStatus * message)
 {
     setUserStatus(message->user, message->status); // Store status for future ifaces
+
+    // Is the user online?
+    if(message->status > 0) {
+        NNLOG("museekd.peers.debug", "User %s is now online", message->user.c_str());
+
+        createPeerSocket(message->user);
+    }
+    else {
+        NNLOG("museekd.peers.debug", "User %s is now offline", message->user.c_str());
+
+        peerOfflineEvent(message->user);
+    }
 }
 
 /**
