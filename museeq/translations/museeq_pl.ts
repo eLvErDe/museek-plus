@@ -1032,7 +1032,7 @@
     <message>
         <location filename="../museeq.cpp" line="969"/>
         <source>--no-tray		Don&apos;t load TrayIcon</source>
-        <translation>--no-tray	Nie ładuj ikony zasobnika</translation>
+        <translation>--no-tray		Nie ładuj ikony zasobnika</translation>
     </message>
 </context>
 <context>
@@ -1321,7 +1321,7 @@
     <message>
         <location filename="../searchlistview.cpp" line="133"/>
         <source>User &apos;%1&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation>Użytkownik „%1”</translation>
     </message>
     <message>
         <location filename="../searchlistview.cpp" line="329"/>
@@ -1943,7 +1943,7 @@
     <message>
         <location filename="../settingsdialog.cpp" line="1546"/>
         <source>Automatically clear finished downloads</source>
-        <translation>Automatycznie czyść skończone pobierania</translation>
+        <translation>Automatycznie czyść skończone pobrania</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1547"/>
@@ -1953,7 +1953,7 @@
     <message>
         <location filename="../settingsdialog.cpp" line="1548"/>
         <source>Automatically retry failed dowloads</source>
-        <translation type="unfinished"></translation>
+        <translation>Automatycznie ponawiaj nieudane pobrania</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1549"/>
@@ -2349,7 +2349,7 @@ Wybierz pasywne jeśli nie masz pewności.</translation>
     <message>
         <location filename="../transfers.cpp" line="336"/>
         <source>User &apos;%1&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation>Użytkownik „%1”</translation>
     </message>
     <message>
         <location filename="../transfers.cpp" line="480"/>
