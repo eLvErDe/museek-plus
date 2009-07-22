@@ -2634,16 +2634,18 @@ class PrivateChat:
 		if event.button != 3:
 			return
 		items = self.popup_menu.get_children()
-		#items[6].set_active(self.user in [i[0] for i in self.frame.np.config.sections["server"]["userlist"]])
-		#items[7].set_active(self.user in self.frame.np.config.sections["server"]["banlist"])
-		#items[8].set_active(self.user in self.frame.np.config.sections["server"]["ignorelist"])
 		user = self.user
 		num = 5
+		config = self.frame.Networking.config
 		self.popup_menu.ready = False
-		items[num].set_active(self.frame.Networking.config.has_key("buddies") and self.frame.Networking.config["buddies"].has_key(user))
-		items[num+1].set_active(self.frame.Networking.config.has_key("banned") and self.frame.Networking.config["banned"].has_key(user))
-		items[num+2].set_active(self.frame.Networking.config.has_key("ignored") and self.frame.Networking.config["ignored"].has_key(user))
-		items[num+3].set_active(self.frame.Networking.config["trusted"].has_key(user))
+		if "buddies" in config:
+			items[num].set_active(user in config["buddies"])
+		if "banned" in config:
+			items[num+1].set_active(user in config["banned"])
+		if "ignored" in config:
+			items[num+2].set_active(user in config["ignored"])
+		if "trusted" in config:
+			items[num+3].set_active(user in config["trusted"])
 		self.popup_menu.popup(None, None, None, event.button, event.time)
 		self.popup_menu.ready = True
 		self.ChatScroll.emit_stop_by_name("button_press_event")
