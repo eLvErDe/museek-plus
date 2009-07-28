@@ -860,11 +860,11 @@ class RoomMembers(BaseMessage):
 				downloadnum, pos = self.unpack_pos_uint(data, pos)
 				files, pos = self.unpack_pos_uint(data, pos)
 				dirs, pos = self.unpack_pos_uint(data, pos)
-				country, pos = self.unpack_pos_string(data, pos)
-
 				slotsfull = ord(data[pos]); pos += 1
+				country, pos = self.unpack_pos_string(data, pos)
 				
-				self.roomlist[room][user] = [status, avgspeed, downloadnum, files, dirs, slotsfull, country]
+				roomstatus, pos = self.unpack_pos_uint(data, pos)
+				self.roomlist[room][user] = [status, avgspeed, downloadnum, files, dirs, slotsfull, country, roomstatus]
 		return self
 
 class RoomsTickers(BaseMessage):

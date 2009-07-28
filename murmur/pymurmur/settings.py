@@ -3460,6 +3460,8 @@ class Settings( gtk.Dialog):
 				self.FirstPort.set_value(int(self.config["clients.bind"]["first"]))
 			if "output" in self.config["logging"]:
 				self.LogMethod.set_active(int(self.config["logging"]["output"]))
+			else:
+				self.config["logging"] = {"output":0}
 			# Museek Clients
 			if "password" in self.config["interfaces"]:
 				self.interfacePassword.set_text(str(self.config["interfaces"]["password"]))
