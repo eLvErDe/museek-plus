@@ -10,23 +10,23 @@
     <message>
         <location filename="../banlist.cpp" line="55"/>
         <source>Ban a new user:</source>
-        <translation type="unfinished"></translation>
+        <translation>Bandisci un nuovo utente:</translation>
     </message>
     <message>
         <location filename="../banlist.cpp" line="60"/>
         <source>Add</source>
-        <translation type="unfinished">Aggiungi</translation>
+        <translation>Aggiungi</translation>
     </message>
     <message>
         <location filename="../banlist.cpp" line="65"/>
         <location filename="../banlist.cpp" line="90"/>
         <source>Send a message to all banned users</source>
-        <translation type="unfinished"></translation>
+        <translation>Invia un messaggio a tutti gli utenti banditi</translation>
     </message>
     <message>
         <location filename="../banlist.cpp" line="90"/>
         <source>Write the message you want to send to all users in your banned list</source>
-        <translation type="unfinished"></translation>
+        <translation>Scrivi il messaggio che vuoi inviare a tutti gli utenti nella lista dei banditi</translation>
     </message>
     <message>
         <location filename="../banlist.cpp" line="102"/>
@@ -82,23 +82,23 @@
     <message>
         <location filename="../buddylist.cpp" line="53"/>
         <source>Add a new buddy:</source>
-        <translation type="unfinished"></translation>
+        <translation>Aggiungi un nuovo amico:</translation>
     </message>
     <message>
         <location filename="../buddylist.cpp" line="58"/>
         <source>Add</source>
-        <translation type="unfinished">Aggiungi</translation>
+        <translation>Aggiungi</translation>
     </message>
     <message>
         <location filename="../buddylist.cpp" line="63"/>
         <location filename="../buddylist.cpp" line="88"/>
         <source>Send a message to all buddies</source>
-        <translation type="unfinished"></translation>
+        <translation>invia un messaggio a tutti gli amici</translation>
     </message>
     <message>
         <location filename="../buddylist.cpp" line="88"/>
         <source>Write the message you want to send to all users in your buddy list</source>
-        <translation type="unfinished"></translation>
+        <translation>Scrivi il messaggio che vuoi inviare a tutti gli utenti nella lista degli amici</translation>
     </message>
     <message>
         <location filename="../buddylist.cpp" line="100"/>
@@ -151,7 +151,7 @@
     <message>
         <location filename="../chatrooms.cpp" line="61"/>
         <source>*Public Chat*</source>
-        <translation type="unfinished"></translation>
+        <translation>*Chat Pubblica*</translation>
     </message>
 </context>
 <context>
@@ -309,23 +309,23 @@
     <message>
         <location filename="../ignorelist.cpp" line="53"/>
         <source>Ignore a new user:</source>
-        <translation type="unfinished"></translation>
+        <translation>Ignora un nuovo utente:</translation>
     </message>
     <message>
         <location filename="../ignorelist.cpp" line="58"/>
         <source>Add</source>
-        <translation type="unfinished">Aggiungi</translation>
+        <translation>Aggiungi</translation>
     </message>
     <message>
         <location filename="../ignorelist.cpp" line="63"/>
         <location filename="../ignorelist.cpp" line="88"/>
         <source>Send a message to all ignored users</source>
-        <translation type="unfinished"></translation>
+        <translation>Invia un messaggio a tutti gli utenti ignorati</translation>
     </message>
     <message>
         <location filename="../ignorelist.cpp" line="88"/>
         <source>Write the message you want to send to all users in your ignored list</source>
-        <translation type="unfinished"></translation>
+        <translation>Scrivi il messaggio che vuoi inviare a tutti gli utenti nella lista degli ignorati</translation>
     </message>
     <message>
         <location filename="../ignorelist.cpp" line="100"/>
@@ -348,7 +348,7 @@
     <message>
         <location filename="../interestlist.cpp" line="47"/>
         <source>Add</source>
-        <translation type="unfinished">Aggiungi</translation>
+        <translation>Aggiungi</translation>
     </message>
     <message>
         <location filename="../interestlist.cpp" line="50"/>
@@ -1011,7 +1011,7 @@
     <message>
         <location filename="../util.cpp" line="45"/>
         <source>%1 PiB</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 PiB</translation>
     </message>
     <message>
         <source>%1 PB</source>
@@ -1067,7 +1067,7 @@
     <message>
         <location filename="../recommendsview.cpp" line="34"/>
         <source>Number</source>
-        <translation type="unfinished"></translation>
+        <translation>Numero</translation>
     </message>
     <message>
         <location filename="../recommendsview.cpp" line="47"/>
@@ -1089,28 +1089,28 @@
     <message>
         <location filename="../roomlist.cpp" line="42"/>
         <source>Create a new room:</source>
-        <translation type="unfinished"></translation>
+        <translation>Crea una nuova stanza:</translation>
     </message>
     <message>
         <location filename="../roomlist.cpp" line="48"/>
         <source>Private</source>
-        <translation type="unfinished"></translation>
+        <translation>Privata</translation>
     </message>
     <message>
         <location filename="../roomlist.cpp" line="52"/>
         <source>Create</source>
-        <translation type="unfinished"></translation>
+        <translation>Crea</translation>
     </message>
     <message>
         <location filename="../roomlist.cpp" line="57"/>
         <location filename="../roomlist.cpp" line="88"/>
         <source>Show public chat</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostra chat pubblica</translation>
     </message>
     <message>
         <location filename="../roomlist.cpp" line="90"/>
         <source>Stop public chat</source>
-        <translation type="unfinished"></translation>
+        <translation>Ferma chat pubblica</translation>
     </message>
 </context>
 <context>
@@ -1128,7 +1128,7 @@
     <message>
         <location filename="../roomlistview.cpp" line="35"/>
         <source>Status</source>
-        <translation type="unfinished">Stato</translation>
+        <translation>Stato</translation>
     </message>
     <message>
         <location filename="../roomlistview.cpp" line="50"/>
@@ -1158,32 +1158,32 @@
     <message>
         <location filename="../roomlistview.cpp" line="107"/>
         <source>Public</source>
-        <translation type="unfinished"></translation>
+        <translation>Pubblica</translation>
     </message>
     <message>
         <location filename="../roomlistview.cpp" line="113"/>
         <source>member</source>
-        <translation type="unfinished"></translation>
+        <translation>membro</translation>
     </message>
     <message>
         <location filename="../roomlistview.cpp" line="113"/>
         <source>operator</source>
-        <translation type="unfinished"></translation>
+        <translation>operatore</translation>
     </message>
     <message>
         <location filename="../roomlistview.cpp" line="113"/>
         <source>owner</source>
-        <translation type="unfinished"></translation>
+        <translation>proprietario</translation>
     </message>
     <message>
         <location filename="../roomlistview.cpp" line="113"/>
         <source>unknown</source>
-        <translation type="unfinished">sconosciuto</translation>
+        <translation>sconosciuto</translation>
     </message>
     <message>
         <location filename="../roomlistview.cpp" line="117"/>
         <source>Private (%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Privato (%1)</translation>
     </message>
 </context>
 <context>
@@ -1347,7 +1347,7 @@
     <message>
         <location filename="../searchlistview.cpp" line="133"/>
         <source>User &apos;%1&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation>Utente &apos;%1&apos;</translation>
     </message>
     <message>
         <location filename="../searchlistview.cpp" line="329"/>
@@ -2662,7 +2662,7 @@ Scegli passivo se non sei sicuro.</translation>
     <message>
         <location filename="../wishlist.cpp" line="47"/>
         <source>Add</source>
-        <translation type="unfinished">Aggiungi</translation>
+        <translation>Aggiungi</translation>
     </message>
 </context>
 <context>
