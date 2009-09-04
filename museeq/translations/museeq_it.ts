@@ -2320,7 +2320,7 @@ Scegli passivo se non sei sicuro.</translation>
     <message>
         <location filename="../transfers.cpp" line="163"/>
         <source>Message downloading users</source>
-        <translation type="unfinished"></translation>
+        <translation>Invia un messaggio agli utenti che scaricano</translation>
     </message>
     <message>
         <location filename="../transfers.cpp" line="169"/>
@@ -2360,17 +2360,17 @@ Scegli passivo se non sei sicuro.</translation>
     <message>
         <location filename="../transfers.cpp" line="336"/>
         <source>User &apos;%1&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation>Utente &apos;%1&apos;</translation>
     </message>
     <message>
         <location filename="../transfers.cpp" line="480"/>
         <source>Send a message to all downloading users</source>
-        <translation type="unfinished"></translation>
+        <translation>Invia un messaggio a tutti gli utenti che scaricano</translation>
     </message>
     <message>
         <location filename="../transfers.cpp" line="480"/>
         <source>Write the message you want to send to all users currently downloading from you</source>
-        <translation type="unfinished"></translation>
+        <translation>Scrivi il messaggio che vuoi inviare a tutti gli utenti che scaricano da te</translation>
     </message>
     <message>
         <location filename="../transfers.cpp" line="167"/>
