@@ -83,6 +83,9 @@ public:
 	}
 
 	unsigned char unpack() {
+	    if (mData.isEmpty())
+            return 0;
+
 		unsigned char r = mData.front();
 		mData.pop_front();
 		return r;
