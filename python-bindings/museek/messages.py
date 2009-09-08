@@ -583,7 +583,7 @@ class JoinRoom(BaseMessage):
 			self.users[user] = [status, avgspeed, downloadnum, files, dirs, free]
 		self.private = False
 		self.owner = ''
-		self.operators = {}
+		self.operators = []
 		if len(data) > 0:
 			self.private = True
 			self.owner, pos = self.unpack_pos_string(data, pos)
@@ -899,7 +899,7 @@ class PrivateRoomAlterableMembers(BaseMessage):
 		room, data = self.unpack_string(data)
 		n, data = self.unpack_uint(data)
 		self.members = {}
-		self.members[room] = {}
+		self.members[room] = []
 		for i in range(n):
 			member, data = self.unpack_string(data)
 			self.members[room].append(member)
@@ -915,7 +915,7 @@ class PrivateRoomAlterableOperators(BaseMessage):
 		room, data = self.unpack_string(data)
 		n, data = self.unpack_uint(data)
 		self.operators = {}
-		self.operators[room] = {}
+		self.operators[room] = []
 		for i in range(n):
 			operator, data = self.unpack_string(data)
 			self.operators[room].append(operator)
