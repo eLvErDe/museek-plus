@@ -3442,24 +3442,28 @@ class Settings( gtk.Dialog):
 			
 			self.CONFIG_PATH = self.app.Muscan.configfile
 			config = self.config
-			if "host" in self.config["server"]:
-				self.EntryServerHost.set_text(self.config["server"]["host"])
-			if "port" in self.config["server"]:
-				self.ServerPort.set_value(int(self.config["server"]["port"]))
-			if "password" in self.config["server"]:
-				self.EntryServerPassword.set_text(self.config["server"]["password"])
-			if "username" in self.config["server"]:
-				self.EntryServerUsername.set_text(self.config["server"]["username"])
-			if "filesystem" in self.config["encoding"]:
-				self.filesystemEncoding.child.set_text(self.config["encoding"]["filesystem"])
-			if "network" in self.config["encoding"]:
-				self.networkEncoding.child.set_text(self.config["encoding"]["network"])
-			if "last" in self.config["clients.bind"]:
-				self.LastPort.set_value(int(self.config["clients.bind"]["last"]))
-			if "first" in self.config["clients.bind"]:
-				self.FirstPort.set_value(int(self.config["clients.bind"]["first"]))
-			if "output" in self.config["logging"]:
-				self.LogMethod.set_active(int(self.config["logging"]["output"]))
+			if "server" in self.config:
+				if "host" in self.config["server"]:
+					self.EntryServerHost.set_text(self.config["server"]["host"])
+				if "port" in self.config["server"]:
+					self.ServerPort.set_value(int(self.config["server"]["port"]))
+				if "password" in self.config["server"]:
+					self.EntryServerPassword.set_text(self.config["server"]["password"])
+				if "username" in self.config["server"]:
+					self.EntryServerUsername.set_text(self.config["server"]["username"])
+			if "encoding" in self.config:
+				if "filesystem" in self.config["encoding"]:
+					self.filesystemEncoding.child.set_text(self.config["encoding"]["filesystem"])
+				if "network" in self.config["encoding"]:
+					self.networkEncoding.child.set_text(self.config["encoding"]["network"])
+			if "clients.bind" in self.config:
+				if "last" in self.config["clients.bind"]:
+					self.LastPort.set_value(int(self.config["clients.bind"]["last"]))
+				if "first" in self.config["clients.bind"]:
+					self.FirstPort.set_value(int(self.config["clients.bind"]["first"]))
+			if "logging" in self.config:
+				if "output" in self.config["logging"]:
+					self.LogMethod.set_active(int(self.config["logging"]["output"]))
 			else:
 				self.config["logging"] = {"output":0}
 			# Museek Clients
