@@ -796,7 +796,7 @@ void SettingsDialog::loadSettings() {
     STrustedUsers->setChecked(museeq->config("transfers", "trusting_uploads") == "true");
     mAutoClearFinishedDownloads->setChecked(museeq->config("transfers", "autoclear_finished_downloads") == "true");
     mAutoClearFinishedUploads->setChecked(museeq->config("transfers", "autoclear_finished_uploads") == "true");
-    mAutoRetryDownloads->setChecked(museeq->config("transfers", "autoretry_uploads") == "true");
+    mAutoRetryDownloads->setChecked(museeq->config("transfers", "autoretry_downloads") == "true");
     SActive->setChecked(museeq->config("clients", "connectmode") == "active");
 
     SPrivRoom->setChecked(mPrivRoomEnabled);
