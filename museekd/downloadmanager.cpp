@@ -751,19 +751,28 @@ Museek::DownloadManager::add(const std::string & user, const std::string & path,
         return;
     }
 
-    download->setEnqueued(false); // Ensure we're gonna enqueue it even it has already been done previously (useful when we want to retry)
-    download->setState(TS_QueuedRemotely);
-    download->setPositionFromIncompleteFile();
+    // Do nothing if already downloading: this prevent running downloads to be stopped (the peer would not like it)
+    if ((download->state() != TS_Connecting) &&
+        (download->state() != TS_Establishing) &&
+        (download->state() != TS_Initiating) &&
+        (download->state() != TS_Negotiating) &&
+        (download->state() != TS_Waiting) &&
+        (download->state() != TS_Transferring)) {
 
-    // Check that we don't already have this file downloaded in destination dir
-    std::ifstream file(download->destinationPath().c_str(), std::fstream::in | std::fstream::binary);
-    if(file.is_open()) {
-        NNLOG("museekd.down.debug", "%s has already been downloaded.", path.c_str());
-        download->setState(TS_Finished);
-        file.close();
-    }
+        download->setEnqueued(false); // Ensure we're gonna enqueue it even if it has already been done previously (useful when we want to retry)
+        download->setState(TS_QueuedRemotely);
+        download->setPositionFromIncompleteFile();
 
-    checkDownloads();
+        // Check that we don't already have this file downloaded in destination dir
+        std::ifstream file(download->destinationPath().c_str(), std::fstream::in | std::fstream::binary);
+        if(file.is_open()) {
+            NNLOG("museekd.down.debug", "%s has already been downloaded.", path.c_str());
+            download->setState(TS_Finished);
+            file.close();
+        }
+
+        checkDownloads();
+        }
 }
 
 /**
