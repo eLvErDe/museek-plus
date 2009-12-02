@@ -202,7 +202,7 @@ void ChatRooms::setHighlight(int highlight, QWidget* chatwidget) {
             pc->setHighlighted(highlight);
 
 		if (highlight > 0)// Icon on tab
-			tabBar()->setTabIcon(pos, QIcon(IMG("online")));
+			tabBar()->setTabIcon(pos, QIcon(IMG("new-element")));
 		if (highlight > 1)// Red tab
 			tabBar()->setTabTextColor(pos, QColor(255, 0, 0));
 

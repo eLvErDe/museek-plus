@@ -252,7 +252,7 @@ void SearchTabWidget::setHighlight(int highlight, QWidget* widget) {
 
 		if (uw->highlighted() > 0) {
 			// Icon on tab
-			tabBar()->setTabIcon(pos, QIcon(IMG("online")));
+			tabBar()->setTabIcon(pos, QIcon(IMG("new-element")));
 		}
 		if (uw->highlighted() > 1) {
 			// Red tab

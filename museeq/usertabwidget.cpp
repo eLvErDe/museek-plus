@@ -119,7 +119,7 @@ void UserTabWidget::setHighlight(int pos, int highlight) {
 
 		if (uw->highlighted() > 0) {
 			// Icon on tab
-			tabBar()->setTabIcon(pos, QIcon(IMG("online")));
+			tabBar()->setTabIcon(pos, QIcon(IMG("new-element")));
 		}
 		if (uw->highlighted() > 1) {
 			// Red tab
