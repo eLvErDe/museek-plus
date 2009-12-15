@@ -234,7 +234,7 @@ Museek::UploadSocket::findPosition() {
 
     if(mHavePos)
         // We're not supposed to receive something else... throw it away
-        receiveBuffer().seek(receiveBuffer().count());
+        receiveBuffer().clear();
 }
 
 /*

@@ -165,7 +165,7 @@ PEERMESSAGE(PSearchReply, 9)
 		ticket = unpack_int();
 		uint n = unpack_int();
 		while(n) {
-			buffer.seek(1);
+			unpack_char();
 			std::string fn = unpack_string();
 			FileEntry fe;
 			fe.size = unpack_off();

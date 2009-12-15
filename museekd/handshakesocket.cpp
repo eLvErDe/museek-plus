@@ -81,7 +81,10 @@ Museek::HandshakeSocket::onMessageReceived(const MessageData * data)
       m_Token = msg.token;
       m_User = msg.user;
       // Seek past the message.
-      receiveBuffer().seek(data->length + 5);
+      if (receiveBuffer().count() >= data->length + 5)
+        receiveBuffer().seek(data->length + 5);
+      else
+        receiveBuffer().clear();
       if(msg.type == "P")
       {
         // Create a new PeerSocket which will copy our descriptor and state.
