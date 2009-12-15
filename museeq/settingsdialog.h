@@ -112,6 +112,8 @@ public:
 	QSpinBox* CPortStart, * CPortEnd, * TickerLength;
 	QCheckBox* SBuddiesPrivileged, * SOnlineAlerts,* SShareBuddiesOnly, * STrustedUsers, * SPrivRoom, * SBuddiesShares, * SIPLog, * LoggingPrivate, * LoggingRooms, * IconsAlignment, * mToggleTickers, * mToggleCountry, * mToggleSaveTransfersLayout, * mToggleSaveAllLayouts, * mToggleLog, * mToggleTimestamps, * mToggleTrayicon, * mAutoClearFinishedDownloads, * mAutoClearFinishedUploads, * mAutoRetryDownloads;
 	QTreeWidget* ListNormalShares, * ListBuddyShares;
+	QLabel* mBlacklistLabel;
+	QLineEdit* mBlacklistDownload;
 
     QComboBox * mDAddress, * mDConnectType;
     QPushButton * mSelectConfigFileButton, * mStartDaemonButton, * mStopDaemonButton/*, * mMusetupButton*/, * mConnectToDaemonButton, * mDisconnectFromDaemonButton, * mIconTheme;

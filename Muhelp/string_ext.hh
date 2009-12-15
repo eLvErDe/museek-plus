@@ -176,4 +176,18 @@ inline std::wstring str_replace(const std::wstring& s, wchar_t from, wchar_t to)
 	return r;
 }
 
+inline std::string str_replace(const std::string& s, const std::string& from, const std::string& to) {
+	size_t findStartPos = 0, foundPos = 0;
+	std::string out = s;
+
+	foundPos = out.find(from, findStartPos);
+    while ((findStartPos < out.length()) && (foundPos != std::string::npos)) {
+        out = out.replace(foundPos, from.length(), to.c_str(), to.length());
+        findStartPos = foundPos+to.length();
+		foundPos = out.find(from, findStartPos);
+    }
+
+	return out;
+}
+
 #endif //STRING_EXT_HH

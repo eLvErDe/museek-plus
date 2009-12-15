@@ -484,6 +484,12 @@ void Museek::DownloadManager::addFolderContents(const std::string & user, const 
 
     Folders::const_iterator fit;
     std::string downloadDir = museekd()->config()->get("transfers", "download-dir");
+
+    // Don't download files matching a blacklist item
+    std::string blacklist = museekd()->config()->get("transfers", "download_blacklist");
+    std::vector<std::string> blacklistItems;
+    split(blacklist, blacklistItems, ";");
+
     for (fit = folders.begin(); fit != folders.end(); fit++) {
         // Folder we have asked the contents
         std::string remotePathBase = museekd()->codeset()->fromPeer(user, fit->first);
@@ -517,11 +523,30 @@ void Museek::DownloadManager::addFolderContents(const std::string & user, const 
                 localPath += museekd()->codeset()->fromUtf8ToFS(remotePathDir.substr(posB));
 
             Folder::const_iterator fiit;
+            bool blacklisted = false;
             for (fiit = sit->second.begin(); fiit != sit->second.end(); fiit++) {
+                std::string filename = museekd()->codeset()->fromPeer(user, fiit->first);
+
+                // Don't download files matching a blacklist item
+                std::vector<std::string>::const_iterator bit;
+                blacklisted = false;
+                for (bit = blacklistItems.begin(); bit != blacklistItems.end(); bit++) {
+                    blacklisted = wildcmp(*bit, filename);
+                    if (blacklisted) {
+                        NNLOG("museekd.down.debug", "File %s blacklisted by %s.", filename.c_str(), bit->c_str());
+                        m_Museekd->ifaces()->sendStatusMessage(true, std::string("File '") + filename.c_str() + "' is blacklisted (" + bit->c_str()+")");
+                        break;
+                    }
+                }
+
+                if (blacklisted)
+                    continue; // Skip to next file
+
                 // Adding each file
                 std::string remotePath = remotePathDir; // Complete remote path of a file
                 remotePath += "\\";
-                remotePath += museekd()->codeset()->fromPeer(user, fiit->first);
+                remotePath += filename;
+
                 if (localPath != std::string() && localPath != downloadDir)
                     add(user, remotePath, localPath);
                 else

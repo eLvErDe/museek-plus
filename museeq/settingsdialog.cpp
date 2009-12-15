@@ -315,7 +315,13 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Q
 	mAutoRetryDownloads = new QCheckBox( mUsersTab);
 	UsersGrid->addWidget( mAutoRetryDownloads, 6, 0);
 
-	UsersGrid->setRowStretch(7, 10);
+	mBlacklistLabel = new QLabel(mUsersTab);
+	UsersGrid->addWidget( mBlacklistLabel, 7, 0);
+
+	mBlacklistDownload = new QLineEdit( mUsersTab );
+	UsersGrid->addWidget( mBlacklistDownload, 7, 1 );
+
+	UsersGrid->setRowStretch(8, 10);
 
 
     // Populate museeq tab
@@ -816,6 +822,7 @@ void SettingsDialog::loadSettings() {
  	mToggleSaveTransfersLayout->setChecked(museeq->settings()->value("saveTransfersLayout", false).toBool());
  	mToggleSaveAllLayouts->setChecked(museeq->settings()->value("saveAllLayouts", false).toBool());
  	mToggleLog->setChecked(museeq->settings()->value("showStatusLog", false).toBool());
+ 	mBlacklistDownload->setText(museeq->config("transfers", "download_blacklist"));
 
 	IconsAlignment->setChecked(museeq->settings()->value("VerticalIconBox").toBool());
 	SMessageFont->setText(museeq->mFontMessage);
@@ -943,6 +950,8 @@ void SettingsDialog::slotConfigChanged(const QString& domain, const QString& key
 		SDownDir->setText(value);
 	} else if(domain == "transfers" && key == "incomplete-dir") {
 		SIncompleteDir->setText(value);
+	} else if(domain == "transfers" && key == "download_blacklist") {
+		mBlacklistDownload->setText(value);
 
 	} else if(domain == "clients" && key == "connectmode") {
 		if (value == "active") SActive->setChecked(true);
@@ -1551,6 +1560,8 @@ void SettingsDialog::languageChange()
 	SIPLog->setText( tr( "Display IP addresses in daemon log instead of popup" ) );
 	TickerLengthLabel->setText( tr( "Maximum length of ticker messages:" ) );
 	IconsAlignment->setText( tr( "Align mode icons vertically (requires restart)" ) );
+
+	mBlacklistLabel->setText( tr( "Download blacklist ('*' is 0 or more characters, '?' is exactly 1 character, separate with ';'):" ) );
 
 	mHostLabel->setText( tr( "Connection type:" ) );
 }

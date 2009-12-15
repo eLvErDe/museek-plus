@@ -959,6 +959,8 @@ void MainWindow::saveSettings() {
         museeq->driver()->doPrivRoomToggle(mSettingsDialog->getPrivRoomEnabled());
     }
 
+    museeq->setConfig("transfers", "download_blacklist", mSettingsDialog->mBlacklistDownload->text());
+
 	// listen ports
 	QVariant ps (mSettingsDialog->CPortStart->value());
 	museeq->setConfig("clients.bind", "first", ps.toString());

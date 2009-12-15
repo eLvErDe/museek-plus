@@ -22,9 +22,11 @@
 #define MUSEEK_UTIL_H
 
 #include <NewNet/nnpath.h>
+#include <Muhelp/string_ext.hh>
 #ifndef WIN32
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <regex.h>
 #else
 #include <io.h>
 #endif // ! WIN32
@@ -180,4 +182,57 @@ static inline int read_str(std::ifstream * ifs, std::string& r) {
 	return len + 4;
 }
 
+/**
+ * Returns true if stringStr matched the given pattern (wildStr). False otherwise.
+ * Authorized special characters are: * (any chars) and ? (exactly one char)
+ */
+static inline bool wildcmp(const std::string & wildStr, const std::string & stringStr) {
+#ifndef WIN32
+    int err;
+    regex_t preg;
+
+    std::string regex = wildStr;
+    regex = str_replace(regex, "\\", "\\\\");
+    regex = str_replace(regex, "+", "\\+");
+    regex = str_replace(regex, ".", "\\.");
+    regex = str_replace(regex, "{", "\\{");
+    regex = str_replace(regex, "}", "\\}");
+    regex = str_replace(regex, "|", "\\|");
+    regex = str_replace(regex, "(", "\\(");
+    regex = str_replace(regex, ")", "\\)");
+    regex = str_replace(regex, "^", "\\^");
+    regex = str_replace(regex, "$", "\\$");
+
+    regex = str_replace(regex, "*", ".*");
+    regex = str_replace(regex, "?", ".{1}"); // FIXME doesn't work
+
+    regex = "^"+regex+"$";
+
+    const char *str_regex = regex.c_str();
+    const char *str_request = stringStr.c_str();
+
+    err = regcomp (&preg, str_regex, REG_NOSUB | REG_EXTENDED | REG_ICASE);
+
+    if (err == 0)
+    {
+      int match;
+
+      match = regexec (&preg, str_request, 0, NULL, 0);
+
+      regfree (&preg);
+
+      if (match == 0)
+         return true;
+      else
+          return false;
+    }
+
+    NNLOG("museekd.util.warn", "Error while using regex %s.", regex.c_str());
+
+    return false;
+
+#endif // WIN32
+
+return false; // For Win32
+}
 #endif // MUSEEK_UTIL_H
