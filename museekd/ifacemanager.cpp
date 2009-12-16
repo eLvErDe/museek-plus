@@ -873,7 +873,8 @@ Museek::IfaceManager::onIfaceDownloadFile(const IDownloadFile * message)
 {
     museekd()->downloads()->add(message->user, message->path);
     Download * newDownload = museekd()->downloads()->findDownload(message->user, message->path);
-    newDownload->setSize(message->size);
+    if (newDownload)
+        newDownload->setSize(message->size);
 }
 
 void
@@ -881,7 +882,8 @@ Museek::IfaceManager::onIfaceDownloadFileTo(const IDownloadFileTo * message)
 {
     museekd()->downloads()->add(message->user, message->path, museekd()->codeset()->fromUtf8ToFS(message->localpath));
     Download * newDownload = museekd()->downloads()->findDownload(message->user, message->path);
-    newDownload->setSize(message->size);
+    if (newDownload)
+        newDownload->setSize(message->size);
 }
 
 void

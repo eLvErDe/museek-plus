@@ -342,6 +342,9 @@ Museek::PeerSocket::onTransferRequested(const PTransferRequest * request)
         // Create the download and prepare it
         museekd()->downloads()->add(user(), path, localPath.str());
         Download * newDownload = museekd()->downloads()->findDownload(user(), path);
+        if (!newDownload)
+            return; // Check this just in case it disappers between add() and find() calls
+
         newDownload->setTicket(request->ticket);
         newDownload->setSize(request->filesize);
 
