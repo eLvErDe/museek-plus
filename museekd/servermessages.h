@@ -69,6 +69,8 @@ protected:
 			values.clear(); \
 			uint32 j = unpack_int(); \
 			while(j) { \
+                if (buffer.empty()) \
+                    break; \
 				values.push_back(unpack_string()); \
 				j--; \
 			} \
@@ -440,12 +442,16 @@ SERVERMESSAGE(SGetRecommendations, 54)
 	PARSE
 		uint32 n = unpack_int();
 		while(n) {
+            if (buffer.empty())
+                break; // If this happens, message is malformed. No need to continue (prevent huge loops)
 			std::string recommendation = unpack_string();
 			recommendations[recommendation] = unpack_signed_int();
 			n--;
 		}
 		uint32 nu = unpack_int();
 		while(nu) {
+            if (buffer.empty())
+                break; // If this happens, message is malformed. No need to continue (prevent huge loops)
 			std::string recommendation = unpack_string();
 			recommendations[recommendation] = unpack_signed_int();
 			nu--;
@@ -464,12 +470,16 @@ SERVERMESSAGE(SGetGlobalRecommendations, 56)
 	PARSE
 		uint32 n = unpack_int();
 		while(n) {
+            if (buffer.empty())
+                break; // If this happens, message is malformed. No need to continue (prevent huge loops)
 			std::string recommendation = unpack_string();
 			recommendations[recommendation] = static_cast<int32>(unpack_int());
 			n--;
 		}
 		uint32 nu = unpack_int();
 		while(nu) {
+            if (buffer.empty())
+                break; // If this happens, message is malformed. No need to continue (prevent huge loops)
 			std::string recommendation = unpack_string();
 			recommendations[recommendation] = unpack_signed_int();
 			nu--;
@@ -491,11 +501,15 @@ SERVERMESSAGE(SUserInterests, 57)
 		user = unpack_string();
 		uint32 n1 = unpack_int();
 		while(n1) {
+            if (buffer.empty())
+                break; // If this happens, message is malformed. No need to continue (prevent huge loops)
 			likes.push_back(unpack_string());
 			n1--;
 		}
 		uint32 n2 = unpack_int();
 		while(n2) {
+            if (buffer.empty())
+                break; // If this happens, message is malformed. No need to continue (prevent huge loops)
 			hates.push_back(unpack_string());
 			n2--;
 		}
@@ -516,6 +530,8 @@ SERVERMESSAGE(SRoomList, 64)
 		uint32 n = unpack_int();
 		std::vector<std::string> rooms;
 		while(n) {
+            if (buffer.empty())
+                break; // If this happens, message is malformed. No need to continue (prevent huge loops)
 			rooms.push_back(unpack_string());
 			n--;
 		}
@@ -528,6 +544,8 @@ SERVERMESSAGE(SRoomList, 64)
 		uint32 no = unpack_int();
 		std::vector<std::string> privroomsOwned;
 		while(no) {
+            if (buffer.empty())
+                break; // If this happens, message is malformed. No need to continue (prevent huge loops)
 			privroomsOwned.push_back(unpack_string());
 			no--;
 		}
@@ -540,6 +558,8 @@ SERVERMESSAGE(SRoomList, 64)
 		uint32 nm = unpack_int();
 		std::vector<std::string> privroomsMember;
 		while(nm) {
+            if (buffer.empty())
+                break; // If this happens, message is malformed. No need to continue (prevent huge loops)
 			privroomsMember.push_back(unpack_string());
 			nm--;
 		}
@@ -552,6 +572,8 @@ SERVERMESSAGE(SRoomList, 64)
 		uint32 np = unpack_int();
 		std::vector<std::string> privrooms;
 		while(np) {
+            if (buffer.empty())
+                break; // If this happens, message is malformed. No need to continue (prevent huge loops)
 		    std::string opedRoom = unpack_string();
 		    if (privroomlist.find(opedRoom) != privroomlist.end())
                 privroomlist[opedRoom].second = 1;
@@ -669,6 +691,8 @@ SERVERMESSAGE(SNetInfo, 102)
 	PARSE
 		uint32 n = unpack_int();
 		while(n) {
+            if (buffer.empty())
+                break; // If this happens, message is malformed. No need to continue (prevent huge loops)
 			std::string  user = unpack_string(),
 			             ip   = unpack_ip();
 			uint32 port = unpack_int();
@@ -703,6 +727,8 @@ SERVERMESSAGE(SGetSimilarUsers, 110)
 	PARSE
 		uint32 n = unpack_int();
 		while(n) {
+            if (buffer.empty())
+                break; // If this happens, message is malformed. No need to continue (prevent huge loops)
 			std::string user = unpack_string();
 			users[user] = unpack_int();
 			n--;
@@ -724,6 +750,8 @@ SERVERMESSAGE(SGetItemRecommendations, 111)
 		item = unpack_string();
 		uint32 n = unpack_int();
 		while(n) {
+            if (buffer.empty())
+                break; // If this happens, message is malformed. No need to continue (prevent huge loops)
 			std::string recommendation = unpack_string();
 			recommendations[recommendation] = unpack_signed_int();
 			n--;
@@ -746,6 +774,8 @@ SERVERMESSAGE(SGetItemSimilarUsers, 112)
 		item = unpack_string();
 		uint32 n = unpack_int();
 		while(n) {
+            if (buffer.empty())
+                break; // If this happens, message is malformed. No need to continue (prevent huge loops)
 			std::string user = unpack_string();
 			users[user] = 0;
 			n--;
@@ -763,6 +793,8 @@ SERVERMESSAGE(SRoomTickers, 113)
 		room = unpack_string();
 		uint32 n = unpack_int();
 		while(n) {
+            if (buffer.empty())
+                break; // If this happens, message is malformed. No need to continue (prevent huge loops)
 			std::string user = unpack_string();
 			tickers[user] = unpack_string();
 			n--;
@@ -927,6 +959,8 @@ SERVERMESSAGE(SPrivRoomAlterableMembers, 133)
 		room = unpack_string();
 		n = unpack_int();
 		while(n) {
+            if (buffer.empty())
+                break; // If this happens, message is malformed. No need to continue (prevent huge loops)
 			users.push_back(unpack_string());
 			n--;
 		}
@@ -1123,6 +1157,8 @@ SERVERMESSAGE(SPrivRoomAlterableOperators, 148)
 		room = unpack_string();
 		n = unpack_int();
 		while(n) {
+            if (buffer.empty())
+                break; // If this happens, message is malformed. No need to continue (prevent huge loops)
 			ops.push_back(unpack_string());
 			n--;
 		}

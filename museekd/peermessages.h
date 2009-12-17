@@ -83,10 +83,14 @@ PEERMESSAGE(PSharesReply, 5)
 		decompress();
 		uint n = unpack_int();
 		while(n) {
+            if (buffer.empty())
+                break; // If this happens, message is malformed. No need to continue (prevent huge loops)
 			std::string dirname = unpack_string();
 			uint f = unpack_int();
 			Folder files;
 			while(f) {
+			    if (buffer.empty())
+                    break; // If this happens, message is malformed. No need to continue (prevent huge loops)
 				unpack_char();
 				std::string filename = unpack_string();
 				FileEntry fe;
@@ -94,6 +98,8 @@ PEERMESSAGE(PSharesReply, 5)
 				fe.ext = unpack_string();
 				uint attrs = unpack_int();
 				while(attrs) {
+                    if (buffer.empty())
+                        break; // If this happens, message is malformed. No need to continue (prevent huge loops)
 					unpack_int();
 					fe.attrs.push_back(unpack_int());
 					attrs--;
@@ -164,26 +170,29 @@ PEERMESSAGE(PSearchReply, 9)
 		user = unpack_string();
 		ticket = unpack_int();
 		uint n = unpack_int();
-		NewNet::Buffer backupBuffer = buffer; // Save buffer in case the message is malformed (see below)
+		NewNet::Buffer backupBuffer;
+		backupBuffer.append(buffer.data(), buffer.count()); // Save buffer in case the message is malformed (see below)
 		uint backupN = n;
 		bool malformedMsg = false;
 
 		while(n) {
-			unpack_char();
-			std::string fn = unpack_string();
-			if (fn.length() == 0) {
-			    // Message claimed n files, but we exhausted buffer. It means message is malformed.
+            if (buffer.empty()) {
+                // Message claimed n files, but we exhausted buffer. It means message is malformed.
 			    // This happens with an unknown exotic client which codes file size using uint32 instead of uint64
 			    // The way to solve this is to reparse the message using uint32 (see below)
                 malformedMsg = true;
                 buffer.clear();
-			    break;
-			}
+                break;
+            }
+			unpack_char();
+			std::string fn = unpack_string();
 			FileEntry fe;
             fe.size = unpack_off(); // Sometimes an uint with an exotic client
 			fe.ext = unpack_string();
 			int attrs = unpack_int();
             while(attrs) {
+			    if (buffer.empty())
+                    break; // If this happens, message is malformed. No need to continue (prevent huge loops)
                 unpack_int();
                 fe.attrs.push_back(unpack_int());
                 attrs--;
@@ -193,13 +202,19 @@ PEERMESSAGE(PSearchReply, 9)
 		}
 		slotfree = (unpack_char() != 0);
 		avgspeed = unpack_int();
-		queuelen = unpack_off();
+		if (buffer.count() >= 8)
+            queuelen = unpack_off();
+        else
+            queuelen = static_cast<uint64>(unpack_int()); // Some clients use uint32 instead of uint64
 
         // If there was a problem try reparsing using uint32 for size
         if (malformedMsg) {
             buffer = backupBuffer;
             n = backupN;
+            results.clear();
             while(n) {
+			    if (buffer.empty())
+                    break; // If this happens, message is malformed. No need to continue (prevent huge loops)
                 unpack_char();
                 std::string fn = unpack_string();
                 FileEntry fe;
@@ -207,6 +222,8 @@ PEERMESSAGE(PSearchReply, 9)
                 fe.ext = unpack_string();
                 int attrs = unpack_int();
                 while(attrs) {
+                    if (buffer.empty())
+                        break; // If this happens, message is malformed. No need to continue (prevent huge loops)
                     unpack_int();
                     fe.attrs.push_back(unpack_int());
                     attrs--;
@@ -216,7 +233,10 @@ PEERMESSAGE(PSearchReply, 9)
             }
             slotfree = (unpack_char() != 0);
             avgspeed = unpack_int();
-            queuelen = unpack_off();
+            if (buffer.count() >= 8)
+                queuelen = unpack_off();
+            else
+                queuelen = static_cast<uint64>(unpack_int()); // Some clients use uint32 instead of uint64
         }
 	END_PARSE
 
@@ -283,6 +303,8 @@ PEERMESSAGE(PFolderContentsRequest, 36)
 	PARSE
 		uint n = unpack_int();
 		while(n) {
+            if (buffer.empty())
+                break; // If this happens, message is malformed. No need to continue (prevent huge loops)
 			dirs.push_back(unpack_string());
 			n--;
 		}
@@ -330,13 +352,19 @@ PEERMESSAGE(PFolderContentsReply, 37)
 
 		uint n = unpack_int();
 		while(n) {
+            if (buffer.empty())
+                break; // If this happens, message is malformed. No need to continue (prevent huge loops)
 			std::string _folder = unpack_string();
 			uint o = unpack_int();
 			while(o) {
+			    if (buffer.empty())
+                    break; // If this happens, message is malformed. No need to continue (prevent huge loops)
 				std::string _dir = unpack_string();
 				uint p = unpack_int();
 				folders[_folder][_dir].clear();
 				while(p) {
+                    if (buffer.empty())
+                        break; // If this happens, message is malformed. No need to continue (prevent huge loops)
 					FileEntry fe;
 					unpack_char();
 					std::string _name = unpack_string();
@@ -344,6 +372,8 @@ PEERMESSAGE(PFolderContentsReply, 37)
 					fe.ext = unpack_string();
 					uint q = unpack_int();
 					while(q) {
+                        if (buffer.empty())
+                            break; // If this happens, message is malformed. No need to continue (prevent huge loops)
 						unpack_int();
 						fe.attrs.push_back(unpack_int());
 						q--;
