@@ -164,24 +164,60 @@ PEERMESSAGE(PSearchReply, 9)
 		user = unpack_string();
 		ticket = unpack_int();
 		uint n = unpack_int();
+		NewNet::Buffer backupBuffer = buffer; // Save buffer in case the message is malformed (see below)
+		uint backupN = n;
+		bool malformedMsg = false;
+
 		while(n) {
 			unpack_char();
 			std::string fn = unpack_string();
+			if (fn.length() == 0) {
+			    // Message claimed n files, but we exhausted buffer. It means message is malformed.
+			    // This happens with an unknown exotic client which codes file size using uint32 instead of uint64
+			    // The way to solve this is to reparse the message using uint32 (see below)
+                malformedMsg = true;
+                buffer.clear();
+			    break;
+			}
 			FileEntry fe;
-			fe.size = unpack_off();
+            fe.size = unpack_off(); // Sometimes an uint with an exotic client
 			fe.ext = unpack_string();
 			int attrs = unpack_int();
-			while(attrs) {
-				unpack_int();
-				fe.attrs.push_back(unpack_int());
-				attrs--;
-			}
+            while(attrs) {
+                unpack_int();
+                fe.attrs.push_back(unpack_int());
+                attrs--;
+            }
 			results[fn] = fe;
 			n--;
 		}
 		slotfree = (unpack_char() != 0);
 		avgspeed = unpack_int();
 		queuelen = unpack_off();
+
+        // If there was a problem try reparsing using uint32 for size
+        if (malformedMsg) {
+            buffer = backupBuffer;
+            n = backupN;
+            while(n) {
+                unpack_char();
+                std::string fn = unpack_string();
+                FileEntry fe;
+                fe.size = static_cast<uint64>(unpack_int()); // Sometimes an uint with an exotic client
+                fe.ext = unpack_string();
+                int attrs = unpack_int();
+                while(attrs) {
+                    unpack_int();
+                    fe.attrs.push_back(unpack_int());
+                    attrs--;
+                }
+                results[fn] = fe;
+                n--;
+            }
+            slotfree = (unpack_char() != 0);
+            avgspeed = unpack_int();
+            queuelen = unpack_off();
+        }
 	END_PARSE
 
 	std::string user;
