@@ -1651,7 +1651,7 @@
     <message>
         <location filename="../settingsdialog.cpp" line="1564"/>
         <source>Download blacklist (&apos;*&apos; is 0 or more characters, &apos;?&apos; is exactly 1 character, separate with &apos;;&apos;):</source>
-        <translation type="unfinished"></translation>
+        <translation>Czarna lista pobrań (&apos;*&apos; to 0 lub więcej znaków, &apos;?&apos; to dokładnie 1 znak, rozdzielać za pomocą &apos;;&apos;):</translation>
     </message>
     <message>
         <location filename="../settingsdialog.cpp" line="1633"/>
