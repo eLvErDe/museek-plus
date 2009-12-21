@@ -1050,7 +1050,7 @@ IFACEMESSAGE(IMessageUsers, 0x0310)
 	PARSE
 		uint32 n = unpack_int();
 		while(n) {
-            if (buffer.empty())
+            if (buffer.count() < 4)
                 break; // If this happens, message is malformed. No need to continue (prevent huge loops)
 			users.push_back(unpack_string());
 			n--;

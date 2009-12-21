@@ -83,7 +83,7 @@ PEERMESSAGE(PSharesReply, 5)
 		decompress();
 		uint n = unpack_int();
 		while(n) {
-            if (buffer.empty())
+            if (buffer.count() < 4)
                 break; // If this happens, message is malformed. No need to continue (prevent huge loops)
 			std::string dirname = unpack_string();
 			uint f = unpack_int();
@@ -98,7 +98,7 @@ PEERMESSAGE(PSharesReply, 5)
 				fe.ext = unpack_string();
 				uint attrs = unpack_int();
 				while(attrs) {
-                    if (buffer.empty())
+                    if (buffer.count() < 4)
                         break; // If this happens, message is malformed. No need to continue (prevent huge loops)
 					unpack_int();
 					fe.attrs.push_back(unpack_int());
@@ -191,7 +191,7 @@ PEERMESSAGE(PSearchReply, 9)
 			fe.ext = unpack_string();
 			int attrs = unpack_int();
             while(attrs) {
-			    if (buffer.empty())
+                if (buffer.count() < 4)
                     break; // If this happens, message is malformed. No need to continue (prevent huge loops)
                 unpack_int();
                 fe.attrs.push_back(unpack_int());
@@ -222,7 +222,7 @@ PEERMESSAGE(PSearchReply, 9)
                 fe.ext = unpack_string();
                 int attrs = unpack_int();
                 while(attrs) {
-                    if (buffer.empty())
+                    if (buffer.count() < 4)
                         break; // If this happens, message is malformed. No need to continue (prevent huge loops)
                     unpack_int();
                     fe.attrs.push_back(unpack_int());
@@ -303,7 +303,7 @@ PEERMESSAGE(PFolderContentsRequest, 36)
 	PARSE
 		uint n = unpack_int();
 		while(n) {
-            if (buffer.empty())
+            if (buffer.count() < 4)
                 break; // If this happens, message is malformed. No need to continue (prevent huge loops)
 			dirs.push_back(unpack_string());
 			n--;
@@ -352,12 +352,12 @@ PEERMESSAGE(PFolderContentsReply, 37)
 
 		uint n = unpack_int();
 		while(n) {
-            if (buffer.empty())
+            if (buffer.count() < 4)
                 break; // If this happens, message is malformed. No need to continue (prevent huge loops)
 			std::string _folder = unpack_string();
 			uint o = unpack_int();
 			while(o) {
-			    if (buffer.empty())
+                if (buffer.count() < 4)
                     break; // If this happens, message is malformed. No need to continue (prevent huge loops)
 				std::string _dir = unpack_string();
 				uint p = unpack_int();
@@ -372,7 +372,7 @@ PEERMESSAGE(PFolderContentsReply, 37)
 					fe.ext = unpack_string();
 					uint q = unpack_int();
 					while(q) {
-                        if (buffer.empty())
+                        if (buffer.count() < 4)
                             break; // If this happens, message is malformed. No need to continue (prevent huge loops)
 						unpack_int();
 						fe.attrs.push_back(unpack_int());
