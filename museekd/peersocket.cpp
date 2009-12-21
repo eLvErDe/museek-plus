@@ -454,7 +454,7 @@ Museek::PeerSocket::onFolderContentsReceived(const PFolderContentsReply * messag
 
 void
 Museek::PeerSocket::onSearchResultsReceived(const PSearchReply * message) {
-    NNLOG("museekd.peers.debug", "Search result from %s", message->user.c_str());
+    NNLOG("museekd.peers.debug", "Search result from %s", user().c_str());
 
     Folder folders;
     Folder::const_iterator it = message->results.begin();
@@ -463,7 +463,7 @@ Museek::PeerSocket::onSearchResultsReceived(const PSearchReply * message) {
         folders[encodedFilename] = (*it).second;
         }
 
-    museekd()->searches()->searchReplyReceived(message->ticket, message->user, message->slotfree, message->avgspeed, message->queuelen, folders);
+    museekd()->searches()->searchReplyReceived(message->ticket, user(), message->slotfree, message->avgspeed, message->queuelen, folders);
 
     addSearchResultsOnlyTimeout(2000);
 }
