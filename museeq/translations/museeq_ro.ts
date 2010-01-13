@@ -3167,7 +3167,7 @@ Choose passive if you&apos;re unsure.</source>
         <translation type="unfinished">/s</translation>
     </message>
     <message numerus="yes">
-        <location filename="../transferlistview.cpp" line="308"/>
+        <location filename="../transferlistview.cpp" line="310"/>
         <source>%n transfer(s)</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -3176,7 +3176,7 @@ Choose passive if you&apos;re unsure.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../transferlistview.cpp" line="308"/>
+        <location filename="../transferlistview.cpp" line="310"/>
         <source> (%n user(s))</source>
         <translation type="unfinished">
             <numerusform></numerusform>

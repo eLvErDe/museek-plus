@@ -264,7 +264,7 @@ FolderListView::FolderListView(const QString& user, QWidget* parent, const char*
 
 	ActionUploadFolder = new QAction( tr("Upload folder"), this);
 	connect(ActionUploadFolder, SIGNAL(triggered()), this, SLOT(doUploadFolder()));
-	if (museeq->nickname() == mUser)
+	if (museeq->nickname().compare(mUser) == 0)
 		mPopupMenu->addAction(ActionUploadFolder);
 
 	ActionCopyURL = new QAction( tr("Copy URL"), this);

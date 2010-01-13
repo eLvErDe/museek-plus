@@ -87,9 +87,9 @@ TransferListItem* TransferListView::findTransfer(const QString& _u, const QStrin
 	QTreeWidgetItemIterator it(this);
 	while (*it) {
 	    TransferListItem * item = dynamic_cast<TransferListItem *>(*it);
-		if (item && (item->user() == _u) && (item->path() == _p))
+		if (item && (item->user().compare(_u) == 0) && (item->path().compare(_p) == 0))
  			return item;
-		++it;
+		it++;
 	}
 
 	return NULL;
@@ -119,8 +119,10 @@ TransferListItem* TransferListView::findParent(const QString& user) {
 
 void TransferListView::update(const NTransfer& transfer) {
 	TransferListItem* file = findTransfer(transfer.user, transfer.filename);
-	if (!file )
+	if (!file ) {
 		file = new TransferListItem(findParent(transfer.user), transfer.user, transfer.filename);
+		museeq->flush(); // Needed to avoid transfers being added times when update() is called twice.
+	}
 
 	file->update(transfer);
 }
