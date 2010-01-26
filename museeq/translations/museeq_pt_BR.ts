@@ -1696,39 +1696,39 @@
         <translation>Slot livre</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="111"/>
-        <location filename="../searchfilter.cpp" line="143"/>
-        <location filename="../searchfilter.cpp" line="167"/>
+        <location filename="../searchfilter.cpp" line="112"/>
+        <location filename="../searchfilter.cpp" line="144"/>
+        <location filename="../searchfilter.cpp" line="168"/>
         <source>Warning - Museeq</source>
         <translation>Aviso - Museeq</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="111"/>
+        <location filename="../searchfilter.cpp" line="112"/>
         <source>Invalid regular expression, disabling it</source>
         <translation>Expressão regular inválida, desabilitando-a</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="131"/>
+        <location filename="../searchfilter.cpp" line="132"/>
         <source>k</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="133"/>
+        <location filename="../searchfilter.cpp" line="134"/>
         <source>m</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="135"/>
+        <location filename="../searchfilter.cpp" line="136"/>
         <source>g</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="143"/>
+        <location filename="../searchfilter.cpp" line="144"/>
         <source>Invalid size filter, disabling it</source>
         <translation>Filtro de tamanho inválido, desabilitando-o</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="167"/>
+        <location filename="../searchfilter.cpp" line="168"/>
         <source>Invalid bitrate filter, disabling it</source>
         <translation>Filtro de bitrate inválido, desabilitando-o</translation>
     </message>

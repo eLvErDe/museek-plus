@@ -107,6 +107,7 @@ void SearchFilter::hideEvent(QHideEvent *ev) {
 
 void SearchFilter::updateFilter() {
 	mFilterRegExp.setPattern(mRegExp->currentText());
+	mFilterRegExp.setCaseSensitivity(Qt::CaseInsensitive);
 	if(! mFilterRegExp.isValid()) {
 		QMessageBox::warning(this, tr("Warning - Museeq"), tr("Invalid regular expression, disabling it"));
 		mFilterRegExp.setPattern(QString::null);

@@ -1808,39 +1808,39 @@
         <translation>Vrij slot</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="111"/>
-        <location filename="../searchfilter.cpp" line="143"/>
-        <location filename="../searchfilter.cpp" line="167"/>
+        <location filename="../searchfilter.cpp" line="112"/>
+        <location filename="../searchfilter.cpp" line="144"/>
+        <location filename="../searchfilter.cpp" line="168"/>
         <source>Warning - Museeq</source>
         <translation>Waarschuwing - Museeq</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="111"/>
+        <location filename="../searchfilter.cpp" line="112"/>
         <source>Invalid regular expression, disabling it</source>
         <translation>Ongeldige reguliere expressie, wordt uitgeschakeld</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="131"/>
+        <location filename="../searchfilter.cpp" line="132"/>
         <source>k</source>
         <translation>k</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="133"/>
+        <location filename="../searchfilter.cpp" line="134"/>
         <source>m</source>
         <translation>m</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="135"/>
+        <location filename="../searchfilter.cpp" line="136"/>
         <source>g</source>
         <translation>g</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="143"/>
+        <location filename="../searchfilter.cpp" line="144"/>
         <source>Invalid size filter, disabling it</source>
         <translation>Ongeldig groottefilter, wordt uitgeschakeld</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="167"/>
+        <location filename="../searchfilter.cpp" line="168"/>
         <source>Invalid bitrate filter, disabling it</source>
         <translation>Ongeldig bitratefilter, wordt uitgeschakeld</translation>
     </message>

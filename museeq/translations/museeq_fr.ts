@@ -1243,40 +1243,40 @@
         <translation>Place disponible</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="111"/>
-        <location filename="../searchfilter.cpp" line="143"/>
-        <location filename="../searchfilter.cpp" line="167"/>
+        <location filename="../searchfilter.cpp" line="112"/>
+        <location filename="../searchfilter.cpp" line="144"/>
+        <location filename="../searchfilter.cpp" line="168"/>
         <source>Warning - Museeq</source>
         <translation>Attention - Museeq</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="111"/>
+        <location filename="../searchfilter.cpp" line="112"/>
         <source>Invalid regular expression, disabling it</source>
         <translation>Expression régulière invalide</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="131"/>
+        <location filename="../searchfilter.cpp" line="132"/>
         <source>k</source>
         <translation>k</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="133"/>
+        <location filename="../searchfilter.cpp" line="134"/>
         <source>m</source>
         <translation>m</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="135"/>
+        <location filename="../searchfilter.cpp" line="136"/>
         <source>g</source>
         <translation>g</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="143"/>
+        <location filename="../searchfilter.cpp" line="144"/>
         <source>Invalid size filter, disabling it</source>
         <translation>Filtrage sur la taille invalide
 (Ne doit contenir que des chiffres)</translation>
     </message>
     <message>
-        <location filename="../searchfilter.cpp" line="167"/>
+        <location filename="../searchfilter.cpp" line="168"/>
         <source>Invalid bitrate filter, disabling it</source>
         <translation>Filtrage sur le débit invalide
 (Ne doit contenir que des chiffres)</translation>
