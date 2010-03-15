@@ -12,6 +12,6 @@ setup(name                  = "museek-setup",
       url                   = "http://museek-plus.org/",
       long_description      = "musetup, musetup-gtk (config tools), and the unfinished musetup-qt",
       scripts               = ['musetup', 'musetup-gtk', 'musetup-qt'],
-      data_files            = [('man/man1', ['musetup.1', 'musetup-gtk.1'])],
+      data_files            = [('man/man1', ['musetup.1', 'musetup-gtk.1', 'musetup-qt.1'])],
 
 )

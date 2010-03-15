@@ -1,0 +1,56 @@
+.TH "MUSETUP-QT" "1" "Release 0.2.0" "daelstorm" "Museek Daemon Plus"
+.SH "NAME"
+.LP 
+\fBMusetup\-QT\fR \- PyQT3 Configuration app for Museekd
+.SH "SYNOPSIS"
+.B musetup\-qt 
+[\-c | \-\-config <\fIconfig\-filename\fP>]
+[\-h | \-\-help]
+[\-v | \-\-version]
+.SH "DESCRIPTION"
+.LP 
+Musetup\-QT is PyQT3 GUI that configures \fImuseekd\fP(1). There are two configuration modes: 
+.LP 
+Dialogs \- under General Settings \- that provide the most commonly configured options, including the adding of shared directories, via a muscan frontend (add/removing & rescanning take effect immediately).
+.LP 
+The Settings Tree allows you to modify all options and even remove entire settings nodes, so it is quite dangerous, and should be used with much care.
+.LP 
+After changes to settings you need to Save them from them be written to the config file.
+.SH "OPTIONS"
+.LP 
+Musetup\-QT accepts the following options:
+.TP 
+.B \-c, \-\-config <\fIconfig\-filename\fP>
+Selected Config's path and filename.
+.TP 
+.B \-h, \-\-help
+Display Help and exit.
+.TP 
+.B \-v, \-\-version
+Display Version and exit.
+.SH "EXAMPLE"
+.LP 
+To run this program the standard way type:
+.LP 
+musetup\-qt
+.LP 
+Alternativly you use a different config file with:
+.LP 
+musetup\-qt \-c config.xml
+.LP 
+
+.SH "FILES"
+.TP 
+ \fI~/.museekd/config.xml\fR
+The default location for the \fBmuseekd\fP config file.
+.TP 
+ \fI/usr/share/museek/museekd/config.xml.tmpl\fR
+Config file template that's used if no config exists.
+.SH "AUTHORS"
+.LP 
+Code taken from musetup by Hyriand <hyriand@thegraveyard.org>
+.LP 
+daelstorm <daelstorm@gmail.com>
+.SH "SEE ALSO"
+.LP 
+\fImucous\fP(1) \fImulog\fP(1) \fImurmur\fP(1) \fImuscan\fP(1) \fImuscand\fP(1) \fImuseekcontrol\fP(1) \fImuseekd\fP(1) \fImuseeq\fP(1) \fImusetup\fP(1)

@@ -28,6 +28,7 @@ install(
 set(MANPAGES
   musetup.1
   musetup-gtk.1  
+  musetup-qt.1  
 )
 
 set(ICONS
