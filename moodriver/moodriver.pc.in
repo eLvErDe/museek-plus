@@ -1,0 +1,11 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: @PACKAGE@
+Description: MooDriver (C++ museekd client lib) 
+Version: @PACKAGE_VERSION@
+Requires: glibmm-2.4 glib-2.0 gthread-2.0 gobject-2.0 
+Libs: -L${libdir} -lmoodriver
+Cflags: -I${includedir}/moodriver
