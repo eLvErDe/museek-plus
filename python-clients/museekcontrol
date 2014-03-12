@@ -890,7 +890,6 @@ class museekcontrol(driver.Driver):
 					if result[3] != []:
 						bitrate = result[3][0]
 						length = result[3][1]
-						vbr = result[3][2]
 						minutes = int(length)/60
 						seconds = str(length - (60 * minutes))
 						
