@@ -151,14 +151,13 @@ Transfers::Transfers(QWidget* _p, const char* _n)
 	connect(ActionRetry, SIGNAL(triggered()), this, SLOT(retrySelected()));
 	mTransferMenu->addAction(ActionRetry);
 
-	ActionAbort = new QAction(tr("Abort"), this);
-	connect(ActionAbort, SIGNAL(triggered()), this, SLOT(abortSelected()));
-	mTransferMenu->addAction(ActionAbort);
-
-
 	ActionCheckPosition = new QAction(tr("Check place"), this);
 	connect(ActionCheckPosition, SIGNAL(triggered()), this, SLOT(updateSelected()));
 	mTransferMenu->addAction(ActionCheckPosition);
+
+	ActionAbort = new QAction(tr("Abort"), this);
+	connect(ActionAbort, SIGNAL(triggered()), this, SLOT(abortSelected()));
+	mTransferMenu->addAction(ActionAbort);
 
 	ActionMessageDownloading = new QAction(tr("Message downloading users"), this);
 	connect(ActionMessageDownloading, SIGNAL(triggered()), this, SLOT(messageDownloadingUsers()));
