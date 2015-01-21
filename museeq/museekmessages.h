@@ -105,7 +105,7 @@ public:
 	qint64 unpack_off() {
 		qint64 r = 0;
 		for(int j = 0; j < 8; j++)
-			r += unpack() << (j * 8);
+			r += (qint64)unpack() << (j * 8);
 		return r;
 	}
 	QString unpack_str() {
