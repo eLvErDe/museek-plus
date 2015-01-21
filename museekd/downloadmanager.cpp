@@ -101,6 +101,9 @@ Museek::Download::incompletePath() const
 
     // Get the incomplete directory
     std::string incompletedir = m_Museekd->config()->get("transfers", "incomplete-dir");
+    // Fall back to the destination directory provided with the download.
+    if(incompletedir.empty() && NewNet::Path(m_LocalDir).isAbsolute())
+        incompletedir = m_LocalDir;
     // Fall back to download directory.
     if(incompletedir.empty())
         incompletedir = m_Museekd->config()->get("transfers", "download-dir");
