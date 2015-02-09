@@ -162,7 +162,7 @@ static inline int read_off(std::ifstream * ifs, uint64* r) {
 		return -1;
 
 	for(uint64 j = 0; j < 8; j++) {
-		(*r) += d[j] << (j * 8);
+		(*r) += (uint64)d[j] << (j * 8);
 	}
 	return 8;
 }

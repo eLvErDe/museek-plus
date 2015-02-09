@@ -1123,7 +1123,7 @@ void Museek::DownloadManager::loadDownloads() {
 			return;
 		}
 		if (!path.empty()) {
-            NNLOG("museekd.down.debug", "Loading download: %s from %s (size: %d)", path.c_str(), user.c_str(), size);
+            NNLOG("museekd.down.debug", "Loading download: %s from %s (size: %lld)", path.c_str(), user.c_str(), size);
             size_t posB = localpath.find_last_of(NewNet::Path::separator());
             add(user, path, localpath.substr(0, posB));
             Download * dl = findDownload(user, path);
@@ -1139,7 +1139,7 @@ void Museek::DownloadManager::loadDownloads() {
             }
 		}
 		else
-		    NNLOG("museekd.config.warn", "Couldn't load a corrupted download: %s from %s (size: %d)", path.c_str(), user.c_str(), size);
+		    NNLOG("museekd.config.warn", "Couldn't load a corrupted download: %s from %s (size: %lld)", path.c_str(), user.c_str(), size);
 
 		n--;
 	}
