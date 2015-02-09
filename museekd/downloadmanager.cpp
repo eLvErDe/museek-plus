@@ -1130,7 +1130,9 @@ void Museek::DownloadManager::loadDownloads() {
             if (dl) {
                 if(state == 0)
                     dl->setState(TS_Aborted);
-                else
+                else if (state == 2)
+                    dl->setState(TS_Finished);
+                else // The only expected value at this point is 1.
                     dl->setState(TS_Offline); // We're not sure the peer is connected
                 dl->setSize(size);
                 dl->setIncompletePath(temppath);
@@ -1167,12 +1169,7 @@ void Museek::DownloadManager::saveDownloads() {
             return;
         }
 
-        uint32 transfers = 0;
-
-        std::vector<NewNet::RefPtr<Download> >::const_iterator it = downloads().begin();
-        for(; it != downloads().end(); ++it)
-            if((*it)->state() != TS_Finished)
-                transfers++;
+        uint32 transfers = downloads().size();
 
         NNLOG("museekd.down.debug", "Saving %d downloads", transfers);
 
@@ -1183,6 +1180,7 @@ void Museek::DownloadManager::saveDownloads() {
             return;
         }
 
+        std::vector<NewNet::RefPtr<Download> >::const_iterator it;
         for(it = downloads().begin(); it != downloads().end(); ++it) {
             if (m_PendingDownloadsSave)
                 break; // If we have another save request, stop saving and restart from scratch
@@ -1190,7 +1188,8 @@ void Museek::DownloadManager::saveDownloads() {
             uint32 state;
             switch((*it)->state()) {
             case TS_Finished:
-                continue;
+                state = 2;
+                break;
             case TS_Aborted:
                 state = 0;
                 break;
