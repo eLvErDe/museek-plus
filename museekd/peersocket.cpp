@@ -313,18 +313,16 @@ Museek::PeerSocket::onTransferRequested(const PTransferRequest * request)
             }
             // Prepare the download
             download->setTicket(request->ticket);
-            if (request->filesize == 0 && download->size())
-                {
+            if (request->filesize == 0 && download->size()) {
                 // Ignore filesize=0 because we already know it to be nonzero.
                 // (SoulseekQt 2014.8.31 sends filesize=0 for files > 4GiB.)
                 museekd()->ifaces()->sendStatusMessage(true,
                     std::string("Ignoring filesize=0 from ") + user() + " for '"
                     + path + "'. It was probably a bug in their Soulseek client.");
-                }
-            else
-                {
+            }
+            else {
                 download->setSize(request->filesize);
-                }
+            }
             DownloadSocket * downloadSocket = new DownloadSocket(museekd(), download);
             download->setSocket(downloadSocket);
             museekd()->reactor()->add(downloadSocket);
