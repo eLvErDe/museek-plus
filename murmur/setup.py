@@ -11,7 +11,6 @@ import os
 import glob
 
 from distutils.core import setup
-from distutils.sysconfig import get_python_lib
 
 # Local functions
 from setup_inc import *

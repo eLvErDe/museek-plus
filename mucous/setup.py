@@ -11,8 +11,6 @@ import os
 import glob
 
 from distutils.core import setup
-from distutils.sysconfig import get_python_lib
-
 
 if __name__ == '__main__' :
     LONG_DESCRIPTION = \
