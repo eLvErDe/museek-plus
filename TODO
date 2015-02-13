@@ -1,11 +1,14 @@
-General To Dos
+=== General To Dos ===
+ * Make museeq remember search history
+ * Right-click in upload-queue gives a option 'message all downloading users' (chs_kasper)
  * Auto-Away in museekd (chs_kasper's idea)
  * Make Muscan work properly on Sparc (Big Endian problem?)
- * Up/Down transfer rate status in status bar
- * Wishlist - with auto-download. (mer.lin.ux)
- 
-Unlikely to be added anytime soon
+ * Adding logging of Chat Rooms and Private Message to museeq
+ * Wishlist - with auto-download. (mer.lin.ux) Status: Partially complete (searches only) 
 
+=== Unlikely to be added anytime soon ===
+
+ * Up/Down transfer rate status in status bar
  * Round robin queueing
  * "max amount of MB's per day per user/list-user" (suggested by Dalai on slsk forum Mar 27 2004, 11:30 AM) (This feature would limit certain users to a maximum total amount downloaded per day.)
  * swarmed downloads
