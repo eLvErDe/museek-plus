@@ -32,6 +32,7 @@
 #endif // HAVE_QTSCRIPT
 
 class QMenu;
+class QAction;
 
 class Script : public QObject {
 	Q_OBJECT
