@@ -2,7 +2,7 @@ project(Muhelp CXX)
 
 INCLUDE(FindPkgConfig REQUIRED)
 
-pkg_search_module(LIBXMLPP "libxml++-2.6")
+pkg_search_module(LIBXMLPP REQUIRED "libxml++-2.6")
 
 ADD_DEFINITIONS(${LIBXMLPP_CFLAGS})
 
