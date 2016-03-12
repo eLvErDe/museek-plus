@@ -1,31 +1,37 @@
 project(Museek-Python-Bindings)
 
-IF(PREFIX)
-  SET(CMAKE_INSTALL_PREFIX ${PREFIX})
-ELSE(PREFIX)
-  SET(CMAKE_INSTALL_PREFIX "/usr")
-ENDIF(PREFIX)
+if(PREFIX)
+    set(CMAKE_INSTALL_PREFIX ${PREFIX})
+else(PREFIX)
+    set(CMAKE_INSTALL_PREFIX "/usr")
+endif(PREFIX)
 
-if (NOT MANDIR)
-  set(MANUAL_DIRECTORY "man/man1")
-else (NOT MANDIR)
-  set(MANUAL_DIRECTORY ${MANDIR}/man1)
-endif (NOT MANDIR)
+if(NOT MANDIR)
+    set(MANUAL_DIRECTORY "man/man1")
+else(NOT MANDIR)
+    set(MANUAL_DIRECTORY ${MANDIR}/man1)
+endif(NOT MANDIR)
 
 set(PYTHON_BINDINGS_SOURCES
-museek/__init__.py
-museek/messages.py
-museek/driver.py
-)
+    museek/__init__.py
+    museek/messages.py
+    museek/driver.py
+    )
 
-EXECUTE_PROCESS(COMMAND python ${CMAKE_SOURCE_DIR}/cmake/get_python_lib.py museek OUTPUT_VARIABLE sitepackages OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_VARIABLE error)
+execute_process(COMMAND python
+    ${CMAKE_SOURCE_DIR}/cmake/get_python_lib.py museek
+    OUTPUT_VARIABLE sitepackages
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    ERROR_VARIABLE error)
 
-if (NOT sitepackages OR error)
-	MESSAGE(FATAL_ERROR "Failed to find Python's site-packages directory" ${sitepackages} ${error})
-endif (NOT sitepackages OR error)
+if(NOT sitepackages OR error)
+    message(FATAL_ERROR
+        "Failed to find Python's site-packages directory"
+        ${sitepackages} ${error})
+endif(NOT sitepackages OR error)
 
 install(
-  FILES ${PYTHON_BINDINGS_SOURCES}
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/${sitepackages}/museek
-)
+    FILES ${PYTHON_BINDINGS_SOURCES}
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/${sitepackages}/museek
+    )
 message("--> Python Bindings will be installed..")
