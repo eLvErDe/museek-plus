@@ -2,16 +2,16 @@ project(Murmur)
 
 if(PREFIX)
     set(CMAKE_INSTALL_PREFIX ${PREFIX})
-else(PREFIX)
+else()
     set(CMAKE_INSTALL_PREFIX "/usr")
-endif(PREFIX)
+endif()
 
 
 if(NOT MANDIR)
     set(MANUAL_DIRECTORY "man/man1")
-else(NOT MANDIR)
+else()
     set(MANUAL_DIRECTORY ${MANDIR}/man1)
-endif(NOT MANDIR)
+endif()
 
 set(MURMUR_SOURCES
     murmur
@@ -29,7 +29,7 @@ EXECUTE_PROCESS(COMMAND python ${CMAKE_SOURCE_DIR}/cmake/get_python_lib.py musee
 
 if(NOT sitepackages OR error)
     message(FATAL_ERROR "Failed to find Python's site-packages directory" ${sitepackages} ${error})
-endif(NOT sitepackages OR error)
+endif()
 
 install(
     FILES ${PYMURMUR_SOURCES}

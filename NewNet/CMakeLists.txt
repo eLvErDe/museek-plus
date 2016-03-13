@@ -23,7 +23,7 @@ if(Event_LIBRARIES AND EVENT_FOUND)
             nnunixclientsocket.cpp
             nnunixserversocket.cpp
             )
-    endif(UNIX)
+    endif()
 
     add_library(NewNet STATIC ${NEWNET_SOURCES})
 
@@ -32,6 +32,6 @@ if(Event_LIBRARIES AND EVENT_FOUND)
         NewNet
         ${Event_LIBRARIES}
         )
-else(Event_LIBRARIES AND EVENT_FOUND)
+else()
     message("!!! NewNet will NOT be installed..")
-endif(Event_LIBRARIES AND EVENT_FOUND)
+endif()

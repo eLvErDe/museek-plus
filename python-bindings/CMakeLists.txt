@@ -2,15 +2,15 @@ project(Museek-Python-Bindings)
 
 if(PREFIX)
     set(CMAKE_INSTALL_PREFIX ${PREFIX})
-else(PREFIX)
+else()
     set(CMAKE_INSTALL_PREFIX "/usr")
-endif(PREFIX)
+endif()
 
 if(NOT MANDIR)
     set(MANUAL_DIRECTORY "man/man1")
-else(NOT MANDIR)
+else()
     set(MANUAL_DIRECTORY ${MANDIR}/man1)
-endif(NOT MANDIR)
+endif()
 
 set(PYTHON_BINDINGS_SOURCES
     museek/__init__.py
@@ -28,7 +28,7 @@ if(NOT sitepackages OR error)
     message(FATAL_ERROR
         "Failed to find Python's site-packages directory"
         ${sitepackages} ${error})
-endif(NOT sitepackages OR error)
+endif()
 
 install(
     FILES ${PYTHON_BINDINGS_SOURCES}

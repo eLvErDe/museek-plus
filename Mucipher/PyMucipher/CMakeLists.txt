@@ -5,9 +5,9 @@ project(PyMucipher)
 
 if(PREFIX)
     set(CMAKE_INSTALL_PREFIX ${PREFIX})
-else(PREFIX)
+else()
     set(CMAKE_INSTALL_PREFIX "/usr")
-endif(PREFIX)
+endif()
 
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
@@ -41,7 +41,7 @@ EXECUTE_PROCESS(COMMAND python ${CMAKE_SOURCE_DIR}/cmake/get_python_lib.py musee
 
 if(NOT sitepackages OR error)
     message(FATAL_ERROR "Failed to find Python's site-packages directory" ${sitepackages} ${error})
-endif(NOT sitepackages OR error)
+endif()
 
 install(
     FILES ${PYMUCIPHER_LIBS}

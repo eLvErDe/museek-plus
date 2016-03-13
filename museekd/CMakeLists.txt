@@ -13,13 +13,13 @@ add_definitions(${LIBXML2_DEFINITIONS})
 set(OS_LIBRARIES "")
 if(WIN32 AND NOT CYGWIN)
     set(OS_LIBRARIES ${OS_LIBRARIES} ole32 shell32)
-endif(WIN32 AND NOT CYGWIN)
+endif()
 
 if(NOT MANDIR)
     set(MANUAL_DIRECTORY "man/man1")
-else(NOT MANDIR)
+else()
     set(MANUAL_DIRECTORY ${MANDIR}/man1)
-endif(NOT MANDIR)
+endif()
 
 # Select some source files.
 set(MUSEEKD_SOURCES

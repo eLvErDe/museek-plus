@@ -2,15 +2,15 @@ project(SetupTools)
 
 if(PREFIX)
     set(CMAKE_INSTALL_PREFIX ${PREFIX})
-else(PREFIX)
+else()
     set(CMAKE_INSTALL_PREFIX "/usr")
-endif(PREFIX)
+endif()
 
 if(NOT MANDIR)
     set(MANUAL_DIRECTORY "man/man1")
-else(NOT MANDIR)
+else()
     set(MANUAL_DIRECTORY ${MANDIR}/man1)
-endif(NOT MANDIR)
+endif()
 
 set(SETUP_TOOLS_SOURCES
     musetup

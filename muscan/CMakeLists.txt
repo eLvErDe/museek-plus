@@ -2,9 +2,9 @@ project(Tools CXX)
 
 if(PREFIX)
     set(CMAKE_INSTALL_PREFIX ${PREFIX})
-else(PREFIX)
+else()
     set(CMAKE_INSTALL_PREFIX "/usr")
-endif(PREFIX)
+endif()
 
 find_package(FAM)
 
@@ -67,9 +67,9 @@ if(C_MUSCAN)
             DESTINATION bin
             )
         message("--> muscand (FAM-based file scanning daemon) will be installed..")
-    else(FAM_LIBRARIES AND FAM_FOUND)
+    else()
         message("!!! muscand will NOT be installed..")
-    endif(FAM_LIBRARIES AND FAM_FOUND)
+    endif()
 
     target_link_libraries(
         muscan
@@ -85,4 +85,4 @@ if(C_MUSCAN)
         DESTINATION ${MANUAL_DIRECTORY}
         )
 
-endif(C_MUSCAN)
+endif()
