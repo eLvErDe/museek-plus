@@ -12,6 +12,8 @@ INCLUDE(FindPkgConfig REQUIRED)
 pkg_search_module(LIBXMLPP "libxml++-2.6")
 ADD_DEFINITIONS(${LIBXMLPP_CFLAGS})
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
 set(TOOLS_SOURCES
   mp3.c
   scandir.cc
