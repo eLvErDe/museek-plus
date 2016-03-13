@@ -2,99 +2,54 @@ project(museek-plus)
 
 cmake_minimum_required(VERSION 2.8.0)
 
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+
 # Include some cmake checks.
 include(CheckIncludeFiles)
 include(CheckTypeSize)
 include(CheckFunctionExists)
 include(CheckLibraryExists)
 include(CheckCXXSourceCompiles)
-
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-message("DECLARATIONS: PREFIX (/usr), MANDIR (PREFIX/man)
-Package options: EVERYTHING, NO_MUSEEKD, NO_MUSCAN, NO_SETUP, NO_MUSEEQ, NO_PYMUCIPHER, BINDINGS, MURMUR, MUCOUS, CLIENTS
-Museeq options: BINRELOC, DATADIR (PREFIX/share), RELOAD_TRANSLATIONS
-Prefix these declarations with -D and set them with either 1, 0 or a path.
-Set -DEVERYTHING=1 if you want it all")
+include(GNUInstallDirs)
 
 # Enable NewNet's smart-pointer debugging capabilities.
 add_definitions(-DNN_PTR_DEBUG -DNN_PTR_DEBUG_ASSERT)
-
-if(PREFIX)
-    set(CMAKE_INSTALL_PREFIX ${PREFIX})
-else()
-    set(CMAKE_INSTALL_PREFIX "/usr")
-endif()
-
-if(NOT DATADIR)
-    set(DATADIR ${CMAKE_INSTALL_PREFIX}/share)
-endif()
 
 set(MANUAL_DIRECTORY "man/man1")
 if(MANDIR)
     set(MANUAL_DIRECTORY ${MANDIR}/man1)
 endif()
 
-set(PYMUCOUS OF CACHE BOOL "Build pymucous curses client.")
-if(NOT MUCOUS)
-    set(PYMUCOUS 0)
-endif()
+message("DECLARATIONS:
+Package options: EVERYTHING, MURMUR, MUCOUS, CLIENTS, BINDINGS
+Museeq options: BINRELOC, RELOAD_TRANSLATIONS
+Prefix these declarations with -D and set them with either 1, 0 or a path.
+Set -DEVERYTHING=1 if you want it all.")
 
-set(PYMURMUR 1)
-if(NOT MURMUR)
-    set(PYMURMUR 0)
-endif()
-
-set(PYCLIENTS 1)
-if(NOT CLIENTS)
-    set(PYCLIENTS 0)
-endif()
-
-set(PYBIND 1)
-if(NOT BINDINGS)
-    set(PYBIND 0)
-endif()
+set(MUSEEKD ON CACHE BOOL "Build museekd soulseek daemon.")
+set(MUSETUP ON CACHE BOOL "Build musetup configuration interface for museekd.")
+set(MUSCAN ON CACHE BOOL "Build muscan shared file index generation tool.")
+set(MUSEEQ ON CACHE BOOL "Build museeq Qt client.")
 
 if(EVERYTHING)
-    set(PYMUCIPHER 1)
-    set(PYBIND 1)
-    set(PYCLIENTS 1)
-    set(PYMURMUR 1)
-    set(PYMUCOUS 1)
-    set(PYSETUP 1)
-    set(C_MUSEEKD 1)
-    set(C_MUSCAN 1)
-    set(C_MUSEEQ 1)
+    set(OPTIONAL_DEFAULT ON)
+    set(FORCE_CACHE FORCE)
+else()
+    set(OPTIONAL_DEFAULT OFF)
 endif()
+unset(EVERYTHING CACHE)
 
-set(PYSETUP 1)
-if(NO_SETUP)
-    set(PYSETUP 0)
-endif()
-
-set(C_MUSEEKD 1)
-if(NO_MUSEEKD)
-    set(C_MUSEEKD 0)
-endif()
-
-set(C_MUSCAN 1)
-if(NO_MUSCAN)
-    set(C_MUSCAN 0)
-endif()
-
-set(PYMUCIPHER 1)
-if(NO_PYMUCIPHER)
-    set(PYMUCIPHER 0)
-endif()
-
-set(C_MUSEEQ 1)
-if(NO_MUSEEQ)
-    set(C_MUSEEQ 0)
-endif()
-
-set(PYSETUP 1)
-if(NO_SETUP)
-    set(PYSETUP 0)
-endif()
+set(MUCOUS ${OPTIONAL_DEFAULT} CACHE BOOL
+    "Build mucous curses client." ${FORCE_CACHE})
+set(MURMUR ${OPTIONAL_DEFAULT} CACHE BOOL
+    "Build murmur PyGTK client." ${FORCE_CACHE})
+set(PYMUCIPHER ${OPTIONAL_DEFAULT} CACHE BOOL
+    "Generate PyMucipher bindings for Mucipher." ${FORCE_CACHE})
+set(PYTHON_BINDINGS ${OPTIONAL_DEFAULT} CACHE BOOL
+    "Generate python bindings." ${FORCE_CACHE})
+set(PYTHON_CLIENTS ${OPTIONAL_DEFAULT} CACHE BOOL
+    "Build python clients (mulog, museekchat, museekcontrol, musirc)."
+     ${FORCE_CACHE})
 
 # Add top source directory to the include path.
 include_directories(.)
@@ -295,47 +250,55 @@ endif()
 
 add_subdirectory(NewNet)
 add_subdirectory(Mucipher)
-if(C_MUSCAN)
+
+if(MUSEEKD OR MUSCAN)
     add_subdirectory(Muhelp)
-    add_subdirectory(muscan)
-else()
-    message("!!! muscan will NOT be installed [NO_MUSCAN=0]")
 endif()
-if(C_MUSEEKD)
-    if(NOT C_MUSCAN)
-        add_subdirectory(Muhelp)
-    endif()
+
+if(MUSEEKD)
     add_subdirectory(museekd)
 else()
-    message("!!! museekd will NOT be installed [NO_MUSEEKD=0]")
+    message("!!! museekd will NOT be installed.")
 endif()
-if(PYBIND)
-    add_subdirectory(python-bindings)
-else()
-    message("!!! Python Bindings will NOT be installed.. [BINDINGS=1]")
-endif()
-if(PYCLIENTS)
-    add_subdirectory(python-clients)
-else()
-    message("!!! mulog, museekchat, museekcontrol, musIRC will NOT be installed [CLIENTS=1]")
-endif()
-if(PYSETUP)
+
+if(MUSETUP)
     add_subdirectory(setup)
 else()
-    message("!!! musetup, musetup-gtk, musetup-qt will NOT be installed [NO_SETUP=0]")
+    message("!!! musetup, musetup-gtk, musetup-qt will NOT be installed.")
 endif()
-if(PYMUCOUS)
-    add_subdirectory(mucous)
+
+if(MUSCAN)
+    add_subdirectory(muscan)
 else()
-    message("!!! Mucous (Py/Curses Client)will NOT be installed.. [MUCOUS=1]")
+    message("!!! muscan will NOT be installed.")
 endif()
-if(PYMURMUR)
-    add_subdirectory(murmur)
-else()
-    message("!!! Murmur (PyGTK2 Client) will NOT be installed.. [MURMUR=1]")
-endif()
-if(C_MUSEEQ)
+
+if(MUSEEQ)
     add_subdirectory(museeq)
 else()
-    message("!!! museeq will NOT be installed [NO_MUSEEQ=0]")
+    message("!!! museeq will NOT be installed.")
+endif()
+
+if(MUCOUS)
+    add_subdirectory(mucous)
+else()
+    message("!!! mucous (Py/Curses Client)will NOT be installed.")
+endif()
+
+if(MURMUR)
+    add_subdirectory(murmur)
+else()
+    message("!!! murmur (PyGTK2 Client) will NOT be installed.")
+endif()
+
+if(PYTHON_BINDINGS)
+    add_subdirectory(python-bindings)
+else()
+    message("!!! Python bindings will NOT be installed.")
+endif()
+
+if(PYTHON_CLIENTS)
+    add_subdirectory(python-clients)
+else()
+    message("!!! Python clients (mulog, museekchat, museekcontrol, musirc) will NOT be installed.")
 endif()
