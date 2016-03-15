@@ -1,6 +1,8 @@
 project(museek-plus)
 
-cmake_minimum_required(VERSION 2.6.0)
+cmake_minimum_required(VERSION 2.8.0)
+
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 # Include some cmake checks.
 include(CheckIncludeFiles)
@@ -8,93 +10,41 @@ include(CheckTypeSize)
 include(CheckFunctionExists)
 include(CheckLibraryExists)
 include(CheckCXXSourceCompiles)
-
-SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-MESSAGE("DECLARATIONS: PREFIX (/usr), MANDIR (PREFIX/man)
-Package options: EVERYTHING, NO_MUSEEKD, NO_MUSCAN, NO_SETUP, NO_MUSEEQ, NO_PYMUCIPHER, BINDINGS, MURMUR, MUCOUS, CLIENTS
-Museeq options: BINRELOC, DATADIR (PREFIX/share), RELOAD_TRANSLATIONS
-Prefix these declarations with -D and set them with either 1, 0 or a path.
-Set -DEVERYTHING=1 if you want it all")
+include(GNUInstallDirs)
 
 # Enable NewNet's smart-pointer debugging capabilities.
 add_definitions(-DNN_PTR_DEBUG -DNN_PTR_DEBUG_ASSERT)
 
-IF(PREFIX)
-  SET(CMAKE_INSTALL_PREFIX ${PREFIX})
-ELSE(PREFIX)
-  SET(CMAKE_INSTALL_PREFIX "/usr")
-ENDIF(PREFIX)
+message("DECLARATIONS:
+Package options: EVERYTHING, MURMUR, MUCOUS, CLIENTS, BINDINGS
+Museeq options: BINRELOC, RELOAD_TRANSLATIONS
+Prefix these declarations with -D and set them with either 1, 0 or a path.
+Set -DEVERYTHING=1 if you want it all.")
 
-IF (NOT DATADIR)
-  set(DATADIR ${CMAKE_INSTALL_PREFIX}/share)
-ENDIF (NOT DATADIR)
+set(MUSEEKD ON CACHE BOOL "Build museekd soulseek daemon.")
+set(MUSETUP ON CACHE BOOL "Build musetup configuration interface for museekd.")
+set(MUSCAN ON CACHE BOOL "Build muscan shared file index generation tool.")
+set(MUSEEQ ON CACHE BOOL "Build museeq Qt client.")
 
-set(MANUAL_DIRECTORY "man/man1")
-if (MANDIR)
-  set(MANUAL_DIRECTORY ${MANDIR}/man1)
-endif (MANDIR)
+if(EVERYTHING)
+    set(OPTIONAL_DEFAULT ON)
+    set(FORCE_CACHE FORCE)
+else()
+    set(OPTIONAL_DEFAULT OFF)
+endif()
+unset(EVERYTHING CACHE)
 
-set(PYMUCOUS 1)
-IF (NOT MUCOUS)
-  set(PYMUCOUS 0)
-ENDIF (NOT MUCOUS)
-
-set(PYMURMUR 1)
-IF (NOT MURMUR)
-  set(PYMURMUR 0)
-ENDIF (NOT MURMUR)
-
-set(PYCLIENTS 1)
-IF (NOT CLIENTS)
-  set(PYCLIENTS 0)
-ENDIF (NOT CLIENTS)
-
-set(PYBIND 1)
-IF (NOT BINDINGS)
-  set(PYBIND 0)
-ENDIF (NOT BINDINGS)
-
-IF (EVERYTHING)
-  set(PYMUCIPHER 1)
-  set(PYBIND 1)
-  set(PYCLIENTS 1)
-  set(PYMURMUR 1)
-  set(PYMUCOUS 1)
-  set(PYSETUP 1)
-  set(C_MUSEEKD 1)
-  set(C_MUSCAN 1)
-  set(C_MUSEEQ 1)
-ENDIF (EVERYTHING)
-
-set(PYSETUP 1)
-IF (NO_SETUP)
-  set(PYSETUP 0)
-ENDIF (NO_SETUP)
-
-set(C_MUSEEKD 1)
-IF (NO_MUSEEKD)
-  set(C_MUSEEKD 0)
-ENDIF (NO_MUSEEKD)
-
-set(C_MUSCAN 1)
-IF (NO_MUSCAN)
-  set(C_MUSCAN 0)
-ENDIF (NO_MUSCAN)
-
-set(PYMUCIPHER 1)
-IF (NO_PYMUCIPHER)
-  set(PYMUCIPHER 0)
-ENDIF (NO_PYMUCIPHER)
-
-set(C_MUSEEQ 1)
-IF (NO_MUSEEQ)
-  set(C_MUSEEQ 0)
-ENDIF (NO_MUSEEQ)
-
-set(PYSETUP 1)
-IF (NO_SETUP)
-  set(PYSETUP 0)
-ENDIF (NO_SETUP)
+set(MUCOUS ${OPTIONAL_DEFAULT} CACHE BOOL
+    "Build mucous curses client." ${FORCE_CACHE})
+set(MURMUR ${OPTIONAL_DEFAULT} CACHE BOOL
+    "Build murmur PyGTK client." ${FORCE_CACHE})
+set(PYMUCIPHER ${OPTIONAL_DEFAULT} CACHE BOOL
+    "Generate PyMucipher bindings for Mucipher." ${FORCE_CACHE})
+set(PYTHON_BINDINGS ${OPTIONAL_DEFAULT} CACHE BOOL
+    "Generate python bindings." ${FORCE_CACHE})
+set(PYTHON_CLIENTS ${OPTIONAL_DEFAULT} CACHE BOOL
+    "Build python clients (mulog, museekchat, museekcontrol, musirc)."
+     ${FORCE_CACHE})
 
 # Add top source directory to the include path.
 include_directories(.)
@@ -145,37 +95,38 @@ check_type_size("uint32" UINT32)
 
 # Determine the type to use as uint32.
 if(HAVE_UINT32)
-  set(UINT32_TYPE uint32)
+    set(UINT32_TYPE uint32)
 elseif(UNSIGNED_CHAR EQUAL 4)
-  set(UINT32_TYPE "unsigned char")
+    set(UINT32_TYPE "unsigned char")
 elseif(UNSIGNED_SHORT EQUAL 4)
-  set(UINT32_TYPE "unsigned short")
+    set(UINT32_TYPE "unsigned short")
 elseif(UNSIGNED_INT EQUAL 4)
-  set(UINT32_TYPE "unsigned int")
+    set(UINT32_TYPE "unsigned int")
 elseif(UNSIGNED_LONG EQUAL 4)
-  set(UINT32_TYPE "unsigned long")
+    set(UINT32_TYPE "unsigned long")
 elseif(UNSIGNED_LONG_LONG EQUAL 4)
-  set(UINT32_TYPE "unsigned long long")
-else(UNSIGNED_LONG_LONG EQUAL 4)
-  message(FATAL_ERROR "Couldn't determine 32bit unsigned interger type.")
-endif(HAVE_UINT32)
+    set(UINT32_TYPE "unsigned long long")
+else()
+    message(FATAL_ERROR "Couldn't determine 32bit unsigned interger type.")
+endif()
 
 # Check for iconv.h
 check_include_files(iconv.h HAVE_ICONV_H)
 if(NOT HAVE_ICONV_H)
-  MESSAGE(FATAL_ERROR "Could not find iconv.h.")
-endif(NOT HAVE_ICONV_H)
+    message(FATAL_ERROR "Could not find iconv.h.")
+endif()
 
 # Check for iconv library (if we need it)
 check_function_exists(iconv HAVE_ICONV_BUILTIN)
+
 if(HAVE_ICONV_BUILTIN)
-  set(ICONV_LIBRARIES "")
-else(HAVE_ICONV_BUILTIN)
-  find_library(ICONV_LIBRARIES NAMES iconv PATHS /usr/lib /usr/local/lib)
-  if(NOT ICONV_LIBRARIES)
-    message(FATAL_ERROR "Couldn't find iconv library.")
-  endif(NOT ICONV_LIBRARIES)
-endif(HAVE_ICONV_BUILTIN)
+    set(ICONV_LIBRARIES "")
+else()
+    find_library(ICONV_LIBRARIES NAMES iconv PATHS /usr/lib /usr/local/lib)
+    if(NOT ICONV_LIBRARIES)
+        message(FATAL_ERROR "Couldn't find iconv library.")
+    endif()
+endif()
 
 # Use the iconv library (if any) for the following tests.
 set(CMAKE_REQUIRED_LIBRARIES ${ICONV_LIBRARIES})
@@ -196,8 +147,8 @@ check_cxx_source_compiles("
 
 # Not const char ** AND not char **? Uhh.. That's bad mmkay.
 if(NOT ICONV_CONST AND NOT ICONV_NON_CONST)
-  message(FATAL_ERROR "Problem with iconv: could not determine iconv() input type.")
-endif(NOT ICONV_CONST AND NOT ICONV_NON_CONST)
+    message(FATAL_ERROR "Problem with iconv: could not determine iconv() input type.")
+endif()
 
 # Check if signal type.
 check_cxx_source_compiles("
@@ -206,30 +157,30 @@ check_cxx_source_compiles("
   int main() {
      signal(11, test_handler); }
 " SIGNAL_TYPE)
-	
-if (NOT SIGNAL_TYPE)
- set(RSIGTYPE 1)
-endif (NOT SIGNAL_TYPE)
+
+if(NOT SIGNAL_TYPE)
+    set(RSIGTYPE 1)
+endif()
 
 # Clean up after iconv tests.
 set(CMAKE_REQUIRED_LIBRARIES)
 
 set(INCLUDE_HEAD "")
-if (HAVE_DIRENT_H)
-   set(INCLUDE_HEAD  "${INCLUDE_HEAD}#include <dirent.h>\n")
-endif (HAVE_DIRENT_H)
+if(HAVE_DIRENT_H)
+    set(INCLUDE_HEAD  "${INCLUDE_HEAD}#include <dirent.h>\n")
+endif()
 
-if (HAVE_SYS_DIR_H)
-   set(INCLUDE_HEAD "${INCLUDE_HEAD}#include <sys/dir.h>\n")
-endif (HAVE_SYS_DIR_H)
+if(HAVE_SYS_DIR_H)
+    set(INCLUDE_HEAD "${INCLUDE_HEAD}#include <sys/dir.h>\n")
+endif()
 
-if (HAVE_SYS_NDIR_H)
-   set(INCLUDE_HEAD "${INCLUDE_HEAD}#include <sys/ndir.h>\n")
-endif (HAVE_SYS_NDIR_H)
+if(HAVE_SYS_NDIR_H)
+    set(INCLUDE_HEAD "${INCLUDE_HEAD}#include <sys/ndir.h>\n")
+endif()
 
-if (HAVE_NDIR_H)
-   set(INCLUDE_HEAD "${INCLUDE_HEAD}#include <ndir.h>\n")
-endif (HAVE_NDIR_H)
+if(HAVE_NDIR_H)
+    set(INCLUDE_HEAD "${INCLUDE_HEAD}#include <ndir.h>\n")
+endif()
 
 set(code "
   ${INCLUDE_HEAD}
@@ -238,9 +189,9 @@ set(code "
     return 0; }
 " )
 check_cxx_source_compiles("${code}" DIR_H)
-if (NOT DIR_H)
+if(NOT DIR_H)
     message(FATAL_ERROR "Headers for DIRENT not found")
-endif (NOT DIR_H)
+endif()
 
 check_cxx_source_compiles("
   ${INCLUDE_HEAD}
@@ -249,29 +200,29 @@ check_cxx_source_compiles("
     scandir(0, &temp, 0, 0);
     return 0; }
 " DIR_SCANDIR_H)
-if (NOT DIR_SCANDIR_H)
+if(NOT DIR_SCANDIR_H)
     set(HAVE_SCANDIR 0)
-endif (NOT DIR_SCANDIR_H)
+endif()
 
 # Detect Vorbisfile library
-if (HAVE_VORBIS_H)
-  find_library(VORBIS_LIBRARIES NAMES vorbisfile PATHS /usr/lib /usr/local/lib)
-  if (VORBIS_LIBRARIES)
-    set(HAVE_VORBIS 1)
-    message(STATUS "Vorbisfile library found at ${VORBIS_LIBRARIES}.")
-  else (VORBIS_LIBRARIES)
-    message(STATUS "Vorbisfile library wasn't found, ogg metadata will not be created")
+if(HAVE_VORBIS_H)
+    find_library(VORBIS_LIBRARIES NAMES vorbisfile PATHS /usr/lib /usr/local/lib)
+    if(VORBIS_LIBRARIES)
+        set(HAVE_VORBIS 1)
+        message(STATUS "Vorbisfile library found at ${VORBIS_LIBRARIES}.")
+    else()
+        message(STATUS "Vorbisfile library wasn't found, ogg metadata will not be created")
+        set(VORBIS_LIBRARIES "")
+    endif()
+else()
     set(VORBIS_LIBRARIES "")
-  endif (VORBIS_LIBRARIES)
-else (HAVE_VORBIS_H)
-  set(VORBIS_LIBRARIES "")
-endif (HAVE_VORBIS_H)
+endif()
 
 set(CMAKE_REQUIRED_LIBRARIES)
 
-if (NOT HAVE_STDLIB_H)
-  message(FATAL_ERROR "STDLIB not found")
-endif (NOT HAVE_STDLIB_H)
+if(NOT HAVE_STDLIB_H)
+    message(FATAL_ERROR "STDLIB not found")
+endif()
 # Process system.h.cmake to system.h.
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/system.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/system.h)
 # Add -DHAVE_CONFIG_H.
@@ -287,55 +238,62 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 # Set up new net libraries variable.
 set(NEWNET_LIBRARIES NewNet)
 if(WIN32 AND NOT CYGWIN)
-  set(NEWNET_LIBRARIES ${NEWNET_LIBRARIES} wsock32)
-endif(WIN32 AND NOT CYGWIN)
+    set(NEWNET_LIBRARIES ${NEWNET_LIBRARIES} wsock32)
+endif()
 
 # Where the wild things are...
 
 add_subdirectory(NewNet)
 add_subdirectory(Mucipher)
-if (C_MUSCAN)
-  add_subdirectory(Muhelp)
-  add_subdirectory(muscan)
-else (C_MUSCAN)
-  message("!!! muscan will NOT be installed [NO_MUSCAN=0]")
-endif (C_MUSCAN)
-if (C_MUSEEKD)
-  if (NOT C_MUSCAN)
-    add_subdirectory(Muhelp)
-  endif (NOT C_MUSCAN)
-  add_subdirectory(museekd)
-else (C_MUSEEKD)
-  message("!!! museekd will NOT be installed [NO_MUSEEKD=0]")
-endif (C_MUSEEKD)
-if (PYBIND)
-  add_subdirectory(python-bindings)
-else (PYBIND)
-  message("!!! Python Bindings will NOT be installed.. [BINDINGS=1]")
-endif (PYBIND)
-if (PYCLIENTS)
-  add_subdirectory(python-clients)
-else (PYCLIENTS)
-  message("!!! mulog, museekchat, museekcontrol, musIRC will NOT be installed [CLIENTS=1]")
-endif (PYCLIENTS)
-if (PYSETUP)
-  add_subdirectory(setup)
-else (PYSETUP)
-  message("!!! musetup, musetup-gtk, musetup-qt will NOT be installed [NO_SETUP=0]")
-endif (PYSETUP)
-if (PYMUCOUS)
-  add_subdirectory(mucous)
-else (PYMUCOUS)
-  message("!!! Mucous (Py/Curses Client)will NOT be installed.. [MUCOUS=1]")
-endif (PYMUCOUS)
-if (PYMURMUR)
-  add_subdirectory(murmur)
-else (PYMURMUR)
-  message("!!! Murmur (PyGTK2 Client) will NOT be installed.. [MURMUR=1]")
-endif (PYMURMUR)
-if (C_MUSEEQ)
-  add_subdirectory(museeq)
-else (C_MUSEEQ)
-  message("!!! museeq will NOT be installed [NO_MUSEEQ=0]")
-endif (C_MUSEEQ)
 
+if(MUSEEKD OR MUSCAN)
+    add_subdirectory(Muhelp)
+endif()
+
+if(MUSEEKD)
+    add_subdirectory(museekd)
+else()
+    message("!!! museekd will NOT be installed.")
+endif()
+
+if(MUSETUP)
+    add_subdirectory(setup)
+else()
+    message("!!! musetup, musetup-gtk, musetup-qt will NOT be installed.")
+endif()
+
+if(MUSCAN)
+    add_subdirectory(muscan)
+else()
+    message("!!! muscan will NOT be installed.")
+endif()
+
+if(MUSEEQ)
+    add_subdirectory(museeq)
+else()
+    message("!!! museeq will NOT be installed.")
+endif()
+
+if(MUCOUS)
+    add_subdirectory(mucous)
+else()
+    message("!!! mucous (Py/Curses Client)will NOT be installed.")
+endif()
+
+if(MURMUR)
+    add_subdirectory(murmur)
+else()
+    message("!!! murmur (PyGTK2 Client) will NOT be installed.")
+endif()
+
+if(PYTHON_BINDINGS)
+    add_subdirectory(python-bindings)
+else()
+    message("!!! Python bindings will NOT be installed.")
+endif()
+
+if(PYTHON_CLIENTS)
+    add_subdirectory(python-clients)
+else()
+    message("!!! Python clients (mulog, museekchat, museekcontrol, musirc) will NOT be installed.")
+endif()
