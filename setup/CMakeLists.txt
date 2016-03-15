@@ -1,17 +1,5 @@
 project(SetupTools)
 
-if(PREFIX)
-    set(CMAKE_INSTALL_PREFIX ${PREFIX})
-else()
-    set(CMAKE_INSTALL_PREFIX "/usr")
-endif()
-
-if(NOT MANDIR)
-    set(MANUAL_DIRECTORY "man/man1")
-else()
-    set(MANUAL_DIRECTORY ${MANDIR}/man1)
-endif()
-
 set(SETUP_TOOLS_SOURCES
     musetup
     musetup-gtk
@@ -42,7 +30,7 @@ install(
 
 install(
     FILES ${MANPAGES}
-    DESTINATION ${MANUAL_DIRECTORY}
+    DESTINATION "${CMAKE_INSTALL_MANDIR}/man1"
     )
 
 set(DESKTOP

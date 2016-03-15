@@ -17,22 +17,7 @@ include(CheckIncludeFiles)
 include(CheckTypeSize)
 include(CheckCXXSourceCompiles)
 
-if(PREFIX)
-    set(CMAKE_INSTALL_PREFIX ${PREFIX})
-else()
-    set(CMAKE_INSTALL_PREFIX "/usr")
-endif()
-
-if(NOT DATADIR)
-    set(DATADIR ${CMAKE_INSTALL_PREFIX}/share)
-endif()
-add_definitions(-DDATADIR="\""${DATADIR}"\"")
-
-if(MANDIR)
-    set(MANUAL_DIRECTORY ${MANDIR}/man1)
-else()
-    set(MANUAL_DIRECTORY "man/man1")
-endif()
+add_definitions(-DDATADIR="\""${CMAKE_INSTALL_DATADIR}"\"")
 
 if(BINRELOC)
     add_definitions(-DENABLE_BINRELOC=1)
@@ -242,12 +227,15 @@ if(QT_QTNETWORK_FOUND)
         DESTINATION bin
         )
 
-    install(FILES ${QM_FILES} DESTINATION ${DATADIR}/museek/museeq/translations)
+    install(FILES ${QM_FILES}
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/museek/museeq/translations)
 
-    install(DIRECTORY themes DESTINATION ${DATADIR}/museek/museeq
+    install(DIRECTORY themes
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/museek/museeq
         PATTERN ".svn" EXCLUDE)
 
-    install(DIRECTORY scripts DESTINATION ${DATADIR}/museek/museeq
+    install(DIRECTORY scripts
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/museek/museeq
         PATTERN ".svn" EXCLUDE)
 
     set(ICONS
@@ -268,7 +256,7 @@ if(QT_QTNETWORK_FOUND)
         )
     install(
         FILES "museeq.1"
-        DESTINATION ${MANUAL_DIRECTORY}
+        DESTINATION "${CMAKE_INSTALL_MANDIR}/man1"
         )
 
     message("--> Museeq-qt4 will be installed.. [NO_MUSEEQ=1]")

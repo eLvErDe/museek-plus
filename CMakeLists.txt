@@ -15,11 +15,6 @@ include(GNUInstallDirs)
 # Enable NewNet's smart-pointer debugging capabilities.
 add_definitions(-DNN_PTR_DEBUG -DNN_PTR_DEBUG_ASSERT)
 
-set(MANUAL_DIRECTORY "man/man1")
-if(MANDIR)
-    set(MANUAL_DIRECTORY ${MANDIR}/man1)
-endif()
-
 message("DECLARATIONS:
 Package options: EVERYTHING, MURMUR, MUCOUS, CLIENTS, BINDINGS
 Museeq options: BINRELOC, RELOAD_TRANSLATIONS

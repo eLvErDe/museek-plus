@@ -1,17 +1,5 @@
 project(Clients)
 
-if(PREFIX)
-    set(CMAKE_INSTALL_PREFIX ${PREFIX})
-else()
-    set(CMAKE_INSTALL_PREFIX "/usr")
-endif()
-
-if(NOT MANDIR)
-    set(MANUAL_DIRECTORY "man/man1")
-else()
-    set(MANUAL_DIRECTORY ${MANDIR}/man1)
-endif()
-
 set(CLIENT_SOURCES
     mulog
     museekchat
@@ -34,7 +22,7 @@ set(MANPAGES
 
 install(
     FILES ${MANPAGES}
-    DESTINATION ${MANUAL_DIRECTORY}
+    DESTINATION "${CMAKE_INSTALL_MANDIR}/man1"
     )
 
 message("--> mulog, museekchat, museekcontrol, musirc.py will be installed..")

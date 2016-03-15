@@ -3,12 +3,6 @@
 #  perl tcl ruby php4 pike
 project(PyMucipher)
 
-if(PREFIX)
-    set(CMAKE_INSTALL_PREFIX ${PREFIX})
-else()
-    set(CMAKE_INSTALL_PREFIX "/usr")
-endif()
-
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
 

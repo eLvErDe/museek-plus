@@ -1,11 +1,5 @@
 project(Tools CXX)
 
-if(PREFIX)
-    set(CMAKE_INSTALL_PREFIX ${PREFIX})
-else()
-    set(CMAKE_INSTALL_PREFIX "/usr")
-endif()
-
 find_package(FAM)
 
 include(FindPkgConfig REQUIRED)
@@ -81,5 +75,5 @@ target_link_libraries(
 
 install(
     FILES ${MANPAGES}
-    DESTINATION ${MANUAL_DIRECTORY}
+    DESTINATION "${CMAKE_INSTALL_MANDIR}/man1"
     )

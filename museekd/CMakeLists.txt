@@ -15,12 +15,6 @@ if(WIN32 AND NOT CYGWIN)
     set(OS_LIBRARIES ${OS_LIBRARIES} ole32 shell32)
 endif()
 
-if(NOT MANDIR)
-    set(MANUAL_DIRECTORY "man/man1")
-else()
-    set(MANUAL_DIRECTORY ${MANDIR}/man1)
-endif()
-
 # Select some source files.
 set(MUSEEKD_SOURCES
     codesetmanager.cpp  ifacemanager.cpp     peermanager.cpp
@@ -56,10 +50,10 @@ install(
 
 install(
     FILES "museekd.1"
-    DESTINATION ${MANUAL_DIRECTORY}
+    DESTINATION "${CMAKE_INSTALL_MANDIR}/man1"
     )
 install(
     FILES "config.xml.tmpl"
-    DESTINATION ${DATADIR}/museek/museekd
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/museek/museekd
     )
 message("--> Museek Daemon (museekd) will be installed..")

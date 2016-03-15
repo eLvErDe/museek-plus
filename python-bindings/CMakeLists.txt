@@ -1,17 +1,5 @@
 project(Museek-Python-Bindings)
 
-if(PREFIX)
-    set(CMAKE_INSTALL_PREFIX ${PREFIX})
-else()
-    set(CMAKE_INSTALL_PREFIX "/usr")
-endif()
-
-if(NOT MANDIR)
-    set(MANUAL_DIRECTORY "man/man1")
-else()
-    set(MANUAL_DIRECTORY ${MANDIR}/man1)
-endif()
-
 set(PYTHON_BINDINGS_SOURCES
     museek/__init__.py
     museek/messages.py
