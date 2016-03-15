@@ -33,5 +33,5 @@ if(Event_LIBRARIES AND EVENT_FOUND)
         ${Event_LIBRARIES}
         )
 else()
-    message("!!! NewNet will NOT be installed..")
+    message("!!! NewNet will NOT be installed.")
 endif()

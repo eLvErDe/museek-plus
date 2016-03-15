@@ -41,4 +41,4 @@ install(
     FILES ${PYMUCIPHER_LIBS}
     DESTINATION ${CMAKE_INSTALL_PREFIX}/${sitepackages}
     )
-message("--> PyMucipher will be installed.. [NO_PYMUCIPHER=1]")
+message("--> PyMucipher will be installed.")

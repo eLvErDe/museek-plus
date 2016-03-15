@@ -259,12 +259,12 @@ if(QT_QTNETWORK_FOUND)
         DESTINATION "${CMAKE_INSTALL_MANDIR}/man1"
         )
 
-    message("--> Museeq-qt4 will be installed.. [NO_MUSEEQ=1]")
+    message("--> Museeq-qt4 will be installed")
 
     if(NOT BINRELOC)
-        message("   * without Binary Relocation.. [BINRELOC=1]")
+        message("   * without Binary Relocation")
     else()
-        message("   * with Binary Relocation.. [BINRELOC=0]")
+        message("   * with Binary Relocation")
     endif()
 
     if(RELOAD_TRANSLATIONS)
@@ -272,5 +272,5 @@ if(QT_QTNETWORK_FOUND)
     endif()
 
 else()
-    message("!!! museeq will NOT be installed [QTNETWORK not found]")
+    message("!!! museeq will NOT be installed [QTNETWORK not found].")
 endif()

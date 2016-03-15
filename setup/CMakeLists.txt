@@ -40,4 +40,4 @@ install(
     FILES ${DESKTOP}
     DESTINATION "share/applications"
     )
-message("--> musetup, musetup-gtk, musetup-qt will be installed..")
+message("--> musetup, musetup-gtk, musetup-qt will be installed.")

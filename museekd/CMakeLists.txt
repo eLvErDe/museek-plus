@@ -56,4 +56,4 @@ install(
     FILES "config.xml.tmpl"
     DESTINATION ${CMAKE_INSTALL_DATADIR}/museek/museekd
     )
-message("--> Museek Daemon (museekd) will be installed..")
+message("--> Museek Daemon (museekd) will be installed.")

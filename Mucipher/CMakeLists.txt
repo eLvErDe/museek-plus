@@ -11,6 +11,6 @@ add_library(Mucipher STATIC ${MUCIPHER_SOURCES})
 if(PYMUCIPHER)
     add_subdirectory(PyMucipher)
 else()
-    message("!!! PyMucipher will NOT be installed.. [NO_PYMUCIPHER=0]")
+    message("!!! PyMucipher will NOT be installed.")
 endif()
 

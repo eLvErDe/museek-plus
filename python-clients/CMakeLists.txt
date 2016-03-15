@@ -25,4 +25,4 @@ install(
     DESTINATION "${CMAKE_INSTALL_MANDIR}/man1"
     )
 
-message("--> mulog, museekchat, museekcontrol, musirc.py will be installed..")
+message("--> mulog, museekchat, museekcontrol, musirc.py will be installed.")

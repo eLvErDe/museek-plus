@@ -47,4 +47,4 @@ install(
     FILES ${MANPAGES}
     DESTINATION "${CMAKE_INSTALL_MANDIR}/man1"
     )
-message("--> Mucous will be installed..")
+message("--> Mucous will be installed.")

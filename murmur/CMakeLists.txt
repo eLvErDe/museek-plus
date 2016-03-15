@@ -57,4 +57,4 @@ install(
     FILES ${DESKTOP}
     DESTINATION "share/applications"
     )
-message("--> Murmur will be installed..")
+message("--> Murmur will be installed.")
