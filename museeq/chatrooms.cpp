@@ -75,7 +75,7 @@ void ChatRooms::joined(const QString& room, const NRoom& r, const QString& owner
 		}
 	}
 
-	ChatRoom* _room = new ChatRoom(room, this, false);
+	ChatRoom* _room = new ChatRoom(room, this);
 	addTab(_room, room);
 	setCurrentWidget(_room);
 	connect(_room, SIGNAL(highlight(int, QWidget*)), this, SIGNAL(highlight(int)));
