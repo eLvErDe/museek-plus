@@ -144,7 +144,7 @@ namespace NewNet
            Class::Method(object, ...), this results in a valid C++ bound
            method call. */
         if(m_Object)
-          std::bind1st(std::mem_fun(m_Method), m_Object)(t);
+          std::bind(&m_Method, m_Object);
       }
 
     protected:
