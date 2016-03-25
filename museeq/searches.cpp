@@ -158,7 +158,7 @@ void Searches::setToken(const QString& query, uint token) {
 
     // Create the tab if it's a wishlist result
 	if ((i == mSearchTabWidget->count()) && museeq->isInWishlist(query)) {
-		Search* s = new Search(query, mSearchTabWidget, false);
+		Search* s = new Search(query, mSearchTabWidget);
 		mSearchTabWidget->addTab(s, query);
 
         // Highlight the search icon so that the user know that there are some new search results
@@ -194,7 +194,7 @@ void Searches::doSearch(const QString& q) {
 		}
 	}
 	if(i == mSearchTabWidget->count()) {
-		Search* s = new Search(q, mSearchTabWidget, false);
+		Search* s = new Search(q, mSearchTabWidget);
 		mSearchTabWidget->addTab(s, q);
 
         // Highlight the search icon so that the user know that there are some new search results
