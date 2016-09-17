@@ -17,7 +17,7 @@ include(CheckIncludeFiles)
 include(CheckTypeSize)
 include(CheckCXXSourceCompiles)
 
-add_definitions(-DDATADIR="${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}")
+add_definitions(-DDATADIR="${CMAKE_INSTALL_FULL_DATADIR}")
 
 if(BINRELOC)
     add_definitions(-DENABLE_BINRELOC=1)
