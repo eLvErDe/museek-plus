@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python2
 #-*- coding: utf-8 -*-
 # Murmur - a PyGTK2 client for museek 
 # Code fragments taken from mucous, musetup-gtk, and nicotine
