@@ -56,7 +56,7 @@ Museeq options:
 # cd build/
 # cmake -CMAKE_INSTALL_DPREFIX=/usr ..
 # (or) cmake -DEVERYTHING=1 -DCMAKE_INSTALL_PREFIX=/usr ..
-# (or) cmake -DMUCOUS=0 -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_INSTALL_MANDIR=/usr/share/man ..
+# (or) cmake -DMUCOUS=1 -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_INSTALL_MANDIR=/usr/share/man ..
 # make
 # (or) make VERBOSE=1
 # make install
