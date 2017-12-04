@@ -26,6 +26,7 @@
 #include "nnweakrefptr.h"
 #include "nnratelimiter.h"
 #include <event.h>
+#include <string.h>
 
 namespace NewNet
 {
@@ -86,7 +87,7 @@ namespace NewNet
               m_DataWaiting(false)
     {
         m_EventData = new struct event;
-        m_EventData->ev_flags = 0; // This event has not been initialized
+        memset(m_EventData, 0, sizeof(struct event));
     }
 
     //! Return the associated reactor.
