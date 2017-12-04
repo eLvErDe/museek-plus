@@ -8,7 +8,7 @@ set(QT_USE_QTUITOOLS TRUE)
 # find and setup Qt4 for this project
 find_package(Qt4 REQUIRED)
 
-add_definitions(${QT_DEFINITIONS} )
+add_definitions(${QT_DEFINITIONS})
 
 # tell cmake where to search for headers:v
 include_directories(.)
@@ -17,7 +17,7 @@ include(CheckIncludeFiles)
 include(CheckTypeSize)
 include(CheckCXXSourceCompiles)
 
-add_definitions(-DDATADIR="\""${CMAKE_INSTALL_DATADIR}"\"")
+add_definitions(-DDATADIR="${CMAKE_INSTALL_FULL_DATADIR}")
 
 if(BINRELOC)
     add_definitions(-DENABLE_BINRELOC=1)

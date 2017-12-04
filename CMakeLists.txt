@@ -4,6 +4,8 @@ cmake_minimum_required(VERSION 2.8.0)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
+enable_language(CXX)
+
 # Include some cmake checks.
 include(CheckIncludeFiles)
 include(CheckTypeSize)

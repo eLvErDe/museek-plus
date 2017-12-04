@@ -14,10 +14,8 @@ libogg-dev
 SWIG (for the mucipher Python bindings)
 
 
-
 Get binaries and help for Museek+ there:
 http://www.museek-plus.org
-
 
 
 -----------------------
@@ -27,37 +25,41 @@ CMake is the recommended way to build everything
 
    I.1 - DECLARATIONS (prefix with -D, set bool options on with 1; off with 0):
    ----------------------------------------------------------------------------
-PREFIX: Where museek+ should be installed (default is /usr)
-MANDIR: Where man files should be installed (default is PREFIX/man)
 
-EVERYTHING: Install every components of museek+ (daemon, clients, bindings, etc.)
-NO_MUSEEKD: don't install museekd
-NO_MUSCAN: don't install muscan
-NO_SETUP: don't install musetup, musetup-gtk and musetup-qt
-NO_PYMUCIPHER: don't install python bindings for mucipher (hashing library: SHA1, MD5, ...)
-NO_MUSEEQ: don't install museeq (Qt4 client)
-BINDINGS: install python bindings for museek
-MURMUR: install PyGTK client
-MUCOUS: install Curses Python client
-CLIENTS: install some Python tools to museekd, featuring a command line client and a very primitive curses chat client.
+To customize the installation location, different variables can be set. For an exhaustive list please see the GNUInstallDirs module documentation which is part of cmake.
+
+Examples:
+CMAKE_INSTALL_PREFIX: Where museek+ should be installed (default is /usr/local)
+CMAKE_INSTALL_MANDIR: Where man files should be installed (default is share/man)
+CMAKE_INSTALL_DATADIR: Where data files should be installed (default is share). Museek will put it's data in a museek/ subfolder relative to this.
+Relative paths are appended to CMAKE_INSTALL_PREFIX. Absolute paths are also possible.
+
+EVERYTHING: Install every components of museek+ (daemon, clients, bindings, etc.) (default 0)
+MUSEEKD: Build museekd soulseek daemon (default 1)
+MUSETUP: Build musetup configuration interface for museekd (default 1)
+MUSEEQ:  Build museeq Qt client (default 1)
+MUSCAN:  Build muscan shared file index generator (default 1)
+MUCOUS:  Build mucous curses client (default 0)
+MURMUR:  Build murmur PyGTK client (default 0)
+PYMUCIPHER:      Generate PyMucipher bindings (default 0)
+PYTHON_BINDINGS: Generate python bindings (default 0)
+PYTHON_CLIENTS:  Build python clients (mulog, museekchat, museekcontrol, musirc) (default 0)
 
 Museeq options:
   BINRELOC: Use binary relocation
-  DATADIR: Change default data dir
   RELOAD_TRANSLATIONS: Update .ts files in src/museeq/translations
 
    I.2 - Commands
    --------------
 # cd /path/to/src
-# mkdir workdir
-# cd workdir/
-# cmake -DPREFIX=/usr ..
-# (or) cmake -DEVERYTHING=1 -DPREFIX=/usr ..
-# (or) cmake -DMUCOUS=0 -DPREFIX=/usr/local -DMANDIR=share/man
+# mkdir build/
+# cd build/
+# cmake -CMAKE_INSTALL_DPREFIX=/usr ..
+# (or) cmake -DEVERYTHING=1 -DCMAKE_INSTALL_PREFIX=/usr ..
+# (or) cmake -DMUCOUS=1 -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_INSTALL_MANDIR=/usr/share/man ..
 # make
 # (or) make VERBOSE=1
 # make install
-
 
 
 ----------------------------------------------------
@@ -86,4 +88,3 @@ Setup tools (musetup, musetup-gtk, musetup-qt)
 Mucous
 Requires: PyMucipher or PyCrypto, Python Bindings
 # cd mucous/
-
