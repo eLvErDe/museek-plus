@@ -6,7 +6,7 @@ set(PYTHON_BINDINGS_SOURCES
     museek/driver.py
     )
 
-execute_process(COMMAND python
+execute_process(COMMAND python2
     ${CMAKE_SOURCE_DIR}/cmake/get_python_lib.py museek
     OUTPUT_VARIABLE sitepackages
     OUTPUT_STRIP_TRAILING_WHITESPACE

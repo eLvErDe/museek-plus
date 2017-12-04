@@ -3,6 +3,8 @@
 #  perl tcl ruby php4 pike
 project(PyMucipher)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
 
@@ -31,7 +33,7 @@ set(PYMUCIPHER_LIBS
     ${CMAKE_CURRENT_BINARY_DIR}/mucipherc.py
     ${CMAKE_CURRENT_BINARY_DIR}/_mucipherc.so
     )
-EXECUTE_PROCESS(COMMAND python ${CMAKE_SOURCE_DIR}/cmake/get_python_lib.py museek OUTPUT_VARIABLE sitepackages OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_VARIABLE error)
+EXECUTE_PROCESS(COMMAND python2 ${CMAKE_SOURCE_DIR}/cmake/get_python_lib.py museek OUTPUT_VARIABLE sitepackages OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_VARIABLE error)
 
 if(NOT sitepackages OR error)
     message(FATAL_ERROR "Failed to find Python's site-packages directory" ${sitepackages} ${error})

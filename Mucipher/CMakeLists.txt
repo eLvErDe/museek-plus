@@ -8,6 +8,8 @@ set(MUCIPHER_SOURCES
     )
 add_library(Mucipher STATIC ${MUCIPHER_SOURCES})
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+
 if(PYMUCIPHER)
     add_subdirectory(PyMucipher)
 else()
