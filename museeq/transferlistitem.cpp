@@ -180,6 +180,7 @@ void TransferListItem::update(const NTransfer& transfer, bool force) {
 	uint place = (uint)-1;
 	if (mState == 7)
 		place = transfer.placeInQueue;
+
 	if (place != mPlaceInQueue || force) {
 		mPlaceInQueue = place;
 		if(mPlaceInQueue != (uint)-1)
@@ -187,28 +188,41 @@ void TransferListItem::update(const NTransfer& transfer, bool force) {
 		else
 			setText(4, "");
 	}
-	if ((transfer.rate != mRate) || (transfer.filepos != mPosition) || (transfer.filesize != mSize) || force) {
-	    if (transfer.rate > 0)
-            mTimeLeft = (transfer.filesize - transfer.filepos) / transfer.rate;
-	    else
-            mTimeLeft = 0;
 
-        if (mTimeLeft > 0)
-            setText(8, Util::makeTime(mTimeLeft));
-        else
-            setText(8, TransferListView::tr("?"));
-	}
-	if(transfer.filepos != mPosition || force) {
+	if (mState != 1) {
+        // Not transferring => we have no rate nor time left
+        mRate = 0;
+		setText(7, Util::makeSize(mRate) + TransferListView::tr("/s"));
+        mTimeLeft = 0;
+        setText(8, TransferListView::tr("?"));
+    }
+    else {
+    	if ((transfer.rate != mRate) || (transfer.filepos != mPosition) || (transfer.filesize != mSize) || force) {
+    	    if (transfer.rate > 0)
+                mTimeLeft = (transfer.filesize - transfer.filepos) / transfer.rate;
+    	    else
+                mTimeLeft = 0;
+
+            if (mTimeLeft > 0)
+                setText(8, Util::makeTime(mTimeLeft));
+            else
+                setText(8, TransferListView::tr("?"));
+    	}
+        
+    	if (transfer.rate != mRate || force) {
+            mRate = transfer.rate;
+    		setText(7, Util::makeSize(mRate) + TransferListView::tr("/s"));
+    	}
+    }
+
+
+	if (transfer.filepos != mPosition || force) {
 		mPosition = transfer.filepos;
 		setText(5, Util::makeSize(mPosition));
 	}
-	if(transfer.filesize != mSize || force) {
+	if (transfer.filesize != mSize || force) {
 		mSize = transfer.filesize;
 		setText(6, Util::makeSize(mSize));
-	}
-	if(transfer.rate != mRate || force) {
-		mRate = transfer.rate;
-		setText(7, Util::makeSize(mRate) + TransferListView::tr("/s"));
 	}
 
     int progress = 0;
@@ -261,6 +275,13 @@ void TransferListItem::updateStats() {
 		return;
 	TransferListItem* file;
 	int pos = 0;
+    bool haveTransferring = false;
+    bool haveQueued = false;
+    bool haveAborted = false;
+    bool haveError = false;
+    int totalFinished = 0;
+    QFont globalStatFont;
+    globalStatFont.setBold(true);
 	for(; pos < childCount(); pos++) {
 		file = dynamic_cast<TransferListItem*>(child(pos));
 		if (file) {
@@ -271,8 +292,87 @@ void TransferListItem::updateStats() {
 				groupSize += file->mSize;
 			if(file->mState == 1)
 				groupRate = file->mRate;
+
+            if (pos == 0) {
+                setText(4, file->text(4));
+                setText(9, file->text(9));
+            }
+
+            // Display a global status message for the parent
+            switch (file->mState) {
+                // kind of transferring:
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                case 6:
+                case 8:
+                case 9:
+                    setText(2, file->text(2));
+                    setBackground(2, file->background(2));
+                    setForeground(2, file->foreground(2));
+                    haveTransferring = true;
+                    break;
+                // offline:
+                case 10:
+                // connection errors:
+                case 11:
+                case 12:
+                case 14:
+                case 15:
+                    if (!haveTransferring) {
+                        setText(2, file->text(2));
+                        setBackground(2, file->background(2));
+                        setForeground(2, file->foreground(2));
+                        haveError = true;
+                    }
+                    break;
+                // queued:
+                case 7:
+                case 16:
+                    if (!haveTransferring && !haveAborted && !haveError) {
+                        setText(2, file->text(2));
+                        setBackground(2, file->background(2));
+                        setForeground(2, file->foreground(2));
+                        haveQueued = true;
+                    }
+                    break;
+                // finished:
+                case 0:
+                    totalFinished++;
+                    if (!haveTransferring && !haveQueued && !haveAborted && !haveError) {
+                        setText(2, file->text(2));
+                        setBackground(2, file->background(2));
+                        setForeground(2, file->foreground(2));
+                    }
+                    break;
+                // aborted:
+                case 13:
+                    if (!haveTransferring && !haveQueued && !haveError) {
+                        setText(2, file->text(2));
+                        setBackground(2, file->background(2));
+                        setForeground(2, file->foreground(2));
+                        haveAborted = true;
+                    }
+                    break;
+            }
 		}
 	}
+
+    setFont(0, globalStatFont);
+    setFont(1, globalStatFont);
+    setFont(2, globalStatFont);
+    setFont(3, globalStatFont);
+    setFont(4, globalStatFont);
+    setFont(5, globalStatFont);
+    setFont(6, globalStatFont);
+    setFont(7, globalStatFont);
+    setFont(8, globalStatFont);
+    setFont(9, globalStatFont);
+
+    setText(1, QString::number(totalFinished) + "/" + QString::number(childCount()) + TransferListView::tr(" files"));
+    setTextAlignment(1, Qt::AlignHCenter);
 
 	setText(5, Util::makeSize(groupPosition));
 	if(groupSize == -1)
