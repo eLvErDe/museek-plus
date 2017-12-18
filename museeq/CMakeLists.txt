@@ -258,7 +258,7 @@ install(
     DESTINATION "${CMAKE_INSTALL_MANDIR}/man1"
     )
 
-message("--> Museeq-qt4 will be installed")
+message("--> Museeq-qt will be installed")
 
 if(NOT BINRELOC)
     message("   * without Binary Relocation")
