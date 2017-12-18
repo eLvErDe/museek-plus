@@ -154,10 +154,15 @@ void Museek::DistributedSocket::onChildDepthReceived(const DChildDepth * msg) {
 void Museek::DistributedSocket::onSearchRequested(const DSearchRequest * msg) {
     std::string query = museekd()->codeset()->fromNet(msg->query);
 
-    NNLOG("museekd.distrib.debug", "Received search request from our parent: %s for %s", query.c_str(), msg->username.c_str());
+    if (museekd()->isBot(msg->username)) {
+        NNLOG("museekd.peers.debug", "Ignoring search request from bot: '%s' for '%s'", query.c_str(), msg->username.c_str());
+    }
+    else if (!museekd()->isBanned(msg->username)) {
+        NNLOG("museekd.distrib.debug", "Received search request from our parent: '%s' for '%s'", query.c_str(), msg->username.c_str());
 
-    museekd()->searches()->transmitSearch(msg->unknown, msg->username, msg->ticket, query);
-    museekd()->searches()->sendSearchResults(msg->username, query, msg->ticket);
+        museekd()->searches()->transmitSearch(msg->unknown, msg->username, msg->ticket, query);
+        museekd()->searches()->sendSearchResults(msg->username, query, msg->ticket);
+    }
 }
 
 void

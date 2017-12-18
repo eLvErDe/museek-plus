@@ -297,10 +297,16 @@ void Museek::SearchManager::branchLevelReceived(DistributedSocket * socket, uint
 void Museek::SearchManager::onSearchRequested(const SSearchRequest * msg) {
     std::string query = museekd()->codeset()->fromNet(msg->query);
 
-    NNLOG("museekd.peers.debug", "Received search request from server: %s for %s", query.c_str(), msg->username.c_str());
+    if (museekd()->isBot(msg->username)) {
+        // See https://www.slsknet.org/news/node/3395
+        NNLOG("museekd.peers.debug", "Ignoring search request from bot: '%s' for '%s'", query.c_str(), msg->username.c_str());
+    }
+    else if (!museekd()->isBanned(msg->username)) {
+        NNLOG("museekd.peers.debug", "Received search request from server: '%s' for '%s'", query.c_str(), msg->username.c_str());
 
-    transmitSearch(msg->unknown, msg->username, msg->token, msg->query);
-    sendSearchResults(msg->username, query, msg->token);
+        transmitSearch(msg->unknown, msg->username, msg->token, msg->query);
+        sendSearchResults(msg->username, query, msg->token);
+    }
 }
 
 /**
@@ -309,9 +315,15 @@ void Museek::SearchManager::onSearchRequested(const SSearchRequest * msg) {
 void Museek::SearchManager::onFileSearchRequested(const SFileSearch * msg) {
     std::string query = museekd()->codeset()->fromNet(msg->query);
 
-    NNLOG("museekd.peers.debug", "Received file search request from server: %s for %s", query.c_str(), msg->user.c_str());
+    if (museekd()->isBot(msg->user)) {
+        // See https://www.slsknet.org/news/node/3395
+        NNLOG("museekd.peers.debug", "Ignoring search request from bot: '%s' for '%s'", query.c_str(), msg->user.c_str());
+    }
+    else if (!museekd()->isBanned(msg->user)) {
+        NNLOG("museekd.peers.debug", "Received file search request from server: %s for %s", query.c_str(), msg->user.c_str());
 
-    sendSearchResults(msg->user, query, msg->ticket);
+        sendSearchResults(msg->user, query, msg->ticket);
+    }
 }
 
 /**
