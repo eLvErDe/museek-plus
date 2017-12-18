@@ -107,7 +107,8 @@ PEERMESSAGE(PSharesReply, 5)
 				files[filename] = fe;
 				f--;
 			}
-			shares[dirname] = files;
+			if (dirname != "\\")
+                shares[dirname] = files;
 			n--;
 		}
 	END_PARSE
