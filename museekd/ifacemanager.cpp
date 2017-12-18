@@ -1354,7 +1354,7 @@ Museek::IfaceManager::onPeerSharesReceived(const PSharesReply * message)
     for(itFold = oriShares.begin(); itFold != oriShares.end(); ++itFold) {
         Folder newFold;
         for(itFile = itFold->second.begin(); itFile != itFold->second.end(); ++itFile) {
-            newFold[museekd()->codeset()->fromPeer(socket->user(), itFile->first)] = itFile->second;
+            newFold[museekd()->codeset()->fromPeer(socket->user(), itFile->first, true)] = itFile->second;
         }
         encShares[museekd()->codeset()->fromPeer(socket->user(), itFold->first)] = newFold;
     }

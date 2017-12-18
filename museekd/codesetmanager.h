@@ -26,6 +26,7 @@
 #include <string>
 #include <map>
 #include <iconv.h>
+#include <set>
 
 namespace Museek
 {
@@ -66,7 +67,7 @@ namespace Museek
     std::string toRoom(const std::string & room, const std::string & str);
 
     /* Convert 'str' from character set set for peer 'peer' to UTF8 */
-    std::string fromPeer(const std::string & peer, const std::string & str);
+    std::string fromPeer(const std::string & peer, const std::string & str, bool isPath = false);
     /* Convert 'str' from UTF8 to character set for peer 'peer' */
     std::string toPeer(const std::string & peer, const std::string & str);
 
@@ -95,6 +96,11 @@ namespace Museek
     /* Convert 'str' from the network encoding to utf8 */
     std::string fromNetToUtf8(const std::string & str);
 
+    // Add user to the list of users running a modern client (ie supporting utf-8)
+    void addModernPeer(const std::string & user);
+
+    void checkModernPath(const std::string & user, const std::string & path);
+
   private:
     /* Get the character set for an object from the configuration */
     std::string getNetworkCodeset(const std::string & domain, const std::string & key) const;
@@ -105,6 +111,8 @@ namespace Museek
     NewNet::WeakRefPtr<Museekd> m_Museekd;
     /* Iconv context cache. */
     std::map<std::pair<std::string, std::string>, iconv_t> m_Contexts;
+
+    std::set<std::string> m_ModernPeers;
   };
 }
 

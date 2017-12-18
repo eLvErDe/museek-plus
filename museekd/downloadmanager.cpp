@@ -495,7 +495,7 @@ void Museek::DownloadManager::addFolderContents(const std::string & user, const 
 
     for (fit = folders.begin(); fit != folders.end(); fit++) {
         // Folder we have asked the contents
-        std::string remotePathBase = museekd()->codeset()->fromPeer(user, fit->first);
+        std::string remotePathBase = museekd()->codeset()->fromPeer(user, fit->first, true);
         // The (optional) local path where the folder should be downloaded
         std::string localPathBase = m_ContentsAsked[user].find(remotePathBase)->second;
         if (m_ContentsAsked[user].find(remotePathBase) == m_ContentsAsked[user].end()) {
