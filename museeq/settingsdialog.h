@@ -49,7 +49,7 @@ class SettingsDialog : public QDialog
     Q_OBJECT
 
 public:
-	SettingsDialog( QWidget* parent = 0, const char* name = 0, bool modal = FALSE, Qt::WFlags fl = 0 );
+	SettingsDialog( QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0 );
 	~SettingsDialog();
 
 	bool areSharesDirty() {return mSharesDirty;};

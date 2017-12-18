@@ -44,6 +44,7 @@
 #include <QFile>
 #include <QList>
 #include <QFileInfo>
+#include <QUrl>
 
 using std::string;
 Museeq::Museeq(QApplication * app)

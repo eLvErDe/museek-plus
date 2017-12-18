@@ -36,7 +36,7 @@ class OnlineAlert : public QDialog
     Q_OBJECT
 
 public:
-    OnlineAlert( QWidget* parent = 0, const char* name = 0, bool modal = FALSE, Qt::WFlags fl = 0 );
+    OnlineAlert( QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0 );
     ~OnlineAlert() {};
 
     void setUser( const QString & user );

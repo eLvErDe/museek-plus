@@ -57,7 +57,7 @@ UserTabWidget::UserTabWidget(QWidget* _p, const char* _n)
 	}
 
 
-	connect(this, SIGNAL(currentChanged(QWidget*)), SLOT(doCurrentChanged(QWidget*)));
+	connect(this, SIGNAL(currentChanged(int)), SLOT(doCurrentChanged(int)));
 	connect(museeq, SIGNAL(connectedToServer(bool)), SLOT(setCanDrop(bool)));
 }
 
@@ -88,8 +88,8 @@ UserWidget* UserTabWidget::makeNewPage(const QString& _u) {
 	return new UserWidget(_u);
 }
 
-void UserTabWidget::doCurrentChanged(QWidget* userwidget) {
-	UserWidget* uw = dynamic_cast<UserWidget*>(userwidget);
+void UserTabWidget::doCurrentChanged(int) {
+	UserWidget* uw = dynamic_cast<UserWidget*>(currentWidget());
 	if (uw)
         uw->selected();
 }

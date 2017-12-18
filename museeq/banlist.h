@@ -22,11 +22,11 @@
 #define BANLIST_H
 
 #include <QWidget>
+#include <QUrl>
 
 class UserListView;
 class QLineEdit;
 class QPushButton;
-class QUrl;
 
 class BanList : public QWidget {
 	Q_OBJECT

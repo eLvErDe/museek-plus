@@ -40,6 +40,8 @@
 #include <QMouseEvent>
 #include <QUrl>
 #include <QPainter>
+#include <QDrag>
+#include <QMimeData>
 
 class SharesData {
 public:

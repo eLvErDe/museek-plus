@@ -1,18 +1,18 @@
 # Project's name
 project(museeq)
 
-set(QT_USE_QTNETWORK TRUE)
-set(QT_USE_QTSCRIPT TRUE)
-set(QT_USE_QTUITOOLS TRUE)
+# find and setup Qt5 for this project
+find_package(Qt5Core    REQUIRED)
+find_package(Qt5Widgets REQUIRED)
+find_package(Qt5Network REQUIRED)
+find_package(Qt5LinguistTools REQUIRED)
+find_package(Qt5Script REQUIRED)
+find_package(Qt5UiTools REQUIRED)
 
-# find and setup Qt4 for this project
-find_package(Qt4 REQUIRED)
-
-add_definitions(${QT_DEFINITIONS})
+add_definitions(${QT_DEFINITIONS} )
 
 # tell cmake where to search for headers:v
 include_directories(.)
-include(${QT_USE_FILE})
 include(CheckIncludeFiles)
 include(CheckTypeSize)
 include(CheckCXXSourceCompiles)
@@ -23,7 +23,7 @@ if(BINRELOC)
     add_definitions(-DENABLE_BINRELOC=1)
 endif()
 
-if(QT_QTSCRIPT_FOUND)
+if (Qt5Script_FOUND)
     message(STATUS "Qt Script available")
     add_definitions(-DHAVE_QTSCRIPT=1 )
 else()
@@ -31,7 +31,7 @@ else()
 endif()
 
 
-if(QT_QTUITOOLS_FOUND)
+if (Qt5UiTools_FOUND)
     message(STATUS "Qt UI Tools available")
     add_definitions(-DHAVE_QTUITOOLS=1 )
 else()
@@ -195,82 +195,77 @@ set(MUSEEQ_MOC_HEADERS
 
 add_definitions(-DHAVE_SYSTEM_H)
 
-if(QT_QTNETWORK_FOUND)
-    qt4_wrap_cpp( MUSEEQ_SOURCES ${MUSEEQ_MOC_HEADERS} )
+QT5_WRAP_CPP( MUSEEQ_SOURCES ${MUSEEQ_MOC_HEADERS} )
 
-    set(TRANSLATIONS
-        translations/museeq_de.ts
-        translations/museeq_es.ts
-        translations/museeq_en.ts
-        translations/museeq_fr.ts
-        translations/museeq_it.ts
-        translations/museeq_nl.ts
-        translations/museeq_pl.ts
-        translations/museeq_pt_BR.ts
-        translations/museeq_ro.ts
-        )
+set(TRANSLATIONS
+    translations/museeq_de.ts
+    translations/museeq_es.ts
+    translations/museeq_en.ts
+    translations/museeq_fr.ts
+    translations/museeq_it.ts
+    translations/museeq_nl.ts
+    translations/museeq_pl.ts
+    translations/museeq_pt_BR.ts
+    translations/museeq_ro.ts
+    )
 
-    if(RELOAD_TRANSLATIONS)
-        QT4_CREATE_TRANSLATION(QM_FILES ${MUSEEQ_SOURCES} translations/museeq_template.ts ${TRANSLATIONS})
-    else()
-        QT4_ADD_TRANSLATION(QM_FILES ${TRANSLATIONS})
-    endif()
-
-    add_executable(museeq ${QM_FILES} ${MUSEEQ_SOURCES} ${MUSEEQ_MOC_HEADERS})
-
-    set(LINK_LIBRARIES Mucipher ${QT_LIBRARIES})
-
-    target_link_libraries(museeq ${LINK_LIBRARIES})
-
-    install(
-        TARGETS museeq
-        DESTINATION bin
-        )
-
-    install(FILES ${QM_FILES}
-        DESTINATION ${CMAKE_INSTALL_DATADIR}/museek/museeq/translations)
-
-    install(DIRECTORY themes
-        DESTINATION ${CMAKE_INSTALL_DATADIR}/museek/museeq
-        PATTERN ".svn" EXCLUDE)
-
-    install(DIRECTORY scripts
-        DESTINATION ${CMAKE_INSTALL_DATADIR}/museek/museeq
-        PATTERN ".svn" EXCLUDE)
-
-    set(ICONS
-        museeq.png
-        )
-
-    install(
-        FILES ${ICONS}
-        DESTINATION "share/pixmaps"
-        )
-    set(DESKTOP
-        museeq.desktop
-        )
-
-    install(
-        FILES ${DESKTOP}
-        DESTINATION "share/applications"
-        )
-    install(
-        FILES "museeq.1"
-        DESTINATION "${CMAKE_INSTALL_MANDIR}/man1"
-        )
-
-    message("--> Museeq-qt4 will be installed")
-
-    if(NOT BINRELOC)
-        message("   * without Binary Relocation")
-    else()
-        message("   * with Binary Relocation")
-    endif()
-
-    if(RELOAD_TRANSLATIONS)
-        message( "   * rebuilding translations from sources" )
-    endif()
-
+if(RELOAD_TRANSLATIONS)
+    QT5_CREATE_TRANSLATION(QM_FILES ${MUSEEQ_SOURCES} translations/museeq_template.ts ${TRANSLATIONS})
 else()
-    message("!!! museeq will NOT be installed [QTNETWORK not found].")
+    QT5_ADD_TRANSLATION(QM_FILES ${TRANSLATIONS})
+endif()
+
+add_executable(museeq ${QM_FILES} ${MUSEEQ_SOURCES} ${MUSEEQ_MOC_HEADERS})
+
+qt5_use_modules( museeq Core Widgets Network LinguistTools Script UiTools )
+
+target_link_libraries(museeq Mucipher)
+
+install(
+    TARGETS museeq
+    DESTINATION bin
+    )
+
+install(FILES ${QM_FILES}
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/museek/museeq/translations)
+
+install(DIRECTORY themes
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/museek/museeq
+    PATTERN ".svn" EXCLUDE)
+
+install(DIRECTORY scripts
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/museek/museeq
+    PATTERN ".svn" EXCLUDE)
+
+set(ICONS
+    museeq.png
+    )
+
+install(
+    FILES ${ICONS}
+    DESTINATION "share/pixmaps"
+    )
+set(DESKTOP
+    museeq.desktop
+    )
+
+install(
+    FILES ${DESKTOP}
+    DESTINATION "share/applications"
+    )
+install(
+    FILES "museeq.1"
+    DESTINATION "${CMAKE_INSTALL_MANDIR}/man1"
+    )
+
+message("--> Museeq-qt4 will be installed")
+
+if(NOT BINRELOC)
+    message("   * without Binary Relocation")
+else()
+    message("   * with Binary Relocation")
+endif()
+
+if(RELOAD_TRANSLATIONS)
+    message( "   * rebuilding translations from sources" )
 endif()

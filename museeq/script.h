@@ -23,6 +23,7 @@
 
 #include <QObject>
 #include <QList>
+#include <QAction>
 #ifdef HAVE_QTSCRIPT
     #include <QtScript>
     #ifdef HAVE_QTUITOOLS
@@ -32,7 +33,6 @@
 #endif // HAVE_QTSCRIPT
 
 class QMenu;
-class QAction;
 
 class Script : public QObject {
 	Q_OBJECT

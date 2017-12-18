@@ -104,7 +104,7 @@ Searches::Searches(QWidget* parent, const char* name)
 	connect(museeq, SIGNAL(connectedToServer(bool)), mSearch, SLOT(setEnabled(bool)));
 	connect(museeq, SIGNAL(connectedToServer(bool)), mInterests, SLOT(setEnabled(bool)));
 	connect(museeq, SIGNAL(connectedToServer(bool)), mWishListView, SLOT(setEnabled(bool)));
-	connect(mSearchTabWidget, SIGNAL(currentChanged(QWidget*)), SLOT(tabSelected(QWidget*)));
+	connect(mSearchTabWidget, SIGNAL(currentChanged(int)), SLOT(tabSelected(int)));
 }
 
 void Searches::searchModeSelected() {
@@ -237,7 +237,7 @@ SearchTabWidget::SearchTabWidget(QWidget* _p, const char* _n)
               : TabWidget(_p, _n)
 {
     setLastProtected(1);
-    connect(this, SIGNAL(currentChanged(QWidget*)), SLOT(selected(QWidget*)));
+    connect(this, SIGNAL(currentChanged(int)), SLOT(selected(int)));
 }
 
 void SearchTabWidget::setHighlight(int highlight, QWidget* widget) {
@@ -264,10 +264,10 @@ void SearchTabWidget::setHighlight(int highlight, QWidget* widget) {
 	}
 }
 
-void SearchTabWidget::selected(QWidget* searchwidget) {
-	if (currentIndex() <= 1)
+void SearchTabWidget::selected(int curIndex) {
+	if (curIndex <= 1)
 		return;
-	Search * uw = dynamic_cast<Search*>(searchwidget);
+	Search * uw = dynamic_cast<Search*>(currentWidget());
 	if(uw && uw->highlighted() != 0) {
 		uw->setHighlighted(0);
 		setHighlight(uw->highlighted(), uw );

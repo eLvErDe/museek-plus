@@ -24,6 +24,7 @@
 
 #include <QDropEvent>
 #include <QUrl>
+#include <QMimeData>
 
 QString Util::makeSize(qint64 i) {
 	double d = i;

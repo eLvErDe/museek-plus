@@ -26,7 +26,7 @@
 #include <QLayout>
 #include <QDialogButtonBox>
 
-IPDialog::IPDialog( QWidget* parent, const char* name, bool modal, Qt::WFlags fl )
+IPDialog::IPDialog( QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl )
     : QDialog( parent)
 {
 	setMinimumSize( QSize( 400, 0 ) );

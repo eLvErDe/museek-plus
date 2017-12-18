@@ -30,6 +30,8 @@
 #include <QPainter>
 #include <QHeaderView>
 #include <QSettings>
+#include <QMimeData>
+#include <QDrag>
 
 TransferListView::TransferListView(bool place, QWidget* _p, const QString& _name)
                  : QTreeWidget(_p), mGroupMode(None) {
@@ -37,7 +39,7 @@ TransferListView::TransferListView(bool place, QWidget* _p, const QString& _name
 	mName = _name;
 
 	QStringList headers;
-	headers << tr("User") << tr("File") << tr("Status") << tr("Progress") << tr("Place") << tr("Position") << tr("Size") << tr("Speed") << tr("Time Left") << tr("Path") << QString::null;
+	headers << tr("User") << tr("File") << tr("Status") << tr("Progress") << tr("Place") << tr("Position") << tr("Size") << tr("Speed") << tr("Time Left") << tr("Path");
 
     setAllColumnsShowFocus(true);
 	setHeaderLabels(headers);

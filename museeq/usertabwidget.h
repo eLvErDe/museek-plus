@@ -71,7 +71,7 @@ protected:
 	UserWidget* page(const QString&, bool = false);
 	virtual UserWidget* makeNewPage(const QString&);
 protected slots:
-	void doCurrentChanged(QWidget *);
+	void doCurrentChanged(int);
 private:
 
 	BuddyList* mBuddyList;

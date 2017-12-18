@@ -178,16 +178,16 @@ void TransferListItem::update(const NTransfer& transfer, bool force) {
 	}
 
 	uint place = (uint)-1;
-	if(mState == 7)
+	if (mState == 7)
 		place = transfer.placeInQueue;
-	if(place != mPlaceInQueue || force) {
+	if (place != mPlaceInQueue || force) {
 		mPlaceInQueue = place;
 		if(mPlaceInQueue != (uint)-1)
 			setText(4, QString::number(mPlaceInQueue));
 		else
 			setText(4, "");
 	}
-	if((transfer.rate != mRate) || (transfer.filepos != mPosition) || (transfer.filesize != mSize) || force) {
+	if ((transfer.rate != mRate) || (transfer.filepos != mPosition) || (transfer.filesize != mSize) || force) {
 	    if (transfer.rate > 0)
             mTimeLeft = (transfer.filesize - transfer.filepos) / transfer.rate;
 	    else
@@ -216,6 +216,7 @@ void TransferListItem::update(const NTransfer& transfer, bool force) {
         progress = 1000;
     else if ((mSize > 0) && (mPosition > 0))
         progress = static_cast<uint>((static_cast<float>(mPosition)/static_cast<float>(mSize)) * 1000);
+
     if (progress > 1000)
         progress = 1000;
     setData(3, Qt::DisplayRole, progress);

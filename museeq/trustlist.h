@@ -22,12 +22,12 @@
 #define TRUSTLIST_H
 
 #include <QWidget>
+#include <QUrl>
 
 class QShowEvent;
 class UserListView;
 class QLineEdit;
 class QPushButton;
-class QUrl;
 
 class TrustList : public QWidget {
 	Q_OBJECT

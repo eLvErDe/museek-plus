@@ -42,7 +42,7 @@ ChatRooms::ChatRooms(QWidget* parent, const char* name)
 	connect(museeq, SIGNAL(roomsTickers(const NTickerMap&)), SLOT(setTickersForAllRooms(const NTickerMap&)));
 	connect(museeq, SIGNAL(roomTickerSet(const QString&, const QString&, const QString&)), SLOT(setTicker(const QString&, const QString&, const QString&)));
 	connect(museeq, SIGNAL(askedPublicChat()), SLOT(askedPublicChat()));
-	connect(this, SIGNAL(currentChanged(QWidget*)), SLOT(doCurrentChanged(QWidget*)));
+	connect(this, SIGNAL(currentChanged(int)), SLOT(doCurrentChanged(int)));
 }
 
 void ChatRooms::clear() {
@@ -75,7 +75,7 @@ void ChatRooms::joined(const QString& room, const NRoom& r, const QString& owner
 		}
 	}
 
-	ChatRoom* _room = new ChatRoom(room, this, false);
+	ChatRoom* _room = new ChatRoom(room, this);
 	addTab(_room, room);
 	setCurrentWidget(_room);
 	connect(_room, SIGNAL(highlight(int, QWidget*)), this, SIGNAL(highlight(int)));
@@ -171,8 +171,8 @@ void ChatRooms::updateTickers() {
 	}
 }
 
-void ChatRooms::doCurrentChanged(QWidget* widget) {
-	selected(widget);
+void ChatRooms::doCurrentChanged(int) {
+	selected(currentWidget());
 }
 
 void ChatRooms::setHighlight(int highlight, QWidget* chatwidget) {

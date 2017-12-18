@@ -26,6 +26,7 @@
 #include <QWidget>
 
 class QCheckBox;
+class QComboBox;
 class QPushButton;
 class SearchListView;
 class SearchFilter;

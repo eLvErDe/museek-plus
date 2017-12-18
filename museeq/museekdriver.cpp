@@ -125,7 +125,7 @@ void MuseekDriver::readMessage() {
 
 		unsigned char digest[20];
 
-		const char *_chresp = chresp.toAscii();
+		const char *_chresp = chresp.toLatin1();
 		shaBlock((unsigned char*)_chresp, chresp.length(), digest);
 
 		char hexdigest[41];
@@ -138,7 +138,7 @@ void MuseekDriver::readMessage() {
 	case 0x0002: {
 		NLogin m(data);
 		if(m.ok) {
-			const char* key = mPassword.toAscii();
+			const char* key = mPassword.toLatin1();
 			cipherKeySHA256(&mContext, (char*)key, mPassword.length());
 		}
 		emit loggedIn(m.ok, m.msg);
@@ -692,4 +692,3 @@ void MuseekDriver::doPrivRoomAddOperator(const QString& room, const QString& use
 void MuseekDriver::doPrivRoomRemoveOperator(const QString& room, const QString& user) {
     send(NPrivRoomRemoveOperator(room, user));
 }
-

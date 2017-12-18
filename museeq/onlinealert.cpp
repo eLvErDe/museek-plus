@@ -27,7 +27,7 @@
 #include <QDateTime>
 #include <QDialogButtonBox>
 
-OnlineAlert::OnlineAlert( QWidget* parent, const char* name, bool modal, Qt::WFlags fl )
+OnlineAlert::OnlineAlert( QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl )
     : QDialog( parent )
 {
     OnlineAlertLayout = new QVBoxLayout( this);

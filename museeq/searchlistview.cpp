@@ -33,6 +33,7 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QHeaderView>
+#include <QMimeData>
 
 SearchListView::SearchListView(SearchFilter* filter, QWidget* parent, const char* name)
                : QTreeWidget(parent), mFilter(filter), mN(0) {
@@ -40,7 +41,7 @@ SearchListView::SearchListView(SearchFilter* filter, QWidget* parent, const char
 	headers << QString::null << tr("User") << tr("Filename") << tr("Size") << tr("Speed") << tr("Queued") << tr("Imm.") << tr("Length") << tr("Bitrate") << tr("Path") << QString::null;
 	setHeaderLabels(headers);
 	setSortingEnabled(false);
-	header()->setClickable(true);
+	header()->setSectionsClickable(true);
 	setRootIsDecorated(false);
 	setSelectionMode(QAbstractItemView::ExtendedSelection);
  	setAllColumnsShowFocus(true);

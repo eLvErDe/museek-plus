@@ -47,7 +47,7 @@ Search::Search(const QString& query, QWidget* parent, const char* name)
 	mResults = new SearchListView(mFilters, this);
 	MainLayout->addWidget(mResults);
 
-	connect(mShowFilters, SIGNAL(toggled(bool)), mFilters, SLOT(setShown(bool)));
+	connect(mShowFilters, SIGNAL(toggled(bool)), mFilters, SLOT(setVisible(bool)));
 	mFilters->hide();
 
 	connect(mFilters, SIGNAL(filterChanged()), SLOT(refilter()));

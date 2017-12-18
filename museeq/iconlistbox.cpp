@@ -28,6 +28,7 @@
 #include <QDropEvent>
 #include <QDragMoveEvent>
 #include <QUrl>
+#include <QMimeData>
 
 IconListBox::IconListBox( QWidget *parent, const char *name, bool verticalIconBox )
   : QListWidget( parent )
@@ -294,4 +295,3 @@ void IconListItem::selected()
 		setForeground(QBrush(listWidget()->palette().color(QPalette::Foreground)));
     }
 }
-

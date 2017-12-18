@@ -24,6 +24,7 @@
 #include "museeqtypes.h"
 
 #include <QTreeWidget>
+#include <QUrl>
 
 class QDropEvent;
 class QDragEnterEvent;

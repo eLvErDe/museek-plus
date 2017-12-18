@@ -642,16 +642,16 @@ void MainWindow::appendToLogWindow(const QString& msg) {
 	QStringList::iterator it = wm.begin();
 	for(; it != wm.end(); ++it) {
 		if (museeq->mShowTimestamps)
-			mLog->append(QString(_TIME+"<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+Qt::escape(*it)+"</span>"));
+			mLog->append(QString(_TIME+"<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+it->toHtmlEscaped()+"</span>"));
 		else
-			mLog->append(QString("<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+Qt::escape(*it)+"</span>"));
+			mLog->append(QString("<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+it->toHtmlEscaped()+"</span>"));
 	}
 }
 
 void MainWindow::slotUserStatus( const QString & user, uint status ) {
  	if (museeq->mOnlineAlert  && museeq->hasAlert(user)) {
 		QString s = (status == 0) ? "offline" : ((status == 1) ? "away" : "online");
-		mLog->append(QString(_TIME)+QString("<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>user %2 is now %3</span>").arg(Qt::escape(user)).arg(s)) ;
+		mLog->append(QString(_TIME)+QString("<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>user %2 is now %3</span>").arg(user.toHtmlEscaped()).arg(s)) ;
 
 	}
 }
@@ -765,7 +765,7 @@ void MainWindow::slotUserAddress(const QString& user, const QString& ip, uint po
 		item->setText(1, ip);
 		item->setText(2, QString::number(port));
 #ifdef HAVE_NETDB_H
-		struct hostent *addr = gethostbyname(ip.toAscii());
+		struct hostent *addr = gethostbyname(ip.toLatin1());
 		if(addr && addr->h_length) {
 			struct hostent *addr2 = gethostbyaddr(addr->h_addr_list[0], 4, AF_INET);
 			if(addr2 && addr2->h_name) {
@@ -778,9 +778,9 @@ void MainWindow::slotUserAddress(const QString& user, const QString& ip, uint po
 
 	if (museeq->mIPLog) {
 		if (museeq->mShowTimestamps) {
-			mLog->append(QString(_TIME+"<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+tr("IP of ")+Qt::escape(user)+": "+ ip +" "+ tr("Port:")+" "+QString::number(port)+" ("+Qt::escape(hostname)+")</span>"));
+			mLog->append(QString(_TIME+"<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+tr("IP of ")+user.toHtmlEscaped()+": "+ ip +" "+ tr("Port:")+" "+QString::number(port)+" ("+hostname.toHtmlEscaped()+")</span>"));
 		} else {
-			mLog->append(QString("<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+tr("IP of ")+Qt::escape(user)+": "+ ip +" "+ tr("Port:")+" "+QString::number(port)+" ("+Qt::escape(hostname)+")</span>"));
+			mLog->append(QString("<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+tr("IP of ")+user.toHtmlEscaped()+": "+ ip +" "+ tr("Port:")+" "+QString::number(port)+" ("+hostname.toHtmlEscaped()+")</span>"));
 		}
 	}
 
@@ -1097,7 +1097,7 @@ void MainWindow::displayHelpDialog() {
 void MainWindow::givePrivileges(const QString& user)
 {
 	bool ok = false;
-	int days = QInputDialog::getInteger(0, tr("Give privileges"),
+	int days = QInputDialog::getInt(0, tr("Give privileges"),
 	             tr("How many days worth of privileges \n") +
 	             tr("do you wish to give to user ") + user + "?",
 	             0, 0, 999, 1, &ok);
