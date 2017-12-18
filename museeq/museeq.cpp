@@ -87,7 +87,7 @@ Museeq::Museeq(QApplication * app)
 
 	connect(mDriver, SIGNAL(sayChatroom(const QString&, const QString&, const QString&)), SIGNAL(saidChatroom(const QString&, const QString&, const QString&)));
 	connect(mDriver, SIGNAL(privateMessage(uint, uint, const QString&, const QString&)), SIGNAL(privateMessage(uint, uint, const QString&, const QString&)));
-	connect(mDriver, SIGNAL(searchResults(uint, const QString&, bool, uint, uint, const NFolder&)), SIGNAL(searchResults(uint, const QString&, bool, uint, uint, const NFolder&)));
+	connect(mDriver, SIGNAL(searchResults(uint, const QString&, bool, uint, uint, const NFolder&, const NFolder&)), SIGNAL(searchResults(uint, const QString&, bool, uint, uint, const NFolder&, const NFolder&)));
 	connect(mDriver, SIGNAL(searchToken(const QString&, uint)), SIGNAL(searchToken(const QString&, uint)));
 	connect(mDriver, SIGNAL(userInfo(const QString&, const QString&, const QByteArray&, uint, uint, bool)), SIGNAL(userInfo(const QString&, const QString&, const QByteArray&, uint, uint, bool)));
 	connect(mDriver, SIGNAL(userInterests(const QString&, const QStringList&, const QStringList&)), SIGNAL(userInterests(const QString&, const QStringList&, const QStringList&)));
@@ -95,6 +95,7 @@ Museeq::Museeq(QApplication * app)
 	connect(mDriver, SIGNAL(roomList(const NRoomList&)), SIGNAL(roomList(const NRoomList&)));
 	connect(mDriver, SIGNAL(Recommendations(const NGlobalRecommendations&)), SIGNAL(Recommendations(const NGlobalRecommendations&)));
 	connect(mDriver, SIGNAL(aRecommendations(const NRecommendations&)), SIGNAL(aRecommendations(const NRecommendations&)));
+	connect(mDriver, SIGNAL(relatedSearches(const QString&, const NRelatedSearches&)), SIGNAL(relatedSearches(const QString&, const NRelatedSearches&)));
 
 	connect(mDriver, SIGNAL(itemSimilarUsers(const QString&, const NItemSimilarUsers&)), SIGNAL(itemSimilarUsers(const QString&, const NItemSimilarUsers&)));
 	connect(mDriver, SIGNAL(itemRecommendations(const QString&, const NItemRecommendations&)), SIGNAL(itemRecommendations(const QString&, const NItemRecommendations&)));

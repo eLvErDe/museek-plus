@@ -35,7 +35,7 @@ public:
 	SearchListView(SearchFilter*, QWidget* = 0, const char* = 0);
 
 public slots:
-	void append(const QString&, bool, uint, uint, const NFolder&);
+	void append(const QString&, bool, uint, uint, const NFolder&, const NFolder&);
 
 protected:
 	void setupUsers();
@@ -59,7 +59,7 @@ private:
 
 class SearchListItem : public QTreeWidgetItem {
 public:
-	SearchListItem(QTreeWidget*, quint64, const QString&, bool, uint, uint, const QString&, quint64, uint, uint, bool);
+	SearchListItem(QTreeWidget*, quint64, const QString&, bool, bool, uint, uint, const QString&, quint64, uint, uint, bool);
 
 	quint64 n() const { return mN; };
 	QString user() const { return mUser; }
@@ -72,6 +72,7 @@ public:
 	quint64 size() const { return mSize; }
 	bool vbr() const { return mVBR; }
 	bool freeSlot() const { return mFree; }
+	bool locked() const { return mLocked; }
 	bool operator<(const QTreeWidgetItem & other) const;
 
 private:
@@ -79,7 +80,7 @@ private:
 	QString mUser, mPath, mFilename, mDir;
 	uint mSpeed, mInQueue, mLength, mBitrate;
 	quint64 mSize;
-	bool mFree, mVBR;
+	bool mFree, mLocked, mVBR;
 };
 
 #endif // SEARCHLISTVIEW_H

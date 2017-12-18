@@ -68,7 +68,7 @@ public slots:
 protected slots:
 	void doSearch();
 	void setToken(const QString&, uint);
-	void append(uint, const QString&, bool, uint, uint, const NFolder&);
+	void append(uint, const QString&, bool, uint, uint, const NFolder&, const NFolder&);
 
 private:
 	QComboBox* mEntry,* mUserEntry;
@@ -78,6 +78,7 @@ private:
 	Interests* mInterests;
 	WishList* mWishListView;
 	SearchTabWidget* mSearchTabWidget, mWishlistTabWidget;
+	QMap<uint, QString> mWishListTokens;
 };
 
 #endif // SEARCHES_H

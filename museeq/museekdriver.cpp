@@ -44,7 +44,6 @@ void MuseekDriver::connectToHost(const QString& host, quint16 port, const QStrin
 	connect(mSocket, SIGNAL(hostFound()), this, SIGNAL(hostFound()));
 	connect(mSocket, SIGNAL(connected()), SIGNAL(connected()));
 	connect(mSocket, SIGNAL(connectionClosed()), SIGNAL(connectionClosed()));
-	connect(mSocket, SIGNAL(delayedCloseFinished()), SIGNAL(connectionClosed()));
 	connect(mSocket, SIGNAL(error(QAbstractSocket::SocketError)), SIGNAL(error(QAbstractSocket::SocketError)));
 	connect(mSocket, SIGNAL(readyRead()), SLOT(dataReady()));
 	mSocket->connectToHost(host, port);
@@ -78,8 +77,6 @@ void MuseekDriver::connectToUnix(const QString& path, const QString& password) {
 	mSocket = new QTcpSocket(this);
 	connect(mSocket, SIGNAL(hostFound()), this, SIGNAL(hostFound()));
 	connect(mSocket, SIGNAL(connected()), SIGNAL(connected()));
-	connect(mSocket, SIGNAL(connectionClosed()), SIGNAL(connectionClosed()));
-	connect(mSocket, SIGNAL(delayedCloseFinished()), SIGNAL(connectionClosed()));
 	connect(mSocket, SIGNAL(error(QAbstractSocket::SocketError)), SIGNAL(error(QAbstractSocket::SocketError)));
 	connect(mSocket, SIGNAL(readyRead()), SLOT(dataReady()));
     mSocket->setSocketDescriptor(sock);
@@ -335,7 +332,7 @@ void MuseekDriver::readMessage() {
 	}
 	case 0x0402: {
 		NSearchResults m(data);
-		emit searchResults(m.token, m.username, m.slotsfree, m.speed, m.queue, m.results);
+		emit searchResults(m.token, m.username, m.slotsfree, m.speed, m.queue, m.results, m.lockedResults);
 		break;
 	}
 	case 0x0406: {
@@ -411,6 +408,11 @@ void MuseekDriver::readMessage() {
 	case 0x0614: {
 		NUserInterests m(data);
 		emit userInterests(m.user, m.likes, m.hates);
+		break;
+	}
+	case 0x0615: {
+		NGetRelatedSearch m(data);
+		emit relatedSearches(m.query, m.terms);
 		break;
 	}
 	default:

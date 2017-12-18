@@ -867,7 +867,7 @@ MESSAGE(NSearchResults, 0x0402)
 	bool slotsfree;
 	uint speed;
 	uint queue;
-	NFolder results;
+	NFolder results, lockedResults;
 
 	NSearchResults(uint _token) {
 		pack(_token);
@@ -880,6 +880,7 @@ MESSAGE(NSearchResults, 0x0402)
 		speed = unpack_uint();
 		queue = unpack_uint();
 		results = unpack_folder();
+		lockedResults = unpack_folder();
 	END
 END
 
@@ -1171,6 +1172,21 @@ MESSAGE(NUserInterests, 0x0614)
 	END
 END
 
+MESSAGE(NGetRelatedSearch, 0x0615)
+	QString query;
+	NRelatedSearches terms;
+
+	PARSE
+		query = unpack_str();
+		uint n = unpack_uint();
+		while(n) {
+			QString r = unpack_str();
+			terms[r] = unpack_int();
+			--n;
+		}
+	END
+END
+
 MESSAGE(NConnectServer, 0x0700)
 END
 
@@ -1181,4 +1197,3 @@ MESSAGE(NReloadShares, 0x0703)
 END
 
 #endif // MUSEEKMESSAGES_H
-

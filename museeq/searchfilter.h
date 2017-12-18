@@ -31,6 +31,7 @@ class SearchListView;
 class SearchListItem;
 class QCheckBox;
 class QComboBox;
+class QPushButton;
 class QShowEvent;
 class QHideEvent;
 class QKeyEvent;
@@ -51,17 +52,19 @@ protected:
 
 protected slots:
 	void updateFilter();
+    void saveDefault();
 
 private:
 
 	bool mEnabled;
 	QComboBox* mRegExp, * mSize, * mBitrate;
-	QCheckBox* mFreeSlot;
+	QCheckBox* mFreeSlot, * mUnlocked;
+    QPushButton* mSaveDefault;
 
 	QRegExp mFilterRegExp;
 	qint64 mFilterSize;
 	int mFilterBitrate;
-	bool mFilterFreeSlot, mFilterSizeExact, mFilterBitrateExact;
+	bool mFilterFreeSlot, mFilterUnlocked, mFilterSizeExact, mFilterBitrateExact;
 };
 
 class MyLineEdit : public QLineEdit {

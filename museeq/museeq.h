@@ -267,6 +267,7 @@ signals:
 	void similarUsers( const NSimilarUsers&);
 	void itemSimilarUsers(const QString&, const NItemSimilarUsers&);
 	void itemRecommendations(const QString&, const NItemRecommendations&);
+	void relatedSearches(const QString&, const NRelatedSearches&);
 
 	void addedInterest(const QString& interest);
 	void addedHatedInterest(const QString&);
@@ -282,7 +283,7 @@ signals:
 	void uploadRemoved(const QString&, const QString&);
 
 	// Search related signals:
-	void searchResults(uint, const QString&, bool, uint, uint, const NFolder&);
+	void searchResults(uint, const QString&, bool, uint, uint, const NFolder&, const NFolder&);
 	void searchToken(const QString&, uint);
 
 	// Peer stuff:
