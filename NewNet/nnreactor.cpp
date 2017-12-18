@@ -233,7 +233,7 @@ NewNet::Reactor::prepareReactorData() {
 
 void
 NewNet::Reactor::eventCallback(int fd, short event, void *arg) {
-    NNLOG("newnet.net.debug", "Entering event callback for socket %i.", fd);
+    NNLOG("newnet.net.debug", "Entering event callback for socket %i with event %i.", fd, event);
 
     bool loop = true;
     while (loop) {

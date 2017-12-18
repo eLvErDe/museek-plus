@@ -137,10 +137,10 @@ NewNet::ClientSocket::process()
       }
     }
     else {
-        NNLOG("newnet.net.debug", "Sent %i bytes to socket %u.", sent, descriptor());
         if(upRateLimiter())
           upRateLimiter()->transferred(sent);
         m_SendBuffer.seek(sent);
+        NNLOG("newnet.net.debug", "Sent %i bytes to socket %u, %d bytes remaining.", sent, descriptor(), m_SendBuffer.count());
         setDataWaiting(m_SendBuffer.count() != 0);
         dataSentEvent(this);
     }
