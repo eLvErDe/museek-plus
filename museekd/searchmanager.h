@@ -74,7 +74,7 @@ namespace Museek
     uint transferSpeed() {return m_TransferSpeed;};
     void setTransferSpeed(uint speed) {m_TransferSpeed = speed;};
 
-    void searchReplyReceived(uint ticket, const std::string & user, bool slotfree, uint avgspeed, uint64 queuelen, const Folder & folders);
+    void searchReplyReceived(uint ticket, const std::string & user, bool slotfree, uint avgspeed, uint64 queuelen, const Folder & folders, const Folder & locked);
     void branchLevelReceived(DistributedSocket * socket, uint level);
 
     void transmitSearch(uint unknown, const std::string & username, uint ticket, const std::string & query);

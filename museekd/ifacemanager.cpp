@@ -1430,7 +1430,7 @@ Museek::IfaceManager::onUploadRemoved(Upload * upload)
 }
 
 void
-Museek::IfaceManager::onSearchReply(uint ticket, const std::string & user, bool slotfree, uint avgspeed, uint queuelen, const Folder & folders)
+Museek::IfaceManager::onSearchReply(uint ticket, const std::string & user, bool slotfree, uint avgspeed, uint queuelen, const Folder & folders, const Folder & locked)
 {
-  SEND_ALL(ISearchReply(ticket, user, slotfree, avgspeed, queuelen, folders));
+  SEND_ALL(ISearchReply(ticket, user, slotfree, avgspeed, queuelen, folders, locked));
 }

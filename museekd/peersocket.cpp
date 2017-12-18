@@ -472,7 +472,14 @@ Museek::PeerSocket::onSearchResultsReceived(const PSearchReply * message) {
         folders[encodedFilename] = (*it).second;
     }
 
-    museekd()->searches()->searchReplyReceived(message->ticket, user(), message->slotfree, message->avgspeed, message->queuelen, folders);
+    Folder locked;
+    Folder::const_iterator itl = message->lockedResults.begin();
+    for(; itl != message->lockedResults.end(); ++itl) {
+        std::string encodedFilename = museekd()->codeset()->fromPeer(user(), (*itl).first, true);
+        locked[encodedFilename] = (*itl).second;
+    }
+
+    museekd()->searches()->searchReplyReceived(message->ticket, user(), message->slotfree, message->avgspeed, message->queuelen, folders, locked);
 
     addSearchResultsOnlyTimeout(2000);
 }
