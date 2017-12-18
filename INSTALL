@@ -4,8 +4,8 @@ libevent >= 1.3e
 GCC
 Python (by Python bindings)
 pyexpat (for musetup)
-CMake >= 2.6 (for building)
-QT >= 4.4 for museeq
+CMake >= 2.8.3 (for building)
+QT >= 5 for museeq
 
 Optional:
 libvorbis-dev
