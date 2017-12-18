@@ -66,6 +66,17 @@ namespace Museek
     uint m_Token;
     std::string m_User;
   };
+
+  /*
+   * HandshakeObfuscatedSocket is the same as HandshakeSocket
+   * except it uses the soulseek obfuscation mechanism
+   */
+  class HandshakeObfuscatedSocket : public Museek::HandshakeSocket
+  {
+  public:
+    HandshakeObfuscatedSocket();
+    ~HandshakeObfuscatedSocket();
+  };
 }
 
 #endif // MUSEEK_HANDSHAKESOCKET_H

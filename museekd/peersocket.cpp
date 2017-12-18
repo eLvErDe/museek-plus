@@ -42,12 +42,12 @@
 #include <NewNet/nnpath.h>
 #include <NewNet/nntcpserversocket.h>
 
-Museek::PeerSocket::PeerSocket(Museek::Museekd * museekd) : Museek::UserSocket(museekd, "P"), Museek::MessageProcessor(4)
+Museek::PeerSocket::PeerSocket(Museek::Museekd * museekd, bool obfuscated) : Museek::UserSocket(museekd, "P", obfuscated), Museek::MessageProcessor(4, obfuscated)
 {
   connectMessageSignals();
 }
 
-Museek::PeerSocket::PeerSocket(Museek::HandshakeSocket * that) : Museek::UserSocket(that, "P"), Museek::MessageProcessor(4)
+Museek::PeerSocket::PeerSocket(Museek::HandshakeSocket * that) : Museek::UserSocket(that, "P"), Museek::MessageProcessor(4, that->obfuscated())
 {
   connectMessageSignals();
 
@@ -470,7 +470,7 @@ Museek::PeerSocket::onSearchResultsReceived(const PSearchReply * message) {
     for(; it != message->results.end(); ++it) {
         std::string encodedFilename = museekd()->codeset()->fromPeer(user(), (*it).first);
         folders[encodedFilename] = (*it).second;
-        }
+    }
 
     museekd()->searches()->searchReplyReceived(message->ticket, user(), message->slotfree, message->avgspeed, message->queuelen, folders);
 

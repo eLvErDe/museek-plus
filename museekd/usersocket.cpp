@@ -21,6 +21,7 @@
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #endif // HAVE_CONFIG_H
+#include "codesetmanager.h"
 #include "usersocket.h"
 #include "museekd.h"
 #include "configmanager.h"
@@ -29,9 +30,11 @@
 #include "servermanager.h"
 #include "peermanager.h"
 #include <NewNet/nnreactor.h>
+#include <limits.h>
 
-Museek::UserSocket::UserSocket(Museek::Museekd * museekd, const std::string & type) : NewNet::TcpClientSocket(), m_Museekd(museekd), m_Type(type)
+Museek::UserSocket::UserSocket(Museek::Museekd * museekd, const std::string & type, bool obfuscated) : NewNet::TcpClientSocket(), m_Museekd(museekd), m_Type(type)
 {
+  setNeedsObfuscated(obfuscated);
   disconnectedEvent.connect(this, &UserSocket::onDisconnected);
   m_Museekd->server()->cannotConnectNotifyReceivedEvent.connect(this, &UserSocket::onCannotConnectNotify);
 }
@@ -43,6 +46,8 @@ Museek::UserSocket::UserSocket(Museek::HandshakeSocket * that, const std::string
 
   m_Token = that->token();
   m_User = that->user();
+
+  setNeedsObfuscated(that->obfuscated());
 
   setDescriptor(that->descriptor());
   setSocketState(SocketConnected);
@@ -82,9 +87,6 @@ Museek::UserSocket::initiateActive()
 {
   NNLOG("museekd.user.debug", "Initiating active user connection to %s (type %s).", m_User.c_str(), m_Type.c_str());
 
-  HInitiate handshake(m_Museekd->server()->username(), m_Type, m_Token);
-  sendMessage(handshake.make_network_packet());
-
   m_Museekd->server()->peerAddressReceivedEvent.connect(this, &UserSocket::onServerPeerAddressReceived);
   SGetPeerAddress msg(m_User);
   m_Museekd->server()->sendMessage(msg.make_network_packet());
@@ -110,6 +112,7 @@ Museek::UserSocket::firewallPierced(Museek::HandshakeSocket * socket)
       m_Museekd->reactor()->removeTimeout(m_PassiveConnectTimeout);
 
     setSocketState(SocketConnected);
+    setNeedsObfuscated(socket->obfuscated());
     setDescriptor(socket->descriptor());
     receiveBuffer() = socket->receiveBuffer();
     if(! receiveBuffer().empty())
@@ -144,15 +147,38 @@ Museek::UserSocket::onCannotConnectNotify(const SCannotConnect * msg)
 void
 Museek::UserSocket::onServerPeerAddressReceived(const SGetPeerAddress * message)
 {
-  if((message->user != m_User) || (socketState() != SocketUninitialized))
-    return;
-  NNLOG("museekd.user.debug", "Received address of user %s: %s:%u", m_User.c_str(), message->ip.c_str(), message->port);
-  if((message->ip == "0.0.0.0") || (message->port == 0))
-  {
-    cannotConnectEvent(this);
-    return;
-  }
-  connect(message->ip, message->port);
+    if((message->user != m_User) || (socketState() != SocketUninitialized))
+        return;
+
+    if (message->use_obfuscation) {
+        NNLOG("museekd.user.debug", "Received address of user %s: %s:%u and obfuscated port %u", m_User.c_str(), message->ip.c_str(), message->port, message->obfuscated_port);
+
+        museekd()->codeset()->addModernPeer(message->user);
+
+        if((message->ip == "0.0.0.0") || (message->obfuscated_port == 0)) {
+            cannotConnectEvent(this);
+            return;
+        }
+
+        setNeedsObfuscated(message->use_obfuscation);
+        HInitiate handshake(m_Museekd->server()->username(), m_Type, m_Token);
+        sendMessage(handshake.make_network_packet());
+
+        connect(message->ip, message->obfuscated_port);
+    }
+    else {
+        NNLOG("museekd.user.debug", "Received address of user %s: %s:%u", m_User.c_str(), message->ip.c_str(), message->port);
+
+        if((message->ip == "0.0.0.0") || (message->port == 0)) {
+            cannotConnectEvent(this);
+            return;
+        }
+
+        HInitiate handshake(m_Museekd->server()->username(), m_Type, m_Token);
+        sendMessage(handshake.make_network_packet());
+
+        connect(message->ip, message->port);
+    }
 }
 
 /**
@@ -190,11 +216,75 @@ Museek::UserSocket::onCannotReverseConnect(NewNet::ClientSocket *)
 void
 Museek::UserSocket::sendMessage(const NewNet::Buffer & buffer)
 {
-  unsigned char buf[4];
-  buf[0] = buffer.count() & 0xff;
-  buf[1] = (buffer.count() >> 8) & 0xff;
-  buf[2] = (buffer.count() >> 16) & 0xff;
-  buf[3] = (buffer.count() >> 24) & 0xff;
-  send(buf, 4);
-  send(buffer.data(), buffer.count());
+    // If obfuscated, generate and send the key
+    unsigned char key[4];
+    if (needsObfuscated()) {
+        generateObfKey(key);
+        send(key, 4);
+    }
+
+    // Send the message length
+    unsigned char len_buf[4];
+    len_buf[0] = buffer.count() & 0xff;
+    len_buf[1] = (buffer.count() >> 8) & 0xff;
+    len_buf[2] = (buffer.count() >> 16) & 0xff;
+    len_buf[3] = (buffer.count() >> 24) & 0xff;
+
+    if (needsObfuscated()) {
+        encodeMessage(len_buf, key, 4);
+    }
+
+    send(len_buf, 4);
+
+    // Send the data
+    if (needsObfuscated()) {
+        NewNet::Buffer * obfBuffer = new NewNet::Buffer(buffer);
+        encodeMessage(obfBuffer->data(), key, buffer.count());
+        send(obfBuffer->data(), buffer.count());
+        delete obfBuffer;
+    }
+    else {
+        send(buffer.data(), buffer.count());
+    }
+
+}
+
+void
+Museek::UserSocket::generateObfKey(unsigned char *buf)
+{
+    srand(time(NULL));
+    for (int i = 0; i < 4; i++) {
+        buf[i] = (rand() % 255) + 1;
+    }
+}
+
+void
+Museek::UserSocket::rotrKey(unsigned char *buf, unsigned int c)
+{
+    const unsigned int mask = (CHAR_BIT*sizeof(buf) - 1);
+
+    uint32_t key_orig = buf[0] + (buf[1] << 8) + (buf[2] << 16) + (buf[3] << 24);
+
+    c &= mask;
+    uint32_t key_rotated = (key_orig>>c) | (key_orig<<( (-c)&mask ));
+
+    buf[0] = key_rotated & 0xff;
+    buf[1] = (key_rotated >> 8) & 0xff;
+    buf[2] = (key_rotated >> 16) & 0xff;
+    buf[3] = (key_rotated >> 24) & 0xff;
+}
+
+void
+Museek::UserSocket::encodeMessage(unsigned char *buf, unsigned char *key, uint32 len)
+{
+    uint keySize = 4;
+
+    uint32 key_pos = 0;
+    for (int i = 0; i < len; i++) {
+        key_pos = i % keySize;
+        if (key_pos == 0) {
+            rotrKey(key, 31);
+        }
+        buf[i] = buf[i] ^ key[key_pos];
+    }
 }

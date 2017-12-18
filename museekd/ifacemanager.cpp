@@ -754,8 +754,7 @@ Museek::IfaceManager::onIfacePrivRoomDisown(const IPrivRoomDisown * message) {
 }
 
 void
-Museek::IfaceManager::onIfaceStartSearch(const ISearch * message)
-{
+Museek::IfaceManager::onIfaceStartSearch(const ISearch * message) {
     uint token = museekd()->token();
 
     if (message->type == 0) // Global search

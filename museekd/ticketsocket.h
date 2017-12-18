@@ -29,7 +29,7 @@ namespace Museek
   {
   public:
     TicketSocket(HandshakeSocket * that);
-    TicketSocket(Museekd * museekd);
+    TicketSocket(Museekd * museekd, bool obfuscated);
     ~TicketSocket();
     void findTicket();
 

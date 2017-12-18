@@ -29,12 +29,15 @@
 
 Museek::TicketSocket::TicketSocket(Museek::HandshakeSocket * that) : UserSocket(that, "F")
 {
+    // No need for obfuscation once we're connected
+    setNeedsObfuscated(false);
+
     // Sometimes, the ticket is sent at the connection of the socket so the data received event is not called.
     // You should call findTicket when you create a new TicketSocket, after adding it to the reactor
     dataReceivedEvent.connect(this, &TicketSocket::onDataReceived);
 }
 
-Museek::TicketSocket::TicketSocket(Museek::Museekd * museekd) : UserSocket(museekd, "F")
+Museek::TicketSocket::TicketSocket(Museek::Museekd * museekd, bool obfuscated) : UserSocket(museekd, "F", obfuscated)
 {
   dataReceivedEvent.connect(this, &TicketSocket::onDataReceived);
 }

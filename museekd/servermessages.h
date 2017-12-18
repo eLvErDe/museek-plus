@@ -22,6 +22,7 @@
 #define MUSEEK_SERVERMESSAGES_H
 
 #include "networkmessage.h"
+#include <Mucipher/mucipher.h>
 
 class ServerMessage : public NetworkMessage {
 protected:
@@ -81,7 +82,14 @@ protected:
 SERVERMESSAGE(SLogin, 1)
 	SLogin(const std::string& _username = "", const std::string& _password = "") :
 		greet(""), username(_username), password(_password), publicip(""), success(0)
-		{};
+		{
+            std::string ch = username + password;
+            unsigned char tmpdigest[16];
+            md5Block((unsigned char *)ch.data(), ch.size(), tmpdigest);
+            char hexdigest[65];
+            hexDigest(tmpdigest, 16, hexdigest);
+            digest = hexdigest;
+        };
 
 	MAKE
 		pack(username);
@@ -93,14 +101,25 @@ SERVERMESSAGE(SLogin, 1)
 		success = (unpack_char() != 0);
 		greet = unpack_string();
 		publicip = unpack_ip();
+		unknown = (unpack_char() != 0);
 	END_PARSE
 
-	std::string greet, username, password, publicip;
-	uchar success;
+	std::string greet, username, password, publicip, digest;
+	uchar success, unknown;
 END
 
 
-SINTEGERMESSAGE(SSetListenPort, 2)
+SERVERMESSAGE(SSetListenPort, 2)
+	SSetListenPort(uint32 _port, uint32 _use_obfuscation, uint32 _obfuscated_port) : port(_port), use_obfuscation(_use_obfuscation), obfuscated_port(_obfuscated_port) { };
+
+	MAKE
+		pack(port);
+		pack(use_obfuscation);
+		pack(obfuscated_port);
+	END_MAKE
+
+	uint32 port, use_obfuscation, obfuscated_port;
+END
 
 SERVERMESSAGE(SGetPeerAddress, 3)
 	SGetPeerAddress(const std::string& _u = "") : user(_u) {};
@@ -113,10 +132,13 @@ SERVERMESSAGE(SGetPeerAddress, 3)
 		user = unpack_string();
 		ip = unpack_ip();
 		port = unpack_int();
+		use_obfuscation = (unpack_int() == 1);
+		obfuscated_port = unpack_int16();
 	END_PARSE
 
 	std::string user, ip;
-	uint32 port;
+	uint32 port, obfuscated_port;
+    bool use_obfuscation;
 END
 
 SERVERMESSAGE(SAddUser, 5)
@@ -287,12 +309,14 @@ SERVERMESSAGE(SConnectToPeer, 18)
 		ip = unpack_ip();
 		port = unpack_int();
 		token = unpack_int();
-		privileged = (unpack_char() != 0);
+		privileged = (unpack_int() != 0);
+		use_obfuscation = (unpack_char() != 1);
+		obfuscated_port = unpack_int();
 	END_PARSE
 
 	std::string user, type, ip;
-	uint32 port, token;
-	bool privileged;
+	uint32 port, token, obfuscated_port;
+	bool privileged, use_obfuscation;
 END
 
 SERVERMESSAGE(SPrivateMessage, 22)

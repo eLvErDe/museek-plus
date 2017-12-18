@@ -29,7 +29,7 @@
 #include "codesetmanager.h"
 #include <NewNet/nnreactor.h>
 
-Museek::DistributedSocket::DistributedSocket(Museek::HandshakeSocket * that) : Museek::UserSocket(that, "D"), Museek::MessageProcessor(1)
+Museek::DistributedSocket::DistributedSocket(Museek::HandshakeSocket * that) : Museek::UserSocket(that, "D"), Museek::MessageProcessor(1, that->obfuscated())
 {
     messageReceivedEvent.connect(this, &DistributedSocket::onMessageReceived);
     dataReceivedEvent.connect(this, &TcpMessageSocket::onDataReceived);
@@ -41,7 +41,7 @@ Museek::DistributedSocket::DistributedSocket(Museek::HandshakeSocket * that) : M
     connectedEvent.connect(this, &DistributedSocket::onConnected);
 }
 
-Museek::DistributedSocket::DistributedSocket(Museek::Museekd * museekd) : Museek::UserSocket(museekd, "D"), Museek::MessageProcessor(1)
+Museek::DistributedSocket::DistributedSocket(Museek::Museekd * museekd, bool obfuscated) : Museek::UserSocket(museekd, "D", obfuscated), Museek::MessageProcessor(1, obfuscated)
 {
     messageReceivedEvent.connect(this, &DistributedSocket::onMessageReceived);
     dataReceivedEvent.connect(this, &TcpMessageSocket::onDataReceived);
@@ -163,8 +163,8 @@ void Museek::DistributedSocket::onSearchRequested(const DSearchRequest * msg) {
 void
 Museek::DistributedSocket::onMessageReceived(const MessageData * data)
 {
-    if (m_DataTimeout.isValid())
-        museekd()->reactor()->removeTimeout(m_DataTimeout);
+  if (m_DataTimeout.isValid())
+    museekd()->reactor()->removeTimeout(m_DataTimeout);
 
   switch(data->type)
   {

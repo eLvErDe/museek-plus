@@ -204,7 +204,7 @@ static inline bool wildcmp(const std::string & wildStr, const std::string & stri
     regex = str_replace(regex, "$", "\\$");
 
     regex = str_replace(regex, "*", ".*");
-    regex = str_replace(regex, "?", ".{1}"); // FIXME doesn't work
+    regex = str_replace(regex, "?", ".{1}");
 
     regex = "^"+regex+"$";
 
