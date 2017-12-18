@@ -95,6 +95,9 @@ SERVERMESSAGE(SLogin, 1)
 		pack(username);
 		pack(password);
 		pack((uint32)182);
+		pack(digest);
+		pack((uint32)100);
+
 	END_MAKE
 
 	PARSE
