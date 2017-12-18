@@ -36,6 +36,7 @@ Museek::SearchManager::SearchManager(Museekd * museekd) : m_Museekd(museekd)
     // Connect some events.
     museekd->server()->loggedInStateChangedEvent.connect(this, &SearchManager::onServerLoggedInStateChanged);
     museekd->server()->netInfoReceivedEvent.connect(this, &SearchManager::onNetInfoReceived);
+    museekd->server()->parentSpeedRatioReceivedEvent.connect(this, &SearchManager::onParentSpeedRatioReceived);
     museekd->server()->searchRequestedEvent.connect(this, &SearchManager::onSearchRequested);
     museekd->server()->fileSearchRequestedEvent.connect(this, &SearchManager::onFileSearchRequested);
     museekd->peers()->peerSocketReadyEvent.connect(this, &SearchManager::onPeerSocketReady);
@@ -50,7 +51,7 @@ Museek::SearchManager::SearchManager(Museekd * museekd) : m_Museekd(museekd)
     m_BranchRoot = std::string();
     m_BranchLevel = 0;
     m_TransferSpeed = 0;
-    m_ChildrenMaxNumber = 3;
+    m_ChildrenMaxNumber = 0;
     m_WishlistInterval = 720; // Default wishlist interval
 }
 
@@ -189,7 +190,7 @@ void Museek::SearchManager::setParent(DistributedSocket * parentSocket) {
             m_PotentialParents.erase(it->first);
         }
 
-        SAcceptChildren msgAccept(true);
+        SAcceptChildren msgAccept(m_Children.size() < m_ChildrenMaxNumber);
         museekd()->server()->sendMessage(msgAccept.make_network_packet());
 
         parentSocket->disconnectedEvent.connect(this, &SearchManager::onParentDisconnected);
@@ -237,11 +238,36 @@ void Museek::SearchManager::onNetInfoReceived(const SNetInfo * msg) {
     for (it = msg->users.begin(); it != msg->users.end(); it++) {
         NNLOG("museekd.peers.debug", "Potential parent: %s (%s:%i)", it->first.c_str(), it->second.first.c_str(), it->second.second);
 
-        DistributedSocket * socket = new DistributedSocket(museekd());
+        DistributedSocket * socket = new DistributedSocket(museekd(), false);
         museekd()->reactor()->add(socket);
         addPotentialParent(it->first, socket, it->second.first);
-        socket->initiateActiveWithIP(it->first, it->second.first, it->second.second); // Don't ask for ip/port: we already know it
+        // We use to connect actively with initiateActiveWithIP(), but now that we use obfuscated connections we do it passively
+        socket->initiate(it->first);
     }
+}
+
+/**
+  * The server sends the parent speed ratio
+  */
+void Museek::SearchManager::onParentSpeedRatioReceived(const SParentSpeedRatio * msg) {
+
+    m_ParentSpeedRatio = msg->value;
+
+    if ((m_TransferSpeed > 0) && (m_ParentSpeedRatio > 0)) {
+        m_ChildrenMaxNumber = m_TransferSpeed / m_ParentSpeedRatio;
+    }
+    else {
+        m_ChildrenMaxNumber = 0;
+    }
+    NNLOG("museekd.peers.debug", "We can accept at most %d children", m_ChildrenMaxNumber);
+}
+
+/**
+  * The server sends the parent min speed
+  */
+void Museek::SearchManager::onParentMinSpeedReceived(const SParentMinSpeed * msg) {
+
+    m_ParentMinSpeed = msg->value;
 }
 
 /**
@@ -295,6 +321,14 @@ void Museek::SearchManager::onAddUserReceived(const SAddUser * msg) {
     if (msg->user == museekd()->server()->username()) {
         NNLOG("museekd.peers.debug", "Our transfer speed is %d", msg->userdata.avgspeed);
         setTransferSpeed(msg->userdata.avgspeed);
+
+        if ((m_TransferSpeed > 0) && (m_ParentSpeedRatio > 0)) {
+            m_ChildrenMaxNumber = m_TransferSpeed / m_ParentSpeedRatio;
+        }
+        else {
+            m_ChildrenMaxNumber = 0;
+        }
+        NNLOG("museekd.peers.debug", "We can accept at most %d children", m_ChildrenMaxNumber);
     }
 }
 
@@ -491,7 +525,7 @@ Museek::SearchManager::onServerLoggedInStateChanged(bool loggedIn)
 {
     if(loggedIn) {
         uint level = branchLevel();
-        uint depth = branchLevel();
+        uint depth = childDepth();
         DistributedSocket * parentSocket = parent();
         std::string parentName = museekd()->server()->username();
         if (parentSocket)
@@ -511,20 +545,21 @@ Museek::SearchManager::onServerLoggedInStateChanged(bool loggedIn)
         SChildDepth msgDepth(depth);
         museekd()->server()->sendMessage(msgDepth.make_network_packet());
 
-        SAcceptChildren msgAccept(true);
-        museekd()->server()->sendMessage(msgAccept.make_network_packet());
-
         // We want to know our own transfer speed. Ask the server for it.
         museekd()->peers()->requestUserData(museekd()->server()->username());
     }
-    else if(!parent()) {
-        // If we're the root of our branch and we get disconnected, we should disconnect from our children to let them go on a living branch
-        std::map<std::string, std::pair<NewNet::RefPtr<DistributedSocket>, uint> >::iterator it;
-        for (it = m_Children.begin(); it != m_Children.end(); it++) {
-            if (it->second.first)
-                it->second.first->stop();
+    else {
+        if(!parent()) {
+            // If we're the root of our branch and we get disconnected, we should disconnect from our children to let them go on a living branch
+            std::map<std::string, std::pair<NewNet::RefPtr<DistributedSocket>, uint> >::iterator it;
+            for (it = m_Children.begin(); it != m_Children.end(); it++) {
+                if (it->second.first)
+                    it->second.first->stop();
+            }
+            m_Children.clear();
         }
-        m_Children.clear();
+        setBranchLevel(0);
+        setParent(0);
     }
 }
 
@@ -542,8 +577,8 @@ Museek::SearchManager::onPeerSocketUnavailable(std::string user)
 }
 
 void
-Museek::SearchManager::searchReplyReceived(uint ticket, const std::string & user, bool slotfree, uint avgspeed, uint64 queuelen, const Folder & folders) {
-    museekd()->ifaces()->onSearchReply(ticket, user, slotfree, avgspeed, (uint) queuelen, folders);
+Museek::SearchManager::searchReplyReceived(uint ticket, const std::string & user, bool slotfree, uint avgspeed, uint64 queuelen, const Folder & folders, const Folder & locked) {
+    museekd()->ifaces()->onSearchReply(ticket, user, slotfree, avgspeed, (uint) queuelen, folders, locked);
 }
 
 void

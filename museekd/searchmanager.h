@@ -80,7 +80,7 @@ namespace Museek
     void transmitSearch(uint unknown, const std::string & username, uint ticket, const std::string & query);
     void sendSearchResults(const std::string & username, const std::string & query, uint token);
 
-    bool acceptChildren() {return m_Children.size() < m_ChildrenMaxNumber;};
+    bool acceptChildren() {return ((m_TransferSpeed > m_ParentMinSpeed) && (m_Children.size() < m_ChildrenMaxNumber));};
 
     void buddySearch(uint token, const std::string & query);
     void roomsSearch(uint token, const std::string & query);
@@ -94,6 +94,8 @@ namespace Museek
     void onServerLoggedInStateChanged(bool loggedIn);
     void onPeerSocketUnavailable(std::string user);
     void onNetInfoReceived(const SNetInfo * msg);
+    void onParentSpeedRatioReceived(const SParentSpeedRatio * msg);
+    void onParentMinSpeedReceived(const SParentMinSpeed * msg);
     void onSearchRequested(const SSearchRequest * msg);
     void onFileSearchRequested(const SFileSearch * msg);
     void onAddUserReceived(const SAddUser * msg);
@@ -110,6 +112,8 @@ namespace Museek
     std::string                                 m_BranchRoot;       // Parent of the branch we're in
     uint                                        m_BranchLevel;      // Position in the branch we're in (starting from top)
     uint                                        m_TransferSpeed;    // Our own transfer speed
+    uint                                        m_ParentSpeedRatio; // A speed ratio determining the number of children we can have
+    uint                                        m_ParentMinSpeed;   // The minimum speed to be a parent
     NewNet::RefPtr<DistributedSocket>           m_Parent;           // Parent's socket
     uint                                        m_ChildrenMaxNumber;// Maximum number of child allowed
     uint                                        m_WishlistInterval; // Wishlist interval
