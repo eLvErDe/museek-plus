@@ -66,7 +66,7 @@
 #define _TIME QString("<span style='"+museeq->mFontTime+";color:"+museeq->mColorTime+"'>") + QDateTime::currentDateTime().toString("hh:mm:ss") + "</span> "
 
 MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(0, 0), mWaitingPrivs(false) {
-	mVersion = "0.3";
+	mVersion = "0.4";
 	setWindowTitle(tr("museeq ")+mVersion);
 	setWindowIcon(IMG("icon"));
 	connect(museeq->driver(), SIGNAL(hostFound()), SLOT(slotHostFound()));
@@ -265,7 +265,6 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(0, 0), m
 
 	mIcons->updateMinimumWidth();
 	mIcons->updateMinimumHeight();
-
 
 	mIcons->setCurrentRow(0);
 
