@@ -525,6 +525,11 @@ void Museek::DownloadManager::addFolderContents(const std::string & user, const 
             if (posB != std::string::npos && posB < remotePathDir.size())
                 localPath += museekd()->codeset()->fromUtf8ToFS(remotePathDir.substr(posB));
 
+            if (sit->second.size() > museekd()->config()->getUint("transfers", "max_folder_size", 200)) {
+                NNLOG("museekd.down.warn", "Too long folder content from '%s' in '%s', skipping.", user.c_str(), remotePathBase.c_str());
+                continue;
+            }
+
             Folder::const_iterator fiit;
             bool blacklisted = false;
             for (fiit = sit->second.begin(); fiit != sit->second.end(); fiit++) {
