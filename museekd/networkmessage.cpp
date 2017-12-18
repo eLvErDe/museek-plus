@@ -129,6 +129,18 @@ uint32 NetworkMessage::unpack_int()
   return l;
 }
 
+/* Unpack a 16bit unsigned integer (little endian). */
+uint32 NetworkMessage::unpack_int16()
+{
+  // If we have less than 2 bytes, that's bad.
+  if(buffer.count() < 2)
+    return 0;
+  unsigned char * buf = buffer.data();
+  uint32 l = buf[0] + (buf[1] << 8);
+  buffer.seek(2);
+  return l;
+}
+
 /* Unpack a 32bit signed integer (little endian). */
 int32 NetworkMessage::unpack_signed_int()
 {

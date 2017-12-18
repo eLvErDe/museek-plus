@@ -1230,6 +1230,30 @@ SERVERMESSAGE(SPublicChat, 152)
     std::string room, user, message;
 END
 
+SERVERMESSAGE(SRelatedSearch, 153)
+	SRelatedSearch() {};
+	SRelatedSearch(std::string _q) : query(_q) {}
+
+	MAKE
+        pack(query);
+	END_MAKE
+
+	PARSE
+        query = unpack_string();
+		uint32 n = unpack_int();
+		while(n) {
+            if (buffer.count() < 4)
+                break; // If this happens, message is malformed. No need to continue (prevent huge loops)
+			std::string term = unpack_string();
+			related_searches[term] = unpack_signed_int(); // This is a score
+			n--;
+		}
+	END_PARSE
+
+    std::string query;
+	std::map<std::string, int32> related_searches;
+END
+
 SERVERMESSAGE(SCannotConnect, 1001)
 	SCannotConnect() {};
 	SCannotConnect(const std::string& _u, uint32 _t) : token(_t), user(_u) {};
@@ -1241,7 +1265,6 @@ SERVERMESSAGE(SCannotConnect, 1001)
 
 	PARSE
 		token = unpack_int();
-		user = unpack_string();
 	END_PARSE
 
 	uint32 token;

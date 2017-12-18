@@ -2183,6 +2183,41 @@ IFACEMESSAGE(IUserInterests, 0x0614)
 	StringList liked, hated;
 END
 
+IFACEMESSAGE(IRelatedSearch, 0x0615)
+/*
+	Related Search -- Receive related search suggestions
+
+	*empty*
+
+	uint num  --  Number of search terms
+	*repeat num*
+		string related_search -- Related search term
+		uint  score -- Score
+*/
+
+	IRelatedSearch() { }
+	IRelatedSearch( const std::string& _q, const RelatedSearches& _r ) : query(_q), terms(_r) { }
+
+	MAKE
+		pack(query);
+ 		pack((uint32)terms.size());
+		RelatedSearches::const_iterator it = terms.begin();
+		for(; it != terms.end(); ++it) {
+			pack((*it).first);
+			pack((uint32)(*it).second);
+
+		}
+
+	END_MAKE
+
+	PARSE
+	END_PARSE
+
+	std::string query;
+	RelatedSearches terms;
+
+END
+
 
 
 IFACEMESSAGE(IConnectServer, 0x0700)

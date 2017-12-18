@@ -175,6 +175,7 @@ namespace Museek
     void onServerUserInterestsReceived(const SUserInterests * message);
     void onServerNewPasswordSet(const SNewPassword * message);
     void onServerPublicChatReceived(const SPublicChat * message);
+    void onRelatedSearchReceived(const SRelatedSearch * message);
 
     void onServerPrivRoomToggled(const SPrivRoomToggle * message);
     void onServerPrivRoomAlterableMembers(const SPrivRoomAlterableMembers * message);
