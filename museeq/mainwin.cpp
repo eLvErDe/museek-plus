@@ -335,7 +335,8 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(0, 0), m
 	// Disable Museekd settings
 	mSettingsDialog->mTabHolder->setTabEnabled(mSettingsDialog->mTabHolder->indexOf(mSettingsDialog->mMuseekdTabs), false);
 
-	changeCMode();
+	// Switch to transfer tab by default
+	changeTMode();
 
     if (museeq->settings()->value("saveAllLayouts", false).toBool()) {
         QString optionName = "logSplitter_Layout";
@@ -953,6 +954,11 @@ void MainWindow::saveSettings() {
 		museeq->setConfig("transfers", "autoretry_downloads", "true");
 	else
         museeq->setConfig("transfers", "autoretry_downloads", "false");
+
+	if (! mSettingsDialog->mMaxFolderSize->text().isEmpty() ) {
+    	QVariant p (mSettingsDialog->mMaxFolderSize->value());
+    	museeq->setConfig("transfers", "max_folder_size", p.toString());
+    }
 
     if (mSettingsDialog->SPrivRoom->isChecked() != mSettingsDialog->getPrivRoomEnabled()) {
         mSettingsDialog->setPrivRoomEnabled(mSettingsDialog->SPrivRoom->isChecked());

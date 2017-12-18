@@ -321,6 +321,15 @@ SettingsDialog::SettingsDialog( QWidget* parent, const char* name, bool modal, Q
 	mBlacklistDownload = new QLineEdit( mUsersTab );
 	UsersGrid->addWidget( mBlacklistDownload, 7, 1 );
 
+	// Max folder size
+	mMaxFolderSizeLabel = new QLabel( mUsersTab );
+	UsersGrid->addWidget( mMaxFolderSizeLabel, 8, 0);
+
+	mMaxFolderSize = new QSpinBox( mUsersTab);
+	mMaxFolderSize->setMaximum( 1000000 );
+	mMaxFolderSize->setValue( 200 );
+	UsersGrid->addWidget( mMaxFolderSize, 8, 1);
+
 	UsersGrid->setRowStretch(8, 10);
 
 
@@ -683,7 +692,9 @@ void SettingsDialog::populateDConnectionTab() {
 	mDConnectType->setEditable( false );
 	mDConnectType->setSizePolicy (QSizePolicy::Expanding,QSizePolicy::Preferred);
 	mDConnectType->addItem(tr( "TCP" ));
+#ifdef HAVE_SYS_UN_H
 	mDConnectType->addItem(tr( "Unix socket" ));
+#endif
 	mDConnectType->setToolTip(tr("Choose the type of connection between Museeq and the daemon.\nLeaving the default value is usually a good choice when Museeq and the daemon are running on the same machine."));
 
 	mDAddress = new QComboBox(mDConnectionTab);
@@ -765,8 +776,6 @@ void SettingsDialog::populateDConnectionTab() {
 #ifdef HAVE_SYS_UN_H
 	connect(mDAddress, SIGNAL(activated(const QString&)), SLOT(slotAddressActivated(const QString&)));
 	connect(mDAddress, SIGNAL(editTextChanged(const QString&)), SLOT(slotAddressChanged(const QString&)));
-#else
-    mDConnectType->removeItem(1);
 #endif
 
     connect( mDConnectType, SIGNAL(currentIndexChanged(int)), this, SLOT(connectionTypeChanged(int)));
@@ -823,6 +832,11 @@ void SettingsDialog::loadSettings() {
  	mToggleSaveAllLayouts->setChecked(museeq->settings()->value("saveAllLayouts", false).toBool());
  	mToggleLog->setChecked(museeq->settings()->value("showStatusLog", false).toBool());
  	mBlacklistDownload->setText(museeq->config("transfers", "download_blacklist"));
+
+    uint maxFS = museeq->config("transfers", "max_folder_size").toInt();
+    if (maxFS == 0)
+        maxFS = 200;
+    mMaxFolderSize->setValue(maxFS);
 
 	IconsAlignment->setChecked(museeq->settings()->value("VerticalIconBox").toBool());
 	SMessageFont->setText(museeq->mFontMessage);
@@ -882,6 +896,7 @@ void SettingsDialog::loadSettings() {
 	}
 
 	mDAddress->setCurrentIndex(mDAddress->count() - 1);
+    updateConnectType(mDAddress->currentText());
 }
 
 void SettingsDialog::buttonClicked(QAbstractButton* ab) {
@@ -952,7 +967,8 @@ void SettingsDialog::slotConfigChanged(const QString& domain, const QString& key
 		SIncompleteDir->setText(value);
 	} else if(domain == "transfers" && key == "download_blacklist") {
 		mBlacklistDownload->setText(value);
-
+	}  else if(domain == "transfers" && key == "max_folder_size") {
+		mMaxFolderSize->setValue(value.toInt());
 	} else if(domain == "clients" && key == "connectmode") {
 		if (value == "active") SActive->setChecked(true);
 		else if (value == "passive") SPassive->setChecked(true);
@@ -1499,6 +1515,7 @@ void SettingsDialog::languageChange()
 	usernamelabel->setText( tr( "Soulseek username:" ) );
 	passwordLabel->setText( tr( "Soulseek password:" ) );
 	SSoulseekPassword->setInputMask( QString::null );
+	mMaxFolderSizeLabel->setText( tr( "Maximum size of downloaded folders:" ) );
 
 	mNewHandler->setText( tr( "New" ) );
 	mModifyHandler->setText( tr( "Modify" ) );
@@ -1692,6 +1709,15 @@ void SettingsDialog::connectionTypeChanged(int index) {
 
 void SettingsDialog::slotAddressActivated(const QString& server) {
 #ifdef HAVE_SYS_UN_H
+    updateConnectType(server);
+#endif
+}
+
+void SettingsDialog::slotAddressChanged(const QString& server) {
+    updateConnectType(server);
+}
+
+void SettingsDialog::updateConnectType(const QString& server) {
     if (server.isEmpty())
         return;
 
@@ -1699,17 +1725,6 @@ void SettingsDialog::slotAddressActivated(const QString& server) {
         mDConnectType->setCurrentIndex(1);
 	else if ( (server[0] != '/') && (mDConnectType->currentIndex() != 0) )
         mDConnectType->setCurrentIndex(0);
-#endif
-}
-
-void SettingsDialog::slotAddressChanged(const QString& text) {
-	if(text.length() >= 1)
-	{
-		if ((text[0] == '/') && (mDConnectType->currentIndex() != 1))
-            mDConnectType->setCurrentIndex(1);
-		else if ((text[0] != '/') && (mDConnectType->currentIndex() != 0))
-            mDConnectType->setCurrentIndex(0);
-	}
 }
 
 void SettingsDialog::slotConnectedToServer(bool connected) {
