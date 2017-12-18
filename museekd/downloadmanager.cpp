@@ -34,6 +34,7 @@
 #include <NewNet/util.h>
 #include "util.h"
 #include <sstream>
+#include <Mucipher/mucipher.h>
 
 /**
   * Constructor
@@ -116,7 +117,15 @@ Museek::Download::incompletePath() const
 
     // Build file path: <incompletedir>/incomplete.<filesize>.<filename>
     std::stringstream path;
-    path << incompletedir << NewNet::Path::separator() << "incomplete." << size() << ".";
+
+    // Generate a md5 hash of username + remote path
+    std::string ch = m_User + m_RemotePath;
+    unsigned char tmpdigest[16];
+    md5Block((unsigned char *)ch.data(), ch.size(), tmpdigest);
+    char hexdigest[65];
+    hexDigest(tmpdigest, 16, hexdigest);
+
+    path << incompletedir << NewNet::Path::separator() << "incomplete." << hexdigest << ".";
     path << filename();
 
     m_IncompletePath = museekd()->codeset()->fromUtf8ToFS(path.str());
