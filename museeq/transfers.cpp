@@ -462,13 +462,7 @@ void Transfers::retrySelected() {
 }
 
 void Transfers::updateSelected() {
-	QList<QPair<QString, QString> > items;
-	QTreeWidgetItemIterator it(mDownloads, QTreeWidgetItemIterator::Selected | QTreeWidgetItemIterator::NotHidden);
-	for(; *it; ++it) {
-		TransferListItem* item = dynamic_cast<TransferListItem*>(*it);
-		if (item)
-            items += QPair<QString, QString>(item->user(), item->path());
-	}
+	QList<QPair<QString, QString> > items = findSelected(mDownloads);
 	QList<QPair<QString, QString> >::iterator sit = items.begin();
 	for(; sit != items.end(); ++sit)
 		museeq->updateTransfer((*sit).first, (*sit).second);

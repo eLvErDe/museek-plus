@@ -42,12 +42,12 @@
 #include <NewNet/nnpath.h>
 #include <NewNet/nntcpserversocket.h>
 
-Museek::PeerSocket::PeerSocket(Museek::Museekd * museekd) : Museek::UserSocket(museekd, "P"), Museek::MessageProcessor(4)
+Museek::PeerSocket::PeerSocket(Museek::Museekd * museekd, bool obfuscated) : Museek::UserSocket(museekd, "P", obfuscated), Museek::MessageProcessor(4, obfuscated)
 {
   connectMessageSignals();
 }
 
-Museek::PeerSocket::PeerSocket(Museek::HandshakeSocket * that) : Museek::UserSocket(that, "P"), Museek::MessageProcessor(4)
+Museek::PeerSocket::PeerSocket(Museek::HandshakeSocket * that) : Museek::UserSocket(that, "P"), Museek::MessageProcessor(4, that->obfuscated())
 {
   connectMessageSignals();
 
@@ -205,7 +205,7 @@ Museek::PeerSocket::onPlaceInQueueRequested(const PPlaceInQueueRequest * message
 
 void
 Museek::PeerSocket::onPlaceInQueueReplyReceived(const PPlaceInQueueReply * message) {
-    Download * download = museekd()->downloads()->findDownload(user(), museekd()->codeset()->fromPeer(user(), message->filename));
+    Download * download = museekd()->downloads()->findDownload(user(), museekd()->codeset()->fromPeer(user(), message->filename, true));
 
     if (download)
         download->setPlace(message->place);
@@ -233,7 +233,7 @@ Museek::PeerSocket::onTransferRequested(const PTransferRequest * request)
         // Since slsk 157, we're not supposed to received an upload request like this.
         // The peer sends us PQueueDownload and then WE send him transfer request.
         // So this code is not much useful anymore. That's why we haven't fixed the case problem (see Upload::setCaseProblem())
-        std::string path = museekd()->codeset()->toNet(museekd()->codeset()->fromPeer(user(), request->filename));
+        std::string path = museekd()->codeset()->toNet(museekd()->codeset()->fromPeer(user(), request->filename, true));
 
         if (museekd()->uploads()->isUploadable(user(), path, &reason)) {
 	        NNLOG("museekd.peers.debug", "shared");
@@ -278,7 +278,7 @@ Museek::PeerSocket::onTransferRequested(const PTransferRequest * request)
     {
       NNLOG("museekd.peers.debug", "request for download %s %s %u", user().c_str(), request->filename.c_str(), request->ticket);
       // Starting a download
-      std::string path = museekd()->codeset()->fromPeer(user(), request->filename);
+      std::string path = museekd()->codeset()->fromPeer(user(), request->filename, true);
       Download * download = museekd()->downloads()->findDownload(user(), path);
       if(download)
       {
@@ -410,7 +410,7 @@ Museek::PeerSocket::onQueueDownloadRequested(const PQueueDownload * message) {
 void
 Museek::PeerSocket::onQueueFailedReceived(const PQueueFailed * message)
 {
-    std::string path = museekd()->codeset()->fromPeer(user(), message->filename);
+    std::string path = museekd()->codeset()->fromPeer(user(), message->filename, true);
     Download * download = museekd()->downloads()->findDownload(user(), path);
     if(download)
         download->setRemoteError(message->reason);
@@ -422,7 +422,7 @@ Museek::PeerSocket::onQueueFailedReceived(const PQueueFailed * message)
 void
 Museek::PeerSocket::onUploadFailedReceived(const PUploadFailed * message)
 {
-    std::string path = museekd()->codeset()->fromPeer(user(), message->filename);
+    std::string path = museekd()->codeset()->fromPeer(user(), message->filename, true);
     Download * download = museekd()->downloads()->findDownload(user(), path);
     if(download && download->state() != TS_Aborted && download->state() != TS_LocalError)
         download->setRemoteError("Failed");
@@ -468,11 +468,18 @@ Museek::PeerSocket::onSearchResultsReceived(const PSearchReply * message) {
     Folder folders;
     Folder::const_iterator it = message->results.begin();
     for(; it != message->results.end(); ++it) {
-        std::string encodedFilename = museekd()->codeset()->fromPeer(user(), (*it).first);
+        std::string encodedFilename = museekd()->codeset()->fromPeer(user(), (*it).first, true);
         folders[encodedFilename] = (*it).second;
-        }
+    }
 
-    museekd()->searches()->searchReplyReceived(message->ticket, user(), message->slotfree, message->avgspeed, message->queuelen, folders);
+    Folder locked;
+    Folder::const_iterator itl = message->lockedResults.begin();
+    for(; itl != message->lockedResults.end(); ++itl) {
+        std::string encodedFilename = museekd()->codeset()->fromPeer(user(), (*itl).first, true);
+        locked[encodedFilename] = (*itl).second;
+    }
+
+    museekd()->searches()->searchReplyReceived(message->ticket, user(), message->slotfree, message->avgspeed, message->queuelen, folders, locked);
 
     addSearchResultsOnlyTimeout(2000);
 }

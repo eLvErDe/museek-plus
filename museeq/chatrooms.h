@@ -48,7 +48,7 @@ public slots:
 protected slots:
 	void clear();
 	void closeCurrent();
-	void doCurrentChanged(QWidget *);
+	void doCurrentChanged(int);
 	void joined(const QString&, const NRoom&, const QString&, const QStringList&);
 	void left(const QString&);
 	void append(const QString&, const QString&, const QString&);

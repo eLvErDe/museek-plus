@@ -29,7 +29,7 @@
 #include <NewNet/nnreactor.h>
 
 Museek::UploadSocket::UploadSocket(Museek::Museekd * museekd, Museek::Upload * upload)
-              : UserSocket(museekd, "F")
+              : UserSocket(museekd, "F", false)
 {
     m_Upload = upload;
 

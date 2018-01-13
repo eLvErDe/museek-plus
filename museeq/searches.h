@@ -25,6 +25,7 @@
 #include "tabwidget.h"
 
 #include <QWidget>
+#include <QMap>
 
 class QComboBox;
 class QRadioButton;
@@ -45,7 +46,7 @@ signals:
 
 public slots:
 	void setHighlight(int, QWidget*);
-	void selected(QWidget*);
+	void selected(int);
 
 };
 
@@ -62,12 +63,12 @@ public slots:
 	void setUserSearchText(const QString&);
 	void searchModeSelected();
 	void doSearch(const QString&);
-	void tabSelected(QWidget*);
+	void tabSelected(int);
 
 protected slots:
 	void doSearch();
 	void setToken(const QString&, uint);
-	void append(uint, const QString&, bool, uint, uint, const NFolder&);
+	void append(uint, const QString&, bool, uint, uint, const NFolder&, const NFolder&);
 
 private:
 	QComboBox* mEntry,* mUserEntry;
@@ -77,6 +78,7 @@ private:
 	Interests* mInterests;
 	WishList* mWishListView;
 	SearchTabWidget* mSearchTabWidget, mWishlistTabWidget;
+	QMap<uint, QString> mWishListTokens;
 };
 
 #endif // SEARCHES_H

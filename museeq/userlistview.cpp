@@ -36,6 +36,7 @@
 #include <QMouseEvent>
 #include <QHeaderView>
 #include <QSettings>
+#include <QMimeData>
 
 UserListView::UserListView(bool comments, QWidget * parent, const QString& name)
 	: QTreeWidget(parent) {
@@ -50,7 +51,7 @@ UserListView::UserListView(bool comments, QWidget * parent, const QString& name)
 	setColumnCount(5);
 
 	QStringList headers;
-	headers  << QString::null << tr("User") << tr("Speed") << tr("Files") << tr("Country");
+	headers << QString::null << tr("User") << tr("Speed") << tr("Files") << tr("Country");
 	if(comments) {
 		headers << (tr("Comments"));
         setColumnCount(6);

@@ -22,6 +22,7 @@
 #define ICONLISTBOX_H
 
 #include <QListWidget>
+#include <QUrl>
 
 class IconListItem : public QObject, public QListWidgetItem
 {

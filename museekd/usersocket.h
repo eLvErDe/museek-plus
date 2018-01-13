@@ -32,7 +32,7 @@ namespace Museek
   class UserSocket : public NewNet::TcpClientSocket
   {
   public:
-    UserSocket(Museekd * museekd, const std::string & type);
+    UserSocket(Museekd * museekd, const std::string & type, bool obfuscated);
     UserSocket(HandshakeSocket * that, const std::string & type);
     ~UserSocket();
 
@@ -51,7 +51,17 @@ namespace Museek
 
     void sendMessage(const NewNet::Buffer & buffer);
 
+    void generateObfKey(unsigned char *buf);
+
     void firewallPierced(HandshakeSocket * socket);
+
+    virtual void setNeedsObfuscated(bool isObfuscated) {
+        m_NeedsObfuscated = isObfuscated;
+    }
+
+    bool needsObfuscated() {
+        return m_NeedsObfuscated;
+    }
 
   protected:
     void initiateActive();
@@ -63,12 +73,17 @@ namespace Museek
     void onDisconnected(NewNet::ClientSocket *);
     void onCannotConnectNotify(const SCannotConnect * msg);
 
+    void rotrKey(unsigned char *buf, unsigned int c);
+    void encodeMessage(unsigned char *buf, unsigned char *key, uint32 len);
+
   private:
     NewNet::WeakRefPtr<Museekd> m_Museekd;
     NewNet::WeakRefPtr<NewNet::Event<long>::Callback> m_PassiveConnectTimeout;
 
     std::string m_Type, m_User;
     uint m_Token;
+
+    bool m_NeedsObfuscated = false;
   };
 }
 

@@ -88,13 +88,13 @@ void ChatText::append(uint ts, const QString& _room, const QString& _u, const QS
 		line = "";
 
     if (!_room.isEmpty()) // For public chat
-        line += " <span style='"+fontTime+";color:"+colorTime+";'>[" + Qt::escape(_room) + "]</span> ";
+        line += " <span style='"+fontTime+";color:"+colorTime+";'>[" + _room.toHtmlEscaped() + "]</span> ";
 
 	if(_l.startsWith("/me ")) {
-		line += "<span style='" + fontMessage + ";color:"+colorMe+";'> * " + Qt::escape(u) + " ";
+		line += "<span style='" + fontMessage + ";color:"+colorMe+";'> * " + u.toHtmlEscaped() + " ";
 		l = _l.mid(4);
 	} else if(museeq->nickname() == u) {
-		line += " <span style='"+fontTime+";color:"+colorTime+";'>[</span><span style='" + fontMessage + ";color:"+colorNickname+";'>" + Qt::escape(u) + "</span><span style='"+fontTime+";color:"+colorTime+";'>]</span> <span style='" + fontMessage + ";color:"+colorNickname+";'> ";
+		line += " <span style='"+fontTime+";color:"+colorTime+";'>[</span><span style='" + fontMessage + ";color:"+colorNickname+";'>" + u.toHtmlEscaped() + "</span><span style='"+fontTime+";color:"+colorTime+";'>]</span> <span style='" + fontMessage + ";color:"+colorNickname+";'> ";
 	} else {
 		line += " <span style='"+fontTime+";color:"+colorTime+";'>[</span><span style='" + fontMessage;
 		 if(museeq->isBanned(u)) {
@@ -105,7 +105,7 @@ void ChatText::append(uint ts, const QString& _room, const QString& _u, const QS
 			line += ";color:"+colorBuddied+";'>";
 		} else
 			line += ";color:"+colorRemote+";'>";
-		line +=  Qt::escape(u) + "</span><span style='"+fontTime+";color:"+colorTime+";'>]</span><span style='" + fontMessage + ";color:"+colorRemote+";'> ";
+		line +=  u.toHtmlEscaped() + "</span><span style='"+fontTime+";color:"+colorTime+";'>]</span><span style='" + fontMessage + ";color:"+colorRemote+";'> ";
 	}
 	int ix;
 
@@ -123,7 +123,7 @@ void ChatText::append(uint ts, const QString& _room, const QString& _u, const QS
 		QString url = l.mid(ix, len);
 
 		line += postProcess( l.left(ix), _l, u);
-		line += "<a href=\"" + url + "\">" + Qt::escape(url) + "</a>";
+		line += "<a href=\"" + url + "\">" + url.toHtmlEscaped() + "</a>";
 		l = l.mid(ix + len);
 	}
 
@@ -137,13 +137,13 @@ void ChatText::append(uint ts, const QString& _room, const QString& _u, const QS
 QString ChatText::postProcess(const QString& _s, const QString& _l, const QString& _u) {
 	if(! mNickname.isNull()) {
 		if(_l.startsWith("/me ")) {
-			return Qt::escape(_s).replace(mNickname, "</span><span style='" + museeq->mFontMessage + ";color:"+museeq->mColorMe+";'>" + mNickname + "</span><span style='" + museeq->mFontMessage + ";color:"+museeq->mColorMe+";'>");
+			return _s.toHtmlEscaped().replace(mNickname, "</span><span style='" + museeq->mFontMessage + ";color:"+museeq->mColorMe+";'>" + mNickname + "</span><span style='" + museeq->mFontMessage + ";color:"+museeq->mColorMe+";'>");
 		} else if(museeq->nickname() == _u) {
-			return Qt::escape(_s).replace(mNickname, "</span><span style='" + museeq->mFontMessage + ";color:"+museeq->mColorMe+";'>" + mNickname + "</span><span style='" + museeq->mFontMessage + ";color:"+museeq->mColorNickname+";'>");
+			return _s.toHtmlEscaped().replace(mNickname, "</span><span style='" + museeq->mFontMessage + ";color:"+museeq->mColorMe+";'>" + mNickname + "</span><span style='" + museeq->mFontMessage + ";color:"+museeq->mColorNickname+";'>");
 		} else
-			return Qt::escape(_s).replace(mNickname, "</span><span style='" + museeq->mFontMessage + ";color:"+museeq->mColorMe+";'>" + mNickname + "</span><span style='" + museeq->mFontMessage + ";color:"+museeq->mColorRemote+";'>");
+			return _s.toHtmlEscaped().replace(mNickname, "</span><span style='" + museeq->mFontMessage + ";color:"+museeq->mColorMe+";'>" + mNickname + "</span><span style='" + museeq->mFontMessage + ";color:"+museeq->mColorRemote+";'>");
 	} else
-		return Qt::escape(_s);
+		return _s.toHtmlEscaped();
 }
 
 void ChatText::setNickname(const QString& nickname) {

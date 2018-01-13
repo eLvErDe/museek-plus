@@ -81,12 +81,17 @@ Museek::Museekd::~Museekd()
   NNLOG("museekd.debug", "museekd destroyed");
 }
 
+// See https://www.slsknet.org/news/node/3395
+bool Museek::Museekd::isBot(const std::string u) {
+    return (u == "Lola45") || (u == "Lolo51");
+}
+
 bool Museek::Museekd::isBanned(const std::string u) {
-    return config()->hasKey("banned", u);
+    return config()->hasKey("banned", u) || isBot(u);
 }
 
 bool Museek::Museekd::isIgnored(const std::string u) {
-    return config()->hasKey("ignored", u);
+    return config()->hasKey("ignored", u) || isBot(u);
 }
 
 bool Museek::Museekd::isTrusted(const std::string u) {

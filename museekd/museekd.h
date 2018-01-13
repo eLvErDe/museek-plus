@@ -123,6 +123,7 @@ namespace Museek
     void LoadShares();
     void LoadDownloads();
 
+    bool isBot(const std::string u);
     bool isBanned(const std::string u);
     bool isIgnored(const std::string u);
     bool isTrusted(const std::string u);

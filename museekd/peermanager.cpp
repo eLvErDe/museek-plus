@@ -22,6 +22,7 @@
 # include "config.h"
 #endif // HAVE_CONFIG_H
 #include "peermanager.h"
+#include "codesetmanager.h"
 #include "museekd.h"
 #include "handshakesocket.h"
 #include "servermanager.h"
@@ -61,6 +62,13 @@ Museek::PeerManager::unlisten()
             m_Museekd->reactor()->remove(m_Factory->serverSocket());
     }
     m_Factory = 0;
+
+    if(m_ObfuscatedFactory.isValid()) {
+        m_ObfuscatedFactory->serverSocket()->disconnect();
+        if (m_ObfuscatedFactory->serverSocket()->reactor())
+            m_Museekd->reactor()->remove(m_ObfuscatedFactory->serverSocket());
+    }
+    m_ObfuscatedFactory = 0;
 }
 
 void
@@ -82,12 +90,21 @@ Museek::PeerManager::listen()
     if((port >= first) && (port <= last))
       return;
     unlisten();
+}
+
+  if(m_ObfuscatedFactory.isValid())
+  {
+    unsigned int port = m_ObfuscatedFactory->serverSocket()->listenPort();
+    if((port >= first) && (port <= last))
+      return;
+    unlisten();
   }
 
+  // Normal peer socket
   unsigned int port = first;
   while(port <= last)
   {
-    NNLOG("museekd.peers.debug", "Trying to bind to port %i...", port);
+    NNLOG("museekd.peers.debug", "Trying to bind to port %i for peers...", port);
     m_Factory = new PeerFactory();
     m_Factory->clientAcceptedEvent.connect(this, &PeerManager::onClientAccepted);
 
@@ -97,6 +114,27 @@ Museek::PeerManager::listen()
     {
       onServerLoggedInStateChanged(m_Museekd->server()->loggedIn());
       NNLOG("museekd.peers.debug", "Listening for peers on port %i", port);
+      break;
+    }
+    unlisten();
+    ++port;
+  }
+
+  ++port;
+
+  // Obfuscated peer socket
+  while(port <= last)
+  {
+    NNLOG("museekd.peers.debug", "Trying to bind to port %i for obfuscated peers...", port);
+    m_ObfuscatedFactory = new ObfuscatedFactory();
+    m_ObfuscatedFactory->clientAcceptedEvent.connect(this, &PeerManager::onClientAccepted);
+
+    m_Museekd->reactor()->add(m_ObfuscatedFactory->serverSocket());
+    m_ObfuscatedFactory->serverSocket()->listen(port);
+    if(m_ObfuscatedFactory->serverSocket()->socketState() == NewNet::Socket::SocketListening)
+    {
+      onServerLoggedInStateChanged(m_Museekd->server()->loggedIn());
+      NNLOG("museekd.peers.debug", "Listening for peers for obfuscated traffic on port %i", port);
       return;
     }
     unlisten();
@@ -193,7 +231,7 @@ void Museek::PeerManager::addPeerSocket(PeerSocket * socket) {
     if (!isOurself)
         removePeerSocket(socket->user(), true);
 
-    // There shouldn't be several peer sockets for the same user. If that happens, keep only the last one.
+    // There shouldn't be multiple peer sockets for the same user. If that happens, keep only the last one.
     m_Peers[socket->user()] = socket;
     if (!isOurself || (isOurself && !m_Peers[socket->user()])) {
         // Don't watch for disconnection twice if we're trying to connect to ourself
@@ -263,7 +301,7 @@ Museek::PeerManager::createPeerSocket(const std::string& user) {
         PeerSocket * socket = m_Peers[user];
         if(! socket) {
             // Nope. Create a new one.
-            socket = new PeerSocket(museekd());
+            socket = new PeerSocket(museekd(), false);
             socket->setUser(user);
             addPeerSocket(socket);
             museekd()->reactor()->add(socket);
@@ -346,9 +384,17 @@ Museek::PeerManager::onCannotConnectOurself(NewNet::ClientSocket * socket_) {
 
 void
 Museek::PeerManager::onCannotConnectNotify(const SCannotConnect * msg) {
-	NNLOG("museekd.peers.debug", "Cannot connect to the peer %s", msg->user.c_str());
 
-    peerSocketUnavailableEvent(msg->user);
+    std::map<std::string, NewNet::WeakRefPtr<PeerSocket> >::iterator it;
+    for (it = m_Peers.begin(); it != m_Peers.end(); ++it) {
+        if (it->second && it->second->token() == msg->token) {
+        	NNLOG("museekd.peers.debug", "Cannot connect to the peer %s", it->second->user().c_str());
+            peerSocketUnavailableEvent(it->second->user());
+            return;
+        }
+    }
+
+    NNLOG("museekd.peers.warn", "Cannot connect to a peer, but could not find a peer socket with token %i", msg->token);
 }
 
 /*
@@ -406,35 +452,44 @@ Museek::PeerManager::onServerLoggedInStateChanged(bool loggedIn)
   if(loggedIn)
   {
     uint port = m_Factory ? m_Factory->serverSocket()->listenPort() : 0;
-    m_Museekd->server()->sendMessage(SSetListenPort(port).make_network_packet());
+    uint isobf = m_ObfuscatedFactory ? 1 : 0;
+    uint obfport = m_ObfuscatedFactory ? m_ObfuscatedFactory->serverSocket()->listenPort() : 0;
+    m_Museekd->server()->sendMessage(SSetListenPort(port, isobf, obfport).make_network_packet());
   }
 }
 
 void
 Museek::PeerManager::onServerConnectToPeerRequested(const SConnectToPeer * message)
 {
+    uint32 port = message->port;
+    if (message->use_obfuscation){
+        port = message->obfuscated_port;
+        museekd()->codeset()->addModernPeer(message->user);
+    }
+
     if (message->type == "P") {
-        PeerSocket * socket = new PeerSocket(m_Museekd);
+        PeerSocket * socket = new PeerSocket(m_Museekd, message->use_obfuscation);
         socket->setUser(message->user);
         addPeerSocket(socket);
         m_Museekd->reactor()->add(socket);
-        socket->reverseConnect(message->user, message->token, message->ip, message->port);
+        socket->reverseConnect(message->user, message->token, message->ip, port);
     }
     else if (message->type == "F") {
-        TicketSocket * socket = new TicketSocket(m_Museekd);
+        TicketSocket * socket = new TicketSocket(m_Museekd, message->use_obfuscation);
         m_Museekd->reactor()->add(socket);
         socket->reverseConnect(message->user, message->token, message->ip, message->port);
+        socket->setNeedsObfuscated(false); // HPierceFirewall is sent or in the send buffer, we don't need obfuscation anymore
         // There may be some data waiting in the buffer (sent at connection). We have to ask the ticketsocket to check it.
         socket->findTicket();
     }
     else if (message->type == "D") {
         // Create a new DistributedSocket which will copy our descriptor and state.
-        DistributedSocket * socket = new DistributedSocket(m_Museekd);
+        DistributedSocket * socket = new DistributedSocket(m_Museekd, message->use_obfuscation);
         // A potential parent doesn't care about our position
         if (!museekd()->searches()->isPotentialParent(message->user))
             socket->sendPosition();
         m_Museekd->reactor()->add(socket);
-        socket->reverseConnect(message->user, message->token, message->ip, message->port);
+        socket->reverseConnect(message->user, message->token, message->ip, port);
     }
 }
 

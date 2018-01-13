@@ -19,16 +19,21 @@
  */
 #include "searchfilter.h"
 #include "searchlistview.h"
+#include "museeq.h"
 
 #include <QComboBox>
 #include <QCheckBox>
+#include <QPushButton>
 #include <QLabel>
 #include <QLayout>
 #include <QMessageBox>
 #include <QKeyEvent>
+#include <QSettings>
 
 SearchFilter::SearchFilter(QWidget *parent, const char *name)
              : QWidget(parent) {
+
+    mEnabled = false;
 
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	QHBoxLayout *box = new QHBoxLayout(this);
@@ -58,6 +63,20 @@ SearchFilter::SearchFilter(QWidget *parent, const char *name)
 	box->addWidget(mFreeSlot);
 	connect(mFreeSlot, SIGNAL(toggled(bool)), SLOT(updateFilter()));
 
+	mUnlocked = new QCheckBox(tr("Unlocked"), this);
+	box->addWidget(mUnlocked);
+	connect(mUnlocked, SIGNAL(toggled(bool)), SLOT(updateFilter()));
+
+	mSaveDefault = new QPushButton(tr("Save as default filter"), this);
+	box->addWidget(mSaveDefault);
+	connect(mSaveDefault, SIGNAL(clicked()), SLOT(saveDefault()));
+
+    mRegExp->setCurrentText(museeq->settings()->value("default_filter_regexp", "").toString());
+    mSize->setCurrentText(museeq->settings()->value("default_filter_size", "").toString());
+    mBitrate->setCurrentText(museeq->settings()->value("default_filter_bitrate", "").toString());
+    mFreeSlot->setChecked(museeq->settings()->value("default_filter_freeslot", false).toBool());
+    mUnlocked->setChecked(museeq->settings()->value("default_filter_unlocked", false).toBool());
+
 	updateFilter();
 }
 
@@ -76,6 +95,9 @@ bool SearchFilter::match(SearchListItem *item) {
 		return false;
 
 	if(mFilterFreeSlot && ! item->freeSlot())
+		return false;
+
+	if(mFilterUnlocked && item->locked())
 		return false;
 
 	return true;
@@ -174,7 +196,17 @@ void SearchFilter::updateFilter() {
 
 	mFilterFreeSlot = mFreeSlot->isChecked();
 
+	mFilterUnlocked = mUnlocked->isChecked();
+
 	emit filterChanged();
+}
+
+void SearchFilter::saveDefault() {
+    museeq->settings()->setValue("default_filter_regexp", mRegExp->currentText());
+    museeq->settings()->setValue("default_filter_size", mSize->currentText());
+    museeq->settings()->setValue("default_filter_bitrate", mBitrate->currentText());
+    museeq->settings()->setValue("default_filter_freeslot", mFreeSlot->isChecked());
+    museeq->settings()->setValue("default_filter_unlocked", mUnlocked->isChecked());
 }
 
 void MyLineEdit::keyReleaseEvent(QKeyEvent *e) {

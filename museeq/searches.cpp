@@ -98,13 +98,13 @@ Searches::Searches(QWidget* parent, const char* name)
 	vbox->addWidget(mWishListView);
 	mSearchTabWidget->addTab(mWishListView, tr("*Wishlist*"));
 
-	connect(museeq, SIGNAL(searchResults(uint, const QString&, bool, uint, uint, const NFolder&)), SLOT(append(uint, const QString&, bool, uint, uint, const NFolder&)));
+	connect(museeq, SIGNAL(searchResults(uint, const QString&, bool, uint, uint, const NFolder&, const NFolder&)), SLOT(append(uint, const QString&, bool, uint, uint, const NFolder&, const NFolder&)));
 	connect(museeq, SIGNAL(searchToken(const QString&, uint)), SLOT(setToken(const QString&, uint)));
 	connect(museeq, SIGNAL(connectedToServer(bool)), mEntry, SLOT(setEnabled(bool)));
 	connect(museeq, SIGNAL(connectedToServer(bool)), mSearch, SLOT(setEnabled(bool)));
 	connect(museeq, SIGNAL(connectedToServer(bool)), mInterests, SLOT(setEnabled(bool)));
 	connect(museeq, SIGNAL(connectedToServer(bool)), mWishListView, SLOT(setEnabled(bool)));
-	connect(mSearchTabWidget, SIGNAL(currentChanged(QWidget*)), SLOT(tabSelected(QWidget*)));
+	connect(mSearchTabWidget, SIGNAL(currentChanged(int)), SLOT(tabSelected(int)));
 }
 
 void Searches::searchModeSelected() {
@@ -135,14 +135,38 @@ void Searches::setUserSearchText(const QString& text) {
 	}
 }
 
-void Searches::append(uint token, const QString& user, bool free, uint speed, uint files, const NFolder& r) {
+void Searches::append(uint token, const QString& user, bool free, uint speed, uint files, const NFolder& r, const NFolder& lr) {
     qDebug() << "Search results from " << user;
-	for(int i = 2; i < mSearchTabWidget->count(); ++i) {
+    int i;
+	for(i = 2; i < mSearchTabWidget->count(); ++i) {
 		Search* search = dynamic_cast<Search*>(mSearchTabWidget->widget(i));
 		if(search && search->hasToken(token)) {
-			search->append(user, free, speed, files, r);
+			search->append(user, free, speed, files, r, lr);
 			return;
 		}
+	}
+
+    // Create the tab if it's a first result from a wishlist search
+	if (i == mSearchTabWidget->count()) {
+        QMap<uint, QString>::const_iterator i = mWishListTokens.find(token);
+        while (i != mWishListTokens.end() && i.key() == token) {
+            QString query = i.value();
+            if (museeq->isInWishlist(query)) {
+        		Search* s = new Search(query, mSearchTabWidget);
+        		mSearchTabWidget->addTab(s, query);
+
+                // Highlight the search icon so that the user know that there are some new search results
+        		connect(s, SIGNAL(highlight(int, QWidget*)), SIGNAL(highlight(int)));
+
+                // Highlight the tab where we have received new search results
+        		connect(s, SIGNAL(highlight(int, QWidget*)), mSearchTabWidget, SLOT(setHighlight(int, QWidget*)));
+
+        		mSearchTabWidget->setCurrentWidget(s);
+        		s->setToken(token);
+	            s->append(user, free, speed, files, r, lr);
+            }
+            ++i;
+        }
 	}
 }
 
@@ -156,25 +180,23 @@ void Searches::setToken(const QString& query, uint token) {
 		}
 	}
 
-    // Create the tab if it's a wishlist result
-	if ((i == mSearchTabWidget->count()) && museeq->isInWishlist(query)) {
-		Search* s = new Search(query, mSearchTabWidget, false);
-		mSearchTabWidget->addTab(s, query);
-
-        // Highlight the search icon so that the user know that there are some new search results
-		connect(s, SIGNAL(highlight(int, QWidget*)), SIGNAL(highlight(int)));
-
-        // Highlight the tab where we have received new search results
-		connect(s, SIGNAL(highlight(int, QWidget*)), mSearchTabWidget, SLOT(setHighlight(int, QWidget*)));
-
-		mSearchTabWidget->setCurrentWidget(s);
-		s->setToken(token);
-	}
+    // Keep the token in memory to create the tab if needed (on first result)
+    if ((i == mSearchTabWidget->count()) && museeq->isInWishlist(query)) {
+        mWishListTokens[token] = query;
+    }
 }
 
 void Searches::doSearch(const QString& q) {
 	if(q.isEmpty())
 		return;
+
+    // Cleanup query string
+    QString clean_q = q;
+    clean_q = clean_q.replace(QRegExp("\\s+[-–_.!?/]\\s+"), " ");
+    clean_q = clean_q.remove(QRegExp("^[-–_.!?/]\\s+"));
+    clean_q = clean_q.remove(QRegExp("\\s+[-–_.!?/]$"));
+    clean_q = clean_q.simplified();
+
 	QString user;
  	if (mUser->isChecked ()) {
 		if ( mUserEntry->currentText().isEmpty() )
@@ -183,19 +205,18 @@ void Searches::doSearch(const QString& q) {
 			user = mUserEntry->currentText();
 		}
 	}
-	mEntry->setCurrentIndex(0);
 
 	int i;
 	for(i = 2; i < mSearchTabWidget->count(); ++i) {
 		Search* search = dynamic_cast<Search*>(mSearchTabWidget->widget(i));
-		if(search && search->query() == q) {
+		if(search && search->query() == clean_q) {
 			mSearchTabWidget->setCurrentIndex(i);
 			break;
 		}
 	}
 	if(i == mSearchTabWidget->count()) {
-		Search* s = new Search(q, mSearchTabWidget, false);
-		mSearchTabWidget->addTab(s, q);
+		Search* s = new Search(clean_q, mSearchTabWidget);
+		mSearchTabWidget->addTab(s, clean_q);
 
         // Highlight the search icon so that the user know that there are some new search results
 		connect(s, SIGNAL(highlight(int, QWidget*)), SIGNAL(highlight(int)));
@@ -206,17 +227,19 @@ void Searches::doSearch(const QString& q) {
 		mSearchTabWidget->setCurrentWidget(s);
 	}
 
+	mEntry->setEditText("");
+
 	if(mBuddies->isChecked())
-		museeq->buddySearch(q);
+		museeq->buddySearch(clean_q);
 	else if (mRooms->isChecked ())
-		museeq->roomSearch (q);
+		museeq->roomSearch (clean_q);
 	else if (mGlobal->isChecked ())
-		museeq->search(q);
+		museeq->search(clean_q);
 	else if (mUser->isChecked ()) {
 		if ( ! user.isEmpty() )
-			museeq->userSearch(user, q);
+			museeq->userSearch(user, clean_q);
 	} else if (mWishList->isChecked ())
-		museeq->wishListSearch(q);
+		museeq->wishListSearch(clean_q);
 }
 
 void Searches::doSearch() {
@@ -224,10 +247,10 @@ void Searches::doSearch() {
 	doSearch(q);
 }
 
-void Searches::tabSelected(QWidget* searchwidget) {
-	if (mSearchTabWidget->currentIndex() <= 1)
+void Searches::tabSelected(int curIndex) {
+	if (curIndex <= 1)
 		return;
-	Search * uw = dynamic_cast<Search*>(searchwidget);
+	Search * uw = dynamic_cast<Search*>(mSearchTabWidget->currentWidget());
 	if (uw)
         setSearchText(uw->query());
 }
@@ -237,7 +260,7 @@ SearchTabWidget::SearchTabWidget(QWidget* _p, const char* _n)
               : TabWidget(_p, _n)
 {
     setLastProtected(1);
-    connect(this, SIGNAL(currentChanged(QWidget*)), SLOT(selected(QWidget*)));
+    connect(this, SIGNAL(currentChanged(int)), SLOT(selected(int)));
 }
 
 void SearchTabWidget::setHighlight(int highlight, QWidget* widget) {
@@ -264,10 +287,10 @@ void SearchTabWidget::setHighlight(int highlight, QWidget* widget) {
 	}
 }
 
-void SearchTabWidget::selected(QWidget* searchwidget) {
-	if (currentIndex() <= 1)
+void SearchTabWidget::selected(int curIndex) {
+	if (curIndex <= 1)
 		return;
-	Search * uw = dynamic_cast<Search*>(searchwidget);
+	Search * uw = dynamic_cast<Search*>(currentWidget());
 	if(uw && uw->highlighted() != 0) {
 		uw->setHighlighted(0);
 		setHighlight(uw->highlighted(), uw );

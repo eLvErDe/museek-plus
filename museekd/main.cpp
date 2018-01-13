@@ -132,7 +132,7 @@ int main(int argc, char ** argv)
     return 1;
   }
 
-  std::string version("museekd :: Version 0.3.0 :: Museek Daemon Plus");
+  std::string version("museekd :: Version 0.4.0 :: Museek Daemon Plus");
 
 #ifndef WIN32
   /* Load the configuration from ~/.museekd/config.xml. */

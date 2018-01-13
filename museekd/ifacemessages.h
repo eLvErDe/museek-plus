@@ -1519,8 +1519,8 @@ IFACEMESSAGE(ISearchReply, 0x0402)
 	folder results -- The actual results
 */
 	ISearchReply() {}
-	ISearchReply(uint32 _t, const std::string& _u, bool _f, uint32 _s, uint32 _q, const Folder& _r)
-                    : username(_u), results(_r) { ticket = _t, slotfree = _f, speed = _s, queue = _q; }
+	ISearchReply(uint32 _t, const std::string& _u, bool _f, uint32 _s, uint32 _q, const Folder& _r, const Folder& _lr)
+                    : username(_u), results(_r), lockedResults(_lr) { ticket = _t, slotfree = _f, speed = _s, queue = _q; }
 
 	MAKE
 		pack(ticket);
@@ -1534,6 +1534,12 @@ IFACEMESSAGE(ISearchReply, 0x0402)
 			pack((*it).first);
 			pack((const FileEntry&)(*it).second);
 		}
+		pack((uint32)lockedResults.size());
+		Folder::const_iterator lit = lockedResults.begin();
+		for(; lit != lockedResults.end(); ++lit) {
+			pack((*lit).first);
+			pack((const FileEntry&)(*lit).second);
+		}
 	END_MAKE
 
 	PARSE
@@ -1542,7 +1548,7 @@ IFACEMESSAGE(ISearchReply, 0x0402)
 
 	uint32 ticket, speed, queue;
 	std::string username;
-	Folder results;
+	Folder results, lockedResults;
 	bool slotfree;
 END
 
@@ -2181,6 +2187,41 @@ IFACEMESSAGE(IUserInterests, 0x0614)
 
 	std::string user;
 	StringList liked, hated;
+END
+
+IFACEMESSAGE(IRelatedSearch, 0x0615)
+/*
+	Related Search -- Receive related search suggestions
+
+	*empty*
+
+	uint num  --  Number of search terms
+	*repeat num*
+		string related_search -- Related search term
+		uint  score -- Score
+*/
+
+	IRelatedSearch() { }
+	IRelatedSearch( const std::string& _q, const RelatedSearches& _r ) : query(_q), terms(_r) { }
+
+	MAKE
+		pack(query);
+ 		pack((uint32)terms.size());
+		RelatedSearches::const_iterator it = terms.begin();
+		for(; it != terms.end(); ++it) {
+			pack((*it).first);
+			pack((uint32)(*it).second);
+
+		}
+
+	END_MAKE
+
+	PARSE
+	END_PARSE
+
+	std::string query;
+	RelatedSearches terms;
+
 END
 
 

@@ -33,14 +33,15 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QHeaderView>
+#include <QMimeData>
 
 SearchListView::SearchListView(SearchFilter* filter, QWidget* parent, const char* name)
                : QTreeWidget(parent), mFilter(filter), mN(0) {
 	QStringList headers;
-	headers << QString::null << tr("User") << tr("Filename") << tr("Size") << tr("Speed") << tr("Queued") << tr("Imm.") << tr("Length") << tr("Bitrate") << tr("Path") << QString::null;
+	headers << QString::null << tr("User") << tr("Filename") << tr("Size") << tr("Speed") << tr("Queued") << tr("Imm.") << tr("Locked") << tr("Length") << tr("Bitrate") << tr("Path");
 	setHeaderLabels(headers);
 	setSortingEnabled(false);
-	header()->setClickable(true);
+	header()->setSectionsClickable(true);
 	setRootIsDecorated(false);
 	setSelectionMode(QAbstractItemView::ExtendedSelection);
  	setAllColumnsShowFocus(true);
@@ -52,11 +53,11 @@ SearchListView::SearchListView(SearchFilter* filter, QWidget* parent, const char
 	setColumnWidth ( 4, 100 );
 	setColumnWidth ( 5, 75 );
 	setColumnWidth ( 6, 30 );
-	setColumnWidth ( 7, 75 );
+	setColumnWidth ( 7, 30 );
 	setColumnWidth ( 8, 75 );
-	setColumnWidth ( 9, 150 );
-	setColumnWidth ( 10, 250 );
-	setColumnWidth ( 11, 0 );
+	setColumnWidth ( 9, 75 );
+	setColumnWidth ( 10, 150 );
+	setColumnWidth ( 11, 250 );
 
 	mPopupMenu = new QMenu(this);
 	QAction * ActionDownloadFiles, * ActionDownloadFilesTo, * ActionDownloadFolders;
@@ -187,10 +188,16 @@ void SearchListView::downloadFolders() {
  	}
 }
 
-void SearchListView::append(const QString& u, bool f, uint s, uint q, const NFolder& r) {
+void SearchListView::append(const QString& u, bool f, uint s, uint q, const NFolder& r, const NFolder& lr) {
 	NFolder::const_iterator it = r.begin();
 	for(; it != r.end(); ++it) {
-		SearchListItem *item = new SearchListItem(this, ++mN, u, f, s, q, it.key(), (*it).size, (*it).length, (*it).bitrate, (*it).vbr);
+		SearchListItem *item = new SearchListItem(this, ++mN, u, f, false, s, q, it.key(), (*it).size, (*it).length, (*it).bitrate, (*it).vbr);
+ 		item->setHidden(!mFilter->match(item));
+	}
+
+	NFolder::const_iterator itl = lr.begin();
+	for(; itl != lr.end(); ++itl) {
+		SearchListItem *item = new SearchListItem(this, ++mN, u, f, true, s, q, itl.key(), (*itl).size, (*itl).length, (*itl).bitrate, (*itl).vbr);
  		item->setHidden(!mFilter->match(item));
 	}
 }
@@ -306,9 +313,9 @@ void SearchListView::mouseMoveEvent(QMouseEvent *event)
     drag->exec();
 }
 
-SearchListItem::SearchListItem(QTreeWidget* parent, quint64 n, const QString& user, bool free, uint speed, uint inQueue, const QString& path, quint64 size, uint length, uint bitrate, bool vbr)
+SearchListItem::SearchListItem(QTreeWidget* parent, quint64 n, const QString& user, bool free, bool locked, uint speed, uint inQueue, const QString& path, quint64 size, uint length, uint bitrate, bool vbr)
                : QTreeWidgetItem(parent), mN(n), mUser(user), mPath(path), mSpeed(speed), mInQueue(inQueue),
-                 mLength(length), mBitrate(bitrate), mSize(size), mFree(free), mVBR(vbr)
+                 mLength(length), mBitrate(bitrate), mSize(size), mFree(free), mLocked(locked), mVBR(vbr)
 {
 	setText(0, QString::number(n));
 	setText(1, mUser);
@@ -317,7 +324,7 @@ SearchListItem::SearchListItem(QTreeWidget* parent, quint64 n, const QString& us
 		mFilename = mPath.mid(ix + 1);
 		mDir = mPath.left(ix + 1);
 		setText(2, mFilename);
-		setText(9, mDir);
+		setText(10, mDir);
 	} else {
 		mFilename = mPath;
 		mDir = "";
@@ -327,15 +334,26 @@ SearchListItem::SearchListItem(QTreeWidget* parent, quint64 n, const QString& us
 	setText(4, Util::makeSize(mSpeed) + SearchListView::tr("/s"));
 	setText(5, QString::number(mInQueue));
 	setText(6, mFree ? SearchListView::tr("Y") : SearchListView::tr("N"));
+	setText(7, mLocked ? SearchListView::tr("Y") : SearchListView::tr("N"));
 	if(mLength)
-		setText(7, Util::makeTime(mLength));
+		setText(8, Util::makeTime(mLength));
 	if(mBitrate)
-		setText(8, Util::makeBitrate(mBitrate, mVBR));
+		setText(9, Util::makeBitrate(mBitrate, mVBR));
 
     if (!mFree) {
         QBrush brush = QBrush(QApplication::palette().color(QPalette::Disabled, QPalette::Text));
-        for (int i = 0; i < 10; ++i) {
+        for (int i = 0; i < 11; ++i) {
             setForeground(i, brush);
+        }
+    }
+
+    if (mLocked) {
+        QBrush brush = QBrush(QApplication::palette().color(QPalette::Disabled, QPalette::Text));
+        QFont lockedFont;
+        lockedFont.setItalic(true);
+        for (int i = 0; i < 11; ++i) {
+            setForeground(i, brush);
+            setFont(i, lockedFont);
         }
     }
 }
@@ -365,10 +383,12 @@ bool SearchListItem::operator<(const QTreeWidgetItem & other_) const {
 	case 6:
 		return freeSlot();
 	case 7:
-		return length() < other->length();
+		return locked();
 	case 8:
-		return bitrate() < other->bitrate();
+		return length() < other->length();
 	case 9:
+		return bitrate() < other->bitrate();
+	case 10:
 		return dir() < other->dir() ;
 	}
 

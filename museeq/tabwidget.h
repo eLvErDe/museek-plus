@@ -23,11 +23,11 @@
 
 #include <QTabBar>
 #include <QTabWidget>
+#include <QUrl>
 
 class QDragMoveEvent;
 class QDropEvent;
 class Usermenu;
-class QUrl;
 
 class TabBar : public QTabBar {
 	Q_OBJECT
@@ -71,7 +71,7 @@ protected slots:
 
 	void setFirstProtected(int);
 	void setLastProtected(int);
-	void doCurrentChanged(QWidget *);
+	void doCurrentChanged(int);
 	virtual void closeCurrent();
 	void previousPage();
 	void nextPage();

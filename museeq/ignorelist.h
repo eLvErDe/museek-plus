@@ -22,12 +22,12 @@
 #define IGNORELIST_H
 
 #include <QWidget>
+#include <QUrl>
 
 class UserListView;
 class QLineEdit;
 class QPushButton;
 class QShowEvent;
-class QUrl;
 
 class IgnoreList : public QWidget {
 	Q_OBJECT

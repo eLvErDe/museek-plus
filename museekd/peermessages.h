@@ -107,7 +107,8 @@ PEERMESSAGE(PSharesReply, 5)
 				files[filename] = fe;
 				f--;
 			}
-			shares[dirname] = files;
+			if (dirname != "\\")
+                shares[dirname] = files;
 			n--;
 		}
 	END_PARSE
@@ -137,8 +138,8 @@ END
 
 PEERMESSAGE(PSearchReply, 9)
 	PSearchReply() {};
-	PSearchReply(uint _t, const std::string& _u, const Folder& _r, uint _spe, uint64 _que, bool _fre)
-                    : user(_u), results(_r), ticket(_t), avgspeed(_spe), queuelen(_que), slotfree(_fre) {}
+	PSearchReply(uint _t, const std::string& _u, const Folder& _r, uint _spe, uint64 _que, bool _fre, const Folder& _lr)
+                    : user(_u), results(_r), lockedResults(_lr), ticket(_t), avgspeed(_spe), queuelen(_que), slotfree(_fre) {}
 
 	MAKE
 		pack(user);
@@ -160,6 +161,21 @@ PEERMESSAGE(PSearchReply, 9)
 		pack((uchar)slotfree);
 		pack(avgspeed);
 		pack(queuelen);
+
+		pack((uint32)lockedResults.size());
+		Folder::iterator itl = lockedResults.begin();
+		for(; itl != lockedResults.end(); ++itl) {
+			pack((uchar)1);
+			pack((*itl).first, true);
+			pack((*itl).second.size);
+			pack((*itl).second.ext);
+			pack((uint32)(*itl).second.attrs.size());
+			std::vector<uint>::iterator aitl = (*itl).second.attrs.begin();
+			for(uint j = 0; aitl != (*itl).second.attrs.end(); ++aitl) {
+				pack(j++);
+				pack(*aitl);
+			}
+		}
 
 		compress();
 	END_MAKE
@@ -207,6 +223,34 @@ PEERMESSAGE(PSearchReply, 9)
         else
             queuelen = static_cast<uint64>(unpack_int()); // Some clients use uint32 instead of uint64
 
+        if (buffer.count() >= 4) {
+            // Newest clients can send some locked results too
+    		uint n = unpack_int();
+
+    		while(n) {
+                if (buffer.empty()) {
+                    // Message claimed n files, but we exhausted buffer. It means message is malformed.
+                    buffer.clear();
+                    break;
+                }
+    			unpack_char();
+    			std::string fn = unpack_string();
+    			FileEntry fe;
+                fe.size = unpack_off(); // Sometimes an uint with an exotic client
+    			fe.ext = unpack_string();
+    			int attrs = unpack_int();
+                while(attrs) {
+                    if (buffer.count() < 4)
+                        break; // If this happens, message is malformed. No need to continue (prevent huge loops)
+                    unpack_int();
+                    fe.attrs.push_back(unpack_int());
+                    attrs--;
+                }
+    			lockedResults[fn] = fe;
+    			n--;
+    		}
+        }
+
         // If there was a problem try reparsing using uint32 for size
         if (malformedMsg) {
             buffer = backupBuffer;
@@ -242,6 +286,7 @@ PEERMESSAGE(PSearchReply, 9)
 
 	std::string user;
 	Folder results;
+	Folder lockedResults;
 	uint ticket, avgspeed;
 	uint64 queuelen;
 	bool slotfree;

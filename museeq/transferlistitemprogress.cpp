@@ -30,7 +30,7 @@ TransferListItemProgress::TransferListItemProgress( QObject* parent ) : QItemDel
 void TransferListItemProgress::paint( QPainter *painter, const QStyleOptionViewItem &option,
                                     const QModelIndex &index ) const
 {
-    QStyleOptionProgressBarV2 bar;
+    QStyleOptionProgressBar bar;
     bar.rect = option.rect;
     bar.minimum = 0;
     bar.maximum = 1000;

@@ -31,7 +31,7 @@ namespace Museek
   {
   public:
     DistributedSocket(HandshakeSocket * that);
-    DistributedSocket(Museekd * museekd);
+    DistributedSocket(Museekd * museekd, bool obfuscated);
     ~DistributedSocket();
 
     void sendPosition();
@@ -49,6 +49,11 @@ namespace Museek
     #define MAP_MESSAGE(ID, TYPE, EVENT) NewNet::Event<const TYPE *> EVENT;
     #include "distributedeventtable.h"
     #undef MAP_MESSAGE
+
+    virtual void setNeedsObfuscated(bool isObfuscated) {
+        Museek::UserSocket::setNeedsObfuscated(isObfuscated);
+        setObfuscated(isObfuscated); // Make sure the message processor is aware too
+    }
 
   private:
     void onMessageReceived(const MessageData * data);

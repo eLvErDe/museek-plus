@@ -66,7 +66,7 @@
 #define _TIME QString("<span style='"+museeq->mFontTime+";color:"+museeq->mColorTime+"'>") + QDateTime::currentDateTime().toString("hh:mm:ss") + "</span> "
 
 MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(0, 0), mWaitingPrivs(false) {
-	mVersion = "0.3";
+	mVersion = "0.4";
 	setWindowTitle(tr("museeq ")+mVersion);
 	setWindowIcon(IMG("icon"));
 	connect(museeq->driver(), SIGNAL(hostFound()), SLOT(slotHostFound()));
@@ -266,7 +266,6 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(0, 0), m
 	mIcons->updateMinimumWidth();
 	mIcons->updateMinimumHeight();
 
-
 	mIcons->setCurrentRow(0);
 
 	mTitle = new QLabel(MainWidget);
@@ -335,7 +334,8 @@ MainWindow::MainWindow(QWidget* parent, const char* name) : QMainWindow(0, 0), m
 	// Disable Museekd settings
 	mSettingsDialog->mTabHolder->setTabEnabled(mSettingsDialog->mTabHolder->indexOf(mSettingsDialog->mMuseekdTabs), false);
 
-	changeCMode();
+	// Switch to transfer tab by default
+	changeTMode();
 
     if (museeq->settings()->value("saveAllLayouts", false).toBool()) {
         QString optionName = "logSplitter_Layout";
@@ -642,16 +642,16 @@ void MainWindow::appendToLogWindow(const QString& msg) {
 	QStringList::iterator it = wm.begin();
 	for(; it != wm.end(); ++it) {
 		if (museeq->mShowTimestamps)
-			mLog->append(QString(_TIME+"<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+Qt::escape(*it)+"</span>"));
+			mLog->append(QString(_TIME+"<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+it->toHtmlEscaped()+"</span>"));
 		else
-			mLog->append(QString("<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+Qt::escape(*it)+"</span>"));
+			mLog->append(QString("<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+it->toHtmlEscaped()+"</span>"));
 	}
 }
 
 void MainWindow::slotUserStatus( const QString & user, uint status ) {
  	if (museeq->mOnlineAlert  && museeq->hasAlert(user)) {
 		QString s = (status == 0) ? "offline" : ((status == 1) ? "away" : "online");
-		mLog->append(QString(_TIME)+QString("<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>user %2 is now %3</span>").arg(Qt::escape(user)).arg(s)) ;
+		mLog->append(QString(_TIME)+QString("<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>user %2 is now %3</span>").arg(user.toHtmlEscaped()).arg(s)) ;
 
 	}
 }
@@ -765,7 +765,7 @@ void MainWindow::slotUserAddress(const QString& user, const QString& ip, uint po
 		item->setText(1, ip);
 		item->setText(2, QString::number(port));
 #ifdef HAVE_NETDB_H
-		struct hostent *addr = gethostbyname(ip.toAscii());
+		struct hostent *addr = gethostbyname(ip.toLatin1());
 		if(addr && addr->h_length) {
 			struct hostent *addr2 = gethostbyaddr(addr->h_addr_list[0], 4, AF_INET);
 			if(addr2 && addr2->h_name) {
@@ -778,9 +778,9 @@ void MainWindow::slotUserAddress(const QString& user, const QString& ip, uint po
 
 	if (museeq->mIPLog) {
 		if (museeq->mShowTimestamps) {
-			mLog->append(QString(_TIME+"<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+tr("IP of ")+Qt::escape(user)+": "+ ip +" "+ tr("Port:")+" "+QString::number(port)+" ("+Qt::escape(hostname)+")</span>"));
+			mLog->append(QString(_TIME+"<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+tr("IP of ")+user.toHtmlEscaped()+": "+ ip +" "+ tr("Port:")+" "+QString::number(port)+" ("+hostname.toHtmlEscaped()+")</span>"));
 		} else {
-			mLog->append(QString("<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+tr("IP of ")+Qt::escape(user)+": "+ ip +" "+ tr("Port:")+" "+QString::number(port)+" ("+Qt::escape(hostname)+")</span>"));
+			mLog->append(QString("<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+tr("IP of ")+user.toHtmlEscaped()+": "+ ip +" "+ tr("Port:")+" "+QString::number(port)+" ("+hostname.toHtmlEscaped()+")</span>"));
 		}
 	}
 
@@ -954,6 +954,11 @@ void MainWindow::saveSettings() {
 	else
         museeq->setConfig("transfers", "autoretry_downloads", "false");
 
+	if (! mSettingsDialog->mMaxFolderSize->text().isEmpty() ) {
+    	QVariant p (mSettingsDialog->mMaxFolderSize->value());
+    	museeq->setConfig("transfers", "max_folder_size", p.toString());
+    }
+
     if (mSettingsDialog->SPrivRoom->isChecked() != mSettingsDialog->getPrivRoomEnabled()) {
         mSettingsDialog->setPrivRoomEnabled(mSettingsDialog->SPrivRoom->isChecked());
         museeq->driver()->doPrivRoomToggle(mSettingsDialog->getPrivRoomEnabled());
@@ -1097,7 +1102,7 @@ void MainWindow::displayHelpDialog() {
 void MainWindow::givePrivileges(const QString& user)
 {
 	bool ok = false;
-	int days = QInputDialog::getInteger(0, tr("Give privileges"),
+	int days = QInputDialog::getInt(0, tr("Give privileges"),
 	             tr("How many days worth of privileges \n") +
 	             tr("do you wish to give to user ") + user + "?",
 	             0, 0, 999, 1, &ok);

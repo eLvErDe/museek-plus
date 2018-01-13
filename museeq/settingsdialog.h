@@ -49,7 +49,7 @@ class SettingsDialog : public QDialog
     Q_OBJECT
 
 public:
-	SettingsDialog( QWidget* parent = 0, const char* name = 0, bool modal = FALSE, Qt::WFlags fl = 0 );
+	SettingsDialog( QWidget* parent = 0, const char* name = 0, bool modal = false, Qt::WindowFlags fl = 0 );
 	~SettingsDialog();
 
 	bool areSharesDirty() {return mSharesDirty;};
@@ -78,6 +78,7 @@ public:
 	QLabel* instructionsLabel;
 	QLabel* downloadLabel;
 	QLabel* incompleteLabel;
+	QLabel* mMaxFolderSizeLabel;
 
 	QLabel* listenPortsLabel, * listenPortsStartLabel, * listenPortsEndLabel;
 
@@ -100,6 +101,8 @@ public:
 	QLineEdit* SServerHost;
 	QLineEdit* SDownDir;
 	QLineEdit* SIncompleteDir;
+
+	QSpinBox* mMaxFolderSize;
 
 	QPushButton* mNewHandler;
 	QPushButton* mModifyHandler;
@@ -166,6 +169,7 @@ public slots:
     void buttonClicked(QAbstractButton*);
 	void slotAddressActivated(const QString&);
 	void slotAddressChanged(const QString&);
+    void updateConnectType(const QString&);
 
 	bool getPrivRoomEnabled();
 	void setPrivRoomEnabled(bool);

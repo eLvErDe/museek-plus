@@ -39,7 +39,7 @@ namespace Museek
   public:
     /* Constructor. codeSize defines how wide the messageCode parameter will
        be. 1 is used for handshake socket, other types use 4. */
-    MessageProcessor(uint codeSize) : m_CodeSize(codeSize)
+    MessageProcessor(uint codeSize, bool obfuscated = false) : m_CodeSize(codeSize), m_IsObfuscated(obfuscated)
     {
     }
 
@@ -70,11 +70,26 @@ namespace Museek
       }
     }
 
+    void setObfuscated(bool isObfuscated) {
+        m_IsObfuscated = isObfuscated;
+    }
+
+    bool obfuscated() {
+        return m_IsObfuscated;
+    }
+
   private:
     /* Size of the message type, see constructor comment for more info. */
     uint m_CodeSize;
+
+    bool m_IsObfuscated;
+
     /* Try to parse a complete message from the socket's receive buffer. */
     bool parseMessage(NewNet::ClientSocket * socket);
+
+    void rotrKey(unsigned char *buf, unsigned int c);
+    void decodeMessage(unsigned char *buf, uint32 len);
+    uint32 getMessageLen(const unsigned char *buf);
   };
 }
 

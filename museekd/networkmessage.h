@@ -113,6 +113,8 @@ protected:
   std::string unpack_ip();
   /* Unpack a 32bit unsigned integer. */
   uint32 unpack_int();
+  /* Unpack a 16bit unsigned integer. */
+  uint32 unpack_int16();
   /* Unpack a 32bit signed integer. */
   int32 unpack_signed_int();
   /* Unpack a 64bit unsigned integer. */

@@ -273,9 +273,9 @@ void ChatRoom::userJoined(const QString& _u, const NUserData& _data) {
 		return;
 	if (! museeq->isIgnored(_u)) {
 		if (museeq->mShowTimestamps)
-			mLog->append(QString(_TIME+"<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+tr("%1 joined the room")+"</span>").arg(Qt::escape(_u)));
+			mLog->append(QString(_TIME+"<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+tr("%1 joined the room")+"</span>").arg(_u.toHtmlEscaped()));
 		else
-			mLog->append( QString("<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+ tr("%1 joined the room")+"</span>" ).arg(Qt::escape(_u) ) ) ;
+			mLog->append( QString("<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+ tr("%1 joined the room")+"</span>" ).arg(_u.toHtmlEscaped() ) ) ;
 	}
 
 	mUserList->add(_u , _data.status, _data.speed, _data.files, QString::null, _data.country);
@@ -291,9 +291,9 @@ void ChatRoom::userLeft(const QString& _u) {
 	mStatus.remove(_u);
 	if (! museeq->isIgnored(_u))  {
 		if (museeq->mShowTimestamps)
-			mLog->append(QString(_TIME+"<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+tr("%1 left the room")+"</span>").arg(Qt::escape(_u)));
+			mLog->append(QString(_TIME+"<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+tr("%1 left the room")+"</span>").arg(_u.toHtmlEscaped()));
 		else
-			mLog->append(QString("<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+tr("%1 left the room")+"</span>").arg(Qt::escape(_u)));
+			mLog->append(QString("<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+tr("%1 left the room")+"</span>").arg(_u.toHtmlEscaped()));
 	}
 	mUserList->remove(_u);
 
@@ -313,9 +313,9 @@ void ChatRoom::setUserStatus(const QString& _u, uint _s) {
 				l += _TIME;
 
 			if(_s == 1)
-				l += QString("<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+tr("%1 has gone away")+"</span>").arg(Qt::escape(_u));
+				l += QString("<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+tr("%1 has gone away")+"</span>").arg(_u.toHtmlEscaped());
 			else if(_s == 2)
-				l += QString("<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+tr("%1 has returned")+"</span>").arg(Qt::escape(_u));
+				l += QString("<span style='"+museeq->mFontMessage+";color:"+museeq->mColorRemote+"'>"+tr("%1 has returned")+"</span>").arg(_u.toHtmlEscaped());
 		mLog->append(l);
 		mStatus[_u] = _s;
 		}
@@ -385,5 +385,3 @@ void ChatRoom::setTicker() {
 	delete dlg;
 
 }
-
-

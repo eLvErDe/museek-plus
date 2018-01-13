@@ -97,6 +97,7 @@ typedef struct _FolderRequest FolderRequest;
 typedef StringMap Tickers;
 typedef std::map<std::string, std::wstring> WTickers;
 typedef std::map<std::string, int32> Recommendations;
+typedef std::map<std::string, int32> RelatedSearches;
 typedef std::map<std::string, uint32> SimilarUsers;
 typedef std::map<std::string, std::pair<std::string, uint32> > NetInfo;
 typedef std::map<std::string, uint32> RoomList;

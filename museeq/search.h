@@ -26,6 +26,7 @@
 #include <QWidget>
 
 class QCheckBox;
+class QComboBox;
 class QPushButton;
 class SearchListView;
 class SearchFilter;
@@ -45,12 +46,15 @@ signals:
 
 public slots:
 	void setToken(uint);
-	void append(const QString&, bool, uint, uint, const NFolder&);
+	void append(const QString&, bool, uint, uint, const NFolder&, const NFolder&);
 	void setHighlighted(int newH) {mHighlight = newH;};
 
 protected slots:
 	void refilter();
 	void ignoreSearch();
+	void addToWishlist();
+    void setRelatedSearches(const QString&, const NRelatedSearches&);
+    void selectedRelatedSearch(int);
 
 private:
 	int mHighlight;
@@ -58,9 +62,10 @@ private:
 	QList<uint> mTokens;
 
 	QCheckBox* mShowFilters;
+    QComboBox* mRelatedSearches;
 	SearchFilter* mFilters;
 	SearchListView* mResults;
-	QPushButton* mIgnore;
+	QPushButton* mIgnore, * mAddWishlist;
 };
 
 #endif // SEARCH_H

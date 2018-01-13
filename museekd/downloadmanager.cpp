@@ -34,6 +34,7 @@
 #include <NewNet/util.h>
 #include "util.h"
 #include <sstream>
+#include <Mucipher/mucipher.h>
 
 /**
   * Constructor
@@ -116,7 +117,15 @@ Museek::Download::incompletePath() const
 
     // Build file path: <incompletedir>/incomplete.<filesize>.<filename>
     std::stringstream path;
-    path << incompletedir << NewNet::Path::separator() << "incomplete." << size() << ".";
+
+    // Generate a md5 hash of username + remote path
+    std::string ch = m_User + m_RemotePath;
+    unsigned char tmpdigest[16];
+    md5Block((unsigned char *)ch.data(), ch.size(), tmpdigest);
+    char hexdigest[65];
+    hexDigest(tmpdigest, 16, hexdigest);
+
+    path << incompletedir << NewNet::Path::separator() << "incomplete." << hexdigest << ".";
     path << filename();
 
     m_IncompletePath = museekd()->codeset()->fromUtf8ToFS(path.str());
@@ -495,7 +504,7 @@ void Museek::DownloadManager::addFolderContents(const std::string & user, const 
 
     for (fit = folders.begin(); fit != folders.end(); fit++) {
         // Folder we have asked the contents
-        std::string remotePathBase = museekd()->codeset()->fromPeer(user, fit->first);
+        std::string remotePathBase = museekd()->codeset()->fromPeer(user, fit->first, true);
         // The (optional) local path where the folder should be downloaded
         std::string localPathBase = m_ContentsAsked[user].find(remotePathBase)->second;
         if (m_ContentsAsked[user].find(remotePathBase) == m_ContentsAsked[user].end()) {
@@ -524,6 +533,11 @@ void Museek::DownloadManager::addFolderContents(const std::string & user, const 
             size_t posB = remotePathBase.find_last_of('\\');
             if (posB != std::string::npos && posB < remotePathDir.size())
                 localPath += museekd()->codeset()->fromUtf8ToFS(remotePathDir.substr(posB));
+
+            if (sit->second.size() > museekd()->config()->getUint("transfers", "max_folder_size", 200)) {
+                NNLOG("museekd.down.warn", "Too long folder content from '%s' in '%s', skipping.", user.c_str(), remotePathBase.c_str());
+                continue;
+            }
 
             Folder::const_iterator fiit;
             bool blacklisted = false;

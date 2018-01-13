@@ -45,6 +45,7 @@ namespace Museek
   {
   public:
     typedef NewNet::FactorySocket<NewNet::TcpServerSocket, HandshakeSocket> PeerFactory;
+    typedef NewNet::FactorySocket<NewNet::TcpServerSocket, HandshakeObfuscatedSocket> ObfuscatedFactory;
 
     PeerManager(Museekd * museekd);
     ~PeerManager();
@@ -55,6 +56,11 @@ namespace Museek
     PeerFactory * peerFactory() const
     {
       return m_Factory;
+    }
+
+    ObfuscatedFactory * obfuscatedFactory() const
+    {
+      return m_ObfuscatedFactory;
     }
 
     NewNet::Event<HandshakeSocket *> firewallPiercedEvent;
@@ -102,6 +108,7 @@ namespace Museek
 
     NewNet::WeakRefPtr<Museekd> m_Museekd;
     NewNet::RefPtr<PeerFactory> m_Factory;
+    NewNet::RefPtr<ObfuscatedFactory> m_ObfuscatedFactory;
 
     std::map<std::string, struct timeval >                  m_LastStatusTime;   // When did we ask for status of each user?
     std::map<std::string, NewNet::WeakRefPtr<PeerSocket> >  m_Peers;            // List of all the peer sockets

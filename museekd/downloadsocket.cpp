@@ -30,7 +30,7 @@
 #include <NewNet/nnreactor.h>
 
 Museek::DownloadSocket::DownloadSocket(Museek::Museekd * museekd, Museek::Download * download)
-              : UserSocket(museekd, "F"), m_Download(download)
+              : UserSocket(museekd, "F", false), m_Download(download)
 {
     // Connect our data received event.
     dataReceivedEvent.connect(this, &DownloadSocket::onDataReceived);
@@ -66,6 +66,9 @@ void
 Museek::DownloadSocket::onConnected(NewNet::ClientSocket *)
 {
     m_Download->setState(TS_Transferring);
+
+    // No more obfusction now
+    setNeedsObfuscated(false);
 
     m_DataTimeout = museekd()->reactor()->addTimeout(120000, this, &DownloadSocket::dataTimeout);
 
@@ -148,6 +151,7 @@ Museek::DownloadSocket::onTransferTicketReceived(TicketSocket * socket)
         // Steal the socket and its data.
         setDescriptor(socket->descriptor());
         setSocketState(SocketConnected);
+        setNeedsObfuscated(false);
         receiveBuffer() = socket->receiveBuffer();
 
         // Open our incomplete file

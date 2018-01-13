@@ -66,7 +66,7 @@ namespace Museek
     }
 
     // Some search results received
-    void onSearchReply(uint ticket, const std::string & user, bool slotfree, uint avgspeed, uint queuelen, const Folder & folders);
+    void onSearchReply(uint ticket, const std::string & user, bool slotfree, uint avgspeed, uint queuelen, const Folder & folders, const Folder & locked);
 
     void sendNewSearchToAll(const std::string & query, uint token);
 
@@ -175,6 +175,7 @@ namespace Museek
     void onServerUserInterestsReceived(const SUserInterests * message);
     void onServerNewPasswordSet(const SNewPassword * message);
     void onServerPublicChatReceived(const SPublicChat * message);
+    void onRelatedSearchReceived(const SRelatedSearch * message);
 
     void onServerPrivRoomToggled(const SPrivRoomToggle * message);
     void onServerPrivRoomAlterableMembers(const SPrivRoomAlterableMembers * message);

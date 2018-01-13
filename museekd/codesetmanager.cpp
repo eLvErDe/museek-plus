@@ -108,6 +108,11 @@ Museek::CodesetManager::getNetworkCodeset(const std::string & domain, const std:
 {
   // Try to get the requested character set
   std::string codeset = museekd()->config()->get(domain, key);
+  if(codeset.empty() && domain == "encoding.users") {
+      if(std::find(m_ModernPeers.begin(), m_ModernPeers.end(), key) != m_ModernPeers.end()) {
+          codeset = "UTF-8";
+      }
+  }
   if(codeset.empty()) // Get the default network encoding
     codeset = museekd()->config()->get("encoding", "network");
   if(codeset.empty()) // Fall back to UTF-8
@@ -144,9 +149,13 @@ Museek::CodesetManager::toRoom(const std::string & room, const std::string & str
 }
 
 std::string
-Museek::CodesetManager::fromPeer(const std::string & peer, const std::string & str)
+Museek::CodesetManager::fromPeer(const std::string & peer, const std::string & str, bool isPath)
 {
-  return convert(getNetworkCodeset("encoding.users", peer), "UTF-8", str);
+    if (isPath) {
+        // Try to guess encoding if it's a file path
+        checkModernPath(peer, str);
+    }
+    return convert(getNetworkCodeset("encoding.users", peer), "UTF-8", str);
 }
 
 std::string
@@ -251,4 +260,20 @@ Museek::CodesetManager::getContext(const std::string & from, const std::string &
   // Store the context for future use.
   m_Contexts[key] = context;
   return context;
+}
+
+void
+Museek::CodesetManager::addModernPeer(const std::string & user)
+{
+    m_ModernPeers.insert(user);
+}
+
+void
+Museek::CodesetManager::checkModernPath(const std::string & user, const std::string & path)
+{
+    std::string modernPrefix = "@@"; // Modern clients use @@ as path prefix
+    std::string unixPrefix = "/"; // unix clients are usually utf-8 too
+    if ((path.compare(0, 2, modernPrefix) == 0) || (path.compare(0, 2, unixPrefix) == 0)) {
+        addModernPeer(user);
+    }
 }

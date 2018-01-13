@@ -25,12 +25,12 @@
 
 #include <QList>
 #include <QWidget>
+#include <QUrl>
 
 class TransferListView;
 class QMenu;
 class QCheckBox;
 class QSpinBox;
-class QUrl;
 class QSplitter;
 
 class Transfers : public QWidget {

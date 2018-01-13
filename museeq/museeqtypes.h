@@ -62,6 +62,7 @@ typedef QMap<QString, int> NRecommendations;
 typedef QMap<QString, int> NItemRecommendations;
 typedef QMap<QString, uint> NItemSimilarUsers;
 typedef QMap<QString, uint> NSimilarUsers;
+typedef QMap<QString, int> NRelatedSearches;
 
 typedef QList<NTransfer> NTransfers;
 typedef QMap<QString, QString> NTickers;

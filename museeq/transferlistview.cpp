@@ -30,6 +30,8 @@
 #include <QPainter>
 #include <QHeaderView>
 #include <QSettings>
+#include <QMimeData>
+#include <QDrag>
 
 TransferListView::TransferListView(bool place, QWidget* _p, const QString& _name)
                  : QTreeWidget(_p), mGroupMode(None) {
@@ -37,7 +39,7 @@ TransferListView::TransferListView(bool place, QWidget* _p, const QString& _name
 	mName = _name;
 
 	QStringList headers;
-	headers << tr("User") << tr("File") << tr("Status") << tr("Progress") << tr("Place") << tr("Position") << tr("Size") << tr("Speed") << tr("Time Left") << tr("Path") << QString::null;
+	headers << tr("User") << tr("File") << tr("Status") << tr("Progress") << tr("Place") << tr("Position") << tr("Size") << tr("Speed") << tr("Time Left") << tr("Path");
 
     setAllColumnsShowFocus(true);
 	setHeaderLabels(headers);
@@ -60,7 +62,6 @@ TransferListView::TransferListView(bool place, QWidget* _p, const QString& _name
 	setColumnWidth ( 7, 75 );
 	setColumnWidth ( 8, 95 );
 	setColumnWidth ( 9, 230 );
-	setColumnWidth ( 10, 0 );
 
     // Define the progress bar for the progress column
     mProgressBar = new TransferListItemProgress(this);
@@ -166,7 +167,7 @@ void TransferListView::setGroupMode(GroupMode mode) {
 		items = invisibleRootItem()->takeChildren ();
 		QList<QTreeWidgetItem *>::iterator itx = items.begin();
 		for(; itx != items.end(); ++itx) {
-			if ( ! ( *itx)->text(1).isNull())
+			if ( ( *itx)->childCount() == 0)
 				invisibleRootItem()->addChild(*itx);
 			else {
 				subitems = (*itx)->takeChildren();
@@ -185,12 +186,12 @@ void TransferListView::setGroupMode(GroupMode mode) {
 
 		QList<QTreeWidgetItem *>::iterator itx = items.begin();
 		for(; itx != items.end(); ++itx) {
-			if ( (*itx)->text(1).isNull())
+			if ( (*itx)->childCount() > 0)
 				invisibleRootItem()->addChild(*itx);
 		}
 		itx = items.begin();
 		for(; itx != items.end(); ++itx) {
-			if (! (*itx)->text(1).isNull()) {
+			if ((*itx)->childCount() == 0) {
 			    TransferListItem *itxx = dynamic_cast<TransferListItem *>(*itx);
 			    if (itxx)
                     findParent(itxx->user())->addChild(*itx);

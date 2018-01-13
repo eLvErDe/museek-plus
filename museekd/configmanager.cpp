@@ -196,7 +196,7 @@ Museek::ConfigManager::updateConfigFile() {
         // One new config key: "priv_rooms"/"enable_priv_room" -> false if not present
     }
     // Setting the new version
-    set("museekd", "version", "0.3.0");
+    set("museekd", "version", "0.4.0");
 }
 
 std::string

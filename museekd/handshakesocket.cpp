@@ -31,7 +31,7 @@
 #include "searchmanager.h"
 #include <NewNet/nnreactor.h>
 
-Museek::HandshakeSocket::HandshakeSocket() : NewNet::ClientSocket(), Museek::MessageProcessor(1)
+Museek::HandshakeSocket::HandshakeSocket() : NewNet::ClientSocket(), Museek::MessageProcessor(1, false)
 {
   // Connect some signals.
   dataReceivedEvent.connect(this, &HandshakeSocket::onDataReceived);
@@ -63,7 +63,9 @@ Museek::HandshakeSocket::onMessageReceived(const MessageData * data)
       HPierceFirewall msg;
       msg.parse_network_packet(data->data, data->length);
       m_Token = msg.token;
-      receiveBuffer().seek(data->length + 5);
+      if (this->obfuscated())
+        receiveBuffer().seek(4); // Seek past the key
+      receiveBuffer().seek(data->length + 5); // Message length + prefix (msg length + msg code)
       // Tell the peer manager, it should know more.
       m_Museekd->peers()->firewallPiercedEvent(this);
       // This particular socket is no longer needed. Remove it from the reactor.
@@ -81,8 +83,11 @@ Museek::HandshakeSocket::onMessageReceived(const MessageData * data)
       m_Token = msg.token;
       m_User = msg.user;
       // Seek past the message.
-      if (receiveBuffer().count() >= data->length + 5)
-        receiveBuffer().seek(data->length + 5);
+      if (receiveBuffer().count() >= data->length + 5) {
+          if (this->obfuscated())
+            receiveBuffer().seek(4); // Seek past the key
+        receiveBuffer().seek(data->length + 5); // Message length + prefix (msg length + msg code)
+      }
       else
         receiveBuffer().clear();
       if(msg.type == "P")
@@ -141,4 +146,14 @@ Museek::HandshakeSocket::onCannotConnect(NewNet::ClientSocket *)
 {
   NNLOG("museekd.hand.debug", "Could not connect handshake socket for user %s.", m_User.c_str());
   disconnect();
+}
+
+Museek::HandshakeObfuscatedSocket::HandshakeObfuscatedSocket() : Museek::HandshakeSocket()
+{
+    setObfuscated(true);
+}
+
+Museek::HandshakeObfuscatedSocket::~HandshakeObfuscatedSocket()
+{
+  NNLOG("museekd.hand.debug", "HandshakeObfuscatedSocket %d destroyed", descriptor());
 }

@@ -35,7 +35,7 @@ namespace Museek
   class PeerSocket : public UserSocket, public MessageProcessor
   {
   public:
-    PeerSocket(Museekd * museekd);
+    PeerSocket(Museekd * museekd, bool obfuscated);
     PeerSocket(HandshakeSocket * that);
     ~PeerSocket();
 
@@ -47,6 +47,11 @@ namespace Museek
     #define MAP_MESSAGE(ID, TYPE, EVENT) NewNet::Event<const TYPE *> EVENT;
     #include "peereventtable.h"
     #undef MAP_MESSAGE
+
+    virtual void setNeedsObfuscated(bool isObfuscated) {
+        Museek::UserSocket::setNeedsObfuscated(isObfuscated);
+        setObfuscated(isObfuscated); // Make sure the message processor is aware too
+    }
 
   private:
     void connectMessageSignals();

@@ -27,6 +27,7 @@
 #include <QDropEvent>
 #include <QShortcut>
 #include <QUrl>
+#include <QMimeData>
 
 TabWidget::TabWidget(QWidget* parent, const char* name, bool isUser)
           : QTabWidget(parent), mFirstProtected(0), mLastProtected(0){
@@ -46,7 +47,7 @@ TabWidget::TabWidget(QWidget* parent, const char* name, bool isUser)
 	setCornerWidget(b, Qt::BottomRightCorner);
 	connect(b, SIGNAL(clicked()), SLOT(closeCurrent()));
 
-	connect(this, SIGNAL(currentChanged(QWidget*)), SLOT(doCurrentChanged(QWidget*)));
+	connect(this, SIGNAL(currentChanged(int)), SLOT(doCurrentChanged(int)));
 
 	new QShortcut(Qt::ALT + Qt::Key_Left, this, SLOT(previousPage()));
 	new QShortcut(Qt::ALT + Qt::Key_Right, this, SLOT(nextPage()));
@@ -88,7 +89,7 @@ void TabWidget::setFirstProtected(int firstProtected) {
 	cornerWidget()->setEnabled(!( (currentIndex() >= mFirstProtected) && (currentIndex() <= mLastProtected) ));
 }
 
-void TabWidget::doCurrentChanged(QWidget*) {
+void TabWidget::doCurrentChanged(int) {
 	cornerWidget()->setEnabled(!( (currentIndex() >= mFirstProtected) && (currentIndex() <= mLastProtected) ));
 }
 

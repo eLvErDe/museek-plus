@@ -33,9 +33,9 @@
  *  name 'name' and widget flags set to 'f'.
  *
  *  The dialog will by default be modeless, unless you set 'modal' to
- *  TRUE to construct a modal dialog.
+ *  true to construct a modal dialog.
  */
-TickerDialog::TickerDialog( QWidget* parent, const char* name, bool modal, Qt::WFlags fl )
+TickerDialog::TickerDialog( QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl )
 	: QDialog( parent )
 {
 
@@ -54,18 +54,18 @@ TickerDialog::TickerDialog( QWidget* parent, const char* name, bool modal, Qt::W
 	buttonGroup1Layout->addWidget( mMessage, 0, 0 );
 
 	mThisTime = new QRadioButton( this);
-	mThisTime->setEnabled( TRUE );
-	mThisTime->setChecked( TRUE );
+	mThisTime->setEnabled( true );
+	mThisTime->setChecked( true );
 
 	buttonGroup1Layout->addWidget( mThisTime, 0, 1 );
 
 	mAlways = new QRadioButton( mThisTime );
-	mAlways->setEnabled( TRUE );
+	mAlways->setEnabled( true );
 
 	buttonGroup1Layout->addWidget( mAlways, 1, 1 );
 
 	mDefault = new QRadioButton( mThisTime );
-	mDefault->setEnabled( TRUE );
+	mDefault->setEnabled( true );
 
 	buttonGroup1Layout->addWidget( mDefault, 2, 1 );
 	spacer1 = new QSpacerItem( 20, 51, QSizePolicy::Minimum, QSizePolicy::Expanding );
@@ -109,4 +109,3 @@ void TickerDialog::languageChange()
 	mAlways->setText( tr( "Always for this room" ) );
 	mDefault->setText( tr( "Default for all rooms" ) );
 }
-

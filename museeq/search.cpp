@@ -22,8 +22,10 @@
 #include "searchfilter.h"
 #include "museeq.h"
 #include "search.h"
+#include "mainwin.h"
 
 #include <QCheckBox>
+#include <QComboBox>
 #include <QPushButton>
 #include <QList>
 #include <QLayout>
@@ -37,6 +39,15 @@ Search::Search(const QString& query, QWidget* parent, const char* name)
 	MainLayout->addLayout(ButtonLayout);
 	mShowFilters = new QCheckBox(tr("Enable filters"), this);
 	ButtonLayout->addWidget(mShowFilters);
+
+    mRelatedSearches = new QComboBox(this);
+	mRelatedSearches->setEditable( false );
+	mRelatedSearches->setSizePolicy (QSizePolicy::Minimum,QSizePolicy::Preferred);
+    mRelatedSearches->addItem(tr("Related search"));
+	ButtonLayout->addWidget(mRelatedSearches);
+
+	mAddWishlist = new QPushButton(tr("Add to wishlist"), this);
+	ButtonLayout->addWidget(mAddWishlist);
 	mIgnore = new QPushButton(tr("Stop search"), this);
 	ButtonLayout->addWidget(mIgnore);
 
@@ -47,11 +58,15 @@ Search::Search(const QString& query, QWidget* parent, const char* name)
 	mResults = new SearchListView(mFilters, this);
 	MainLayout->addWidget(mResults);
 
-	connect(mShowFilters, SIGNAL(toggled(bool)), mFilters, SLOT(setShown(bool)));
+	connect(mShowFilters, SIGNAL(toggled(bool)), mFilters, SLOT(setVisible(bool)));
 	mFilters->hide();
 
 	connect(mFilters, SIGNAL(filterChanged()), SLOT(refilter()));
 	connect(mIgnore, SIGNAL(clicked()), SLOT(ignoreSearch()));
+	connect(mAddWishlist, SIGNAL(clicked()), SLOT(addToWishlist()));
+    connect(mRelatedSearches, SIGNAL(currentIndexChanged(int)), this, SLOT(selectedRelatedSearch(int)));
+
+	connect(museeq, SIGNAL(relatedSearches(const QString&, const NRelatedSearches&)), SLOT(setRelatedSearches(const QString&, const NRelatedSearches&)));
 }
 
 Search::~Search() {
@@ -73,8 +88,8 @@ bool Search::hasToken(uint token) const {
 	return (mTokens.indexOf(token) != -1);
 }
 
-void Search::append(const QString& u, bool f, uint s, uint q, const NFolder& r) {
-	mResults->append(u, f, s, q, r);
+void Search::append(const QString& u, bool f, uint s, uint q, const NFolder& r, const NFolder& lr) {
+	mResults->append(u, f, s, q, r, lr);
 	emit highlight(1, this);
 }
 
@@ -83,6 +98,26 @@ void Search::ignoreSearch() {
 	mIgnore->setDisabled(true);
 }
 
+void Search::addToWishlist() {
+	museeq->addWishItem(mQuery);
+}
+
 void Search::refilter() {
 	mFilters->refilter(mResults);
+}
+
+void Search::setRelatedSearches(const QString& query, const NRelatedSearches& r) {
+    if (mQuery == QString(query)) {
+    	QMap<QString, int>::const_iterator rit = r.begin();
+    	for(; rit != r.end(); ++rit){
+            mRelatedSearches->addItem(rit.key());
+        }
+    }
+}
+
+void Search::selectedRelatedSearch(int) {
+    if (mRelatedSearches->currentIndex() != 0) {
+        museeq->mainwin()->startSearch(mRelatedSearches->currentText());
+        mRelatedSearches->setCurrentIndex(0);
+    }
 }

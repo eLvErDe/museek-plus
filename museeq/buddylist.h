@@ -22,12 +22,12 @@
 #define BUDDYLIST_H
 
 #include <QWidget>
+#include <QUrl>
 
 class UserListView;
 class QLineEdit;
 class QPushButton;
 class QShowEvent;
-class QUrl;
 
 class BuddyList : public QWidget {
 	Q_OBJECT

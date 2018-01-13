@@ -56,6 +56,7 @@ signals:
 	void similarUsers(const NSimilarUsers&);
 	void itemRecommendations(const QString& item, const NItemRecommendations&);
 	void itemSimilarUsers(const QString& item, const NItemSimilarUsers&);
+	void relatedSearches(const QString&, const NRelatedSearches&);
 
 	void addWishItem(const QString&, uint);
 	void removeWishItem(const QString&);
@@ -66,7 +67,7 @@ signals:
 	void removeHatedInterest(const QString&);
 
 	void searchToken(const QString&, uint);
-	void searchResults(uint, const QString&, bool, uint, uint, const NFolder&);
+	void searchResults(uint, const QString&, bool, uint, uint, const NFolder&, const NFolder&);
 	void sayChatroom(const QString&, const QString&, const QString&);
 	void joinRoom(const QString&, const NRoom&, const QString&, const QStringList&);
 	void leaveRoom(const QString&);

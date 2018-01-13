@@ -108,6 +108,7 @@ Museek::IfaceManager::IfaceManager(Museekd * museekd) : m_Museekd(museekd)
   museekd->server()->userInterestsReceivedEvent.connect(this, &IfaceManager::onServerUserInterestsReceived);
   museekd->server()->newPasswordReceivedEvent.connect(this, &IfaceManager::onServerNewPasswordSet);
   museekd->server()->publicChatReceivedEvent.connect(this, &IfaceManager::onServerPublicChatReceived);
+  museekd->server()->relatedSearchReceivedEvent.connect(this, &IfaceManager::onRelatedSearchReceived);
 
   museekd->server()->privRoomToggleReceivedEvent.connect(this, &IfaceManager::onServerPrivRoomToggled);
   museekd->server()->privRoomAlterableMembersReceivedEvent.connect(this, &IfaceManager::onServerPrivRoomAlterableMembers);
@@ -754,12 +755,13 @@ Museek::IfaceManager::onIfacePrivRoomDisown(const IPrivRoomDisown * message) {
 }
 
 void
-Museek::IfaceManager::onIfaceStartSearch(const ISearch * message)
-{
+Museek::IfaceManager::onIfaceStartSearch(const ISearch * message) {
     uint token = museekd()->token();
 
-    if (message->type == 0) // Global search
+    if (message->type == 0) {// Global search
         SEND_MESSAGE(museekd()->server(), SFileSearch(token, museekd()->codeset()->toNet(message->query)));
+        SEND_MESSAGE(museekd()->server(), SRelatedSearch(museekd()->codeset()->toNet(message->query)));
+    }
     else if (message->type == 1) // Buddies search
         museekd()->searches()->buddySearch(token, message->query);
     else if (message->type == 2) // Room search
@@ -1249,6 +1251,12 @@ Museek::IfaceManager::onServerGlobalRecommendationsReceived(const SGetGlobalReco
 }
 
 void
+Museek::IfaceManager::onRelatedSearchReceived(const SRelatedSearch * message)
+{
+  SEND_MASK(EM_INTERESTS, IRelatedSearch(message->query, message->related_searches));
+}
+
+void
 Museek::IfaceManager::onServerSimilarUsersReceived(const SGetSimilarUsers * message)
 {
     SEND_MASK(EM_INTERESTS, IGetSimilarUsers(message->users));
@@ -1355,7 +1363,7 @@ Museek::IfaceManager::onPeerSharesReceived(const PSharesReply * message)
     for(itFold = oriShares.begin(); itFold != oriShares.end(); ++itFold) {
         Folder newFold;
         for(itFile = itFold->second.begin(); itFile != itFold->second.end(); ++itFile) {
-            newFold[museekd()->codeset()->fromPeer(socket->user(), itFile->first)] = itFile->second;
+            newFold[museekd()->codeset()->fromPeer(socket->user(), itFile->first, true)] = itFile->second;
         }
         encShares[museekd()->codeset()->fromPeer(socket->user(), itFold->first)] = newFold;
     }
@@ -1422,7 +1430,7 @@ Museek::IfaceManager::onUploadRemoved(Upload * upload)
 }
 
 void
-Museek::IfaceManager::onSearchReply(uint ticket, const std::string & user, bool slotfree, uint avgspeed, uint queuelen, const Folder & folders)
+Museek::IfaceManager::onSearchReply(uint ticket, const std::string & user, bool slotfree, uint avgspeed, uint queuelen, const Folder & folders, const Folder & locked)
 {
-  SEND_ALL(ISearchReply(ticket, user, slotfree, avgspeed, queuelen, folders));
+  SEND_ALL(ISearchReply(ticket, user, slotfree, avgspeed, queuelen, folders, locked));
 }
