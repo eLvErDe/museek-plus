@@ -474,13 +474,9 @@ class Search:
 			for numbers, results in self.results[str(this_ticket)].items():
 				ticket, user, free, speed, queue, path, size, ftype, extended = results
 				if this_ticket == ticket and self.current == ticket:
-					if ftype.upper() in ('MP3', 'OGG'):
-						if extended != []:
-							bitrate = extended[0]
-							time = extended[1]
-						else:
-							bitrate = 0
-							time = 0
+					if ftype.upper() in ('MP3', 'OGG') and extended != []:
+						bitrate = extended[0]
+						time = extended[1] if len(extended) > 1 else 0
 					else: 
 						bitrate = 0
 						time = 0
