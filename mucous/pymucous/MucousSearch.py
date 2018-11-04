@@ -412,7 +412,7 @@ class Search:
 				ssw.erase()
 				ssw.addstr(self.mucous.logs["search_count"][0],  self.mucous.colors["blackwhite"] )
 				ssw.addstr(str(self.mucous.logs["search_count"][1]),  self.mucous.colors["blackwhite"] )
-				ssw.refresh()
+				ssw.noutrefresh()
 			except Exception, e:
 				pass
 				#self.mucous.Help.Log( "debug", "Search Status: " + str(e))
