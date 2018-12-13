@@ -779,7 +779,7 @@ class Networking(driver.Driver):
 						if self.mucous.Transfers.current == "uploads":
 							pass
 						else:
-							self.mucous.DownloadManager()
+							self.mucous.Transfers.DownloadManager()
 							curses.doupdate()
 				self.mucous.Transfers.DrawDownloadCount(str(len(self.mucous.Transfers.transfers["downloads"].keys())))
 		except Exception, e:
