@@ -22,13 +22,15 @@ apt-get install swig pkg-config libxml2-dev libevent-dev libxml++2.6-dev qttools
 Get binaries and help for Museek+ here: http://www.museek-plus.org
 
 
-## Install using CMake
+museekd can be installed using CMake or python's distutils.\
+distutils doesn't provide for uninstalls, so be cautious with it.\
+The recommended way to build museek is using CMake.
 
-CMake is the recommended way to build everything
+## Install using CMake
 
 ### Configure Features
 
-Prefix the boolean variables with -D, set them to 1 to enable the feature, 0 to disable.\
+Prefix the boolean variables with `-D`, set them to `1` to enable the feature, `0` to disable.\
 Default values are between brackets.
 
 #### Features
@@ -73,8 +75,6 @@ $ sudo make install
 
 ## Distutils (Python's built-in installation tool)
 
-distutils doesn't provide for uninstalls, so be cautious with it.
-
 Based on the desired feature, `cd` to the appropriate directory and issue the build commands.
 
 ### Feature Directories
@@ -90,16 +90,16 @@ $ cd python-bindings/
 Python Clients (mulog, museekchat, museekcontrol, musirc.py)\
 Requires: PyMucipher or PyCrypto, Python Bindings
 ```shell
-# cd python-clients/
+$ cd python-clients/
 ```
 Setup tools (musetup, musetup-gtk, musetup-qt)
 ```shell
-# cd setup/
+$ cd setup/
 ```
 Mucous\
 Requires: PyMucipher or PyCrypto, Python Bindings
 ```shell
-# cd mucous/
+$ cd mucous/
 ```
 
 ### Build Commands
