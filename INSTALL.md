@@ -14,9 +14,17 @@ libvorbis-dev\
 libogg-dev\
 SWIG (for the mucipher Python bindings)\
 
-On Debian:
+To keep our system clean we can build everything in a Docker container:
 ```shell
-apt-get install swig pkg-config libxml2-dev libevent-dev libxml++2.6-dev qttools5-dev qtscript5-dev
+$ cd /path/to/src
+$ docker run -v $(pwd):/source -it debian:stable bash
+```
+
+Inside the container:
+```shell
+apt-get update
+apt-get install -y cmake build-essential python swig pkg-config libxml2-dev libevent-dev libxml++2.6-dev qttools5-dev qtscript5-dev libogg-dev libvorbis-dev python-dev
+cd /source
 ```
 
 Get binaries and help for Museek+ here: http://www.museek-plus.org
@@ -68,7 +76,7 @@ $ cd build/
 $ cmake -CMAKE_INSTALL_DPREFIX=/usr ..
 (or) $ cmake -DEVERYTHING=1 -DCMAKE_INSTALL_PREFIX=/usr ..
 (or) $ cmake -DMUCOUS=1 -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_INSTALL_MANDIR=/usr/share/man ..
-$ make
+$ make -j$(nproc+1)
 (or) $ make VERBOSE=1
 $ sudo make install
 ```
