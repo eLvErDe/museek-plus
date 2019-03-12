@@ -23,7 +23,7 @@ $ docker run -v $(pwd):/source -it debian:stable bash
 Inside the container:
 ```shell
 apt-get update
-apt-get install -y cmake build-essential python swig pkg-config libxml2-dev libevent-dev libxml++2.6-dev qttools5-dev qtscript5-dev libogg-dev libvorbis-dev python-dev
+apt-get install -y cmake build-essential python swig pkg-config libxml2-dev libevent-dev libxml++2.6-dev qttools5-dev qtscript5-dev libogg-dev libvorbis-dev python-dev python-geoip geoip-database-extra
 cd /source
 ```
 
