@@ -18,7 +18,7 @@ include(GNUInstallDirs)
 add_definitions(-DNN_PTR_DEBUG -DNN_PTR_DEBUG_ASSERT)
 
 message("DECLARATIONS:
-Package options: EVERYTHING, MURMUR, MUCOUS, CLIENTS, BINDINGS
+Package options: EVERYTHING, MURMUR, MUCOUS, PYTHON_CLIENTS, PYTHON_BINDINGS
 Museeq options: BINRELOC, RELOAD_TRANSLATIONS
 Prefix these declarations with -D and set them with either 1, 0 or a path.
 Set -DEVERYTHING=1 if you want it all.")
