@@ -1,21 +1,22 @@
-Website (ticket, documentation, packages) at http://www.museek-plus.org
+# Museek Plus
 
-Museek consists of the binary progams: 
+Website for ticket, documentation and packages is http://www.museek-plus.org
 
-museekd, museeq, muscan ( and possibly muscand).
+**Museek** consists of the binary progams: 
+- museekd
+- museeq
+- muscan ( and possibly muscand).
 
 The configuration script is:
+- musetup
 
-musetup
-
-Steps:
+**Steps:**
 
 1) Configure your settings with musetup .
-
- a) Settings that must be set for museekd to run are:
+ 	- Settings that must be set for museekd to run are:
     Server, Username, Password, Interface Password, Download Directory.
 
- b) Having a shares directories is advised.
+ 	- Having a shares directories is advised.
 
 2) Run museekd. (The Museek Daemon)
 
