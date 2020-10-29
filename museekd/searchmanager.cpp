@@ -482,7 +482,7 @@ void Museek::SearchManager::onPeerSocketReady(PeerSocket * socket) {
 
         std::map<uint, Folder>::const_iterator it;
         for (it = m_PendingResults[username].begin(); it != m_PendingResults[username].end(); it++) {
-            PSearchReply msg(it->first, username, it->second, transferSpeed(), (uint64) museekd()->uploads()->queueTotalLength(), museekd()->uploads()->hasFreeSlots(), lockedResults);
+            PSearchReply msg(it->first, museekd()->server()->username(), it->second, transferSpeed(), (uint64) museekd()->uploads()->queueTotalLength(), museekd()->uploads()->hasFreeSlots(), lockedResults);
             socket->sendMessage(msg.make_network_packet());
         }
 

@@ -94,7 +94,7 @@ SERVERMESSAGE(SLogin, 1)
 	MAKE
 		pack(username);
 		pack(password);
-		pack((uint32)183);
+		pack((uint32)178);
 		pack(digest);
 		pack((uint32)1);
 
