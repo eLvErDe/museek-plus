@@ -601,7 +601,7 @@ class museekcontrol(driver.Driver):
 			elif want == "downfolder":
 				if user != '':
 					s = ufile[:-1]
-					self.send(messages.GetFolderContents(user, ufile))
+					self.send(messages.GetFolderContents(user, s))
 						
 				sys.exit()
 			elif want == "gsearch":
