@@ -314,7 +314,7 @@ PEERMESSAGE(PInfoReply, 16)
 			pack((uchar)0);
 		pack(totalupl);
 		pack(queuesize);
-		pack((uint32)slotfree);
+		pack((uchar)slotfree);
 	END_MAKE
 
 	PARSE
@@ -324,7 +324,7 @@ PEERMESSAGE(PInfoReply, 16)
 			picture = unpack_vector();
 		totalupl = unpack_int();
 		queuesize = unpack_int();
-		slotfree = unpack_int();
+		slotfree = (unpack_char() != 0);
 	END_PARSE
 
 	std::string description;
