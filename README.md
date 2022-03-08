@@ -1,5 +1,15 @@
 # Museek Plus
 
+## No longer maintained!
+
+Museek+ is no longer in active development. Please use one of the actively maintained alternatives to avoid compatibility issues with other Soulseek clients:
+
+- [slskd](https://github.com/slskd/slskd), a modern client-server application
+- [Nicotine+](https://nicotine-plus.org/), a graphical client for desktop
+- [Seeker](https://github.com/jackBonadies/SeekerAndroid), a client for Android
+
+## Setup
+
 Website for ticket, documentation and packages is http://www.museek-plus.org
 
 **Museek** consists of the binary progams: 
