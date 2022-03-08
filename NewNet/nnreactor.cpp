@@ -218,7 +218,10 @@ NewNet::Reactor::prepareReactorData() {
         timeout.tv_usec = 0;
       }
 
-      evtimer_del(&mEvTimeout); // delete potentially existing previous timeout
+      // Delete potentially existing previous timeout
+      if (event_initialized(&mEvTimeout))
+        evtimer_del(&mEvTimeout);
+
       evtimer_set(&mEvTimeout, ::eventCallback, this);
       evtimer_add(&mEvTimeout, &timeout);
     }
